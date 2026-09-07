@@ -1,10 +1,12 @@
 """Only the missing bridge: existing skill text + company context -> structured drafts."""
 
 import json
+import re
+from typing import Literal
 
 from django.conf import settings
 from openai import OpenAI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, create_model
 
 
 class IdeaOutput(BaseModel):
@@ -26,6 +28,18 @@ class DraftOutput(BaseModel):
     checks: list[str]
 
 
+def grounded_ideas_schema(context):
+    quotes = tuple(dict.fromkeys(
+        part.strip() for field in ("current", "profile")
+        for part in re.split(r"(?<=[.!?])\s+|\n+", context.get(field, "")) if part.strip()
+    ))
+    if not quotes:
+        raise ValueError("Fyll i företagsprofil och aktuella uppgifter först.")
+    # Constrain the existing quote field to source text, instead of asking the model to transcribe it.
+    idea = create_model("GroundedIdea", __base__=IdeaOutput, source_quote=(Literal[quotes], ...))
+    return create_model("GroundedIdeas", __base__=IdeasOutput, ideas=(list[idea], Field(min_length=3, max_length=3)))
+
+
 def skill_text(*names):
     root = settings.ENGINE_ROOT / "vendor" / "social-media-skills" / "skills"
     return "\n\n".join((root / name / "SKILL.md").read_text(encoding="utf-8") for name in names)
@@ -45,7 +59,7 @@ Endast profil och aktuellt är faktakällor. Hitta aldrig på priser, datum, res
 kundfrågor, öppettider eller egenskaper. Hänvisa oklarheter till mänsklig granskning.
 Skriv naturlig svenska med företagets ton. Undvik generisk reklam och fabricerad brådska.
 Publicering sker i Postiz efter mänskligt godkännande; du har inga publiceringsverktyg.
-Låt nya idéer skilja sig från medföljande historik. Återge source_quote ordagrant från aktuellt.
+Låt nya idéer skilja sig från medföljande historik. Återge source_quote ordagrant från aktuellt eller profil, aldrig från stil-/röstexempel.
 Ge tre tydligt olika idéer med motivering och konkret förslag på en riktig företagsbild.
 Om en idé redan är vald: skriv en Facebooktext och en Instagramtext för JUST den idén,
 ett bildförslag och en kort lista över fakta att kontrollera före publicering.
@@ -56,7 +70,7 @@ Instagramtexten får vara högst 2200 tecken. Lägg aldrig granskningsanteckning
             model=settings.OPENAI_MODEL,
             instructions=instructions + "\n\nHantverksreferenser:\n" + skill_text(*skills),
             input=json.dumps({"company_context": context, "selected_idea": idea}, ensure_ascii=False),
-            text_format=DraftOutput if writing else IdeasOutput,
+            text_format=DraftOutput if writing else grounded_ideas_schema(context),
             max_output_tokens=5000,
             store=False,
         )
@@ -65,8 +79,13 @@ Instagramtexten får vara högst 2200 tecken. Lägg aldrig granskningsanteckning
     output = response.output_parsed.model_dump()
     if not writing:
         for item in output["ideas"]:
-            if not item["source_quote"].strip() or item["source_quote"] not in context["current"]:
+            source_field = next(
+                (field for field in ("current", "profile") if item["source_quote"].strip() and item["source_quote"] in context.get(field, "")),
+                None,
+            )
+            if source_field is None:
                 raise ValueError("En idé saknade korrekt källcitat. Ingen idé sparades; försök igen.")
+            item["source_field"] = source_field
     elif len(output["instagram"]) > 2200:
         raise ValueError("Instagramtexten blev för lång. Försök igen.")
     return output

@@ -28,7 +28,7 @@
     {% else %}
     <div class="ideas">
       {% for idea in run.ideas %}
-      <article class="idea"><h3>{{ idea.title }}</h3><p>{{ idea.angle }}</p><p><strong>Varför:</strong> {{ idea.reason }}</p><blockquote>{{ idea.source_quote }}</blockquote><p class="small">Bild: {{ idea.photo_brief }}</p>
+      <article class="idea"><h3>{{ idea.title }}</h3><p>{{ idea.angle }}</p><p><strong>Varför:</strong> {{ idea.reason }}</p><blockquote>{{ idea.source_quote }}{% if idea.source_field %}<br><small>{% if idea.source_field == 'profile' %}Ur företagsprofilen{% else %}Ur aktuella uppgifter{% endif %}</small>{% endif %}</blockquote><p class="small">Bild: {{ idea.photo_brief }}</p>
         <form method="post" action="{% url 'engine:draft' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit">Skriv det här inlägget</button></form>
       </article>
       {% endfor %}

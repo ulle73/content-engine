@@ -10,6 +10,26 @@ from .models import Company, ContentRun
 from .postiz import make_payload
 
 
+class SourceQuoteTests(TestCase):
+    @patch("engine.generation.OpenAI")
+    def test_quotes_accept_only_exact_current_or_profile_text(self, client):
+        from copy import deepcopy
+
+        from .generation import generate
+
+        context = {"current": "Nya rangebollar.", "profile": "Vi hjälper amatörgolfare.", "voice": "Garanterat tio slag bättre."}
+        output = deepcopy(IDEAS)
+        output["ideas"][1]["source_quote"] = context["profile"]
+        client.return_value.__enter__.return_value.responses.parse.return_value.output_parsed.model_dump.return_value = output
+        result = generate(context)
+        self.assertEqual(result["ideas"][0]["source_field"], "current")
+        self.assertEqual(result["ideas"][1]["source_field"], "profile")
+        for invalid in (context["voice"], "Vi hjälper alla golfare.", ""):
+            output["ideas"][1]["source_quote"] = invalid
+            with self.assertRaisesRegex(ValueError, "källcitat"):
+                generate(context)
+
+
 @override_settings(LOCAL_HTTP=True)
 class FirstRunTests(TestCase):
     def fields(self):
