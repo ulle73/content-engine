@@ -1,6 +1,3 @@
-[submodule "vendor/brightbean-studio"]
-	path = vendor/brightbean-studio
-	url = https://github.com/brightbeanxyz/brightbean-studio.git
 [submodule "vendor/social-media-skills"]
 	path = vendor/social-media-skills
 	url = https://github.com/social-media-skills/skills.git

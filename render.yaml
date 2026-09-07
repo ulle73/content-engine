@@ -14,15 +14,11 @@ services:
         sync: false
       - key: SECRET_KEY
         generateValue: true
-      - key: ENCRYPTION_KEY_SALT
+      - key: POSTIZ_ENCRYPTION_SECRET
         generateValue: true
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL
         value: gpt-5.6-luna
-      - key: BOOTSTRAP_ADMIN_EMAIL
-        sync: false
-      - key: BOOTSTRAP_ADMIN_PASSWORD
-        sync: false
-      - key: EMAIL_BACKEND_TYPE
-        value: console
+      - key: SETUP_TOKEN
+        generateValue: true

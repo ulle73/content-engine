@@ -1,12 +1,12 @@
 from django import forms
 from django.utils import timezone
 
-from .models import BrandContext
+from .models import Company
 
 
 class BrandForm(forms.ModelForm):
     class Meta:
-        model = BrandContext
+        model = Company
         fields = ["profile", "voice", "current", "source", "valid_until"]
         labels = {
             "profile": "Om företaget, målgrupp och mål",
@@ -37,3 +37,10 @@ def validate_context(context):
         raise ValueError("Ange hur länge de aktuella uppgifterna gäller.")
     if context.valid_until < timezone.localdate():
         raise ValueError("De aktuella uppgifterna har gått ut. Uppdatera dem först.")
+
+
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ["name"]
+        labels = {"name": "Företagets namn"}

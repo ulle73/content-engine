@@ -1,7 +1,5 @@
 from datetime import date
 
-from apps.composer.models import Post
-from apps.members.decorators import require_permission
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,50 +9,43 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from openai import APIError
 
-from .forms import BrandForm, validate_context
+from .forms import BrandForm, CompanyForm, validate_context
 from .generation import generate
-from .models import BrandContext, ContentRun
-
-
-@login_required
-def source_code(request):
-    from django.http import FileResponse, Http404
-
-    path = settings.ENGINE_ROOT / "data" / "source.zip"
-    if not path.exists():
-        raise Http404("Source archive is created during deployment.")
-    return FileResponse(path.open("rb"), as_attachment=True, filename="content-engine-source.zip")
+from .models import Company, ContentRun
+from .ownership import company_required
 
 
 @login_required
 def index(request):
-    if request.workspace:
-        return redirect("engine:home", workspace_id=request.workspace.id)
-    membership = request.user.workspace_memberships.filter(workspace__is_archived=False).first()
-    if membership:
-        return redirect("engine:home", workspace_id=membership.workspace_id)
-    return redirect("workspaces:list")
+    companies = Company.objects.filter(owner=request.user).order_by("name")
+    form = CompanyForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        company = form.save(commit=False)
+        company.owner = request.user
+        company.save()
+        return redirect("engine:home", workspace_id=company.pk)
+    return render(request, "engine/companies.html", {"companies": companies, "form": form})
 
 
 @login_required
-@require_permission("create_posts")
+@company_required
 def home(request, workspace_id):
     workspace = request.workspace
-    context, _ = BrandContext.objects.get_or_create(workspace=workspace)
+    context = workspace
     form = BrandForm(request.POST or None, instance=context)
     if request.method == "POST" and form.is_valid():
         form.save()
         messages.success(request, "Företagsunderlaget är sparat.")
         return redirect("engine:home", workspace_id=workspace_id)
-    runs = ContentRun.objects.filter(workspace=workspace).select_related("post").order_by("-created_at")[:10]
+    runs = ContentRun.objects.filter(workspace=workspace).order_by("-created_at")[:10]
     return render(request, "engine/home.html", {"form": form, "runs": runs, "workspace": workspace})
 
 
 @login_required
-@require_permission("create_posts")
+@company_required
 @require_POST
 def ideas(request, workspace_id):
-    context = get_object_or_404(BrandContext, workspace=request.workspace)
+    context = request.workspace
     try:
         validate_context(context)
         snapshot = {
@@ -65,11 +56,13 @@ def ideas(request, workspace_id):
             "source": context.source,
             "valid_until": context.valid_until.isoformat(),
             "captured_at": timezone.now().isoformat(),
-            "recent_posts": list(
-                Post.objects.filter(workspace=request.workspace)
+            "recent_posts": [
+                item.get("facebook", "")
+                for item in ContentRun.objects.filter(workspace=request.workspace)
+                .exclude(draft={})
                 .order_by("-created_at")
-                .values_list("caption", flat=True)[:10]
-            ),
+                .values_list("draft", flat=True)[:10]
+            ],
         }
         output = generate(snapshot)
         ContentRun.objects.create(
@@ -91,18 +84,18 @@ def ideas(request, workspace_id):
 
 
 @login_required
-@require_permission("create_posts")
+@company_required
 @require_POST
 def draft(request, workspace_id, run_id, idea_index):
     run = get_object_or_404(ContentRun, pk=run_id, workspace=request.workspace)
-    if run.post_id:
+    if run.draft:
         return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
     if idea_index >= len(run.ideas):
         from django.http import Http404
 
         raise Http404
     try:
-        current = get_object_or_404(BrandContext, workspace=request.workspace)
+        current = request.workspace
         validate_context(current)
         if (
             any(run.context[key] != getattr(current, key) for key in ["profile", "voice", "current", "source"])
@@ -114,21 +107,10 @@ def draft(request, workspace_id, run_id, idea_index):
         output = generate(run.context, idea=run.ideas[idea_index])
         with transaction.atomic():
             locked = ContentRun.objects.select_for_update().get(pk=run.pk, workspace=request.workspace)
-            if not locked.post_id:
-                notes = (
-                    f"Källa: {run.context['source']}\nGiltigt t.o.m.: {run.context['valid_until']}\nKällcitat: {run.ideas[idea_index]['source_quote']}\n\nINSTAGRAMVERSION\n{output['instagram']}\n\nBILDFÖRSLAG\n{output['photo_brief']}\n\nKONTROLLERA\n"
-                    + "\n".join(output["checks"])
-                )
-                locked.post = Post.objects.create(
-                    workspace=request.workspace,
-                    author=request.user,
-                    title=run.ideas[idea_index]["title"][:255],
-                    caption=output["facebook"],
-                    internal_notes=notes,
-                )
+            if not locked.draft:
                 locked.draft = output
                 locked.selected = idea_index
-                locked.save(update_fields=["post", "draft", "selected"])
+                locked.save(update_fields=["draft", "selected"])
         messages.success(request, "Utkastet är sparat. Granska texten, välj bild och för över till Postiz.")
         return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
     except ValueError as exc:
@@ -142,11 +124,11 @@ def draft(request, workspace_id, run_id, idea_index):
 
 
 @login_required
-@require_permission("manage_social_accounts")
+@company_required
 def connect(request, workspace_id):
     from .postiz import PostizError, list_channels
 
-    context, _ = BrandContext.objects.get_or_create(workspace=request.workspace)
+    context = request.workspace
     if request.method == "POST":
         key = request.POST.get("api_key", "").strip() or context.postiz_key
         try:
@@ -155,12 +137,14 @@ def connect(request, workspace_id):
                 chosen = request.POST.getlist("channels")
                 context.postiz_key = key
                 context.postiz_channels = [c for c in channels if c["id"] in chosen]
-                context.save(update_fields=["postiz_key", "postiz_channels"])
+                context.save(update_fields=["postiz_ciphertext", "postiz_channels"])
                 messages.success(request, "Företagets Postiz-koppling är sparad.")
                 return redirect("engine:home", workspace_id=workspace_id)
             # Persist the verified credential encrypted, never send it back to HTML.
+            if key != context.postiz_key:
+                context.postiz_channels = []
             context.postiz_key = key
-            context.save(update_fields=["postiz_key"])
+            context.save(update_fields=["postiz_ciphertext", "postiz_channels"])
             return render(
                 request,
                 "engine/connect.html",
@@ -174,13 +158,13 @@ def connect(request, workspace_id):
 
 
 @login_required
-@require_permission("create_posts")
+@company_required
 def review(request, workspace_id, run_id):
     from .postiz import PostizError, make_payload
     from .postiz import request as postiz_request
 
-    run = get_object_or_404(ContentRun, pk=run_id, workspace=request.workspace, post__isnull=False)
-    brand = get_object_or_404(BrandContext, workspace=request.workspace)
+    run = get_object_or_404(ContentRun, pk=run_id, workspace=request.workspace)
+    brand = request.workspace
     if request.method == "POST" and request.POST.get("action") == "reset":
         if run.delivery_status == "unknown" and request.POST.get("checked_postiz"):
             ContentRun.objects.filter(pk=run.pk, delivery_status="unknown").update(delivery_status="draft")
@@ -204,7 +188,6 @@ def review(request, workspace_id, run_id):
                     raise ValueError("Överföringen har redan startat. Kontrollera Postiz.")
                 current_run.draft = run.draft
                 current_run.save(update_fields=["draft"])
-                Post.objects.filter(pk=run.post_id).update(caption=facebook)
             if action == "send":
                 validate_context(brand)
                 if run.context["valid_until"] < timezone.localdate().isoformat() or any(
@@ -229,7 +212,6 @@ def review(request, workspace_id, run_id):
                 )
                 if not claimed:
                     raise ValueError("Överföringen har redan startat. Kontrollera Postiz.")
-                Post.objects.filter(pk=run.post_id).update(caption=facebook)
                 try:
                     media = []
                     if photo:

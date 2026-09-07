@@ -2,12 +2,62 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import BrandContext, ContentRun
+from .models import Company, ContentRun
 from .postiz import make_payload
+
+
+@override_settings(LOCAL_HTTP=True)
+class FirstRunTests(TestCase):
+    def fields(self):
+        return {
+            "username": "owner@example.test",
+            "company": "Mitt företag",
+            "password1": "Strong-test-passphrase-291!",
+            "password2": "Strong-test-passphrase-291!",
+        }
+
+    def test_first_visit_creates_admin_and_company_and_closes_registration(self):
+        self.assertRedirects(self.client.get("/"), "/accounts/login/?next=/", fetch_redirect_response=False)
+        self.assertRedirects(self.client.get("/accounts/login/"), "/setup/")
+        self.assertContains(self.client.get("/setup/"), "Skapa första administratören")
+        self.assertRedirects(self.client.post("/setup/", self.fields()), "/")
+        user = get_user_model().objects.get()
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.check_password(self.fields()["password1"]))
+        self.assertEqual(Company.objects.get().owner, user)
+        self.client.logout()
+        self.assertRedirects(self.client.post("/setup/", self.fields()), "/accounts/login/")
+        self.assertEqual(get_user_model().objects.count(), 1)
+        self.assertRedirects(
+            self.client.post(
+                "/accounts/login/", {"username": "OWNER@example.test", "password": self.fields()["password1"]}
+            ),
+            "/",
+        )
+
+    @override_settings(LOCAL_HTTP=False, SETUP_TOKEN="test-installation-secret")
+    def test_public_setup_requires_installation_secret(self):
+        fields = self.fields()
+        self.assertEqual(self.client.post("/setup/", fields).status_code, 200)
+        self.assertFalse(get_user_model().objects.exists())
+        fields["setup_token"] = "wrong"
+        self.client.post("/setup/", fields)
+        self.assertFalse(get_user_model().objects.exists())
+        fields["setup_token"] = "test-installation-secret"
+        self.assertRedirects(self.client.post("/setup/", fields), "/")
+
+    def test_setup_enforces_csrf_and_password_validation(self):
+        from django.test import Client
+
+        self.assertEqual(Client(enforce_csrf_checks=True).post("/setup/", self.fields()).status_code, 403)
+        fields = {**self.fields(), "password1": "123", "password2": "123"}
+        self.client.post("/setup/", fields)
+        self.assertFalse(get_user_model().objects.exists())
+
 
 IDEAS = {
     "ideas": [
@@ -31,10 +81,10 @@ DRAFT = {
 
 class ContentFlowTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(email="editor@example.test", password="test-only-password")
-        self.workspace = self.user.workspace_memberships.first().workspace
-        self.context = BrandContext.objects.create(
-            workspace=self.workspace,
+        self.user = get_user_model().objects.create_user(username="editor@example.test", password="test-only-password")
+        self.workspace = self.context = Company.objects.create(
+            owner=self.user,
+            name="Testföretag",
             profile="Testföretag.",
             voice="Kort och vänligt.",
             current="Nya rangebollar.",
@@ -49,10 +99,10 @@ class ContentFlowTests(TestCase):
     def test_real_pages_and_workspace_isolation(self):
         self.assertEqual(self.client.get(self.url("home")).status_code, 200)
         self.assertEqual(self.client.get(self.url("connect")).status_code, 200)
-        outsider = get_user_model().objects.create_user(email="outsider@example.test")
+        outsider = get_user_model().objects.create_user(username="outsider@example.test")
         self.client.force_login(outsider)
-        self.assertEqual(self.client.get(self.url("home")).status_code, 403)
-        self.assertEqual(self.client.post(self.url("ideas")).status_code, 403)
+        self.assertEqual(self.client.get(self.url("home")).status_code, 404)
+        self.assertEqual(self.client.post(self.url("ideas")).status_code, 404)
 
     @patch("engine.views.generate")
     def test_ideas_draft_and_repeat_do_not_publish_or_duplicate(self, generate):
@@ -62,9 +112,8 @@ class ContentFlowTests(TestCase):
         response = self.client.post(self.url("draft", run_id=run.pk, idea_index=0))
         self.assertEqual(response.status_code, 302)
         run.refresh_from_db()
-        self.assertIsNotNone(run.post_id)
-        self.assertIsNone(run.post.scheduled_at)
-        self.assertEqual(run.post.platform_posts.count(), 0)
+        self.assertEqual(run.draft, DRAFT)
+        self.assertEqual(run.delivery_status, "draft")
         self.assertEqual(self.client.get(self.url("review", run_id=run.pk)).status_code, 200)
         self.client.post(self.url("draft", run_id=run.pk, idea_index=0))
         self.assertEqual(generate.call_count, 2)
@@ -89,8 +138,6 @@ class ContentFlowTests(TestCase):
         self.assertEqual(payload["posts"][1]["settings"], {"__type": "instagram", "post_type": "post"})
 
     def saved_draft(self):
-        from apps.composer.models import Post
-
         self.context.postiz_key = "test-only-key"
         self.context.postiz_channels = [{"id": "fb-1", "name": "Test FB", "identifier": "facebook"}]
         self.context.save()
@@ -105,7 +152,6 @@ class ContentFlowTests(TestCase):
                 "valid_until": self.context.valid_until.isoformat(),
             },
             draft=DRAFT,
-            post=Post.objects.create(workspace=self.workspace, author=self.user, caption="Test"),
         )
 
     @patch("engine.postiz.request")

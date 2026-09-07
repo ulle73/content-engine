@@ -1,7 +1,9 @@
-from config.urls import urlpatterns as brightbean_urls
+from django.contrib.auth.views import LogoutView
+from django.http import JsonResponse
 from django.urls import include, path
 
 from . import views
+from .onboarding import SignInView, setup
 
 engine_urls = [
     path("", views.home, name="home"),
@@ -11,8 +13,10 @@ engine_urls = [
     path("runs/<uuid:run_id>/draft/<int:idea_index>/", views.draft, name="draft"),
 ]
 urlpatterns = [
-    path("source/", views.source_code, name="source_code"),
     path("", views.index, name="dashboard"),
-    path("workspace/<uuid:workspace_id>/content/", include((engine_urls, "engine"))),
-    *(route for route in brightbean_urls if str(route.pattern) != ""),
+    path("setup/", setup, name="setup"),
+    path("accounts/login/", SignInView.as_view(), name="login"),
+    path("accounts/logout/", LogoutView.as_view(), name="logout"),
+    path("health/", lambda request: JsonResponse({"status": "ok"})),
+    path("company/<uuid:workspace_id>/", include((engine_urls, "engine"))),
 ]

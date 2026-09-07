@@ -1,7 +1,10 @@
-# Återanvänd kod
+# Återanvändning och licensgränser
 
-- Brightbean Studio: https://github.com/brightbeanxyz/brightbean-studio, AGPL-3.0, revision d85fce192e687d20e8fd7e9449a40ad7952ec7c3. Befintlig Django-app, inloggning, organisationer, arbetsytor, krypterade fält och inläggsmodell. Ingen egen Meta-integration används i innehållsflödet.
-- Social Media Skills: https://github.com/social-media-skills/skills, MIT, revision 6e30eeb2f6736bda8683b6bbaa674af3641d7945. Oförändrade skilltexter läses vid generering. MIT-notice finns i vendor/social-media-skills/LICENSE.
-- Postiz: https://github.com/gitroomhq/postiz-app. Hostad tjänst anropas genom dess public API; dess kod kopieras inte in.
+Den aktiva applikationen innehåller inte Brightbean. Dess submodul, Python-importer, modeller, sidmall, beroendelista och byggkedja har tagits bort. Den nya sidramen, konfigurationen och företagsmodellen är självständigt skrivna för detta projekt. Ingen Postiz-serverkod kopieras eller körs här.
 
-Applikationskoden tillhandahålls under AGPL-3.0; licenstext finns i LICENSE. Inloggade användare kan hämta motsvarande källkod via /source/. Arkivet skapas från versionshanterade filer. Nycklar, databas och genererat företagsinnehåll ingår inte.
+- **Social Media Skills:** https://github.com/social-media-skills/skills, MIT, låst submodulrevision 6e30eeb2f6736bda8683b6bbaa674af3641d7945. Ursprungliga skilltexter och MIT-notice finns kvar i `vendor/social-media-skills/`. Fyra befintliga skills läses vid generering, utan att deras instruktioner skrivs om till en egen innehållsmotor.
+- **Django:** https://github.com/django/django/blob/main/LICENSE, BSD-3-Clause. Färdig autentisering, lösenordshashning, formulär, sessioner, CSRF och ORM används som bibliotek.
+- **Hosted Postiz:** https://docs.postiz.com/public-api/introduction. Extern tjänst via HTTP API. Konton, abonnemang och tjänstevillkor hanteras hos Postiz.
+- Övriga Python-bibliotek installeras från `requirements.txt` och behåller sina medföljande licenser. Exempel: OpenAI SDK och HTTPX (Apache-2.0/BSD respektive BSD), cryptography (Apache-2.0 eller BSD), psycopg (LGPL-3.0). Att ta bort Brightbean betyder inte att tredjepartslicenser upphör att gälla.
+
+Ingen ny öppen licens tilldelas projektets egen kod utan ägarens val. Tidigare revisioner med Brightbean och AGPL finns kvar i Git-historiken, med sina dåvarande licensvillkor. De har inte retroaktivt omlicensierats. Licenstexten för den tidigare versionen finns under `docs/licenses/`.

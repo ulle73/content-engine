@@ -1,3 +1,5 @@
+> Arkitekturvalet i detta dokument är ersatt av [beslutet att ta bort Brightbean](2026-09-07-arkitekturbeslut.md). Se README för nuvarande installation.
+
 # Första skarpa versionen
 
 Detta ersätter de tidigare planernas tidslinje och byggordning för första leveransen.

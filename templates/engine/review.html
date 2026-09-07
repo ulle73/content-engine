@@ -1,10 +1,11 @@
 {% extends 'engine/home.html' %}
 {% block content %}<main class="engine">
 <a href="{% url 'engine:home' workspace_id=workspace.id %}">← {{ workspace.name }}</a>
-<section class="box"><h1>{{ run.post.title }}</h1>
+<section class="box"><h1>{{ run.title }}</h1>
 <p class="small">Källa: {{ run.context.source }} · Gäller t.o.m. {{ run.context.valid_until }}</p>
 {% if run.delivery_status == 'sent' %}<p>Utkast överfört till Postiz. Slutgranska och välj publiceringstid där.</p><a class="action" href="https://platform.postiz.com" target="_blank" rel="noopener">Öppna Postiz ↗</a>
 {% elif run.delivery_status != 'draft' %}<p>Överföringen inväntar kontroll. Kontrollera i Postiz om utkastet finns innan något skickas igen.</p><a class="action" href="https://platform.postiz.com" target="_blank" rel="noopener">Kontrollera Postiz ↗</a>
+{% if run.delivery_status == 'unknown' %}<form method="post">{% csrf_token %}<label><input style="width:auto" name="checked_postiz" type="checkbox" required> Jag har kontrollerat att inget utkast skapats i Postiz.</label><button name="action" value="reset">Tillåt ett nytt försök</button></form>{% endif %}
 {% else %}
 <form method="post" enctype="multipart/form-data">{% csrf_token %}
 <label for="facebook">Facebook</label><textarea id="facebook" name="facebook" rows="7" required>{{ run.draft.facebook }}</textarea>

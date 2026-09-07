@@ -1,4 +1,4 @@
-"""Brightbean configuration. Same application locally and on the production host."""
+"""Small standalone Django application; publishing belongs to hosted Postiz."""
 
 import os
 from pathlib import Path
@@ -8,42 +8,88 @@ import environ
 from django.core.exceptions import ImproperlyConfigured
 
 ENGINE_ROOT = Path(__file__).resolve().parent.parent
+env = environ.Env()
 environ.Env.read_env(ENGINE_ROOT / ".env", overwrite=False)
-if os.environ.get('RENDER_EXTERNAL_URL'):
-    os.environ.setdefault('APP_URL', os.environ['RENDER_EXTERNAL_URL'])
-    os.environ.setdefault('ALLOWED_HOSTS', urlparse(os.environ['RENDER_EXTERNAL_URL']).hostname)
-from config.settings.base import *  # noqa: E402,F403
-
+SECRET_KEY = env("SECRET_KEY")
+APP_URL = os.environ.get("RENDER_EXTERNAL_URL") or env("APP_URL", default="http://127.0.0.1:8765")
+LOCAL_HTTP = urlparse(APP_URL).hostname in {"127.0.0.1", "localhost"} and APP_URL.startswith("http://")
 DEBUG = False
-INSTALLED_APPS = [*INSTALLED_APPS, "engine"]  # noqa: F405
+ALLOWED_HOSTS = [urlparse(APP_URL).hostname]
+DATABASES = {"default": env.db("DATABASE_URL", default=f"sqlite:///{ENGINE_ROOT / 'data' / 'app.sqlite3'}")}
+if DATABASES["default"]["ENGINE"].endswith("postgresql"):
+    DATABASES["default"]["CONN_MAX_AGE"] = 60
+    DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
+INSTALLED_APPS = [
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "engine",
+]
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
 ROOT_URLCONF = "engine.urls"
 WSGI_APPLICATION = "engine.wsgi.application"
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [ENGINE_ROOT / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ]
+        },
+    }
+]
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": f"django.contrib.auth.password_validation.{name}"}
+    for name in [
+        "UserAttributeSimilarityValidator",
+        "MinimumLengthValidator",
+        "CommonPasswordValidator",
+        "NumericPasswordValidator",
+    ]
+]
 LANGUAGE_CODE = "sv"
 TIME_ZONE = "Europe/Stockholm"
+USE_TZ = True
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+STATIC_URL = "/static/"
 STATIC_ROOT = ENGINE_ROOT / "staticfiles"
-MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(ENGINE_ROOT / "data" / "media"))
-TEMPLATES[0]["DIRS"].insert(0, ENGINE_ROOT / "templates")  # noqa: F405
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.6-luna")
-ACCOUNT_ADAPTER = "engine.accounts.AccountAdapter"
-ACCOUNT_ALLOW_REGISTRATION = False
-MIDDLEWARE = [item for item in MIDDLEWARE if item != "apps.accounts.middleware.TosAcceptanceMiddleware"]  # noqa: F405
-
-# TLS is terminated by the deployment's reverse proxy. Plain HTTP is local only.
-app_host = urlparse(APP_URL).hostname  # noqa: F405
-LOCAL_HTTP = app_host in {"127.0.0.1", "localhost"} and APP_URL.startswith("http://")  # noqa: F405
-if not LOCAL_HTTP:
-    if not APP_URL.startswith("https://"):  # noqa: F405
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "dashboard"
+LOGOUT_REDIRECT_URL = "login"
+OPENAI_MODEL = env("OPENAI_MODEL", default="gpt-5.6-luna")
+SETUP_TOKEN = env("SETUP_TOKEN", default="")
+# Dedicated encryption secret, stable across deployments. No upstream field implementation.
+POSTIZ_ENCRYPTION_SECRET = env("POSTIZ_ENCRYPTION_SECRET", default=SECRET_KEY)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+if LOCAL_HTTP:
+    ALLOWED_HOSTS += ["localhost", "127.0.0.1", "testserver"]
+else:
+    if not APP_URL.startswith("https://"):
         raise ImproperlyConfigured("APP_URL must use HTTPS outside localhost.")
-    if DATABASES["default"]["ENGINE"] != "django.db.backends.postgresql":  # noqa: F405
-        raise ImproperlyConfigured("Set DATABASE_URL to PostgreSQL for production.")
+    if not DATABASES["default"]["ENGINE"].endswith("postgresql"):
+        raise ImproperlyConfigured("Production requires PostgreSQL.")
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 31536000
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    CSRF_TRUSTED_ORIGINS = [APP_URL.rstrip("/")]  # noqa: F405
-else:
-    ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
-    DATABASES["default"].setdefault("OPTIONS", {})  # noqa: F405
-    if DATABASES["default"]["ENGINE"].endswith("sqlite3"):  # noqa: F405
-        DATABASES["default"]["OPTIONS"]["timeout"] = 30  # noqa: F405
+    CSRF_TRUSTED_ORIGINS = [APP_URL.rstrip("/")]

@@ -1,51 +1,46 @@
 # Social Content Engine
 
-Första versionen för skarp användning: företagsunderlag → tre idéer → redigerbara Facebook-/Instagramtexter → utkast i hostad Postiz. Slutgranskning, schemaläggning, publicering och resultat sker i Postiz.
+Företagsunderlag → tre idéer → redigerbara Facebook-/Instagramtexter → utkast i **hosted Postiz**. Slutgranskning, kalender, schemaläggning, publicering och resultat hanteras i Postiz.
 
-Social Media Skills bidrar med innehållshantverket. Brightbean bidrar med inloggning, företagshantering och datalagring. Kopplingen finns i engine/. Ingen egen Meta-app, publiceringsworker eller Docker behövs.
+**Brightbean är borttaget.** Läs [arkitekturbeslutet](docs/2026-09-07-arkitekturbeslut.md). Social Media Skills används direkt som innehållsreferenser, och Django tillhandahåller standardfunktionerna för webbappen. Två affärsmodeller: företag och innehållskörning. En separat låsrad skyddar registreringen av första administratören.
 
-## Kör
+## Kom igång i webbläsaren
 
-Python 3.13 och Node behövs vid installation. Klona med --recurse-submodules.
+Öppna appens adress. Om inget konto finns visas **Skapa första administratören** automatiskt. Fyll i e-post, företag och ditt valda lösenord. Du loggas in och kan lägga till fler företag direkt i UI. Inga terminalkommandon eller förskapade lösenord behövs för användaren.
+
+På en publik HTTPS-installation behövs också installationskoden från webbhotellets inställning `SETUP_TOKEN`. Render skapar den automatiskt; kopiera den från Render → Environment till formuläret. Det hindrar besökare från att ta över en ny installation. Registreringen stängs när det första kontot skapats. Vanlig inloggning kräver aldrig installationskoden.
+
+1. Välj företag och spara profil, egna textexempel, aktuella fakta, källa och giltighetsdatum.
+2. Skapa tre idéer och välj en att skriva.
+3. Granska och redigera kanaltexterna.
+4. Anslut företagets Postiz-konto och välj rätt Facebook-/Instagramkanaler. Nyckeln lagras krypterad.
+5. Välj företagets bild och skicka utkastet till Postiz. Slutgranska och schemalägg där.
+
+## Installation för driftansvarig
+
+Python 3.13. Ingen Node-byggkedja, Docker, egen Meta-app eller publiceringsworker.
 
 ```powershell
+git submodule update --init vendor/social-media-skills
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-npm.cmd --prefix vendor/brightbean-studio/theme/static_src ci
-npm.cmd --prefix vendor/brightbean-studio/theme/static_src run build
 .\.venv\Scripts\python.exe manage.py migrate
 .\.venv\Scripts\python.exe manage.py collectstatic --noinput
 .\start.ps1
 ```
 
-Konfiguration läses från .env och miljövariabler. Se .env.example. Befintlig OPENAI_API_KEY återanvänds med användarens godkännande. Hemligheter versionshanteras inte.
+Konfiguration: `.env.example`. Hemligheter hör hemma i `.env` lokalt eller webbhotellets miljövariabler. Befintlig `OPENAI_API_KEY` återanvänds med ägarens godkännande. Behåll `SECRET_KEY` och `POSTIZ_ENCRYPTION_SECRET` mellan driftsättningar. Render-konfigurationen finns i `render.yaml`; startkommandot kör databasens migrering automatiskt. PostgreSQL är ett krav för publik drift, inklusive transaktionslåset vid första registreringen. SQLite stöds lokalt och i isolerade tester.
 
-## Använd
+Den nya databasen `content_engine_app` ligger på samma Neon-projekt/branch som tidigare. Den gamla databasen `content_engine` finns kvar orörd för återgång; den innehöll inga innehållskörningar eller företagsunderlag vid bytet. Gamla Brightbean-tabeller och migreringar ska **inte** återanvändas med den nya appen. Det är ett medvetet engångsbyte före användardata, inte en migreringsväg för redan använda Brightbean-installationer.
 
-1. Logga in och välj företag.
-2. Spara profil, egna textexempel, aktuella fakta, källa och giltighetsdatum.
-3. Skapa tre idéer och välj vilken som ska skrivas.
-4. Granska och redigera kanaltexterna.
-5. Anslut Postiz en gång per företag och välj rätt konton. API-nyckeln lagras med Brightbeans kryptering.
-6. Välj riktig bild och kanaler. Skicka utkastet till Postiz och slutgranska där.
+## Kontroller och begränsningar
 
-Tomma/utgångna underlag stoppas. Ändrade fakta kräver nya idéer. Källcitaten kontrolleras mot inskriven text. Detta verifierar ursprunget, inte sanningen i alla AI-påståenden. Människan granskar fakta och bildrättigheter.
+Nio riktade tester passerar i en ren installation och täcker första registrering, installationskod, lösenord/CSRF, företagsåtkomst, idé→utkast, utgångna fakta, Postiz-format, godkännande och osäkra överföringar. Kör `python manage.py test engine --settings=engine.test_settings`; tester använder alltid separat minnesdatabas.
 
-## Drift
+Efter arkitekturbytet gav ett nytt verkligt AI-prov i den rena miljön tre idéer och kanaltexter på 13,9 sekunder med syntetiska fakta. Genereringslogiken återanvänds oförändrad. **Postiz är ännu inte anslutet och inget flöde mot verkliga sociala konton är verifierat.**
 
-Render i Frankfurt + PostgreSQL hos Neon + hostad Postiz. Bilder skickas till Postiz; företagsdata förlitar sig inte på appens lokala disk. render.yaml och scripts/ innehåller driftkommandon. Ingen egen publiceringsworker körs.
+Källcitat kontrolleras mot inskriven text; det bevisar inte sanningen i alla AI-påståenden. Människan granskar fakta och bildrättigheter. Vid osäkert Postiz-svar görs ingen automatisk omsändning; kontrollera utkasten där först. Företagets konton väljs manuellt, och Postiz-avtalets API-åtkomst måste provas innan vidare funktioner byggs.
 
-bootstrap_owner skapar första administratören från BOOTSTRAP_ADMIN_EMAIL/PASSWORD utan att ändra befintliga konton. Behåll SECRET_KEY och ENCRYPTION_KEY_SALT vid omstarter. Ta bort bootstrap-lösenordet ur driftmiljön efter första uppstart.
+Denna ändring lägger inte till webbimport, konkurrentanalys, video eller egen statistik. [Ursprungsunderlaget](docs/specs/2026-09-07-ursprungligt-underlag.md) finns kvar. Se [tredjepartslicenser](THIRD_PARTY_NOTICES.md).
 
-Timeout vid överföring markeras som oklar. Ingen automatisk omsändning görs: kontrollera Postiz först. Publiceringstillståndet ägs av Postiz.
-
-## Verifierat och kvar
-
-- Fyra riktade tester passerade: företagsåtkomst, sparade utkast, giltighet och Postiz-payload.
-- Verkliga AI-anrop gav tre idéer och kanaltexter på 18,2 sekunder med syntetiskt underlag. Lokal rapport: data/generation-check.json. Ingenting publicerades.
-- Databasen är skapad i Neon Frankfurt och migrerad.
-- Postiz-kontot är ännu inte anslutet. Ingen livepublicering är verifierad.
-- Webbimport, konkurrentanalys, videoproduktion och återkoppling från resultat kommer efter att kärnflödet används.
-- Brightbeans återanvända gränssnitt är delvis engelskt; vårt innehållsflöde är svenskt.
-
-Den äldre veckoplanen ersätts för första versionen av [leveransordningen i timmar](docs/2026-09-07-forsta-version.md). [Ursprungsunderlaget](docs/specs/2026-09-07-ursprungligt-underlag.md) finns kvar som framtida krav. Se [licenser](THIRD_PARTY_NOTICES.md).
+Djangos driftkontroll ger endast två HSTS-råd om subdomäner och preload. De aktiveras inte innan en slutlig domän är vald; HTTPS och säkra sessionscookies är påslagna i publik drift.

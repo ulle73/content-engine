@@ -1,8 +1,6 @@
 import os
 import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent / "vendor" / "brightbean-studio"))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "engine.settings")
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 .venv/
+.venv-clean/
 .env
 .env.*
 !.env.example
