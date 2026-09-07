@@ -1,0 +1,7 @@
+[tool.ruff]
+line-length = 120
+exclude = ["vendor", ".venv", "engine/migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501", "E402", "F403", "F405"]

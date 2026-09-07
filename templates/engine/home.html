@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ workspace.name }} · Innehåll{% endblock %}
+{% block sidebar_nav %}
+<a class="sidebar-nav-item active" href="{% url 'engine:home' workspace_id=workspace.id %}"><span class="sidebar-nav-label">Innehåll</span></a>
+<a class="sidebar-nav-item" href="{% url 'engine:connect' workspace_id=workspace.id %}"><span class="sidebar-nav-label">Postiz-koppling</span></a>
+<a class="sidebar-nav-item" href="{% url 'workspaces:settings' workspace_id=workspace.id %}"><span class="sidebar-nav-label">Företagsinställningar</span></a>
+<a class="sidebar-nav-item" href="https://platform.postiz.com" target="_blank" rel="noopener"><span class="sidebar-nav-label">Öppna Postiz ↗</span></a>
+<a class="sidebar-nav-item" href="{% url 'source_code' %}"><span class="sidebar-nav-label">Öppen källkod</span></a>
+{% endblock %}
+{% block extra_head %}
+<style>
+.engine {max-width:1100px;margin:0 auto;padding:32px 24px;color:var(--text-primary)}
+.engine h1 {font-size:30px;font-weight:650;margin-bottom:8px}.engine h2 {font-size:20px;font-weight:600;margin:0 0 14px}
+.engine .intro {color:var(--text-secondary);margin-bottom:24px}.engine .box {border:1px solid var(--border);border-radius:12px;padding:24px;margin:18px 0;background:var(--surface-primary,#fff)}
+.engine label {display:block;font-weight:600;margin:18px 0 6px}.engine input,.engine textarea {width:100%;border:1px solid var(--border);border-radius:6px;padding:10px;background:var(--surface-primary,#fff);font:inherit}
+.engine button,.engine .action {display:inline-block;border:0;border-radius:7px;background:#176444;color:white;padding:11px 18px;margin-top:12px;font-weight:600;cursor:pointer}
+.engine nav {display:flex;gap:20px;flex-wrap:wrap;margin-bottom:24px}.engine nav a {color:#176444;text-decoration:underline}.engine .ideas {display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.engine .idea {padding:18px;border:1px solid var(--border);border-radius:10px}.engine .idea h3 {font-size:18px;font-weight:600;margin-bottom:12px}.engine .idea p {margin:10px 0}.engine blockquote {border-left:3px solid #176444;padding-left:12px;color:var(--text-secondary);font-size:14px}.engine .errorlist {color:#b42318}.engine details summary {cursor:pointer;font-weight:600}.engine .small {font-size:13px;color:var(--text-secondary)}
+</style>
+{% endblock %}
+{% block content %}
+<main class="engine">
+  <h1>{{ workspace.name }} · Innehåll</h1>
+  <p class="intro">Samla det som händer, välj en idé och gör ett inlägg med företagets egen röst.</p>
+  <nav>
+    <a href="https://platform.postiz.com" target="_blank" rel="noopener">Kalender och publicering i Postiz ↗</a>
+    <a href="{% url 'engine:connect' workspace_id=workspace.id %}">Anslut Postiz</a>
+  </nav>
+  <section class="box">
+    <h2>1. Företagets underlag</h2>
+    <p class="small">Skriv bara uppgifter som får användas i företagets kommunikation. Underlaget skickas till OpenAI när du skapar idéer eller text.</p>
+    <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Spara underlaget</button></form>
+  </section>
+  <section class="box">
+    <h2>2. Hitta nästa inlägg</h2>
+    <p>Tre förslag utifrån det sparade underlaget. Du väljer vilken idé som blir ett utkast.</p>
+    <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.id %}">{% csrf_token %}<button type="submit">Skapa tre idéer</button></form>
+    <p class="small">Det tar vanligtvis en stund att skriva. Låt sidan arbeta tills förslagen visas.</p>
+  </section>
+  {% for run in runs %}
+  <section class="box">
+    <h2>Förslag från {{ run.created_at|date:"j F H:i" }}</h2>
+    {% if run.post_id %}
+      <a class="action" href="{% url 'engine:review' workspace_id=workspace.id run_id=run.id %}">Öppna sparat inlägg</a>
+      <details style="margin-top:16px"><summary>Instagramtext och bildförslag</summary><p style="white-space:pre-wrap">{{ run.draft.instagram }}</p><p>{{ run.draft.photo_brief }}</p></details>
+    {% else %}
+    <div class="ideas">
+      {% for idea in run.ideas %}
+      <article class="idea"><h3>{{ idea.title }}</h3><p>{{ idea.angle }}</p><p><strong>Varför:</strong> {{ idea.reason }}</p><blockquote>{{ idea.source_quote }}</blockquote><p class="small">Bild: {{ idea.photo_brief }}</p>
+        <form method="post" action="{% url 'engine:draft' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit">Skriv det här inlägget</button></form>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <p class="small" style="margin-top:16px">Källa: {{ run.context.source }} · Underlaget gäller t.o.m. {{ run.context.valid_until }}</p>
+  </section>
+  {% empty %}<p class="small">Här visas dina sparade idéer och utkast.</p>{% endfor %}
+</main>
+{% endblock %}

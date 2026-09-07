@@ -1,0 +1,9 @@
+{% extends 'engine/home.html' %}
+{% block content %}<main class="engine">
+<a href="{% url 'engine:home' workspace_id=workspace.id %}">← {{ workspace.name }}</a>
+<section class="box"><h1>Anslut Postiz</h1>
+<p>Anslut företagets Facebook- och Instagramkonton i <a href="https://platform.postiz.com" target="_blank" rel="noopener">Postiz</a>. Kopiera sedan API-nyckeln från inställningarna.</p>
+<form method="post">{% csrf_token %}<label for="api_key">Postiz API-nyckel</label><input type="password" id="api_key" name="api_key" autocomplete="new-password" placeholder="{% if connected %}Nyckel sparad. Lämna tomt för att behålla.{% endif %}"><button name="action" value="load">Hämta anslutna kanaler</button></form>
+{% if channels %}<form method="post">{% csrf_token %}<h2 style="margin-top:24px">Välj bara kanaler som tillhör {{ workspace.name }}</h2>
+{% for channel in channels %}<label><input style="width:auto" type="checkbox" name="channels" value="{{ channel.id }}"> {{ channel.name }} · {{ channel.identifier }}</label>{% endfor %}<button name="action" value="save">Spara företagets kanaler</button></form>{% endif %}
+</section></main>{% endblock %}

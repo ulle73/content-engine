@@ -1,0 +1,19 @@
+{% extends 'engine/home.html' %}
+{% block content %}<main class="engine">
+<a href="{% url 'engine:home' workspace_id=workspace.id %}">← {{ workspace.name }}</a>
+<section class="box"><h1>{{ run.post.title }}</h1>
+<p class="small">Källa: {{ run.context.source }} · Gäller t.o.m. {{ run.context.valid_until }}</p>
+{% if run.delivery_status == 'sent' %}<p>Utkast överfört till Postiz. Slutgranska och välj publiceringstid där.</p><a class="action" href="https://platform.postiz.com" target="_blank" rel="noopener">Öppna Postiz ↗</a>
+{% elif run.delivery_status != 'draft' %}<p>Överföringen inväntar kontroll. Kontrollera i Postiz om utkastet finns innan något skickas igen.</p><a class="action" href="https://platform.postiz.com" target="_blank" rel="noopener">Kontrollera Postiz ↗</a>
+{% else %}
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+<label for="facebook">Facebook</label><textarea id="facebook" name="facebook" rows="7" required>{{ run.draft.facebook }}</textarea>
+<label for="instagram">Instagram</label><textarea id="instagram" name="instagram" rows="7" maxlength="2200" required>{{ run.draft.instagram }}</textarea>
+<button name="action" value="save">Spara textändringar</button>
+<h2 style="margin-top:24px">Bild och granskning</h2><p>{{ run.draft.photo_brief }}</p><ul>{% for check in run.draft.checks %}<li>{{ check }}</li>{% endfor %}</ul>
+<label for="photo">Välj företagets bild (JPEG/PNG, högst 8 MB)</label><input id="photo" name="photo" type="file" accept="image/jpeg,image/png">
+<p class="small">Bilden överförs till Postiz när du skickar utkastet.</p>
+{% for channel in brand.postiz_channels %}<label><input style="width:auto" type="checkbox" name="channels" value="{{ channel.id }}"> {{ channel.name }} · {{ channel.identifier }}</label>{% empty %}<p><a href="{% url 'engine:connect' workspace_id=workspace.id %}">Anslut företagets Postiz-kanaler först.</a></p>{% endfor %}
+<label><input style="width:auto" type="checkbox" name="reviewed"> Jag har kontrollerat uppgifterna och har rätt att använda bilden.</label>
+<button name="action" value="send">Skicka utkast till Postiz</button><p class="small">Detta skapar ett utkast. Slutligt godkännande och schemaläggning görs i Postiz.</p>
+</form>{% endif %}</section></main>{% endblock %}

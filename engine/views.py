@@ -1,0 +1,265 @@
+from datetime import date
+
+from apps.composer.models import Post
+from apps.members.decorators import require_permission
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.views.decorators.http import require_POST
+from openai import APIError
+
+from .forms import BrandForm, validate_context
+from .generation import generate
+from .models import BrandContext, ContentRun
+
+
+@login_required
+def source_code(request):
+    from django.http import FileResponse, Http404
+
+    path = settings.ENGINE_ROOT / "data" / "source.zip"
+    if not path.exists():
+        raise Http404("Source archive is created during deployment.")
+    return FileResponse(path.open("rb"), as_attachment=True, filename="content-engine-source.zip")
+
+
+@login_required
+def index(request):
+    if request.workspace:
+        return redirect("engine:home", workspace_id=request.workspace.id)
+    membership = request.user.workspace_memberships.filter(workspace__is_archived=False).first()
+    if membership:
+        return redirect("engine:home", workspace_id=membership.workspace_id)
+    return redirect("workspaces:list")
+
+
+@login_required
+@require_permission("create_posts")
+def home(request, workspace_id):
+    workspace = request.workspace
+    context, _ = BrandContext.objects.get_or_create(workspace=workspace)
+    form = BrandForm(request.POST or None, instance=context)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Företagsunderlaget är sparat.")
+        return redirect("engine:home", workspace_id=workspace_id)
+    runs = ContentRun.objects.filter(workspace=workspace).select_related("post").order_by("-created_at")[:10]
+    return render(request, "engine/home.html", {"form": form, "runs": runs, "workspace": workspace})
+
+
+@login_required
+@require_permission("create_posts")
+@require_POST
+def ideas(request, workspace_id):
+    context = get_object_or_404(BrandContext, workspace=request.workspace)
+    try:
+        validate_context(context)
+        snapshot = {
+            "company": request.workspace.name,
+            "profile": context.profile,
+            "voice": context.voice,
+            "current": context.current,
+            "source": context.source,
+            "valid_until": context.valid_until.isoformat(),
+            "captured_at": timezone.now().isoformat(),
+            "recent_posts": list(
+                Post.objects.filter(workspace=request.workspace)
+                .order_by("-created_at")
+                .values_list("caption", flat=True)[:10]
+            ),
+        }
+        output = generate(snapshot)
+        ContentRun.objects.create(
+            workspace=request.workspace,
+            author=request.user,
+            context=snapshot,
+            ideas=output["ideas"],
+            model=settings.OPENAI_MODEL,
+        )
+        messages.success(request, "Tre idéer är klara. Välj vilken du vill skriva.")
+    except ValueError as exc:
+        messages.error(request, str(exc))
+    except APIError as exc:
+        messages.error(
+            request,
+            f"AI-anropet misslyckades ({getattr(exc, 'status_code', None) or 'anslutning'}). Inga nya idéer sparades.",
+        )
+    return redirect("engine:home", workspace_id=workspace_id)
+
+
+@login_required
+@require_permission("create_posts")
+@require_POST
+def draft(request, workspace_id, run_id, idea_index):
+    run = get_object_or_404(ContentRun, pk=run_id, workspace=request.workspace)
+    if run.post_id:
+        return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
+    if idea_index >= len(run.ideas):
+        from django.http import Http404
+
+        raise Http404
+    try:
+        current = get_object_or_404(BrandContext, workspace=request.workspace)
+        validate_context(current)
+        if (
+            any(run.context[key] != getattr(current, key) for key in ["profile", "voice", "current", "source"])
+            or run.context["valid_until"] != current.valid_until.isoformat()
+        ):
+            raise ValueError("Underlaget har ändrats. Skapa nya idéer så att texten bygger på rätt uppgifter.")
+        if date.fromisoformat(run.context["valid_until"]) < timezone.localdate():
+            raise ValueError("Underlaget har gått ut. Uppdatera det och skapa nya idéer.")
+        output = generate(run.context, idea=run.ideas[idea_index])
+        with transaction.atomic():
+            locked = ContentRun.objects.select_for_update().get(pk=run.pk, workspace=request.workspace)
+            if not locked.post_id:
+                notes = (
+                    f"Källa: {run.context['source']}\nGiltigt t.o.m.: {run.context['valid_until']}\nKällcitat: {run.ideas[idea_index]['source_quote']}\n\nINSTAGRAMVERSION\n{output['instagram']}\n\nBILDFÖRSLAG\n{output['photo_brief']}\n\nKONTROLLERA\n"
+                    + "\n".join(output["checks"])
+                )
+                locked.post = Post.objects.create(
+                    workspace=request.workspace,
+                    author=request.user,
+                    title=run.ideas[idea_index]["title"][:255],
+                    caption=output["facebook"],
+                    internal_notes=notes,
+                )
+                locked.draft = output
+                locked.selected = idea_index
+                locked.save(update_fields=["post", "draft", "selected"])
+        messages.success(request, "Utkastet är sparat. Granska texten, välj bild och för över till Postiz.")
+        return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
+    except ValueError as exc:
+        messages.error(request, str(exc))
+    except APIError as exc:
+        messages.error(
+            request,
+            f"AI-anropet misslyckades ({getattr(exc, 'status_code', None) or 'anslutning'}). Idéerna finns kvar.",
+        )
+    return redirect("engine:home", workspace_id=workspace_id)
+
+
+@login_required
+@require_permission("manage_social_accounts")
+def connect(request, workspace_id):
+    from .postiz import PostizError, list_channels
+
+    context, _ = BrandContext.objects.get_or_create(workspace=request.workspace)
+    if request.method == "POST":
+        key = request.POST.get("api_key", "").strip() or context.postiz_key
+        try:
+            channels = list_channels(key)
+            if request.POST.get("action") == "save":
+                chosen = request.POST.getlist("channels")
+                context.postiz_key = key
+                context.postiz_channels = [c for c in channels if c["id"] in chosen]
+                context.save(update_fields=["postiz_key", "postiz_channels"])
+                messages.success(request, "Företagets Postiz-koppling är sparad.")
+                return redirect("engine:home", workspace_id=workspace_id)
+            # Persist the verified credential encrypted, never send it back to HTML.
+            context.postiz_key = key
+            context.save(update_fields=["postiz_key"])
+            return render(
+                request,
+                "engine/connect.html",
+                {"channels": channels, "workspace": request.workspace, "connected": True},
+            )
+        except PostizError as exc:
+            messages.error(request, str(exc))
+    return render(
+        request, "engine/connect.html", {"workspace": request.workspace, "connected": bool(context.postiz_key)}
+    )
+
+
+@login_required
+@require_permission("create_posts")
+def review(request, workspace_id, run_id):
+    from .postiz import PostizError, make_payload
+    from .postiz import request as postiz_request
+
+    run = get_object_or_404(ContentRun, pk=run_id, workspace=request.workspace, post__isnull=False)
+    brand = get_object_or_404(BrandContext, workspace=request.workspace)
+    if request.method == "POST" and request.POST.get("action") == "reset":
+        if run.delivery_status == "unknown" and request.POST.get("checked_postiz"):
+            ContentRun.objects.filter(pk=run.pk, delivery_status="unknown").update(delivery_status="draft")
+            messages.success(request, "Överföringen är återställd efter din kontroll i Postiz.")
+        else:
+            messages.error(request, "Kontrollera först att inget utkast skapats i Postiz.")
+        return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
+    if request.method == "POST":
+        facebook = request.POST.get("facebook", "").strip()
+        instagram = request.POST.get("instagram", "").strip()
+        action = request.POST.get("action")
+        try:
+            if run.delivery_status != "draft":
+                raise ValueError("Utkastet har redan skickats eller inväntar kontroll i Postiz. Redigera där.")
+            if not facebook or not instagram or len(instagram) > 2200 or len(facebook) > 63206:
+                raise ValueError("Båda texter behövs. Instagram får vara högst 2200 tecken och Facebook högst 63206.")
+            run.draft.update(facebook=facebook, instagram=instagram)
+            with transaction.atomic():
+                current_run = ContentRun.objects.select_for_update().get(pk=run.pk)
+                if current_run.delivery_status != "draft":
+                    raise ValueError("Överföringen har redan startat. Kontrollera Postiz.")
+                current_run.draft = run.draft
+                current_run.save(update_fields=["draft"])
+                Post.objects.filter(pk=run.post_id).update(caption=facebook)
+            if action == "send":
+                validate_context(brand)
+                if run.context["valid_until"] < timezone.localdate().isoformat() or any(
+                    run.context[k] != getattr(brand, k) for k in ["current", "source", "profile"]
+                ):
+                    raise ValueError(
+                        "Underlaget har ändrats eller gått ut. Skapa ett nytt inlägg från de aktuella uppgifterna."
+                    )
+                if not request.POST.get("reviewed"):
+                    raise ValueError("Bekräfta att texten och bildrättigheterna har kontrollerats.")
+                chosen = request.POST.getlist("channels")
+                channels = [c for c in brand.postiz_channels if c["id"] in chosen]
+                photo = request.FILES.get("photo")
+                if photo and (photo.size > 8 * 1024 * 1024 or photo.content_type not in {"image/jpeg", "image/png"}):
+                    raise ValueError("Välj en JPEG- eller PNG-bild under 8 MB.")
+                # Validate before any write to the external service.
+                make_payload(channels, facebook, instagram, [{}] if photo else [])
+                if not brand.postiz_key:
+                    raise ValueError("Anslut Postiz först.")
+                claimed = ContentRun.objects.filter(pk=run.pk, delivery_status="draft").update(
+                    delivery_status="sending", draft=run.draft
+                )
+                if not claimed:
+                    raise ValueError("Överföringen har redan startat. Kontrollera Postiz.")
+                Post.objects.filter(pk=run.post_id).update(caption=facebook)
+                try:
+                    media = []
+                    if photo:
+                        uploaded = postiz_request(
+                            brand.postiz_key,
+                            "POST",
+                            "/upload",
+                            files={"file": (photo.name, photo.read(), photo.content_type)},
+                        )
+                        media = [{"id": uploaded["id"], "path": uploaded["path"]}]
+                    result = postiz_request(
+                        brand.postiz_key, "POST", "/posts", json=make_payload(channels, facebook, instagram, media)
+                    )
+                    if (
+                        not isinstance(result, list)
+                        or len(result) != len(channels)
+                        or not all(r.get("postId") for r in result)
+                    ):
+                        raise PostizError("Postiz-svaret gick inte att bekräfta. Kontrollera utkasten i Postiz.")
+                    ContentRun.objects.filter(pk=run.pk).update(delivery_status="sent", delivery_result=result)
+                    messages.success(request, "Utkastet finns i Postiz. Slutgranska och schemalägg där.")
+                except (PostizError, KeyError):
+                    ContentRun.objects.filter(pk=run.pk).update(delivery_status="unknown")
+                    raise PostizError(
+                        "Överföringen kunde inte bekräftas. Kontrollera utkastet i Postiz; ingen automatisk omsändning görs."
+                    )
+            else:
+                messages.success(request, "Ändringarna är sparade.")
+            return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
+        except (ValueError, PostizError) as exc:
+            messages.error(request, str(exc))
+        run.refresh_from_db()
+    return render(request, "engine/review.html", {"run": run, "brand": brand, "workspace": request.workspace})
