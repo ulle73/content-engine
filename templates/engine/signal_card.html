@@ -1,15 +1,60 @@
-<article class="box">
-<p class="small">{{ signal.post.competitor.name }} · <strong>{{ signal.post.get_format_display }}</strong> · {{ signal.age_days }} dagar{% if signal.post.slide_count %} · {{ signal.post.slide_count }} bilder{% endif %}{% if signal.post.duration_seconds %} · {{ signal.post.duration_seconds|floatformat:0 }} sek{% endif %}</p>
-{% if signal.relative != None %}{% if signal.baseline_type == 'mature_low_confidence' %}<h2>{{ signal.relative|floatformat:1 }}× äldre posters nivå · låg säkerhet</h2><p class="small">Tillfällig baslinje: {{ signal.metric }} mot {{ signal.sample_size }} äldre poster från samma konto och format, mätta efter minst 14 dagar. De har haft längre tid att växa. Detta bedömer inte hur stark starten är. Bara {{ signal.age_matched_sample_size }} jämförelser vid liknande ålder finns; dessa prioriteras automatiskt när de blir minst fem.</p>{% else %}<h2>{{ signal.relative|floatformat:1 }}× kontots norm</h2><p class="small">{{ signal.metric }} jämfört med medianen för {{ signal.sample_size }} poster av samma format och liknande ålder.</p>{% endif %}{% else %}<h2>För lite jämförbar historik</h2><p class="small">{{ signal.sample_size }} jämförbara poster. Vi inväntar fler mätningar innan vi bedömer överprestation.</p>{% endif %}
-<p>Likes: {{ signal.likes|default_if_none:'Saknas' }} · Kommentarer: {{ signal.comments|default_if_none:'Saknas' }}{% if signal.views != None %} · Videovisningar: {{ signal.views }}{% endif %}</p>
-{% if signal.momentum.likes_percent != None %}<p>Likes {{ signal.momentum.likes_percent }} % på {{ signal.momentum.hours }} timmar{% if signal.momentum.comments_percent != None %} · Kommentarer {{ signal.momentum.comments_percent }} %{% endif %}</p>{% endif %}
-<p><strong>{{ signal.momentum.label }}</strong></p>
-{% if signal.analysis_current and signal.post.classification %}
-<h3>Varför den verkar fungera</h3><p>{{ signal.post.classification.why }}</p>
-<p class="small">{{ signal.post.classification.topic }} · {{ signal.post.classification.mechanisms|join:' + ' }}. Hypotes utifrån caption och metadata.</p>
-<h3>Så kan {{ workspace.name }} använda mekanismen</h3><p>{{ signal.post.classification.adaptation }}</p>
-{% else %}<p class="small">Analysera caption för att få en mekanism och en egen vinkel för företaget.</p><form method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Förklara mekanismen</button></form>{% endif %}
-<a href="{{ signal.post.url }}" target="_blank" rel="noopener">Öppna originalposten ↗</a>
-<form method="post" action="{% url 'engine:ideas' workspace_id=workspace.pk %}">{% csrf_token %}<input type="hidden" name="signal_id" value="{{ signal.id }}"><button>Skapa idé från signal</button></form>
-<details style="margin-top:16px"><summary>Så bedöms signalen · {{ signal.score }} poäng</summary><p class="small">Relativ prestation {{ signal.score_parts.relative }} · momentum {{ signal.score_parts.momentum }} · aktualitet {{ signal.score_parts.recency }} · datamängd {{ signal.score_parts.confidence }}. Mätt {{ signal.as_of }}. {{ signal.ranker_version }}.</p></details>
-</article>
+<details class="signal-item">
+  <summary class="signal-row">
+    <span class="signal-account">{{ signal.post.competitor.name }}</span>
+    <span class="signal-content">
+      <span class="signal-title">{{ signal.post.caption|default:'Ingen caption'|truncatechars:72 }}</span>
+      <span class="signal-subtitle">{% if signal.momentum.likes_percent != None %}{{ signal.momentum.likes_percent }} % likes senaste {{ signal.momentum.hours }} h{% else %}{{ signal.momentum.label }}{% endif %}</span>
+    </span>
+    <span class="signal-format">{{ signal.post.get_format_display }}</span>
+    <span>{{ signal.age_days|floatformat:0 }} dagar</span>
+    <span>{{ signal.likes|default_if_none:'–' }}</span>
+    <span class="signal-relative">{% if signal.relative != None %}{{ signal.relative|floatformat:1 }}×{% else %}–{% endif %}</span>
+    <span class="signal-chevron">›</span>
+  </summary>
+
+  <div class="signal-detail">
+    <div class="signal-detail-inner">
+      <div>
+        <h3>Resultat och signal</h3>
+        <p>Likes: <strong>{{ signal.likes|default_if_none:'Saknas' }}</strong> · Kommentarer: <strong>{{ signal.comments|default_if_none:'Saknas' }}</strong>{% if signal.views != None %} · Videovisningar: <strong>{{ signal.views }}</strong>{% endif %}</p>
+        {% if signal.relative != None %}
+          {% if signal.baseline_type == 'mature_low_confidence' %}
+            <p><strong>{{ signal.relative|floatformat:1 }}× äldre posters nivå</strong> · låg säkerhet</p>
+            <p class="small">Tillfällig baslinje mot {{ signal.sample_size }} äldre poster från samma konto och format. När minst fem mätningar vid liknande postålder finns prioriteras de automatiskt.</p>
+          {% else %}
+            <p><strong>{{ signal.relative|floatformat:1 }}× kontots norm</strong></p>
+            <p class="small">{{ signal.metric }} jämfört med medianen för {{ signal.sample_size }} poster av samma format och liknande ålder.</p>
+          {% endif %}
+        {% else %}
+          <p><strong>För lite jämförbar historik</strong></p>
+          <p class="small">{{ signal.sample_size }} jämförbara poster. Vi inväntar mer data innan överprestation bedöms.</p>
+        {% endif %}
+        <p class="small">{{ signal.momentum.label }}</p>
+      </div>
+
+      <div>
+        {% if signal.analysis_current and signal.post.classification %}
+          <h3>Varför den verkar fungera</h3>
+          <p>{{ signal.post.classification.why }}</p>
+          <p class="small">{{ signal.post.classification.topic }} · {{ signal.post.classification.mechanisms|join:' + ' }}. Hypotes utifrån caption och metadata.</p>
+          <h3>Förslag för {{ workspace.name }}</h3>
+          <p>{{ signal.post.classification.adaptation }}</p>
+        {% else %}
+          <h3>Detaljerad analys</h3>
+          <p class="small">Analysera caption för att få en mekanism och en egen vinkel för företaget.</p>
+          <form method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Förklara mekanismen</button></form>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="signal-actions">
+      <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.pk %}">{% csrf_token %}<input type="hidden" name="signal_id" value="{{ signal.id }}"><button>Skapa innehåll</button></form>
+      <a class="action button-secondary" href="{{ signal.post.url }}" target="_blank" rel="noopener">Visa original ↗</a>
+    </div>
+
+    <details>
+      <summary>Så bedöms signalen · {{ signal.score }} poäng</summary>
+      <p class="small">Relativ prestation {{ signal.score_parts.relative }} · momentum {{ signal.score_parts.momentum }} · aktualitet {{ signal.score_parts.recency }} · datamängd {{ signal.score_parts.confidence }}. Mätt {{ signal.as_of }}. {{ signal.ranker_version }}.</p>
+    </details>
+  </div>
+</details>
