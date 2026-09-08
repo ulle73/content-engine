@@ -38,7 +38,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 ROOT_URLCONF = "engine.urls"
-WSGI_APPLICATION = "engine.wsgi.application"
+WSGI_APPLICATION = "engine.wsgi:application"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -70,7 +70,13 @@ STATIC_URL = "/static/"
 STATIC_ROOT = ENGINE_ROOT / "staticfiles"
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    "staticfiles": {
+        "BACKEND": (
+            "django.contrib.staticfiles.storage.StaticFilesStorage"
+            if LOCAL_HTTP
+            else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        )
+    },
 }
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
