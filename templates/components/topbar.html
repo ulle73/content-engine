@@ -1,0 +1,8 @@
+<header class="app-topbar">
+  <a class="app-topbar-link" href="https://platform.postiz.com" target="_blank" rel="noopener">Postiz ↗</a>
+  <div class="user-chip">
+    <span class="user-avatar">{{ user.username|slice:':1'|upper }}</span>
+    <span class="user-meta"><strong>{{ user.username }}</strong><span>{{ workspace.name }}</span></span>
+  </div>
+  <form class="logout-form" method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="logout-button" type="submit">Logga ut</button></form>
+</header>

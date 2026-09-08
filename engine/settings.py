@@ -70,8 +70,17 @@ STATIC_URL = "/static/"
 STATIC_ROOT = ENGINE_ROOT / "staticfiles"
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    "staticfiles": {
+        "BACKEND": (
+            "django.contrib.staticfiles.storage.StaticFilesStorage"
+            if LOCAL_HTTP
+            else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        )
+    },
 }
+# Local development uses Waitress with DEBUG off, so WhiteNoise must read app static files directly.
+WHITENOISE_USE_FINDERS = LOCAL_HTTP
+WHITENOISE_AUTOREFRESH = LOCAL_HTTP
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
