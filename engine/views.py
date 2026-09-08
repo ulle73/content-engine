@@ -185,6 +185,7 @@ def connect(request, workspace_id):
 @login_required
 @company_required
 def review(request, workspace_id, run_id):
+    from .media_storage import MediaError, open_asset
     from .postiz import PostizError, make_payload
     from .postiz import request as postiz_request
 
@@ -234,22 +235,31 @@ def review(request, workspace_id, run_id):
                 chosen = request.POST.getlist("channels")
                 channels = [c for c in brand.postiz_channels if c["id"] in chosen]
                 photo = request.FILES.get("photo")
+                asset = run.media_asset
+                if asset and asset.company_id != brand.pk:
+                    raise ValueError("Vald media hör inte till företaget.")
+                if asset and photo:
+                    raise ValueError("Byt vald media innan en annan fil laddas upp.")
                 if photo and (photo.size > 8 * 1024 * 1024 or photo.content_type not in {"image/jpeg", "image/png"}):
                     raise ValueError("Välj en JPEG- eller PNG-bild under 8 MB.")
                 # Validate before any write to the external service.
-                make_payload(channels, facebook, instagram, [{}] if photo else [])
+                make_payload(channels, facebook, instagram, [{}] if photo or asset else [])
                 if not brand.postiz_key:
                     raise ValueError("Anslut Postiz först.")
-                claimed = ContentRun.objects.filter(pk=run.pk, delivery_status="draft").update(
+                claimed = ContentRun.objects.filter(pk=run.pk, delivery_status="draft", media_asset_id=run.media_asset_id).update(
                     delivery_status="sending", draft=run.draft
                 )
                 if not claimed:
                     raise ValueError("Överföringen har redan startat. Kontrollera Postiz.")
                 ContentEvent.objects.create(
-                    run=run, idea_index=run.selected, action="approved", data={"draft": run.draft, "channels": channels}
+                    run=run, idea_index=run.selected, action="approved", data={"draft": run.draft, "channels": channels, "media_asset_id": str(asset.pk) if asset else None}
                 )
                 try:
                     media = []
+                    if asset:
+                        with open_asset(asset) as source:
+                            uploaded = postiz_request(brand.postiz_key, "POST", "/upload", files={"file": (asset.storage_key.rsplit("/", 1)[-1], source, asset.mime_type)})
+                        media = [{"id": uploaded["id"], "path": uploaded["path"]}]
                     if photo:
                         uploaded = postiz_request(
                             brand.postiz_key,
@@ -272,7 +282,7 @@ def review(request, workspace_id, run_id):
                         run=run, idea_index=run.selected, action="postiz_draft", data={"posts": result}
                     )
                     messages.success(request, "Utkastet finns i Postiz. Slutgranska och schemalägg där.")
-                except (PostizError, KeyError):
+                except (PostizError, MediaError, KeyError):
                     ContentRun.objects.filter(pk=run.pk).update(delivery_status="unknown")
                     raise PostizError(
                         "Överföringen kunde inte bekräftas. Kontrollera utkastet i Postiz; ingen automatisk omsändning görs."

@@ -2,10 +2,19 @@ from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
 
-from . import intelligence_views, views
+from . import intelligence_views, media_views, views
 from .onboarding import SignInView, setup
 
 engine_urls = [
+    path("media/<uuid:asset_id>/file/", media_views.asset_file, name="asset_file"),
+    path("runs/<uuid:run_id>/media/", media_views.picker, name="media"),
+    path("runs/<uuid:run_id>/media/upload/", media_views.upload, name="media_upload"),
+    path("runs/<uuid:run_id>/media/generate/", media_views.generate_media, name="media_generate"),
+    path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/", media_views.job_page, name="media_job"),
+    path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/status/", media_views.job_status, name="media_job_status"),
+    path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/reset/", media_views.reset_job, name="media_job_reset"),
+    path("runs/<uuid:run_id>/media/<uuid:asset_id>/use/", media_views.use_asset, name="media_use"),
+    path("runs/<uuid:run_id>/media/<uuid:asset_id>/delete/", media_views.delete_asset, name="media_delete"),
     path("intelligence/", intelligence_views.intelligence, name="intelligence"),
     path("intelligence/refresh/", intelligence_views.refresh_imports, name="refresh_imports"),
     path("intelligence/accounts/<int:competitor_id>/", intelligence_views.competitor_action, name="competitor_action"),

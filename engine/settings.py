@@ -80,6 +80,11 @@ SETUP_TOKEN = env("SETUP_TOKEN", default="")
 # Dedicated encryption secret, stable across deployments. No upstream field implementation.
 POSTIZ_ENCRYPTION_SECRET = env("POSTIZ_ENCRYPTION_SECRET", default=SECRET_KEY)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+MEDIA_STORAGE = env("MEDIA_STORAGE", default="r2" if env("R2_ENDPOINT_URL", default="") or env("R2_ACCOUNT_ID", default="") or not LOCAL_HTTP else "local")
+MEDIA_ROOT = ENGINE_ROOT / "media"
+OPENAI_IMAGE_MODEL = env("OPENAI_IMAGE_MODEL", default="gpt-image-2")
+# Official Higgsfield OpenAPI, checked 2026-09-08. Model names stay out of the editor UI.
+HIGGSFIELD_VIDEO_MODEL = "kling-video/v2.5-turbo/pro"
 if LOCAL_HTTP:
     ALLOWED_HOSTS += ["localhost", "127.0.0.1", "testserver"]
 else:

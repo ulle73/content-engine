@@ -22,3 +22,19 @@ services:
         value: gpt-5.6-luna
       - key: SETUP_TOKEN
         generateValue: true
+      - key: MEDIA_STORAGE
+        value: r2
+      - key: R2_ENDPOINT_URL
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_REGION
+        value: auto
+      - key: HIGGSFIELD_API_KEY
+        sync: false
+      - key: HIGGSFIELD_API_SECRET
+        sync: false

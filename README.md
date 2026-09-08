@@ -14,7 +14,7 @@ På en publik HTTPS-installation behövs också installationskoden från webbhot
 2. Skapa tre idéer och välj en att skriva.
 3. Granska och redigera kanaltexterna.
 4. Anslut företagets Postiz-konto och välj rätt Facebook-/Instagramkanaler. Nyckeln lagras krypterad.
-5. Välj företagets bild och skicka utkastet till Postiz. Slutgranska och schemalägg där.
+5. Välj företagets bild/video, ladda upp eller generera alternativ direkt från inlägget. Välj **Använd** och skicka utkastet till Postiz. Slutgranska och schemalägg där.
 
 ## Installation för driftansvarig
 
@@ -32,6 +32,12 @@ python -m venv .venv
 Konfiguration: `.env.example`. Hemligheter hör hemma i `.env` lokalt eller webbhotellets miljövariabler. Befintlig `OPENAI_API_KEY` återanvänds med ägarens godkännande. Behåll `SECRET_KEY` och `POSTIZ_ENCRYPTION_SECRET` mellan driftsättningar. Render-konfigurationen finns i `render.yaml`; startkommandot kör databasens migrering automatiskt. PostgreSQL är ett krav för publik drift, inklusive transaktionslåset vid första registreringen. SQLite stöds lokalt och i isolerade tester.
 
 Den nya databasen `content_engine_app` ligger på samma Neon-projekt/branch som tidigare. Den gamla databasen `content_engine` finns kvar orörd för återgång; den innehöll inga innehållskörningar eller företagsunderlag vid bytet. Gamla Brightbean-tabeller och migreringar ska **inte** återanvändas med den nya appen. Det är ett medvetet engångsbyte före användardata, inte en migreringsväg för redan använda Brightbean-installationer.
+
+## Media och AI-generering
+
+**Välj bild eller video** öppnar företagets media i innehållsflödet. Egna uppladdningar prioriteras, OpenAI skapar bildalternativ/varianter och Higgsfields officiella API kan skapa video från text eller en startbild. Filer ligger i privat R2; metadata och val ligger i befintlig Neon. Använd media skyddas mot radering. Se [konfiguration, API-kontrakt, verifiering och begränsningar](docs/2026-09-08-media.md).
+
+Den riktiga bildkedjan till R2 och ett valt inlägg är verifierad. Higgsfields nycklar, startbilduppladdning och prisförfrågan fungerar; verklig videogenerering är ännu blockerad av `not_enough_credits` på API-kontot. Ett vanligt Higgsfield-abonnemang ska inte antas innebära att det aktuella API-saldot räcker.
 
 ## Competitor Intelligence
 

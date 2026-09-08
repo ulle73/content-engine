@@ -52,6 +52,7 @@ class ContentRun(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     delivery_status = models.CharField(max_length=20, default="draft")
     delivery_result = models.JSONField(default=list)
+    media_asset = models.ForeignKey("MediaAsset", null=True, blank=True, on_delete=models.PROTECT, related_name="content_runs")
 
     @property
     def title(self):
@@ -144,3 +145,41 @@ class ContentEvent(models.Model):
     action = models.CharField(max_length=30)
     data = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class MediaGeneration(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    run = models.ForeignKey(ContentRun, on_delete=models.CASCADE, related_name="media_jobs")
+    kind = models.CharField(max_length=10)
+    provider = models.CharField(max_length=20)
+    brief = models.TextField()
+    prompt = models.TextField()
+    parameters = models.JSONField(default=dict)
+    source_asset = models.ForeignKey("MediaAsset", null=True, blank=True, on_delete=models.SET_NULL, related_name="variations")
+    provider_id = models.CharField(max_length=200, blank=True)
+    status = models.CharField(max_length=20, default="queued")
+    error = models.CharField(max_length=500, blank=True)
+    usage = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class MediaAsset(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="media_assets")
+    kind = models.CharField(max_length=10, choices=[("image", "Bild"), ("video", "Video")])
+    origin = models.CharField(max_length=10, choices=[("uploaded", "Uppladdad"), ("generated", "AI-genererad")])
+    provider = models.CharField(max_length=20)
+    storage_backend = models.CharField(max_length=10)
+    storage_key = models.CharField(max_length=300)
+    mime_type = models.CharField(max_length=80)
+    byte_size = models.PositiveBigIntegerField()
+    width = models.PositiveIntegerField(null=True)
+    height = models.PositiveIntegerField(null=True)
+    duration_seconds = models.FloatField(null=True)
+    alt_text = models.CharField(max_length=500, blank=True)
+    brief = models.TextField(blank=True)
+    generation = models.ForeignKey(MediaGeneration, null=True, on_delete=models.SET_NULL, related_name="assets")
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True)
+    used_at = models.DateTimeField(null=True)

@@ -47,7 +47,7 @@ def make_payload(channels, facebook, instagram, media):
             raise PostizError("Den här versionen stöder Facebook och Instagram.")
         is_instagram = provider.startswith("instagram")
         if is_instagram and not media:
-            raise PostizError("Välj en riktig bild för Instagram.")
+            raise PostizError("Välj en bild eller MP4-video för Instagram.")
         settings = {"__type": provider}
         if is_instagram:
             settings["post_type"] = "post"
