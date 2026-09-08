@@ -78,6 +78,9 @@ STORAGES = {
         )
     },
 }
+# Local development uses Waitress with DEBUG off, so WhiteNoise must read app static files directly.
+WHITENOISE_USE_FINDERS = LOCAL_HTTP
+WHITENOISE_AUTOREFRESH = LOCAL_HTTP
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
