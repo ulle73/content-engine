@@ -15,6 +15,9 @@ class IdeaOutput(BaseModel):
     reason: str
     source_quote: str
     photo_brief: str
+    signal_id: str
+    profile_relevance: int = Field(ge=0, le=3)
+    current_relevance: int = Field(ge=0, le=3)
 
 
 class IdeasOutput(BaseModel):
@@ -29,14 +32,21 @@ class DraftOutput(BaseModel):
 
 
 def grounded_ideas_schema(context):
-    quotes = tuple(dict.fromkeys(
-        part.strip() for field in ("current", "profile")
-        for part in re.split(r"(?<=[.!?])\s+|\n+", context.get(field, "")) if part.strip()
-    ))
+    quotes = tuple(
+        dict.fromkeys(
+            part.strip()
+            for field in ("current", "profile")
+            for part in re.split(r"(?<=[.!?])\s+|\n+", context.get(field, ""))
+            if part.strip()
+        )
+    )
     if not quotes:
         raise ValueError("Fyll i företagsprofil och aktuella uppgifter först.")
     # Constrain the existing quote field to source text, instead of asking the model to transcribe it.
-    idea = create_model("GroundedIdea", __base__=IdeaOutput, source_quote=(Literal[quotes], ...))
+    signal_ids = ("", *(s["id"] for s in context.get("competitor_signals", [])))
+    idea = create_model(
+        "GroundedIdea", __base__=IdeaOutput, source_quote=(Literal[quotes], ...), signal_id=(Literal[signal_ids], ...)
+    )
     return create_model("GroundedIdeas", __base__=IdeasOutput, ideas=(list[idea], Field(min_length=3, max_length=3)))
 
 
@@ -61,9 +71,14 @@ Skriv naturlig svenska med företagets ton. Undvik generisk reklam och fabricera
 Publicering sker i Postiz efter mänskligt godkännande; du har inga publiceringsverktyg.
 Låt nya idéer skilja sig från medföljande historik. Återge source_quote ordagrant från aktuellt eller profil, aldrig från stil-/röstexempel.
 Ge tre tydligt olika idéer med motivering och konkret förslag på en riktig företagsbild.
+Competitor_signals är enbart inspiration till mekanismer. Kopiera, översätt eller parafrasera aldrig konkurrentinnehåll.
+Vårt företags egna verifierade fakta väger alltid tyngst. Konkurrentuppgifter är aldrig faktakälla om oss.
+Ange signal_id för den mekanism som faktiskt påverkat idén, annars tom sträng. Använd bara medföljande signal-id:n.
+Ange relevans för profil och aktuella fakta med 0=ingen, 1=svag, 2=god, 3=stark; detta är en bedömning, inte mätt performance.
 Om en idé redan är vald: skriv en Facebooktext och en Instagramtext för JUST den idén,
 ett bildförslag och en kort lista över fakta att kontrollera före publicering.
 Instagramtexten får vara högst 2200 tecken. Lägg aldrig granskningsanteckningar i bildtexten.
+Granskningslistan ska bara innehålla konkreta redaktionella kontroller på vanlig svenska, inga interna id:n, fältnamn eller rankingpoäng.
 """
     with OpenAI(timeout=100, max_retries=0) as client:
         response = client.responses.parse(
@@ -80,7 +95,11 @@ Instagramtexten får vara högst 2200 tecken. Lägg aldrig granskningsanteckning
     if not writing:
         for item in output["ideas"]:
             source_field = next(
-                (field for field in ("current", "profile") if item["source_quote"].strip() and item["source_quote"] in context.get(field, "")),
+                (
+                    field
+                    for field in ("current", "profile")
+                    if item["source_quote"].strip() and item["source_quote"] in context.get(field, "")
+                ),
                 None,
             )
             if source_field is None:

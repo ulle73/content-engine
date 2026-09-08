@@ -2,10 +2,15 @@ from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
 
-from . import views
+from . import intelligence_views, views
 from .onboarding import SignInView, setup
 
 engine_urls = [
+    path("intelligence/", intelligence_views.intelligence, name="intelligence"),
+    path("intelligence/refresh/", intelligence_views.refresh_imports, name="refresh_imports"),
+    path("intelligence/accounts/<int:competitor_id>/", intelligence_views.competitor_action, name="competitor_action"),
+    path("intelligence/analyze/<int:post_id>/", intelligence_views.analyze_signal, name="analyze_signal"),
+    path("runs/<uuid:run_id>/reject/<int:idea_index>/", intelligence_views.reject_idea, name="reject_idea"),
     path("", views.home, name="home"),
     path("ideas/", views.ideas, name="ideas"),
     path("connect/", views.connect, name="connect"),

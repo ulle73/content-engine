@@ -1,0 +1,15 @@
+<article class="box">
+<p class="small">{{ signal.post.competitor.name }} · <strong>{{ signal.post.get_format_display }}</strong> · {{ signal.age_days }} dagar{% if signal.post.slide_count %} · {{ signal.post.slide_count }} bilder{% endif %}{% if signal.post.duration_seconds %} · {{ signal.post.duration_seconds|floatformat:0 }} sek{% endif %}</p>
+{% if signal.relative != None %}<h2>{{ signal.relative|floatformat:1 }}× kontots norm</h2><p class="small">{{ signal.metric }} jämfört med medianen för {{ signal.sample_size }} poster av samma format och liknande ålder.</p>{% else %}<h2>För lite jämförbar historik</h2><p class="small">{{ signal.sample_size }} jämförbara poster. Vi inväntar fler mätningar innan vi bedömer överprestation.</p>{% endif %}
+<p>Likes: {{ signal.likes|default_if_none:'Saknas' }} · Kommentarer: {{ signal.comments|default_if_none:'Saknas' }}{% if signal.views != None %} · Videovisningar: {{ signal.views }}{% endif %}</p>
+{% if signal.momentum.likes_percent != None %}<p>Likes {{ signal.momentum.likes_percent }} % på {{ signal.momentum.hours }} timmar{% if signal.momentum.comments_percent != None %} · Kommentarer {{ signal.momentum.comments_percent }} %{% endif %}</p>{% endif %}
+<p><strong>{{ signal.momentum.label }}</strong></p>
+{% if signal.analysis_current and signal.post.classification %}
+<h3>Varför den verkar fungera</h3><p>{{ signal.post.classification.why }}</p>
+<p class="small">{{ signal.post.classification.topic }} · {{ signal.post.classification.mechanisms|join:' + ' }}. Hypotes utifrån caption och metadata.</p>
+<h3>Så kan {{ workspace.name }} använda mekanismen</h3><p>{{ signal.post.classification.adaptation }}</p>
+{% else %}<p class="small">Analysera caption för att få en mekanism och en egen vinkel för företaget.</p><form method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Förklara mekanismen</button></form>{% endif %}
+<a href="{{ signal.post.url }}" target="_blank" rel="noopener">Öppna originalposten ↗</a>
+<form method="post" action="{% url 'engine:ideas' workspace_id=workspace.pk %}">{% csrf_token %}<input type="hidden" name="signal_id" value="{{ signal.id }}"><button>Skapa idé från signal</button></form>
+<details style="margin-top:16px"><summary>Så bedöms signalen · {{ signal.score }} poäng</summary><p class="small">Relativ prestation {{ signal.score_parts.relative }} · momentum {{ signal.score_parts.momentum }} · aktualitet {{ signal.score_parts.recency }} · datamängd {{ signal.score_parts.confidence }}. Mätt {{ signal.as_of }}. {{ signal.ranker_version }}.</p></details>
+</article>

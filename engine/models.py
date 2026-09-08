@@ -60,3 +60,87 @@ class ContentRun(models.Model):
             if self.selected is not None and self.selected < len(self.ideas)
             else "Sparat utkast"
         )
+
+    @property
+    def influencing_signal(self):
+        if self.selected is None or self.selected >= len(self.ideas):
+            return None
+        signal_id = self.ideas[self.selected].get("signal_id")
+        return next((s for s in self.context.get("competitor_signals", []) if s["id"] == signal_id), None)
+
+
+class Competitor(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="competitors")
+    name = models.CharField(max_length=200)
+    username = models.CharField(max_length=30)
+    active = models.BooleanField(default=True)
+    last_success_at = models.DateTimeField(null=True)
+    last_error = models.CharField(max_length=500, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company", "username"], name="unique_company_competitor")]
+
+    @property
+    def url(self):
+        return f"https://www.instagram.com/{self.username}/"
+
+
+class CompetitorImport(models.Model):
+    competitor = models.ForeignKey(Competitor, on_delete=models.CASCADE, related_name="imports")
+    actor = models.CharField(max_length=100)
+    actor_run_id = models.CharField(max_length=100, unique=True, null=True)
+    dataset_id = models.CharField(max_length=100, blank=True)
+    status = models.CharField(max_length=20, default="starting")
+    started_at = models.DateTimeField(auto_now_add=True)
+    finished_at = models.DateTimeField(null=True)
+    cost_usd = models.DecimalField(max_digits=12, decimal_places=6, null=True)
+    item_count = models.PositiveIntegerField(default=0)
+    skipped_count = models.PositiveIntegerField(default=0)
+    requested_limit = models.PositiveIntegerField(default=100)
+    error = models.CharField(max_length=500, blank=True)
+    fallback_of = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+
+
+class CompetitorPost(models.Model):
+    competitor = models.ForeignKey(Competitor, on_delete=models.CASCADE, related_name="posts")
+    shortcode = models.CharField(max_length=100)
+    instagram_id = models.CharField(max_length=100, blank=True)
+    url = models.URLField(max_length=500)
+    published_at = models.DateTimeField(db_index=True)
+    caption = models.TextField(blank=True)
+    format = models.CharField(
+        max_length=20, choices=[("image", "Bild"), ("carousel", "Carousel"), ("reel", "Reel/video")]
+    )
+    duration_seconds = models.FloatField(null=True)
+    slide_count = models.PositiveSmallIntegerField(null=True)
+    classification = models.JSONField(default=dict)
+    classification_hash = models.CharField(max_length=64, blank=True)
+    classified_at = models.DateTimeField(null=True)
+    classifier_model = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["competitor", "shortcode"], name="unique_competitor_post")]
+
+
+class CompetitorSnapshot(models.Model):
+    post = models.ForeignKey(CompetitorPost, on_delete=models.CASCADE, related_name="snapshots")
+    import_run = models.ForeignKey(CompetitorImport, on_delete=models.CASCADE)
+    observed_at = models.DateTimeField(db_index=True)
+    likes = models.BigIntegerField(null=True)
+    comments = models.BigIntegerField(null=True)
+    views = models.BigIntegerField(null=True)
+    view_metric = models.CharField(max_length=30, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["post", "import_run"], name="unique_post_observation")]
+        ordering = ["observed_at", "id"]
+
+
+class ContentEvent(models.Model):
+    """Append-only learning trail; future published/results observations use the same run link."""
+
+    run = models.ForeignKey(ContentRun, on_delete=models.CASCADE, related_name="events")
+    idea_index = models.PositiveSmallIntegerField(null=True)
+    action = models.CharField(max_length=30)
+    data = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)

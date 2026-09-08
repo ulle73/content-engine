@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}{{ workspace.name }} · Konkurrentsignaler{% endblock %}
+{% block content %}<main class="engine">
+<a href="{% url 'engine:home' workspace_id=workspace.pk %}">← {{ workspace.name }}</a>
+<h1>Vad verkar fungera just nu?</h1>
+<p class="intro">Upptäck mekanismer hos dina referenskonton och gör något eget av dem. Egna verifierade fakta är alltid grunden.</p>
+{% if pending %}<p id="import-status" class="notice" role="status">Apify hämtar. Resultatet visas här när körningen är kontrollerad.</p>
+<form id="poll-import" action="{% url 'engine:refresh_imports' workspace_id=workspace.pk %}" method="post">{% csrf_token %}<button>Kontrollera hämtningen</button></form>
+<script>
+const pollForm=document.getElementById('poll-import');
+async function pollImport(event){
+  if(event)event.preventDefault();
+  try{const response=await fetch(pollForm.action,{method:'POST',body:new FormData(pollForm)});const result=await response.json();
+    if(!response.ok){document.getElementById('import-status').textContent=result.error||'Kontrollen misslyckades. Försök igen.';return;}
+    if(!result.pending){location.reload();return;}setTimeout(pollImport,15000);
+  }catch{document.getElementById('import-status').textContent='Kunde inte kontrollera hämtningen. Försök igen.';}
+}
+pollForm.addEventListener('submit',pollImport);setTimeout(pollImport,15000);
+</script>{% endif %}
+<h2>Veckans signaler</h2><p class="small">Jämförelser görs inom samma konto och format, vid liknande postålder. Minst fem jämförelseposter behövs. Poängen är en öppen heuristik, inte en prognos.</p>
+{% for signal in weekly %}{% include 'engine/signal_card.html' %}{% empty %}<section class="box"><p>Inga poster från senaste veckan är importerade ännu. Lägg till ett konto eller hämta igen.</p></section>{% endfor %}
+{% if patterns %}<section class="box"><h2>Återkommande mekanismer</h2>{% for pattern in patterns %}<p><strong>{{ pattern.mechanism }}</strong> · {{ pattern.count }} starka poster från {{ pattern.accounts }} konton under två veckor.</p>{% endfor %}<p class="small">Ett observerat mönster, inte bevis för vad som orsakar resultatet.</p></section>{% endif %}
+{% if references %}<details><summary>Starka historiska referenser</summary><p class="small">Äldre poster som överpresterat inom sitt konto och format. De är inte aktuella trendsignaler.</p>{% for signal in references %}{% include 'engine/signal_card.html' %}{% endfor %}</details>{% endif %}
+<section class="box"><h2>Konton att lära av</h2>
+{% for competitor in competitors %}<div style="border-bottom:1px solid var(--border);padding:12px 0"><strong>{{ competitor.name }}</strong> · <a href="{{ competitor.url }}" target="_blank" rel="noopener">@{{ competitor.username }}</a> · {% if competitor.active %}Aktiv{% else %}Inaktiv{% endif %}
+<p class="small">Senast hämtat: {{ competitor.last_success_at|date:'j M H:i'|default:'Inte ännu' }}{% if competitor.last_error %} · {{ competitor.last_error }}{% endif %}</p>
+<a href="?edit={{ competitor.pk }}">Redigera</a>
+<form method="post" action="{% url 'engine:competitor_action' workspace_id=workspace.pk competitor_id=competitor.pk %}" style="display:inline">{% csrf_token %}{% if competitor.active %}<button name="action" value="fetch">Hämta nu</button>{% endif %}<button name="action" value="toggle" style="background:#647269">{% if competitor.active %}Inaktivera{% else %}Aktivera{% endif %}</button></form></div>{% empty %}<p>Lägg till ditt första referenskonto.</p>{% endfor %}
+<h2 style="margin-top:24px">{% if editing %}Redigera konto{% else %}Lägg till konto{% endif %}</h2>
+<form method="post">{% csrf_token %}{% if editing %}<input type="hidden" name="competitor_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>{% if editing %}Spara{% else %}Lägg till och hämta historik{% endif %}</button></form>
+<p class="small">Första hämtningen begär upp till 100 poster, följande upp till 30. Kostnadstak 0,25 USD per Actor-körning. Bilder och videofiler sparas inte i appen.</p></section>
+<details><summary>Importstatus och kostnad</summary>{% for run in runs %}<p>{{ run.competitor.name }} · {{ run.status }} · {{ run.item_count }} poster{% if run.skipped_count %} · {{ run.skipped_count }} kunde inte tolkas{% endif %} · {% if run.cost_usd != None %}{{ run.cost_usd }} USD{% else %}kostnad ännu okänd{% endif %}<br><small>{{ run.actor }} · {{ run.started_at|date:'j M H:i' }}{% if run.error %} · {{ run.error }}{% endif %}</small></p>{% endfor %}</details>
+</main>{% endblock %}

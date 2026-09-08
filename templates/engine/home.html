@@ -5,6 +5,7 @@
   <h1>{{ workspace.name }} · Innehåll</h1>
   <p class="intro">Samla det som händer, välj en idé och gör ett inlägg med företagets egen röst.</p>
   <nav>
+    <a href="{% url 'engine:intelligence' workspace_id=workspace.id %}">Konkurrentsignaler</a>
     <a href="https://platform.postiz.com" target="_blank" rel="noopener">Kalender och publicering i Postiz ↗</a>
     <a href="{% url 'engine:connect' workspace_id=workspace.id %}">Anslut Postiz</a>
   </nav>
@@ -30,6 +31,9 @@
       {% for idea in run.ideas %}
       <article class="idea"><h3>{{ idea.title }}</h3><p>{{ idea.angle }}</p><p><strong>Varför:</strong> {{ idea.reason }}</p><blockquote>{{ idea.source_quote }}{% if idea.source_field %}<br><small>{% if idea.source_field == 'profile' %}Ur företagsprofilen{% else %}Ur aktuella uppgifter{% endif %}</small>{% endif %}</blockquote><p class="small">Bild: {{ idea.photo_brief }}</p>
         <form method="post" action="{% url 'engine:draft' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit">Skriv det här inlägget</button></form>
+        {% if idea.ranking %}<p class="small">Rank {{ forloop.counter }} · {{ idea.ranking.score }} poäng<br>Egna fakta {{ idea.ranking.parts.current_facts }} · profil {{ idea.ranking.parts.profile_relevance }} · aktuellt {{ idea.ranking.parts.current_relevance }} · konkurrentsignal {{ idea.ranking.parts.competitor }} · upprepning {{ idea.ranking.parts.recent_repeat }}</p>{% endif %}
+        {% if idea.signal %}<p class="small">Inspirerad av en mekanism hos <a href="{{ idea.signal.url }}" target="_blank" rel="noopener">{{ idea.signal.account }}</a>. Underlaget och poängen sparas med idén.</p>{% endif %}
+        <form method="post" action="{% url 'engine:reject_idea' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit" style="background:#647269">Inte relevant</button></form>
       </article>
       {% endfor %}
     </div>

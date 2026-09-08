@@ -11,7 +11,7 @@ from openai import APIError
 
 from .forms import BrandForm, CompanyForm, validate_context
 from .generation import generate
-from .models import Company, ContentRun
+from .models import Company, CompetitorPost, ContentEvent, ContentRun
 from .ownership import company_required
 
 
@@ -48,6 +48,14 @@ def ideas(request, workspace_id):
     context = request.workspace
     try:
         validate_context(context)
+        from .signals import classify, inspiration, rank_ideas
+
+        signal_id = request.POST.get("signal_id")
+        if signal_id:
+            signal_post = get_object_or_404(
+                CompetitorPost, pk=signal_id, competitor__company=request.workspace, competitor__active=True
+            )
+            classify(signal_post, request.workspace)
         snapshot = {
             "company": request.workspace.name,
             "profile": context.profile,
@@ -64,13 +72,24 @@ def ideas(request, workspace_id):
                 .values_list("draft", flat=True)[:10]
             ],
         }
+        snapshot["competitor_signals"] = inspiration(request.workspace, signal_id)
         output = generate(snapshot)
-        ContentRun.objects.create(
+        ranked = rank_ideas(output["ideas"], snapshot)
+        new_run = ContentRun.objects.create(
             workspace=request.workspace,
             author=request.user,
             context=snapshot,
-            ideas=output["ideas"],
+            ideas=ranked,
             model=settings.OPENAI_MODEL,
+        )
+        ContentEvent.objects.create(
+            run=new_run,
+            action="ranked",
+            data={
+                "ranker_version": "heuristic-v1",
+                "ideas": ranked,
+                "signal_ids": [s["id"] for s in snapshot["competitor_signals"]],
+            },
         )
         messages.success(request, "Tre idéer är klara. Välj vilken du vill skriva.")
     except ValueError as exc:
@@ -111,6 +130,12 @@ def draft(request, workspace_id, run_id, idea_index):
                 locked.draft = output
                 locked.selected = idea_index
                 locked.save(update_fields=["draft", "selected"])
+                ContentEvent.objects.create(
+                    run=locked, idea_index=idea_index, action="selected", data={"idea": run.ideas[idea_index]}
+                )
+                ContentEvent.objects.create(
+                    run=locked, idea_index=idea_index, action="draft_created", data={"initial_draft": output}
+                )
         messages.success(request, "Utkastet är sparat. Granska texten, välj bild och för över till Postiz.")
         return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
     except ValueError as exc:
@@ -186,8 +211,16 @@ def review(request, workspace_id, run_id):
                 current_run = ContentRun.objects.select_for_update().get(pk=run.pk)
                 if current_run.delivery_status != "draft":
                     raise ValueError("Överföringen har redan startat. Kontrollera Postiz.")
+                previous_draft = current_run.draft
                 current_run.draft = run.draft
                 current_run.save(update_fields=["draft"])
+                if previous_draft != run.draft:
+                    ContentEvent.objects.create(
+                        run=run,
+                        idea_index=run.selected,
+                        action="edited",
+                        data={"before": previous_draft, "after": run.draft},
+                    )
             if action == "send":
                 validate_context(brand)
                 if run.context["valid_until"] < timezone.localdate().isoformat() or any(
@@ -212,6 +245,9 @@ def review(request, workspace_id, run_id):
                 )
                 if not claimed:
                     raise ValueError("Överföringen har redan startat. Kontrollera Postiz.")
+                ContentEvent.objects.create(
+                    run=run, idea_index=run.selected, action="approved", data={"draft": run.draft, "channels": channels}
+                )
                 try:
                     media = []
                     if photo:
@@ -232,6 +268,9 @@ def review(request, workspace_id, run_id):
                     ):
                         raise PostizError("Postiz-svaret gick inte att bekräfta. Kontrollera utkasten i Postiz.")
                     ContentRun.objects.filter(pk=run.pk).update(delivery_status="sent", delivery_result=result)
+                    ContentEvent.objects.create(
+                        run=run, idea_index=run.selected, action="postiz_draft", data={"posts": result}
+                    )
                     messages.success(request, "Utkastet finns i Postiz. Slutgranska och schemalägg där.")
                 except (PostizError, KeyError):
                     ContentRun.objects.filter(pk=run.pk).update(delivery_status="unknown")

@@ -17,7 +17,11 @@ class SourceQuoteTests(TestCase):
 
         from .generation import generate
 
-        context = {"current": "Nya rangebollar.", "profile": "Vi hjälper amatörgolfare.", "voice": "Garanterat tio slag bättre."}
+        context = {
+            "current": "Nya rangebollar.",
+            "profile": "Vi hjälper amatörgolfare.",
+            "voice": "Garanterat tio slag bättre.",
+        }
         output = deepcopy(IDEAS)
         output["ideas"][1]["source_quote"] = context["profile"]
         client.return_value.__enter__.return_value.responses.parse.return_value.output_parsed.model_dump.return_value = output

@@ -1,0 +1,30 @@
+name: Competitor Intelligence
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: competitor-intelligence
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: ${{ vars.CONTENT_INTELLIGENCE_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: ${{ secrets.CONTENT_DATABASE_URL }}
+      SECRET_KEY: ${{ secrets.CONTENT_DJANGO_SECRET }}
+      APIFY_API_TOKEN: ${{ secrets.CONTENT_APIFY_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.CONTENT_OPENAI_KEY }}
+      APP_URL: http://127.0.0.1:8765
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python manage.py migrate --check
+      - run: python manage.py refresh_competitors --wait
