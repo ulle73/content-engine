@@ -14,9 +14,6 @@
       <section class="app-main">
         {% include 'components/topbar.html' %}
         {% for message in messages %}<div class="notice {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
-        {% block content %}{% endblock %}
-      </section>
-    </div>
   {% else %}
     <header class="public-topbar">
       <a class="logo" href="{% url 'dashboard' %}">Content Engine</a>
@@ -29,7 +26,13 @@
       {% endif %}
     </header>
     {% for message in messages %}<div class="notice {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
-    {% block content %}{% endblock %}
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  {% if user.is_authenticated and workspace %}
+      </section>
+    </div>
   {% endif %}
 </body>
 </html>
