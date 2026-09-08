@@ -2,7 +2,7 @@
 
 Företagsunderlag → tre idéer → redigerbara Facebook-/Instagramtexter → utkast i **hosted Postiz**. Slutgranskning, kalender, schemaläggning, publicering och resultat hanteras i Postiz.
 
-**Brightbean är borttaget.** Läs [arkitekturbeslutet](docs/2026-09-07-arkitekturbeslut.md). Social Media Skills används direkt som innehållsreferenser, och Django tillhandahåller standardfunktionerna för webbappen. Två affärsmodeller: företag och innehållskörning. En separat låsrad skyddar registreringen av första administratören.
+**Brightbean är borttaget.** Läs [arkitekturbeslutet](docs/2026-09-07-arkitekturbeslut.md). Social Media Skills används direkt som innehållsreferenser, och Django tillhandahåller standardfunktionerna för webbappen. Företag och innehållskörningar kompletteras av referenskonton, importer, poster, snapshots och beslutshändelser. En separat låsrad skyddar registreringen av första administratören.
 
 ## Kom igång i webbläsaren
 
@@ -33,14 +33,26 @@ Konfiguration: `.env.example`. Hemligheter hör hemma i `.env` lokalt eller webb
 
 Den nya databasen `content_engine_app` ligger på samma Neon-projekt/branch som tidigare. Den gamla databasen `content_engine` finns kvar orörd för återgång; den innehöll inga innehållskörningar eller företagsunderlag vid bytet. Gamla Brightbean-tabeller och migreringar ska **inte** återanvändas med den nya appen. Det är ett medvetet engångsbyte före användardata, inte en migreringsväg för redan använda Brightbean-installationer.
 
+## Competitor Intelligence
+
+Öppna **Konkurrentsignaler** för företaget. Lägg till Instagram-profiler, hämta historik, aktivera/inaktivera konton och skapa egna idéer från signalerna. All historik ligger i befintlig PostgreSQL. Apify sköter scraping via befintlig httpx; inga mediefiler hämtas till appen.
+
+Primär Actor är `esdrasdw/instagram-content-scraper`. Reserven `apify/instagram-post-scraper` startas vid verkligt körningsfel, explicit fel med under 80 % levererade poster, över 20 % ogiltiga poster eller under 70 % användbara normaliserade poster. Enstaka luckor och saknade valfria metrics utlöser inte fallback. Första importen begär 100 poster, följande 30; reserven ärver samma gräns. Varje Actor-körning har 0,25 USD kostnadstak. Taket kan begränsa historiken innan alla begärda poster hunnit hämtas.
+
+Samma konto och format jämförs vid liknande postålder, minst fem peers. Vid kallstart används om möjligt äldre posters observerade nivå efter minst 14 dagar, tydligt märkt **låg säkerhet**, med högst 0,25 confidence. Riktigt age-matched underlag ersätter detta automatiskt. Historiska dag-1-värden och dygnstillväxt konstrueras aldrig ur dagens totalsiffror. Momentum kräver mätningar minst 18 timmar isär; acceleration behöver tre sådana mätningar.
+
+AI tolkar caption och metadata till en mekanism och en egen företagsvinkel. Företagets verifierade uppgifter är faktakällan. Idérankingen sparar ingående signaler, snapshots, baseline-typ, jämförelseunderlag, delpoäng och version. Händelser sparar val, avvisande, redigering och Postiz-utkastets id. Ingen tränad modell eller hämtning av egna publiceringsresultat körs ännu. Se [verifiering och learning-kontrakt](docs/2026-09-08-competitor-intelligence.md).
+
+### Daglig hämtning
+
+`APIFY_API_TOKEN` läses från miljön. `APIFY_USER_ID` är valfri kontometadata, aldrig autentisering. Manuell hämtning och status finns i UI. För schemalagd körning finns `python manage.py refresh_competitors --wait`; den återupptar redan startade körningar och gör högst ett nytt automatiskt försök per konto under 23 timmar. De senaste 30 posterna följs genom daglig profilscrape, vilket normalt täcker två veckor. Mycket aktiva konton kan falla utanför den täckningen.
+
+GitHub-workflow finns för daglig körning 06:17 UTC. Den är **avstängd tills secrets och aktiveringsvariabel satts**. Driftansvarig lägger `CONTENT_DATABASE_URL`, `CONTENT_DJANGO_SECRET`, `CONTENT_APIFY_TOKEN`, `CONTENT_OPENAI_KEY` som GitHub Actions-secrets, och sätter repository-variabeln `CONTENT_INTELLIGENCE_ENABLED=true`. Ingen credential checkas in. Miljönycklar flyttas inte automatiskt till GitHub. Kommandot använder den befintliga databasen; det kräver inga egna workers och kan köras i en befintlig schemaläggare.
+
 ## Kontroller och begränsningar
 
-Nio riktade tester passerar i en ren installation och täcker första registrering, installationskod, lösenord/CSRF, företagsåtkomst, idé→utkast, utgångna fakta, Postiz-format, godkännande och osäkra överföringar. Kör `python manage.py test engine --settings=engine.test_settings`; tester använder alltid separat minnesdatabas.
+Kör `python manage.py test engine --settings=engine.test_settings`. Tester använder separat minnesdatabas. Riktade tester täcker första registrering, företagsåtkomst, källcitat, idé→utkast, Postiz-kontrakt, återhämtning, import-idempotens, tolerans för dataluckor, konservativ reservhämtning, age-matched/kallstartsbaslinjer och verkliga tidsintervall i momentum.
 
-Efter arkitekturbytet gav ett nytt verkligt AI-prov i den rena miljön tre idéer och kanaltexter på 13,9 sekunder med syntetiska fakta. Genereringslogiken återanvänds oförändrad. **Postiz är ännu inte anslutet och inget flöde mot verkliga sociala konton är verifierat.**
+Den verkliga publiceringskedjan verifierades med bild och separata Facebook-/Instagram-utkast för Sänk Dig Golf i hosted Postiz. Inget publicerades. Källcitat väljs från ett strukturerat urval av företagets exakta text; detta bevisar inte sanningen i alla AI-påståenden. Människan granskar fakta och bildrättigheter. Vid osäkert Postiz-svar görs ingen automatisk omsändning.
 
-Källcitat kontrolleras mot inskriven text; det bevisar inte sanningen i alla AI-påståenden. Människan granskar fakta och bildrättigheter. Vid osäkert Postiz-svar görs ingen automatisk omsändning; kontrollera utkasten där först. Företagets konton väljs manuellt, och Postiz-avtalets API-åtkomst måste provas innan vidare funktioner byggs.
-
-Denna ändring lägger inte till webbimport, konkurrentanalys, video eller egen statistik. [Ursprungsunderlaget](docs/specs/2026-09-07-ursprungligt-underlag.md) finns kvar. Se [tredjepartslicenser](THIRD_PARTY_NOTICES.md).
-
-Djangos driftkontroll ger endast två HSTS-råd om subdomäner och preload. De aktiveras inte innan en slutlig domän är vald; HTTPS och säkra sessionscookies är påslagna i publik drift.
+[Ursprungsunderlaget](docs/specs/2026-09-07-ursprungligt-underlag.md) och [tredjepartslicenser](THIRD_PARTY_NOTICES.md) finns kvar. Djangos driftkontroll ger två HSTS-råd om subdomäner och preload; de aktiveras först när slutlig domän är vald. HTTPS och säkra sessionscookies är påslagna i publik drift.

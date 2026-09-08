@@ -44,7 +44,10 @@ def api(method, path, **kwargs):
             **kwargs,
         )
         if response.is_error:
-            raise ApifyError(f"Apify svarade med HTTP {response.status_code}. Kontrollera kontot i Apify.")
+            raise ApifyError(
+                f"Apify svarade med HTTP {response.status_code}. Kontrollera kontot i Apify.",
+                uncertain=response.status_code >= 500,
+            )
         return response.json()
     except (httpx.HTTPError, ValueError) as exc:
         raise ApifyError(

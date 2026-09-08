@@ -68,6 +68,17 @@ class Command(BaseCommand):
             except (ValueError, APIError):
                 failures.append(str(company.pk))
                 self.stderr.write("AI analysis could not complete; imported observations are retained.")
+        for account in accounts:
+            latest = account.imports.order_by("-started_at").first()
+            account.refresh_from_db()
+            if latest and (
+                latest.status in ("failed", "unknown")
+                or (
+                    latest.status == "partial"
+                    and (not account.last_success_at or account.last_success_at < latest.started_at)
+                )
+            ):
+                failures.append(account.pk)
         if pending or failures:
             raise CommandError(
                 "Some imports or analyses need attention; rerun to resume. No automatic duplicate starts."

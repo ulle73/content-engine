@@ -17,7 +17,7 @@ async function pollImport(event){
 }
 pollForm.addEventListener('submit',pollImport);setTimeout(pollImport,15000);
 </script>{% endif %}
-<h2>Veckans signaler</h2><p class="small">Jämförelser görs inom samma konto och format, vid liknande postålder. Minst fem jämförelseposter behövs. Poängen är en öppen heuristik, inte en prognos.</p>
+<h2>Veckans signaler</h2><p class="small">Jämförelser görs inom samma konto och format. Minst fem jämförelseposter behövs. Vid kallstart används äldre posters nivåer med tydligt lägre säkerhet tills mätningar vid liknande postålder finns. Poängen är en öppen heuristik, inte en prognos.</p>
 {% for signal in weekly %}{% include 'engine/signal_card.html' %}{% empty %}<section class="box"><p>Inga poster från senaste veckan är importerade ännu. Lägg till ett konto eller hämta igen.</p></section>{% endfor %}
 {% if patterns %}<section class="box"><h2>Återkommande mekanismer</h2>{% for pattern in patterns %}<p><strong>{{ pattern.mechanism }}</strong> · {{ pattern.count }} starka poster från {{ pattern.accounts }} konton under två veckor.</p>{% endfor %}<p class="small">Ett observerat mönster, inte bevis för vad som orsakar resultatet.</p></section>{% endif %}
 {% if references %}<details><summary>Starka historiska referenser</summary><p class="small">Äldre poster som överpresterat inom sitt konto och format. De är inte aktuella trendsignaler.</p>{% for signal in references %}{% include 'engine/signal_card.html' %}{% endfor %}</details>{% endif %}

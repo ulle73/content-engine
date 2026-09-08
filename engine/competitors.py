@@ -111,7 +111,7 @@ def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
             return existing
         if not current.active:
             raise apify.ApifyError("Kontot är inaktiverat.")
-        limit = 100 if not current.last_success_at or fallback_of else 30
+        limit = fallback_of.requested_limit if fallback_of else (100 if not current.last_success_at else 30)
         run = CompetitorImport.objects.create(
             competitor=current, actor=actor, fallback_of=fallback_of, requested_limit=limit
         )
@@ -142,19 +142,30 @@ def collect_import(run, *, allow_fallback=True):
         return run
     succeeded = remote["status"] == "SUCCEEDED"
     incomplete = not succeeded
+    report_error = False
     if succeeded and run.actor == apify.PRIMARY_ACTOR:
         report = apify.api("GET", f"/key-value-stores/{remote['defaultKeyValueStoreId']}/records/OUTPUT")
         entries = [u for u in report.get("users", []) if u.get("user", "").lower() == run.competitor.username]
-        incomplete = not report.get("ok") or not entries or any(u.get("erro") for u in entries)
+        report_error = not report.get("ok") or not entries or any(u.get("erro") for u in entries)
     rows = apify.dataset_items(remote["defaultDatasetId"])
+    # An error on the very last page is tolerable when nearly all requested data arrived.
+    if report_error and len(rows) < run.requested_limit * 0.8:
+        incomplete = True
     normalized, skipped = [], 0
     for row in rows:
         try:
             normalized.append(normalize(row, run.actor, run.competitor.username))
         except (ValueError, TypeError, KeyError, AttributeError):
             skipped += 1
-    if skipped or not normalized or not any(p["caption"] for p in normalized):
+    # A few malformed posts and absent optional metrics do not justify a second paid run.
+    # Caption plus at least one public engagement metric is the minimum useful intelligence.
+    useful = sum(
+        bool(p["caption"].strip()) and any(p["metrics"][k] is not None for k in ("likes", "comments"))
+        for p in normalized
+    )
+    if not normalized or skipped > len(rows) * 0.2 or useful < len(normalized) * 0.7:
         incomplete = True
+    quality_warning = report_error or bool(skipped) or useful < len(normalized)
     observed_at = datetime.fromisoformat(remote["finishedAt"].replace("Z", "+00:00"))
     with transaction.atomic():
         locked = CompetitorImport.objects.select_for_update().get(pk=run.pk)
@@ -186,13 +197,17 @@ def collect_import(run, *, allow_fallback=True):
                 ],
                 ignore_conflicts=True,
             )
-        locked.status = "partial" if incomplete and normalized else ("failed" if incomplete else "succeeded")
+        locked.status = (
+            "partial" if normalized and (incomplete or quality_warning) else ("failed" if incomplete else "succeeded")
+        )
         locked.finished_at = observed_at
         locked.cost_usd = remote.get("usageTotalUsd")
         locked.item_count = len(normalized)
         locked.skipped_count = skipped
         locked.error = (
-            "Ofullständig hämtning eller saknade kritiska fält. Befintliga resultat har sparats." if incomplete else ""
+            "Väsentligt ofullständig hämtning eller otillräckliga kritiska data. Resultaten har sparats."
+            if incomplete
+            else ("Användbar hämtning med enstaka dataluckor; ingen reservhämtning behövs." if quality_warning else "")
         )
         locked.save()
         updates = {"last_error": locked.error}

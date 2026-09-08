@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -11,6 +12,26 @@ from .postiz import make_payload
 
 
 class SourceQuoteTests(TestCase):
+    @patch("engine.generation.OpenAI")
+    def test_draft_writer_receives_editorial_brief_without_ranking_metadata(self, client):
+        from .generation import generate
+
+        api = client.return_value.__enter__.return_value.responses.parse
+        api.return_value.output_parsed.model_dump.return_value = DRAFT
+        generate(
+            {"profile": "Golf", "competitor_signals": [{"id": "7", "score": 81}]},
+            idea={
+                "title": "Egen vinkel",
+                "angle": "Analysera beslut",
+                "photo_brief": "Eget foto",
+                "ranking": {"score": 81},
+                "signal_id": "7",
+            },
+        )
+        payload = json.loads(api.call_args.kwargs["input"])
+        self.assertNotIn("competitor_signals", payload["company_context"])
+        self.assertEqual(set(payload["selected_idea"]), {"title", "angle", "photo_brief"})
+
     @patch("engine.generation.OpenAI")
     def test_quotes_accept_only_exact_current_or_profile_text(self, client):
         from copy import deepcopy
@@ -141,6 +162,12 @@ class ContentFlowTests(TestCase):
         self.assertEqual(self.client.get(self.url("review", run_id=run.pk)).status_code, 200)
         self.client.post(self.url("draft", run_id=run.pk, idea_index=0))
         self.assertEqual(generate.call_count, 2)
+        self.assertEqual(list(run.events.values_list("action", flat=True)), ["ranked", "selected", "draft_created"])
+        from .signals import RANKER_VERSION
+
+        self.assertEqual(run.events.get(action="ranked").data["ranker_version"], RANKER_VERSION)
+        self.client.post(self.url("reject_idea", run_id=run.pk, idea_index=1))
+        self.assertEqual(run.events.get(action="rejected").idea_index, 1)
 
     @patch("engine.views.generate")
     def test_expired_context_never_calls_ai(self, generate):
@@ -185,6 +212,10 @@ class ContentFlowTests(TestCase):
         fields = {"facebook": "FB", "instagram": "IG", "channels": ["fb-1"], "action": "send"}
         self.client.post(url, fields)
         request.assert_not_called()
+        self.assertFalse(run.events.filter(action="approved").exists())
+        edit = run.events.get(action="edited")
+        self.assertEqual(edit.data["before"]["facebook"], "Nya rangebollar.")
+        self.assertEqual(edit.data["after"]["facebook"], "FB")
         request.return_value = [{"postId": "external-id", "integration": "fb-1"}]
         fields["reviewed"] = "on"
         self.client.post(url, fields)
@@ -193,6 +224,9 @@ class ContentFlowTests(TestCase):
         self.assertEqual(request.call_args.kwargs["json"]["type"], "draft")
         self.client.post(url, fields)
         self.assertEqual(request.call_count, 1)
+        self.assertEqual(run.events.filter(action="approved").count(), 1)
+        self.assertEqual(run.events.get(action="postiz_draft").data["posts"][0]["postId"], "external-id")
+        self.assertFalse(run.events.filter(action="published").exists())
 
     @patch("engine.postiz.request")
     def test_uncertain_transfer_needs_explicit_recovery(self, request):

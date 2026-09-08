@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from .models import CompetitorPost
 
-RANKER_VERSION = "heuristic-v1"
+RANKER_VERSION = "heuristic-v2"
 
 
 def age_bucket(hours):
@@ -98,10 +98,31 @@ def build_signal(post, posts, observations, now):
             peers.append(
                 min(matches, key=lambda s: abs((s.observed_at - peer.published_at).total_seconds() / 3600 - age_hours))
             )
+    matched_count = len(peers)
+    baseline_type = "age_matched" if matched_count >= 5 else "insufficient"
+    if matched_count < 5:
+        # Cold start: mature observations are a conservative reference, never a reconstructed day-one norm.
+        mature = []
+        for peer in posts:
+            if peer.pk == post.pk or peer.competitor_id != post.competitor_id or peer.format != post.format:
+                continue
+            candidates = [
+                s
+                for s in observations[peer.pk]
+                if s.observed_at <= latest.observed_at
+                and s.observed_at - peer.published_at >= timedelta(days=14)
+                and metric(s, kind) is not None
+            ]
+            if candidates:
+                mature.append(max(candidates, key=lambda s: (s.observed_at, s.pk)))
+        if len(mature) >= 5:
+            peers, baseline_type = mature, "mature_low_confidence"
     baseline = median([metric(s, kind) for s in peers]) if len(peers) >= 5 else None
     value = metric(latest, kind)
     relative = value / baseline if baseline and value is not None else None
     confidence = min(len(peers) / 10, 1) if relative is not None else 0
+    if baseline_type == "mature_low_confidence":
+        confidence *= 0.25
     trend = momentum(snapshots)
     freshness = max(0, 1 - (now - post.published_at).total_seconds() / (86400 * 14))
     parts = {
@@ -123,6 +144,8 @@ def build_signal(post, posts, observations, now):
         "relative": round(relative, 2) if relative is not None else None,
         "metric": "likes + kommentarer" if kind == "interactions" else "likes",
         "baseline": baseline,
+        "baseline_type": baseline_type,
+        "age_matched_sample_size": matched_count,
         "baseline_snapshot_ids": [s.pk for s in peers],
         "sample_size": len(peers),
         "age_bucket_hours": bucket,
@@ -274,7 +297,13 @@ def rank_ideas(ideas, context):
 def recurring_patterns(signals):
     groups = {}
     for s in signals:
-        if s["relative"] is None or s["relative"] < 1.5 or s["sample_size"] < 5 or s["age_days"] > 14:
+        if (
+            s["relative"] is None
+            or s["relative"] < 1.5
+            or s["baseline_type"] != "age_matched"
+            or s["sample_size"] < 5
+            or s["age_days"] > 14
+        ):
             continue
         for tag in s["post"].classification.get("mechanisms", []):
             groups.setdefault(tag, []).append(s)

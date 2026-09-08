@@ -48,7 +48,7 @@ def ideas(request, workspace_id):
     context = request.workspace
     try:
         validate_context(context)
-        from .signals import classify, inspiration, rank_ideas
+        from .signals import RANKER_VERSION, classify, inspiration, rank_ideas
 
         signal_id = request.POST.get("signal_id")
         if signal_id:
@@ -86,7 +86,7 @@ def ideas(request, workspace_id):
             run=new_run,
             action="ranked",
             data={
-                "ranker_version": "heuristic-v1",
+                "ranker_version": RANKER_VERSION,
                 "ideas": ranked,
                 "signal_ids": [s["id"] for s in snapshot["competitor_signals"]],
             },

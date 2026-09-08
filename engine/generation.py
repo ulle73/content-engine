@@ -80,11 +80,15 @@ ett bildförslag och en kort lista över fakta att kontrollera före publicering
 Instagramtexten får vara högst 2200 tecken. Lägg aldrig granskningsanteckningar i bildtexten.
 Granskningslistan ska bara innehålla konkreta redaktionella kontroller på vanlig svenska, inga interna id:n, fältnamn eller rankingpoäng.
 """
+    # The writing step needs the chosen editorial brief, not internal ranking/provenance metadata.
+    # That evidence stays in the saved ContentRun and its review panel.
+    writing_context = {k: v for k, v in context.items() if k != "competitor_signals"} if writing else context
+    selected_brief = {k: idea[k] for k in ("title", "angle", "photo_brief") if k in idea} if writing else None
     with OpenAI(timeout=100, max_retries=0) as client:
         response = client.responses.parse(
             model=settings.OPENAI_MODEL,
             instructions=instructions + "\n\nHantverksreferenser:\n" + skill_text(*skills),
-            input=json.dumps({"company_context": context, "selected_idea": idea}, ensure_ascii=False),
+            input=json.dumps({"company_context": writing_context, "selected_idea": selected_brief}, ensure_ascii=False),
             text_format=DraftOutput if writing else grounded_ideas_schema(context),
             max_output_tokens=5000,
             store=False,
