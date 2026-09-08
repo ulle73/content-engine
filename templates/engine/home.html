@@ -2,44 +2,54 @@
 {% block title %}{{ workspace.name }} · Innehåll{% endblock %}
 {% block content %}
 <main class="engine">
-  <h1>{{ workspace.name }} · Innehåll</h1>
-  <p class="intro">Samla det som händer, välj en idé och gör ett inlägg med företagets egen röst.</p>
-  <nav>
-    <a href="{% url 'engine:intelligence' workspace_id=workspace.id %}">Konkurrentsignaler</a>
-    <a href="https://platform.postiz.com" target="_blank" rel="noopener">Kalender och publicering i Postiz ↗</a>
-    <a href="{% url 'engine:connect' workspace_id=workspace.id %}">Anslut Postiz</a>
-  </nav>
-  <section class="box">
-    <h2>1. Företagets underlag</h2>
+  <header class="page-header">
+    <div class="page-heading">
+      <h1>Idag för {{ workspace.name }}</h1>
+      <p class="intro">Samla det som händer, välj en idé och gör ett inlägg med företagets egen röst.</p>
+    </div>
+    <a class="meta-pill" href="{% url 'engine:connect' workspace_id=workspace.id %}">Postiz-koppling</a>
+  </header>
+
+  <section class="box" id="company-context">
+    <h2>Företagets underlag</h2>
     <p class="small">Skriv bara uppgifter som får användas i företagets kommunikation. Underlaget skickas till OpenAI när du skapar idéer eller text.</p>
     <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Spara underlaget</button></form>
   </section>
-  <section class="box">
-    <h2>2. Hitta nästa inlägg</h2>
+
+  <section class="box" id="create-content">
+    <h2>Hitta nästa inlägg</h2>
     <p>Tre förslag utifrån det sparade underlaget. Du väljer vilken idé som blir ett utkast.</p>
     <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.id %}">{% csrf_token %}<button type="submit">Skapa tre idéer</button></form>
     <p class="small">Det tar vanligtvis en stund att skriva. Låt sidan arbeta tills förslagen visas.</p>
   </section>
+
   {% for run in runs %}
-  <section class="box">
-    <h2>Förslag från {{ run.created_at|date:"j F H:i" }}</h2>
-    {% if run.draft %}
-      <a class="action" href="{% url 'engine:review' workspace_id=workspace.id run_id=run.id %}">Öppna sparat inlägg</a>
-      <details style="margin-top:16px"><summary>Instagramtext och bildförslag</summary><p style="white-space:pre-wrap">{{ run.draft.instagram }}</p><p>{{ run.draft.photo_brief }}</p></details>
-    {% else %}
-    <div class="ideas">
-      {% for idea in run.ideas %}
-      <article class="idea"><h3>{{ idea.title }}</h3><p>{{ idea.angle }}</p><p><strong>Varför:</strong> {{ idea.reason }}</p><blockquote>{{ idea.source_quote }}{% if idea.source_field %}<br><small>{% if idea.source_field == 'profile' %}Ur företagsprofilen{% else %}Ur aktuella uppgifter{% endif %}</small>{% endif %}</blockquote><p class="small">Bild: {{ idea.photo_brief }}</p>
-        <form method="post" action="{% url 'engine:draft' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit">Skriv det här inlägget</button></form>
-        {% if idea.ranking %}<p class="small">Rank {{ forloop.counter }} · {{ idea.ranking.score }} poäng<br>Egna fakta {{ idea.ranking.parts.current_facts }} · profil {{ idea.ranking.parts.profile_relevance }} · aktuellt {{ idea.ranking.parts.current_relevance }} · konkurrentsignal {{ idea.ranking.parts.competitor }} · upprepning {{ idea.ranking.parts.recent_repeat }}</p>{% endif %}
-        {% if idea.signal %}<p class="small">Inspirerad av en mekanism hos <a href="{{ idea.signal.url }}" target="_blank" rel="noopener">{{ idea.signal.account }}</a>. Underlaget och poängen sparas med idén.</p>{% endif %}
-        <form method="post" action="{% url 'engine:reject_idea' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit" style="background:#647269">Inte relevant</button></form>
-      </article>
-      {% endfor %}
-    </div>
-    {% endif %}
-    <p class="small" style="margin-top:16px">Källa: {{ run.context.source }} · Underlaget gäller t.o.m. {{ run.context.valid_until }}</p>
-  </section>
-  {% empty %}<p class="small">Här visas dina sparade idéer och utkast.</p>{% endfor %}
+    <section class="box">
+      <h2>Förslag från {{ run.created_at|date:"j F H:i" }}</h2>
+      {% if run.draft %}
+        <a class="action" href="{% url 'engine:review' workspace_id=workspace.id run_id=run.id %}">Öppna sparat inlägg</a>
+        <details style="margin-top:16px"><summary>Instagramtext och bildförslag</summary><p style="white-space:pre-wrap">{{ run.draft.instagram }}</p><p>{{ run.draft.photo_brief }}</p></details>
+      {% else %}
+        <div class="ideas">
+          {% for idea in run.ideas %}
+            <article class="idea">
+              <h3>{{ idea.title }}</h3>
+              <p>{{ idea.angle }}</p>
+              <p><strong>Varför:</strong> {{ idea.reason }}</p>
+              <blockquote>{{ idea.source_quote }}{% if idea.source_field %}<br><small>{% if idea.source_field == 'profile' %}Ur företagsprofilen{% else %}Ur aktuella uppgifter{% endif %}</small>{% endif %}</blockquote>
+              <p class="small">Bild: {{ idea.photo_brief }}</p>
+              <form method="post" action="{% url 'engine:draft' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit">Skriv det här inlägget</button></form>
+              {% if idea.ranking %}<p class="small">Rank {{ forloop.counter }} · {{ idea.ranking.score }} poäng<br>Egna fakta {{ idea.ranking.parts.current_facts }} · profil {{ idea.ranking.parts.profile_relevance }} · aktuellt {{ idea.ranking.parts.current_relevance }} · konkurrentsignal {{ idea.ranking.parts.competitor }} · upprepning {{ idea.ranking.parts.recent_repeat }}</p>{% endif %}
+              {% if idea.signal %}<p class="small">Inspirerad av en mekanism hos <a href="{{ idea.signal.url }}" target="_blank" rel="noopener">{{ idea.signal.account }}</a>. Underlaget och poängen sparas med idén.</p>{% endif %}
+              <form method="post" action="{% url 'engine:reject_idea' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit" class="button-secondary">Inte relevant</button></form>
+            </article>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <p class="small" style="margin-top:16px">Källa: {{ run.context.source }} · Underlaget gäller t.o.m. {{ run.context.valid_until }}</p>
+    </section>
+  {% empty %}
+    <p class="small">Här visas dina sparade idéer och utkast.</p>
+  {% endfor %}
 </main>
 {% endblock %}
