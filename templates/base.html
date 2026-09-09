@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
   <title>{% block title %}Content Engine{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
@@ -20,7 +21,7 @@
       {% if user.is_authenticated %}
         <nav>
           <a href="{% url 'dashboard' %}">Mina företag</a>
-          <a href="https://platform.postiz.com" target="_blank" rel="noopener">Öppna Postiz ↗</a>
+          <a href="https://platform.postiz.com" target="_blank" rel="noopener">Postiz ↗</a>
           <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Logga ut</button></form>
         </nav>
       {% endif %}

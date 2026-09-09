@@ -1,3 +1,13 @@
 {% extends 'base.html' %}
 {% block title %}Kom igång · Content Engine{% endblock %}
-{% block content %}<main class="engine narrow"><h1>Välkommen till Content Engine</h1><p class="intro">Skapa ditt administratörskonto och lägg till det första företaget. Du kan lägga till fler företag när du har loggat in.</p><section class="box"><h2>Skapa första administratören</h2><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Skapa konto och börja</button></form></section><p class="small">Du väljer lösenord här. Den här registreringen stängs när kontot har skapats.</p></main>{% endblock %}
+{% block content %}
+<main class="auth-shell">
+  <section class="auth-card">
+    <div class="auth-brand">CE</div>
+    <h1>Välkommen till Content Engine</h1>
+    <p class="intro">Skapa administratörskontot. Fler företag kan läggas till efter inloggning.</p>
+    <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Skapa konto och börja</button></form>
+    <p class="small">Registreringen stängs automatiskt när det första kontot har skapats.</p>
+  </section>
+</main>
+{% endblock %}

@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
-{% block title %}{{ workspace.name }} · Konkurrentsignaler{% endblock %}
+{% block title %}{{ workspace.name }} · Insikter{% endblock %}
 {% block content %}
 <main class="engine intelligence-page">
   <header class="page-header">
     <div class="page-heading">
       <h1>Insikter</h1>
-      <p class="intro">Inlägg som presterar ovanligt bra hos dina konkurrenter – och vad vi kan lära oss av dem.</p>
+      <p class="intro">Se vad som sticker ut hos konkurrenterna, förstå mekanismen och använd den som input till eget innehåll.</p>
     </div>
-    <span class="meta-pill">Senaste veckan</span>
+    <div class="page-actions"><span class="meta-pill">Senaste veckan</span></div>
   </header>
+
   {% include 'engine/insight_tabs.html' %}
   {% include 'engine/learning_panel.html' %}
 
@@ -28,83 +29,70 @@
     </script>
   {% endif %}
 
-  <div class="toolbar" aria-label="Signalöversikt">
-    <span class="small">Sorterat efter starkaste signal</span>
-    <span class="toolbar-spacer"></span>
-    <span class="meta-pill">{{ competitors|length }} konton</span>
-  </div>
-
   <section>
-    <div class="section-title-row">
-      <div>
-        <h2>Starkaste signalerna just nu</h2>
-        <p class="small">Jämförelser görs inom samma konto och format. Vid kallstart används en konservativ referens med lägre säkerhet tills fler åldersmatchade mätningar finns.</p>
-      </div>
+    <div class="section-head">
+      <div><h2>Starkaste signalerna just nu</h2><p class="small">Sorterat efter relativ prestation, aktualitet, momentum och datakvalitet. Jämförelsen görs inom samma konto och format.</p></div>
+      <span class="meta-pill">{{ competitors|length }} konton</span>
     </div>
-
     <div class="signal-board">
       <div class="signal-board-header" aria-hidden="true">
-        <span>Konto</span>
-        <span>Innehåll</span>
-        <span>Typ</span>
-        <span>Publicerad</span>
-        <span>Likes</span>
-        <span>Över snitt</span>
-        <span></span>
+        <span>Konto</span><span>Innehåll</span><span>Typ</span><span>Ålder</span><span>Likes</span><span>Över norm</span><span></span>
       </div>
       {% for signal in weekly %}
         {% include 'engine/signal_card.html' %}
       {% empty %}
-        <div class="box compact"><p>Inga poster från senaste veckan är importerade ännu. Lägg till ett konto eller hämta igen.</p></div>
+        <div class="empty-state"><h3>Inga aktuella signaler ännu</h3><p>Lägg till referenskonton längre ner eller kör nästa begränsade hämtning.</p></div>
       {% endfor %}
     </div>
   </section>
 
   <div class="section-stack">
     {% if patterns %}
-      <section class="box">
-        <div class="section-title-row"><h2>Återkommande mekanismer</h2></div>
-        {% for pattern in patterns %}<p><strong>{{ pattern.mechanism }}</strong> · {{ pattern.count }} starka poster från {{ pattern.accounts }} konton under två veckor.</p>{% endfor %}
-        <p class="small">Ett observerat mönster, inte bevis för vad som orsakar resultatet.</p>
+      <section class="open-section">
+        <div class="section-head"><div><h2>Återkommande mekanismer</h2><p class="small">Mönster i det sparade underlaget, inte bevis på orsak.</p></div></div>
+        <div class="theme-list">{% for pattern in patterns %}<span class="theme-tag">{{ pattern.mechanism }} · {{ pattern.count }} poster / {{ pattern.accounts }} konton</span>{% endfor %}</div>
       </section>
     {% endif %}
 
     {% if references %}
-      <details class="box">
+      <details class="open-section">
         <summary>Starka historiska referenser</summary>
-        <p class="small">Äldre poster som överpresterat inom sitt konto och format. De är inte aktuella trendsignaler.</p>
+        <p class="small">Äldre poster som överpresterat inom sitt konto och format. De är referenser, inte aktuella trendsignaler.</p>
         <div class="reference-list">{% for signal in references %}{% include 'engine/signal_card.html' %}{% endfor %}</div>
       </details>
     {% endif %}
 
-    <section class="box">
-      <div class="section-title-row">
-        <div><h2>Konton att lära av</h2><p class="small">Hantera vilka referenskonton som ska ingå i signalflödet.</p></div>
+    <section class="open-section">
+      <div class="section-head">
+        <div><h2>Konton att lära av</h2><p class="small">Referenskonton som ingår i det organiska signalflödet.</p></div>
       </div>
-
       <div class="account-list">
         {% for competitor in competitors %}
           <div class="account-row">
-            <div><strong>{{ competitor.name }}</strong><p class="small"><a href="{{ competitor.url }}" target="_blank" rel="noopener">@{{ competitor.username }}</a> · {% if competitor.active %}Aktiv{% else %}Inaktiv{% endif %}</p></div>
+            <div><strong>{{ competitor.name }}</strong><p class="small"><a href="{{ competitor.url }}" target="_blank" rel="noopener">@{{ competitor.username }}</a> · {% if competitor.active %}Aktiv{% else %}Pausad{% endif %}</p></div>
             <div class="small">Senast hämtat: {{ competitor.last_success_at|date:'j M H:i'|default:'Inte ännu' }}{% if competitor.last_error %}<br>{{ competitor.last_error }}{% endif %}</div>
             <div class="account-row-actions">
               <a href="?edit={{ competitor.pk }}">Redigera</a>
-              <form method="post" action="{% url 'engine:competitor_action' workspace_id=workspace.pk competitor_id=competitor.pk %}">{% csrf_token %}{% if competitor.active %}<button name="action" value="fetch">Hämta nu</button>{% endif %}<button class="button-secondary" name="action" value="toggle">{% if competitor.active %}Inaktivera{% else %}Aktivera{% endif %}</button></form>
+              <form method="post" action="{% url 'engine:competitor_action' workspace_id=workspace.pk competitor_id=competitor.pk %}">{% csrf_token %}{% if competitor.active %}<button name="action" value="fetch">Hämta nu</button>{% endif %}<button class="button-secondary" name="action" value="toggle">{% if competitor.active %}Pausa{% else %}Aktivera{% endif %}</button></form>
             </div>
           </div>
         {% empty %}
-          <div class="box compact"><p>Lägg till ditt första referenskonto.</p></div>
+          <div class="empty-state"><h3>Inga referenskonton</h3><p>Lägg till ett konto nedan.</p></div>
         {% endfor %}
       </div>
 
-      <h2 style="margin-top:24px">{% if editing %}Redigera konto{% else %}Lägg till konto{% endif %}</h2>
-      <form method="post">{% csrf_token %}{% if editing %}<input type="hidden" name="competitor_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>{% if editing %}Spara{% else %}Lägg till och hämta historik{% endif %}</button></form>
-      <p class="small">En begränsad första historikhämtning: högst 100 poster. Daglig discovery hämtar de senaste 10; högst veckovis kontrolleras 30 för äldre mätvärden. Actorn saknar datumfilter/cursor, så ett litet överlapp behövs. Kostnadstak: 0,05 USD primär / 0,25 USD reserv, inom företagets gemensamma dygnsbudget (standard 1 USD). Bilder och videofiler sparas inte i appen.</p>
+      <details class="add-workspace" {% if editing or form.errors %}open{% endif %}>
+        <summary>{% if editing %}Redigera konto{% else %}+ Lägg till referenskonto{% endif %}</summary>
+        <div>
+          <form method="post">{% csrf_token %}{% if editing %}<input type="hidden" name="competitor_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>{% if editing %}Spara konto{% else %}Lägg till och hämta historik{% endif %}</button></form>
+          <p class="small">Första hämtningen är begränsad. Därefter anpassas intervall och storlek efter hur mycket nytt varje körning faktiskt ger.</p>
+        </div>
+      </details>
     </section>
 
-    <details class="box compact">
+    <details class="open-section">
       <summary>Importstatus och kostnad</summary>
-      {% for run in runs %}<p>{{ run.competitor.name }} · {{ run.status }} · {{ run.item_count }} poster{% if run.skipped_count %} · {{ run.skipped_count }} kunde inte tolkas{% endif %} · {% if run.cost_usd != None %}{{ run.cost_usd }} USD{% else %}kostnad ännu okänd{% endif %}<br><small>{{ run.actor }} · {{ run.started_at|date:'j M H:i' }}{% if run.error %} · {{ run.error }}{% endif %}</small></p>{% endfor %}
+      <div class="table-scroll"><table class="data-table"><thead><tr><th>Konto</th><th>Status</th><th>Poster</th><th>Kostnad</th><th>Körning</th></tr></thead><tbody>{% for run in runs %}<tr><td>{{ run.competitor.name }}</td><td>{{ run.status }}</td><td>{{ run.item_count }}{% if run.skipped_count %} · {{ run.skipped_count }} hoppades över{% endif %}</td><td>{% if run.cost_usd != None %}${{ run.cost_usd }}{% else %}Okänd{% endif %}</td><td>{{ run.actor }}<br><span class="small">{{ run.started_at|date:'j M H:i' }}{% if run.error %} · {{ run.error }}{% endif %}</span></td></tr>{% empty %}<tr><td colspan="5">Ingen import registrerad ännu.</td></tr>{% endfor %}</tbody></table></div>
     </details>
   </div>
 </main>

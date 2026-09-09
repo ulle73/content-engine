@@ -1,3 +1,35 @@
 {% extends 'base.html' %}
 {% block title %}Mina företag · Content Engine{% endblock %}
-{% block content %}<main class="engine"><h1>Mina företag</h1><p class="intro">Välj företaget du ska skapa innehåll för.</p><div class="ideas">{% for company in companies %}<section class="box"><h2>{{ company.name }}</h2><a class="action" href="{% url 'engine:home' workspace_id=company.pk %}">Öppna företaget</a></section>{% endfor %}</div><section class="box"><h2>Lägg till företag</h2><form method="post">{% csrf_token %}{{ form.as_p }}<button>Lägg till företag</button></form></section></main>{% endblock %}
+{% block content %}
+<main class="workspace-page">
+  <header class="workspace-header">
+    <div>
+      <h1>Välj företag</h1>
+      <p>Öppna arbetsytan du vill skapa och analysera innehåll för.</p>
+    </div>
+  </header>
+
+  <section class="workspace-list" aria-label="Företag">
+    {% for company in companies %}
+      <a class="workspace-row" href="{% url 'engine:home' workspace_id=company.pk %}">
+        <span class="workspace-avatar">{{ company.name|slice:':1'|upper }}</span>
+        <span>
+          <span class="workspace-name">{{ company.name }}</span>
+          <span class="workspace-meta">Content Engine-arbetsyta</span>
+        </span>
+        <span class="workspace-meta workspace-meta-right">Uppdaterad {{ company.updated_at|date:'j M H:i' }}</span>
+        <span class="workspace-arrow">›</span>
+      </a>
+    {% empty %}
+      <div class="empty-state"><h3>Inget företag ännu</h3><p>Lägg till det första företaget nedan.</p></div>
+    {% endfor %}
+  </section>
+
+  <details class="add-workspace" {% if form.errors %}open{% endif %}>
+    <summary>+ Lägg till företag</summary>
+    <div>
+      <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Lägg till företag</button></form>
+    </div>
+  </details>
+</main>
+{% endblock %}

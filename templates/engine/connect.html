@@ -1,9 +1,25 @@
-{% extends 'engine/home.html' %}
-{% block content %}<main class="engine">
-<a href="{% url 'engine:home' workspace_id=workspace.id %}">← {{ workspace.name }}</a>
-<section class="box"><h1>Anslut Postiz</h1>
-<p>Anslut företagets Facebook- och Instagramkonton i <a href="https://platform.postiz.com" target="_blank" rel="noopener">Postiz</a>. Kopiera sedan API-nyckeln från inställningarna.</p>
-<form method="post">{% csrf_token %}<label for="api_key">Postiz API-nyckel</label><input type="password" id="api_key" name="api_key" autocomplete="new-password" placeholder="{% if connected %}Nyckel sparad. Lämna tomt för att behålla.{% endif %}"><button name="action" value="load">Hämta anslutna kanaler</button></form>
-{% if channels %}<form method="post">{% csrf_token %}<h2 style="margin-top:24px">Välj bara kanaler som tillhör {{ workspace.name }}</h2>
-{% for channel in channels %}<label><input style="width:auto" type="checkbox" name="channels" value="{{ channel.id }}"> {{ channel.name }} · {{ channel.identifier }}</label>{% endfor %}<button name="action" value="save">Spara företagets kanaler</button></form>{% endif %}
-</section></main>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Postiz · {{ workspace.name }}{% endblock %}
+{% block content %}
+<main class="engine narrow">
+  <a class="back-link" href="{% url 'engine:settings' workspace_id=workspace.id %}">← Till inställningar</a>
+  <header class="page-header"><div class="page-heading"><h1>Postiz</h1><p class="intro">Anslut de Facebook- och Instagramkanaler som tillhör {{ workspace.name }}.</p></div></header>
+
+  <section class="settings-section">
+    <div class="settings-section-head"><h2>API-koppling</h2><p class="small">API-nyckeln sparas krypterad. Den visas inte igen i gränssnittet.</p></div>
+    <div class="settings-section-body">
+      <p>Anslut kontona i <a href="https://platform.postiz.com" target="_blank" rel="noopener">Postiz ↗</a>, kopiera sedan API-nyckeln från Postiz-inställningarna.</p>
+      <form method="post">{% csrf_token %}<label for="api_key">Postiz API-nyckel</label><input type="password" id="api_key" name="api_key" autocomplete="new-password" placeholder="{% if connected %}Nyckel sparad · lämna tomt för att behålla{% endif %}"><button name="action" value="load">Hämta anslutna kanaler</button></form>
+    </div>
+  </section>
+
+  {% if channels %}
+    <section class="settings-section">
+      <div class="settings-section-head"><h2>Välj företagets kanaler</h2><p class="small">Välj bara kanaler som faktiskt tillhör {{ workspace.name }}.</p></div>
+      <div class="settings-section-body">
+        <form method="post">{% csrf_token %}<div class="channel-list">{% for channel in channels %}<label class="channel-option"><input type="checkbox" name="channels" value="{{ channel.id }}"><span>{{ channel.name }} · {{ channel.identifier }}</span></label>{% endfor %}</div><button name="action" value="save">Spara valda kanaler</button></form>
+      </div>
+    </section>
+  {% endif %}
+</main>
+{% endblock %}

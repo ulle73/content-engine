@@ -1,15 +1,27 @@
-{% extends 'base.html' %}{% block title %}Generering · {{ run.title }}{% endblock %}
-{% block content %}<main class="engine">{% include 'engine/media_styles.html' %}<a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Media till inlägget</a><h1>{% if job.kind == 'image' %}Dina bildalternativ{% else %}Din video{% endif %}</h1><p class="intro">{{ run.title }}</p>
-{% if pending %}<div class="media-progress" role="status"><p id="job-progress">Genereringen arbetar. Du kan lämna sidan och komma tillbaka via inläggets media.</p><progress aria-label="Genereringen pågår"></progress></div><form id="job-poll" method="post" action="{% url 'engine:media_job_status' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<button>Kontrollera status</button></form>
-<script>
-const form=document.getElementById('job-poll');let busy=false,delay=3000;
-async function check(event){if(event)event.preventDefault();if(busy)return;busy=true;form.querySelector('button').disabled=true;
-try{const response=await fetch(form.action,{method:'POST',body:new FormData(form)});const data=await response.json();if(!response.ok){document.getElementById('job-progress').textContent=data.error;return;}if(!data.pending){location.reload();return;}delay=Math.min(delay*1.5,10000);setTimeout(check,delay);}catch{document.getElementById('job-progress').textContent='Kontakten avbröts. Kontrollera status igen för samma generation.';}finally{busy=false;form.querySelector('button').disabled=false;}}
-form.addEventListener('submit',check);check();
-</script>{% endif %}
-{% if job.error %}<p class="notice error">{{ job.error }}</p>{% endif %}
-{% if job.status == 'unknown' %}<form method="post" action="{% url 'engine:media_job_reset' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<label><input type="checkbox" style="width:auto" required name="checked_provider"> Jag har kontrollerat leverantörens konto och vill tillåta ett nytt betalt försök.</label><button>Tillåt nytt försök</button></form>{% endif %}
-{% if job.usage.estimate.usd %}<p class="small">Leverantörens uppskattning: {{ job.usage.estimate.usd }} USD. Slutlig debitering visas hos leverantören.</p>{% endif %}
-<section class="media-section"><div class="media-grid">{% for asset in job.assets.all %}{% if not asset.expires_at or asset.expires_at > now %}{% include 'engine/media_asset.html' %}{% else %}<p class="small">En oanvänd förhandsvisning har gått ut.</p>{% endif %}{% empty %}{% if not pending %}<p>Inget färdigt alternativ finns ännu.</p>{% endif %}{% endfor %}</div></section>
-<details><summary>Beskrivningen som användes</summary><p class="media-description">{{ job.brief }}</p></details><p><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?retry={{ job.pk }}#generate">Justera beskrivningen och generera igen</a></p>
-</main>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Generering · {{ run.title }}{% endblock %}
+{% block content %}
+<main class="engine">
+  <a class="back-link" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Till media</a>
+  <header class="page-header"><div class="page-heading"><h1>{% if job.kind == 'image' %}Bildalternativ{% else %}Video{% endif %}</h1><p class="intro">{{ run.title }}</p></div><div class="page-actions"><span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' %}warning{% else %}muted{% endif %}">{{ job.status }}</span></div></header>
+
+  {% if pending %}<div class="media-progress" role="status"><p id="job-progress">Genereringen arbetar. Du kan lämna sidan och komma tillbaka via utkastets media.</p><progress aria-label="Genereringen pågår"></progress></div><form id="job-poll" method="post" action="{% url 'engine:media_job_status' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<button>Kontrollera status</button></form>
+  <script>
+  const form=document.getElementById('job-poll');let busy=false,delay=3000;
+  async function check(event){if(event)event.preventDefault();if(busy)return;busy=true;form.querySelector('button').disabled=true;
+  try{const response=await fetch(form.action,{method:'POST',body:new FormData(form)});const data=await response.json();if(!response.ok){document.getElementById('job-progress').textContent=data.error;return;}if(!data.pending){location.reload();return;}delay=Math.min(delay*1.5,10000);setTimeout(check,delay);}catch{document.getElementById('job-progress').textContent='Kontakten avbröts. Kontrollera status igen för samma generation.';}finally{busy=false;form.querySelector('button').disabled=false;}}
+  form.addEventListener('submit',check);check();
+  </script>{% endif %}
+
+  {% if job.error %}<p class="notice error">{{ job.error }}</p>{% endif %}
+  {% if job.status == 'unknown' %}<section class="settings-section"><div class="settings-section-body"><form method="post" action="{% url 'engine:media_job_reset' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<label class="channel-option"><input type="checkbox" required name="checked_provider"><span>Jag har kontrollerat leverantörens konto och vill tillåta ett nytt betalt försök.</span></label><button>Tillåt nytt försök</button></form></div></section>{% endif %}
+  {% if job.usage.estimate.usd %}<p class="small">Leverantörens uppskattning: {{ job.usage.estimate.usd }} USD. Slutlig debitering visas hos leverantören.</p>{% endif %}
+
+  <section class="media-section">
+    <div class="media-grid">{% for asset in job.assets.all %}{% if not asset.expires_at or asset.expires_at > now %}{% include 'engine/media_asset.html' %}{% else %}<div class="empty-state"><p>En oanvänd förhandsvisning har gått ut.</p></div>{% endif %}{% empty %}{% if not pending %}<div class="empty-state"><h3>Inget färdigt alternativ</h3><p>Kontrollera generationens status eller justera beskrivningen.</p></div>{% endif %}{% endfor %}</div>
+  </section>
+
+  <details class="open-section"><summary>Beskrivningen som användes</summary><p class="media-description">{{ job.brief }}</p></details>
+  <p><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?retry={{ job.pk }}#generate">Justera beskrivningen och generera igen →</a></p>
+</main>
+{% endblock %}

@@ -1,56 +1,91 @@
 {% extends "base.html" %}
-{% block title %}{{ workspace.name }} · Innehåll{% endblock %}
+{% block title %}{{ workspace.name }} · Översikt{% endblock %}
 {% block content %}
 <main class="engine">
   <header class="page-header">
     <div class="page-heading">
-      <h1>Idag för {{ workspace.name }}</h1>
-      <p class="intro">Samla det som händer, välj en idé och gör ett inlägg med företagets egen röst.</p>
+      <h1>Översikt</h1>
+      <p class="intro">{{ workspace.name }} · från signal till färdigt innehåll utan att tappa företagets fakta och ton.</p>
     </div>
-    <a class="meta-pill" href="{% url 'engine:connect' workspace_id=workspace.id %}">Postiz-koppling</a>
+    <div class="page-actions">
+      <a class="button" href="#create-content">Skapa innehåll</a>
+    </div>
   </header>
 
-  <section class="box" id="company-context">
-    <h2>Företagets underlag</h2>
-    <p class="small">Skriv bara uppgifter som får användas i företagets kommunikation. Underlaget skickas till OpenAI när du skapar idéer eller text.</p>
-    <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Spara underlaget</button></form>
-  </section>
-
-  <section class="box" id="create-content">
-    <nav class="toolbar" aria-label="Skapa innehållstyp"><a href="?channel=organic#create-content">Organiskt</a><a href="?channel=paid#create-content">Annonser</a></nav>
-    <h2>{% if channel == 'paid' %}Hitta nästa annons{% else %}Hitta nästa inlägg{% endif %}</h2>
-    <p>Tre förslag utifrån det sparade underlaget. Du väljer vilken idé som blir ett utkast.</p>
-    <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.id %}">{% csrf_token %}<input type="hidden" name="channel" value="{{ channel }}"><button type="submit">{% if channel == 'paid' %}Skapa tre annonsidéer{% else %}Skapa tre idéer{% endif %}</button></form>
-    <p class="small">Det tar vanligtvis en stund att skriva. Låt sidan arbeta tills förslagen visas.</p>
-  </section>
-
-  {% for run in runs %}
-    <section class="box">
-      <h2>Förslag från {{ run.created_at|date:"j F H:i" }}</h2>
-      {% if run.draft %}
-        <a class="action" href="{% url 'engine:review' workspace_id=workspace.id run_id=run.id %}">Öppna sparat inlägg</a>
-        <details style="margin-top:16px"><summary>Instagramtext och bildförslag</summary><p style="white-space:pre-wrap">{{ run.draft.instagram }}</p><p>{{ run.draft.photo_brief }}</p></details>
-      {% else %}
-        <div class="ideas">
-          {% for idea in run.ideas %}
-            <article class="idea">
-              <h3>{{ idea.title }}</h3>
-              <p>{{ idea.angle }}</p>
-              <p><strong>Varför:</strong> {{ idea.reason }}</p>
-              <blockquote>{{ idea.source_quote }}{% if idea.source_field %}<br><small>{% if idea.source_field == 'profile' %}Ur företagsprofilen{% else %}Ur aktuella uppgifter{% endif %}</small>{% endif %}</blockquote>
-              <p class="small">Bild: {{ idea.photo_brief }}</p>
-              <form method="post" action="{% url 'engine:draft' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit">Skriv det här inlägget</button></form>
-              {% if idea.ranking %}<p class="small">Rank {{ forloop.counter }} · {{ idea.ranking.score }} poäng<br>Egna fakta {{ idea.ranking.parts.current_facts }} · profil {{ idea.ranking.parts.profile_relevance }} · aktuellt {{ idea.ranking.parts.current_relevance }} · konkurrentsignal {{ idea.ranking.parts.competitor }} · upprepning {{ idea.ranking.parts.recent_repeat }}</p>{% endif %}
-              {% if idea.signal %}<p class="small">Inspirerad av en mekanism hos <a href="{{ idea.signal.url }}" target="_blank" rel="noopener">{{ idea.signal.account }}</a>. Underlaget och poängen sparas med idén.</p>{% endif %}
-              <form method="post" action="{% url 'engine:reject_idea' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit" class="button-secondary">Inte relevant</button></form>
-            </article>
-          {% endfor %}
-        </div>
-      {% endif %}
-      <p class="small" style="margin-top:16px">Källa: {{ run.context.source }} · Underlaget gäller t.o.m. {{ run.context.valid_until }}</p>
+  <div class="overview-grid">
+    <section class="create-workspace" id="create-content">
+      <div>
+        <nav class="segmented" aria-label="Innehållstyp">
+          <a href="?channel=organic#create-content"{% if channel != 'paid' %} aria-current="page"{% endif %}>Organiskt</a>
+          <a href="?channel=paid#create-content"{% if channel == 'paid' %} aria-current="page"{% endif %}>Annons</a>
+        </nav>
+        <h2>{% if channel == 'paid' %}Skapa nästa annons utifrån riktiga signaler{% else %}Skapa nästa inlägg utifrån det som är relevant nu{% endif %}</h2>
+        <p>{% if channel == 'paid' %}Content Engine använder företagets verifierade fakta, egen historik och observerade annonsmönster. Konkurrenternas resultat hittas aldrig på.{% else %}Tre tydliga idéer tas fram från företagets aktuella underlag, egen historik och relevanta konkurrentsignaler. Du väljer vad som går vidare.{% endif %}</p>
+      </div>
+      <div class="create-actions">
+        <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.id %}">{% csrf_token %}<input type="hidden" name="channel" value="{{ channel }}"><button type="submit">{% if channel == 'paid' %}Ta fram tre annonsidéer{% else %}Ta fram tre idéer{% endif %}</button></form>
+        <span class="small">Fakta och ton hämtas från företagets sparade underlag.</span>
+      </div>
     </section>
-  {% empty %}
-    <p class="small">Här visas dina sparade idéer och utkast.</p>
-  {% endfor %}
+
+    <aside class="context-panel" id="company-context">
+      <div class="context-panel-head">
+        <h2>Företagsunderlag</h2>
+        <p class="small">Det här är källan AI:n får använda om {{ workspace.name }}.</p>
+      </div>
+      <dl class="context-list">
+        <div class="context-row"><dt>Källa</dt><dd>{{ workspace.source|default:'Saknas'|truncatechars:42 }}</dd></div>
+        <div class="context-row"><dt>Gäller till</dt><dd>{{ workspace.valid_until|date:'j M Y'|default:'Saknas' }}</dd></div>
+        <div class="context-row"><dt>Postiz</dt><dd>{% if workspace.postiz_channels %}{{ workspace.postiz_channels|length }} kanaler{% else %}Inte anslutet{% endif %}</dd></div>
+        <div class="context-row"><dt>Logga</dt><dd>{% if workspace.official_logo %}Officiell fil sparad{% else %}Saknas{% endif %}</dd></div>
+      </dl>
+      <details class="context-edit" {% if form.errors %}open{% endif %}>
+        <summary>Redigera underlaget</summary>
+        <div class="context-edit-form">
+          <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Spara underlaget</button></form>
+        </div>
+      </details>
+    </aside>
+  </div>
+
+  <section class="recent-section">
+    <div class="section-head">
+      <div><h2>Senaste arbete</h2><p class="small">Idéer och utkast för {% if channel == 'paid' %}annonser{% else %}organiskt innehåll{% endif %} visas här.</p></div>
+    </div>
+
+    {% for run in runs %}
+      {% if run.draft %}
+        <div class="run-row">
+          <span class="run-time">{{ run.created_at|date:"j M H:i" }}</span>
+          <span class="run-title"><strong>{{ run.title }}</strong><span>{% if run.channel == 'paid' %}Annonsutkast{% else %}Organiskt utkast{% endif %} · {{ run.delivery_status }}</span></span>
+          <a class="button button-secondary" href="{% url 'engine:review' workspace_id=workspace.id run_id=run.id %}">Öppna</a>
+        </div>
+      {% else %}
+        <section class="idea-batch">
+          <div class="idea-batch-head">
+            <div><h3>Tre förslag · {{ run.created_at|date:"j M H:i" }}</h3><p class="small">Välj ett förslag eller markera det som irrelevant.</p></div>
+          </div>
+          <div class="ideas">
+            {% for idea in run.ideas %}
+              <article class="idea">
+                <h3>{{ idea.title }}</h3>
+                <p>{{ idea.angle }}</p>
+                <p class="small"><strong>Varför:</strong> {{ idea.reason }}</p>
+                <blockquote>{{ idea.source_quote }}{% if idea.source_field %}<br><small>{% if idea.source_field == 'profile' %}Ur företagsprofilen{% else %}Ur aktuella uppgifter{% endif %}</small>{% endif %}</blockquote>
+                <p class="small">Bildidé: {{ idea.photo_brief }}</p>
+                <div class="idea-actions">
+                  <form method="post" action="{% url 'engine:draft' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit">Skriv utkast</button></form>
+                  <form method="post" action="{% url 'engine:reject_idea' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit" class="button-secondary">Inte relevant</button></form>
+                </div>
+                {% if idea.ranking %}<details><summary>Varför rank {{ forloop.counter }}</summary><p class="small">{{ idea.ranking.score }} poäng · egna fakta {{ idea.ranking.parts.current_facts }} · profil {{ idea.ranking.parts.profile_relevance }} · aktuellt {{ idea.ranking.parts.current_relevance }} · konkurrentsignal {{ idea.ranking.parts.competitor }}.</p></details>{% endif %}
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+    {% empty %}
+      <div class="empty-state"><h3>Inget skapat ännu</h3><p>Välj organiskt eller annons ovan och ta fram de första idéerna.</p></div>
+    {% endfor %}
+  </section>
 </main>
 {% endblock %}

@@ -1,20 +1,42 @@
-{% extends 'base.html' %}{% block title %}Media · {{ run.title }}{% endblock %}
-{% block content %}<main class="engine">{% include 'engine/media_styles.html' %}
-<a href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">← Till inlägget</a><h1>Bild eller video till inlägget</h1><p class="intro">{{ run.title }}</p>
-<p class="small">Börja gärna med företagets egna bilder och filmer. AI-genererat material märks och sparas separat i metadata.</p>
-<section class="media-section"><h2>Välj befintlig media</h2><nav class="media-nav" aria-label="Filtrera media">
-<a href="?filter=all&kind={{ kind }}" {% if filter_value == 'all' %}aria-current="page"{% endif %}>Alla</a><a href="?filter=image&kind={{ kind }}" {% if filter_value == 'image' %}aria-current="page"{% endif %}>Bilder</a><a href="?filter=video&kind={{ kind }}" {% if filter_value == 'video' %}aria-current="page"{% endif %}>Video</a><a href="?filter=uploaded&kind={{ kind }}" {% if filter_value == 'uploaded' %}aria-current="page"{% endif %}>Uppladdat</a><a href="?filter=generated&kind={{ kind }}" {% if filter_value == 'generated' %}aria-current="page"{% endif %}>Genererat</a></nav>
-<div class="media-grid">{% for asset in assets %}{% include 'engine/media_asset.html' %}{% empty %}<p class="small">Här finns ingen sparad media ännu. Ladda upp en egen fil eller generera ett alternativ nedan.</p>{% endfor %}</div></section>
-{% if can_edit %}<section class="media-section"><h2>Ladda upp</h2><form class="media-form" method="post" enctype="multipart/form-data" action="{% url 'engine:media_upload' workspace_id=workspace.pk run_id=run.pk %}">{% csrf_token %}
-<label for="media-file">Välj bild eller video</label><input id="media-file" type="file" name="file" accept="image/jpeg,image/png,image/webp,video/mp4" required><p class="small">JPEG, PNG eller WebP högst 8 MB. MP4 högst 80 MB.</p><label for="alt-text">Bildbeskrivning (valfritt)</label><input id="alt-text" name="alt_text" maxlength="500"><button name="use" value="1">Ladda upp och använd</button><button>Lägg i biblioteket</button></form></section>
-<section class="media-section" id="generate"><h2>Generera nytt</h2><nav class="media-nav" aria-label="Typ av generation"><a href="?kind=image#generate" {% if kind == 'image' %}aria-current="page"{% endif %}>Bild</a><a href="?kind=video#generate" {% if kind == 'video' %}aria-current="page"{% endif %}>Video / Reel</a></nav>
-{% if source %}<div class="media-source"><img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=source.pk %}" alt="Vald startbild"><p>{% if kind == 'video' %}Animera vald bild{% else %}Skapa en variant av bilden{% endif %}<br><a href="?kind={{ kind }}#generate">Använd ingen startbild</a></p></div>{% endif %}
-{% if kind == 'video' %}<p class="small">Ett klipp på 10 sekunder. Storyboarden är ett förslag till scener; format, timing, text och ljud måste granskas i resultatet. Välj ”Animera bilden” på en stående bild för att styra bildformatet.</p>{% if not higgs_ready %}<p class="small">Videogenerering behöver Higgsfields API-uppgifter i serverns inställningar. Du kan förbereda storyboarden här.</p>{% endif %}{% endif %}
-<form class="media-form" method="post" action="{% url 'engine:media_generate' workspace_id=workspace.pk run_id=run.pk %}">{% csrf_token %}<input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="{{ kind }}">{% if source %}<input type="hidden" name="source_asset" value="{{ source.pk }}">{% endif %}
-<label for="media-brief">{% if kind == 'video' %}Storyboard – justera om du vill{% else %}Beskriv bilden – justera om du vill{% endif %}</label><textarea id="media-brief" name="brief" rows="7" maxlength="6000" required>{{ brief }}</textarea>
-{% if kind == 'image' %}<div class="media-options"><div><label for="media-shape">Format</label><select name="shape" id="media-shape"><option value="portrait">Stående</option><option value="square">Kvadrat</option><option value="landscape">Liggande</option></select></div><div><label for="media-count">Alternativ</label><select name="count" id="media-count"><option value="2">2 bilder</option><option value="3">3 bilder</option><option value="4">4 bilder</option></select></div></div>{% endif %}
-{% if kind == 'image' %}{% if workspace.official_logo %}<label><input type="checkbox" name="include_logo" value="1" checked style="width:auto"> Lägg till officiell logga</label><p class="small">Originalfilen från Inställningar läggs på efter genereringen. AI ritar inte om loggan.</p>{% else %}<p class="small">Ingen officiell logga finns. <a href="{% url 'engine:settings' workspace_id=workspace.pk %}">Ladda upp i Inställningar</a> för att kunna lägga till den. AI ska inte skapa en egen logga.</p>{% endif %}{% endif %}
-<p class="small">Generering använder företagets sparade underlag och kostar hos leverantören. Oanvända förhandsvisningar sparas i sju dagar. Vald media behålls.</p><button>{% if kind == 'image' %}Generera bildalternativ{% elif source %}Animera bilden{% else %}Generera från text{% endif %}</button></form></section>{% endif %}
-{% if jobs %}<section class="media-section"><h2>Senaste generationer för inlägget</h2>{% for job in jobs %}<p><a href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{{ job.created_at|date:'j M H:i' }} · {% if job.kind == 'image' %}Bild{% else %}Video{% endif %}</a> · {% if job.status == 'completed' %}Klar{% elif job.status == 'failed' %}Behöver åtgärdas{% elif job.status == 'unknown' %}Inväntar kontroll{% else %}Pågår – öppna för status{% endif %}</p>{% endfor %}</section>{% endif %}
-<script>document.querySelectorAll('form').forEach(form=>form.addEventListener('submit',event=>{if(form.dataset.busy){event.preventDefault();return;}form.dataset.busy='1';form.setAttribute('aria-busy','true');setTimeout(()=>form.querySelectorAll('button').forEach(b=>b.disabled=true),0);}));</script>
-</main>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Media · {{ run.title }}{% endblock %}
+{% block content %}
+<main class="engine">
+  <a class="back-link" href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">← Till utkastet</a>
+  <header class="page-header"><div class="page-heading"><h1>Media</h1><p class="intro">{{ run.title }} · välj befintligt, ladda upp eller skapa ett nytt alternativ.</p></div></header>
+
+  <section class="media-section">
+    <div class="section-head"><div><h2>Bibliotek</h2><p class="small">Börja med företagets egna bilder och filmer. AI-genererat material är separat märkt.</p></div></div>
+    <nav class="media-nav" aria-label="Filtrera media"><a href="?filter=all&kind={{ kind }}" {% if filter_value == 'all' %}aria-current="page"{% endif %}>Alla</a><a href="?filter=image&kind={{ kind }}" {% if filter_value == 'image' %}aria-current="page"{% endif %}>Bilder</a><a href="?filter=video&kind={{ kind }}" {% if filter_value == 'video' %}aria-current="page"{% endif %}>Video</a><a href="?filter=uploaded&kind={{ kind }}" {% if filter_value == 'uploaded' %}aria-current="page"{% endif %}>Uppladdat</a><a href="?filter=generated&kind={{ kind }}" {% if filter_value == 'generated' %}aria-current="page"{% endif %}>Genererat</a></nav>
+    <div class="media-grid">{% for asset in assets %}{% include 'engine/media_asset.html' %}{% empty %}<div class="empty-state"><h3>Biblioteket är tomt</h3><p>Ladda upp företagets media eller generera ett alternativ nedan.</p></div>{% endfor %}</div>
+  </section>
+
+  {% if can_edit %}
+    <section class="media-section">
+      <div class="section-head"><div><h2>Lägg till media</h2><p class="small">Uppladdat material prioriteras framför genererat när det passar idén.</p></div></div>
+      <div class="media-two-column">
+        <section class="media-card">
+          <h3>Ladda upp</h3>
+          <form class="media-form" method="post" enctype="multipart/form-data" action="{% url 'engine:media_upload' workspace_id=workspace.pk run_id=run.pk %}">{% csrf_token %}<label for="media-file">Bild eller video</label><input id="media-file" type="file" name="file" accept="image/jpeg,image/png,image/webp,video/mp4" required><p class="small">JPEG, PNG eller WebP högst 8 MB. MP4 högst 80 MB.</p><label for="alt-text">Bildbeskrivning</label><input id="alt-text" name="alt_text" maxlength="500" placeholder="Valfritt"><div class="page-actions"><button name="use" value="1">Ladda upp och använd</button><button class="button-secondary">Lägg i biblioteket</button></div></form>
+        </section>
+
+        <section class="media-card" id="generate">
+          <div class="section-head"><div><h3>Generera nytt</h3></div><nav class="segmented" aria-label="Typ av generation"><a href="?kind=image#generate" {% if kind == 'image' %}aria-current="page"{% endif %}>Bild</a><a href="?kind=video#generate" {% if kind == 'video' %}aria-current="page"{% endif %}>Video</a></nav></div>
+          {% if source %}<div class="media-source"><img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=source.pk %}" alt="Vald startbild"><p class="small">{% if kind == 'video' %}Animera vald bild{% else %}Skapa variant av vald bild{% endif %}<br><a href="?kind={{ kind }}#generate">Ta bort startbild</a></p></div>{% endif %}
+          {% if kind == 'video' %}<p class="small">Videon blir 10 sekunder. Storyboard, timing, text och ljud behöver granskas i resultatet.{% if not higgs_ready %} Higgsfield-uppgifter saknas på servern, så storyboard kan förberedas men videon kan inte startas ännu.{% endif %}</p>{% endif %}
+          <form class="media-form" method="post" action="{% url 'engine:media_generate' workspace_id=workspace.pk run_id=run.pk %}">{% csrf_token %}<input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="{{ kind }}">{% if source %}<input type="hidden" name="source_asset" value="{{ source.pk }}">{% endif %}<label for="media-brief">{% if kind == 'video' %}Storyboard{% else %}Bildbeskrivning{% endif %}</label><textarea id="media-brief" name="brief" rows="7" maxlength="6000" required>{{ brief }}</textarea>{% if kind == 'image' %}<div class="media-options"><div><label for="media-shape">Format</label><select name="shape" id="media-shape"><option value="portrait">Stående</option><option value="square">Kvadrat</option><option value="landscape">Liggande</option></select></div><div><label for="media-count">Alternativ</label><select name="count" id="media-count"><option value="2">2 bilder</option><option value="3">3 bilder</option><option value="4">4 bilder</option></select></div></div>{% if workspace.official_logo %}<label class="channel-option"><input type="checkbox" name="include_logo" value="1" checked><span>Lägg till officiell logga efter genereringen</span></label><p class="small">Originalfilen från Inställningar compositas ovanpå resultatet. AI:n ritar inte om loggan.</p>{% else %}<p class="small">Ingen officiell logga finns. <a href="{% url 'engine:settings' workspace_id=workspace.pk %}">Ladda upp den i Inställningar</a> om den ska användas.</p>{% endif %}{% endif %}<p class="small">Oanvända förhandsvisningar sparas i sju dagar. Vald media behålls.</p><button>{% if kind == 'image' %}Generera alternativ{% elif source %}Animera bilden{% else %}Generera video{% endif %}</button></form>
+        </section>
+      </div>
+    </section>
+  {% endif %}
+
+  {% if jobs %}
+    <section class="media-section">
+      <div class="section-head"><div><h2>Senaste generationer</h2><p class="small">Öppna ett jobb för status eller färdiga alternativ.</p></div></div>
+      <div class="job-list">{% for job in jobs %}<div class="job-row"><span class="small">{{ job.created_at|date:'j M H:i' }}</span><a href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% if job.kind == 'image' %}Bildalternativ{% else %}Video{% endif %}</a><span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' %}warning{% else %}muted{% endif %}">{% if job.status == 'completed' %}Klar{% elif job.status == 'failed' %}Kontrollera{% elif job.status == 'unknown' %}Okänd{% else %}Pågår{% endif %}</span></div>{% endfor %}</div>
+    </section>
+  {% endif %}
+
+  <script>document.querySelectorAll('form').forEach(form=>form.addEventListener('submit',event=>{if(form.dataset.busy){event.preventDefault();return;}form.dataset.busy='1';form.setAttribute('aria-busy','true');setTimeout(()=>form.querySelectorAll('button').forEach(b=>b.disabled=true),0);}));</script>
+</main>
+{% endblock %}

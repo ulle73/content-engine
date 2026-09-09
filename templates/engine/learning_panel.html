@@ -1,6 +1,8 @@
-<section class="box"><h2>Learning · {% if learning.channel == 'paid' %}Paid{% else %}Organic{% endif %}</h2>
-<p>{{ learning.labels }} egna sjudygnsresultat · {{ learning.predictions }} innehåll med frysta features.</p>
-{% if learning.model %}<p>Modelläge: {{ learning.model.mode }}. Mål: {{ learning.model.target }}. Tidsdelad utvärdering: {{ learning.model.evaluation.test }} resultat.</p>
-<details><summary>Modell och utvärdering</summary><p>{{ learning.model.version }}</p><p>MAE {{ learning.model.evaluation.mae|floatformat:2 }} · enkel baseline {{ learning.model.evaluation.baseline_mae|floatformat:2 }}</p></details>
-{% else %}<p>Samlar underlag. Minst 80 egna resultat för samma mål och tillräcklig tidsmässig historik behövs före första träningen. Konkurrentannonser och redaktörens val används aldrig som prestationslabels.</p>{% endif %}
-<p class="small">Nya modeller körs i shadow och ändrar inte rekommendationerna. Registrera verkligt resultat från ett sparat innehåll efter de första sju dygnen.</p></section>
+<section class="learning-strip" aria-label="Learning-status">
+  <span class="learning-label">Learning · {% if learning.channel == 'paid' %}Paid{% else %}Organic{% endif %}</span>
+  <span class="learning-copy">{{ learning.labels }} egna resultat · {{ learning.predictions }} innehåll med frysta features{% if learning.model %} · {{ learning.model.mode }} · {{ learning.model.target }}{% else %} · samlar underlag före första modellträningen{% endif %}</span>
+  <details>
+    <summary>Detaljer</summary>
+    {% if learning.model %}<p class="small">Modell {{ learning.model.version }} · MAE {{ learning.model.evaluation.mae|floatformat:2 }} · baseline {{ learning.model.evaluation.baseline_mae|floatformat:2 }}. Nya modeller går först i shadow och ändrar inte rekommendationerna automatiskt.</p>{% else %}<p class="small">Minst 80 egna resultat för samma mål och tillräcklig tidsmässig historik behövs före första träningen. Konkurrentdata är signaler, aldrig performance-labels.</p>{% endif %}
+  </details>
+</section>

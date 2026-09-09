@@ -1,3 +1,12 @@
 {% extends 'base.html' %}
 {% block title %}Logga in · Content Engine{% endblock %}
-{% block content %}<main class="engine narrow"><h1>Logga in</h1><section class="box"><form method="post">{% csrf_token %}{{ form.as_p }}<input type="hidden" name="next" value="{{ next }}"><button type="submit">Logga in</button></form></section></main>{% endblock %}
+{% block content %}
+<main class="auth-shell">
+  <section class="auth-card">
+    <div class="auth-brand">CE</div>
+    <h1>Logga in</h1>
+    <p class="intro">Fortsätt till Content Engine.</p>
+    <form method="post">{% csrf_token %}{{ form.as_p }}<input type="hidden" name="next" value="{{ next }}"><button type="submit">Logga in</button></form>
+  </section>
+</main>
+{% endblock %}

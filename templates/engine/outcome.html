@@ -1,3 +1,18 @@
-{% extends 'base.html' %}{% block content %}<main class="engine"><section class="box"><h1>Registrera verkligt resultat</h1><p>{{ run.title }} · {{ run.get_channel_display }}</p>
-<p>Använd företagets egen resultatrapport för exakt de första sju dygnen. Lämna okända fält tomma. {% if run.channel == 'paid' %}Paid lär på klick per 1 000 impressions; det är inte samma sak som lönsamhet.{% else %}Organic lär på likes + kommentarer per 1 000 impressions.{% endif %}</p>
-<form method="post">{% csrf_token %}{{ form.as_p }}<button>Spara eget resultat</button></form><a href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">Tillbaka till innehållet</a></section></main>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Resultat · {{ run.title }}{% endblock %}
+{% block content %}
+<main class="engine narrow">
+  <a class="back-link" href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">← Till utkastet</a>
+  <header class="page-header">
+    <div class="page-heading"><h1>Registrera verifierat resultat</h1><p class="intro">{{ run.title }} · {{ run.get_channel_display }}. Använd bara mätvärden från en källa du kan verifiera.</p></div>
+  </header>
+
+  <section class="settings-section">
+    <div class="settings-section-head"><h2>Resultatunderlag</h2><p class="small">Lämna okända fält tomma. Saknade värden blir aldrig automatiskt 0 och historiska labels skrivs inte över.</p></div>
+    <div class="settings-section-body">
+      <p class="small">Mätningen ska avse det dokumenterade mätfönstret för valt learning-mål. Paid kan använda klick, konverteringar, CPA, ROAS eller revenue när rätt verifierade metrics och valuta finns.</p>
+      <form method="post">{% csrf_token %}{{ form.as_p }}<button>Spara verifierat resultat</button></form>
+    </div>
+  </section>
+</main>
+{% endblock %}
