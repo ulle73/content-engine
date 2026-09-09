@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import AdAccount, Company, CompetitorAd
+from .models import AdAccount, Company, CompetitorAd, ContentRun
 
 
 class AppShellTests(TestCase):
@@ -36,7 +36,9 @@ class AppShellTests(TestCase):
 
         self.assertContains(response, "htmx.org@2.0.10")
         self.assertContains(response, 'href="/static/css/workspace-v3.css"')
+        self.assertContains(response, 'href="/static/css/product-polish.css"')
         self.assertEqual(self.client.get("/static/css/workspace-v3.css").status_code, 200)
+        self.assertEqual(self.client.get("/static/css/product-polish.css").status_code, 200)
 
     def test_workspace_shell_has_mobile_header_and_bottom_navigation(self):
         response = self.client.get(
@@ -68,6 +70,37 @@ class AppShellTests(TestCase):
 
         self.assertContains(response, 'class="data-table mobile-table"')
         self.assertContains(response, "Scraping · kostnad och nytt värde")
+
+    def test_primary_screens_expose_product_specific_layouts(self):
+        home = self.client.get(reverse("engine:home", kwargs={"workspace_id": self.workspace.pk}))
+        organic = self.client.get(reverse("engine:intelligence", kwargs={"workspace_id": self.workspace.pk}))
+        performance = self.client.get(reverse("engine:own_performance", kwargs={"workspace_id": self.workspace.pk}))
+        settings = self.client.get(reverse("engine:settings", kwargs={"workspace_id": self.workspace.pk}))
+        companies = self.client.get(reverse("dashboard"))
+
+        self.assertContains(home, 'class="engine overview-page"')
+        self.assertContains(home, 'class="overview-command"')
+        self.assertContains(organic, 'organic-insights-page')
+        self.assertContains(performance, 'performance-page')
+        self.assertContains(settings, 'class="engine settings-page"')
+        self.assertContains(settings, 'class="settings-layout"')
+        self.assertContains(companies, 'workspace-page-v3')
+
+    def test_review_and_media_are_task_specific_workspaces(self):
+        run = ContentRun.objects.create(
+            workspace=self.workspace,
+            author=self.user,
+            context={"source": "test", "valid_until": "2099-01-01"},
+            ideas=[],
+            draft={"facebook": "Facebook text", "instagram": "Instagram text", "photo_brief": "", "checks": []},
+            model="test-model",
+        )
+        review = self.client.get(reverse("engine:review", kwargs={"workspace_id": self.workspace.pk, "run_id": run.pk}))
+        media = self.client.get(reverse("engine:media", kwargs={"workspace_id": self.workspace.pk, "run_id": run.pk}))
+
+        self.assertContains(review, 'class="engine review-page"')
+        self.assertContains(review, 'class="review-progress"')
+        self.assertContains(media, 'class="engine media-workspace"')
 
 
 class AdsWorkspaceTests(TestCase):
