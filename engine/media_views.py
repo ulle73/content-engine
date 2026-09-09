@@ -33,7 +33,7 @@ def picker(request, workspace_id, run_id):
         kind, source = retry.kind, retry.source_asset
     if request.GET.get("source"):
         source = get_object_or_404(MediaAsset, pk=request.GET["source"], company=request.workspace, kind="image")
-    assets = request.workspace.media_assets.filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()))
+    assets = request.workspace.media_assets.filter(purpose="content").filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()))
     filter_value = request.GET.get("filter", "all")
     if filter_value in {"image", "video"}:
         assets = assets.filter(kind=filter_value)
@@ -82,7 +82,7 @@ def generate_media(request, workspace_id, run_id):
         source = get_object_or_404(MediaAsset, pk=request.POST["source_asset"], company=request.workspace, kind="image") if request.POST.get("source_asset") else None
         job = create_job(run, token=uuid.UUID(request.POST.get("token", "")), kind=request.POST.get("kind"),
                          brief=request.POST.get("brief", ""), count=int(request.POST.get("count", "2")),
-                         shape=request.POST.get("shape", "portrait"), source=source)
+                         shape=request.POST.get("shape", "portrait"), source=source, include_logo=bool(request.POST.get("include_logo")))
         messages.success(request, "Genereringen är sparad. Du kan lämna sidan och återkomma till samma jobb.")
         return redirect("engine:media_job", workspace_id=workspace_id, run_id=run.pk, job_id=job.pk)
     except (MediaError, ValueError) as exc:

@@ -51,9 +51,11 @@ AI tolkar caption och metadata till en mekanism och en egen företagsvinkel. Fö
 
 ### Daglig hämtning
 
+Den centrala entrypointen är nu **`python manage.py run_daily`**. Den kör konkurrentimport, insamling av färdig media, säker rensning och AI-analys med separata sparade delresultat. Delvis lyckad körning ger varning/status utan att kasta bort lyckat arbete. GitHub Actions anropar kommandot; framtida outcomes/shadow/ML läggs i Django-registret. **Inställningar** innehåller driftloggen och företagets officiella logga. Se [drift, aktivering och loggans versionshantering](docs/2026-09-09-daily-and-logo.md).
+
 `APIFY_API_TOKEN` läses från miljön. `APIFY_USER_ID` är valfri kontometadata, aldrig autentisering. Manuell hämtning och status finns i UI. För schemalagd körning finns `python manage.py refresh_competitors --wait`; den återupptar redan startade körningar och gör högst ett nytt automatiskt försök per konto under 23 timmar. De senaste 30 posterna följs genom daglig profilscrape, vilket normalt täcker två veckor. Mycket aktiva konton kan falla utanför den täckningen.
 
-GitHub-workflow finns för daglig körning 06:17 UTC. Den är **avstängd tills secrets och aktiveringsvariabel satts**. Driftansvarig lägger `CONTENT_DATABASE_URL`, `CONTENT_DJANGO_SECRET`, `CONTENT_APIFY_TOKEN`, `CONTENT_OPENAI_KEY` som GitHub Actions-secrets, och sätter repository-variabeln `CONTENT_INTELLIGENCE_ENABLED=true`. Ingen credential checkas in. Miljönycklar flyttas inte automatiskt till GitHub. Kommandot använder den befintliga databasen; det kräver inga egna workers och kan köras i en befintlig schemaläggare.
+GitHub-workflowen **Content Engine Daily** finns för daglig körning 06:17 UTC. Den är **avstängd tills secrets och aktiveringsvariabel satts**. Driftansvarig lägger Actions-secrets enligt [driftdokumentet](docs/2026-09-09-daily-and-logo.md), och sätter repository-variabeln `CONTENT_INTELLIGENCE_ENABLED=true`. Ingen credential checkas in. Miljönycklar flyttas inte automatiskt till GitHub. Kommandot använder den befintliga databasen; det kräver inga egna workers och kan köras i en befintlig schemaläggare.
 
 ## Kontroller och begränsningar
 

@@ -53,7 +53,7 @@ def generate_images(job):
               "size": job.parameters["size"], "quality": "medium", "output_format": "png"}
     with OpenAI(timeout=240, max_retries=0) as client:
         if job.source_asset:
-            with open_asset(job.source_asset) as source:
+            with open_asset(job.source_asset, unbranded=True) as source:
                 result = client.images.edit(image=("reference." + job.source_asset.storage_key.rsplit(".", 1)[-1],
                                                    source, job.source_asset.mime_type), **params)
         else:
@@ -94,7 +94,7 @@ def video_payload(job):
 
 def upload_input(asset):
     result = higgs("POST", "/files/generate-upload-url", json={"content_type": asset.mime_type})
-    with open_asset(asset) as source:
+    with open_asset(asset, unbranded=True) as source:
         try:
             # Storage receives only its upload headers, never the Higgsfield credential.
             response = httpx.put(public_url(result["upload_url"]), content=source.read(),

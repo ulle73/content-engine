@@ -39,6 +39,10 @@ body { min-height: 100vh; margin: 0; background: var(--app-bg); color: var(--tex
 button, input, textarea, select { font: inherit; }
 a { color: inherit; }
 img { max-width: 100%; display: block; }
+.daily-table { width:100%; border-collapse:collapse; text-align:left; }
+.daily-table th, .daily-table td { padding:12px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+.daily-table th { color:var(--text-muted); font-size:12px; font-weight:600; }
+.daily-table td { line-height:1.5; }
 
 .app-shell { min-height: 100vh; display: grid; grid-template-columns: var(--sidebar-width) minmax(0, 1fr); }
 .app-sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: var(--space-6); padding: 18px 14px 16px; background: #fbfcfb; border-right: 1px solid var(--border); z-index: 20; }

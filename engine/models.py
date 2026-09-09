@@ -25,6 +25,7 @@ class Company(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     postiz_ciphertext = models.TextField(blank=True, default="")
     postiz_channels = models.JSONField(default=list)
+    official_logo = models.ForeignKey("MediaAsset", null=True, blank=True, on_delete=models.PROTECT, related_name="official_for")
 
     @staticmethod
     def cipher():
@@ -156,6 +157,7 @@ class MediaGeneration(models.Model):
     prompt = models.TextField()
     parameters = models.JSONField(default=dict)
     source_asset = models.ForeignKey("MediaAsset", null=True, blank=True, on_delete=models.SET_NULL, related_name="variations")
+    logo_asset = models.ForeignKey("MediaAsset", null=True, blank=True, on_delete=models.PROTECT, related_name="logo_generations")
     provider_id = models.CharField(max_length=200, blank=True)
     status = models.CharField(max_length=20, default="queued")
     error = models.CharField(max_length=500, blank=True)
@@ -183,3 +185,36 @@ class MediaAsset(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(null=True)
     used_at = models.DateTimeField(null=True)
+    purpose = models.CharField(max_length=10, default="content", choices=[("content", "Innehåll"), ("logo", "Logga")])
+    sha256 = models.CharField(max_length=64, blank=True)
+    # Clean generation before deterministic logo placement; never feed a rendered logo back to AI.
+    generation_base_key = models.CharField(max_length=300, blank=True)
+
+
+class DailyRun(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    day = models.DateField(unique=True)
+    status = models.CharField(max_length=15, default="running")
+    attempts = models.PositiveIntegerField(default=0)
+    started_at = models.DateTimeField(auto_now_add=True)
+    finished_at = models.DateTimeField(null=True)
+    lease_token = models.UUIDField(null=True)
+    lease_until = models.DateTimeField(null=True)
+    summary = models.JSONField(default=dict)
+
+
+class DailyStep(models.Model):
+    run = models.ForeignKey(DailyRun, on_delete=models.CASCADE, related_name="steps")
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="daily_steps")
+    stage = models.CharField(max_length=60)
+    version = models.CharField(max_length=30, default="v1")
+    key = models.CharField(max_length=160)
+    status = models.CharField(max_length=15, default="pending")
+    attempts = models.PositiveIntegerField(default=0)
+    started_at = models.DateTimeField(null=True)
+    finished_at = models.DateTimeField(null=True)
+    message = models.CharField(max_length=500, blank=True)
+    result = models.JSONField(default=dict)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["run", "company", "stage", "version", "key"], name="unique_daily_work")]

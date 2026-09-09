@@ -66,14 +66,15 @@ def put(key, data, mime, backend=None):
 
 
 @contextmanager
-def open_asset(asset):
+def open_asset(asset, *, unbranded=False):
+    key = asset.generation_base_key if unbranded and asset.generation_base_key else asset.storage_key
     try:
         if asset.storage_backend == "local":
-            with local_path(asset.storage_key).open("rb") as file:
+            with local_path(key).open("rb") as file:
                 yield file
         else:
             with SpooledTemporaryFile(max_size=8 * 1024 * 1024) as file:
-                r2().download_fileobj(os.environ["R2_BUCKET_NAME"], asset.storage_key, file)
+                r2().download_fileobj(os.environ["R2_BUCKET_NAME"], key, file)
                 file.seek(0)
                 yield file
     except (OSError, BotoCoreError, ClientError) as exc:
@@ -90,9 +91,10 @@ def download_url(asset):
 
 def delete_file(asset):
     try:
-        if asset.storage_backend == "local":
-            local_path(asset.storage_key).unlink(missing_ok=True)
-        else:
-            r2().delete_object(Bucket=os.environ["R2_BUCKET_NAME"], Key=asset.storage_key)
+        for key in filter(None, (asset.storage_key, asset.generation_base_key)):
+            if asset.storage_backend == "local":
+                local_path(key).unlink(missing_ok=True)
+            else:
+                r2().delete_object(Bucket=os.environ["R2_BUCKET_NAME"], Key=key)
     except (OSError, BotoCoreError, ClientError) as exc:
         raise MediaError("Filen kunde inte tas bort. Försök igen.") from exc

@@ -232,16 +232,20 @@ Statistik i vår nya vinkel får bara föreslås som något att samla in, om ing
     return result
 
 
-def analyze_top(company, limit=3):
+def analysis_candidates(company, limit=3):
     if not company.profile.strip() or not company.current.strip():
-        return 0
+        return []
     signals = catalog(company)
     recent = [s for s in signals if s["age_days"] <= 14]
     references = [s for s in signals if s["age_days"] > 14 and s["relative"] and s["relative"] >= 1.5]
     candidates = recent[: max(1, limit - 1)] + references[:1]
+    return [signal["post"] for signal in candidates]
+
+
+def analyze_top(company, limit=3):
     completed = 0
-    for signal in candidates:
-        classify(signal["post"], company)
+    for post in analysis_candidates(company, limit):
+        classify(post, company)
         completed += 1
     return completed
 
