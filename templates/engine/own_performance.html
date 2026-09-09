@@ -1,14 +1,34 @@
 {% extends 'base.html' %}
 {% block title %}{{ workspace.name }} · Egna resultat{% endblock %}
 {% block content %}
-<main class="engine intelligence-page">
+<main class="engine intelligence-page performance-page">
   <header class="page-header">
-    <div class="page-heading"><h1>Insikter</h1><p class="intro">Egna publicerade resultat från Postiz, jämförda mot företagets verkliga baseline när tillräckligt underlag finns.</p></div>
+    <div class="page-heading">
+      <span class="editorial-eyebrow">Own performance</span>
+      <h1>Insikter</h1>
+      <p class="intro">Se hur egna publiceringar utvecklas mot företagets verkliga baseline och vilka resultat som faktiskt kan bli learning-data.</p>
+    </div>
   </header>
   {% include 'engine/insight_tabs.html' %}
 
-  <section>
-    <div class="section-head"><div><h2>Egna resultat</h2><p class="small">Views, reach och impressions hålls isär. Äldre eller manuella Postiz-inlägg kan bygga baseline utan att bli retroaktiva ML-labels.</p></div><span class="meta-pill">{{ own_posts|length }} poster</span></div>
+  {% if own_posts %}
+    {% with lead=own_posts.0 %}
+      <section class="performance-highlight">
+        <div>
+          <span class="signal-kicker">Senaste egna observationen</span>
+          <h2>{{ lead.caption|striptags|default:'Senaste publiceringen'|truncatechars:120 }}</h2>
+          <p>{{ lead.platform|title }} · publicerad {{ lead.published_at|date:'j M Y' }}{% if lead.latest %} · följs av daily-jobbet{% endif %}</p>
+        </div>
+        <div class="performance-highlight-value">
+          <strong>{% if lead.latest and lead.latest.baseline.relative != None %}{{ lead.latest.baseline.relative|floatformat:1 }}×{% else %}–{% endif %}</strong>
+          <span>relativ nivå mot baseline</span>
+        </div>
+      </section>
+    {% endwith %}
+  {% endif %}
+
+  <section class="product-section">
+    <div class="product-section-head"><div><span class="editorial-eyebrow">Verifierat</span><h2>Egna resultat</h2><p class="small">Views, reach och impressions hålls isär. Äldre eller manuella Postiz-inlägg kan bygga baseline utan att bli retroaktiva ML-labels.</p></div><span class="meta-pill">{{ own_posts|length }} poster</span></div>
     <div class="performance-board">
       <div class="performance-head" aria-hidden="true"><span>Plattform</span><span>Innehåll</span><span>Publicerad</span><span>Relativ nivå</span><span>Status</span><span></span></div>
       {% for post in own_posts %}
@@ -32,7 +52,7 @@
               <div>
                 {% if post.latest %}
                   <h3>Senaste observationen</h3>
-                  <div class="metric-strip">{% for name,value in post.latest.metrics.items %}<div class="metric"><span>{{ name }}</span><strong>{{ value }}</strong></div>{% endfor %}</div>
+                  <div class="metric-strip metric-strip-scroll">{% for name,value in post.latest.metrics.items %}<div class="metric"><span>{{ name }}</span><strong>{{ value }}</strong></div>{% endfor %}</div>
                   {% if post.latest.baseline.relative != None %}<p><strong>{{ post.latest.baseline.relative|floatformat:1 }}× er normala nivå</strong> för {{ post.latest.baseline.metric }}.</p>{% else %}<p>Ingen tillförlitlig relativ nivå ännu.</p>{% endif %}
                   <p class="small">{{ post.latest.baseline.peers|default:0 }} jämförelseinlägg · {% if post.latest.baseline.confidence_label == 'moderate' %}måttlig säkerhet{% else %}låg säkerhet{% endif %} · åldersfönster {{ post.latest.baseline.age_bucket|default:'utanför standardfönster' }}.</p>
                 {% else %}
