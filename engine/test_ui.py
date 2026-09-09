@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
-from .models import Company
+from .models import AdAccount, Company, CompetitorAd
 
 
 class AppShellTests(TestCase):
@@ -67,3 +68,85 @@ class AppShellTests(TestCase):
 
         self.assertContains(response, 'class="data-table mobile-table"')
         self.assertContains(response, "Scraping · kostnad och nytt värde")
+
+
+class AdsWorkspaceTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="ads-ui@example.test",
+            password="test-only-password",
+        )
+        self.workspace = Company.objects.create(owner=self.user, name="Sänk Dig Golf")
+        self.account = AdAccount.objects.create(
+            company=self.workspace,
+            name="Shot Scope",
+            page_url="https://www.facebook.com/123456789",
+            page_id="123456789",
+            country="SE",
+        )
+        now = timezone.now()
+        self.ad = CompetitorAd.objects.create(
+            account=self.account,
+            external_id="987654321",
+            creative={
+                "headline": "Play Smarter Like Radar",
+                "text": "Get data on your game and make better decisions.",
+                "format": "image",
+                "image_url": "https://images.example.test/shot-scope.jpg",
+                "video_url": None,
+                "cta": "LEARN_MORE",
+                "landing_page": "https://example.test/product",
+                "platforms": ["FACEBOOK", "INSTAGRAM"],
+                "variant_count": 8,
+            },
+            creative_hash="creative-hash",
+            classification={
+                "message": "Data hjälper golfaren fatta bättre beslut.",
+                "hook": "Social proof och datadrivet löfte",
+                "cta": "Learn more",
+                "offer": "Produktdemo",
+                "themes": ["Datadriven golf"],
+                "mechanisms": ["Social proof"],
+                "adaptation": "Visa ett konkret beslut en amatörgolfare kan förbättra med verifierad data.",
+                "unknowns": ["Faktisk annonsperformance är okänd."],
+            },
+            classification_hash="stale-until-view-computes-current",
+            first_seen_at=now,
+            last_seen_at=now,
+            is_active=True,
+        )
+        self.client.force_login(self.user)
+
+    def test_paid_intelligence_uses_two_pane_workspace_with_creative_preview(self):
+        response = self.client.get(
+            reverse("engine:intelligence", kwargs={"workspace_id": self.workspace.pk}),
+            {"channel": "paid"},
+        )
+        detail_url = reverse(
+            "engine:ad_detail",
+            kwargs={"workspace_id": self.workspace.pk, "ad_id": self.ad.pk},
+        )
+
+        self.assertContains(response, 'class="ads-workspace workspace-split"')
+        self.assertContains(response, 'id="ad-detail-panel"')
+        self.assertContains(response, f'hx-get="{detail_url}"')
+        self.assertContains(response, "https://images.example.test/shot-scope.jpg")
+        self.assertContains(response, "Play Smarter Like Radar")
+
+    def test_ad_detail_is_company_scoped_and_renders_editorial_detail(self):
+        detail_url = reverse(
+            "engine:ad_detail",
+            kwargs={"workspace_id": self.workspace.pk, "ad_id": self.ad.pk},
+        )
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="workspace-detail-panel ad-detail-panel"')
+        self.assertContains(response, "Play Smarter Like Radar")
+        self.assertContains(response, "CTR, CPA och ROAS är okända")
+
+        other = Company.objects.create(owner=self.user, name="Annat bolag")
+        cross_company_url = reverse(
+            "engine:ad_detail",
+            kwargs={"workspace_id": other.pk, "ad_id": self.ad.pk},
+        )
+        self.assertEqual(self.client.get(cross_company_url).status_code, 404)
