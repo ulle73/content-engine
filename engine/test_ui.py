@@ -22,7 +22,7 @@ class AppShellTests(TestCase):
         self.assertContains(response, 'href="/static/css/app.css"')
         self.assertContains(response, 'class="app-sidebar"')
         self.assertContains(response, 'class="app-topbar"')
-        self.assertContains(response, "Konkurrenssignaler")
+        self.assertContains(response, "Insikter")
 
         stylesheet = self.client.get("/static/css/app.css")
         self.assertEqual(stylesheet.status_code, 200)

@@ -31,6 +31,13 @@ class DraftOutput(BaseModel):
     checks: list[str]
 
 
+class AdDraftOutput(DraftOutput):
+    headline: str
+    description: str
+    cta: str
+    landing_page: str
+
+
 def grounded_ideas_schema(context):
     quotes = tuple(
         dict.fromkeys(
@@ -57,6 +64,7 @@ def skill_text(*names):
 
 def generate(context, *, idea=None):
     writing = idea is not None
+    paid = context.get("channel") == "paid"
     skills = (
         ("caption-writer", "cross-platform-repurposing")
         if writing
@@ -80,6 +88,15 @@ ett bildförslag och en kort lista över fakta att kontrollera före publicering
 Instagramtexten får vara högst 2200 tecken. Lägg aldrig granskningsanteckningar i bildtexten.
 Granskningslistan ska bara innehålla konkreta redaktionella kontroller på vanlig svenska, inga interna id:n, fältnamn eller rankingpoäng.
 """
+    if paid:
+        skills = (*skills, "campaign-and-launch-planning")
+        instructions += """\nUppgiften gäller betalda Meta-annonser, inte organiska inlägg. Skapa tre egna annonsvinklar eller vald annonscopy.
+Konkurrenternas Ads Library-data visar kreativa mekanismer, INTE prestation. Hitta aldrig på CTR, CPA, ROAS, konverteringar eller lönsamhet.
+Livslängd, synlighet och varianter bevisar inte framgång. Kopiera aldrig konkurrentens erbjudande eller kreativ.
+Vid copy: skriv primärtext för Facebook och Instagram, rubrik, beskrivning, CTA och landing_page.
+Landing_page får bara vara en exakt verifierad URL i vårt företagsunderlag, annars tom sträng med kontrollpunkt.
+Rubrik/erbjudande måste stödjas av våra fakta. Bild/video beskrivs i photo_brief; originalproduktion görs i befintligt mediaflöde.
+Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att köpa annonser."""
     # The writing step needs the chosen editorial brief, not internal ranking/provenance metadata.
     # That evidence stays in the saved ContentRun and its review panel.
     writing_context = {k: v for k, v in context.items() if k != "competitor_signals"} if writing else context
@@ -89,7 +106,7 @@ Granskningslistan ska bara innehålla konkreta redaktionella kontroller på vanl
             model=settings.OPENAI_MODEL,
             instructions=instructions + "\n\nHantverksreferenser:\n" + skill_text(*skills),
             input=json.dumps({"company_context": writing_context, "selected_idea": selected_brief}, ensure_ascii=False),
-            text_format=DraftOutput if writing else grounded_ideas_schema(context),
+            text_format=(AdDraftOutput if paid else DraftOutput) if writing else grounded_ideas_schema(context),
             max_output_tokens=5000,
             store=False,
         )
@@ -111,4 +128,9 @@ Granskningslistan ska bara innehålla konkreta redaktionella kontroller på vanl
             item["source_field"] = source_field
     elif len(output["instagram"]) > 2200:
         raise ValueError("Instagramtexten blev för lång. Försök igen.")
+    if writing and paid and output.get("landing_page"):
+        url = output["landing_page"]
+        if not url.startswith("https://") or url not in "\n".join(context.get(k, "") for k in ("profile", "current", "source")):
+            output["landing_page"] = ""
+            output["checks"].append("Ange och kontrollera företagets landningssida.")
     return output

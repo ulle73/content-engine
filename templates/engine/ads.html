@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}{{ workspace.name }} · Annonsinsikter{% endblock %}
+{% block content %}<main class="engine intelligence-page">
+<header class="page-header"><div class="page-heading"><h1>Insikter</h1><p class="intro">Konkurrenternas annonsidéer, budskap och återkommande teman.</p></div><a class="action" href="{% url 'engine:home' workspace_id=workspace.pk %}?channel=paid#create-content">Skapa annons</a></header>
+{% include 'engine/insight_tabs.html' %}
+<p class="notice">Annonsbiblioteket visar vad som observerats. CTR, CPA, ROAS och konverteringar är okända. Lång synlighet är inte bevis på framgång.</p>
+{% if themes %}<section class="box"><h2>Återkommande teman i urvalet</h2>{% for theme, count in themes %}<p>{{ theme }} · {{ count }} annonser</p>{% endfor %}<p class="small">Beskrivning av sparat underlag, inte ett mått på prestation.</p></section>{% endif %}
+<section><h2>Observerade annonser</h2><div class="ideas">
+{% for ad in ads %}<article class="box">
+<p class="small">{{ ad.account.name }} · {{ ad.creative.platforms|join:' / ' }}</p>
+<h3>{{ ad.creative.headline|default:'Annons utan angiven rubrik' }}</h3><p style="white-space:pre-wrap">{{ ad.creative.text|default:'Annonstext saknas'|truncatechars:700 }}</p>
+<p><a href="{{ ad.url }}" target="_blank" rel="noopener">Se original och media i Ads Library ↗</a></p>
+<p class="small">Först sedd {{ ad.first_seen_at|date:'j M Y' }} · senast sedd {{ ad.last_seen_at|date:'j M Y H:i' }} · {{ ad.observed_days }} dagar mellan observationerna.</p>
+<p class="small">{% if ad.is_active == True %}Rapporterad aktiv{% elif ad.is_active == False %}Rapporterad inaktiv{% else %}Status okänd{% endif %} vid senaste observationen. Start: {{ ad.start_date|default:'okänd' }} · slut: {{ ad.end_date|default:'okänt' }}.</p>
+<details><summary>Format, CTA och variationer</summary><p>Format: {{ ad.creative.format }} · varianter: {{ ad.creative.variant_count|default_if_none:'okänt' }}</p><p>CTA: {{ ad.creative.cta|default:'okänd' }} · länkrad: {{ ad.creative.cta_caption|default:'okänd' }}</p>
+{% if ad.creative.landing_page %}<a href="{{ ad.creative.landing_page }}" target="_blank" rel="noopener">Angiven landningssida ↗</a>{% else %}<p>Landningssidans fullständiga URL saknas.</p>{% endif %}<p>Bild-/videoinnehållet är inte visuellt analyserat. Bibliotekslänken visar tillgängligt original.</p></details>
+{% if ad.analysis_current %}<h4>Så kan {{ workspace.name }} använda detta</h4><p>{{ ad.classification.adaptation }}</p><p class="small">Hook: {{ ad.classification.hook }}<br>Erbjudande i källan: {{ ad.classification.offer }}</p>
+<details><summary>Analysens begränsningar</summary><ul>{% for item in ad.classification.unknowns %}<li>{{ item }}</li>{% endfor %}</ul></details>
+<form method="post" action="{% url 'engine:ideas' workspace_id=workspace.pk %}">{% csrf_token %}<input type="hidden" name="channel" value="paid"><input type="hidden" name="signal_id" value="{{ ad.pk }}"><button>Skapa egen annonsidé</button></form>
+{% else %}<form method="post" action="{% url 'engine:ad_analyze' workspace_id=workspace.pk ad_id=ad.pk %}">{% csrf_token %}<button>Analysera budskapet</button></form>{% endif %}
+</article>{% empty %}<section class="box"><p>Inga annonser har sparats ännu. Lägg till en annonsör nedan och starta första begränsade hämtningen.</p></section>{% endfor %}
+</div></section>
+<section class="box"><h2>Bevakade annonsörer</h2>
+{% for account in accounts %}<article style="border-bottom:1px solid #ddd;padding:16px 0"><strong>{{ account.name }}</strong> · {{ account.country }} · {% if account.active %}Aktiv{% else %}Pausad{% endif %}
+<p class="small">{{ account.page_url }}<br>Täckning: {{ account.sync.coverage|default:'Ej startad' }} · {{ account.ads.count }} sparade annonser.</p>
+<form method="post" action="{% url 'engine:ad_account_action' workspace_id=workspace.pk account_id=account.pk %}">{% csrf_token %}<button name="action" value="refresh">Hämta / kontrollera</button> <button class="button-secondary" name="action" value="toggle">{% if account.active %}Pausa{% else %}Aktivera{% endif %}</button></form>
+{% if account.sync.coverage == 'limited' %}<p>Resultatgränsen nåddes. Historiken är ofullständig och fler betalda hämtningar är pausade.</p><form method="post" action="{% url 'engine:ad_account_action' workspace_id=workspace.pk account_id=account.pk %}">{% csrf_token %}<button class="button-secondary" name="action" value="resume_new">Acceptera historikluckan och bevaka nytt</button></form>{% endif %}
+{% if account.sync.coverage == 'refresh_limited' %}<p>Veckans kontroll av äldre annonser nådde gränsen. Äldre status har begränsad täckning; discovery fortsätter med det korta fönstret.</p>{% endif %}
+<a href="?channel=paid&edit={{ account.pk }}">Redigera bevakning</a>
+{% if account.sync %}<form method="post" action="{% url 'engine:ad_account_action' workspace_id=workspace.pk account_id=account.pk %}">{% csrf_token %}<button class="button-secondary" name="action" value="reprocess">Läs om sparat dataset (ingen ny scrape)</button></form>{% endif %}
+{% if account.sync %}<details><summary>Senaste hämtningar</summary>{% for run in account.sync.requests.all|slice:':5' %}<p>{{ run.created_at|date:'j M H:i' }} · {{ run.mode }} · {{ run.status }} · {{ run.result.saved|default:0 }} sparade · kostnad USD {{ run.cost_usd|default_if_none:'ej rapporterad' }}</p>{% endfor %}</details>{% endif %}
+</article>{% empty %}<p>Inga annonsörer tillagda.</p>{% endfor %}
+<h3>{% if editing %}Redigera annonsör{% else %}Lägg till annonsör{% endif %}</h3><form method="post" action="?channel=paid">{% csrf_token %}{% if editing %}<input type="hidden" name="account_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>Spara bevakning</button></form>
+<p class="small">Första urvalet: högst 50 annonser från 30 dagar. Därefter kort datumöverlapp, högst 20 annonser; äldre status kontrolleras högst veckovis. Datumfilter gäller leveransdagar och kan även returnera redan kända, långlivade annonser. Ingen obegränsad backfill görs.</p></section>
+{% include 'engine/learning_panel.html' %}
+</main>{% endblock %}

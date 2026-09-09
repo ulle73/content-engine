@@ -50,6 +50,7 @@ class ContentRun(models.Model):
     selected = models.PositiveSmallIntegerField(null=True)
     draft = models.JSONField(default=dict)
     model = models.CharField(max_length=100)
+    channel = models.CharField(max_length=10, default="organic", choices=[("organic", "Organiskt"), ("paid", "Annonser")])
     created_at = models.DateTimeField(auto_now_add=True)
     delivery_status = models.CharField(max_length=20, default="draft")
     delivery_result = models.JSONField(default=list)
@@ -101,6 +102,8 @@ class CompetitorImport(models.Model):
     requested_limit = models.PositiveIntegerField(default=100)
     error = models.CharField(max_length=500, blank=True)
     fallback_of = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+    scrape_request = models.OneToOneField("ScrapeRequest", null=True, on_delete=models.PROTECT)
+    sync_mode = models.CharField(max_length=20, default="discovery")
 
 
 class CompetitorPost(models.Model):
@@ -218,3 +221,137 @@ class DailyStep(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["run", "company", "stage", "version", "key"], name="unique_daily_work")]
+
+
+class ScraperState(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    source = models.CharField(max_length=30)
+    external_key = models.CharField(max_length=200)
+    backfill_attempted_at = models.DateTimeField(null=True)
+    watermark = models.DateTimeField(null=True)
+    last_refresh_at = models.DateTimeField(null=True)
+    next_attempt_at = models.DateTimeField(null=True)
+    coverage = models.CharField(max_length=30, default="uninitialized")
+    details = models.JSONField(default=dict)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company", "source", "external_key"], name="unique_scraper_source")]
+
+
+class ScrapeRequest(models.Model):
+    state = models.ForeignKey(ScraperState, on_delete=models.CASCADE, related_name="requests")
+    key = models.CharField(max_length=64, unique=True)
+    actor = models.CharField(max_length=100)
+    mode = models.CharField(max_length=20)
+    inputs = models.JSONField(default=dict)
+    status = models.CharField(max_length=20, default="starting")
+    actor_run_id = models.CharField(max_length=100, unique=True, null=True)
+    dataset_id = models.CharField(max_length=100, blank=True)
+    max_cost_usd = models.DecimalField(max_digits=10, decimal_places=4)
+    cost_usd = models.DecimalField(max_digits=12, decimal_places=6, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    finished_at = models.DateTimeField(null=True)
+    result = models.JSONField(default=dict)
+
+
+class AnalysisMemo(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    key = models.CharField(max_length=64)
+    status = models.CharField(max_length=20, default="started")
+    model = models.CharField(max_length=100)
+    result = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_attempt_at = models.DateTimeField(null=True)
+    attempts = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company", "key"], name="unique_paid_analysis")]
+
+
+class AdAccount(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="ad_accounts")
+    name = models.CharField(max_length=200)
+    page_url = models.URLField(max_length=500)
+    page_id = models.CharField(max_length=100, blank=True)
+    country = models.CharField(max_length=3, default="SE")
+    active = models.BooleanField(default=True)
+    sync = models.OneToOneField(ScraperState, null=True, on_delete=models.PROTECT)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company", "page_url", "country"], name="unique_ad_account"),
+                       models.UniqueConstraint(fields=["company", "page_id", "country"], condition=~models.Q(page_id=""), name="unique_ad_page_country")]
+
+
+class CompetitorAd(models.Model):
+    account = models.ForeignKey(AdAccount, on_delete=models.CASCADE, related_name="ads")
+    external_id = models.CharField(max_length=100)
+    creative = models.JSONField(default=dict)
+    creative_hash = models.CharField(max_length=64)
+    classification = models.JSONField(default=dict)
+    classification_hash = models.CharField(max_length=64, blank=True)
+    first_seen_at = models.DateTimeField()
+    last_seen_at = models.DateTimeField()
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+    is_active = models.BooleanField(null=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["account", "external_id"], name="unique_account_ad")]
+
+
+class AdObservation(models.Model):
+    ad = models.ForeignKey(CompetitorAd, on_delete=models.CASCADE, related_name="observations")
+    request = models.ForeignKey(ScrapeRequest, on_delete=models.PROTECT)
+    observed_at = models.DateTimeField()
+    data = models.JSONField(default=dict)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["ad", "request"], name="unique_ad_observation")]
+
+
+class LearningModel(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    channel = models.CharField(max_length=10)
+    version = models.CharField(max_length=64)
+    target = models.CharField(max_length=60)
+    mode = models.CharField(max_length=15, default="shadow")
+    trained_at = models.DateTimeField(auto_now_add=True)
+    training_cutoff = models.DateTimeField()
+    artifact = models.JSONField(default=dict)
+    evaluation = models.JSONField(default=dict)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company", "channel", "version"], name="unique_learning_model")]
+
+
+class Prediction(models.Model):
+    run = models.ForeignKey(ContentRun, on_delete=models.CASCADE, related_name="predictions")
+    idea_index = models.PositiveSmallIntegerField()
+    channel = models.CharField(max_length=10)
+    features = models.JSONField()
+    feature_version = models.CharField(max_length=40)
+    model_version = models.CharField(max_length=64)
+    model = models.ForeignKey(LearningModel, null=True, on_delete=models.PROTECT)
+    value = models.FloatField(null=True)
+    target = models.CharField(max_length=60)
+    mode = models.CharField(max_length=15, default="shadow")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["run", "idea_index", "model_version"], name="unique_idea_prediction")]
+
+
+class OwnOutcome(models.Model):
+    prediction = models.ForeignKey(Prediction, on_delete=models.PROTECT, related_name="outcomes")
+    source = models.CharField(max_length=60)
+    external_id = models.CharField(max_length=200)
+    published_at = models.DateTimeField()
+    window_end = models.DateTimeField()
+    observed_at = models.DateTimeField()
+    recorded_at = models.DateTimeField(auto_now_add=True)
+    metrics = models.JSONField()
+    label = models.FloatField()
+    evidence = models.URLField(max_length=1000)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["prediction", "source", "external_id", "window_end"], name="unique_own_outcome")]

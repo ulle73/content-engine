@@ -22,6 +22,7 @@ def import_account(account):
             return Result("success", "Färsk hämtning finns redan.", {"last_success_at": account.last_success_at.isoformat()})
         latest = account.imports.order_by("-started_at").first()
         if latest and latest.started_at > timezone.now()-timedelta(hours=23):
+            collect_import(latest, allow_fallback=False)
             return Result("attention", "Senaste försöket behöver kontroll; ingen ny betald start inom 23 timmar.", {"import_id": latest.pk})
         run = start_import(account)
     if not run.actor_run_id:
@@ -107,3 +108,71 @@ STAGES = (
     Stage("media_cleanup", cleanup_units),
     Stage("competitor_analysis", analysis_units),
 )
+
+
+def import_ads(account):
+    from . import ads
+    state = ads.account_state(account)
+    if state.coverage == "limited":
+        return Result("attention", "Annonsurvalet nådde resultatgränsen. Sparat underlag kan användas; kontrollera täckningen i Insikter.")
+    request = ads.start(account)
+    if not request:
+        return Result("skipped", "Ingen annonskontroll behövs ännu.")
+    if request.status in ("starting", "unknown") and not request.actor_run_id:
+        return Result("attention", "Apify-starten behöver kontroll; ingen ny start görs.")
+    request = ads.collect(request, account)
+    data = {"request_id":request.pk, "actor":request.actor, "actor_run_id":request.actor_run_id,
+            "cost_usd":str(request.cost_usd) if request.cost_usd is not None else None, **request.result}
+    return Result("pending" if request.status in ("starting", "running") else
+                  ("success" if request.status == "succeeded" else "attention"),
+                  "Annonser kontrollerade; observationer sparade." if request.status == "succeeded" else "Annonskontrollen är pågående eller behöver åtgärd.", data)
+
+
+def ads_units(company):
+    from .ads import account_state
+    result = []
+    for account in company.ad_accounts.filter(active=True).select_related("sync"):
+        state = account_state(account)
+        if state.next_attempt_at and state.next_attempt_at > timezone.now() and not state.requests.filter(status__in=OPEN_STATUSES).exists():
+            # A failed dataset can be repaired/reprocessed in the UI without another paid run.
+            latest = state.requests.order_by("-created_at").first()
+            if latest and latest.status == "succeeded":
+                for step in company.daily_steps.filter(run__day=timezone.localdate(), stage="ads_import", status__in=("attention", "failed"), result__request_id=latest.pk):
+                    result.append((step.key, partial(import_ads, account)))
+            continue
+        result.append((f"{account.pk}:{state.watermark.isoformat() if state.watermark else 'first'}", partial(import_ads, account)))
+    return result
+
+
+def ads_analysis_units(company):
+    from .ads import classification_hash, classify
+    from .models import CompetitorAd
+    if not company.profile.strip() or not company.current.strip():
+        return []
+    candidates = CompetitorAd.objects.filter(account__company=company, account__active=True).order_by("-last_seen_at", "-pk")[:100]
+    units = []
+    for ad in candidates:
+        key = classification_hash(ad, company)
+        if ad.classification and ad.classification_hash == key:
+            continue
+        def work(ad=ad, key=key):
+            classify(ad, company)
+            return Result(data={"ad_id":ad.pk, "classification_hash":key})
+        units.append((f"{ad.pk}:{key}", work))
+        if len(units) >= 3:
+            break
+    return units
+
+
+def learning_units(company):
+    from .learning import dataset, train
+    from .sync import fingerprint
+    def work(channel):
+        result = train(company, channel)
+        return Result("skipped" if result["status"].startswith("insufficient") else "success",
+                      "Learning: " + result["status"], result)
+    return [(f"{channel}:{fingerprint([r.pk for r in dataset(company, channel)])}", partial(work, channel))
+            for channel in ("organic", "paid")]
+
+
+STAGES = (*STAGES, Stage("ads_import", ads_units), Stage("ads_analysis", ads_analysis_units), Stage("learning", learning_units))

@@ -36,6 +36,9 @@ class CompetitorForm(forms.ModelForm):
 @login_required
 @company_required
 def intelligence(request, workspace_id):
+    from . import ads_views
+    if request.GET.get("channel") == "paid":
+        return ads_views.intelligence(request, workspace_id)
     company = request.workspace
     editing = (
         get_object_or_404(Competitor, pk=request.GET["edit"], company=company) if request.GET.get("edit") else None
@@ -83,6 +86,7 @@ def intelligence(request, workspace_id):
             "weekly": [s for s in signals if s["age_days"] <= 7][:8],
             "references": [s for s in signals if s["age_days"] > 7 and s["relative"] and s["relative"] >= 1.5][:4],
             "patterns": recurring_patterns(signals),
+            "channel":"organic", "learning":ads_views.overview(company, "organic"),
         },
     )
 
@@ -108,21 +112,23 @@ def competitor_action(request, workspace_id, competitor_id):
 @company_required
 @require_POST
 def refresh_imports(request, workspace_id):
-    try:
-        for run in CompetitorImport.objects.filter(
+    errors = []
+    for run in CompetitorImport.objects.filter(
             competitor__company=request.workspace, status__in=OPEN_STATUSES
         ).select_related("competitor"):
+        try:
             collect_import(run)
-        pending = CompetitorImport.objects.filter(
+        except apify.ApifyError:
+            errors.append(run.pk)
+    pending = CompetitorImport.objects.filter(
             competitor__company=request.workspace, status__in=("starting", "running")
         ).exists()
+    try:
         if not pending:
             analyze_top(request.workspace)
-        return JsonResponse({"pending": pending})
-    except apify.ApifyError as exc:
-        return JsonResponse({"error": str(exc)}, status=502)
     except (ValueError, APIError):
-        return JsonResponse({"error": "Hämtningen är sparad men AI-analysen kunde inte slutföras."}, status=502)
+        errors.append("analysis")
+    return JsonResponse({"pending":pending, "partial":bool(errors), "needs_attention":errors})
 
 
 @login_required

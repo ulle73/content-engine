@@ -14,7 +14,7 @@
     </a>
     <a class="app-nav-link {% if request.resolver_match.url_name == 'intelligence' or request.resolver_match.url_name == 'analyze_signal' %}is-active{% endif %}" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}">
       <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10"></path><path d="M12 20V4"></path><path d="M19 20v-7"></path></svg>
-      <span>Konkurrens</span>
+      <span>Insikter</span>
     </a>
     <a class="app-nav-link {% if request.resolver_match.url_name == 'review' or request.resolver_match.url_name == 'media' or request.resolver_match.url_name == 'media_job' %}is-active{% endif %}" href="{% url 'engine:home' workspace_id=workspace.pk %}#create-content">
       <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14.5 7.5 2 2"></path></svg>

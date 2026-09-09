@@ -37,8 +37,9 @@ def home(request, workspace_id):
         form.save()
         messages.success(request, "Företagsunderlaget är sparat.")
         return redirect("engine:home", workspace_id=workspace_id)
-    runs = ContentRun.objects.filter(workspace=workspace).order_by("-created_at")[:10]
-    return render(request, "engine/home.html", {"form": form, "runs": runs, "workspace": workspace})
+    channel = "paid" if request.GET.get("channel") == "paid" else "organic"
+    runs = ContentRun.objects.filter(workspace=workspace, channel=channel).order_by("-created_at")[:10]
+    return render(request, "engine/home.html", {"form": form, "runs": runs, "workspace": workspace, "channel":channel})
 
 
 @login_required
@@ -46,18 +47,25 @@ def home(request, workspace_id):
 @require_POST
 def ideas(request, workspace_id):
     context = request.workspace
+    channel = "paid" if request.POST.get("channel") == "paid" else "organic"
     try:
         validate_context(context)
         from .signals import RANKER_VERSION, classify, inspiration, rank_ideas
 
         signal_id = request.POST.get("signal_id")
-        if signal_id:
+        if signal_id and channel == "paid":
+            from .ads import classify as classify_ad
+            from .models import CompetitorAd
+            signal_ad = get_object_or_404(CompetitorAd, pk=signal_id, account__company=request.workspace, account__active=True)
+            classify_ad(signal_ad, request.workspace)
+        elif signal_id:
             signal_post = get_object_or_404(
                 CompetitorPost, pk=signal_id, competitor__company=request.workspace, competitor__active=True
             )
             classify(signal_post, request.workspace)
         snapshot = {
             "company": request.workspace.name,
+            "channel":channel,
             "profile": context.profile,
             "voice": context.voice,
             "current": context.current,
@@ -66,13 +74,17 @@ def ideas(request, workspace_id):
             "captured_at": timezone.now().isoformat(),
             "recent_posts": [
                 item.get("facebook", "")
-                for item in ContentRun.objects.filter(workspace=request.workspace)
+                for item in ContentRun.objects.filter(workspace=request.workspace, channel=channel)
                 .exclude(draft={})
                 .order_by("-created_at")
                 .values_list("draft", flat=True)[:10]
             ],
         }
-        snapshot["competitor_signals"] = inspiration(request.workspace, signal_id)
+        if channel == "paid":
+            from .ads import signals
+            snapshot["competitor_signals"] = signals(request.workspace, signal_id)
+        else:
+            snapshot["competitor_signals"] = inspiration(request.workspace, signal_id)
         output = generate(snapshot)
         ranked = rank_ideas(output["ideas"], snapshot)
         new_run = ContentRun.objects.create(
@@ -81,13 +93,16 @@ def ideas(request, workspace_id):
             context=snapshot,
             ideas=ranked,
             model=settings.OPENAI_MODEL,
+            channel=channel,
         )
+        from .learning import record_predictions
+        record_predictions(new_run)
         ContentEvent.objects.create(
             run=new_run,
             action="ranked",
             data={
                 "ranker_version": RANKER_VERSION,
-                "ideas": ranked,
+                "ideas": new_run.ideas,
                 "signal_ids": [s["id"] for s in snapshot["competitor_signals"]],
             },
         )
@@ -99,7 +114,8 @@ def ideas(request, workspace_id):
             request,
             f"AI-anropet misslyckades ({getattr(exc, 'status_code', None) or 'anslutning'}). Inga nya idéer sparades.",
         )
-    return redirect("engine:home", workspace_id=workspace_id)
+    from django.urls import reverse
+    return redirect(reverse("engine:home", kwargs={"workspace_id":workspace_id})+"?channel="+channel)
 
 
 @login_required
@@ -136,7 +152,7 @@ def draft(request, workspace_id, run_id, idea_index):
                 ContentEvent.objects.create(
                     run=locked, idea_index=idea_index, action="draft_created", data={"initial_draft": output}
                 )
-        messages.success(request, "Utkastet är sparat. Granska texten, välj bild och för över till Postiz.")
+        messages.success(request, "Utkastet är sparat. Granska texten och välj media för Meta Ads Manager." if run.channel == "paid" else "Utkastet är sparat. Granska texten, välj bild och för över till Postiz.")
         return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
     except ValueError as exc:
         messages.error(request, str(exc))
@@ -208,6 +224,9 @@ def review(request, workspace_id, run_id):
             if not facebook or not instagram or len(instagram) > 2200 or len(facebook) > 63206:
                 raise ValueError("Båda texter behövs. Instagram får vara högst 2200 tecken och Facebook högst 63206.")
             run.draft.update(facebook=facebook, instagram=instagram)
+            if run.channel == "paid":
+                for key in ("headline", "description", "cta", "landing_page"):
+                    run.draft[key] = request.POST.get(key, run.draft.get(key, "")).strip()[:2000]
             with transaction.atomic():
                 current_run = ContentRun.objects.select_for_update().get(pk=run.pk)
                 if current_run.delivery_status != "draft":
@@ -223,6 +242,8 @@ def review(request, workspace_id, run_id):
                         data={"before": previous_draft, "after": run.draft},
                     )
             if action == "send":
+                if run.channel == "paid":
+                    raise ValueError("Annonsutkast publiceras inte som organiska inlägg. Använd sparad copy och media i Meta Ads Manager.")
                 validate_context(brand)
                 if run.context["valid_until"] < timezone.localdate().isoformat() or any(
                     run.context[k] != getattr(brand, k) for k in ["current", "source", "profile"]

@@ -2,11 +2,14 @@ from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
 
-from . import intelligence_views, media_views, views
+from . import ads_views, intelligence_views, media_views, views
 from .onboarding import SignInView, setup
 from .company_settings import company_settings
 
 engine_urls = [
+    path("intelligence/ads/accounts/<int:account_id>/", ads_views.account_action, name="ad_account_action"),
+    path("intelligence/ads/analyze/<int:ad_id>/", ads_views.analyze, name="ad_analyze"),
+    path("runs/<uuid:run_id>/outcome/", ads_views.outcome, name="outcome"),
     path("settings/", company_settings, name="settings"),
     path("media/<uuid:asset_id>/file/", media_views.asset_file, name="asset_file"),
     path("runs/<uuid:run_id>/media/", media_views.picker, name="media"),

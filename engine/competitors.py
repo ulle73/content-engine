@@ -104,6 +104,7 @@ def normalize(row, actor, username):
 
 
 def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
+    from .sync import dispatch, organic_plan, state_for
     with transaction.atomic():
         current = Competitor.objects.select_for_update().get(pk=competitor.pk)
         existing = current.imports.filter(status__in=OPEN_STATUSES).first()
@@ -111,31 +112,52 @@ def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
             return existing
         if not current.active:
             raise apify.ApifyError("Kontot är inaktiverat.")
-        limit = fallback_of.requested_limit if fallback_of else (100 if not current.last_success_at else 30)
+        if fallback_of:
+            previous = current.imports.filter(fallback_of=fallback_of).first()
+        else:
+            previous = current.imports.filter(started_at__gte=timezone.now()-timedelta(hours=23)).order_by("-started_at").first()
+        if previous:
+            return previous
+        state = state_for(current.company, "instagram", current.username)
+        mode, limit = organic_plan(current, state)
+        if fallback_of:
+            mode, limit = fallback_of.sync_mode, fallback_of.requested_limit
         run = CompetitorImport.objects.create(
-            competitor=current, actor=actor, fallback_of=fallback_of, requested_limit=limit
+            competitor=current, actor=actor, fallback_of=fallback_of, requested_limit=limit, sync_mode=mode
         )
     try:
-        remote = apify.start_actor(current.username, actor, limit)
+        request = dispatch(state, actor, mode, apify.instagram_input(current.username, actor, limit),
+            max_cost="0.05" if actor == apify.PRIMARY_ACTOR else "0.25",
+            sender=lambda: apify.start_actor(current.username, actor, limit))
     except apify.ApifyError as exc:
         # A POST timeout can mean the paid run did start; never automatically duplicate it.
         run.status = "unknown" if exc.uncertain else "failed"
+        run.scrape_request = state.requests.filter(actor=actor, mode=mode).order_by("-created_at").first()
         run.error = (
             "Starten kunde inte bekräftas. Kontrollera Apify och koppla körnings-id innan ett nytt försök."
             if exc.uncertain
             else str(exc)
         )
-        run.save(update_fields=["status", "error"])
+        run.save(update_fields=["status", "error", "scrape_request"])
         raise
-    run.actor_run_id = remote["id"]
-    run.dataset_id = remote["defaultDatasetId"]
-    run.status = "running"
-    run.save(update_fields=["actor_run_id", "dataset_id", "status"])
+    # A cross-entrypoint reservation is authoritative even after a process interruption.
+    run.scrape_request = request
+    run.actor_run_id = request.actor_run_id
+    run.dataset_id = request.dataset_id
+    run.status = request.status if request.status in OPEN_STATUSES else "failed"
+    run.save(update_fields=["scrape_request", "actor_run_id", "dataset_id", "status"])
     return run
 
 
 def collect_import(run, *, allow_fallback=True):
     if run.status not in OPEN_STATUSES or not run.actor_run_id:
+        if run.status not in OPEN_STATUSES and run.scrape_request_id:
+            # A web process from the previous deployment may have completed the domain import.
+            from .sync import OPEN, finish
+            if run.scrape_request.status in OPEN:
+                finish(run.scrape_request, status=run.status, cost=run.cost_usd,
+                    result={"posts":run.item_count, "skipped":run.skipped_count},
+                    observed_at=run.finished_at or timezone.now())
         return run
     remote = apify.get_run(run.actor_run_id)
     if remote["status"] in {"READY", "RUNNING", "TIMING-OUT", "ABORTING"}:
@@ -163,7 +185,7 @@ def collect_import(run, *, allow_fallback=True):
         bool(p["caption"].strip()) and any(p["metrics"][k] is not None for k in ("likes", "comments"))
         for p in normalized
     )
-    if not normalized or skipped > len(rows) * 0.2 or useful < len(normalized) * 0.7:
+    if (not normalized and (rows or report_error or not succeeded)) or skipped > len(rows) * 0.2 or useful < len(normalized) * 0.7:
         incomplete = True
     quality_warning = report_error or bool(skipped) or useful < len(normalized)
     observed_at = datetime.fromisoformat(remote["finishedAt"].replace("Z", "+00:00"))
@@ -214,6 +236,21 @@ def collect_import(run, *, allow_fallback=True):
         if not incomplete:
             updates["last_success_at"] = observed_at
         Competitor.objects.filter(pk=run.competitor_id).update(**updates)
+        if locked.scrape_request_id:
+            from .sync import finish
+            state = locked.scrape_request.state
+            finish(locked.scrape_request, status=locked.status, cost=locked.cost_usd,
+                   result={"posts":len(normalized), "skipped":skipped}, observed_at=observed_at)
+            if not incomplete:
+                newest = max((p["published_at"] for p in normalized), default=state.watermark)
+                if newest and (not state.watermark or newest > state.watermark):
+                    state.watermark = newest
+                if locked.sync_mode in ("backfill", "refresh"):
+                    state.last_refresh_at = observed_at
+                state.coverage = "bounded_recent_feed"
+                state.details = {**state.details, "limit":locked.requested_limit, "mode":locked.sync_mode,
+                                 "cursor_supported":False, "cap_reached":len(rows) >= locked.requested_limit}
+                state.save()
     if incomplete and allow_fallback and run.actor == apify.PRIMARY_ACTOR:
         start_import(run.competitor, actor=apify.FALLBACK_ACTOR, fallback_of=locked)
     return locked

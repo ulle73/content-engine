@@ -17,9 +17,10 @@
   </section>
 
   <section class="box" id="create-content">
-    <h2>Hitta nästa inlägg</h2>
+    <nav class="toolbar" aria-label="Skapa innehållstyp"><a href="?channel=organic#create-content">Organiskt</a><a href="?channel=paid#create-content">Annonser</a></nav>
+    <h2>{% if channel == 'paid' %}Hitta nästa annons{% else %}Hitta nästa inlägg{% endif %}</h2>
     <p>Tre förslag utifrån det sparade underlaget. Du väljer vilken idé som blir ett utkast.</p>
-    <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.id %}">{% csrf_token %}<button type="submit">Skapa tre idéer</button></form>
+    <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.id %}">{% csrf_token %}<input type="hidden" name="channel" value="{{ channel }}"><button type="submit">{% if channel == 'paid' %}Skapa tre annonsidéer{% else %}Skapa tre idéer{% endif %}</button></form>
     <p class="small">Det tar vanligtvis en stund att skriva. Låt sidan arbeta tills förslagen visas.</p>
   </section>
 

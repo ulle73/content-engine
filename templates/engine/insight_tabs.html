@@ -1,0 +1,4 @@
+<nav class="toolbar" aria-label="Typ av insikt">
+  <a class="{% if channel != 'paid' %}action{% else %}meta-pill{% endif %}" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}">Organiskt</a>
+  <a class="{% if channel == 'paid' %}action{% else %}meta-pill{% endif %}" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}?channel=paid">Annonser</a>
+</nav>

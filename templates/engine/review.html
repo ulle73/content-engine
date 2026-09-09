@@ -13,10 +13,13 @@
 <form method="post" enctype="multipart/form-data">{% csrf_token %}
 <label for="facebook">Facebook</label><textarea id="facebook" name="facebook" rows="7" required>{{ run.draft.facebook }}</textarea>
 <label for="instagram">Instagram</label><textarea id="instagram" name="instagram" rows="7" maxlength="2200" required>{{ run.draft.instagram }}</textarea>
+{% if run.channel == 'paid' %}<label for="headline">Annonsrubrik</label><input id="headline" name="headline" value="{{ run.draft.headline }}"><label for="description">Beskrivning</label><input id="description" name="description" value="{{ run.draft.description }}"><label for="cta">CTA</label><input id="cta" name="cta" value="{{ run.draft.cta }}"><label for="landing_page">Verifierad landningssida</label><input type="url" id="landing_page" name="landing_page" value="{{ run.draft.landing_page }}">{% endif %}
 <button name="action" value="save">Spara textändringar</button>
 <h2 style="margin-top:24px">Media och granskning</h2><p>{{ run.draft.photo_brief }}</p><ul>{% for check in run.draft.checks %}<li>{{ check }}</li>{% endfor %}</ul>
-<p class="small">Vald bild eller video överförs till Postiz när du skickar utkastet.</p>
+{% if run.channel == 'paid' %}<p>Granska annonscopy, välj media och kontrollera landningssidan innan kampanjen sätts upp i Meta Ads Manager.</p>{% if run.media_asset %}<a href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}" download>Hämta vald media</a>{% endif %}
+{% else %}<p class="small">Vald bild eller video överförs till Postiz när du skickar utkastet.</p>
 {% for channel in brand.postiz_channels %}<label><input style="width:auto" type="checkbox" name="channels" value="{{ channel.id }}"> {{ channel.name }} · {{ channel.identifier }}</label>{% empty %}<p><a href="{% url 'engine:connect' workspace_id=workspace.id %}">Anslut företagets Postiz-kanaler först.</a></p>{% endfor %}
 <label><input style="width:auto" type="checkbox" name="reviewed"> Jag har kontrollerat uppgifterna och har rätt att använda vald media.</label>
 <button name="action" value="send">Skicka utkast till Postiz</button><p class="small">Detta skapar ett utkast. Slutligt godkännande och schemaläggning görs i Postiz.</p>
-</form>{% endif %}</section></main>{% endblock %}
+{% endif %}</form>{% endif %}
+<p><a href="{% url 'engine:outcome' workspace_id=workspace.pk run_id=run.pk %}">Registrera verkligt sjudygnsresultat för learning</a></p></section></main>{% endblock %}

@@ -4,11 +4,13 @@
 <main class="engine intelligence-page">
   <header class="page-header">
     <div class="page-heading">
-      <h1>Konkurrenssignaler</h1>
+      <h1>Insikter</h1>
       <p class="intro">Inlägg som presterar ovanligt bra hos dina konkurrenter – och vad vi kan lära oss av dem.</p>
     </div>
     <span class="meta-pill">Senaste veckan</span>
   </header>
+  {% include 'engine/insight_tabs.html' %}
+  {% include 'engine/learning_panel.html' %}
 
   {% if pending %}
     <p id="import-status" class="notice" role="status">Apify hämtar. Resultatet visas här när körningen är kontrollerad.</p>
@@ -97,7 +99,7 @@
 
       <h2 style="margin-top:24px">{% if editing %}Redigera konto{% else %}Lägg till konto{% endif %}</h2>
       <form method="post">{% csrf_token %}{% if editing %}<input type="hidden" name="competitor_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>{% if editing %}Spara{% else %}Lägg till och hämta historik{% endif %}</button></form>
-      <p class="small">Första hämtningen begär upp till 100 poster, följande upp till 30. Kostnadstak 0,25 USD per Actor-körning. Bilder och videofiler sparas inte i appen.</p>
+      <p class="small">En begränsad första historikhämtning: högst 100 poster. Daglig discovery hämtar de senaste 10; högst veckovis kontrolleras 30 för äldre mätvärden. Actorn saknar datumfilter/cursor, så ett litet överlapp behövs. Kostnadstak: 0,05 USD primär / 0,25 USD reserv, inom företagets gemensamma dygnsbudget (standard 1 USD). Bilder och videofiler sparas inte i appen.</p>
     </section>
 
     <details class="box compact">

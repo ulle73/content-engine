@@ -1,0 +1,3 @@
+{% extends 'base.html' %}{% block content %}<main class="engine"><section class="box"><h1>Registrera verkligt resultat</h1><p>{{ run.title }} · {{ run.get_channel_display }}</p>
+<p>Använd företagets egen resultatrapport för exakt de första sju dygnen. Lämna okända fält tomma. {% if run.channel == 'paid' %}Paid lär på klick per 1 000 impressions; det är inte samma sak som lönsamhet.{% else %}Organic lär på likes + kommentarer per 1 000 impressions.{% endif %}</p>
+<form method="post">{% csrf_token %}{{ form.as_p }}<button>Spara eget resultat</button></form><a href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">Tillbaka till innehållet</a></section></main>{% endblock %}

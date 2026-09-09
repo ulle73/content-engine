@@ -195,6 +195,15 @@ def classify(post, company):
         return post.classification
     if not post.caption.strip():
         return {}
+    from .sync import analysis
+    result = analysis(company, ["organic", fingerprint], settings.OPENAI_MODEL, lambda: _classify(post, company))
+    CompetitorPost.objects.filter(pk=post.pk).update(
+        classification=result, classification_hash=fingerprint, classified_at=timezone.now(), classifier_model=settings.OPENAI_MODEL)
+    post.classification, post.classification_hash = result, fingerprint
+    return result
+
+
+def _classify(post, company):
     with OpenAI(timeout=60, max_retries=0) as client:
         response = client.responses.parse(
             model=settings.OPENAI_MODEL,
@@ -221,15 +230,7 @@ Statistik i vår nya vinkel får bara föreslås som något att samla in, om ing
         )
     if response.output_parsed is None:
         raise ValueError("Analysen gav inget färdigt resultat.")
-    result = response.output_parsed.model_dump()
-    CompetitorPost.objects.filter(pk=post.pk).update(
-        classification=result,
-        classification_hash=fingerprint,
-        classified_at=timezone.now(),
-        classifier_model=settings.OPENAI_MODEL,
-    )
-    post.classification, post.classification_hash = result, fingerprint
-    return result
+    return response.output_parsed.model_dump()
 
 
 def analysis_candidates(company, limit=3):
