@@ -196,7 +196,8 @@ def classify(post, company):
     if not post.caption.strip():
         return {}
     from .sync import analysis
-    result = analysis(company, ["organic", fingerprint], settings.OPENAI_MODEL, lambda: _classify(post, company))
+    origin = post.snapshots.order_by("-observed_at").values_list("import_run__scrape_request_id",flat=True).first()
+    result = analysis(company, ["organic", fingerprint], settings.OPENAI_MODEL, lambda: _classify(post, company), scrape_request_id=origin)
     CompetitorPost.objects.filter(pk=post.pk).update(
         classification=result, classification_hash=fingerprint, classified_at=timezone.now(), classifier_model=settings.OPENAI_MODEL)
     post.classification, post.classification_hash = result, fingerprint

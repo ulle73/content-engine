@@ -11,9 +11,9 @@ from django.utils import timezone
 
 from .models import ContentEvent, ContentRun, LearningModel, OwnOutcome, Prediction
 from .sync import fingerprint
+from .learning_targets import DEFAULTS as TARGETS, actual, available_paid, spec
 
 FEATURE_VERSION = "idea-features-v1"
-TARGETS = {"organic":"interactions_per_1000_impressions_7d", "paid":"clicks_per_1000_impressions_7d"}
 NUMERIC = ("profile_relevance", "current_relevance", "own_current_facts", "signal_score", "signal_confidence",
            "signal_relative", "has_signal", "format_video", "format_carousel", "is_instruction", "is_question")
 
@@ -42,91 +42,105 @@ def record_predictions(run):
     """Freeze forecasts before user choice or publication; shadow does not change ranking."""
     channel = run.channel
     production = LearningModel.objects.filter(company=run.workspace, channel=channel, mode="production").order_by("-trained_at").first()
-    shadow = LearningModel.objects.filter(company=run.workspace, channel=channel, mode="shadow").order_by("-trained_at").first()
-    models = [m for m in (production, shadow) if m] or [None]
+    shadows = list(LearningModel.objects.filter(company=run.workspace, channel=channel, mode="shadow").order_by("-trained_at"))
+    models = ([production] if production else []) + shadows or [None]
     rows = [(idea, features(idea, run.context)) for idea in run.ideas]
     if production:
-        rows.sort(key=lambda row: -predict(production, row[1]["numeric"]))
+        direction = -1 if spec(production.target)[3] else 1
+        rows.sort(key=lambda row: direction*predict(production, row[1]["numeric"]))
     with transaction.atomic():
         ContentRun.objects.select_for_update().get(pk=run.pk)
         if run.predictions.exists():
             return
         for index, (idea, data) in enumerate(rows):
-            idea["learning"] = {"mode":"production" if production else "shadow", "target":TARGETS[channel],
+            idea["learning"] = {"mode":"production" if production else "shadow", "target":production.target if production else TARGETS[channel],
                                 "model_version":production.version if production else "heuristic-only"}
             for model in models:
                 Prediction.objects.create(run=run, idea_index=index, channel=channel, features=data,
                     feature_version=FEATURE_VERSION, model=model, model_version=model.version if model else "heuristic-only",
-                    target=TARGETS[channel], value=predict(model, data["numeric"]) if model else None,
+                    target=model.target if model else TARGETS[channel], value=predict(model, data["numeric"]) if model else None,
                     mode=model.mode if model else "shadow")
         run.ideas = [row[0] for row in rows]
         run.save(update_fields=["ideas"])
 
 
-def record_outcome(run, *, source, external_id, published_at, window_end, observed_at, metrics, evidence):
+def record_outcome(run, *, source, external_id, published_at, window_end, observed_at, metrics, evidence, target=None, platform="", snapshot=None):
     from .ads import safe_url
     if run.selected is None:
         raise ValueError("Välj ett verkligt producerat innehåll före resultatregistrering.")
-    if source not in ("meta_export", "postiz_export", "manual_verified") or not external_id.strip() or not safe_url(evidence):
+    if source not in ("meta_export", "postiz_export", "manual_verified", "postiz_api") or not isinstance(external_id,str) or not external_id.strip() or not safe_url(evidence):
         raise ValueError("Ange källa, verkligt post-/annons-id och en spårbar resultatlänk.")
     if any(timezone.is_naive(t) for t in (published_at, window_end, observed_at)):
         raise ValueError("Resultattider måste ha tidszon.")
-    if window_end != published_at+timedelta(days=7) or not window_end <= observed_at <= timezone.now()+timedelta(minutes=5):
+    auto = source == "postiz_api"
+    if auto and (not snapshot or snapshot.post.run_id != run.pk or snapshot.post.company_id != run.workspace_id or snapshot.metrics != metrics or snapshot.observed_at != window_end):
+        raise ValueError("Automatiskt resultat kräver en riktig matchad snapshot.")
+    valid_window = published_at+timedelta(days=7) <= window_end < published_at+timedelta(days=8) if auto else window_end == published_at+timedelta(days=7)
+    if not valid_window or not window_end <= observed_at <= timezone.now()+timedelta(minutes=5):
         raise ValueError("Resultatet ska avse exakt de första sju dygnen och vara observerat efter fönstrets slut.")
-    required = ("impressions", "likes", "comments") if run.channel == "organic" else ("impressions", "clicks")
-    allowed = {"impressions", "likes", "comments", "clicks", "conversions", "spend", "revenue"}
-    if not isinstance(metrics, dict) or not set(required).issubset(metrics) or not set(metrics).issubset(allowed):
+    allowed = {"impressions", "likes", "comments", "clicks", "conversions", "spend", "revenue", "currency", "views", "reach", "reactions", "saves", "shares"}
+    if not isinstance(metrics, dict) or not set(metrics).issubset(allowed):
         raise ValueError("Saknade resultat får inte ersättas med noll. Ange mätta impressions och likes/kommentarer eller klick.")
     for key, value in metrics.items():
+        if key == "currency":
+            import re
+            if not isinstance(value,str) or not re.fullmatch(r"[A-Z]{3}",value):
+                raise ValueError("Ange en valutakod med tre versaler.")
+            continue
         if isinstance(value, bool) or not isinstance(value, (float, int)) or not math.isfinite(value) or value < 0:
             raise ValueError("Resultat måste vara ändliga, icke-negativa mätvärden.")
         if key not in ("spend", "revenue") and int(value) != value:
             raise ValueError("Antal måste vara heltal.")
-    if metrics["impressions"] <= 0:
-        raise ValueError("Minst en mätt impression behövs för den valda labeln.")
-    numerator = metrics["likes"]+metrics["comments"] if run.channel == "organic" else metrics["clicks"]
-    label = 1000*numerator/metrics["impressions"]
+    target = target or (next(iter(available_paid(metrics)),TARGETS["paid"]) if run.channel == "paid" else TARGETS["organic"])
+    if spec(target)[4] != run.channel or ("7to8d" in target) != auto:
+        raise ValueError("Målets kanal och tidsfönster måste matcha resultatkällan.")
+    label = actual(target,metrics)
     with transaction.atomic():
         # Serialize own outcomes by company; one external object cannot label multiple ideas.
         from .models import Company
         Company.objects.select_for_update().get(pk=run.workspace_id)
-        prediction = run.predictions.filter(idea_index=run.selected, created_at__lte=published_at,
-            channel=run.channel, feature_version=FEATURE_VERSION).order_by("created_at", "pk").first()
+        predictions = run.predictions.filter(idea_index=run.selected, created_at__lte=published_at,
+            channel=run.channel, feature_version=FEATURE_VERSION).order_by("created_at", "pk")
+        prediction = predictions.filter(target=target).first() or predictions.first()
         if not prediction:
             raise ValueError("Det saknas en fryst prediction från före publiceringen. Retroaktivt skapade features används inte för ML.")
         existing = OwnOutcome.objects.filter(prediction__run__workspace_id=run.workspace_id,
-            prediction__channel=run.channel, external_id=external_id.strip(), window_end=window_end).first()
+            prediction__channel=run.channel, external_id=external_id.strip(), target=target, window_end=window_end).first()
         if existing:
             if existing.prediction.run_id != run.pk or existing.metrics != metrics or existing.published_at != published_at:
                 raise ValueError("Resultatet finns redan med annat innehåll eller andra mätvärden; skriv inte över historiska labels.")
             return existing
-        if OwnOutcome.objects.filter(prediction__run=run).exists():
+        if OwnOutcome.objects.filter(prediction__run=run,target=target,platform=platform).exists():
             raise ValueError("Det finns redan ett sjudygnsresultat för detta innehåll. Skapa inte dubbla träningslabels.")
         outcome = OwnOutcome.objects.create(prediction=prediction, source=source, external_id=external_id.strip(),
-            published_at=published_at, window_end=window_end, observed_at=observed_at, metrics=metrics, label=label, evidence=evidence)
+            published_at=published_at, window_end=window_end, observed_at=observed_at, metrics=metrics, label=label, evidence=evidence,
+            target=target,platform=platform,snapshot=snapshot)
         ContentEvent.objects.create(run=run, idea_index=run.selected, action="own_outcome",
-            data={"outcome_id":outcome.pk, "channel":run.channel, "target":prediction.target, "source":source,
+            data={"outcome_id":outcome.pk, "channel":run.channel, "target":target, "source":source,
                   "draft_hash":fingerprint(run.draft), "media_asset_id":str(run.media_asset_id) if run.media_asset_id else None})
         return outcome
 
 
-def dataset(company, channel, cutoff=None):
+def dataset(company, channel, cutoff=None, target=None):
     cutoff = cutoff or timezone.now()
     return list(OwnOutcome.objects.filter(prediction__run__workspace=company, prediction__channel=channel,
-        prediction__feature_version=FEATURE_VERSION, prediction__target=TARGETS[channel], recorded_at__lte=cutoff,
+        prediction__feature_version=FEATURE_VERSION, target=target or TARGETS[channel], recorded_at__lte=cutoff,
         observed_at__lte=cutoff, window_end__lte=cutoff).select_related("prediction").order_by("prediction__created_at", "pk"))
 
 
-def train(company, channel):
+def train(company, channel, target=None):
     import numpy as np
     from sklearn.linear_model import Ridge
     from sklearn.preprocessing import StandardScaler
 
     cutoff = timezone.now()
-    rows = dataset(company, channel, cutoff)
+    target = target or TARGETS[channel]
+    if spec(target)[4] != channel:
+        raise ValueError("Fel kanal för learning-målet.")
+    rows = dataset(company, channel, cutoff, target)
     if len(rows) < 80:
         return {"status":"insufficient", "labels":len(rows), "required":80, "channel":channel}
-    candidate = LearningModel.objects.filter(company=company, channel=channel, mode="shadow").order_by("-trained_at").first()
+    candidate = LearningModel.objects.filter(company=company, channel=channel, target=target, mode="shadow").order_by("-trained_at").first()
     if candidate:
         shadow = shadow_evaluation(candidate)
         if shadow["count"] < 20 or shadow["eligible"]:
@@ -134,7 +148,7 @@ def train(company, channel):
             return {"status":"cached", "model_version":candidate.version, "mode":"shadow", "shadow":shadow}
         candidate.mode = "rejected"
         candidate.save(update_fields=["mode"])
-    version = fingerprint(["ridge-v1", channel, FEATURE_VERSION, [(r.pk,r.label) for r in rows]])
+    version = fingerprint(["ridge-v2", channel, target, FEATURE_VERSION, [(r.pk,r.label) for r in rows]])
     existing = LearningModel.objects.filter(company=company, channel=channel, version=version).first()
     if existing:
         return {"status":"cached", "model_version":version, "mode":existing.mode}
@@ -156,17 +170,17 @@ def train(company, channel):
                   "improvement":1-mae/baseline_mae if baseline_mae > 0 else 0,
                   "holdout_after":boundary.isoformat(), "train_outcome_ids":[r.pk for r in training],
                   "test_outcome_ids":[r.pk for r in holdout], "baseline":baseline,
-                  "target":TARGETS[channel], "split":"chronological_purged", "causal_claim":False}
+                  "target":target, "split":"chronological_purged", "causal_claim":False}
     artifact = {"coefficients":model.coef_.tolist(), "intercept":float(model.intercept_),
                 "mean":scaler.mean_.tolist(), "scale":scaler.scale_.tolist(), "features":list(NUMERIC),
                 "feature_version":FEATURE_VERSION, "algorithm":"sklearn.Ridge(alpha=10)"}
     instance, _ = LearningModel.objects.get_or_create(company=company, channel=channel, version=version,
-        defaults={"target":TARGETS[channel], "training_cutoff":cutoff, "artifact":artifact, "evaluation":evaluation})
+        defaults={"target":target, "training_cutoff":cutoff, "artifact":artifact, "evaluation":evaluation})
     return {"status":"trained", "model_version":version, "mode":instance.mode, "evaluation":evaluation}
 
 
 def shadow_evaluation(model):
-    outcomes = {r.prediction.run_id:r for r in dataset(model.company, model.channel)}
+    outcomes = {r.prediction.run_id:r for r in dataset(model.company, model.channel,target=model.target)}
     pairs = [(p, outcomes[p.run_id]) for p in Prediction.objects.filter(model=model, mode="shadow").select_related("run")
              if p.run_id in outcomes and p.idea_index == p.run.selected and p.created_at <= outcomes[p.run_id].published_at
              and p.value is not None]

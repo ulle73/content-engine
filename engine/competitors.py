@@ -120,15 +120,25 @@ def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
             return previous
         state = state_for(current.company, "instagram", current.username)
         mode, limit = organic_plan(current, state)
+        from .scraper_efficiency import discovery_due
+        if not fallback_of and mode == "discovery" and not discovery_due(state):
+            previous = current.imports.order_by("-started_at").first()
+            if previous:
+                return previous
         if fallback_of:
             mode, limit = fallback_of.sync_mode, fallback_of.requested_limit
         run = CompetitorImport.objects.create(
             competitor=current, actor=actor, fallback_of=fallback_of, requested_limit=limit, sync_mode=mode
         )
     try:
-        request = dispatch(state, actor, mode, apify.instagram_input(current.username, actor, limit),
+        inputs = apify.instagram_input(current.username, actor, limit)
+        if actor == apify.FALLBACK_ACTOR:
+            inputs["dataDetailLevel"] = "basicData"
+            if mode == "discovery" and state.watermark:
+                inputs.update(onlyPostsNewerThan=(state.watermark-timedelta(days=2)).isoformat(), skipPinnedPosts=True)
+        request = dispatch(state, actor, mode, inputs,
             max_cost="0.05" if actor == apify.PRIMARY_ACTOR else "0.25",
-            sender=lambda: apify.start_actor(current.username, actor, limit))
+            sender=lambda: apify.start_actor(current.username, actor, limit, inputs=inputs))
     except apify.ApifyError as exc:
         # A POST timeout can mean the paid run did start; never automatically duplicate it.
         run.status = "unknown" if exc.uncertain else "failed"
@@ -194,6 +204,15 @@ def collect_import(run, *, allow_fallback=True):
         if locked.status not in OPEN_STATUSES:
             return locked
         normalized = list({item["shortcode"]: item for item in normalized}.values())
+        from .sync import fingerprint
+        before, after = {}, {}
+        for post in CompetitorPost.objects.filter(competitor=run.competitor,shortcode__in=[i["shortcode"] for i in normalized]).prefetch_related("snapshots"):
+            snapshot = max(post.snapshots.all(), key=lambda s:(s.observed_at,s.pk), default=None)
+            before[post.shortcode] = fingerprint([post.caption,post.format,post.duration_seconds,post.slide_count,
+                *([getattr(snapshot,k) for k in ("likes","comments","views","view_metric")] if snapshot else [None]*4)])
+        for item in normalized:
+            after[item["shortcode"]] = fingerprint([item["caption"],item["format"],item["duration_seconds"],item["slide_count"],
+                *[item["metrics"][k] for k in ("likes","comments","views","view_metric")]])
         if normalized:
             posts = CompetitorPost.objects.bulk_create(
                 [
@@ -251,6 +270,9 @@ def collect_import(run, *, allow_fallback=True):
                 state.details = {**state.details, "limit":locked.requested_limit, "mode":locked.sync_mode,
                                  "cursor_supported":False, "cap_reached":len(rows) >= locked.requested_limit}
                 state.save()
+            from .scraper_efficiency import record_yield
+            record_yield(locked.scrape_request, returned=len(rows),before=before,after=after,complete=not incomplete,
+                capabilities={"date_filter":locked.actor==apify.FALLBACK_ACTOR,"cursor":False,"duplicates_possible":True})
     if incomplete and allow_fallback and run.actor == apify.PRIMARY_ACTOR:
         start_import(run.competitor, actor=apify.FALLBACK_ACTOR, fallback_of=locked)
     return locked

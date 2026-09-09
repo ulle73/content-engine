@@ -1,6 +1,6 @@
 <section class="box"><h2>Learning · {% if learning.channel == 'paid' %}Paid{% else %}Organic{% endif %}</h2>
 <p>{{ learning.labels }} egna sjudygnsresultat · {{ learning.predictions }} innehåll med frysta features.</p>
-{% if learning.model %}<p>Modelläge: {{ learning.model.mode }}. Tidsdelad utvärdering: {{ learning.model.evaluation.test }} resultat.</p>
+{% if learning.model %}<p>Modelläge: {{ learning.model.mode }}. Mål: {{ learning.model.target }}. Tidsdelad utvärdering: {{ learning.model.evaluation.test }} resultat.</p>
 <details><summary>Modell och utvärdering</summary><p>{{ learning.model.version }}</p><p>MAE {{ learning.model.evaluation.mae|floatformat:2 }} · enkel baseline {{ learning.model.evaluation.baseline_mae|floatformat:2 }}</p></details>
-{% else %}<p>Samlar underlag. Minst 80 egna resultat och tillräcklig tidsmässig historik behövs före första träningen. Konkurrentannonser och redaktörens val används aldrig som prestationslabels.</p>{% endif %}
+{% else %}<p>Samlar underlag. Minst 80 egna resultat för samma mål och tillräcklig tidsmässig historik behövs före första träningen. Konkurrentannonser och redaktörens val används aldrig som prestationslabels.</p>{% endif %}
 <p class="small">Nya modeller körs i shadow och ändrar inte rekommendationerna. Registrera verkligt resultat från ett sparat innehåll efter de första sju dygnen.</p></section>

@@ -5,8 +5,10 @@ from django.urls import include, path
 from . import ads_views, intelligence_views, media_views, views
 from .onboarding import SignInView, setup
 from .company_settings import company_settings
+from .performance_views import performance
 
 engine_urls = [
+    path("intelligence/own/",performance,name="own_performance"),
     path("intelligence/ads/accounts/<int:account_id>/", ads_views.account_action, name="ad_account_action"),
     path("intelligence/ads/analyze/<int:ad_id>/", ads_views.analyze, name="ad_analyze"),
     path("runs/<uuid:run_id>/outcome/", ads_views.outcome, name="outcome"),

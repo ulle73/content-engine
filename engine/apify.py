@@ -65,9 +65,9 @@ def instagram_input(username, actor, limit):
     )
 
 
-def start_actor(username, actor=PRIMARY_ACTOR, limit=100):
+def start_actor(username, actor=PRIMARY_ACTOR, limit=100, *, inputs=None):
     return api(
-        "POST", f"/acts/{actor.replace('/', '~')}/runs", json=instagram_input(username, actor, limit),
+        "POST", f"/acts/{actor.replace('/', '~')}/runs", json=inputs if inputs is not None else instagram_input(username, actor, limit),
         params={"timeout": 300, "maxTotalChargeUsd": 0.05 if actor == PRIMARY_ACTOR else 0.25}
     )["data"]
 

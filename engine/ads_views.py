@@ -151,10 +151,14 @@ class OutcomeForm(forms.Form):
     published_at = forms.DateTimeField(label="Publiceringstid", widget=forms.DateTimeInput(attrs={"type":"datetime-local"}))
     window_end = forms.DateTimeField(label="Mätfönstrets slut (exakt sju dygn senare)", widget=forms.DateTimeInput(attrs={"type":"datetime-local"}))
     observed_at = forms.DateTimeField(label="När resultatet lästes av", widget=forms.DateTimeInput(attrs={"type":"datetime-local"}))
-    impressions = forms.IntegerField(label="Impressions under de första sju dygnen", min_value=1)
+    impressions = forms.IntegerField(label="Impressions under de första sju dygnen", min_value=1, required=False)
     likes = forms.IntegerField(label="Likes under samma fönster", min_value=0, required=False)
     comments = forms.IntegerField(label="Kommentarer under samma fönster", min_value=0, required=False)
     clicks = forms.IntegerField(label="Klick under samma fönster", min_value=0, required=False)
+    conversions = forms.IntegerField(label="Verifierade konverteringar",min_value=0,required=False)
+    spend = forms.FloatField(label="Verklig annonskostnad",min_value=0,required=False)
+    revenue = forms.FloatField(label="Verifierad attribuerad intäkt",min_value=0,required=False)
+    currency = forms.ChoiceField(label="Valuta för kostnad/intäkt",required=False,choices=[("","Ej tillämpligt"),("SEK","SEK"),("EUR","EUR"),("USD","USD")])
 
 
 @login_required
@@ -165,9 +169,9 @@ def outcome(request, workspace_id, run_id):
     form = OutcomeForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         values = form.cleaned_data.copy()
-        metrics = {key:values.pop(key) for key in ("impressions", "likes", "comments", "clicks")}
+        metrics = {key:values.pop(key) for key in ("impressions", "likes", "comments", "clicks", "conversions", "spend", "revenue", "currency")}
         try:
-            record_outcome(run, **values, metrics={k:v for k,v in metrics.items() if v is not None})
+            record_outcome(run, **values, metrics={k:v for k,v in metrics.items() if v is not None and v!=""})
             messages.success(request, "Det verkliga resultatet är sparat i rätt learning-spår.")
             return redirect("engine:review", workspace_id=workspace_id, run_id=run_id)
         except ValueError as exc:

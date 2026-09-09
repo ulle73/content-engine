@@ -1,4 +1,4 @@
 <nav class="toolbar" aria-label="Typ av insikt">
-  <a class="{% if channel != 'paid' %}action{% else %}meta-pill{% endif %}" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}">Organiskt</a>
+  <a class="{% if channel != 'paid' and channel != 'own' %}action{% else %}meta-pill{% endif %}" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}">Organiskt</a>
   <a class="{% if channel == 'paid' %}action{% else %}meta-pill{% endif %}" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}?channel=paid">Annonser</a>
-</nav>
+<a href="{% url 'engine:own_performance' workspace_id=workspace.pk %}"{% if channel == 'own' %} aria-current="page"{% endif %}>Egna resultat</a></nav>

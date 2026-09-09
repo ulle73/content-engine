@@ -255,6 +255,7 @@ class ScrapeRequest(models.Model):
 
 
 class AnalysisMemo(models.Model):
+    scrape_request = models.ForeignKey(ScrapeRequest, null=True, on_delete=models.PROTECT, related_name="analysis_memos")
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     key = models.CharField(max_length=64)
     status = models.CharField(max_length=20, default="started")
@@ -342,6 +343,9 @@ class Prediction(models.Model):
 
 
 class OwnOutcome(models.Model):
+    target = models.CharField(max_length=100, blank=True)
+    platform = models.CharField(max_length=30, blank=True)
+    snapshot = models.ForeignKey("OwnSnapshot", null=True, on_delete=models.PROTECT)
     prediction = models.ForeignKey(Prediction, on_delete=models.PROTECT, related_name="outcomes")
     source = models.CharField(max_length=60)
     external_id = models.CharField(max_length=200)
@@ -354,4 +358,39 @@ class OwnOutcome(models.Model):
     evidence = models.URLField(max_length=1000)
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["prediction", "source", "external_id", "window_end"], name="unique_own_outcome")]
+        constraints = [models.UniqueConstraint(fields=["prediction", "source", "target", "external_id", "window_end"], name="unique_own_outcome_target")]
+
+
+class OwnPost(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="own_posts")
+    postiz_id = models.CharField(max_length=100)
+    integration_id = models.CharField(max_length=100)
+    release_id = models.CharField(max_length=200, blank=True)
+    platform = models.CharField(max_length=30)
+    format = models.CharField(max_length=30, default="unknown")
+    caption = models.TextField(blank=True)
+    url = models.URLField(max_length=2000, blank=True)
+    published_at = models.DateTimeField()
+    run = models.ForeignKey(ContentRun, null=True, on_delete=models.PROTECT, related_name="own_posts")
+    next_check_at = models.DateTimeField(null=True)
+    finalized_at = models.DateTimeField(null=True)
+    attempts = models.PositiveIntegerField(default=0)
+    last_error = models.CharField(max_length=500, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company","integration_id","postiz_id"], name="unique_own_post"),
+            models.UniqueConstraint(fields=["company","integration_id","release_id"],condition=~models.Q(release_id=""),name="unique_own_release")]
+
+
+class OwnSnapshot(models.Model):
+    post = models.ForeignKey(OwnPost, on_delete=models.CASCADE, related_name="snapshots")
+    observed_at = models.DateTimeField()
+    source_day = models.DateField()
+    metrics = models.JSONField()
+    raw = models.JSONField()
+    contract = models.CharField(max_length=60, default="postiz-current-totals-v1")
+    checkpoint = models.CharField(max_length=10, default="daily")
+    baseline = models.JSONField(default=dict)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["post","source_day","contract","checkpoint"],name="unique_own_snapshot_checkpoint")]

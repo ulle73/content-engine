@@ -67,10 +67,13 @@ def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None):
 
 
 def finish(request, *, status, cost, result, observed_at):
+    existing = ScrapeRequest.objects.get(pk=request.pk).result
+    if existing.get("yield"):
+        result = {**result,"yield":existing["yield"]}
     ScrapeRequest.objects.filter(pk=request.pk).update(status=status, cost_usd=cost, result=result, finished_at=observed_at)
 
 
-def analysis(company, key, model, work):
+def analysis(company, key, model, work, *, scrape_request_id=None):
     """Cross-entrypoint deduplication; uncertain paid analysis requires explicit review.
 
     Max 12 new classifications/company/day, including manual clicks. Cache hits are free.
@@ -94,7 +97,7 @@ def analysis(company, key, model, work):
         if today.exclude(pk=memo.pk if memo else None).count() >= limit:
             raise ValueError("Dagens gräns för nya AI-analyser är nådd. Sparade analyser går fortfarande att använda.")
         if not memo:
-            memo = AnalysisMemo.objects.create(company=company, key=key, model=model, last_attempt_at=timezone.now())
+            memo = AnalysisMemo.objects.create(company=company, key=key, model=model, last_attempt_at=timezone.now(), scrape_request_id=scrape_request_id)
     try:
         result = work()
     except Exception as exc:
@@ -128,4 +131,5 @@ def organic_plan(account, state):
         return "backfill", 100
     if refresh_due(state, now):
         return "refresh", 30
-    return "discovery", 10
+    from .scraper_efficiency import discovery_limit
+    return "discovery", discovery_limit(state)

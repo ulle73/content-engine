@@ -62,8 +62,11 @@ def start(account):
     elif state.watermark and refresh_due(state, now):
         mode, since, limit = "refresh", now.date()-timedelta(days=90), 30
     else:
+        from .scraper_efficiency import discovery_due, discovery_limit
+        if not discovery_due(state, now):
+            return state.requests.order_by("-created_at").first()
         # A failed initial backfill must not cause another 30-day query.
-        mode, since, limit = "discovery", (state.watermark or now-timedelta(days=2)).date()-timedelta(days=2), 20
+        mode, since, limit = "discovery", (state.watermark or now-timedelta(days=2)).date()-timedelta(days=2), discovery_limit(state)
     until = now.date()
     if mode == "refresh":
         until = min(until, state.watermark.date()-timedelta(days=2))
@@ -137,12 +140,17 @@ def collect(request, account, *, reprocess=False):
     complete = remote["status"] == "SUCCEEDED" and not skipped and not capped and bool(account.page_id)
     with transaction.atomic():
         locked = type(request).objects.select_for_update().get(pk=request.pk)
+        legacy_replay = reprocess and locked.status not in OPEN and not locked.result.get("yield")
         if locked.status not in OPEN and not reprocess:
             return locked
         created, changed = 0, 0
+        before, after = {}, {}
         for item in {i["external_id"]:i for i in valid}.values():
             ad, new = CompetitorAd.objects.get_or_create(account=account, external_id=item["external_id"],
                 defaults={**item, "first_seen_at":observed, "last_seen_at":observed})
+            if not new:
+                before[item["external_id"]] = fingerprint([ad.creative_hash, ad.is_active, ad.start_date, ad.end_date])
+            after[item["external_id"]] = fingerprint([item["creative_hash"],item["is_active"],item["start_date"],item["end_date"]])
             created += int(new)
             changed += int(not new and observed >= ad.last_seen_at and ad.creative_hash != item["creative_hash"])
             if observed >= ad.last_seen_at:
@@ -173,6 +181,10 @@ def collect(request, account, *, reprocess=False):
         state.details = {**state.details, "last_observed_at":observed.isoformat(), "last_request":locked.pk, "mode":locked.mode, "skipped":skipped, "capped":capped,
                          "excluded_other_advertisers":excluded, "advertiser_page_ids":sorted(owners)}
         state.save()
+        from .scraper_efficiency import record_yield
+        if not legacy_replay:
+            record_yield(locked, returned=len(rows), before=before, after=after, complete=complete,
+                         capabilities={"date_filter":"delivery_date", "cursor":False, "duplicates_possible":True})
     request.refresh_from_db()
     return request
 
@@ -211,7 +223,8 @@ Föreslå en originell vinkel för vårt företag med endast våra verifierade f
         if not response.output_parsed:
             raise ValueError("Ingen färdig analys.")
         return response.output_parsed.model_dump()
-    result = analysis(company, ["paid", key], settings.OPENAI_MODEL, work)
+    origin = ad.observations.order_by("-observed_at").values_list("request_id",flat=True).first()
+    result = analysis(company, ["paid", key], settings.OPENAI_MODEL, work, scrape_request_id=origin)
     CompetitorAd.objects.filter(pk=ad.pk).update(classification=result, classification_hash=key)
     ad.classification, ad.classification_hash = result, key
     return result

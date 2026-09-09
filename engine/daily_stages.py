@@ -41,6 +41,11 @@ def import_account(account):
 def competitor_units(company):
     units = []
     for account in Competitor.objects.filter(company=company, active=True):
+        from .sync import state_for, refresh_due
+        from .scraper_efficiency import discovery_due
+        state = state_for(company,"instagram",account.username)
+        if not discovery_due(state) and not refresh_due(state,timezone.now()) and not account.imports.filter(status__in=OPEN_STATUSES).exists():
+            continue
         if account.last_success_at and account.last_success_at > timezone.now()-timedelta(hours=23) and not account.imports.filter(status__in=OPEN_STATUSES).exists():
             continue
         # A manual early check must not mark a later-due refresh done for the entire day.
@@ -133,6 +138,10 @@ def ads_units(company):
     result = []
     for account in company.ad_accounts.filter(active=True).select_related("sync"):
         state = account_state(account)
+        from .scraper_efficiency import discovery_due
+        from .sync import refresh_due
+        if not discovery_due(state) and not refresh_due(state,timezone.now()) and not state.requests.filter(status__in=OPEN_STATUSES).exists():
+            continue
         if state.next_attempt_at and state.next_attempt_at > timezone.now() and not state.requests.filter(status__in=OPEN_STATUSES).exists():
             # A failed dataset can be repaired/reprocessed in the UI without another paid run.
             latest = state.requests.order_by("-created_at").first()
@@ -165,14 +174,53 @@ def ads_analysis_units(company):
 
 
 def learning_units(company):
-    from .learning import dataset, train
+    from .learning import dataset, train, TARGETS
+    from .models import OwnOutcome
     from .sync import fingerprint
-    def work(channel):
-        result = train(company, channel)
+    def work(channel,target):
+        result = train(company, channel,target)
         return Result("skipped" if result["status"].startswith("insufficient") else "success",
                       "Learning: " + result["status"], result)
-    return [(f"{channel}:{fingerprint([r.pk for r in dataset(company, channel)])}", partial(work, channel))
-            for channel in ("organic", "paid")]
+    result=[]
+    for channel in ("organic","paid"):
+        targets={TARGETS[channel],*OwnOutcome.objects.filter(prediction__run__workspace=company,prediction__channel=channel).exclude(target="").values_list("target",flat=True)}
+        for target in sorted(targets):
+            result.append((f"{channel}:{fingerprint([target,[r.pk for r in dataset(company,channel,target=target)]])}",partial(work,channel,target)))
+    return result
 
 
-STAGES = (*STAGES, Stage("ads_import", ads_units), Stage("ads_analysis", ads_analysis_units), Stage("learning", learning_units))
+def own_discovery_units(company):
+    from .own_performance import discover
+    if company.postiz_ciphertext and company.postiz_channels:
+        from cryptography.fernet import InvalidToken
+        try:
+            company.postiz_key  # Validate runner configuration even when today's discovery was already completed.
+        except InvalidToken as exc:
+            raise ValueError("Postiz-kopplingen kunde inte dekrypteras. Kontrollera CONTENT_POSTIZ_ENCRYPTION_SECRET på körvärden.") from exc
+    def work():
+        data=discover(company)
+        return Result(data.pop("status","success"),data.get("message","Egna publiceringar kontrollerade."),data)
+    return [("published",work)]
+
+
+def own_snapshot_units(company):
+    from .own_performance import collect
+    def work(post):
+        data=collect(post)
+        return Result(data.pop("status","success"),data.get("message","Egen performance sparad."),data)
+    return [(str(p.pk),partial(work,p)) for p in company.own_posts.filter(finalized_at=None).filter(Q(next_check_at=None)|Q(next_check_at__lte=timezone.now())).order_by("published_at","pk")[:10]]
+
+
+def own_learning_units(company):
+    from .own_performance import update_baselines, create_outcomes
+    from .models import OwnSnapshot
+    from .sync import fingerprint
+    key=fingerprint(list(OwnSnapshot.objects.filter(post__company=company).values_list("pk",flat=True)))
+    def work():
+        return Result(data={**update_baselines(company),**create_outcomes(company)})
+    return [(key,work)]
+
+
+STAGES = (*STAGES, Stage("ads_import", ads_units), Stage("ads_analysis", ads_analysis_units),
+    Stage("own_discovery",own_discovery_units),Stage("own_snapshots",own_snapshot_units),
+    Stage("own_outcomes",own_learning_units), Stage("learning", learning_units))
