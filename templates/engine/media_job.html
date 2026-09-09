@@ -3,7 +3,7 @@
 {% block content %}
 <main class="engine">
   <a class="back-link" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Till media</a>
-  <header class="page-header"><div class="page-heading"><h1>{% if job.kind == 'image' %}Bildalternativ{% else %}Video{% endif %}</h1><p class="intro">{{ run.title }}</p></div><div class="page-actions"><span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' %}warning{% else %}muted{% endif %}">{{ job.status }}</span></div></header>
+  <header class="page-header"><div class="page-heading"><h1>{% if job.kind == 'image' %}Dina bildalternativ{% else %}Din video{% endif %}</h1><p class="intro">{{ run.title }}</p></div><div class="page-actions"><span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' %}warning{% else %}muted{% endif %}">{{ job.status }}</span></div></header>
 
   {% if pending %}<div class="media-progress" role="status"><p id="job-progress">Genereringen arbetar. Du kan lämna sidan och komma tillbaka via utkastets media.</p><progress aria-label="Genereringen pågår"></progress></div><form id="job-poll" method="post" action="{% url 'engine:media_job_status' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<button>Kontrollera status</button></form>
   <script>
