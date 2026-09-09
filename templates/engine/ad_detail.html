@@ -1,0 +1,92 @@
+<article class="workspace-detail-panel ad-detail-panel">
+  <div class="ad-detail-hero">
+    {% if ad.creative.image_url %}
+      <img src="{{ ad.creative.image_url }}" alt="Annonsmaterial från {{ ad.account.name }}" loading="eager">
+    {% elif ad.creative.video_url %}
+      <video src="{{ ad.creative.video_url }}" controls muted playsinline preload="metadata"></video>
+    {% else %}
+      <div class="ad-thumb-fallback">{{ ad.creative.format|default:'Annons' }}</div>
+    {% endif %}
+  </div>
+
+  <div class="ad-detail-body">
+    <div class="ad-detail-kicker">
+      <span>{{ ad.account.name }}</span>
+      <span class="status-badge {% if ad.is_active == True %}success{% elif ad.is_active == False %}muted{% else %}warning{% endif %}">
+        {% if ad.is_active == True %}Aktiv{% elif ad.is_active == False %}Inaktiv{% else %}Okänd status{% endif %}
+      </span>
+    </div>
+
+    <h2 class="ad-detail-title">{{ ad.creative.headline|default:'Annons utan rubrik' }}</h2>
+    <p class="ad-detail-copy">{{ ad.creative.text|default:'Annonstext saknas' }}</p>
+
+    {% if ad.analysis_current %}
+      <div class="ad-detail-block">
+        <div class="ad-analysis-callout">
+          <h3>Varför signalen är intressant</h3>
+          <p>{{ ad.classification.adaptation }}</p>
+        </div>
+      </div>
+
+      <div class="ad-detail-block">
+        <h3>Budskap och hook</h3>
+        <dl class="ad-fact-list">
+          <div class="ad-fact-row"><dt>Hook</dt><dd>{{ ad.classification.hook|default:'Okänd' }}</dd></div>
+          <div class="ad-fact-row"><dt>Budskap</dt><dd>{{ ad.classification.message|default:'Okänt' }}</dd></div>
+          <div class="ad-fact-row"><dt>Erbjudande</dt><dd>{{ ad.classification.offer|default:'Okänt' }}</dd></div>
+          <div class="ad-fact-row"><dt>CTA</dt><dd>{{ ad.classification.cta|default:ad.creative.cta|default:'Okänd' }}</dd></div>
+        </dl>
+        {% if ad.classification.themes %}
+          <div class="ads-theme-strip">{% for item in ad.classification.themes %}<span class="theme-tag">{{ item }}</span>{% endfor %}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ad-detail-block">
+      <h3>Observerade fakta</h3>
+      <dl class="ad-fact-list">
+        <div class="ad-fact-row"><dt>Format</dt><dd>{{ ad.creative.format|default:'Okänt' }}</dd></div>
+        <div class="ad-fact-row"><dt>Plattform</dt><dd>{{ ad.creative.platforms|join:' / '|default:'Okänd' }}</dd></div>
+        <div class="ad-fact-row"><dt>Först sedd</dt><dd>{{ ad.first_seen_at|date:'j M Y' }}</dd></div>
+        <div class="ad-fact-row"><dt>Senast sedd</dt><dd>{{ ad.last_seen_at|date:'j M Y' }}</dd></div>
+        <div class="ad-fact-row"><dt>Observation</dt><dd>{{ ad.observed_days }} dagar mellan första och senaste observation</dd></div>
+        <div class="ad-fact-row"><dt>Varianter</dt><dd>{{ ad.creative.variant_count|default_if_none:'Okänt' }}</dd></div>
+        {% if ad.creative.description %}<div class="ad-fact-row"><dt>Beskrivning</dt><dd>{{ ad.creative.description }}</dd></div>{% endif %}
+      </dl>
+    </div>
+
+    <div class="ad-detail-block">
+      <h3>Vad vi inte vet</h3>
+      <p class="editorial-subtle">CTR, CPA och ROAS är okända, liksom konverteringar och lönsamhet. Att en annons observerats länge eller finns i flera varianter är en signal – inte prestationsbevis.</p>
+      {% if ad.analysis_current and ad.classification.unknowns %}
+        <details>
+          <summary>Fler begränsningar</summary>
+          <ul class="small">{% for item in ad.classification.unknowns %}<li>{{ item }}</li>{% endfor %}</ul>
+        </details>
+      {% endif %}
+    </div>
+
+    <div class="ad-detail-block">
+      <h3>Original och landningssida</h3>
+      <p class="small"><a href="{{ ad.url }}" target="_blank" rel="noopener">Öppna annonsen i Meta Ad Library ↗</a></p>
+      {% if ad.creative.landing_page %}<p class="small"><a href="{{ ad.creative.landing_page }}" target="_blank" rel="noopener">Öppna angiven landningssida ↗</a></p>{% endif %}
+
+      <div class="ad-detail-actions">
+        {% if ad.analysis_current %}
+          <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="channel" value="paid">
+            <input type="hidden" name="signal_id" value="{{ ad.pk }}">
+            <button>Skapa egen annonsidé</button>
+          </form>
+        {% else %}
+          <form method="post" action="{% url 'engine:ad_analyze' workspace_id=workspace.pk ad_id=ad.pk %}">
+            {% csrf_token %}
+            <button>Analysera budskapet</button>
+          </form>
+        {% endif %}
+      </div>
+      {% if not ad.analysis_current %}<p class="small">Analysen använder text och metadata. Bild-/videoinnehållet är ännu inte visuellt analyserat.</p>{% endif %}
+    </div>
+  </div>
+</article>
