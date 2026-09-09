@@ -1,53 +1,64 @@
 {% extends 'base.html' %}
 {% block title %}Inställningar · {{ workspace.name }}{% endblock %}
 {% block content %}
-<main class="engine">
+<main class="engine settings-page">
   <header class="page-header">
-    <div class="page-heading"><h1>Inställningar</h1><p class="intro">{{ workspace.name }} · företagsdata, kopplingar, varumärkesfiler och driftstatus.</p></div>
+    <div class="page-heading">
+      <span class="editorial-eyebrow">Workspace settings</span>
+      <h1>Inställningar</h1>
+      <p class="intro">{{ workspace.name }} · företagets fakta, kopplingar, varumärkesfiler och driftstatus på ett ställe.</p>
+    </div>
   </header>
 
-  <div class="settings-grid">
-    <div class="settings-stack">
-      <section class="settings-section">
-        <div class="settings-section-head"><h2>Officiell företagslogga</h2><p class="small">Den här filen är enda källan när Content Engine använder företagets logga i genererad media.</p></div>
-        <div class="settings-section-body">
-          {% if workspace.official_logo %}
-            <div class="logo-preview"><img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=workspace.official_logo.pk %}" alt="Officiell logga för {{ workspace.name }}"></div>
-            <p><strong>{{ workspace.official_logo.alt_text|default:'Officiell logga' }}</strong></p>
-            <p class="small">Uppladdad {{ workspace.official_logo.created_at|date:'j M Y H:i' }} · {{ workspace.official_logo.width }} × {{ workspace.official_logo.height }} px</p>
-            <details><summary>Filens identitet</summary><p class="small break-anywhere">Version {{ workspace.official_logo.pk }}<br>SHA-256 {{ workspace.official_logo.sha256 }}</p></details>
-          {% else %}
-            <div class="empty-state"><h3>Ingen logga uppladdad</h3><p>Content Engine skapar ingen ungefärlig ersättare.</p></div>
-          {% endif %}
+  <div class="settings-layout">
+    <nav class="settings-nav" aria-label="Inställningssektioner">
+      <span class="settings-nav-label">Sektioner</span>
+      <a href="#brand">Varumärke</a>
+      <a href="#connections">Kopplingar</a>
+      <a href="#scraping">Scraping</a>
+      <a href="#daily">Daglig körning</a>
+    </nav>
 
-          <form method="post" enctype="multipart/form-data">{% csrf_token %}<label for="official-logo">{% if workspace.official_logo %}Byt officiell logga{% else %}Ladda upp officiell logga{% endif %}</label><input id="official-logo" type="file" name="logo" accept="image/png,image/webp,image/jpeg" required><p class="small">PNG, WebP eller JPEG, högst 8 MB. Transparent PNG rekommenderas.</p><button>Spara officiell logga</button></form>
-          <p class="small">Originalfilen placeras deterministiskt efter AI-genereringen. AI:n ritar inte om loggan och tidigare versioner behålls för redan skapade jobb.</p>
-        </div>
-      </section>
-
-      {% include 'engine/scraper_stats.html' %}
-    </div>
-
-    <div class="settings-stack">
-      <section class="settings-section">
-        <div class="settings-section-head"><h2>Företag och kopplingar</h2><p class="small">Det som styr Content Engine för just den här arbetsytan.</p></div>
-        <div class="settings-section-body">
-          <div class="link-list">
-            <a class="link-row" href="{% url 'engine:home' workspace_id=workspace.pk %}#company-context"><span><strong>Företagsunderlag</strong><br><span>Profil, ton, aktuellt och källa</span></span><span aria-hidden="true">›</span></a>
-            <a class="link-row" href="{% url 'engine:connect' workspace_id=workspace.pk %}"><span><strong>Postiz</strong><br><span>{% if workspace.postiz_channels %}{{ workspace.postiz_channels|length }} valda kanaler{% else %}Inte anslutet{% endif %}</span></span><span aria-hidden="true">›</span></a>
-            <a class="link-row" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"><span><strong>Konkurrentbevakning</strong><br><span>Organiskt och Meta Ads</span></span><span aria-hidden="true">›</span></a>
+    <div class="settings-content">
+      <div class="settings-grid">
+        <section class="settings-section" id="brand">
+          <div class="settings-section-head"><div><span class="editorial-eyebrow">Varumärke</span><h2>Officiell företagslogga</h2><p class="small">Den här filen är enda källan när Content Engine använder företagets logga i genererad media.</p></div></div>
+          <div class="settings-section-body">
+            {% if workspace.official_logo %}
+              <div class="logo-preview"><img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=workspace.official_logo.pk %}" alt="Officiell logga för {{ workspace.name }}"></div>
+              <p><strong>{{ workspace.official_logo.alt_text|default:'Officiell logga' }}</strong></p>
+              <p class="small">Uppladdad {{ workspace.official_logo.created_at|date:'j M Y H:i' }} · {{ workspace.official_logo.width }} × {{ workspace.official_logo.height }} px</p>
+              <details><summary>Filens identitet</summary><p class="small break-anywhere">Version {{ workspace.official_logo.pk }}<br>SHA-256 {{ workspace.official_logo.sha256 }}</p></details>
+            {% else %}
+              <div class="empty-state"><h3>Ingen logga uppladdad</h3><p>Content Engine skapar ingen ungefärlig ersättare.</p></div>
+            {% endif %}
+            <form method="post" enctype="multipart/form-data">{% csrf_token %}<label for="official-logo">{% if workspace.official_logo %}Byt officiell logga{% else %}Ladda upp officiell logga{% endif %}</label><input id="official-logo" type="file" name="logo" accept="image/png,image/webp,image/jpeg" required><p class="small">PNG, WebP eller JPEG, högst 8 MB. Transparent PNG rekommenderas.</p><button>Spara officiell logga</button></form>
+            <p class="small">Originalfilen placeras deterministiskt efter AI-genereringen. AI:n ritar inte om loggan och tidigare versioner behålls för redan skapade jobb.</p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="settings-section">
-        <div class="settings-section-head"><h2>Daglig körning</h2><p class="small">Lyckade delar sparas även om något annat behöver uppmärksamhet.</p></div>
-        <div class="settings-section-body">
-          {% if steps %}
-            <div class="table-scroll"><table class="daily-table mobile-table"><thead><tr><th>Dag</th><th>Moment</th><th>Status</th><th>Detaljer</th></tr></thead><tbody>{% for step in steps %}<tr><td data-label="Dag">{{ step.run.day|date:'j M' }}</td><td data-label="Moment">{{ step.label }}<br><span class="small">{{ step.subject }}</span></td><td data-label="Status">{% if step.status == 'success' %}<span class="status-badge success">Klart</span>{% elif step.status == 'skipped' %}<span class="status-badge muted">Ingen åtgärd</span>{% elif step.status == 'pending' or step.status == 'blocked' %}<span class="status-badge warning">Väntar</span>{% elif step.status == 'running' %}<span class="status-badge warning">Pågår</span>{% else %}<span class="status-badge warning">Kontrollera</span>{% endif %}</td><td data-label="Detaljer">{% if step.message %}<span>{{ step.message }}</span>{% endif %}{% if step.target %}<br><a href="{{ step.target }}">Öppna →</a>{% endif %}<details><summary>Tekniskt</summary><p class="small break-anywhere">{{ step.stage }} · {{ step.version }}<br>{{ step.key }}<br>{{ step.attempts }} försök</p></details></td></tr>{% endfor %}</tbody></table></div>
-          {% else %}<div class="empty-state"><h3>Ingen daily-körning ännu</h3><p>När GitHub Actions har kört visas status här.</p></div>{% endif %}
-        </div>
-      </section>
+        <section class="settings-section" id="connections">
+          <div class="settings-section-head"><div><span class="editorial-eyebrow">Kopplingar</span><h2>Företag och tjänster</h2><p class="small">Det som styr Content Engine för just den här arbetsytan.</p></div></div>
+          <div class="settings-section-body">
+            <div class="link-list">
+              <a class="link-row" href="{% url 'engine:home' workspace_id=workspace.pk %}#company-context"><span><strong>Företagsunderlag</strong><br><span>Profil, ton, aktuellt och källa</span></span><span aria-hidden="true">›</span></a>
+              <a class="link-row" href="{% url 'engine:connect' workspace_id=workspace.pk %}"><span><strong>Postiz</strong><br><span>{% if workspace.postiz_channels %}{{ workspace.postiz_channels|length }} valda kanaler{% else %}Inte anslutet{% endif %}</span></span><span aria-hidden="true">›</span></a>
+              <a class="link-row" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"><span><strong>Konkurrentbevakning</strong><br><span>Organiskt och Meta Ads</span></span><span aria-hidden="true">›</span></a>
+            </div>
+          </div>
+        </section>
+
+        <div id="scraping">{% include 'engine/scraper_stats.html' %}</div>
+
+        <section class="settings-section" id="daily">
+          <div class="settings-section-head"><div><span class="editorial-eyebrow">Drift</span><h2>Daglig körning</h2><p class="small">Lyckade delar sparas även om något annat behöver uppmärksamhet.</p></div></div>
+          <div class="settings-section-body">
+            {% if steps %}
+              <div class="table-scroll"><table class="daily-table mobile-table"><thead><tr><th>Dag</th><th>Moment</th><th>Status</th><th>Detaljer</th></tr></thead><tbody>{% for step in steps %}<tr><td data-label="Dag">{{ step.run.day|date:'j M' }}</td><td data-label="Moment">{{ step.label }}<br><span class="small">{{ step.subject }}</span></td><td data-label="Status">{% if step.status == 'success' %}<span class="status-badge success">Klart</span>{% elif step.status == 'skipped' %}<span class="status-badge muted">Ingen åtgärd</span>{% elif step.status == 'pending' or step.status == 'blocked' %}<span class="status-badge warning">Väntar</span>{% elif step.status == 'running' %}<span class="status-badge warning">Pågår</span>{% else %}<span class="status-badge warning">Kontrollera</span>{% endif %}</td><td data-label="Detaljer">{% if step.message %}<span>{{ step.message }}</span>{% endif %}{% if step.target %}<br><a href="{{ step.target }}">Öppna →</a>{% endif %}<details><summary>Tekniskt</summary><p class="small break-anywhere">{{ step.stage }} · {{ step.version }}<br>{{ step.key }}<br>{{ step.attempts }} försök</p></details></td></tr>{% endfor %}</tbody></table></div>
+            {% else %}<div class="empty-state"><h3>Ingen daily-körning ännu</h3><p>När GitHub Actions har kört visas status här.</p></div>{% endif %}
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </main>
