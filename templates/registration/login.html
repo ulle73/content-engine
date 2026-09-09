@@ -4,8 +4,9 @@
 <main class="auth-shell">
   <section class="auth-card">
     <div class="auth-brand">CE</div>
-    <h1>Logga in</h1>
-    <p class="intro">Fortsätt till Content Engine.</p>
+    <span class="editorial-eyebrow">Content Engine</span>
+    <h1>Välkommen tillbaka</h1>
+    <p class="intro">Logga in för att fortsätta till dina arbetsytor, insikter och innehållsutkast.</p>
     <form method="post">{% csrf_token %}{{ form.as_p }}<input type="hidden" name="next" value="{{ next }}"><button class="button" type="submit">Logga in</button></form>
   </section>
 </main>
