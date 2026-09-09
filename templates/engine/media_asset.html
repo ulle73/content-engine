@@ -1,6 +1,6 @@
 <article class="media-item">
   {% if asset.kind == 'image' %}<img class="media-thumb" loading="lazy" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Bildalternativ' }}">{% else %}<video class="media-thumb" controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}#t=0.1"></video>{% endif %}
-  <p class="small">{{ asset.get_origin_display }} · {{ asset.get_kind_display }} · {{ asset.created_at|date:'j M' }}{% if asset.used_at %} · används i innehåll{% elif asset.expires_at %} · förhandsvisning{% endif %}</p>
+  <p class="small">{{ asset.get_origin_display }} · {{ asset.get_kind_display }} · {{ asset.created_at|date:'j M' }}{% if asset.used_at %} · används i innehåll{% elif asset.expires_at %} · Förhandsvisning i 7 dagar{% endif %}</p>
   <p class="small">{% if asset.width %}{{ asset.width }} × {{ asset.height }}{% endif %}{% if asset.duration_seconds %}{% if asset.width %} · {% endif %}{{ asset.duration_seconds|floatformat:1 }} sek{% endif %}</p>
   <div class="media-actions">
     {% if run.delivery_status == 'draft' %}<form method="post" action="{% url 'engine:media_use' workspace_id=workspace.pk run_id=run.pk asset_id=asset.pk %}">{% csrf_token %}<button>Använd</button></form>{% endif %}
