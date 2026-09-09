@@ -1,15 +1,23 @@
 {% extends 'base.html' %}
 {% block title %}{{ run.title }} · {{ workspace.name }}{% endblock %}
 {% block content %}
-<main class="engine">
+<main class="engine review-page">
   <a class="back-link" href="{% url 'engine:home' workspace_id=workspace.id %}">← Till översikten</a>
   <header class="page-header editor-header">
     <div class="page-heading">
+      <span class="editorial-eyebrow">{% if run.channel == 'paid' %}Paid creative{% else %}Organic creative{% endif %}</span>
       <h1>{{ run.title }}</h1>
       <p class="intro">{% if run.channel == 'paid' %}Annonsutkast{% else %}Organiskt utkast{% endif %} · källa {{ run.context.source }} · underlaget gäller t.o.m. {{ run.context.valid_until }}</p>
     </div>
     <div class="page-actions"><span class="status-badge {% if run.delivery_status == 'sent' %}success{% elif run.delivery_status == 'draft' %}muted{% else %}warning{% endif %}">{% if run.delivery_status == 'sent' %}I Postiz{% elif run.delivery_status == 'draft' %}Utkast{% else %}Kontroll krävs{% endif %}</span></div>
   </header>
+
+  <nav class="review-progress" aria-label="Arbetsflöde">
+    <span class="review-step is-complete"><span class="review-step-index">1</span><span>Idé</span></span>
+    <span class="review-step is-current"><span class="review-step-index">2</span><span>Text</span></span>
+    <span class="review-step {% if run.media_asset %}is-complete{% endif %}"><span class="review-step-index">3</span><span>Media</span></span>
+    <span class="review-step {% if run.delivery_status == 'sent' %}is-complete{% endif %}"><span class="review-step-index">4</span><span>{% if run.channel == 'paid' %}Export{% else %}Postiz{% endif %}</span></span>
+  </nav>
 
   {% if run.influencing_signal %}
     <details class="open-section">
@@ -33,7 +41,7 @@
     <form method="post" enctype="multipart/form-data">{% csrf_token %}
       <div class="editor-layout">
         <section class="editor-panel">
-          <div class="editor-panel-head"><h2>Copy</h2><span class="small">Redigera innan godkännande</span></div>
+          <div class="editor-panel-head"><div><span class="editorial-eyebrow">Steg 2</span><h2>Copy</h2></div><span class="small">Redigera innan godkännande</span></div>
           <div class="editor-panel-body">
             <div class="editor-copy-section"><label for="facebook">Facebook</label><textarea id="facebook" name="facebook" rows="9" required>{{ run.draft.facebook }}</textarea></div>
             <div class="editor-copy-section"><label for="instagram">Instagram</label><textarea id="instagram" name="instagram" rows="9" maxlength="2200" required>{{ run.draft.instagram }}</textarea><p class="small">Max 2 200 tecken.</p></div>
@@ -46,7 +54,7 @@
 
         <aside class="editor-side">
           <section class="editor-panel">
-            <div class="editor-panel-head"><h2>Media</h2>{% if run.media_asset %}<span class="status-badge success">Vald</span>{% endif %}</div>
+            <div class="editor-panel-head"><div><span class="editorial-eyebrow">Steg 3</span><h2>Media</h2></div>{% if run.media_asset %}<span class="status-badge success">Vald</span>{% endif %}</div>
             <div class="editor-panel-body">
               {% if run.media_asset %}
                 <div class="media-preview-wrap">{% if run.media_asset.kind == 'image' %}<img class="media-preview" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}" alt="{{ run.media_asset.alt_text|default:'Vald bild' }}">{% else %}<video class="media-preview" controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}"></video>{% endif %}</div>
@@ -61,7 +69,7 @@
           </section>
 
           <section class="editor-panel">
-            <div class="editor-panel-head"><h2>Granskning</h2></div>
+            <div class="editor-panel-head"><div><span class="editorial-eyebrow">Steg 4</span><h2>Granskning</h2></div></div>
             <div class="editor-panel-body">
               <ul class="check-list">{% for check in run.draft.checks %}<li>{{ check }}</li>{% empty %}<li>Kontrollera fakta, tonalitet och vald media.</li>{% endfor %}</ul>
               {% if run.channel == 'paid' %}
@@ -81,6 +89,6 @@
     </form>
   {% endif %}
 
-  <section class="open-section"><a href="{% url 'engine:outcome' workspace_id=workspace.pk run_id=run.pk %}">Registrera verifierat resultat för learning →</a></section>
+  <section class="review-learning-link"><a href="{% url 'engine:outcome' workspace_id=workspace.pk run_id=run.pk %}">Registrera verifierat resultat för learning →</a></section>
 </main>
 {% endblock %}
