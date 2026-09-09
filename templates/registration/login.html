@@ -6,7 +6,7 @@
     <div class="auth-brand">CE</div>
     <h1>Logga in</h1>
     <p class="intro">Fortsätt till Content Engine.</p>
-    <form method="post">{% csrf_token %}{{ form.as_p }}<input type="hidden" name="next" value="{{ next }}"><button type="submit">Logga in</button></form>
+    <form method="post">{% csrf_token %}{{ form.as_p }}<input type="hidden" name="next" value="{{ next }}"><button class="button" type="submit">Logga in</button></form>
   </section>
 </main>
 {% endblock %}
