@@ -9,6 +9,7 @@ from .performance_views import performance
 
 engine_urls = [
     path("intelligence/own/",performance,name="own_performance"),
+    path("intelligence/ads/<int:ad_id>/detail/", ads_views.detail, name="ad_detail"),
     path("intelligence/ads/accounts/<int:account_id>/", ads_views.account_action, name="ad_account_action"),
     path("intelligence/ads/analyze/<int:ad_id>/", ads_views.analyze, name="ad_analyze"),
     path("runs/<uuid:run_id>/outcome/", ads_views.outcome, name="outcome"),
