@@ -1,7 +1,7 @@
 <section class="settings-section">
   <div class="settings-section-head"><h2>Scraping · kostnad och nytt värde</h2><p class="small">Content Engine mäter vad varje betald hämtning faktiskt gav, inte bara vad som sparades lokalt.</p></div>
   <div class="settings-section-body">
-    <div class="metric-strip">
+    <div class="metric-strip metric-strip-scroll">
       <div class="metric"><span>Hämtade</span><strong>{{ scraping.totals.returned }}</strong></div>
       <div class="metric"><span>Nya</span><strong>{{ scraping.totals.new }}</strong></div>
       <div class="metric"><span>Ändrade</span><strong>{{ scraping.totals.changed }}</strong></div>
@@ -12,8 +12,8 @@
     <p class="small">Kända objekt kan fortfarande kosta hos Apify när Actor:n saknar cursor eller exkludering. Frekvens och storlek anpassas därför efter verkligt utfall.</p>
     <details>
       <summary>Visa senaste körningarna och nästa discovery</summary>
-      <div class="table-scroll"><table class="data-table"><thead><tr><th>Källa / körning</th><th>Utfall</th><th>Kostnad</th><th>Nästa discovery</th></tr></thead><tbody>
-      {% for r in scraping.requests %}<tr><td>{{ r.state.source }} · {{ r.state.external_key }}<br><span class="small">{{ r.created_at|date:'j M H:i' }} · {{ r.mode }} · {{ r.status }}</span></td><td>{% if r.efficiency %}{{ r.efficiency.returned }} hämtade · {{ r.efficiency.new }} nya · {{ r.efficiency.changed }} ändrade · {{ r.efficiency.known }} kända<br><span class="small">{{ r.efficiency.unusable_or_duplicate }} ogiltiga/dubletter · {{ r.ai_analyses }} nya AI-analyser</span>{% else %}Detaljmätning saknas för denna körning{% endif %}</td><td>${{ r.cost_usd|default_if_none:'okänd' }}<br><span class="small">Per användbart: {{ r.efficiency.cost_per_useful_usd|default:'saknar underlag' }}</span></td><td>{{ r.state.details.discovery_interval_days|default:1 }} dygn · max {{ r.state.details.discovery_limit|default:'standard' }}<br><span class="small">{{ r.state.details.discovery_due_at|default:'ej beräknat' }}</span></td></tr>{% empty %}<tr><td colspan="4">Ingen scraperkörning ännu.</td></tr>{% endfor %}
+      <div class="table-scroll"><table class="data-table mobile-table"><thead><tr><th>Källa / körning</th><th>Utfall</th><th>Kostnad</th><th>Nästa discovery</th></tr></thead><tbody>
+      {% for r in scraping.requests %}<tr><td data-label="Källa / körning">{{ r.state.source }} · {{ r.state.external_key }}<br><span class="small">{{ r.created_at|date:'j M H:i' }} · {{ r.mode }} · {{ r.status }}</span></td><td data-label="Utfall">{% if r.efficiency %}{{ r.efficiency.returned }} hämtade · {{ r.efficiency.new }} nya · {{ r.efficiency.changed }} ändrade · {{ r.efficiency.known }} kända<br><span class="small">{{ r.efficiency.unusable_or_duplicate }} ogiltiga/dubletter · {{ r.ai_analyses }} nya AI-analyser</span>{% else %}Detaljmätning saknas för denna körning{% endif %}</td><td data-label="Kostnad">${{ r.cost_usd|default_if_none:'okänd' }}<br><span class="small">Per användbart: {{ r.efficiency.cost_per_useful_usd|default:'saknar underlag' }}</span></td><td data-label="Nästa discovery">{{ r.state.details.discovery_interval_days|default:1 }} dygn · max {{ r.state.details.discovery_limit|default:'standard' }}<br><span class="small break-anywhere">{{ r.state.details.discovery_due_at|default:'ej beräknat' }}</span></td></tr>{% empty %}<tr><td colspan="4">Ingen scraperkörning ännu.</td></tr>{% endfor %}
       </tbody></table></div>
     </details>
   </div>
