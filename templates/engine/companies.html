@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 {% block title %}Mina företag · Content Engine{% endblock %}
 {% block content %}
-<main class="engine workspace-page">
+<main class="engine workspace-page workspace-page-v3">
   <header class="workspace-header">
     <div>
+      <span class="editorial-eyebrow">Workspaces</span>
       <h1>Välj företag</h1>
-      <p>Öppna arbetsytan du vill skapa och analysera innehåll för.</p>
+      <p>Varje företag har egna fakta, signaler, media, Postiz-kopplingar och learning-data. Öppna arbetsytan du vill arbeta i.</p>
     </div>
   </header>
 
@@ -13,10 +14,7 @@
     {% for company in companies %}
       <a class="workspace-row" href="{% url 'engine:home' workspace_id=company.pk %}">
         <span class="workspace-avatar">{{ company.name|slice:':1'|upper }}</span>
-        <span>
-          <span class="workspace-name">{{ company.name }}</span>
-          <span class="workspace-meta">Content Engine-arbetsyta</span>
-        </span>
+        <span><span class="workspace-name">{{ company.name }}</span><span class="workspace-meta">Content Engine-arbetsyta</span></span>
         <span class="workspace-meta workspace-meta-right">Uppdaterad {{ company.updated_at|date:'j M H:i' }}</span>
         <span class="workspace-arrow">›</span>
       </a>
@@ -27,9 +25,7 @@
 
   <details class="add-workspace" {% if form.errors %}open{% endif %}>
     <summary>+ Lägg till företag</summary>
-    <div>
-      <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Lägg till företag</button></form>
-    </div>
+    <div><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Lägg till företag</button></form></div>
   </details>
 </main>
 {% endblock %}
