@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}Generering · {{ run.title }}{% endblock %}
 {% block content %}
-<main class="engine">
+<main class="engine media-workspace media-job-page">
   <a class="back-link" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Till media</a>
-  <header class="page-header"><div class="page-heading"><h1>{% if job.kind == 'image' %}Dina bildalternativ{% else %}Din video{% endif %}</h1><p class="intro">{{ run.title }}</p></div><div class="page-actions"><span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' %}warning{% else %}muted{% endif %}">{{ job.status }}</span></div></header>
+  <header class="page-header"><div class="page-heading"><span class="editorial-eyebrow">Generation</span><h1>{% if job.kind == 'image' %}Dina bildalternativ{% else %}Din video{% endif %}</h1><p class="intro">{{ run.title }}</p></div><div class="page-actions"><span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' %}warning{% else %}muted{% endif %}">{{ job.status }}</span></div></header>
 
   {% if pending %}<div class="media-progress" role="status"><p id="job-progress">Genereringen arbetar. Du kan lämna sidan och komma tillbaka via utkastets media.</p><progress aria-label="Genereringen pågår"></progress></div><form id="job-poll" method="post" action="{% url 'engine:media_job_status' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<button>Kontrollera status</button></form>
   <script>
@@ -18,6 +18,7 @@
   {% if job.usage.estimate.usd %}<p class="small">Leverantörens uppskattning: {{ job.usage.estimate.usd }} USD. Slutlig debitering visas hos leverantören.</p>{% endif %}
 
   <section class="media-section">
+    <div class="product-section-head"><div><span class="editorial-eyebrow">Resultat</span><h2>{% if job.kind == 'image' %}Välj ett alternativ{% else %}Förhandsgranska videon{% endif %}</h2><p class="small">Vald media behålls. Oanvända förhandsvisningar kan löpa ut.</p></div></div>
     <div class="media-grid">{% for asset in job.assets.all %}{% if not asset.expires_at or asset.expires_at > now %}{% include 'engine/media_asset.html' %}{% else %}<div class="empty-state"><p>En oanvänd förhandsvisning har gått ut.</p></div>{% endif %}{% empty %}{% if not pending %}<div class="empty-state"><h3>Inget färdigt alternativ</h3><p>Kontrollera generationens status eller justera beskrivningen.</p></div>{% endif %}{% endfor %}</div>
   </section>
 
