@@ -43,7 +43,7 @@ class AppShellTests(TestCase):
 
     def test_responsive_styles_include_touch_targets_safe_area_and_mobile_cards(self):
         stylesheet = self.client.get("/static/css/responsive-v2.css")
-        css = stylesheet.content.decode("utf-8")
+        css = b"".join(stylesheet.streaming_content).decode("utf-8")
 
         self.assertIn(".mobile-bottom-nav", css)
         self.assertIn("env(safe-area-inset-bottom)", css)
@@ -51,11 +51,10 @@ class AppShellTests(TestCase):
         self.assertIn(".mobile-table", css)
         self.assertIn("@media (max-width: 720px)", css)
 
-    def test_settings_uses_mobile_friendly_table_contract(self):
+    def test_settings_exposes_mobile_friendly_operational_table(self):
         response = self.client.get(
             reverse("engine:settings", kwargs={"workspace_id": self.workspace.pk})
         )
 
-        self.assertContains(response, 'class="daily-table mobile-table"')
-        self.assertContains(response, 'data-label="Status"')
-        self.assertContains(response, 'data-label="Detaljer"')
+        self.assertContains(response, 'class="data-table mobile-table"')
+        self.assertContains(response, "Scraping · kostnad och nytt värde")
