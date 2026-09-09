@@ -15,7 +15,7 @@
             <div class="logo-preview"><img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=workspace.official_logo.pk %}" alt="Officiell logga för {{ workspace.name }}"></div>
             <p><strong>{{ workspace.official_logo.alt_text|default:'Officiell logga' }}</strong></p>
             <p class="small">Uppladdad {{ workspace.official_logo.created_at|date:'j M Y H:i' }} · {{ workspace.official_logo.width }} × {{ workspace.official_logo.height }} px</p>
-            <details><summary>Filens identitet</summary><p class="small">Version {{ workspace.official_logo.pk }}<br>SHA-256 {{ workspace.official_logo.sha256 }}</p></details>
+            <details><summary>Filens identitet</summary><p class="small break-anywhere">Version {{ workspace.official_logo.pk }}<br>SHA-256 {{ workspace.official_logo.sha256 }}</p></details>
           {% else %}
             <div class="empty-state"><h3>Ingen logga uppladdad</h3><p>Content Engine skapar ingen ungefärlig ersättare.</p></div>
           {% endif %}
@@ -33,9 +33,9 @@
         <div class="settings-section-head"><h2>Företag och kopplingar</h2><p class="small">Det som styr Content Engine för just den här arbetsytan.</p></div>
         <div class="settings-section-body">
           <div class="link-list">
-            <a class="link-row" href="{% url 'engine:home' workspace_id=workspace.pk %}#company-context"><span><strong>Företagsunderlag</strong><br><span>Profil, ton, aktuellt och källa</span></span><span>›</span></a>
-            <a class="link-row" href="{% url 'engine:connect' workspace_id=workspace.pk %}"><span><strong>Postiz</strong><br><span>{% if workspace.postiz_channels %}{{ workspace.postiz_channels|length }} valda kanaler{% else %}Inte anslutet{% endif %}</span></span><span>›</span></a>
-            <a class="link-row" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"><span><strong>Konkurrentbevakning</strong><br><span>Organiskt och Meta Ads</span></span><span>›</span></a>
+            <a class="link-row" href="{% url 'engine:home' workspace_id=workspace.pk %}#company-context"><span><strong>Företagsunderlag</strong><br><span>Profil, ton, aktuellt och källa</span></span><span aria-hidden="true">›</span></a>
+            <a class="link-row" href="{% url 'engine:connect' workspace_id=workspace.pk %}"><span><strong>Postiz</strong><br><span>{% if workspace.postiz_channels %}{{ workspace.postiz_channels|length }} valda kanaler{% else %}Inte anslutet{% endif %}</span></span><span aria-hidden="true">›</span></a>
+            <a class="link-row" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"><span><strong>Konkurrentbevakning</strong><br><span>Organiskt och Meta Ads</span></span><span aria-hidden="true">›</span></a>
           </div>
         </div>
       </section>
@@ -44,7 +44,7 @@
         <div class="settings-section-head"><h2>Daglig körning</h2><p class="small">Lyckade delar sparas även om något annat behöver uppmärksamhet.</p></div>
         <div class="settings-section-body">
           {% if steps %}
-            <div class="table-scroll"><table class="daily-table"><thead><tr><th>Dag</th><th>Moment</th><th>Status</th></tr></thead><tbody>{% for step in steps %}<tr><td>{{ step.run.day|date:'j M' }}</td><td>{{ step.label }}<br><span class="small">{{ step.subject }}</span>{% if step.message %}<br><span class="small">{{ step.message }}</span>{% endif %}{% if step.target %}<br><a href="{{ step.target }}">Öppna →</a>{% endif %}</td><td>{% if step.status == 'success' %}<span class="status-badge success">Klart</span>{% elif step.status == 'skipped' %}<span class="status-badge muted">Ingen åtgärd</span>{% elif step.status == 'pending' or step.status == 'blocked' %}<span class="status-badge warning">Väntar</span>{% elif step.status == 'running' %}<span class="status-badge warning">Pågår</span>{% else %}<span class="status-badge warning">Kontrollera</span>{% endif %}<details><summary>Tekniskt</summary><p class="small">{{ step.stage }} · {{ step.version }}<br>{{ step.key }}<br>{{ step.attempts }} försök</p></details></td></tr>{% endfor %}</tbody></table></div>
+            <div class="table-scroll"><table class="daily-table mobile-table"><thead><tr><th>Dag</th><th>Moment</th><th>Status</th><th>Detaljer</th></tr></thead><tbody>{% for step in steps %}<tr><td data-label="Dag">{{ step.run.day|date:'j M' }}</td><td data-label="Moment">{{ step.label }}<br><span class="small">{{ step.subject }}</span></td><td data-label="Status">{% if step.status == 'success' %}<span class="status-badge success">Klart</span>{% elif step.status == 'skipped' %}<span class="status-badge muted">Ingen åtgärd</span>{% elif step.status == 'pending' or step.status == 'blocked' %}<span class="status-badge warning">Väntar</span>{% elif step.status == 'running' %}<span class="status-badge warning">Pågår</span>{% else %}<span class="status-badge warning">Kontrollera</span>{% endif %}</td><td data-label="Detaljer">{% if step.message %}<span>{{ step.message }}</span>{% endif %}{% if step.target %}<br><a href="{{ step.target }}">Öppna →</a>{% endif %}<details><summary>Tekniskt</summary><p class="small break-anywhere">{{ step.stage }} · {{ step.version }}<br>{{ step.key }}<br>{{ step.attempts }} försök</p></details></td></tr>{% endfor %}</tbody></table></div>
           {% else %}<div class="empty-state"><h3>Ingen daily-körning ännu</h3><p>När GitHub Actions har kört visas status här.</p></div>{% endif %}
         </div>
       </section>
