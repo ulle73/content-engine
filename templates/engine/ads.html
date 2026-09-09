@@ -1,102 +1,135 @@
 {% extends 'base.html' %}
 {% block title %}{{ workspace.name }} · Annonsinsikter{% endblock %}
 {% block content %}
-<main class="engine intelligence-page">
+<main class="engine intelligence-page ads-page">
   <header class="page-header">
     <div class="page-heading">
+      <span class="editorial-eyebrow">Paid intelligence</span>
       <h1>Insikter</h1>
-      <p class="intro">Konkurrenternas Meta-annonser, kreativa mönster och budskap. Exponering är aldrig samma sak som bevisad performance.</p>
+      <p class="intro">Se vilka budskap, kreativa vinklar och erbjudanden konkurrenterna faktiskt använder – och välj vad som är värt att omsätta till en egen idé.</p>
     </div>
     <div class="page-actions"><a class="button" href="{% url 'engine:home' workspace_id=workspace.pk %}?channel=paid#create-content">Skapa annons</a></div>
   </header>
 
   {% include 'engine/insight_tabs.html' %}
-  {% include 'engine/learning_panel.html' %}
 
-  <p class="notice">Meta Ad Library visar vad som observerats. CTR, CPA, ROAS, konverteringar och lönsamhet är okända om de inte kommer från våra egna verifierade resultat.</p>
-
-  {% if themes %}
-    <section class="open-section">
-      <div class="section-head"><div><h2>Återkommande teman</h2><p class="small">Teman som återkommer i det aktuella sparade annonsurvalet.</p></div></div>
-      <div class="theme-list">{% for theme, count in themes %}<span class="theme-tag">{{ theme }} · {{ count }} annonser</span>{% endfor %}</div>
+  {% if highlight_ad %}
+    <section class="editorial-highlight" aria-label="Aktuell annonsobservation">
+      <div>
+        <span class="editorial-eyebrow">Vad sticker ut just nu</span>
+        <h2>{% if highlight_ad.analysis_current %}{{ highlight_ad.classification.hook|default:highlight_ad.creative.headline }}{% else %}Nytt annonsmaterial från {{ highlight_ad.account.name }}{% endif %}</h2>
+        <p>{% if highlight_ad.analysis_current %}{{ highlight_ad.classification.adaptation }}{% else %}{{ highlight_ad.creative.headline|default:'Annons utan rubrik' }} · öppna signalen för copy, format, observationstid och nästa steg.{% endif %}</p>
+      </div>
+      <a class="button button-secondary" href="?channel=paid&selected={{ highlight_ad.pk }}#ad-detail-panel"
+         hx-get="{% url 'engine:ad_detail' workspace_id=workspace.pk ad_id=highlight_ad.pk %}"
+         hx-target="#ad-detail-panel" hx-swap="innerHTML show:top" hx-push-url="false">Se signalen</a>
     </section>
   {% endif %}
 
-  <section class="open-section">
-    <div class="section-head"><div><h2>Observerade annonser</h2><p class="small">Öppna en rad för copy, CTA, observationer och en egen vinkel för {{ workspace.name }}.</p></div><span class="meta-pill">{{ ads|length }} sparade</span></div>
-    <div class="ad-board">
-      <div class="ad-board-header" aria-hidden="true"><span>Annonsör</span><span>Annons</span><span>Format</span><span>Först sedd</span><span>Status</span><span></span></div>
-      {% for ad in ads %}
-        <details class="ad-item">
-          <summary class="ad-row">
-            <span class="signal-account">{{ ad.account.name }}</span>
-            <span class="ad-copy"><strong>{{ ad.creative.headline|default:'Annons utan rubrik' }}</strong><span>{{ ad.creative.text|default:'Annonstext saknas'|truncatechars:90 }}</span></span>
-            <span class="signal-format">{{ ad.creative.format|default:'okänt' }}</span>
-            <span class="small">{{ ad.first_seen_at|date:'j M Y' }}</span>
-            <span class="status-badge {% if ad.is_active == True %}success{% elif ad.is_active == False %}muted{% else %}warning{% endif %}">{% if ad.is_active == True %}Aktiv{% elif ad.is_active == False %}Inaktiv{% else %}Okänd{% endif %}</span>
-            <span class="signal-chevron">›</span>
-          </summary>
-          <div class="ad-detail">
-            <div class="ad-detail-inner">
-              <div>
-                <h3>Annonsunderlag</h3>
-                <p class="text-prewrap">{{ ad.creative.text|default:'Annonstext saknas' }}</p>
-                <p><strong>Rubrik:</strong> {{ ad.creative.headline|default:'Saknas' }}</p>
-                <p><strong>Beskrivning:</strong> {{ ad.creative.description|default:'Saknas' }}</p>
-                <p><strong>CTA:</strong> {{ ad.creative.cta|default:'Okänd' }}{% if ad.creative.cta_caption %} · {{ ad.creative.cta_caption }}{% endif %}</p>
-                <p class="small">Plattformar: {{ ad.creative.platforms|join:' / '|default:'okänt' }} · varianter: {{ ad.creative.variant_count|default_if_none:'okänt' }}.</p>
-                <p class="small">Först sedd {{ ad.first_seen_at|date:'j M Y H:i' }} · senast sedd {{ ad.last_seen_at|date:'j M Y H:i' }} · {{ ad.observed_days }} dagar mellan observationerna.</p>
-                <p><a href="{{ ad.url }}" target="_blank" rel="noopener">Se original och media i Ads Library ↗</a></p>
-                {% if ad.creative.landing_page %}<p><a href="{{ ad.creative.landing_page }}" target="_blank" rel="noopener">Öppna angiven landningssida ↗</a></p>{% endif %}
-              </div>
-              <div>
-                {% if ad.analysis_current %}
-                  <h3>Så kan {{ workspace.name }} använda signalen</h3>
-                  <p>{{ ad.classification.adaptation }}</p>
-                  <p class="small"><strong>Hook:</strong> {{ ad.classification.hook }}<br><strong>Erbjudande i källan:</strong> {{ ad.classification.offer }}</p>
-                  {% if ad.classification.themes %}<div class="theme-list">{% for item in ad.classification.themes %}<span class="theme-tag">{{ item }}</span>{% endfor %}</div>{% endif %}
-                  <details><summary>Analysens begränsningar</summary><ul class="small">{% for item in ad.classification.unknowns %}<li>{{ item }}</li>{% endfor %}</ul></details>
-                  <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.pk %}">{% csrf_token %}<input type="hidden" name="channel" value="paid"><input type="hidden" name="signal_id" value="{{ ad.pk }}"><button>Skapa egen annonsidé</button></form>
-                {% else %}
-                  <h3>Analysera budskapet</h3>
-                  <p class="small">AI:n analyserar text och metadata. Den påstår inte att annonsen presterat bra och har inte sett bild-/videoinnehållet.</p>
-                  <form method="post" action="{% url 'engine:ad_analyze' workspace_id=workspace.pk ad_id=ad.pk %}">{% csrf_token %}<button>Analysera budskapet</button></form>
-                {% endif %}
-              </div>
+  <div class="ads-meta-row">
+    {% if themes %}
+      <div>
+        <span class="ads-meta-label">Återkommande teman</span>
+        <div class="ads-theme-strip">{% for theme, count in themes %}<span class="theme-tag">{{ theme }} · {{ count }}</span>{% endfor %}</div>
+      </div>
+    {% endif %}
+    <div class="ads-safety-note">Meta Ad Library visar observerat material. Konkurrenternas faktiska performance är inte tillgänglig.</div>
+  </div>
+
+  <section class="ads-workspace workspace-split">
+    <div class="workspace-main">
+      <div class="editorial-section-head">
+        <div>
+          <h2>Observerade annonser</h2>
+          <p class="editorial-subtle">Välj en annons för att se creative, copy, CTA, mönster och en möjlig egen vinkel.</p>
+        </div>
+        <span class="meta-pill">{{ ads|length }} sparade</span>
+      </div>
+
+      <div class="ads-list" aria-label="Observerade konkurrentannonser">
+        {% for ad in ads %}
+          <a class="ad-intel-row {% if selected_ad and ad.pk == selected_ad.pk %}is-selected{% endif %}"
+             href="?channel=paid&selected={{ ad.pk }}#ad-detail-panel"
+             hx-get="{% url 'engine:ad_detail' workspace_id=workspace.pk ad_id=ad.pk %}"
+             hx-target="#ad-detail-panel"
+             hx-swap="innerHTML show:top"
+             hx-push-url="false">
+            <span class="ad-thumb" aria-hidden="true">
+              {% if ad.creative.image_url %}
+                <img src="{{ ad.creative.image_url }}" alt="" loading="lazy">
+              {% elif ad.creative.video_url %}
+                <video src="{{ ad.creative.video_url }}" muted playsinline preload="metadata"></video>
+              {% else %}
+                <span class="ad-thumb-fallback">{{ ad.creative.format|default:'Annons' }}</span>
+              {% endif %}
+            </span>
+
+            <span class="ad-row-copy">
+              <span class="ad-row-meta"><span class="ad-row-account">{{ ad.account.name }}</span><span>·</span><span>{{ ad.creative.format|default:'okänt format' }}</span></span>
+              <strong class="ad-row-headline">{{ ad.creative.headline|default:'Annons utan rubrik' }}</strong>
+              <span class="ad-row-excerpt">{{ ad.creative.text|default:'Annonstext saknas' }}</span>
+              <span class="ad-row-signals">
+                {% if ad.analysis_current and ad.classification.themes %}{% for item in ad.classification.themes|slice:':2' %}<span class="ad-signal strong">{{ item }}</span>{% endfor %}{% endif %}
+                {% if ad.creative.variant_count %}<span class="ad-signal">{{ ad.creative.variant_count }} varianter</span>{% endif %}
+                {% if ad.observed_days %}<span class="ad-signal">observerad {{ ad.observed_days }} dagar</span>{% endif %}
+              </span>
+            </span>
+
+            <span class="ad-row-side">
+              <strong>{% if ad.is_active == True %}Aktiv{% elif ad.is_active == False %}Inaktiv{% else %}Okänd{% endif %}</strong>
+              <span>först sedd {{ ad.first_seen_at|date:'j M' }}</span>
+            </span>
+          </a>
+        {% empty %}
+          <div class="empty-state">
+            <h3>Inga annonser ännu</h3>
+            <p>Lägg till en annonsör under bevakning. Första hämtningen är begränsad och senare körningar anpassas efter faktiskt nytt värde.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <aside class="workspace-detail" id="ad-detail-panel" aria-live="polite">
+      {% if selected_ad %}
+        {% include 'engine/ad_detail.html' with ad=selected_ad %}
+      {% else %}
+        <div class="workspace-detail-panel"><div class="ad-detail-loading">Välj en annons för att öppna detaljvyn.</div></div>
+      {% endif %}
+    </aside>
+  </section>
+
+  <section class="learning-context">
+    {% include 'engine/learning_panel.html' %}
+  </section>
+
+  <details class="operations-disclosure open-section" {% if editing or form.errors %}open{% endif %}>
+    <summary>Bevakning & datakällor</summary>
+    <div class="operations-body">
+      <div class="section-head"><div><h2>Bevakade annonsörer</h2><p class="small">Konton som ingår i Meta Ads Intelligence. Det här är driftinställningar, inte själva analysytan.</p></div></div>
+      <div class="account-list">
+        {% for account in accounts %}
+          <div class="account-row">
+            <div><strong>{{ account.name }}</strong><p class="small">{{ account.country }} · {% if account.active %}Aktiv{% else %}Pausad{% endif %} · {{ account.ads.count }} annonser</p></div>
+            <div class="small">
+              Täckning: {{ account.sync.coverage|default:'Ej startad' }}<br><span class="break-anywhere">{{ account.page_url }}</span>
+              {% if account.sync.coverage == 'limited' %}<p>Resultatgränsen nåddes. Historiken är ofullständig och fler betalda historikhämtningar är pausade.</p><form method="post" action="{% url 'engine:ad_account_action' workspace_id=workspace.pk account_id=account.pk %}">{% csrf_token %}<button class="button-secondary" name="action" value="resume_new">Acceptera luckan och bevaka nytt</button></form>{% endif %}
+              {% if account.sync %}<details><summary>Senaste hämtningar</summary>{% for run in account.sync.requests.all|slice:':5' %}<p class="small">{{ run.created_at|date:'j M H:i' }} · {{ run.mode }} · {{ run.status }} · {{ run.result.saved|default:0 }} sparade · ${{ run.cost_usd|default_if_none:'okänd' }}</p>{% endfor %}<form method="post" action="{% url 'engine:ad_account_action' workspace_id=workspace.pk account_id=account.pk %}">{% csrf_token %}<button class="button-secondary" name="action" value="reprocess">Läs om sparat dataset utan ny scrape</button></form></details>{% endif %}
+            </div>
+            <div class="account-row-actions">
+              <a href="?channel=paid&edit={{ account.pk }}">Redigera</a>
+              <form method="post" action="{% url 'engine:ad_account_action' workspace_id=workspace.pk account_id=account.pk %}">{% csrf_token %}<button name="action" value="refresh">Kontrollera</button><button class="button-secondary" name="action" value="toggle">{% if account.active %}Pausa{% else %}Aktivera{% endif %}</button></form>
             </div>
           </div>
-        </details>
-      {% empty %}
-        <div class="empty-state"><h3>Inga annonser ännu</h3><p>Lägg till en annonsör nedan. Första hämtningen är begränsad och senare körningar anpassas efter faktiskt nytt värde.</p></div>
-      {% endfor %}
-    </div>
-  </section>
+        {% empty %}
+          <div class="empty-state"><h3>Ingen annonsör tillagd</h3><p>Lägg till ett konto för att börja samla betalda signaler.</p></div>
+        {% endfor %}
+      </div>
 
-  <section class="open-section">
-    <div class="section-head"><div><h2>Bevakade annonsörer</h2><p class="small">Konton som ingår i Meta Ads Intelligence.</p></div></div>
-    <div class="account-list">
-      {% for account in accounts %}
-        <div class="account-row">
-          <div><strong>{{ account.name }}</strong><p class="small">{{ account.country }} · {% if account.active %}Aktiv{% else %}Pausad{% endif %} · {{ account.ads.count }} annonser</p></div>
-          <div class="small">
-            Täckning: {{ account.sync.coverage|default:'Ej startad' }}<br>{{ account.page_url }}
-            {% if account.sync.coverage == 'limited' %}<p>Resultatgränsen nåddes. Historiken är ofullständig och fler betalda historikhämtningar är pausade.</p><form method="post" action="{% url 'engine:ad_account_action' workspace_id=workspace.pk account_id=account.pk %}">{% csrf_token %}<button class="button-secondary" name="action" value="resume_new">Acceptera luckan och bevaka nytt</button></form>{% endif %}
-            {% if account.sync %}<details><summary>Senaste hämtningar</summary>{% for run in account.sync.requests.all|slice:':5' %}<p class="small">{{ run.created_at|date:'j M H:i' }} · {{ run.mode }} · {{ run.status }} · {{ run.result.saved|default:0 }} sparade · ${{ run.cost_usd|default_if_none:'okänd' }}</p>{% endfor %}<form method="post" action="{% url 'engine:ad_account_action' workspace_id=workspace.pk account_id=account.pk %}">{% csrf_token %}<button class="button-secondary" name="action" value="reprocess">Läs om sparat dataset utan ny scrape</button></form></details>{% endif %}
-          </div>
-          <div class="account-row-actions">
-            <a href="?channel=paid&edit={{ account.pk }}">Redigera</a>
-            <form method="post" action="{% url 'engine:ad_account_action' workspace_id=workspace.pk account_id=account.pk %}">{% csrf_token %}<button name="action" value="refresh">Kontrollera</button><button class="button-secondary" name="action" value="toggle">{% if account.active %}Pausa{% else %}Aktivera{% endif %}</button></form>
-          </div>
-        </div>
-      {% empty %}
-        <div class="empty-state"><h3>Ingen annonsör tillagd</h3><p>Lägg till en nedan.</p></div>
-      {% endfor %}
+      <details class="add-workspace" {% if editing or form.errors %}open{% endif %}>
+        <summary>{% if editing %}Redigera annonsör{% else %}+ Lägg till annonsör{% endif %}</summary>
+        <div><form method="post" action="?channel=paid">{% csrf_token %}{% if editing %}<input type="hidden" name="account_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>Spara bevakning</button></form><p class="small">Första urvalet är begränsat. Därefter används kort överlapp och adaptiv frekvens. Kända annonser kan fortfarande returneras av Actor:n och den kostnaden mäts öppet.</p></div>
+      </details>
     </div>
-
-    <details class="add-workspace" {% if editing or form.errors %}open{% endif %}>
-      <summary>{% if editing %}Redigera annonsör{% else %}+ Lägg till annonsör{% endif %}</summary>
-      <div><form method="post" action="?channel=paid">{% csrf_token %}{% if editing %}<input type="hidden" name="account_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>Spara bevakning</button></form><p class="small">Första urvalet är begränsat. Därefter används kort överlapp och adaptiv frekvens. Kända annonser kan fortfarande returneras av Actor:n och den kostnaden mäts öppet.</p></div>
-    </details>
-  </section>
+  </details>
 </main>
 {% endblock %}
