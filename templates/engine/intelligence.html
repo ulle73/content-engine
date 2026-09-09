@@ -1,16 +1,35 @@
 {% extends 'base.html' %}
 {% block title %}{{ workspace.name }} · Insikter{% endblock %}
 {% block content %}
-<main class="engine intelligence-page">
+<main class="engine intelligence-page organic-insights-page">
   <header class="page-header">
     <div class="page-heading">
+      <span class="editorial-eyebrow">Organic intelligence</span>
       <h1>Insikter</h1>
-      <p class="intro">Se vad som sticker ut hos konkurrenterna, förstå mekanismen och använd den som input till eget innehåll.</p>
+      <p class="intro">Se vad som sticker ut hos konkurrenterna, förstå mekanismen och omsätt den till eget innehåll utan att kopiera.</p>
     </div>
     <div class="page-actions"><span class="meta-pill">Senaste veckan</span></div>
   </header>
 
   {% include 'engine/insight_tabs.html' %}
+
+  {% if weekly %}
+    {% with lead=weekly.0 %}
+      <section class="insight-summary-grid" aria-label="Aktuell organisk signal">
+        <div class="insight-summary-main">
+          <span class="signal-kicker">Vad sticker ut just nu</span>
+          <h2>{{ lead.post.caption|default:'Aktuell signal'|truncatechars:120 }}</h2>
+          <p>{% if lead.relative != None %}<strong>{{ lead.relative|floatformat:1 }}× över jämförelsen</strong> inom samma konto och format. {% endif %}{{ lead.momentum.label }}</p>
+        </div>
+        <div class="insight-summary-side">
+          <div class="insight-summary-stat"><span>Bevakade konton</span><strong>{{ competitors|length }}</strong></div>
+          <div class="insight-summary-stat"><span>Aktuella signaler</span><strong>{{ weekly|length }}</strong></div>
+          <div class="insight-summary-stat"><span>Återkommande mönster</span><strong>{{ patterns|length }}</strong></div>
+        </div>
+      </section>
+    {% endwith %}
+  {% endif %}
+
   {% include 'engine/learning_panel.html' %}
 
   {% if pending %}
@@ -29,20 +48,14 @@
     </script>
   {% endif %}
 
-  <section>
-    <div class="section-head">
-      <div><h2>Starkaste signalerna just nu</h2><p class="small">Sorterat efter relativ prestation, aktualitet, momentum och datakvalitet. Jämförelsen görs inom samma konto och format.</p></div>
+  <section class="product-section">
+    <div class="product-section-head">
+      <div><span class="editorial-eyebrow">Prioriterat</span><h2>Starkaste signalerna just nu</h2><p class="small">Relativ prestation, aktualitet, momentum och datakvalitet vägs samman inom samma konto och format.</p></div>
       <span class="meta-pill">{{ competitors|length }} konton</span>
     </div>
     <div class="signal-board">
-      <div class="signal-board-header" aria-hidden="true">
-        <span>Konto</span><span>Innehåll</span><span>Typ</span><span>Ålder</span><span>Likes</span><span>Över norm</span><span></span>
-      </div>
-      {% for signal in weekly %}
-        {% include 'engine/signal_card.html' %}
-      {% empty %}
-        <div class="empty-state"><h3>Inga aktuella signaler ännu</h3><p>Lägg till referenskonton längre ner eller kör nästa begränsade hämtning.</p></div>
-      {% endfor %}
+      <div class="signal-board-header" aria-hidden="true"><span>Konto</span><span>Innehåll</span><span>Typ</span><span>Ålder</span><span>Likes</span><span>Över norm</span><span></span></div>
+      {% for signal in weekly %}{% include 'engine/signal_card.html' %}{% empty %}<div class="empty-state"><h3>Inga aktuella signaler ännu</h3><p>Lägg till referenskonton längre ner eller kör nästa begränsade hämtning.</p></div>{% endfor %}
     </div>
   </section>
 
@@ -55,44 +68,27 @@
     {% endif %}
 
     {% if references %}
-      <details class="open-section">
-        <summary>Starka historiska referenser</summary>
-        <p class="small">Äldre poster som överpresterat inom sitt konto och format. De är referenser, inte aktuella trendsignaler.</p>
-        <div class="reference-list">{% for signal in references %}{% include 'engine/signal_card.html' %}{% endfor %}</div>
-      </details>
+      <details class="open-section"><summary>Starka historiska referenser</summary><p class="small">Äldre poster som överpresterat inom sitt konto och format. De är referenser, inte aktuella trendsignaler.</p><div class="reference-list">{% for signal in references %}{% include 'engine/signal_card.html' %}{% endfor %}</div></details>
     {% endif %}
 
-    <section class="open-section">
-      <div class="section-head">
-        <div><h2>Konton att lära av</h2><p class="small">Referenskonton som ingår i det organiska signalflödet.</p></div>
-      </div>
-      <div class="account-list">
-        {% for competitor in competitors %}
-          <div class="account-row">
-            <div><strong>{{ competitor.name }}</strong><p class="small"><a href="{{ competitor.url }}" target="_blank" rel="noopener">@{{ competitor.username }}</a> · {% if competitor.active %}Aktiv{% else %}Pausad{% endif %}</p></div>
-            <div class="small">Senast hämtat: {{ competitor.last_success_at|date:'j M H:i'|default:'Inte ännu' }}{% if competitor.last_error %}<br>{{ competitor.last_error }}{% endif %}</div>
-            <div class="account-row-actions">
-              <a href="?edit={{ competitor.pk }}">Redigera</a>
-              <form method="post" action="{% url 'engine:competitor_action' workspace_id=workspace.pk competitor_id=competitor.pk %}">{% csrf_token %}{% if competitor.active %}<button name="action" value="fetch">Hämta nu</button>{% endif %}<button class="button-secondary" name="action" value="toggle">{% if competitor.active %}Pausa{% else %}Aktivera{% endif %}</button></form>
+    <details class="open-section" {% if editing or form.errors %}open{% endif %}>
+      <summary>Bevakning & datakällor</summary>
+      <div class="operations-body">
+        <div class="section-head"><div><h2>Konton att lära av</h2><p class="small">Referenskonton som ingår i det organiska signalflödet.</p></div></div>
+        <div class="account-list">
+          {% for competitor in competitors %}
+            <div class="account-row">
+              <div><strong>{{ competitor.name }}</strong><p class="small"><a href="{{ competitor.url }}" target="_blank" rel="noopener">@{{ competitor.username }}</a> · {% if competitor.active %}Aktiv{% else %}Pausad{% endif %}</p></div>
+              <div class="small">Senast hämtat: {{ competitor.last_success_at|date:'j M H:i'|default:'Inte ännu' }}{% if competitor.last_error %}<br>{{ competitor.last_error }}{% endif %}</div>
+              <div class="account-row-actions"><a href="?edit={{ competitor.pk }}">Redigera</a><form method="post" action="{% url 'engine:competitor_action' workspace_id=workspace.pk competitor_id=competitor.pk %}">{% csrf_token %}{% if competitor.active %}<button name="action" value="fetch">Hämta nu</button>{% endif %}<button class="button-secondary" name="action" value="toggle">{% if competitor.active %}Pausa{% else %}Aktivera{% endif %}</button></form></div>
             </div>
-          </div>
-        {% empty %}
-          <div class="empty-state"><h3>Inga referenskonton</h3><p>Lägg till ett konto nedan.</p></div>
-        {% endfor %}
-      </div>
-
-      <details class="add-workspace" {% if editing or form.errors %}open{% endif %}>
-        <summary>{% if editing %}Redigera konto{% else %}+ Lägg till referenskonto{% endif %}</summary>
-        <div>
-          <form method="post">{% csrf_token %}{% if editing %}<input type="hidden" name="competitor_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>{% if editing %}Spara konto{% else %}Lägg till och hämta historik{% endif %}</button></form>
-          <p class="small">Första hämtningen är begränsad. Därefter anpassas intervall och storlek efter hur mycket nytt varje körning faktiskt ger.</p>
+          {% empty %}<div class="empty-state"><h3>Inga referenskonton</h3><p>Lägg till ett konto nedan.</p></div>{% endfor %}
         </div>
-      </details>
-    </section>
 
-    <details class="open-section">
-      <summary>Importstatus och kostnad</summary>
-      <div class="table-scroll"><table class="data-table"><thead><tr><th>Konto</th><th>Status</th><th>Poster</th><th>Kostnad</th><th>Körning</th></tr></thead><tbody>{% for run in runs %}<tr><td>{{ run.competitor.name }}</td><td>{{ run.status }}</td><td>{{ run.item_count }}{% if run.skipped_count %} · {{ run.skipped_count }} hoppades över{% endif %}</td><td>{% if run.cost_usd != None %}${{ run.cost_usd }}{% else %}Okänd{% endif %}</td><td>{{ run.actor }}<br><span class="small">{{ run.started_at|date:'j M H:i' }}{% if run.error %} · {{ run.error }}{% endif %}</span></td></tr>{% empty %}<tr><td colspan="5">Ingen import registrerad ännu.</td></tr>{% endfor %}</tbody></table></div>
+        <details class="add-workspace" {% if editing or form.errors %}open{% endif %}><summary>{% if editing %}Redigera konto{% else %}+ Lägg till referenskonto{% endif %}</summary><div><form method="post">{% csrf_token %}{% if editing %}<input type="hidden" name="competitor_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>{% if editing %}Spara konto{% else %}Lägg till och hämta historik{% endif %}</button></form><p class="small">Första hämtningen är begränsad. Därefter anpassas intervall och storlek efter hur mycket nytt varje körning faktiskt ger.</p></div></details>
+
+        <details class="open-section"><summary>Importstatus och kostnad</summary><div class="table-scroll"><table class="data-table mobile-table"><thead><tr><th>Konto</th><th>Status</th><th>Poster</th><th>Kostnad</th><th>Körning</th></tr></thead><tbody>{% for run in runs %}<tr><td data-label="Konto">{{ run.competitor.name }}</td><td data-label="Status">{{ run.status }}</td><td data-label="Poster">{{ run.item_count }}{% if run.skipped_count %} · {{ run.skipped_count }} hoppades över{% endif %}</td><td data-label="Kostnad">{% if run.cost_usd != None %}${{ run.cost_usd }}{% else %}Okänd{% endif %}</td><td data-label="Körning">{{ run.actor }}<br><span class="small">{{ run.started_at|date:'j M H:i' }}{% if run.error %} · {{ run.error }}{% endif %}</span></td></tr>{% empty %}<tr><td colspan="5">Ingen import registrerad ännu.</td></tr>{% endfor %}</tbody></table></div></details>
+      </div>
     </details>
   </div>
 </main>
