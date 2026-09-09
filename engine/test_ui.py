@@ -28,6 +28,15 @@ class AppShellTests(TestCase):
         self.assertEqual(self.client.get("/static/css/app.css").status_code, 200)
         self.assertEqual(self.client.get("/static/css/responsive-v2.css").status_code, 200)
 
+    def test_workspace_shell_loads_htmx_and_editorial_workspace_styles(self):
+        response = self.client.get(
+            reverse("engine:home", kwargs={"workspace_id": self.workspace.pk})
+        )
+
+        self.assertContains(response, "htmx.org@2.0.10")
+        self.assertContains(response, 'href="/static/css/workspace-v3.css"')
+        self.assertEqual(self.client.get("/static/css/workspace-v3.css").status_code, 200)
+
     def test_workspace_shell_has_mobile_header_and_bottom_navigation(self):
         response = self.client.get(
             reverse("engine:home", kwargs={"workspace_id": self.workspace.pk})
