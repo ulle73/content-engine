@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}Resultat · {{ run.title }}{% endblock %}
 {% block content %}
-<main class="engine narrow">
+<main class="engine narrow outcome-page">
   <a class="back-link" href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">← Till utkastet</a>
   <header class="page-header">
-    <div class="page-heading"><h1>Registrera verifierat resultat</h1><p class="intro">{{ run.title }} · {{ run.get_channel_display }}. Använd bara mätvärden från en källa du kan verifiera.</p></div>
+    <div class="page-heading"><span class="editorial-eyebrow">Learning outcome</span><h1>Registrera verifierat resultat</h1><p class="intro">{{ run.title }} · {{ run.get_channel_display }}. Spara bara mätvärden som kan kopplas till en verklig källa.</p></div>
   </header>
 
   <section class="settings-section">
-    <div class="settings-section-head"><h2>Resultatunderlag</h2><p class="small">Lämna okända fält tomma. Saknade värden blir aldrig automatiskt 0 och historiska labels skrivs inte över.</p></div>
+    <div class="settings-section-head"><div><span class="editorial-eyebrow">Verifierad data</span><h2>Resultatunderlag</h2><p class="small">Lämna okända fält tomma. Saknade värden blir aldrig automatiskt 0 och historiska labels skrivs inte över.</p></div></div>
     <div class="settings-section-body">
       <p class="small">Mätningen ska avse det dokumenterade mätfönstret för valt learning-mål. Paid kan använda klick, konverteringar, CPA, ROAS eller revenue när rätt verifierade metrics och valuta finns.</p>
       <form method="post">{% csrf_token %}{{ form.as_p }}<button>Spara verifierat resultat</button></form>
