@@ -1,0 +1,10 @@
+<header class="mobile-header">
+  <a class="mobile-header-company" href="{% url 'dashboard' %}" aria-label="Byt företag">
+    <span class="mobile-header-mark">CE</span>
+    <span class="mobile-header-copy">
+      <strong>{{ workspace.name }}</strong>
+      <span>{% if request.resolver_match.url_name == 'home' %}Översikt{% elif request.resolver_match.url_name == 'intelligence' or request.resolver_match.url_name == 'analyze_signal' or request.resolver_match.url_name == 'ad_analyze' or request.resolver_match.url_name == 'own_performance' %}Insikter{% elif request.resolver_match.url_name == 'settings' or request.resolver_match.url_name == 'connect' %}Inställningar{% else %}Skapa{% endif %}</span>
+    </span>
+  </a>
+  <a class="mobile-header-postiz" href="https://platform.postiz.com" target="_blank" rel="noopener" aria-label="Öppna Postiz">Postiz ↗</a>
+</header>

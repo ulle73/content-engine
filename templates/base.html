@@ -3,10 +3,12 @@
 <html lang="sv">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
   <title>{% block title %}Content Engine{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'css/responsive-v2.css' %}">
 </head>
 <body>
   {% if user.is_authenticated and workspace %}
@@ -14,6 +16,7 @@
       {% include 'components/sidebar.html' %}
       <section class="app-main">
         {% include 'components/topbar.html' %}
+        {% include 'components/mobile_header.html' %}
         {% for message in messages %}<div class="notice {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
   {% else %}
     <header class="public-topbar">
@@ -32,6 +35,7 @@
   {% block content %}{% endblock %}
 
   {% if user.is_authenticated and workspace %}
+        {% include 'components/mobile_bottom_nav.html' %}
       </section>
     </div>
   {% endif %}
