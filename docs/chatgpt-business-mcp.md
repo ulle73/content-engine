@@ -7,11 +7,11 @@ This document defines the production integration between ChatGPT Business and th
 ```text
 ChatGPT Business
       |
-      | OAuth/OIDC bearer token + MCP Streamable HTTP
+      | OAuth 2.1 + MCP Streamable HTTP
       v
 content-engine-mcp (Render)
       |
-      | authenticated Django user, company scoped
+      | same Django users + same database
       v
 Content Engine services + existing Django models
       |             |             |             |
@@ -24,7 +24,7 @@ Content Engine remains the system of record. ChatGPT is an operator interface. T
 
 ## Hard invariants
 
-1. Every write is scoped from the authenticated identity to a `Company` owned by that Django user.
+1. Every write is scoped from the authenticated Content Engine user to a `Company` owned by that user.
 2. Every produced post lives in a real `ContentRun`; ideas, selected idea, copy, media and delivery remain attached to that run.
 3. `record_predictions()` still runs before idea selection/publication. Existing production learning models can therefore influence idea ordering exactly as they do in Content Engine.
 4. Postiz is never called directly by ChatGPT. Delivery always runs through `engine.delivery`, persists the external IDs on the same `ContentRun`, and preserves `OwnPost`/7–8 day outcome matching for ML.
@@ -47,53 +47,62 @@ Health check:
 https://<content-engine-mcp-host>/healthz
 ```
 
-The service is intentionally deployed separately from the existing WSGI web service but uses the same codebase and the same production database.
+The service is deployed separately from the existing WSGI web service but uses the same codebase and production database.
 
-## Authentication
+## Authentication — no Microsoft/Entra or external IdP
 
-Production uses an external OAuth/OIDC provider. The access token is validated against:
+`content-engine-mcp` is its own OAuth authorization server. It uses Django OAuth Toolkit 3.4.x and the **existing Content Engine Django users**.
 
-- `MCP_AUTH_ISSUER`
-- `MCP_AUTH_AUDIENCE`
-- optional `MCP_AUTH_JWKS_URL` (normally discovered from the issuer)
-- optional `MCP_REQUIRED_SCOPE`
-- `MCP_AUTH_USER_CLAIM`
-
-The configured identity claim must uniquely match one active Django user's email or username. No company/user ID supplied by the language model can bypass that mapping.
-
-For Microsoft Entra ID, a practical configuration is:
+The user experience is:
 
 ```text
-MCP_AUTH_ISSUER=https://login.microsoftonline.com/<tenant-id>/v2.0
-MCP_AUTH_AUDIENCE=<Application ID URI or API client id>
-MCP_AUTH_USER_CLAIM=preferred_username
-MCP_REQUIRED_SCOPE=content-engine.operate
+ChatGPT → Content Engine OAuth login → normal Content Engine email/password → consent → MCP access
 ```
 
-The OAuth provider should issue refresh tokens/offline access for the ChatGPT connection. Register ChatGPT's callback/redirect URL in the OAuth client when ChatGPT shows it during custom-app setup.
+There is no Microsoft Entra app registration, no Google/Auth0 dependency and no separate identity database.
 
-`MCP_ALLOW_INSECURE_LOCAL`, `MCP_DEV_BEARER_TOKEN` and `MCP_DEV_USER_EMAIL` exist only for local/CI tests and must never be enabled on a public deployment.
+Security posture:
+
+- Authorization Code flow only.
+- S256 PKCE required.
+- Refresh-token rotation and reuse protection.
+- Access token lifetime: 1 hour.
+- Refresh token lifetime: 90 days.
+- Access/refresh tokens are hashed at rest.
+- OAuth `resource` is bound to the exact MCP URL (`https://<host>/mcp`).
+- The MCP resource server rejects tokens without `content-engine.operate`.
+- The bearer token maps directly to the Django user ID that authorized it; user/company IDs supplied by the language model cannot elevate access.
+- Dynamic Client Registration exists only as an MCP compatibility fallback and accepts only explicit HTTPS ChatGPT/OpenAI callback hosts.
+- Client ID Metadata Documents are enabled for modern MCP clients.
+
+OAuth/authorization-server metadata is exposed on the same MCP host under the standard well-known routes. ChatGPT can therefore discover authorization/token/registration endpoints from the MCP endpoint without manually configuring an external issuer.
+
+Local-only development variables (`MCP_ALLOW_INSECURE_LOCAL`, `MCP_DEV_BEARER_TOKEN`, `MCP_DEV_USER_EMAIL`) must never be enabled on the public deployment.
 
 ## Render deployment
 
 `render.yaml` adds a second service named `content-engine-mcp`.
 
-The following values **must be identical to the existing `content-engine` service**:
+The following values must point at the same Content Engine system of record/providers as the existing service:
 
 - `DATABASE_URL`
 - `POSTIZ_ENCRYPTION_SECRET`
 - R2 credentials/bucket/endpoint
-- provider credentials that the MCP should be allowed to use (OpenAI/Higgsfield)
+- OpenAI key
+- Apify token where intelligence refresh should be available
+- Higgsfield credentials where video generation should be available
 
-`POSTIZ_ENCRYPTION_SECRET` is especially important: changing it makes existing encrypted Postiz credentials unreadable.
+`POSTIZ_ENCRYPTION_SECRET` must be exactly the same value as the existing `content-engine` service or existing encrypted Postiz credentials cannot be decrypted.
 
-`SECRET_KEY` may technically differ, but using the same deployment secret is simplest. Never copy secrets into the repository.
+The MCP service may have its own generated Django `SECRET_KEY`; it does not need Microsoft or any external OAuth secret.
 
-The start command applies migrations and starts the ASGI MCP server:
+The start command applies migrations with the shared migration lock and starts the combined MCP/OAuth ASGI service:
 
 ```text
 bash scripts/start-mcp.sh
 ```
+
+`RENDER_EXTERNAL_URL` automatically becomes both the OAuth issuer and the base for the protected MCP resource. No `MCP_AUTH_ISSUER`, `MCP_AUTH_AUDIENCE` or JWKS configuration is required.
 
 ## Tool model
 
@@ -136,7 +145,7 @@ There are two supported image paths:
 1. Content Engine generation → persisted `MediaGeneration`/`MediaAsset`.
 2. ChatGPT native image generation → base64 or short-lived public HTTPS URL → validated ingest → persisted `MediaAsset` with ChatGPT provenance.
 
-The URL ingest path uses the existing public-IP/HTTPS validation and refuses redirects/private network targets.
+The URL ingest path uses HTTPS/public-IP validation and refuses redirects/private-network targets.
 
 ### Postiz
 
@@ -147,7 +156,7 @@ The URL ingest path uses the existing public-IP/HTTPS validation and refuses red
 
 They are intentionally separate MCP actions. Immediate publication must only be called for explicit user intent. Schedule uses Europe/Stockholm when a timezone is omitted and is normalized to UTC for Postiz.
 
-If a run was first sent as a Postiz draft and the user later asks to schedule/publish it, Content Engine does **not** merely toggle the Postiz draft status because Postiz keeps the draft's stored date. Instead it creates the new scheduled/now object, atomically replaces the run's authoritative external IDs, and then best-effort removes the superseded non-public draft. This keeps later performance/ML mapping on the object that actually publishes.
+If a run was first sent as a Postiz draft and the user later asks to schedule/publish it, Content Engine does not merely toggle the Postiz draft status because Postiz keeps the draft's stored date. Instead it creates the new scheduled/now object, replaces the run's authoritative external IDs, and then best-effort removes the superseded non-public draft. This keeps later performance/ML mapping on the object that actually publishes.
 
 ## ML continuity
 
@@ -166,7 +175,7 @@ ContentRun
   → existing shadow/production learning pipeline
 ```
 
-This means content created and delivered from ChatGPT remains eligible for the current ML implementation. The critical rule is that ChatGPT never bypasses Content Engine when sending to Postiz.
+Content created and delivered from ChatGPT therefore remains eligible for the current ML implementation. The critical rule is that ChatGPT never bypasses Content Engine when sending to Postiz.
 
 ## Idempotency and uncertain writes
 
@@ -181,18 +190,19 @@ Postiz/network timeouts after a POST are treated as uncertain because the remote
 
 ## ChatGPT Business setup
 
-1. Deploy `content-engine-mcp` and apply the new migration.
-2. Configure the OAuth/OIDC environment and verify `/healthz`.
-3. In ChatGPT Business, enable Developer Mode as a workspace admin/owner.
-4. Create a custom MCP app with `https://<host>/mcp`.
-5. Select OAuth and finish authorization with the configured provider.
-6. Scan tools and verify that the complete tool catalog is visible.
-7. Test the app while it is still a draft.
-8. Test one non-public flow end-to-end: create run → choose idea → generate/ingest image → select media → Postiz draft.
-9. Test schedule on a controlled channel and confirm Postiz external IDs map back to the same `ContentRun`.
-10. Only then publish the ChatGPT Business app to the workspace.
+1. Deploy the `content-engine-mcp` Render service from the tested branch/merged commit.
+2. Give it the shared `DATABASE_URL`, `POSTIZ_ENCRYPTION_SECRET`, R2/provider credentials and verify `/healthz`.
+3. Open `https://<mcp-host>/.well-known/oauth-authorization-server` and verify OAuth discovery returns the MCP host as issuer.
+4. In ChatGPT Business, enable Developer Mode as a workspace admin/owner.
+5. Create a custom MCP app with `https://<mcp-host>/mcp`.
+6. Choose OAuth when prompted. ChatGPT discovers the Content Engine OAuth server itself.
+7. Sign in with the normal Content Engine account and approve the requested `content-engine.operate` access.
+8. Scan tools and verify the complete tool catalog is visible.
+9. Keep the app as a draft while testing one non-public flow end-to-end: create run → choose idea → generate/ingest image → select media → Postiz draft.
+10. Test schedule on a controlled channel and confirm Postiz external IDs map back to the same `ContentRun`.
+11. Only then publish the ChatGPT Business app to the workspace.
 
-Because Business custom-app tool contracts may require recreation/republication to change after publishing, the full tool contract is implemented and CI-tested before the first workspace publication.
+No Microsoft Entra configuration, external OAuth client secret or third-party identity service is part of this setup.
 
 ## Example operator flows
 
