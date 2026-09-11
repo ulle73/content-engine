@@ -1,0 +1,38 @@
+name: Content Engine MCP Verify
+on:
+  push:
+    branches:
+      - feature/chatgpt-content-engine-mcp
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SECRET_KEY: test-only-mcp-secret
+      POSTIZ_ENCRYPTION_SECRET: test-only-postiz-secret
+      APP_URL: http://127.0.0.1:8765
+      MEDIA_STORAGE: local
+      MCP_ALLOW_INSECURE_LOCAL: "true"
+      MCP_DEV_BEARER_TOKEN: test-only-mcp-token
+      MCP_DEV_USER_EMAIL: operator@example.com
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py migrate --noinput
+      - run: python manage.py migrate --check
+      - run: python manage.py check
+      - run: python manage.py collectstatic --noinput
+      - run: python -m py_compile engine/mcp_server.py engine/mcp_auth.py engine/operator.py engine/delivery.py engine/mcp_operations.py operator_bridge/models.py
+      - run: python manage.py test
