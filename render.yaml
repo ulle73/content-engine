@@ -50,11 +50,12 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.15
-      # IMPORTANT: set these to the same values used by content-engine.
+      # The MCP service shares Content Engine's system of record and provider credentials.
       - key: DATABASE_URL
         sync: false
       - key: SECRET_KEY
-        sync: false
+        generateValue: true
+      # Must be exactly the same value as the existing content-engine service.
       - key: POSTIZ_ENCRYPTION_SECRET
         sync: false
       - key: OPENAI_API_KEY
@@ -85,11 +86,8 @@ services:
         sync: false
       - key: HIGGSFIELD_MAX_USD
         value: "2"
-      - key: MCP_AUTH_ISSUER
-        sync: false
-      - key: MCP_AUTH_AUDIENCE
-        sync: false
-      - key: MCP_AUTH_USER_CLAIM
-        value: preferred_username
+      # OAuth is hosted by this service and uses normal Content Engine users. No external IdP.
       - key: MCP_REQUIRED_SCOPE
         value: content-engine.operate
+      - key: MCP_OAUTH_ALLOWED_CLIENT_HOSTS
+        value: chatgpt.com,openai.com,connectors.api.openai.org
