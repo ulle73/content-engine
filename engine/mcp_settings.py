@@ -11,6 +11,14 @@ LOGOUT_REDIRECT_URL = "login"
 MCP_PUBLIC_URL = APP_URL.rstrip("/")  # noqa: F405
 MCP_RESOURCE_URL = os.environ.get("MCP_RESOURCE_URL", f"{MCP_PUBLIC_URL}/mcp").rstrip("/")
 MCP_REQUIRED_SCOPE = os.environ.get("MCP_REQUIRED_SCOPE", "content-engine.operate").strip() or "content-engine.operate"
+MCP_OAUTH_ALLOWED_CLIENT_HOSTS = [
+    item.strip().lower()
+    for item in os.environ.get(
+        "MCP_OAUTH_ALLOWED_CLIENT_HOSTS",
+        "chatgpt.com,openai.com,connectors.api.openai.org",
+    ).split(",")
+    if item.strip()
+]
 
 # Content Engine is its own OAuth authorization server for the MCP service.
 # The same Django users/passwords and same database are used; no external IdP is required.
@@ -36,6 +44,8 @@ OAUTH2_PROVIDER = {
     "DCR_ROTATE_REGISTRATION_TOKEN_ON_UPDATE": True,
     # New MCP clients prefer Client ID Metadata Documents; DCR remains as compatibility fallback.
     "CIMD_ENABLED": True,
+    "CIMD_REGISTRATION_PERMISSION_CLASSES": ("oauth2_provider.cimd.HostAllowlistCIMDPermission",),
+    "CIMD_ALLOWED_HOSTS": MCP_OAUTH_ALLOWED_CLIENT_HOSTS,
     "OAUTH2_RESPONSE_TYPES_SUPPORTED": ["code"],
     "OAUTH2_GRANT_TYPES_SUPPORTED": ["authorization_code", "refresh_token"],
     "OAUTH2_TOKEN_ENDPOINT_AUTH_METHODS_SUPPORTED": ["none", "client_secret_basic", "client_secret_post"],
