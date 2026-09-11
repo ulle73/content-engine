@@ -96,3 +96,8 @@ def current_django_user():
     if len(users) != 1:
         raise OperatorError("Den autentiserade identiteten är inte entydigt kopplad till en aktiv Content Engine-användare.")
     return users[0]
+
+
+# Backwards-compatible symbol for the already-tested MCP tool module. The implementation
+# is no longer OIDC/JWT based; production tokens are issued and verified by Content Engine itself.
+OIDCTokenVerifier = ContentEngineTokenVerifier
