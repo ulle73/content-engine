@@ -34,6 +34,8 @@ jobs:
       - run: python manage.py migrate --noinput
       - run: python manage.py migrate --check
       - run: python manage.py check
+      - run: APP_URL=http://127.0.0.1:8766 DJANGO_SETTINGS_MODULE=engine.mcp_settings python manage.py check
       - run: python manage.py collectstatic --noinput
-      - run: python -m py_compile engine/mcp_server.py engine/mcp_auth.py engine/operator.py engine/delivery.py engine/mcp_operations.py operator_bridge/models.py
+      - run: python -m py_compile engine/mcp_server.py engine/mcp_app.py engine/mcp_auth.py engine/mcp_oauth.py engine/mcp_settings.py engine/mcp_auth_urls.py engine/operator.py engine/delivery.py engine/mcp_operations.py operator_bridge/models.py
+      - run: APP_URL=http://127.0.0.1:8766 DJANGO_SETTINGS_MODULE=engine.mcp_settings python -c "from engine.mcp_app import app; assert app is not None"
       - run: python manage.py test
