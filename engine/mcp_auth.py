@@ -1,120 +1,75 @@
-"""OIDC bearer-token verification for the Content Engine MCP resource server."""
+"""Bearer-token verification for Content Engine's self-hosted MCP OAuth server."""
 
 from __future__ import annotations
 
-import asyncio
+import hashlib
 import os
-from urllib.parse import urlparse
 
-import httpx
-import jwt
+from asgiref.sync import sync_to_async
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.utils import timezone
 from mcp.server.auth.middleware.auth_context import get_access_token
-from mcp.server.auth.provider import AccessToken, TokenVerifier
+from mcp.server.auth.provider import AccessToken as MCPAccessToken, TokenVerifier
+from oauth2_provider.models import AccessToken as OAuthAccessToken
 
 from .operator import OperatorError
 
 
-def _https_url(name: str, *, required: bool = True) -> str:
-    value = os.environ.get(name, "").strip()
-    if not value and not required:
-        return ""
-    parsed = urlparse(value)
-    if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
-        raise RuntimeError(f"{name} must be an absolute https URL")
-    return value.rstrip("/")
-
-
-def _jwks_url(issuer: str) -> str:
-    explicit = _https_url("MCP_AUTH_JWKS_URL", required=False)
-    if explicit:
-        return explicit
-    if not issuer:
-        return ""
-    discovery_url = issuer.rstrip("/") + "/.well-known/openid-configuration"
-    try:
-        response = httpx.get(discovery_url, timeout=10, follow_redirects=False)
-        response.raise_for_status()
-        document = response.json()
-        jwks_uri = str(document.get("jwks_uri") or "").strip()
-    except (httpx.HTTPError, ValueError, TypeError) as exc:
-        raise RuntimeError(
-            "OIDC discovery failed. Set MCP_AUTH_JWKS_URL explicitly or fix MCP_AUTH_ISSUER."
-        ) from exc
-    parsed = urlparse(jwks_uri)
-    if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
-        raise RuntimeError("OIDC discovery returned an invalid jwks_uri")
-    return jwks_uri
-
-
-class OIDCTokenVerifier(TokenVerifier):
-    """Validate JWT access tokens from a configured OIDC/OAuth authorization server."""
+class ContentEngineTokenVerifier(TokenVerifier):
+    """Verify opaque OAuth access tokens issued by this Content Engine deployment."""
 
     def __init__(self) -> None:
         self.allow_local = os.environ.get("MCP_ALLOW_INSECURE_LOCAL", "").lower() in {"1", "true", "yes"}
         self.dev_token = os.environ.get("MCP_DEV_BEARER_TOKEN", "") if self.allow_local else ""
         self.dev_email = os.environ.get("MCP_DEV_USER_EMAIL", "") if self.allow_local else ""
-        self.issuer = _https_url("MCP_AUTH_ISSUER", required=not self.dev_token)
-        self.audience = os.environ.get("MCP_AUTH_AUDIENCE", "").strip()
-        if not self.audience and not self.dev_token:
-            raise RuntimeError("MCP_AUTH_AUDIENCE is required")
-        self.jwks_url = _jwks_url(self.issuer)
-        self.jwks = jwt.PyJWKClient(self.jwks_url) if self.jwks_url else None
-        self.user_claim = os.environ.get("MCP_AUTH_USER_CLAIM", "email").strip() or "email"
-        self.required_scope = os.environ.get("MCP_REQUIRED_SCOPE", "").strip()
-        self.resource = os.environ.get("MCP_RESOURCE_URL", "").strip()
+        self.required_scope = os.environ.get(
+            "MCP_REQUIRED_SCOPE", getattr(settings, "MCP_REQUIRED_SCOPE", "content-engine.operate")
+        ).strip() or "content-engine.operate"
+        self.resource = os.environ.get("MCP_RESOURCE_URL", getattr(settings, "MCP_RESOURCE_URL", "")).strip().rstrip("/")
+        if not self.resource and not self.dev_token:
+            raise RuntimeError("MCP_RESOURCE_URL is required for OAuth token audience validation")
 
-    async def verify_token(self, token: str) -> AccessToken | None:
+    @sync_to_async(thread_sensitive=True)
+    def _lookup(self, raw_token: str):
+        checksum = hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+        token = (
+            OAuthAccessToken.objects.select_related("user", "application")
+            .filter(token_checksum=checksum, expires__gt=timezone.now())
+            .first()
+        )
+        if not token or not token.user_id or not token.user.is_active or not token.application_id:
+            return None
+        if self.required_scope and not token.allow_scopes([self.required_scope]):
+            return None
+        # Require RFC 8707 audience binding. An unrestricted token is deliberately not accepted by MCP.
+        if not token.resource or not token.allows_audience(self.resource):
+            return None
+        return token
+
+    async def verify_token(self, token: str) -> MCPAccessToken | None:
         if self.dev_token and token == self.dev_token:
             if not self.dev_email:
                 return None
-            return AccessToken(
+            return MCPAccessToken(
                 token=token,
                 client_id="local-dev",
-                scopes=[self.required_scope] if self.required_scope else ["content-engine"],
+                scopes=[self.required_scope],
                 subject=self.dev_email.lower(),
                 resource=self.resource or None,
-                claims={self.user_claim: self.dev_email.lower(), "email": self.dev_email.lower()},
+                claims={"content_engine_user": self.dev_email.lower()},
             )
-        if not self.jwks:
+        access = await self._lookup(token)
+        if not access:
             return None
-        try:
-            signing_key = await asyncio.to_thread(self.jwks.get_signing_key_from_jwt, token)
-            claims = await asyncio.to_thread(
-                jwt.decode,
-                token,
-                signing_key.key,
-                algorithms=["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
-                audience=self.audience,
-                issuer=self.issuer,
-                options={"require": ["exp", "iat", "sub"]},
-            )
-        except (jwt.PyJWTError, ValueError, TypeError):
-            return None
-        identity = str(claims.get(self.user_claim) or claims.get("email") or "").strip().lower()
-        if not identity:
-            return None
-        raw_scope = claims.get("scope", claims.get("scp", ""))
-        if isinstance(raw_scope, str):
-            scopes = raw_scope.split()
-        elif isinstance(raw_scope, list):
-            scopes = [str(item) for item in raw_scope]
-        else:
-            scopes = []
-        if self.required_scope and self.required_scope not in scopes:
-            return None
-        raw_audience = claims.get("aud")
-        audience_label = raw_audience[0] if isinstance(raw_audience, list) and raw_audience else raw_audience
-        client_id = str(claims.get("azp") or claims.get("client_id") or audience_label or "chatgpt")
-        return AccessToken(
+        return MCPAccessToken(
             token=token,
-            client_id=client_id,
-            scopes=scopes,
-            expires_at=int(claims["exp"]),
-            subject=str(claims["sub"]),
-            resource=self.resource or None,
-            claims={**claims, "content_engine_user": identity},
+            client_id=access.application.client_id,
+            scopes=list(access.scopes.keys()),
+            expires_at=int(access.expires.timestamp()),
+            subject=str(access.user_id),
+            resource=self.resource,
+            claims={"django_user_id": access.user_id},
         )
 
 
@@ -123,16 +78,21 @@ def current_django_user():
     if token is None:
         raise OperatorError("MCP-anropet saknar autentiserad användare.")
     claims = token.claims or {}
-    identity = str(
-        claims.get("content_engine_user")
-        or claims.get(os.environ.get("MCP_AUTH_USER_CLAIM", "email"))
-        or claims.get("email")
-        or ""
-    ).strip().lower()
-    if not identity:
-        raise OperatorError("Access token saknar användaridentitet som kan mappas till Content Engine.")
+    user_id = claims.get("django_user_id")
     User = get_user_model()
-    users = list(User.objects.filter(Q(email__iexact=identity) | Q(username__iexact=identity))[:2])
-    if len(users) != 1 or not users[0].is_active:
+    if user_id is not None:
+        user = User.objects.filter(pk=user_id, is_active=True).first()
+        if user:
+            return user
+        raise OperatorError("OAuth-token är inte kopplad till en aktiv Content Engine-användare.")
+
+    # Local development only: preserve the explicit email mapping used by CI/manual smoke tests.
+    identity = str(claims.get("content_engine_user") or "").strip().lower()
+    if not identity:
+        raise OperatorError("Access token saknar Content Engine-användaridentitet.")
+    users = list(User.objects.filter(email__iexact=identity, is_active=True)[:2])
+    if len(users) != 1:
+        users = list(User.objects.filter(username__iexact=identity, is_active=True)[:2])
+    if len(users) != 1:
         raise OperatorError("Den autentiserade identiteten är inte entydigt kopplad till en aktiv Content Engine-användare.")
     return users[0]
