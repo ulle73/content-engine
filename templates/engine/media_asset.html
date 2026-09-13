@@ -6,7 +6,7 @@
   </div>
   <div class="media-item-body">
     <div class="media-item-meta"><strong>{{ asset.get_origin_display }}</strong><span>{{ asset.created_at|date:'j M' }}{% if asset.width %} · {{ asset.width }} × {{ asset.height }}{% endif %}{% if asset.duration_seconds %} · {{ asset.duration_seconds|floatformat:1 }} sek{% endif %}</span></div>
-    {% if asset.expires_at and not asset.used_at %}<span class="media-expiry-note">Förhandsvisning · sparas i 7 dagar</span>{% endif %}
+    {% if asset.expires_at and not asset.used_at %}<span class="media-expiry-note">Förhandsvisning i 7 dagar</span>{% endif %}
     <div class="media-actions premium-media-actions">
       {% if run.delivery_status == 'draft' %}<form method="post" action="{% url 'engine:media_use' workspace_id=workspace.pk run_id=run.pk asset_id=asset.pk %}">{% csrf_token %}<button>Använd</button></form>{% endif %}
       <a class="button button-secondary" href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" target="_blank" rel="noopener">Öppna</a>
