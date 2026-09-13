@@ -2,27 +2,35 @@
 {% block title %}{{ workspace.name }} · Inspiration{% endblock %}
 {% block content %}
 <main class="engine intelligence-page ads-page">
-  <header class="page-header">
+  <header class="page-header inspiration-page-header">
     <div class="page-heading">
+      <p class="eyebrow">Konkurrentsignaler</p>
       <h1>Inspiration</h1>
+      <p class="intro">Studera aktiva annonser, kreativa vinklar och återkommande teman – utan att blanda ihop synlighet med faktisk annonsperformance.</p>
     </div>
-    <div class="page-actions"><a class="button" href="{% url 'engine:home' workspace_id=workspace.pk %}?channel=paid#create-content">Skapa annons</a></div>
+    <div class="page-actions"><a class="button inspiration-primary-action" href="{% url 'engine:home' workspace_id=workspace.pk %}?channel=paid#create-content">Skapa annons <span aria-hidden="true">→</span></a></div>
   </header>
 
   {% include 'engine/insight_tabs.html' %}
 
-  <p class="small">Konkurrenternas annonser visas som inspiration. Deras resultat är inte kända.</p>
+  <section class="insight-summary-strip paid-summary-strip" aria-label="Översikt">
+    <div><span>Annonser i vyn</span><strong>{{ ads|length }}</strong></div>
+    <div><span>Bevakade annonsörer</span><strong>{{ accounts|length }}</strong></div>
+    <div class="insight-summary-copy"><span>Viktigt</span><strong>Konkurrenternas faktiska resultat är inte kända.</strong></div>
+  </section>
 
   <section class="ads-workspace workspace-split">
     <div class="workspace-main">
-      <div class="editorial-section-head">
+      <div class="editorial-section-head paid-feed-head">
         <div>
+          <span class="insight-section-kicker">Betalt</span>
           <h2>Annonser att inspireras av</h2>
+          <p class="small">Observerade kreativa uttryck och budskap – inte performance-ranking.</p>
         </div>
         <span class="meta-pill">{{ ads|length }} sparade</span>
       </div>
 
-      <div class="ads-list" aria-label="Observerade konkurrentannonser">
+      <div class="ads-list premium-ads-list" aria-label="Observerade konkurrentannonser">
         {% for ad in ads %}
           <a class="ad-intel-row {% if selected_ad and ad.pk == selected_ad.pk %}is-selected{% endif %}"
              href="?channel=paid&selected={{ ad.pk }}#ad-detail-panel"
@@ -57,9 +65,10 @@
             </span>
           </a>
         {% empty %}
-          <div class="empty-state">
+          <div class="empty-state inspiration-empty-state">
             <h3>Inga annonser ännu</h3>
-            <p><a href="#accounts">Lägg till en annonsör</a></p>
+            <p>Lägg till en relevant annonsör så börjar Content Engine bygga ett kreativt referensbibliotek.</p>
+            <a class="button button-secondary" href="#accounts">Lägg till annonsör</a>
           </div>
         {% endfor %}
       </div>
@@ -69,19 +78,20 @@
       {% if selected_ad %}
         {% include 'engine/ad_detail.html' with ad=selected_ad %}
       {% else %}
-        <div class="workspace-detail-panel"><div class="ad-detail-loading">Välj en annons för att öppna detaljvyn.</div></div>
+        <div class="workspace-detail-panel premium-ad-placeholder"><div class="ad-detail-loading"><span class="ad-placeholder-icon" aria-hidden="true">↗</span><strong>Välj en annons</strong><span>Detaljer, budskap och analys visas här.</span></div></div>
       {% endif %}
     </aside>
   </section>
 
-  <section class="learning-context">
+  <section class="learning-context paid-learning-context">
+    <span class="learning-context-label">Learning · Paid</span>
     {% include 'engine/learning_panel.html' %}
   </section>
 
-  <details class="operations-disclosure open-section" id="accounts" {% if editing or form.errors or not accounts %}open{% endif %}>
-    <summary>Annonsörer att följa</summary>
+  <details class="operations-disclosure open-section inspiration-accounts-card" id="accounts" {% if editing or form.errors or not accounts %}open{% endif %}>
+    <summary>Bevakade annonsörer <span class="small">{{ accounts|length }} annonsörer</span></summary>
     <div class="operations-body">
-      <div class="section-head"><div><h2>Annonsörer</h2></div></div>
+      <div class="section-head"><div><h2>Annonsörer</h2><p class="small">Välj sidor som är relevanta för marknaden och erbjudandet.</p></div></div>
       <div class="account-list">
         {% for account in accounts %}
           <div class="account-row">
