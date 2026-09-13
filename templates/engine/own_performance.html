@@ -4,31 +4,28 @@
 <main class="engine intelligence-page performance-page">
   <header class="page-header">
     <div class="page-heading">
-      <span class="editorial-eyebrow">Own performance</span>
-      <h1>Insikter</h1>
-      <p class="intro">Se hur egna publiceringar utvecklas mot företagets verkliga baseline och vilka resultat som faktiskt kan bli learning-data.</p>
+      <h1>Resultat</h1>
     </div>
   </header>
-  {% include 'engine/insight_tabs.html' %}
 
   {% if own_posts %}
     {% with lead=own_posts.0 %}
       <section class="performance-highlight">
         <div>
-          <span class="signal-kicker">Senaste egna observationen</span>
+          <span class="signal-kicker">Senaste publiceringen</span>
           <h2>{{ lead.caption|striptags|default:'Senaste publiceringen'|truncatechars:120 }}</h2>
-          <p>{{ lead.platform|title }} · publicerad {{ lead.published_at|date:'j M Y' }}{% if lead.latest %} · följs av daily-jobbet{% endif %}</p>
+          <p>{{ lead.platform|title }} · publicerad {{ lead.published_at|date:'j M Y' }}{% if lead.latest %} · följs automatiskt{% endif %}</p>
         </div>
         <div class="performance-highlight-value">
           <strong>{% if lead.latest and lead.latest.baseline.relative != None %}{{ lead.latest.baseline.relative|floatformat:1 }}×{% else %}–{% endif %}</strong>
-          <span>relativ nivå mot baseline</span>
+          <span>jämfört med era vanliga resultat</span>
         </div>
       </section>
     {% endwith %}
   {% endif %}
 
   <section class="product-section">
-    <div class="product-section-head"><div><span class="editorial-eyebrow">Verifierat</span><h2>Egna resultat</h2><p class="small">Views, reach och impressions hålls isär. Äldre eller manuella Postiz-inlägg kan bygga baseline utan att bli retroaktiva ML-labels.</p></div><span class="meta-pill">{{ own_posts|length }} poster</span></div>
+    <div class="product-section-head"><div><h2>Publicerade inlägg</h2></div><span class="meta-pill">{{ own_posts|length }} poster</span></div>
     <div class="performance-board">
       <div class="performance-head" aria-hidden="true"><span>Plattform</span><span>Innehåll</span><span>Publicerad</span><span>Relativ nivå</span><span>Status</span><span></span></div>
       {% for post in own_posts %}
@@ -56,16 +53,16 @@
                   {% if post.latest.baseline.relative != None %}<p><strong>{{ post.latest.baseline.relative|floatformat:1 }}× er normala nivå</strong> för {{ post.latest.baseline.metric }}.</p>{% else %}<p>Ingen tillförlitlig relativ nivå ännu.</p>{% endif %}
                   <p class="small">{{ post.latest.baseline.peers|default:0 }} jämförelseinlägg · {% if post.latest.baseline.confidence_label == 'moderate' %}måttlig säkerhet{% else %}låg säkerhet{% endif %} · åldersfönster {{ post.latest.baseline.age_bucket|default:'utanför standardfönster' }}.</p>
                 {% else %}
-                  <h3>Inväntar performance</h3><p class="small">Daily-jobbet följer publiceringen tills ett användbart mätfönster finns.</p>
+                  <h3>Inväntar resultat</h3><p class="small">Resultaten uppdateras automatiskt.</p>
                 {% endif %}
-                {% if post.run %}<p><a href="{% url 'engine:review' workspace_id=workspace.pk run_id=post.run_id %}">Öppna matchat Content Engine-innehåll →</a></p>{% else %}<p class="small">Ingen säker Content Engine-ID-match. Posten får bygga baseline men inte fabricerade predictions.</p>{% endif %}
+                {% if post.run %}<p><a href="{% url 'engine:review' workspace_id=workspace.pk run_id=post.run_id %}">Öppna utkastet →</a></p>{% else %}<p class="small">Inget kopplat utkast.</p>{% endif %}
                 {% if post.last_error %}<p class="notice warning">{{ post.last_error }}</p>{% endif %}
               </div>
             </div>
           </div>
         </details>
       {% empty %}
-        <div class="empty-state"><h3>Inga egna resultat ännu</h3><p>Daily-jobbet använder företagets Postiz-koppling och importerar publicerade poster när de finns.</p></div>
+        <div class="empty-state"><h3>Inga publicerade inlägg ännu</h3><p>Resultaten visas här efter publicering via Postiz.</p>{% if not workspace.postiz_channels %}<a class="button" href="{% url 'engine:connect' workspace_id=workspace.pk %}">Anslut publiceringskanaler</a>{% else %}<a class="button" href="{% url 'engine:home' workspace_id=workspace.pk %}">Skapa ett inlägg</a>{% endif %}</div>
       {% endfor %}
     </div>
   </section>

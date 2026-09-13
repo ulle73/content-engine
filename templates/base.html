@@ -11,9 +11,12 @@
   <link rel="stylesheet" href="{% static 'css/responsive-v2.css' %}">
   <link rel="stylesheet" href="{% static 'css/workspace-v3.css' %}">
   <link rel="stylesheet" href="{% static 'css/product-polish.css' %}">
+  <link rel="stylesheet" href="{% static 'css/simple-ui.css' %}">
+  <script defer src="{% static 'js/interface.js' %}"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Till innehållet</a>
   {% if user.is_authenticated and workspace %}
     <div class="app-shell">
       {% include 'components/sidebar.html' %}
@@ -35,7 +38,7 @@
     {% for message in messages %}<div class="notice {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
   {% endif %}
 
-  {% block content %}{% endblock %}
+  <div id="main-content" tabindex="-1">{% block content %}{% endblock %}</div>
 
   {% if user.is_authenticated and workspace %}
         {% include 'components/mobile_bottom_nav.html' %}

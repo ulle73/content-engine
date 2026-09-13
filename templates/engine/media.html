@@ -5,41 +5,38 @@
   <a class="back-link" href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">← Till utkastet</a>
   <header class="page-header">
     <div class="page-heading">
-      <span class="editorial-eyebrow">Creative assets</span>
-      <h1>Media</h1>
-      <p class="intro">{{ run.title }} · börja med företagets egna filer och använd AI-generation när det faktiskt tillför något.</p>
+      <h1>Välj bild eller video</h1>
     </div>
   </header>
 
   <section class="media-section">
-    <div class="product-section-head"><div><span class="editorial-eyebrow">Bibliotek</span><h2>Välj befintligt</h2><p class="small">Uppladdat material visas före genererat. AI-genererade filer är alltid separat märkta.</p></div></div>
+    <div class="product-section-head"><div><h2>Dina bilder och videor</h2></div></div>
     <nav class="media-nav" aria-label="Filtrera media"><a href="?filter=all&kind={{ kind }}" {% if filter_value == 'all' %}aria-current="page"{% endif %}>Alla</a><a href="?filter=image&kind={{ kind }}" {% if filter_value == 'image' %}aria-current="page"{% endif %}>Bilder</a><a href="?filter=video&kind={{ kind }}" {% if filter_value == 'video' %}aria-current="page"{% endif %}>Video</a><a href="?filter=uploaded&kind={{ kind }}" {% if filter_value == 'uploaded' %}aria-current="page"{% endif %}>Uppladdat</a><a href="?filter=generated&kind={{ kind }}" {% if filter_value == 'generated' %}aria-current="page"{% endif %}>Genererat</a></nav>
-    <div class="media-grid">{% for asset in assets %}{% include 'engine/media_asset.html' %}{% empty %}<div class="empty-state"><h3>Biblioteket är tomt</h3><p>Ladda upp företagets media eller generera ett alternativ nedan.</p></div>{% endfor %}</div>
+    <div class="media-grid">{% for asset in assets %}{% include 'engine/media_asset.html' %}{% empty %}<div class="empty-state"><h3>Inga filer här ännu</h3><p><a href="#upload">Ladda upp en bild eller video</a></p></div>{% endfor %}</div>
   </section>
 
   {% if can_edit %}
     <section class="media-section">
-      <div class="product-section-head"><div><span class="editorial-eyebrow">Nytt material</span><h2>Lägg till media</h2><p class="small">Egna filer är förstahandsval. Generation är ett verktyg när rätt material saknas.</p></div></div>
+      <div class="product-section-head"><div><h2>Lägg till en fil</h2></div></div>
       <div class="media-two-column">
-        <section class="media-card">
-          <span class="editorial-eyebrow">Egen fil</span>
+        <section class="media-card" id="upload">
           <h3>Ladda upp</h3>
           <form class="media-form" method="post" enctype="multipart/form-data" action="{% url 'engine:media_upload' workspace_id=workspace.pk run_id=run.pk %}">{% csrf_token %}<label for="media-file">Bild eller video</label><input id="media-file" type="file" name="file" accept="image/jpeg,image/png,image/webp,video/mp4" required><p class="small">JPEG, PNG eller WebP högst 8 MB. MP4 högst 80 MB.</p><label for="alt-text">Bildbeskrivning</label><input id="alt-text" name="alt_text" maxlength="500" placeholder="Valfritt"><div class="page-actions"><button name="use" value="1">Ladda upp och använd</button><button class="button-secondary">Lägg i biblioteket</button></div></form>
         </section>
 
-        <section class="media-card" id="generate">
-          <div class="section-head"><div><span class="editorial-eyebrow">AI-stöd</span><h3>Generera nytt</h3></div><nav class="segmented" aria-label="Typ av generation"><a href="?kind=image#generate" {% if kind == 'image' %}aria-current="page"{% endif %}>Bild</a><a href="?kind=video#generate" {% if kind == 'video' %}aria-current="page"{% endif %}>Video</a></nav></div>
+        <details class="media-card" id="generate" {% if source or request.GET.retry or request.GET.kind %}open{% endif %}><summary>Skapa med AI</summary><div class="generation-body">
+          <div class="section-head"><div><h3>{% if kind == 'video' %}Skapa en video{% else %}Skapa bilder{% endif %}</h3></div><nav class="segmented" aria-label="Typ av generation"><a href="?kind=image#generate" {% if kind == 'image' %}aria-current="page"{% endif %}>Bild</a><a href="?kind=video#generate" {% if kind == 'video' %}aria-current="page"{% endif %}>Video</a></nav></div>
           {% if source %}<div class="media-source"><img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=source.pk %}" alt="Vald startbild"><p class="small">{% if kind == 'video' %}Animera vald bild{% else %}Skapa variant av vald bild{% endif %}<br><a href="?kind={{ kind }}#generate">Ta bort startbild</a></p></div>{% endif %}
-          {% if kind == 'video' %}<p class="small">Videon blir 10 sekunder. Storyboard, timing, text och ljud behöver granskas i resultatet.{% if not higgs_ready %} Higgsfield-uppgifter saknas på servern, så storyboard kan förberedas men videon kan inte startas ännu.{% endif %}</p>{% endif %}
-          <form class="media-form" method="post" action="{% url 'engine:media_generate' workspace_id=workspace.pk run_id=run.pk %}">{% csrf_token %}<input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="{{ kind }}">{% if source %}<input type="hidden" name="source_asset" value="{{ source.pk }}">{% endif %}<label for="media-brief">{% if kind == 'video' %}Storyboard{% else %}Bildbeskrivning{% endif %}</label><textarea id="media-brief" name="brief" rows="7" maxlength="6000" required>{{ brief }}</textarea>{% if kind == 'image' %}<div class="media-options"><div><label for="media-shape">Format</label><select name="shape" id="media-shape"><option value="portrait">Stående</option><option value="square">Kvadrat</option><option value="landscape">Liggande</option></select></div><div><label for="media-count">Alternativ</label><select name="count" id="media-count"><option value="2">2 bilder</option><option value="3">3 bilder</option><option value="4">4 bilder</option></select></div></div>{% if workspace.official_logo %}<label class="channel-option"><input type="checkbox" name="include_logo" value="1" checked><span>Lägg till officiell logga efter genereringen</span></label><p class="small">Originalfilen från Inställningar compositas ovanpå resultatet. AI:n ritar inte om loggan.</p>{% else %}<p class="small">Ingen officiell logga finns. <a href="{% url 'engine:settings' workspace_id=workspace.pk %}">Ladda upp den i Inställningar</a> om den ska användas.</p>{% endif %}{% endif %}<p class="small">Oanvända förhandsvisningar sparas i sju dagar. Vald media behålls.</p><button>{% if kind == 'image' %}Generera alternativ{% elif source %}Animera bilden{% else %}Generera video{% endif %}</button></form>
-        </section>
+          {% if kind == 'video' %}<p class="small">Videon blir 10 sekunder.{% if not higgs_ready %} Video är inte anslutet ännu.{% endif %}</p>{% endif %}
+          <form class="media-form" method="post" action="{% url 'engine:media_generate' workspace_id=workspace.pk run_id=run.pk %}">{% csrf_token %}<input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="kind" value="{{ kind }}">{% if source %}<input type="hidden" name="source_asset" value="{{ source.pk }}">{% endif %}<label for="media-brief">{% if kind == 'video' %}Beskriv videon{% else %}Bildbeskrivning{% endif %}</label><textarea id="media-brief" name="brief" rows="7" maxlength="6000" required>{{ brief }}</textarea>{% if kind == 'image' %}<div class="media-options"><div><label for="media-shape">Format</label><select name="shape" id="media-shape"><option value="portrait">Stående</option><option value="square">Kvadrat</option><option value="landscape">Liggande</option></select></div><div><label for="media-count">Alternativ</label><select name="count" id="media-count"><option value="2">2 bilder</option><option value="3">3 bilder</option><option value="4">4 bilder</option></select></div></div>{% if workspace.official_logo %}<label class="channel-option"><input type="checkbox" name="include_logo" value="1" checked><span>Lägg till företagets logga</span></label>{% else %}<p class="small">Ingen officiell logga finns. <a href="{% url 'engine:settings' workspace_id=workspace.pk %}">Ladda upp den i Inställningar</a> om den ska användas.</p>{% endif %}{% endif %}<p class="small">Oanvända förhandsvisningar sparas i sju dagar. Vald media behålls.</p><button>{% if kind == 'image' %}Skapa bildförslag{% elif source %}Animera bilden{% else %}Skapa video{% endif %}</button></form>
+        </div></details>
       </div>
     </section>
   {% endif %}
 
   {% if jobs %}
     <section class="media-section">
-      <div class="product-section-head"><div><span class="editorial-eyebrow">Historik</span><h2>Senaste generationer</h2><p class="small">Öppna ett jobb för status eller färdiga alternativ.</p></div></div>
+      <div class="product-section-head"><div><h2>Senast skapat med AI</h2></div></div>
       <div class="job-list">{% for job in jobs %}<div class="job-row"><span class="small">{{ job.created_at|date:'j M H:i' }}</span><a href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% if job.kind == 'image' %}Bildalternativ{% else %}Video{% endif %}</a><span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' %}warning{% else %}muted{% endif %}">{% if job.status == 'completed' %}Klar{% elif job.status == 'failed' %}Kontrollera{% elif job.status == 'unknown' %}Okänd{% else %}Pågår{% endif %}</span></div>{% endfor %}</div>
     </section>
   {% endif %}

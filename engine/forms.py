@@ -9,11 +9,11 @@ class BrandForm(forms.ModelForm):
         model = Company
         fields = ["profile", "voice", "current", "source", "valid_until"]
         labels = {
-            "profile": "Om företaget, målgrupp och mål",
-            "voice": "Så låter vi — klistra in 3–5 egna inlägg",
+            "profile": "Vad gör ni och vilka vill ni nå?",
+            "voice": "Klistra in texter som låter som er",
             "current": "Aktuellt just nu",
             "source": "Varifrån kommer uppgifterna?",
-            "valid_until": "Uppgifterna gäller till och med",
+            "valid_until": "Aktuellt till och med",
         }
         widgets = {
             "profile": forms.Textarea(attrs={"rows": 4, "maxlength": 16000}),

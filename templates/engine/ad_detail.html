@@ -23,18 +23,18 @@
     {% if ad.analysis_current %}
       <div class="ad-detail-block">
         <div class="ad-analysis-callout">
-          <h3>Varför signalen är intressant</h3>
+          <h3>Idé för er</h3>
           <p>{{ ad.classification.adaptation }}</p>
         </div>
       </div>
 
       <div class="ad-detail-block">
-        <h3>Budskap och hook</h3>
+        <h3>Budskap</h3>
         <dl class="ad-fact-list">
-          <div class="ad-fact-row"><dt>Hook</dt><dd>{{ ad.classification.hook|default:'Okänd' }}</dd></div>
+          <div class="ad-fact-row"><dt>Blickfång</dt><dd>{{ ad.classification.hook|default:'Okänd' }}</dd></div>
           <div class="ad-fact-row"><dt>Budskap</dt><dd>{{ ad.classification.message|default:'Okänt' }}</dd></div>
           <div class="ad-fact-row"><dt>Erbjudande</dt><dd>{{ ad.classification.offer|default:'Okänt' }}</dd></div>
-          <div class="ad-fact-row"><dt>CTA</dt><dd>{{ ad.classification.cta|default:ad.creative.cta|default:'Okänd' }}</dd></div>
+          <div class="ad-fact-row"><dt>Knapptext</dt><dd>{{ ad.classification.cta|default:ad.creative.cta|default:'Okänd' }}</dd></div>
         </dl>
         {% if ad.classification.themes %}
           <div class="ads-theme-strip">{% for item in ad.classification.themes %}<span class="theme-tag">{{ item }}</span>{% endfor %}</div>
@@ -42,8 +42,7 @@
       </div>
     {% endif %}
 
-    <div class="ad-detail-block">
-      <h3>Observerade fakta</h3>
+    <details class="ad-detail-block"><summary>Om annonsen</summary>
       <dl class="ad-fact-list">
         <div class="ad-fact-row"><dt>Format</dt><dd>{{ ad.creative.format|default:'Okänt' }}</dd></div>
         <div class="ad-fact-row"><dt>Plattform</dt><dd>{{ ad.creative.platforms|join:' / '|default:'Okänd' }}</dd></div>
@@ -53,11 +52,11 @@
         <div class="ad-fact-row"><dt>Varianter</dt><dd>{{ ad.creative.variant_count|default_if_none:'Okänt' }}</dd></div>
         {% if ad.creative.description %}<div class="ad-fact-row"><dt>Beskrivning</dt><dd>{{ ad.creative.description }}</dd></div>{% endif %}
       </dl>
-    </div>
+    </details>
 
     <div class="ad-detail-block">
-      <h3>Vad vi inte vet</h3>
-      <p class="editorial-subtle">CTR, CPA och ROAS är okända, liksom konverteringar och lönsamhet. Att en annons observerats länge eller finns i flera varianter är en signal – inte prestationsbevis.</p>
+      <h3>Resultat saknas</h3>
+      <p class="editorial-subtle">Konkurrentens annonsresultat är inte tillgängliga.</p>
       {% if ad.analysis_current and ad.classification.unknowns %}
         <details>
           <summary>Fler begränsningar</summary>

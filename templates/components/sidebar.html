@@ -8,29 +8,11 @@
   </a>
 
   <nav class="app-nav" aria-label="Huvudnavigation">
-    <span class="app-nav-label">Arbetsyta</span>
-    <a class="app-nav-link {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" href="{% url 'engine:home' workspace_id=workspace.pk %}">
-      <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h6v6H4z"></path><path d="M14 5h6v4h-6z"></path><path d="M14 13h6v6h-6z"></path><path d="M4 15h6v4H4z"></path></svg>
-      <span>Översikt</span>
-    </a>
-    <a class="app-nav-link {% if request.resolver_match.url_name == 'intelligence' or request.resolver_match.url_name == 'analyze_signal' or request.resolver_match.url_name == 'ad_analyze' or request.resolver_match.url_name == 'own_performance' %}is-active{% endif %}" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}">
-      <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V11"></path><path d="M12 19V5"></path><path d="M19 19v-6"></path></svg>
-      <span>Insikter</span>
-    </a>
-    <a class="app-nav-link {% if request.resolver_match.url_name == 'review' or request.resolver_match.url_name == 'media' or request.resolver_match.url_name == 'media_job' or request.resolver_match.url_name == 'outcome' %}is-active{% endif %}" href="{% url 'engine:home' workspace_id=workspace.pk %}#create-content">
-      <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z"></path><path d="m14.5 7.5 2 2"></path></svg>
-      <span>Skapa</span>
-    </a>
-    <a class="app-nav-link {% if request.resolver_match.url_name == 'settings' or request.resolver_match.url_name == 'connect' %}is-active{% endif %}" href="{% url 'engine:settings' workspace_id=workspace.pk %}">
-      <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.12-1.28l2.02-1.57-2-3.46-2.5 1a7 7 0 0 0-2.2-1.27L13.8 3h-4l-.4 2.42A7 7 0 0 0 7.2 6.7l-2.5-1-2 3.46 2.02 1.57A7 7 0 0 0 4.6 12c0 .44.04.87.12 1.28L2.7 14.85l2 3.46 2.5-1a7 7 0 0 0 2.2 1.27L9.8 21h4l.4-2.42a7 7 0 0 0 2.2-1.27l2.5 1 2-3.46-2.02-1.57c.08-.41.12-.84.12-1.28Z"></path></svg>
-      <span>Inställningar</span>
-    </a>
+    {% include 'components/navigation_links.html' with link_class='app-nav-link' %}
   </nav>
 
   <div class="app-sidebar-footer">
-    <div class="app-status"><span class="app-status-dot"></span><span>Automation aktiv</span></div>
     <div class="app-sidebar-secondary">
-      <a href="{% url 'dashboard' %}">Byt företag</a>
       <a href="https://platform.postiz.com" target="_blank" rel="noopener">Öppna Postiz ↗</a>
     </div>
   </div>
