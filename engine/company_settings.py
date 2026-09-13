@@ -1,15 +1,12 @@
-from decimal import Decimal
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Case, IntegerField, Q, Sum, Value, When
+from django.db.models import Case, IntegerField, Q, Value, When
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from . import apify
 from .branding import replace_logo
 from .media_storage import MediaError
-from .models import ScrapeRequest
 from .ownership import company_required
 
 
@@ -96,9 +93,8 @@ def costs(request, workspace_id):
     except apify.ApifyError as exc:
         apify_error = str(exc)
 
-    requests = ScrapeRequest.objects.filter(state__company=company)
-    tracked_total = requests.aggregate(value=Sum("cost_usd"))["value"] or Decimal("0")
-    recent = list(requests.select_related("state").order_by("-created_at")[:25])
+    from .provider_costs import cost_summary
+
     return render(
         request,
         "engine/costs.html",
@@ -106,7 +102,6 @@ def costs(request, workspace_id):
             "workspace": company,
             "apify_account": apify_account,
             "apify_error": apify_error,
-            "tracked_total": tracked_total,
-            "recent_costs": recent,
+            "costs": cost_summary(company),
         },
     )
