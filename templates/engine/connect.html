@@ -1,21 +1,27 @@
 {% extends 'base.html' %}
 {% block title %}Postiz · {{ workspace.name }}{% endblock %}
 {% block content %}
-<main class="engine narrow integration-page">
-  <a class="back-link" href="{% url 'engine:settings' workspace_id=workspace.id %}">← Till inställningar</a>
-  <header class="page-header"><div class="page-heading"><h1>Publiceringskanaler</h1></div></header>
+<main class="engine narrow integration-page premium-integration-page">
+  <a class="back-link integration-back-link" href="{% url 'engine:settings' workspace_id=workspace.id %}">← Till inställningar</a>
+  <header class="page-header integration-page-header"><div class="page-heading"><p class="eyebrow">Publicering</p><h1>Publiceringskanaler</h1><p class="intro">Koppla Content Engine till Postiz och välj exakt vilka kanaler som hör till {{ workspace.name }}.</p></div><div class="integration-status-pill {% if connected %}connected{% endif %}"><span class="integration-status-dot"></span><span><small>Postiz</small><strong>{% if connected %}Anslutet{% else %}Inte anslutet{% endif %}</strong></span></div></header>
 
-  <details class="settings-section" {% if not channels %}open{% endif %}><summary>{% if connected %}Postiz är anslutet · ändra koppling{% else %}Anslut Postiz{% endif %}</summary>
-    <div class="settings-section-body">
-      <p>Anslut kontona i <a href="https://platform.postiz.com" target="_blank" rel="noopener">Postiz ↗</a>, kopiera sedan API-nyckeln från Postiz-inställningarna.</p>
-      <form method="post">{% csrf_token %}<label for="api_key">Postiz API-nyckel</label><input type="password" id="api_key" name="api_key" autocomplete="new-password" placeholder="{% if connected %}Nyckel sparad · lämna tomt för att behålla{% endif %}"><button name="action" value="load">Visa mina kanaler</button></form>
+  <section class="integration-explainer">
+    <div class="integration-step"><span>1</span><div><strong>Anslut i Postiz</strong><small>Lägg först till Facebook, Instagram eller andra konton där.</small></div></div>
+    <div class="integration-step"><span>2</span><div><strong>Hämta API-nyckeln</strong><small>Kopiera nyckeln från Postiz-inställningarna.</small></div></div>
+    <div class="integration-step"><span>3</span><div><strong>Välj kanaler här</strong><small>Content Engine använder endast de kanaler du markerar.</small></div></div>
+  </section>
+
+  <details class="settings-section integration-card" {% if not channels %}open{% endif %}><summary><span class="integration-card-title"><span class="integration-card-icon" aria-hidden="true">P</span><span><strong>{% if connected %}Postiz är anslutet{% else %}Anslut Postiz{% endif %}</strong><small>{% if connected %}Byt nyckel eller ladda om kanaler{% else %}Ange API-nyckeln för att läsa tillgängliga kanaler{% endif %}</small></span></span><span class="integration-chevron" aria-hidden="true">⌄</span></summary>
+    <div class="settings-section-body integration-card-body">
+      <div class="integration-help-row"><span class="integration-help-icon" aria-hidden="true">i</span><p>Anslut kontona i <a href="https://platform.postiz.com" target="_blank" rel="noopener">Postiz ↗</a>, kopiera sedan API-nyckeln från Postiz-inställningarna.</p></div>
+      <form class="integration-key-form" method="post">{% csrf_token %}<label for="api_key">Postiz API-nyckel</label><div class="integration-key-row"><input type="password" id="api_key" name="api_key" autocomplete="new-password" placeholder="{% if connected %}Nyckel sparad · lämna tomt för att behålla{% else %}Klistra in API-nyckel{% endif %}"><button name="action" value="load">Visa mina kanaler</button></div><p class="small">Nyckeln används server-side för att läsa och skapa utkast i Postiz.</p></form>
     </div>
   </details>
 
   {% if channels %}
-    <section class="settings-section">
-      <div class="settings-section-head"><div><h2>Välj företagets kanaler</h2></div></div>
-      <div class="settings-section-body"><form method="post">{% csrf_token %}<div class="channel-list">{% for channel in channels %}<label class="channel-option"><input type="checkbox" name="channels" value="{{ channel.id }}"><span>{{ channel.name }} · {{ channel.identifier }}</span></label>{% endfor %}</div><button name="action" value="save">Spara valda kanaler</button></form></div>
+    <section class="settings-section integration-card channel-picker-card">
+      <div class="settings-section-head"><div><span class="integration-section-kicker">Kanaler</span><h2>Välj företagets kanaler</h2><p class="small">Markera de destinationer som Content Engine får skicka organiska utkast till.</p></div><span class="integration-count-pill">{{ channels|length }} tillgängliga</span></div>
+      <div class="settings-section-body"><form method="post" class="channel-picker-form">{% csrf_token %}<div class="channel-list premium-connect-channel-list">{% for channel in channels %}<label class="channel-option"><input type="checkbox" name="channels" value="{{ channel.id }}"><span class="connect-channel-mark" aria-hidden="true">{{ channel.name|slice:':1'|upper }}</span><span class="connect-channel-copy"><strong>{{ channel.name }}</strong><small>{{ channel.identifier }}</small></span><span class="connect-channel-check" aria-hidden="true">✓</span></label>{% endfor %}</div><div class="channel-picker-footer"><span>Du kan ändra valet när som helst.</span><button name="action" value="save">Spara valda kanaler</button></div></form></div>
     </section>
   {% endif %}
 </main>
