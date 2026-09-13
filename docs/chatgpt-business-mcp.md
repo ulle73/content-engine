@@ -47,7 +47,7 @@ Health check:
 https://<content-engine-mcp-host>/healthz
 ```
 
-The service is deployed separately from the existing WSGI web service but uses the same codebase and production database.
+The production service hosts the existing Django editor, OAuth and MCP on one Render origin, using one production database. The WSGI entrypoint remains available for local/alternative deployments.
 
 ## Authentication — no Microsoft/Entra or external IdP
 
@@ -81,7 +81,7 @@ Local-only development variables (`MCP_ALLOW_INSECURE_LOCAL`, `MCP_DEV_BEARER_TO
 
 ## Render deployment
 
-`render.yaml` adds a second service named `content-engine-mcp`.
+`render.yaml` describes the combined service named `content-engine-mcp`, pinned to `feature/chatgpt-content-engine-mcp`. The production editor is at `https://content-engine-mcp.onrender.com/` and the MCP endpoint is `/mcp`.
 
 The following values must point at the same Content Engine system of record/providers as the existing service:
 
@@ -94,7 +94,7 @@ The following values must point at the same Content Engine system of record/prov
 
 `POSTIZ_ENCRYPTION_SECRET` must be exactly the same value as the existing `content-engine` service or existing encrypted Postiz credentials cannot be decrypted.
 
-The MCP service may have its own generated Django `SECRET_KEY`; it does not need Microsoft or any external OAuth secret.
+The migration preserves the existing Django `SECRET_KEY` and the exact Postiz encryption secret. Neither should be regenerated during deployment. Microsoft or any external OAuth secret is unnecessary.
 
 The start command applies migrations with the shared migration lock and starts the combined MCP/OAuth ASGI service:
 

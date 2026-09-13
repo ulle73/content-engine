@@ -31,7 +31,9 @@ python -m venv .venv
 
 Konfiguration: `.env.example`. Hemligheter hör hemma i `.env` lokalt eller webbhotellets miljövariabler. Befintlig `OPENAI_API_KEY` återanvänds med ägarens godkännande. Behåll `SECRET_KEY` och `POSTIZ_ENCRYPTION_SECRET` mellan driftsättningar. Render-konfigurationen finns i `render.yaml`; startkommandot kör databasens migrering automatiskt. PostgreSQL är ett krav för publik drift, inklusive transaktionslåset vid första registreringen. SQLite stöds lokalt och i isolerade tester.
 
-Den nya databasen `content_engine_app` ligger på samma Neon-projekt/branch som tidigare. Den gamla databasen `content_engine` finns kvar orörd för återgång; den innehöll inga innehållskörningar eller företagsunderlag vid bytet. Gamla Brightbean-tabeller och migreringar ska **inte** återanvändas med den nya appen. Det är ett medvetet engångsbyte före användardata, inte en migreringsväg för redan använda Brightbean-installationer.
+Produktionsdatabasen `content_engine_app` ligger sedan 2026-09-13 i Neon-projektet `orange-band-72152493`, under ägarens verifierade konto. Befintliga användare, företag, ContentRuns, observations- och lärhistorik har kopierats från den tidigare Neon-servern och jämförts med radantal och SHA-256 över fullständiga rader. Media ligger kvar i samma privata R2-bucket och Postiz-krypteringsnyckeln är bevarad. Den gamla databasen är kvar för återgång. Se [migreringsrapporten](docs/2026-09-13-production-migration.md) innan eventuell återställning; byt aldrig tillbaka utan att först bevara data som skapats efter migreringen.
+
+Redigerare, OAuth och MCP körs tillsammans på `https://content-engine-mcp.onrender.com/`, med MCP på `/mcp`. Endast `feature/chatgpt-content-engine-mcp` används för denna driftsättning; `main` har inte ändrats eller mergats.
 
 ## Media och AI-generering
 
