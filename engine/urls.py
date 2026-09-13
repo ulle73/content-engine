@@ -4,7 +4,7 @@ from django.urls import include, path
 
 from . import ads_views, intelligence_views, media_views, views
 from .onboarding import SignInView, setup
-from .company_settings import company_settings
+from .company_settings import company_settings, costs
 from .performance_views import performance
 
 engine_urls = [
@@ -14,6 +14,7 @@ engine_urls = [
     path("intelligence/ads/analyze/<int:ad_id>/", ads_views.analyze, name="ad_analyze"),
     path("runs/<uuid:run_id>/outcome/", ads_views.outcome, name="outcome"),
     path("settings/", company_settings, name="settings"),
+    path("costs/", costs, name="costs"),
     path("media/<uuid:asset_id>/file/", media_views.asset_file, name="asset_file"),
     path("runs/<uuid:run_id>/media/", media_views.picker, name="media"),
     path("runs/<uuid:run_id>/media/upload/", media_views.upload, name="media_upload"),
