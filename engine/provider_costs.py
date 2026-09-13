@@ -12,7 +12,7 @@ from decimal import Decimal, InvalidOperation
 from django.db.models import Sum
 from django.utils import timezone
 
-from .models import AnalysisMemo, ContentEvent, MediaGeneration, ScrapeRequest
+from .models import AnalysisMemo, ContentEvent, ContentRun, MediaGeneration, ScrapeRequest
 
 MILLION = Decimal("1000000")
 
@@ -23,6 +23,8 @@ TEXT_RATES = {
     "gpt-5.6-sol": {"input": Decimal("4.00"), "cached": Decimal("0.40"), "output": Decimal("20.00")},
     "gpt-5.6": {"input": Decimal("4.00"), "cached": Decimal("0.40"), "output": Decimal("20.00")},
 }
+# GPT-Image-2 rates. OpenAI's current GPT-Image-2.5 docs explicitly state
+# that its token rates match GPT Image 2.
 IMAGE_RATES = {
     "text_input": Decimal("5.00"),
     "text_cached": Decimal("1.25"),
@@ -69,8 +71,9 @@ def openai_text_cost(meta):
     details = usage.get("input_tokens_details") or usage.get("prompt_tokens_details") or {}
     cached = min(input_tokens, _int(details.get("cached_tokens")) if isinstance(details, dict) else 0)
     output_tokens = _int(usage.get("output_tokens") or usage.get("completion_tokens"))
-    multiplier_in = Decimal("2") if input_tokens > 272000 and str(meta.get("model", "")).startswith("gpt-5.6") else Decimal("1")
-    multiplier_out = Decimal("1.5") if input_tokens > 272000 and str(meta.get("model", "")).startswith("gpt-5.6") else Decimal("1")
+    long_context = input_tokens > 272000 and str(meta.get("model", "")).startswith("gpt-5.6")
+    multiplier_in = Decimal("2") if long_context else Decimal("1")
+    multiplier_out = Decimal("1.5") if long_context else Decimal("1")
     cost = (
         Decimal(input_tokens - cached) * rates["input"] * multiplier_in
         + Decimal(cached) * rates["cached"] * multiplier_in
@@ -88,13 +91,15 @@ def openai_usage_meta(response, operation):
         "model": str(getattr(response, "model", "") or ""),
         "response_id": str(getattr(response, "id", "") or ""),
         "usage": usage.model_dump() if usage and hasattr(usage, "model_dump") else {},
+        "recorded_at": timezone.now().isoformat(),
         "pricing_verified": "2026-09-13",
     }
 
 
 def openai_image_cost(job):
     """Price stored Image API usage. Returns (cost, partial)."""
-    if not str(job.parameters.get("model", "")).startswith("gpt-image-2"):
+    parameters = job.parameters or {}
+    if not str(parameters.get("model", "")).startswith("gpt-image-2"):
         return None, False
     usage = job.usage or {}
     if not isinstance(usage, dict):
@@ -116,8 +121,8 @@ def openai_image_cost(job):
             partial = True
     input_cost = Decimal("0")
     if text_tokens or image_tokens:
-        # The Image API normally reports the split. If it reports only a combined
-        # cached count, apply it to text first and then image, conservatively.
+        # If only a combined cached count exists, apply it to text first and then
+        # image. This keeps the arithmetic deterministic and visible as an estimate.
         cached_text = min(text_tokens, cached)
         cached_image = min(image_tokens, max(0, cached - cached_text))
         input_cost = (
@@ -135,6 +140,19 @@ def openai_image_cost(job):
 def _usage_from_memo(memo):
     result = memo.result or {}
     return result.get("_provider_usage") if isinstance(result, dict) else None
+
+
+def _meta_time(meta, fallback):
+    value = meta.get("recorded_at") if isinstance(meta, dict) else None
+    if value:
+        try:
+            parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+            if timezone.is_naive(parsed):
+                parsed = timezone.make_aware(parsed)
+            return parsed
+        except ValueError:
+            pass
+    return fallback
 
 
 def _event_row(at, provider, service, description, cost, basis, model="", status=""):
@@ -160,42 +178,73 @@ def cost_summary(company):
     apify_total = scrape.aggregate(value=Sum("cost_usd"))["value"] or Decimal("0")
     apify_month = scrape.filter(created_at__gte=month_start).aggregate(value=Sum("cost_usd"))["value"] or Decimal("0")
     for item in scrape.exclude(cost_usd=None).order_by("-created_at")[:50]:
-        rows.append(_event_row(item.created_at, "Apify", "Scraping", f"{item.state.source} · {item.mode}", item.cost_usd, "Leverantör rapporterad", item.actor, item.status))
+        rows.append(
+            _event_row(
+                item.created_at,
+                "Apify",
+                "Scraping",
+                f"{item.state.source} · {item.mode}",
+                item.cost_usd,
+                "Leverantör rapporterad",
+                item.actor,
+                item.status,
+            )
+        )
 
     text_total = Decimal("0")
     text_month = Decimal("0")
     text_calls = 0
     first_text_tracking = None
+    seen_text = set()
 
-    for event in ContentEvent.objects.filter(run__workspace=company, action="provider_usage").select_related("run"):
-        meta = event.data or {}
-        if meta.get("provider") != "openai" or meta.get("service") != "text":
-            continue
+    def add_text(meta, fallback_at, service="Text", status="completed"):
+        nonlocal text_total, text_month, text_calls, first_text_tracking, unknown
+        if not isinstance(meta, dict) or meta.get("provider") != "openai" or meta.get("service") != "text":
+            return
+        response_id = str(meta.get("response_id") or "")
+        dedupe = response_id or f"{meta.get('operation')}:{fallback_at.isoformat()}:{id(meta)}"
+        if dedupe in seen_text:
+            return
+        seen_text.add(dedupe)
+        at = _meta_time(meta, fallback_at)
         cost = openai_text_cost(meta)
         text_calls += 1
-        first_text_tracking = min(first_text_tracking or event.created_at, event.created_at)
+        first_text_tracking = min(first_text_tracking or at, at)
         if cost is None:
             unknown += 1
-            continue
+            return
         text_total += cost
-        if event.created_at >= month_start:
+        if at >= month_start:
             text_month += cost
-        rows.append(_event_row(event.created_at, "OpenAI", "Text", meta.get("operation", "Text"), cost, "Beräknad från tokens", meta.get("model", ""), "completed"))
+        rows.append(
+            _event_row(
+                at,
+                "OpenAI",
+                service,
+                meta.get("operation", service),
+                cost,
+                "Beräknad från tokens",
+                meta.get("model", ""),
+                status,
+            )
+        )
 
+    # Content generation usage is stored together with the run so the accounting
+    # follows the same source of truth as ideas and copy.
+    for run in ContentRun.objects.filter(workspace=company).only("created_at", "context", "draft"):
+        context = run.context or {}
+        draft = run.draft or {}
+        add_text(context.get("_provider_usage_ideas"), run.created_at, "Text · idéer")
+        add_text(draft.get("_provider_usage"), run.created_at, "Text · copy")
+
+    # Operator rewrites can write one event per paid response without changing the draft schema.
+    for event in ContentEvent.objects.filter(run__workspace=company, action="provider_usage"):
+        add_text(event.data or {}, event.created_at, "Text · omskrivning")
+
+    # Competitor/ads analyses cache their result in AnalysisMemo. The private
+    # usage key is stripped before callers receive the cached classification.
     for memo in AnalysisMemo.objects.filter(company=company):
-        meta = _usage_from_memo(memo)
-        if not meta:
-            continue
-        cost = openai_text_cost(meta)
-        text_calls += 1
-        first_text_tracking = min(first_text_tracking or memo.created_at, memo.created_at)
-        if cost is None:
-            unknown += 1
-            continue
-        text_total += cost
-        if memo.created_at >= month_start:
-            text_month += cost
-        rows.append(_event_row(memo.created_at, "OpenAI", "AI-analys", meta.get("operation", "Analys"), cost, "Beräknad från tokens", meta.get("model", memo.model), memo.status))
+        add_text(_usage_from_memo(memo), memo.created_at, "AI-analys", memo.status)
 
     image_total = Decimal("0")
     image_month = Decimal("0")
@@ -214,7 +263,18 @@ def cost_summary(company):
             if job.created_at >= month_start:
                 image_month += cost
             image_partial += int(partial)
-            rows.append(_event_row(job.created_at, "OpenAI", "Bild", job.brief[:100], cost, "Beräknad från tokens" + (" · delvis" if partial else ""), job.parameters.get("model", ""), job.status))
+            rows.append(
+                _event_row(
+                    job.created_at,
+                    "OpenAI",
+                    "Bild",
+                    job.brief[:100],
+                    cost,
+                    "Beräknad från tokens" + (" · delvis" if partial else ""),
+                    (job.parameters or {}).get("model", ""),
+                    job.status,
+                )
+            )
         elif job.provider == "higgsfield":
             estimate = (job.usage or {}).get("estimate", {}) if isinstance(job.usage, dict) else {}
             cost = _decimal(estimate.get("usd"), default=Decimal("-1")) if isinstance(estimate, dict) else Decimal("-1")
@@ -222,13 +282,27 @@ def cost_summary(company):
                 higgs_total += cost
                 if job.created_at >= month_start:
                     higgs_month += cost
-                rows.append(_event_row(job.created_at, "Higgsfield", "Video", job.brief[:100], cost, "Accepterat prisestimat", (job.usage or {}).get("model", ""), job.status))
+                rows.append(
+                    _event_row(
+                        job.created_at,
+                        "Higgsfield",
+                        "Video",
+                        job.brief[:100],
+                        cost,
+                        "Accepterat prisestimat",
+                        (job.usage or {}).get("model", ""),
+                        job.status,
+                    )
+                )
             elif job.status == "unknown" and cost >= 0:
                 higgs_unknown += 1
 
     known_total = apify_total + text_total + image_total + higgs_total
     known_month = apify_month + text_month + image_month + higgs_month
-    rows.sort(key=lambda row: row["at"] or datetime.min.replace(tzinfo=timezone.get_current_timezone()), reverse=True)
+    rows.sort(
+        key=lambda row: row["at"] or datetime.min.replace(tzinfo=timezone.get_current_timezone()),
+        reverse=True,
+    )
 
     return {
         "total_usd": known_total,
