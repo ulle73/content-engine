@@ -117,10 +117,42 @@
               <td data-label="Tid">{{ row.at|date:"j M H:i" }}</td>
               <td data-label="Leverantör"><strong>{{ row.provider }}</strong></td>
               <td data-label="Typ">{{ row.service }}{% if row.model %}<br><span class="small">{{ row.model }}</span>{% endif %}</td>
-              <td data-label="Vad">{{ row.description }}{% if row.status %}<br><span class="small">{{ row.status }}</span>{% endif %}</td>
+              <td data-label="Vad">
+                {% if row.media_assets %}
+                  <button type="button" class="cost-media-trigger" onclick="document.getElementById('cost-media-{{ forloop.counter }}').showModal()">
+                    <span>{{ row.description }}</span>
+                    <span class="cost-media-trigger-link">Visa genererad media ↗</span>
+                    {% if row.status %}<span class="small">{{ row.status }}</span>{% endif %}
+                  </button>
+                {% else %}
+                  {{ row.description }}{% if row.status %}<br><span class="small">{{ row.status }}</span>{% endif %}
+                {% endif %}
+              </td>
               <td data-label="Kostnad"><strong>${{ row.cost_usd|floatformat:6 }}</strong></td>
               <td data-label="Underlag"><span class="small">{{ row.basis }}</span></td>
             </tr>
+            {% if row.media_assets %}
+            <dialog class="media-preview-dialog cost-media-dialog" id="cost-media-{{ forloop.counter }}">
+              <div class="media-preview-dialog-head">
+                <div><span class="media-library-kicker">{{ row.provider }} · {{ row.service }}</span><h2>Genererad media</h2><p>{{ row.description }} · {{ row.at|date:"j M Y H:i" }} · ${{ row.cost_usd|floatformat:6 }}</p></div>
+                <button type="button" class="media-dialog-close" aria-label="Stäng" onclick="this.closest('dialog').close()">×</button>
+              </div>
+              <div class="media-preview-dialog-grid">
+                {% for asset in row.media_assets %}
+                  <figure>
+                    {% if asset.kind == 'image' %}<img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Genererad bild' }}">{% else %}<video controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}"></video>{% endif %}
+                    <figcaption>{{ asset.get_kind_display }}{% if asset.width %} · {{ asset.width }} × {{ asset.height }}{% endif %}</figcaption>
+                  </figure>
+                {% endfor %}
+              </div>
+              <div class="media-preview-dialog-foot">
+                <div><span>Generation</span><strong>{{ row.generation_id|truncatechars:14 }}</strong></div>
+                <div><span>Status</span><strong>{{ row.status }}</strong></div>
+                <div><span>Underlag</span><strong>{{ row.basis }}</strong></div>
+                <a class="button button-secondary" href="{% url 'engine:media_library' workspace_id=workspace.pk %}">Öppna Media</a>
+              </div>
+            </dialog>
+            {% endif %}
           {% empty %}
             <tr><td colspan="6"><div class="cost-empty-state"><strong>Ingen registrerad kostnad ännu</strong><span>Händelser visas här när Content Engine börjar använda leverantörstjänster.</span></div></td></tr>
           {% endfor %}
@@ -132,4 +164,11 @@
 
   <p class="cost-page-footnote">”Totalt registrerat” omfattar endast kostnader som kan knytas säkert till detta workspace. Historisk OpenAI-text från tiden innan token-spårningen infördes räknas inte in retroaktivt.</p>
 </main>
+<script>
+document.querySelectorAll('.cost-media-dialog').forEach(dialog => {
+  dialog.addEventListener('click', event => {
+    if (event.target === dialog) dialog.close();
+  });
+});
+</script>
 {% endblock %}
