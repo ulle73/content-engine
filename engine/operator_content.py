@@ -25,6 +25,7 @@ class RevisedDraft(BaseModel):
     landing_page: str = ""
     checks: list[str] = Field(default_factory=list)
 
+
 def _validate_current_context(run: ContentRun) -> None:
     current = run.workspace
     validate_context(current)
@@ -35,6 +36,7 @@ def _validate_current_context(run: ContentRun) -> None:
         raise OperatorError("Företagsunderlaget har ändrats. Skapa nya idéer från aktuella fakta.")
     if date.fromisoformat(run.context["valid_until"]) < timezone.localdate():
         raise OperatorError("Företagsunderlaget har gått ut. Uppdatera det och skapa nya idéer.")
+
 
 def _build_snapshot(company: Company, channel: str, signal_id: str | None = None) -> dict[str, Any]:
     validate_context(company)
@@ -87,6 +89,7 @@ def _build_snapshot(company: Company, channel: str, signal_id: str | None = None
         snapshot["competitor_signals"] = inspiration(company, signal_id)
     return snapshot
 
+
 def create_run(company: Company, user, *, channel: str = "organic", signal_id: str | None = None) -> ContentRun:
     from .learning import record_predictions
     from .signals import RANKER_VERSION, rank_ideas
@@ -116,6 +119,7 @@ def create_run(company: Company, user, *, channel: str = "organic", signal_id: s
             },
         )
     return run
+
 
 def select_idea(run: ContentRun, idea_index: int, *, expected_revision: int | None = None) -> ContentRun:
     if idea_index < 0 or idea_index >= len(run.ideas):
@@ -154,6 +158,7 @@ def select_idea(run: ContentRun, idea_index: int, *, expected_revision: int | No
             data={"before": previous_draft, "after": output},
         )
     return ContentRun.objects.select_related("workspace", "media_asset").get(pk=run.pk)
+
 
 def update_copy(
     run: ContentRun,
@@ -198,6 +203,7 @@ def update_copy(
             )
     return ContentRun.objects.select_related("workspace", "media_asset").get(pk=run.pk)
 
+
 def rewrite_copy(
     run: ContentRun,
     instruction: str,
@@ -230,6 +236,13 @@ def rewrite_copy(
             text_format=RevisedDraft,
             max_output_tokens=5000,
         )
+    from .provider_costs import openai_usage_meta
+    ContentEvent.objects.create(
+        run=run,
+        idea_index=run.selected,
+        action="provider_usage",
+        data=openai_usage_meta(response, "rewrite"),
+    )
     if response.output_parsed is None:
         raise OperatorError("AI-tjänsten gav ingen färdig omskrivning.")
     revised = response.output_parsed.model_dump()
@@ -242,6 +255,7 @@ def rewrite_copy(
         extras=extras,
         reason=instruction,
     )
+
 
 def create_run_once(
     company: Company,
@@ -269,6 +283,7 @@ def create_run_once(
         finish_action(action, result={}, status="failed", error=_durable_error(exc))
         raise
 
+
 def select_idea_once(
     run: ContentRun,
     user,
@@ -295,6 +310,7 @@ def select_idea_once(
         finish_action(action, result={"run_id": str(run.pk)}, status="failed", error=_durable_error(exc))
         raise
 
+
 def rewrite_copy_once(
     run: ContentRun,
     user,
@@ -320,6 +336,7 @@ def rewrite_copy_once(
     except Exception as exc:
         finish_action(action, result={"run_id": str(run.pk)}, status="failed", error=_durable_error(exc))
         raise
+
 
 def update_copy_once(
     run: ContentRun,
