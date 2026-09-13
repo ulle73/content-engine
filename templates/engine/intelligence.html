@@ -2,18 +2,19 @@
 {% block title %}{{ workspace.name }} · Inspiration{% endblock %}
 {% block content %}
 <main class="engine intelligence-page organic-insights-page">
-  <header class="page-header">
+  <header class="page-header inspiration-page-header">
     <div class="page-heading">
+      <p class="eyebrow">Konkurrentsignaler</p>
       <h1>Inspiration</h1>
+      <p class="intro">Se vad som får ovanligt stark respons hos relevanta konton och använd signalerna som inspiration för eget innehåll.</p>
     </div>
-    <div class="page-actions"><span class="meta-pill">Senaste veckan</span></div>
+    <div class="page-actions"><span class="inspiration-period"><small>Period</small><strong>Senaste veckan</strong></span></div>
   </header>
 
   {% include 'engine/insight_tabs.html' %}
 
   {% if pending %}
-    <p id="import-status" class="notice" role="status">Hämtar inlägg…</p>
-    <form id="poll-import" action="{% url 'engine:refresh_imports' workspace_id=workspace.pk %}" method="post">{% csrf_token %}<button>Kontrollera hämtningen</button></form>
+    <div class="import-status-card"><span id="import-status" role="status">Hämtar nya inlägg…</span><form id="poll-import" action="{% url 'engine:refresh_imports' workspace_id=workspace.pk %}" method="post">{% csrf_token %}<button>Kontrollera</button></form></div>
     <script>
       const pollForm=document.getElementById('poll-import');
       async function pollImport(event){
@@ -27,33 +28,39 @@
     </script>
   {% endif %}
 
-  <section class="product-section">
+  <section class="insight-summary-strip" aria-label="Översikt">
+    <div><span>Signaler i vyn</span><strong>{{ weekly|length }}</strong></div>
+    <div><span>Bevakade konton</span><strong>{{ competitors|length }}</strong></div>
+    <div class="insight-summary-copy"><span>Hur det används</span><strong>Konkurrentdata är inspiration – aldrig facit.</strong></div>
+  </section>
+
+  <section class="product-section insight-feed-section">
     <div class="product-section-head">
-      <div><h2>Inlägg att inspireras av</h2></div>
+      <div><span class="insight-section-kicker">Organiskt</span><h2>Inlägg att inspireras av</h2><p class="small">Prioriterade efter relativ prestation, aktualitet och datakvalitet.</p></div>
       <span class="meta-pill">{{ competitors|length }} konton</span>
     </div>
-    <div class="signal-board">
+    <div class="signal-board premium-signal-board">
       <div class="signal-board-header" aria-hidden="true"><span>Konto</span><span>Innehåll</span><span>Typ</span><span>Ålder</span><span>Gilla</span><span>Jämfört med vanligt</span><span></span></div>
-      {% for signal in weekly %}{% include 'engine/signal_card.html' %}{% empty %}<div class="empty-state"><h3>Vem vill du inspireras av?</h3><p><a href="#accounts">Lägg till ett Instagramkonto</a></p></div>{% endfor %}
+      {% for signal in weekly %}{% include 'engine/signal_card.html' %}{% empty %}<div class="empty-state inspiration-empty-state"><h3>Vem vill du inspireras av?</h3><p>Lägg till relevanta Instagramkonton så börjar Content Engine bygga jämförelseunderlag.</p><a class="button button-secondary" href="#accounts">Lägg till Instagramkonto</a></div>{% endfor %}
     </div>
   </section>
 
-  <div class="section-stack">
+  <div class="section-stack inspiration-secondary-stack">
     {% if patterns %}
-      <section class="open-section">
-        <div class="section-head"><div><h2>Återkommande teman</h2><p class="small">Mönster i det sparade underlaget, inte bevis på orsak.</p></div></div>
-        <div class="theme-list">{% for pattern in patterns %}<span class="theme-tag">{{ pattern.mechanism }} · {{ pattern.count }} poster / {{ pattern.accounts }} konton</span>{% endfor %}</div>
+      <section class="open-section inspiration-pattern-card">
+        <div class="section-head"><div><span class="insight-section-kicker">Mönster</span><h2>Återkommande teman</h2><p class="small">Mönster i det sparade underlaget, inte bevis på orsak.</p></div></div>
+        <div class="theme-list">{% for pattern in patterns %}<span class="theme-tag">{{ pattern.mechanism }} <small>{{ pattern.count }} poster · {{ pattern.accounts }} konton</small></span>{% endfor %}</div>
       </section>
     {% endif %}
 
     {% if references %}
-      <details class="open-section"><summary>Äldre inlägg</summary><p class="small">Äldre poster som överpresterat inom sitt konto och format. De är referenser, inte aktuella trendsignaler.</p><div class="reference-list">{% for signal in references %}{% include 'engine/signal_card.html' %}{% endfor %}</div></details>
+      <details class="open-section inspiration-disclosure"><summary>Äldre referensinlägg <span class="small">Överpresterat inom sitt konto</span></summary><p class="small">Äldre poster som överpresterat inom sitt konto och format. De är referenser, inte aktuella trendsignaler.</p><div class="reference-list">{% for signal in references %}{% include 'engine/signal_card.html' %}{% endfor %}</div></details>
     {% endif %}
 
-    <details class="open-section" id="accounts" {% if editing or form.errors or not competitors %}open{% endif %}>
-      <summary>Konton att följa</summary>
+    <details class="open-section inspiration-accounts-card" id="accounts" {% if editing or form.errors or not competitors %}open{% endif %}>
+      <summary>Konton att lära av <span class="small">{{ competitors|length }} konton</span></summary>
       <div class="operations-body">
-        <div class="section-head"><div><h2>Instagramkonton</h2></div></div>
+        <div class="section-head"><div><h2>Instagramkonton</h2><p class="small">Välj konton som är relevanta för målgruppen och marknaden.</p></div></div>
         <div class="account-list">
           {% for competitor in competitors %}
             <div class="account-row">
@@ -66,10 +73,10 @@
 
         <details class="add-workspace" {% if editing or form.errors or not competitors %}open{% endif %}><summary>{% if editing %}Redigera konto{% else %}+ Lägg till Instagramkonto{% endif %}</summary><div><form method="post">{% csrf_token %}{% if editing %}<input type="hidden" name="competitor_id" value="{{ editing.pk }}">{% endif %}{{ form.as_p }}<button>{% if editing %}Spara konto{% else %}Lägg till konto{% endif %}</button></form></div></details>
 
-        <details class="open-section"><summary>Importstatus och kostnad</summary><div class="table-scroll"><table class="data-table mobile-table"><thead><tr><th>Konto</th><th>Status</th><th>Poster</th><th>Kostnad</th><th>Körning</th></tr></thead><tbody>{% for run in runs %}<tr><td data-label="Konto">{{ run.competitor.name }}</td><td data-label="Status">{{ run.status }}</td><td data-label="Poster">{{ run.item_count }}{% if run.skipped_count %} · {{ run.skipped_count }} hoppades över{% endif %}</td><td data-label="Kostnad">{% if run.cost_usd != None %}${{ run.cost_usd }}{% else %}Okänd{% endif %}</td><td data-label="Körning">{{ run.actor }}<br><span class="small">{{ run.started_at|date:'j M H:i' }}{% if run.error %} · {{ run.error }}{% endif %}</span></td></tr>{% empty %}<tr><td colspan="5">Ingen import registrerad ännu.</td></tr>{% endfor %}</tbody></table></div></details>
+        <details class="open-section import-disclosure"><summary>Importstatus och kostnad</summary><div class="table-scroll"><table class="data-table mobile-table"><thead><tr><th>Konto</th><th>Status</th><th>Poster</th><th>Kostnad</th><th>Körning</th></tr></thead><tbody>{% for run in runs %}<tr><td data-label="Konto">{{ run.competitor.name }}</td><td data-label="Status">{{ run.status }}</td><td data-label="Poster">{{ run.item_count }}{% if run.skipped_count %} · {{ run.skipped_count }} hoppades över{% endif %}</td><td data-label="Kostnad">{% if run.cost_usd != None %}${{ run.cost_usd }}{% else %}Okänd{% endif %}</td><td data-label="Körning">{{ run.actor }}<br><span class="small">{{ run.started_at|date:'j M H:i' }}{% if run.error %} · {{ run.error }}{% endif %}</span></td></tr>{% empty %}<tr><td colspan="5">Ingen import registrerad ännu.</td></tr>{% endfor %}</tbody></table></div></details>
       </div>
     </details>
   </div>
-  {% include 'engine/learning_panel.html' %}
+  <div class="inspiration-learning-panel">{% include 'engine/learning_panel.html' %}</div>
 </main>
 {% endblock %}
