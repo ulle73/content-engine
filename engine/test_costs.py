@@ -101,5 +101,5 @@ class CostScreenTests(TestCase):
         self.assertContains(response, "OpenAI · bilder")
         self.assertContains(response, "Higgsfield · video")
         self.assertContains(response, "Totalt registrerat")
-        self.assertContains(response, "$5.00")
+        self.assertContains(response, "$5,00")
         self.assertNotContains(response, "APIFY_API_TOKEN")
