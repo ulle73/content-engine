@@ -8,7 +8,10 @@
 <a class="{{ link_class }} {% if page == 'own_performance' or page == 'outcome' %}is-active{% endif %}" {% if page == 'own_performance' or page == 'outcome' %}aria-current="page"{% endif %} href="{% url 'engine:own_performance' workspace_id=workspace.pk %}">
   <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V11M12 19V5M19 19v-6"></path></svg><span>Resultat</span>
 </a>
-<a class="{{ link_class }} {% if page == 'settings' or page == 'connect' or page == 'costs' %}is-active{% endif %}" {% if page == 'settings' or page == 'connect' or page == 'costs' %}aria-current="page"{% endif %} href="{% url 'engine:settings' workspace_id=workspace.pk %}">
+<a class="{{ link_class }} {% if page == 'settings' or page == 'connect' %}is-active{% endif %}" {% if page == 'settings' or page == 'connect' %}aria-current="page"{% endif %} href="{% url 'engine:settings' workspace_id=workspace.pk %}">
   <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16"></path><circle cx="9" cy="7" r="3"></circle><circle cx="15" cy="17" r="3"></circle></svg><span>Inställningar</span>
+</a>
+<a class="{{ link_class }} {% if page == 'costs' %}is-active{% endif %}" {% if page == 'costs' %}aria-current="page"{% endif %} href="{% url 'engine:costs' workspace_id=workspace.pk %}">
+  <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M9.5 9.5c.6-1 1.5-1.5 2.8-1.5 1.5 0 2.7.7 2.7 1.8 0 2.7-5.5 1.2-5.5 4 0 1.2 1.1 2.2 2.8 2.2 1.3 0 2.3-.5 2.9-1.5M12.3 6.5v11"></path></svg><span>Kostnader</span>
 </a>
 {% endwith %}

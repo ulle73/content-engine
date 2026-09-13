@@ -1,45 +1,46 @@
 {% extends "base.html" %}
 {% block title %}Kostnader · {{ workspace.name }}{% endblock %}
 {% block content %}
-<div class="engine settings-page">
+<main class="engine costs-page">
   <header class="page-header">
-    <div>
+    <div class="page-heading">
       <p class="eyebrow">Ekonomi</p>
       <h1>Kostnader</h1>
-      <p class="lede">En samlad vy över kostnader som Content Engine kan knyta till {{ workspace.name }}.</p>
+      <p class="intro">En samlad kostnadsöversikt för Content Engine kopplad till {{ workspace.name }}.</p>
     </div>
-    <a class="button secondary" href="{% url 'engine:settings' workspace_id=workspace.pk %}">Till inställningar</a>
   </header>
 
-  <section class="settings-section">
-    <div class="settings-section-head">
-      <h2>Total kostnadsbild</h2>
-      <p class="small">Apify är leverantörsrapporterad. OpenAI beräknas från faktisk token-usage. Higgsfield visar accepterat prisestimat för startade videokörningar.</p>
-    </div>
-    <div class="settings-section-body">
-      <div class="metric-strip metric-strip-scroll">
-        <div class="metric"><span>Totalt registrerat</span><strong>${{ costs.total_usd|floatformat:4 }}</strong></div>
-        <div class="metric"><span>Denna månad</span><strong>${{ costs.month_usd|floatformat:4 }}</strong></div>
-        <div class="metric"><span>Apify</span><strong>${{ costs.apify_usd|floatformat:4 }}</strong></div>
-        <div class="metric"><span>OpenAI text</span><strong>${{ costs.openai_text_usd|floatformat:4 }}</strong></div>
-        <div class="metric"><span>OpenAI bilder</span><strong>${{ costs.openai_image_usd|floatformat:4 }}</strong></div>
-        <div class="metric"><span>Higgsfield video</span><strong>${{ costs.higgsfield_usd|floatformat:4 }}</strong></div>
+  <section class="cost-summary-panel">
+    <div class="cost-summary-head">
+      <div>
+        <h2>Total kostnadsbild</h2>
+        <p class="small">Apify är leverantörsrapporterad. OpenAI beräknas från faktisk token-usage. Higgsfield visar accepterat prisestimat för startade videokörningar.</p>
       </div>
-      <p class="small">"Totalt registrerat" är summan av de kostnader som kan knytas säkert till detta workspace. OpenAI-text från tiden innan token-spårningen infördes kan inte återskapas exakt och räknas därför inte in retroaktivt.</p>
+    </div>
+    <div class="cost-summary-body">
+      <div class="cost-metric-grid">
+        <div class="cost-metric"><span>Totalt registrerat</span><strong>${{ costs.total_usd|floatformat:4 }}</strong></div>
+        <div class="cost-metric"><span>Denna månad</span><strong>${{ costs.month_usd|floatformat:4 }}</strong></div>
+        <div class="cost-metric"><span>Apify</span><strong>${{ costs.apify_usd|floatformat:4 }}</strong></div>
+        <div class="cost-metric"><span>OpenAI text</span><strong>${{ costs.openai_text_usd|floatformat:4 }}</strong></div>
+        <div class="cost-metric"><span>OpenAI bilder</span><strong>${{ costs.openai_image_usd|floatformat:4 }}</strong></div>
+        <div class="cost-metric"><span>Higgsfield video</span><strong>${{ costs.higgsfield_usd|floatformat:4 }}</strong></div>
+      </div>
+      <p class="small cost-summary-note">”Totalt registrerat” är summan av kostnader som kan knytas säkert till detta workspace. OpenAI-text från tiden innan token-spårningen infördes kan inte återskapas exakt och räknas därför inte in retroaktivt.</p>
       {% if costs.unknown_cost_count %}<p class="notice">{{ costs.unknown_cost_count }} leverantörsanrop har usage men saknar en säker prisberäkning och ingår inte i totalen.</p>{% endif %}
     </div>
   </section>
 
-  <div class="settings-layout">
-    <section class="settings-section">
-      <div class="settings-section-head"><h2>Apify</h2><p class="small">Scraping och competitor intelligence.</p></div>
-      <div class="settings-section-body">
-        <p><strong>${{ costs.apify_usd|floatformat:6 }}</strong> registrerat av Content Engine · <strong>${{ costs.apify_month_usd|floatformat:6 }}</strong> denna månad.</p>
+  <div class="cost-provider-grid">
+    <section class="cost-provider-card">
+      <div class="cost-provider-head"><div><h2>Apify</h2><p class="small">Scraping och competitor intelligence.</p></div></div>
+      <div class="cost-provider-body">
+        <p class="cost-provider-total"><strong>${{ costs.apify_usd|floatformat:6 }}</strong> registrerat · <strong>${{ costs.apify_month_usd|floatformat:6 }}</strong> denna månad.</p>
         {% if apify_account %}
-          <div class="metric-strip metric-strip-scroll">
-            <div class="metric"><span>Använt denna Apify-period</span><strong>${{ apify_account.used_usd|floatformat:2 }}</strong></div>
-            <div class="metric"><span>Kvar till hård gräns</span><strong>${{ apify_account.remaining_to_limit_usd|floatformat:2 }}</strong></div>
-            <div class="metric"><span>Inkluderade credits kvar</span><strong>${{ apify_account.included_remaining_usd|floatformat:2 }}</strong></div>
+          <div class="cost-provider-metrics">
+            <div class="cost-mini-metric"><span>Använt denna period</span><strong>${{ apify_account.used_usd|floatformat:2 }}</strong></div>
+            <div class="cost-mini-metric"><span>Kvar till hård gräns</span><strong>${{ apify_account.remaining_to_limit_usd|floatformat:2 }}</strong></div>
+            <div class="cost-mini-metric"><span>Credits kvar</span><strong>${{ apify_account.included_remaining_usd|floatformat:2 }}</strong></div>
           </div>
           <p class="small">Plan: {{ apify_account.plan|default:"okänd" }}{% if apify_account.cycle_start or apify_account.cycle_end %} · Period {{ apify_account.cycle_start|default:"?" }} – {{ apify_account.cycle_end|default:"?" }}{% endif %}</p>
           {% if apify_account.hard_limit_reached %}<p class="errorlist"><strong>Kostnadsgränsen är nådd.</strong> Apify kommer att avvisa nya betalda Actor-körningar tills gränsen höjs eller perioden återställs.</p>{% endif %}
@@ -51,37 +52,37 @@
       </div>
     </section>
 
-    <section class="settings-section">
-      <div class="settings-section-head"><h2>OpenAI · text</h2><p class="small">Idéer, copy och AI-analyser.</p></div>
-      <div class="settings-section-body">
-        <p><strong>${{ costs.openai_text_usd|floatformat:6 }}</strong> registrerat · <strong>${{ costs.openai_text_month_usd|floatformat:6 }}</strong> denna månad.</p>
-        <p class="small">{{ costs.text_calls }} spårade anrop. Kostnaden beräknas från leverantörens faktiska input-, cache- och output-tokens med modellens API-pris.</p>
+    <section class="cost-provider-card">
+      <div class="cost-provider-head"><div><h2>OpenAI · text</h2><p class="small">Idéer, copy, omskrivningar och AI-analyser.</p></div></div>
+      <div class="cost-provider-body">
+        <p class="cost-provider-total"><strong>${{ costs.openai_text_usd|floatformat:6 }}</strong> registrerat · <strong>${{ costs.openai_text_month_usd|floatformat:6 }}</strong> denna månad.</p>
+        <p class="small">{{ costs.text_calls }} spårade anrop. Kostnaden beräknas från faktisk input-, cache- och output-usage med modellens API-pris.</p>
         {% if costs.text_tracking_started_at %}<p class="small">Exakt text-usage sparas från {{ costs.text_tracking_started_at|date:"j M Y H:i" }}. Äldre textanrop saknar historisk token-usage.</p>{% else %}<p class="small">Inga nya textanrop har ännu gjorts sedan kostnadsspårningen aktiverades.</p>{% endif %}
       </div>
     </section>
 
-    <section class="settings-section">
-      <div class="settings-section-head"><h2>OpenAI · bilder</h2><p class="small">Bildgenerering och bildredigering.</p></div>
-      <div class="settings-section-body">
-        <p><strong>${{ costs.openai_image_usd|floatformat:6 }}</strong> beräknat · <strong>${{ costs.openai_image_month_usd|floatformat:6 }}</strong> denna månad.</p>
-        <p class="small">Beräknas från den usage som redan sparas på varje MediaGeneration och den publicerade GPT-Image-prislistan.</p>
-        {% if costs.image_partial_count %}<p class="notice">{{ costs.image_partial_count }} bildredigeringar saknar full uppdelning mellan text- och bildinput. Deras säkert beräkningsbara del visas och markeras som delvis i historiken.</p>{% endif %}
+    <section class="cost-provider-card">
+      <div class="cost-provider-head"><div><h2>OpenAI · bilder</h2><p class="small">Bildgenerering och bildredigering.</p></div></div>
+      <div class="cost-provider-body">
+        <p class="cost-provider-total"><strong>${{ costs.openai_image_usd|floatformat:6 }}</strong> beräknat · <strong>${{ costs.openai_image_month_usd|floatformat:6 }}</strong> denna månad.</p>
+        <p class="small">Beräknas från usage som sparas på varje MediaGeneration och den publicerade GPT-Image-prislistan.</p>
+        {% if costs.image_partial_count %}<p class="notice">{{ costs.image_partial_count }} bildredigeringar saknar full uppdelning mellan text- och bildinput. Den säkert beräkningsbara delen visas och markeras som delvis i historiken.</p>{% endif %}
       </div>
     </section>
 
-    <section class="settings-section">
-      <div class="settings-section-head"><h2>Higgsfield · video</h2><p class="small">Videojobb som faktiskt har startats hos leverantören.</p></div>
-      <div class="settings-section-body">
-        <p><strong>${{ costs.higgsfield_usd|floatformat:6 }}</strong> accepterade prisestimat · <strong>${{ costs.higgsfield_month_usd|floatformat:6 }}</strong> denna månad.</p>
+    <section class="cost-provider-card">
+      <div class="cost-provider-head"><div><h2>Higgsfield · video</h2><p class="small">Videojobb som faktiskt har startats hos leverantören.</p></div></div>
+      <div class="cost-provider-body">
+        <p class="cost-provider-total"><strong>${{ costs.higgsfield_usd|floatformat:6 }}</strong> accepterade prisestimat · <strong>${{ costs.higgsfield_month_usd|floatformat:6 }}</strong> denna månad.</p>
         <p class="small">Higgsfield-estimatet sparas före den betalda videokörningen. Endast körningar med bekräftad start eller completion räknas i totalen.</p>
         {% if costs.higgsfield_unknown_count %}<p class="notice">{{ costs.higgsfield_unknown_count }} videostarter har okänt externt läge och räknas inte in förrän de har reconcilerats.</p>{% endif %}
       </div>
     </section>
   </div>
 
-  <section class="settings-section">
-    <div class="settings-section-head"><h2>Senaste kostnadshändelserna</h2><p class="small">Var kostnaden kommer ifrån och hur beloppet har fastställts.</p></div>
-    <div class="settings-section-body">
+  <section class="cost-events-card">
+    <div class="cost-provider-head"><div><h2>Senaste kostnadshändelserna</h2><p class="small">Var kostnaden kommer ifrån och hur beloppet har fastställts.</p></div></div>
+    <div class="cost-provider-body">
       <div class="table-scroll">
         <table class="data-table mobile-table">
           <thead><tr><th>Tid</th><th>Leverantör</th><th>Typ</th><th>Vad</th><th>Kostnad</th><th>Underlag</th></tr></thead>
@@ -103,5 +104,5 @@
       </div>
     </div>
   </section>
-</div>
+</main>
 {% endblock %}
