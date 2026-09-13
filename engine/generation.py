@@ -96,7 +96,11 @@ Vid copy: skriv primärtext för Facebook och Instagram, rubrik, beskrivning, CT
 Landing_page får bara vara en exakt verifierad URL i vårt företagsunderlag, annars tom sträng med kontrollpunkt.
 Rubrik/erbjudande måste stödjas av våra fakta. Bild/video beskrivs i photo_brief; originalproduktion görs i befintligt mediaflöde.
 Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att köpa annonser."""
-    writing_context = {k: v for k, v in context.items() if k != "competitor_signals"} if writing else context
+    writing_context = (
+        {k: v for k, v in context.items() if k != "competitor_signals" and not str(k).startswith("_")}
+        if writing
+        else context
+    )
     selected_brief = {k: idea[k] for k in ("title", "angle", "photo_brief") if k in idea} if writing else None
     with OpenAI(timeout=100, max_retries=0) as client:
         response = client.responses.parse(
@@ -131,11 +135,10 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
             output["landing_page"] = ""
             output["checks"].append("Ange och kontrollera företagets landningssida.")
     from .provider_costs import openai_usage_meta
+
     usage_meta = openai_usage_meta(response, "draft" if writing else "ideas")
     if writing:
         output["_provider_usage"] = usage_meta
     else:
-        # The ideas call happens before ContentRun exists. The snapshot is stored
-        # directly on the new run, so this keeps its exact usage with that run.
         context["_provider_usage_ideas"] = usage_meta
     return output
