@@ -118,12 +118,17 @@ def restore(directory, *, verify_only=False):
             raise RuntimeError("Target is missing source schema migrations")
         if not verify_only:
             existing = inventory()
-            occupied = [t for t, v in existing.items() if v["rows"] and t not in METADATA | {"engine_setupstate"}]
+            managed = {model._meta.db_table for model in registry.get_models(include_auto_created=True)}
+            occupied = [t for t, v in existing.items() if v["rows"] and t in managed
+                        and t not in METADATA | {"engine_setupstate"}]
             if occupied:
                 raise RuntimeError("Target is not empty; refusing overwrite: " + ", ".join(occupied))
             call_command("loaddata", str(fixture), verbosity=0)
         current = inventory()
         compare(manifest["tables"], current)
+        if not verify_only:
+            # Unrelated target tables are retained verbatim, never cleared for import.
+            compare({t: v for t, v in existing.items() if t not in managed}, current)
         # Exiting atomic validates deferred foreign keys before claiming success.
     print("Verified all source application/auth/session table counts and SHA-256 row digests")
 

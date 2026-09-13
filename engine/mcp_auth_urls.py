@@ -27,5 +27,8 @@ urlpatterns = [
     path("accounts/login/", SignInView.as_view(), name="login"),
     path("accounts/logout/", LogoutView.as_view(), name="logout"),
     path("setup/", setup, name="setup"),
-    path("", auth_home, name="oauth_home"),
+    path("oauth/status/", auth_home, name="oauth_home"),
+    # Serve the existing editor on this same deployment. Its named dashboard
+    # route is also required by login/setup templates and OAuth return flows.
+    path("", include("engine.urls")),
 ]

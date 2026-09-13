@@ -72,7 +72,9 @@ class MediaTests(TestCase):
         self.assertEqual((original.origin, original.width, original.height), ("uploaded", 64, 96))
         preview = self.client.get(self.url("asset_file", asset_id=original.pk))
         self.assertEqual(preview.status_code, 200)
-        preview.close()
+        # Consume the streaming response through Django's test-client wrapper;
+        # direct close() fires request_finished inside TestCase's DB transaction.
+        self.assertEqual(b"".join(preview.streaming_content), picture())
         next_asset = store_asset(self.company, picture())
         select_asset(self.run, next_asset)
         with self.assertRaises(MediaError):

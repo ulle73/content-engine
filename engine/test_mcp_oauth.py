@@ -22,6 +22,14 @@ class SelfHostedMCPOAuthTests(TestCase):
             password="test-only-strong-password-3901",
         )
 
+    def test_existing_login_and_dashboard_render_on_mcp_host(self):
+        response = self.client.get("/accounts/login/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Logga in")
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get("/").status_code, 200)
+        self.assertEqual(self.client.get("/setup/").status_code, 302)
+
     def test_authorization_metadata_advertises_self_hosted_mcp_oauth(self):
         response = self.client.get("/.well-known/oauth-authorization-server")
         self.assertEqual(response.status_code, 200)
