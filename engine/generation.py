@@ -131,5 +131,11 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
             output["landing_page"] = ""
             output["checks"].append("Ange och kontrollera företagets landningssida.")
     from .provider_costs import openai_usage_meta
-    output["_provider_usage"] = openai_usage_meta(response, "draft" if writing else "ideas")
+    usage_meta = openai_usage_meta(response, "draft" if writing else "ideas")
+    if writing:
+        output["_provider_usage"] = usage_meta
+    else:
+        # The ideas call happens before ContentRun exists. The snapshot is stored
+        # directly on the new run, so this keeps its exact usage with that run.
+        context["_provider_usage_ideas"] = usage_meta
     return output
