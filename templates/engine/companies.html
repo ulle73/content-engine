@@ -1,27 +1,30 @@
 {% extends 'base.html' %}
 {% block title %}Mina företag · Content Engine{% endblock %}
 {% block content %}
-<main class="engine workspace-page workspace-page-v3">
-  <header class="workspace-header">
+<main class="engine workspace-page workspace-page-v3 premium-workspace-page">
+  <header class="workspace-header premium-workspace-header">
     <div>
+      <p class="workspace-eyebrow">Content Engine</p>
       <h1>Välj företag</h1>
+      <p>Varje företag har separat kontext, kanaler, konkurrentdata, media och learning.</p>
     </div>
+    <span class="workspace-count-pill">{{ companies|length }} workspace</span>
   </header>
 
-  <section class="workspace-list" aria-label="Företag">
+  <section class="workspace-list premium-workspace-list" aria-label="Företag">
     {% for company in companies %}
-      <a class="workspace-row" href="{% url 'engine:home' workspace_id=company.pk %}">
+      <a class="workspace-row premium-workspace-row" href="{% url 'engine:home' workspace_id=company.pk %}">
         <span class="workspace-avatar">{{ company.name|slice:':1'|upper }}</span>
-        <span><span class="workspace-name">{{ company.name }}</span></span>
+        <span class="workspace-row-copy"><span class="workspace-name">{{ company.name }}</span><small>Öppna workspace</small></span>
         <span class="workspace-arrow">›</span>
       </a>
     {% empty %}
-      <div class="empty-state"><h3>Inget företag ännu</h3><p>Lägg till det första företaget nedan.</p></div>
+      <div class="empty-state premium-workspace-empty"><span class="workspace-empty-icon" aria-hidden="true">+</span><h3>Inget företag ännu</h3><p>Skapa det första workspacet för att börja bygga innehåll och samla learning.</p></div>
     {% endfor %}
   </section>
 
-  <details class="add-workspace" {% if form.errors or not companies %}open{% endif %}>
-    <summary>+ Lägg till företag</summary>
+  <details class="add-workspace premium-add-workspace" {% if form.errors or not companies %}open{% endif %}>
+    <summary><span class="add-workspace-icon" aria-hidden="true">+</span><span><strong>Lägg till företag</strong><small>Skapa ett separat workspace</small></span><span class="add-workspace-chevron" aria-hidden="true">⌄</span></summary>
     <div><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Lägg till företag</button></form></div>
   </details>
 </main>
