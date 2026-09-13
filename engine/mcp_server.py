@@ -24,6 +24,7 @@ from mcp.server.mcpserver.exceptions import ToolError
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import ToolAnnotations
 
+from .mcp_db import database_tool
 from .delivery import deliver_to_postiz, reset_unknown_delivery
 from .mcp_auth import OIDCTokenVerifier, current_django_user
 from .mcp_operations import poll_generation, prepare_best_content, refresh_company_once, refresh_performance_once
@@ -152,6 +153,7 @@ def _asset(company_ref: str, asset_id: str) -> MediaAsset:
     description="List only Content Engine companies owned by the authenticated user.",
     annotations=ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False),
 )
+@database_tool
 def list_companies() -> list[dict]:
     return list_owned_companies(current_django_user())
 
@@ -161,6 +163,7 @@ def list_companies() -> list[dict]:
     description="Read verified company profile, voice, current facts, validity and configured Postiz channels. Secrets are never returned.",
     annotations=ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False),
 )
+@database_tool
 def get_company_context(company_ref: str) -> dict:
     return company_summary(_company(company_ref))
 
@@ -170,6 +173,7 @@ def get_company_context(company_ref: str) -> dict:
     description="Read current organic/paid signals, own recent performance and learning-model status for one company.",
     annotations=ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False),
 )
+@database_tool
 def get_content_intelligence(company_ref: str, limit: int = 5) -> dict:
     return _safe_call(intelligence_summary, _company(company_ref), limit=max(1, min(limit, 20)))
 
@@ -179,6 +183,7 @@ def get_content_intelligence(company_ref: str, limit: int = 5) -> dict:
     description="Run one non-blocking pass of the existing safe daily pipeline for this company. It may start only due, budget-protected intelligence jobs and also updates own performance/learning where due.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def refresh_content_engine(company_ref: str, idempotency_key: str) -> dict:
     company = _company(company_ref)
     return _safe_call(refresh_company_once, company, current_django_user(), idempotency_key=idempotency_key)
@@ -189,6 +194,7 @@ def refresh_content_engine(company_ref: str, idempotency_key: str) -> dict:
     description="Read published Postiz posts and due analytics, create verified outcomes and run existing learning training logic. No content is published.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def refresh_published_performance(company_ref: str, idempotency_key: str) -> dict:
     company = _company(company_ref)
     return _safe_call(refresh_performance_once, company, current_django_user(), idempotency_key=idempotency_key)
@@ -199,6 +205,7 @@ def refresh_published_performance(company_ref: str, idempotency_key: str) -> dic
     description="Create a real ContentRun with exactly three grounded, ranked ideas and frozen pre-selection ML predictions. Returns the persisted run.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def create_content_run(
     company_ref: str,
     idempotency_key: str,
@@ -226,6 +233,7 @@ def create_content_run(
     ),
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def run_content_engine(
     company_ref: str,
     idempotency_key: str,
@@ -258,6 +266,7 @@ def run_content_engine(
     description="Read the current persisted workflow state, ideas, copy, selected media, delivery state and frozen predictions.",
     annotations=ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False),
 )
+@database_tool
 def get_content_run(company_ref: str, run_id: str) -> dict:
     return serialize_run(_run(company_ref, run_id))
 
@@ -267,6 +276,7 @@ def get_content_run(company_ref: str, run_id: str) -> dict:
     description="Choose idea 1, 2 or 3 on an existing run and generate a fresh platform-specific draft from that grounded idea.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def choose_idea(
     company_ref: str,
     run_id: str,
@@ -293,6 +303,7 @@ def choose_idea(
     description="Rewrite the current FB/IG copy from a natural-language instruction while preserving the selected idea and verified company facts.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def rewrite_copy(
     company_ref: str,
     run_id: str,
@@ -317,6 +328,7 @@ def rewrite_copy(
     description="Persist complete Facebook and Instagram copy supplied by the operator. Intended for exact manual edits made in ChatGPT.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=False),
 )
+@database_tool
 def replace_copy(
     company_ref: str,
     run_id: str,
@@ -349,6 +361,7 @@ def replace_copy(
     description="Start/reuse the existing Content Engine image or video generation flow for a run. Image generation normally returns completed assets; video may require polling.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def generate_media(
     company_ref: str,
     run_id: str,
@@ -389,6 +402,7 @@ def generate_media(
     description="Advance an already-created media job without starting a duplicate provider job.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def poll_media_generation(company_ref: str, run_id: str, job_id: str) -> dict:
     run = _run(company_ref, run_id)
     job = MediaGeneration.objects.filter(pk=job_id, run=run).first()
@@ -403,6 +417,7 @@ def poll_media_generation(company_ref: str, run_id: str, job_id: str) -> dict:
     description="List persisted media generated for this ContentRun. Use view_media to visually inspect an image before selecting it.",
     annotations=ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False),
 )
+@database_tool
 def list_media_options(company_ref: str, run_id: str) -> list[dict]:
     return media_options(_run(company_ref, run_id))
 
@@ -412,6 +427,7 @@ def list_media_options(company_ref: str, run_id: str) -> list[dict]:
     description="Return the actual image bytes for a Content Engine asset so ChatGPT can visually inspect and compare generated options.",
     annotations=ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False),
 )
+@database_tool
 def view_media(company_ref: str, asset_id: str) -> Image:
     asset = _asset(company_ref, asset_id)
     if asset.kind != "image":
@@ -432,6 +448,7 @@ def view_media(company_ref: str, asset_id: str) -> Image:
     description="Ingest image bytes generated in ChatGPT into Content Engine as a real company-scoped MediaAsset; optionally select it for the run. The image must be base64 or a data URL.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=False),
 )
+@database_tool
 def save_chatgpt_image(
     company_ref: str,
     run_id: str,
@@ -462,6 +479,7 @@ def save_chatgpt_image(
     description="Ingest an HTTPS image URL into Content Engine after public-IP/SSRF validation. Useful when ChatGPT exposes a short-lived generated-image URL instead of raw bytes.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def save_chatgpt_image_url(
     company_ref: str,
     run_id: str,
@@ -492,6 +510,7 @@ def save_chatgpt_image_url(
     description="Attach an existing company-owned Content Engine asset to the run. This is the authoritative media selection used for Postiz delivery and later learning provenance.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=False),
 )
+@database_tool
 def select_media(
     company_ref: str,
     run_id: str,
@@ -517,6 +536,7 @@ def select_media(
     description="Transfer the persisted ContentRun through Content Engine to configured Postiz channels as a non-public draft. Unknown external state blocks automatic replay.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def create_postiz_draft(
     company_ref: str,
     run_id: str,
@@ -537,6 +557,7 @@ def create_postiz_draft(
     description="Schedule the persisted ContentRun through Content Engine. Use only when the user explicitly requested a publication date/time. Naive times are interpreted as Europe/Stockholm.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def schedule_postiz(
     company_ref: str,
     run_id: str,
@@ -558,6 +579,7 @@ def schedule_postiz(
     description="Publish the persisted ContentRun immediately through Content Engine and Postiz. Call this only when the user explicitly asked to publish now; never infer immediate publication from a request to create content.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def publish_postiz_now(
     company_ref: str,
     run_id: str,
@@ -578,6 +600,7 @@ def publish_postiz_now(
     description="Reset a run from unknown/sending to draft only after a human/operator has explicitly confirmed that no corresponding Postiz post exists. Use this after an interrupted or uncertain delivery; never guess.",
     annotations=ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=True),
 )
+@database_tool
 def reset_unknown_postiz_delivery(
     company_ref: str,
     run_id: str,
