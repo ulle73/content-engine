@@ -34,7 +34,6 @@ def momentum(snapshots):
     if len(snapshots) < 2:
         return {"label": "Första mätningen – tillväxt kan inte bedömas ännu", "growth": None}
     latest = snapshots[-1]
-    # Short verification reruns are observations, never presented as daily growth.
     older = [s for s in snapshots[:-1] if latest.observed_at - s.observed_at >= timedelta(hours=18)]
     if not older:
         return {"label": "Inväntar nästa dygnsmätning", "growth": None}
@@ -101,7 +100,6 @@ def build_signal(post, posts, observations, now):
     matched_count = len(peers)
     baseline_type = "age_matched" if matched_count >= 5 else "insufficient"
     if matched_count < 5:
-        # Cold start: mature observations are a conservative reference, never a reconstructed day-one norm.
         mature = []
         for peer in posts:
             if peer.pk == post.pk or peer.competitor_id != post.competitor_id or peer.format != post.format:
@@ -196,10 +194,20 @@ def classify(post, company):
     if not post.caption.strip():
         return {}
     from .sync import analysis
-    origin = post.snapshots.order_by("-observed_at").values_list("import_run__scrape_request_id",flat=True).first()
-    result = analysis(company, ["organic", fingerprint], settings.OPENAI_MODEL, lambda: _classify(post, company), scrape_request_id=origin)
+    origin = post.snapshots.order_by("-observed_at").values_list("import_run__scrape_request_id", flat=True).first()
+    result = analysis(
+        company,
+        ["organic", fingerprint],
+        settings.OPENAI_MODEL,
+        lambda: _classify(post, company),
+        scrape_request_id=origin,
+    )
     CompetitorPost.objects.filter(pk=post.pk).update(
-        classification=result, classification_hash=fingerprint, classified_at=timezone.now(), classifier_model=settings.OPENAI_MODEL)
+        classification=result,
+        classification_hash=fingerprint,
+        classified_at=timezone.now(),
+        classifier_model=settings.OPENAI_MODEL,
+    )
     post.classification, post.classification_hash = result, fingerprint
     return result
 
@@ -231,7 +239,10 @@ Statistik i vår nya vinkel får bara föreslås som något att samla in, om ing
         )
     if response.output_parsed is None:
         raise ValueError("Analysen gav inget färdigt resultat.")
-    return response.output_parsed.model_dump()
+    result = response.output_parsed.model_dump()
+    from .provider_costs import openai_usage_meta
+    result["_provider_usage"] = openai_usage_meta(response, "competitor_analysis")
+    return result
 
 
 def analysis_candidates(company, limit=3):
