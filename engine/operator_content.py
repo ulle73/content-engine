@@ -123,7 +123,7 @@ def select_idea(run: ContentRun, idea_index: int, *, expected_revision: int | No
     _validate_current_context(run)
     output = generate(run.context, idea=run.ideas[idea_index])
     with transaction.atomic():
-        locked = ContentRun.objects.select_for_update().select_related("workspace", "media_asset").get(pk=run.pk)
+        locked = ContentRun.objects.select_for_update(of=("self",)).select_related("workspace", "media_asset").get(pk=run.pk)
         state = _check_revision(locked, expected_revision, state=run_state(locked, lock=True))
         _make_editable(locked, state)
         previous_index = locked.selected

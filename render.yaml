@@ -1,6 +1,7 @@
 services:
   - type: web
     name: content-engine
+    branch: feature/chatgpt-content-engine-mcp
     runtime: python
     plan: starter
     region: frankfurt
@@ -13,13 +14,15 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: SECRET_KEY
-        generateValue: true
+        sync: false
       - key: POSTIZ_ENCRYPTION_SECRET
-        generateValue: true
+        sync: false
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL
         value: gpt-5.6-luna
+      - key: APIFY_API_TOKEN
+        sync: false
       - key: SETUP_TOKEN
         generateValue: true
       - key: MEDIA_STORAGE
@@ -41,6 +44,7 @@ services:
 
   - type: web
     name: content-engine-mcp
+    branch: feature/chatgpt-content-engine-mcp
     runtime: python
     plan: starter
     region: frankfurt

@@ -18,6 +18,8 @@ ALLOWED_HOSTS = [urlparse(APP_URL).hostname]
 DATABASES = {"default": env.db("DATABASE_URL", default=f"sqlite:///{ENGINE_ROOT / 'data' / 'app.sqlite3'}")}
 if DATABASES["default"]["ENGINE"].endswith("postgresql"):
     DATABASES["default"]["CONN_MAX_AGE"] = 60
+    DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+    DATABASES["default"]["OPTIONS"].setdefault("connect_timeout", 15)
     DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
 INSTALLED_APPS = [
     "django.contrib.auth",

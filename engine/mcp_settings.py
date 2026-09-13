@@ -4,6 +4,12 @@ import os
 
 from .settings import *  # noqa: F403
 
+# Django ASGI must not retain per-thread persistent connections. Neon provides
+# the pool; each request releases its connection back to that pool.
+DATABASES["default"]["CONN_MAX_AGE"] = 0
+if not LOCAL_HTTP and os.environ.get("MCP_ALLOW_INSECURE_LOCAL", "").lower() in {"1", "true", "yes"}:
+    raise ImproperlyConfigured("Local MCP authentication must not be enabled in production.")
+
 ROOT_URLCONF = "engine.mcp_auth_urls"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "login"

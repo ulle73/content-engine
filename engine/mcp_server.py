@@ -13,6 +13,8 @@ import django
 django.setup()
 
 from pydantic import AnyHttpUrl
+from asgiref.sync import sync_to_async
+from django.db import close_old_connections, connection
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -69,7 +71,7 @@ def _issuer_url() -> str:
 
 RESOURCE_URL = _resource_url()
 ISSUER_URL = _issuer_url()
-REQUIRED_SCOPE = os.environ.get("MCP_REQUIRED_SCOPE", "").strip()
+REQUIRED_SCOPE = os.environ.get("MCP_REQUIRED_SCOPE", "").strip() or "content-engine.operate"
 
 mcp = MCPServer(
     "Content Engine",
@@ -100,7 +102,22 @@ mcp = MCPServer(
 
 @mcp.custom_route("/healthz", methods=["GET"], include_in_schema=False)
 async def healthz(request: Request):
-    return JSONResponse({"status": "ok", "service": "content-engine-mcp"})
+    healthy = await sync_to_async(_database_ready, thread_sensitive=True)()
+    return JSONResponse({"status": "ok" if healthy else "unavailable", "service": "content-engine-mcp"},
+                        status_code=200 if healthy else 503)
+
+
+def _database_ready():
+    try:
+        close_old_connections()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM engine_setupstate WHERE id = 1")
+            return cursor.fetchone() is not None
+    except Exception:
+        # Never expose database addresses, credentials or exception bodies publicly.
+        return False
+    finally:
+        connection.close()
 
 
 def _safe_call(fn, *args, **kwargs):

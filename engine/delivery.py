@@ -147,7 +147,7 @@ def deliver_to_postiz(
             scheduled_for=scheduled,
         )
         with transaction.atomic():
-            locked = ContentRun.objects.select_for_update().select_related("workspace", "media_asset").get(pk=run.pk)
+            locked = ContentRun.objects.select_for_update(of=("self",)).select_related("workspace", "media_asset").get(pk=run.pk)
             state = run_state(locked, lock=True)
             if expected_revision is not None and state.revision != expected_revision:
                 raise OperatorError(
