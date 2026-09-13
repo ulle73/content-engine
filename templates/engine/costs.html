@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Kostnader · {{ workspace.name }}{% endblock %}
+{% block content %}
+<main class="engine settings-page costs-page">
+  <header class="page-header">
+    <div class="page-heading"><h1>Kostnader</h1></div>
+  </header>
+
+  <div class="settings-layout">
+    <div class="settings-content">
+      <div class="settings-grid">
+        <section class="settings-section">
+          <div class="settings-section-head"><div><h2>Apify</h2></div></div>
+          <div class="settings-section-body">
+            {% if apify_account %}
+              <div class="metric-strip metric-strip-scroll">
+                <div class="metric"><span>Använt denna period</span><strong>${{ apify_account.used_usd|floatformat:2 }}</strong></div>
+                <div class="metric"><span>Kvar till gränsen</span><strong>{% if apify_account.remaining_to_limit_usd != None %}${{ apify_account.remaining_to_limit_usd|floatformat:2 }}{% else %}—{% endif %}</strong></div>
+                <div class="metric"><span>Inkluderat</span><strong>${{ apify_account.included_credits_usd|floatformat:2 }}</strong></div>
+                <div class="metric"><span>Inkluderat kvar</span><strong>${{ apify_account.included_remaining_usd|floatformat:2 }}</strong></div>
+              </div>
+              {% if apify_account.hard_limit_reached %}
+                <div class="empty-state"><h3>Kostnadsgränsen är nådd</h3></div>
+              {% endif %}
+              <p class="small">{% if apify_account.plan %}Plan: {{ apify_account.plan }}{% endif %}{% if apify_account.cycle_start and apify_account.cycle_end %} · Period {{ apify_account.cycle_start|slice:':10' }} – {{ apify_account.cycle_end|slice:':10' }}{% endif %}</p>
+            {% else %}
+              <div class="empty-state">
+                <h3>Kunde inte läsa Apify</h3>
+                {% if apify_error %}<p>{{ apify_error }}</p>{% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="settings-section-head"><div><h2>Content Engine</h2></div></div>
+          <div class="settings-section-body">
+            <div class="metric-strip metric-strip-scroll">
+              <div class="metric"><span>Registrerad Apify-kostnad</span><strong>${{ tracked_total|floatformat:4 }}</strong></div>
+            </div>
+            <details>
+              <summary>Senaste kostnaderna</summary>
+              <div class="table-scroll">
+                <table class="data-table mobile-table">
+                  <thead><tr><th>När</th><th>Källa</th><th>Status</th><th>Kostnad</th></tr></thead>
+                  <tbody>
+                    {% for r in recent_costs %}
+                      <tr>
+                        <td data-label="När">{{ r.created_at|date:'j M H:i' }}</td>
+                        <td data-label="Källa">{{ r.state.source }} · {{ r.state.external_key }}</td>
+                        <td data-label="Status">{{ r.status }}</td>
+                        <td data-label="Kostnad">{% if r.cost_usd != None %}${{ r.cost_usd|floatformat:6 }}{% else %}—{% endif %}</td>
+                      </tr>
+                    {% empty %}
+                      <tr><td colspan="4">Ingen registrerad kostnad ännu.</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
