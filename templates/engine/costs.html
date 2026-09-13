@@ -1,67 +1,107 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block title %}Kostnader · {{ workspace.name }}{% endblock %}
 {% block content %}
-<main class="engine settings-page costs-page">
+<div class="engine settings-page">
   <header class="page-header">
-    <div class="page-heading"><h1>Kostnader</h1></div>
+    <div>
+      <p class="eyebrow">Ekonomi</p>
+      <h1>Kostnader</h1>
+      <p class="lede">En samlad vy över kostnader som Content Engine kan knyta till {{ workspace.name }}.</p>
+    </div>
+    <a class="button secondary" href="{% url 'engine:settings' workspace_id=workspace.pk %}">Till inställningar</a>
   </header>
 
-  <div class="settings-layout">
-    <div class="settings-content">
-      <div class="settings-grid">
-        <section class="settings-section">
-          <div class="settings-section-head"><div><h2>Apify</h2></div></div>
-          <div class="settings-section-body">
-            {% if apify_account %}
-              <div class="metric-strip metric-strip-scroll">
-                <div class="metric"><span>Använt denna period</span><strong>${{ apify_account.used_usd|floatformat:2 }}</strong></div>
-                <div class="metric"><span>Kvar till gränsen</span><strong>{% if apify_account.remaining_to_limit_usd != None %}${{ apify_account.remaining_to_limit_usd|floatformat:2 }}{% else %}—{% endif %}</strong></div>
-                <div class="metric"><span>Inkluderat</span><strong>${{ apify_account.included_credits_usd|floatformat:2 }}</strong></div>
-                <div class="metric"><span>Inkluderat kvar</span><strong>${{ apify_account.included_remaining_usd|floatformat:2 }}</strong></div>
-              </div>
-              {% if apify_account.hard_limit_reached %}
-                <div class="empty-state"><h3>Kostnadsgränsen är nådd</h3></div>
-              {% endif %}
-              <p class="small">{% if apify_account.plan %}Plan: {{ apify_account.plan }}{% endif %}{% if apify_account.cycle_start and apify_account.cycle_end %} · Period {{ apify_account.cycle_start|slice:':10' }} – {{ apify_account.cycle_end|slice:':10' }}{% endif %}</p>
-            {% else %}
-              <div class="empty-state">
-                <h3>Kunde inte läsa Apify</h3>
-                {% if apify_error %}<p>{{ apify_error }}</p>{% endif %}
-              </div>
-            {% endif %}
-          </div>
-        </section>
+  <section class="settings-section">
+    <div class="settings-section-head">
+      <h2>Total kostnadsbild</h2>
+      <p class="small">Apify är leverantörsrapporterad. OpenAI beräknas från faktisk token-usage. Higgsfield visar accepterat prisestimat för startade videokörningar.</p>
+    </div>
+    <div class="settings-section-body">
+      <div class="metric-strip metric-strip-scroll">
+        <div class="metric"><span>Totalt registrerat</span><strong>${{ costs.total_usd|floatformat:4 }}</strong></div>
+        <div class="metric"><span>Denna månad</span><strong>${{ costs.month_usd|floatformat:4 }}</strong></div>
+        <div class="metric"><span>Apify</span><strong>${{ costs.apify_usd|floatformat:4 }}</strong></div>
+        <div class="metric"><span>OpenAI text</span><strong>${{ costs.openai_text_usd|floatformat:4 }}</strong></div>
+        <div class="metric"><span>OpenAI bilder</span><strong>${{ costs.openai_image_usd|floatformat:4 }}</strong></div>
+        <div class="metric"><span>Higgsfield video</span><strong>${{ costs.higgsfield_usd|floatformat:4 }}</strong></div>
+      </div>
+      <p class="small">"Totalt registrerat" är summan av de kostnader som kan knytas säkert till detta workspace. OpenAI-text från tiden innan token-spårningen infördes kan inte återskapas exakt och räknas därför inte in retroaktivt.</p>
+      {% if costs.unknown_cost_count %}<p class="notice">{{ costs.unknown_cost_count }} leverantörsanrop har usage men saknar en säker prisberäkning och ingår inte i totalen.</p>{% endif %}
+    </div>
+  </section>
 
-        <section class="settings-section">
-          <div class="settings-section-head"><div><h2>Content Engine</h2></div></div>
-          <div class="settings-section-body">
-            <div class="metric-strip metric-strip-scroll">
-              <div class="metric"><span>Registrerad Apify-kostnad</span><strong>${{ tracked_total|floatformat:4 }}</strong></div>
-            </div>
-            <details>
-              <summary>Senaste kostnaderna</summary>
-              <div class="table-scroll">
-                <table class="data-table mobile-table">
-                  <thead><tr><th>När</th><th>Källa</th><th>Status</th><th>Kostnad</th></tr></thead>
-                  <tbody>
-                    {% for r in recent_costs %}
-                      <tr>
-                        <td data-label="När">{{ r.created_at|date:'j M H:i' }}</td>
-                        <td data-label="Källa">{{ r.state.source }} · {{ r.state.external_key }}</td>
-                        <td data-label="Status">{{ r.status }}</td>
-                        <td data-label="Kostnad">{% if r.cost_usd != None %}${{ r.cost_usd|floatformat:6 }}{% else %}—{% endif %}</td>
-                      </tr>
-                    {% empty %}
-                      <tr><td colspan="4">Ingen registrerad kostnad ännu.</td></tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </details>
+  <div class="settings-layout">
+    <section class="settings-section">
+      <div class="settings-section-head"><h2>Apify</h2><p class="small">Scraping och competitor intelligence.</p></div>
+      <div class="settings-section-body">
+        <p><strong>${{ costs.apify_usd|floatformat:6 }}</strong> registrerat av Content Engine · <strong>${{ costs.apify_month_usd|floatformat:6 }}</strong> denna månad.</p>
+        {% if apify_account %}
+          <div class="metric-strip metric-strip-scroll">
+            <div class="metric"><span>Använt denna Apify-period</span><strong>${{ apify_account.used_usd|floatformat:2 }}</strong></div>
+            <div class="metric"><span>Kvar till hård gräns</span><strong>${{ apify_account.remaining_to_limit_usd|floatformat:2 }}</strong></div>
+            <div class="metric"><span>Inkluderade credits kvar</span><strong>${{ apify_account.included_remaining_usd|floatformat:2 }}</strong></div>
           </div>
-        </section>
+          <p class="small">Plan: {{ apify_account.plan|default:"okänd" }}{% if apify_account.cycle_start or apify_account.cycle_end %} · Period {{ apify_account.cycle_start|default:"?" }} – {{ apify_account.cycle_end|default:"?" }}{% endif %}</p>
+          {% if apify_account.hard_limit_reached %}<p class="errorlist"><strong>Kostnadsgränsen är nådd.</strong> Apify kommer att avvisa nya betalda Actor-körningar tills gränsen höjs eller perioden återställs.</p>{% endif %}
+        {% elif apify_error %}
+          <p class="errorlist"><strong>Apify kunde inte läsa kontosaldot:</strong> {{ apify_error }}</p>
+        {% else %}
+          <p class="small">Apify-kontots livegräns kunde inte läsas.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <div class="settings-section-head"><h2>OpenAI · text</h2><p class="small">Idéer, copy och AI-analyser.</p></div>
+      <div class="settings-section-body">
+        <p><strong>${{ costs.openai_text_usd|floatformat:6 }}</strong> registrerat · <strong>${{ costs.openai_text_month_usd|floatformat:6 }}</strong> denna månad.</p>
+        <p class="small">{{ costs.text_calls }} spårade anrop. Kostnaden beräknas från leverantörens faktiska input-, cache- och output-tokens med modellens API-pris.</p>
+        {% if costs.text_tracking_started_at %}<p class="small">Exakt text-usage sparas från {{ costs.text_tracking_started_at|date:"j M Y H:i" }}. Äldre textanrop saknar historisk token-usage.</p>{% else %}<p class="small">Inga nya textanrop har ännu gjorts sedan kostnadsspårningen aktiverades.</p>{% endif %}
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <div class="settings-section-head"><h2>OpenAI · bilder</h2><p class="small">Bildgenerering och bildredigering.</p></div>
+      <div class="settings-section-body">
+        <p><strong>${{ costs.openai_image_usd|floatformat:6 }}</strong> beräknat · <strong>${{ costs.openai_image_month_usd|floatformat:6 }}</strong> denna månad.</p>
+        <p class="small">Beräknas från den usage som redan sparas på varje MediaGeneration och den publicerade GPT-Image-prislistan.</p>
+        {% if costs.image_partial_count %}<p class="notice">{{ costs.image_partial_count }} bildredigeringar saknar full uppdelning mellan text- och bildinput. Deras säkert beräkningsbara del visas och markeras som delvis i historiken.</p>{% endif %}
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <div class="settings-section-head"><h2>Higgsfield · video</h2><p class="small">Videojobb som faktiskt har startats hos leverantören.</p></div>
+      <div class="settings-section-body">
+        <p><strong>${{ costs.higgsfield_usd|floatformat:6 }}</strong> accepterade prisestimat · <strong>${{ costs.higgsfield_month_usd|floatformat:6 }}</strong> denna månad.</p>
+        <p class="small">Higgsfield-estimatet sparas före den betalda videokörningen. Endast körningar med bekräftad start eller completion räknas i totalen.</p>
+        {% if costs.higgsfield_unknown_count %}<p class="notice">{{ costs.higgsfield_unknown_count }} videostarter har okänt externt läge och räknas inte in förrän de har reconcilerats.</p>{% endif %}
+      </div>
+    </section>
+  </div>
+
+  <section class="settings-section">
+    <div class="settings-section-head"><h2>Senaste kostnadshändelserna</h2><p class="small">Var kostnaden kommer ifrån och hur beloppet har fastställts.</p></div>
+    <div class="settings-section-body">
+      <div class="table-scroll">
+        <table class="data-table mobile-table">
+          <thead><tr><th>Tid</th><th>Leverantör</th><th>Typ</th><th>Vad</th><th>Kostnad</th><th>Underlag</th></tr></thead>
+          <tbody>
+          {% for row in costs.recent %}
+            <tr>
+              <td data-label="Tid">{{ row.at|date:"j M H:i" }}</td>
+              <td data-label="Leverantör">{{ row.provider }}</td>
+              <td data-label="Typ">{{ row.service }}{% if row.model %}<br><span class="small">{{ row.model }}</span>{% endif %}</td>
+              <td data-label="Vad">{{ row.description }}{% if row.status %}<br><span class="small">{{ row.status }}</span>{% endif %}</td>
+              <td data-label="Kostnad"><strong>${{ row.cost_usd|floatformat:6 }}</strong></td>
+              <td data-label="Underlag"><span class="small">{{ row.basis }}</span></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6">Ingen registrerad kostnad ännu.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
-  </div>
-</main>
+  </section>
+</div>
 {% endblock %}
