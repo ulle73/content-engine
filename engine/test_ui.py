@@ -68,6 +68,7 @@ class AppShellTests(TestCase):
         self.assertContains(response, ">Inspiration<")
         self.assertContains(response, ">Skapa<")
         self.assertContains(response, ">Inställningar<")
+        self.assertContains(response, ">Kostnader<")
 
     def test_responsive_styles_include_touch_targets_safe_area_and_mobile_cards(self):
         stylesheet = self.client.get("/static/css/responsive-v2.css")
@@ -98,7 +99,7 @@ class AppShellTests(TestCase):
         self.assertContains(home, 'class="overview-command"')
         self.assertContains(organic, 'organic-insights-page')
         self.assertContains(performance, 'performance-page')
-        self.assertContains(settings, 'class="engine settings-page"')
+        self.assertContains(settings, 'settings-page-premium')
         self.assertContains(settings, 'class="settings-layout"')
         self.assertContains(companies, 'workspace-page-v3')
 
@@ -115,7 +116,7 @@ class AppShellTests(TestCase):
         media = self.client.get(reverse("engine:media", kwargs={"workspace_id": self.workspace.pk, "run_id": run.pk}))
 
         self.assertContains(review, 'class="engine review-page"')
-        self.assertContains(review, 'class="review-progress"')
+        self.assertContains(review, 'premium-review-progress')
         self.assertContains(media, 'class="engine media-workspace"')
 
     def test_missing_or_expired_company_details_open_before_generation(self):
@@ -156,13 +157,13 @@ class AppShellTests(TestCase):
         self.assertContains(response, "Min profil")
         self.assertContains(response, 'class="errorlist"')
 
-    def test_navigation_has_four_distinct_destinations_and_one_active_item_per_menu(self):
+    def test_navigation_has_five_distinct_destinations_and_one_active_item_per_menu(self):
         response = self.client.get(reverse("engine:own_performance", kwargs={"workspace_id": self.workspace.pk}))
         elements = UIElements(response).elements
         for link_class in ("app-nav-link", "mobile-nav-link"):
             links = [attrs for tag, attrs in elements if tag == "a" and link_class in attrs.get("class", "").split()]
-            self.assertEqual(len(links), 4)
-            self.assertEqual(len({link["href"] for link in links}), 4)
+            self.assertEqual(len(links), 5)
+            self.assertEqual(len({link["href"] for link in links}), 5)
             active = [link for link in links if link.get("aria-current") == "page"]
             self.assertEqual(len(active), 1)
             self.assertEqual(active[0]["href"], reverse("engine:own_performance", kwargs={"workspace_id": self.workspace.pk}))
