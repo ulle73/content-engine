@@ -19,6 +19,7 @@
               <a class="link-row" href="{% url 'engine:home' workspace_id=workspace.pk %}#company-context"><span><strong>Företagsuppgifter</strong><br><span>Om företaget och aktuella erbjudanden</span></span><span aria-hidden="true">›</span></a>
               <a class="link-row" href="{% url 'engine:connect' workspace_id=workspace.pk %}"><span><strong>Publiceringskanaler · Postiz</strong><br><span>{% if workspace.postiz_channels %}{{ workspace.postiz_channels|length }} valda kanaler{% else %}Inte anslutet{% endif %}</span></span><span aria-hidden="true">›</span></a>
               <a class="link-row" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"><span><strong>Konkurrentbevakning</strong><br><span>Inlägg och annonser</span></span><span aria-hidden="true">›</span></a>
+              <a class="link-row" href="{% url 'engine:costs' workspace_id=workspace.pk %}"><span><strong>Kostnader</strong><br><span>Apify och användning</span></span><span aria-hidden="true">›</span></a>
             </div>
           </div>
         </section>
