@@ -67,6 +67,7 @@ class AppShellTests(TestCase):
         self.assertContains(response, ">Resultat<")
         self.assertContains(response, ">Inspiration<")
         self.assertContains(response, ">Skapa<")
+        self.assertContains(response, ">Media<")
         self.assertContains(response, ">Inställningar<")
         self.assertContains(response, ">Kostnader<")
 
@@ -90,6 +91,7 @@ class AppShellTests(TestCase):
 
     def test_primary_screens_expose_product_specific_layouts(self):
         home = self.client.get(reverse("engine:home", kwargs={"workspace_id": self.workspace.pk}))
+        media_library = self.client.get(reverse("engine:media_library", kwargs={"workspace_id": self.workspace.pk}))
         organic = self.client.get(reverse("engine:intelligence", kwargs={"workspace_id": self.workspace.pk}))
         performance = self.client.get(reverse("engine:own_performance", kwargs={"workspace_id": self.workspace.pk}))
         settings = self.client.get(reverse("engine:settings", kwargs={"workspace_id": self.workspace.pk}))
@@ -97,6 +99,8 @@ class AppShellTests(TestCase):
 
         self.assertContains(home, 'class="engine overview-page"')
         self.assertContains(home, 'class="overview-command"')
+        self.assertContains(media_library, 'class="engine media-library-page"')
+        self.assertContains(media_library, "Ladda upp till biblioteket")
         self.assertContains(organic, 'organic-insights-page')
         self.assertContains(performance, 'performance-page')
         self.assertContains(settings, 'settings-page-premium')
@@ -157,13 +161,13 @@ class AppShellTests(TestCase):
         self.assertContains(response, "Min profil")
         self.assertContains(response, 'class="errorlist"')
 
-    def test_navigation_has_five_distinct_destinations_and_one_active_item_per_menu(self):
+    def test_navigation_has_six_distinct_destinations_and_one_active_item_per_menu(self):
         response = self.client.get(reverse("engine:own_performance", kwargs={"workspace_id": self.workspace.pk}))
         elements = UIElements(response).elements
         for link_class in ("app-nav-link", "mobile-nav-link"):
             links = [attrs for tag, attrs in elements if tag == "a" and link_class in attrs.get("class", "").split()]
-            self.assertEqual(len(links), 5)
-            self.assertEqual(len({link["href"] for link in links}), 5)
+            self.assertEqual(len(links), 6)
+            self.assertEqual(len({link["href"] for link in links}), 6)
             active = [link for link in links if link.get("aria-current") == "page"]
             self.assertEqual(len(active), 1)
             self.assertEqual(active[0]["href"], reverse("engine:own_performance", kwargs={"workspace_id": self.workspace.pk}))
