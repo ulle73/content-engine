@@ -137,6 +137,8 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
     from .provider_costs import openai_usage_meta
 
     usage_meta = openai_usage_meta(response, "draft" if writing else "ideas")
+    if not isinstance(usage_meta.get("usage"), dict):
+        usage_meta["usage"] = {}
     if writing:
         output["_provider_usage"] = usage_meta
     else:
