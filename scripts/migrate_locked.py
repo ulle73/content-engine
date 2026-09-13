@@ -1,6 +1,14 @@
 """Serialize production migrations when web and MCP Render services deploy concurrently."""
 
 import os
+import sys
+from pathlib import Path
+
+# When Render executes this file directly, Python puts scripts/ (not the repo
+# root) on sys.path. Add the project root so the engine package is importable.
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "engine.settings")
 
