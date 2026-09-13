@@ -155,7 +155,7 @@ def _meta_time(meta, fallback):
     return fallback
 
 
-def _event_row(at, provider, service, description, cost, basis, model="", status=""):
+def _event_row(at, provider, service, description, cost, basis, model="", status="", media_assets=None, generation_id=""):
     return {
         "at": at,
         "provider": provider,
@@ -165,6 +165,8 @@ def _event_row(at, provider, service, description, cost, basis, model="", status
         "basis": basis,
         "model": model,
         "status": status,
+        "media_assets": list(media_assets or []),
+        "generation_id": generation_id,
     }
 
 
@@ -252,8 +254,9 @@ def cost_summary(company):
     higgs_total = Decimal("0")
     higgs_month = Decimal("0")
     higgs_unknown = 0
-    jobs = MediaGeneration.objects.filter(run__workspace=company).select_related("run", "source_asset")
+    jobs = MediaGeneration.objects.filter(run__workspace=company).select_related("run", "source_asset").prefetch_related("assets")
     for job in jobs:
+        job_assets = list(job.assets.all())
         if job.provider == "openai" and job.status == "completed":
             cost, partial = openai_image_cost(job)
             if cost is None:
@@ -273,6 +276,8 @@ def cost_summary(company):
                     "Beräknad från tokens" + (" · delvis" if partial else ""),
                     (job.parameters or {}).get("model", ""),
                     job.status,
+                    media_assets=job_assets,
+                    generation_id=str(job.pk),
                 )
             )
         elif job.provider == "higgsfield":
@@ -292,6 +297,8 @@ def cost_summary(company):
                         "Accepterat prisestimat",
                         (job.usage or {}).get("model", ""),
                         job.status,
+                        media_assets=job_assets,
+                        generation_id=str(job.pk),
                     )
                 )
             elif job.status == "unknown" and cost >= 0:
