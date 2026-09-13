@@ -22,6 +22,59 @@ def run_for(request, run_id):
 
 @login_required
 @company_required
+def library(request, workspace_id):
+    now = timezone.now()
+    assets = request.workspace.media_assets.filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now)).select_related(
+        "generation", "generation__run"
+    )
+    filter_value = request.GET.get("filter", "all")
+    if filter_value in {"image", "video"}:
+        assets = assets.filter(kind=filter_value)
+    elif filter_value in {"uploaded", "generated"}:
+        assets = assets.filter(origin=filter_value)
+    elif filter_value == "logo":
+        assets = assets.filter(purpose="logo")
+    elif filter_value != "all":
+        filter_value = "all"
+
+    assets = list(assets.order_by("-created_at")[:120])
+    recent_jobs = list(
+        MediaGeneration.objects.filter(run__workspace=request.workspace, status="completed")
+        .select_related("run")
+        .prefetch_related("assets")
+        .order_by("-created_at")[:8]
+    )
+    return render(
+        request,
+        "engine/media_library.html",
+        {
+            "workspace": request.workspace,
+            "assets": assets,
+            "recent_jobs": recent_jobs,
+            "filter_value": filter_value,
+            "now": now,
+        },
+    )
+
+
+@login_required
+@company_required
+@require_POST
+def library_upload(request, workspace_id):
+    try:
+        file = request.FILES.get("file")
+        if not file or file.size > 80 * 1024 * 1024:
+            raise MediaError("Välj en bild (högst 8 MB) eller MP4-video (högst 80 MB).")
+        cleanup_expired(request.workspace)
+        store_asset(request.workspace, file.read(), alt_text=request.POST.get("alt_text", ""))
+        messages.success(request, "Filen är sparad i Media och kan väljas i alla framtida utkast.")
+    except MediaError as exc:
+        messages.error(request, str(exc))
+    return redirect("engine:media_library", workspace_id=workspace_id)
+
+
+@login_required
+@company_required
 def picker(request, workspace_id, run_id):
     run = run_for(request, run_id)
     kind = request.GET.get("kind", "image")
