@@ -43,7 +43,10 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
   run("git", ["config", "user.email", "opportunity-os@golfkuponger.se"], dir);
   run("git", ["config", "user.name", "Golfkuponger Opportunity OS"], dir);
 
-  const codex = new Codex({ apiKey });
+  const codex = new Codex({
+    apiKey,
+    config: { features: { use_legacy_landlock: true } },
+  });
   const thread = codex.startThread({
     workingDirectory: dir,
     sandboxMode: "workspace-write",
