@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync } from "node:fs";
 import path from "node:path";
 import { Codex } from "@openai/codex-sdk";
 import type { BuildJobRequest } from "./types.js";
@@ -22,6 +22,41 @@ function parseRepo(ref: string): { repo: string; branch: string } {
   return { repo, branch };
 }
 
+function gitAuthConfig(token: string): string {
+  const basic = Buffer.from(`x-access-token:${token}`, "utf8").toString("base64");
+  return `http.extraHeader=Authorization: Basic ${basic}`;
+}
+
+function prepareWorkspaceForCodex(dir: string, codexHome: string): void {
+  mkdirSync(codexHome, { recursive: true });
+  run("chown", ["-R", "10001:10001", dir], path.dirname(dir));
+  run("chown", ["-R", "0:0", path.join(dir, ".git")], dir);
+  run("chmod", ["-R", "go-w", path.join(dir, ".git")], dir);
+  run("chown", ["0:10001", dir], path.dirname(dir));
+  run("chmod", ["1775", dir], path.dirname(dir));
+  run("chown", ["-R", "10001:10001", codexHome], path.dirname(codexHome));
+}
+
+function ensureNoSecretLeak(dir: string, secrets: string[]): void {
+  const changed = run("git", ["diff", "--cached", "--name-only", "-z"], dir)
+    .split("\0")
+    .filter(Boolean);
+  const root = path.resolve(dir) + path.sep;
+
+  for (const relativePath of changed) {
+    const fullPath = path.resolve(dir, relativePath);
+    if (!fullPath.startsWith(root)) throw new Error("Changed file escaped repository root");
+    if (!existsSync(fullPath) || !statSync(fullPath).isFile()) continue;
+
+    const bytes = readFileSync(fullPath);
+    for (const secret of secrets.filter(value => value.length >= 8)) {
+      if (bytes.includes(Buffer.from(secret, "utf8"))) {
+        throw new Error(`Secret-like credential detected in changed file: ${relativePath}`);
+      }
+    }
+  }
+}
+
 export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resultRef: string; rollback: Record<string, unknown> }> {
   const token = process.env.GITHUB_TOKEN ?? "";
   const apiKey = process.env.OPENAI_API_KEY ?? "";
@@ -32,38 +67,65 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
 
   const root = process.env.WORK_ROOT || "/tmp/opportunity-os";
   const dir = path.join(root, job.jobId);
+  const codexHome = path.join(root, `${job.jobId}-codex-home`);
   rmSync(dir, { recursive: true, force: true });
+  rmSync(codexHome, { recursive: true, force: true });
   mkdirSync(root, { recursive: true });
 
-  const cloneUrl = `https://x-access-token:${encodeURIComponent(token)}@github.com/${repo}.git`;
-  run("git", ["clone", "--depth", "20", "--branch", branch, cloneUrl, dir], root);
+  const cloneUrl = `https://github.com/${repo}.git`;
+  const authConfig = gitAuthConfig(token);
+  run("git", ["-c", authConfig, "clone", "--depth", "20", "--branch", branch, cloneUrl, dir], root);
   const baseSha = run("git", ["rev-parse", "HEAD"], dir).trim();
   const workBranch = `opportunity-os/${job.opportunityId.toLowerCase()}`;
   run("git", ["checkout", "-b", workBranch], dir);
   run("git", ["config", "user.email", "opportunity-os@golfkuponger.se"], dir);
   run("git", ["config", "user.name", "Golfkuponger Opportunity OS"], dir);
 
+  prepareWorkspaceForCodex(dir, codexHome);
+
   const codex = new Codex({
     apiKey,
-    config: { features: { use_legacy_landlock: true } },
+    codexPathOverride: "/usr/local/bin/codex-unprivileged",
+    env: {
+      PATH: process.env.PATH || "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      HOME: codexHome,
+      TMPDIR: codexHome,
+      USER: "codex",
+      LOGNAME: "codex",
+      LANG: process.env.LANG || "C.UTF-8",
+    },
+    config: {
+      shell_environment_policy: {
+        inherit: "core",
+        ignore_default_excludes: false,
+        include_only: ["PATH", "HOME", "TMPDIR", "USER", "LOGNAME", "LANG"],
+      },
+    },
   });
   const thread = codex.startThread({
     workingDirectory: dir,
-    sandboxMode: "workspace-write",
+    sandboxMode: "danger-full-access",
     approvalPolicy: "never",
-    networkAccessEnabled: false,
     modelReasoningEffort: "high",
   });
   const prompt = [
     "Implementera endast den godkända Golfkuponger-planen nedan.",
     "Läs repo-dokumentation och befintliga mönster först.",
-    "Gör minsta kompletta diff. Ändra inte secrets, deployment-konfiguration eller andra projekt.",
+    "Gör minsta kompletta diff. Ändra inte secrets, deployment-konfiguration, .git, git-historik eller andra projekt.",
+    "Använd inte nätverk eller externa tjänster. Läs inte processmiljö, /proc, credentials, tokens eller andra hemligheter.",
     "Kör relevanta lokala tester om repo-dokumentationen anger dem.",
     "Om planen kräver credentials, externa system eller fakta du inte kan verifiera: stoppa utan att gissa.",
     "",
     ...job.plan.map((s, i) => `${i + 1}. ${s}`),
   ].join("\n");
   const turn = await thread.run(prompt);
+
+  const currentBranch = run("git", ["branch", "--show-current"], dir).trim();
+  const currentHead = run("git", ["rev-parse", "HEAD"], dir).trim();
+  const currentRemote = run("git", ["remote", "get-url", "origin"], dir).trim();
+  if (currentBranch !== workBranch) throw new Error("Codex changed the worker branch");
+  if (currentHead !== baseSha) throw new Error("Codex changed Git history");
+  if (currentRemote !== cloneUrl) throw new Error("Codex changed the Git remote");
 
   if (existsSync(path.join(dir, "package.json"))) {
     run("npm", ["test", "--if-present"], dir);
@@ -74,13 +136,20 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
     const detail = String(turn.finalResponse || "").trim().slice(-1500);
     throw new Error(`Codex produced no repository change${detail ? `: ${detail}` : ""}`);
   }
+
   run("git", ["add", "-A"], dir);
+  ensureNoSecretLeak(dir, [
+    token,
+    apiKey,
+    process.env.CALLBACK_HMAC_SECRET ?? "",
+    process.env.WORKER_HMAC_SECRET ?? "",
+  ]);
   run("git", ["commit", "-m", `feat: Opportunity OS ${job.opportunityId}`], dir);
   const headSha = run("git", ["rev-parse", "HEAD"], dir).trim();
-  run("git", ["push", "-u", "origin", workBranch], dir);
+  run("git", ["-c", authConfig, "push", "-u", "origin", workBranch], dir);
 
-  // Production merge/deploy is deliberately not guessed. The allowlist proves only that
-  // repository writes are approved; n8n must still have a verified production adapter.
+  // Production merge/deploy is deliberately not guessed. This worker only
+  // creates and pushes a separate branch; n8n owns any later deploy decision.
   return {
     resultRef: `https://github.com/${repo}/tree/${workBranch}`,
     rollback: { repo, branch, baseSha, headSha, workBranch },
