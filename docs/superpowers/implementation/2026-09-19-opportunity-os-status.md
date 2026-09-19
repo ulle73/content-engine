@@ -91,7 +91,9 @@ Railway service:
 
 ### External blocker
 
-The worker has no deployment yet. Railway reports the source branch `opportunity-os-spec` as a STAGED change and requires Railway dashboard 2FA to commit it. Railway also reports that its GitHub integration does not currently have access to `ulle73/content-engine`.
+The worker has no deployment yet.
+
+A second verified blocker exists in n8n: Code nodes cannot access process.env and $env access is blocked in this installation. Therefore the n8n → worker HMAC secret cannot be read from environment inside a Code node. Dispatch must use a credential-backed authentication mechanism (for example an n8n HTTP Header Auth credential) rather than embedding a secret in workflow code. Railway reports the source branch `opportunity-os-spec` as a STAGED change and requires Railway dashboard 2FA to commit it. Railway also reports that its GitHub integration does not currently have access to `ulle73/content-engine`.
 
 Because of that external authorization block:
 - `worker_enabled=false`
@@ -101,7 +103,8 @@ Because of that external authorization block:
 ## Remaining cutover gates
 
 1. Approve the staged Railway branch/source change with 2FA and ensure Railway GitHub access to `ulle73/content-engine`.
-2. Obtain a healthy worker deployment and authenticated callback/dispatch path.
+2. Create a credential-backed n8n → worker authentication secret; do not place the secret in workflow code or Data Tables.
+3. Obtain a healthy worker deployment and authenticated callback/dispatch path.
 3. Run a reversible end-to-end BUILD QA, including failure/rollback.
 4. Verify at least one real Opportunity OS opportunity card and interaction path.
 5. Set `publisher_shadow_mode=false`.
