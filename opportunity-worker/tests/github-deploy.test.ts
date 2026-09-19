@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  createGitHubRefClient,
   deployVerifiedRevision,
   isAutoDeployTarget,
   rollbackVerifiedRevision,
@@ -104,5 +105,44 @@ describe("rollbackVerifiedRevision", () => {
     })).rejects.toThrow("Refusing rollback");
 
     expect(client.restores).toEqual([]);
+  });
+});
+
+
+describe("createGitHubRefClient", () => {
+  it("reads and advances a branch through the GitHub refs API", async () => {
+    const calls: Array<{ url: string; method: string; body: string }> = [];
+    const request = async (url: string, init?: RequestInit) => {
+      const method = String(init?.method || "GET");
+      const body = String(init?.body || "");
+      calls.push({ url, method, body });
+      if (method === "GET") {
+        return new Response(JSON.stringify({ object: { sha: "base123" } }), { status: 200 });
+      }
+      return new Response(JSON.stringify({ object: { sha: "head456" } }), { status: 200 });
+    };
+
+    const client = createGitHubRefClient("token-value", request as typeof fetch);
+    expect(await client.getRef("ulle73/content-engine", "opportunity-os-qa")).toBe("base123");
+    await client.setRef("ulle73/content-engine", "opportunity-os-qa", "head456");
+
+    expect(calls[0].method).toBe("GET");
+    expect(calls[0].url).toContain("/repos/ulle73/content-engine/git/ref/heads/opportunity-os-qa");
+    expect(calls[1].method).toBe("PATCH");
+    expect(JSON.parse(calls[1].body)).toEqual({ sha: "head456", force: false });
+  });
+
+  it("uses an explicit rollback ref update", async () => {
+    const calls: Array<{ method: string; body: string }> = [];
+    const request = async (_url: string, init?: RequestInit) => {
+      calls.push({ method: String(init?.method || "GET"), body: String(init?.body || "") });
+      return new Response(JSON.stringify({ object: { sha: "base123" } }), { status: 200 });
+    };
+
+    const client = createGitHubRefClient("token-value", request as typeof fetch);
+    await client.restoreRef("ulle73/content-engine", "opportunity-os-qa", "base123");
+
+    expect(calls[0].method).toBe("PATCH");
+    expect(JSON.parse(calls[0].body)).toEqual({ sha: "base123", force: true });
   });
 });
