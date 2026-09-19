@@ -86,10 +86,10 @@ export function createGitHubRefClient(token: string, request: RequestFn = fetch)
       return sha;
     },
     async setRef(repo, branch, sha) {
-      await call(refUrl(repo, branch), { method: "PATCH", body: JSON.stringify({ sha, force: false }) });
+      await call(updateRefUrl(repo, branch), { method: "PATCH", body: JSON.stringify({ sha, force: false }) });
     },
     async restoreRef(repo, branch, sha) {
-      await call(refUrl(repo, branch), { method: "PATCH", body: JSON.stringify({ sha, force: true }) });
+      await call(updateRefUrl(repo, branch), { method: "PATCH", body: JSON.stringify({ sha, force: true }) });
     },
     async createOrReusePullRequest(repo, baseBranch, headBranch) {
       const existingUrl = await findPullRequest(repo, baseBranch, headBranch);
