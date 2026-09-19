@@ -18,6 +18,19 @@ export function verifyHmac(args: {
   return timingSafeEqual(Buffer.from(expected, "hex"), Buffer.from(signature, "hex"));
 }
 
+export function authorizeWorkerRequest(args: {
+  secret: string;
+  timestamp: string;
+  body: string;
+  signature: string;
+  allowPrivateUnsigned: boolean;
+  publicDomain: string;
+  nowMs?: number;
+}): boolean {
+  if (verifyHmac(args)) return true;
+  return args.allowPrivateUnsigned && !args.publicDomain;
+}
+
 export function signHmac(secret: string, timestamp: string, body: string): string {
   return createHmac("sha256", secret).update(timestamp + "." + body).digest("hex");
 }
