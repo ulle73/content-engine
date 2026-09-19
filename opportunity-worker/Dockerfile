@@ -5,6 +5,8 @@ COPY package*.json ./
 RUN npm install --no-audit --no-fund
 COPY tsconfig.json ./
 COPY src ./src
+COPY tests ./tests
+RUN npm test
 RUN npm run build
 ENV NODE_ENV=production
 EXPOSE 3000
