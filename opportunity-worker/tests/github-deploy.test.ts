@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   deployVerifiedRevision,
   isAutoDeployTarget,
+  rollbackVerifiedRevision,
   type GitHubRefClient,
 } from "../src/github-deploy.js";
 
 class MemoryRefClient implements GitHubRefClient {
   refs = new Map<string, string>();
   updates: Array<{ repo: string; branch: string; sha: string }> = [];
+  restores: Array<{ repo: string; branch: string; sha: string }> = [];
 
   private key(repo: string, branch: string) {
     return repo + "@" + branch;
@@ -21,6 +23,11 @@ class MemoryRefClient implements GitHubRefClient {
 
   async setRef(repo: string, branch: string, sha: string) {
     this.updates.push({ repo, branch, sha });
+    this.refs.set(this.key(repo, branch), sha);
+  }
+
+  async restoreRef(repo: string, branch: string, sha: string) {
+    this.restores.push({ repo, branch, sha });
     this.refs.set(this.key(repo, branch), sha);
   }
 }
@@ -63,5 +70,39 @@ describe("deployVerifiedRevision", () => {
     })).rejects.toThrow("Target branch moved");
 
     expect(client.updates).toEqual([]);
+  });
+});
+
+
+describe("rollbackVerifiedRevision", () => {
+  it("restores the captured base only while the deployed SHA is still current", async () => {
+    const client = new MemoryRefClient();
+    client.refs.set("ulle73/content-engine@opportunity-os-qa", "head456");
+
+    const result = await rollbackVerifiedRevision({
+      client,
+      repo: "ulle73/content-engine",
+      branch: "opportunity-os-qa",
+      baseSha: "base123",
+      deployedSha: "head456",
+    });
+
+    expect(result).toEqual({ ok: true, restoredSha: "base123" });
+    expect(client.restores).toEqual([{ repo: "ulle73/content-engine", branch: "opportunity-os-qa", sha: "base123" }]);
+  });
+
+  it("refuses rollback after a third party moves the target", async () => {
+    const client = new MemoryRefClient();
+    client.refs.set("ulle73/content-engine@opportunity-os-qa", "newer789");
+
+    await expect(rollbackVerifiedRevision({
+      client,
+      repo: "ulle73/content-engine",
+      branch: "opportunity-os-qa",
+      baseSha: "base123",
+      deployedSha: "head456",
+    })).rejects.toThrow("Refusing rollback");
+
+    expect(client.restores).toEqual([]);
   });
 });
