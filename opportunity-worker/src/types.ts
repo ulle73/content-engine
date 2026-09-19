@@ -18,6 +18,25 @@ export interface BuildJobRequest {
   callbackNonce: string;
 }
 
+export interface GitHubRollbackMetadata {
+  repo: string;
+  branch: string;
+  baseSha: string;
+  headSha: string;
+  workBranch: string;
+}
+
+export interface FinalizeJobRequest {
+  jobId: string;
+  targetType: "github";
+  targetRef: string;
+  callbackUrl: string;
+  callbackNonce: string;
+  rollback: GitHubRollbackMetadata;
+}
+
+export type CallbackJob = Pick<BuildJobRequest, "jobId" | "callbackUrl" | "callbackNonce">;
+
 export interface JobProgress {
   jobId: string;
   status: JobStatus;

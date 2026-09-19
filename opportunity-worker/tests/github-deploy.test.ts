@@ -12,6 +12,7 @@ class MemoryRefClient implements GitHubRefClient {
   refs = new Map<string, string>();
   updates: Array<{ repo: string; branch: string; sha: string }> = [];
   restores: Array<{ repo: string; branch: string; sha: string }> = [];
+  pullRequests: Array<{ repo: string; baseBranch: string; headBranch: string }> = [];
 
   private key(repo: string, branch: string) {
     return repo + "@" + branch;
@@ -32,6 +33,11 @@ class MemoryRefClient implements GitHubRefClient {
     this.restores.push({ repo, branch, sha });
     this.refs.set(this.key(repo, branch), sha);
   }
+
+  async createOrReusePullRequest(repo: string, baseBranch: string, headBranch: string) {
+    this.pullRequests.push({ repo, baseBranch, headBranch });
+    return { url: `https://github.com/${repo}/pull/42` };
+  }
 }
 
 describe("isAutoDeployTarget", () => {
@@ -39,6 +45,7 @@ describe("isAutoDeployTarget", () => {
     const allow = "ulle73/content-engine@opportunity-os-qa";
     expect(isAutoDeployTarget("ulle73/content-engine", "opportunity-os-qa", allow)).toBe(true);
     expect(isAutoDeployTarget("ulle73/content-engine", "main", allow)).toBe(false);
+    expect(isAutoDeployTarget("other/content-engine", "opportunity-os-qa", allow)).toBe(false);
   });
 });
 
@@ -46,6 +53,7 @@ describe("deployVerifiedRevision", () => {
   it("moves the target only when it still equals the captured base SHA", async () => {
     const client = new MemoryRefClient();
     client.refs.set("ulle73/content-engine@opportunity-os-qa", "base123");
+    client.refs.set("ulle73/content-engine@opportunity-os/opp-1", "head456");
 
     const result = await deployVerifiedRevision({
       client,
@@ -53,6 +61,7 @@ describe("deployVerifiedRevision", () => {
       branch: "opportunity-os-qa",
       baseSha: "base123",
       headSha: "head456",
+      workBranch: "opportunity-os/opp-1",
     });
 
     expect(result.deployedSha).toBe("head456");
@@ -69,7 +78,25 @@ describe("deployVerifiedRevision", () => {
       branch: "opportunity-os-qa",
       baseSha: "base123",
       headSha: "head456",
+      workBranch: "opportunity-os/opp-1",
     })).rejects.toThrow("Target branch moved");
+
+    expect(client.updates).toEqual([]);
+  });
+
+  it("rejects a worker branch that no longer equals the captured head SHA", async () => {
+    const client = new MemoryRefClient();
+    client.refs.set("ulle73/content-engine@opportunity-os-qa", "base123");
+    client.refs.set("ulle73/content-engine@opportunity-os/opp-1", "different-head");
+
+    await expect(deployVerifiedRevision({
+      client,
+      repo: "ulle73/content-engine",
+      branch: "opportunity-os-qa",
+      baseSha: "base123",
+      headSha: "head456",
+      workBranch: "opportunity-os/opp-1",
+    })).rejects.toThrow("Work branch moved");
 
     expect(client.updates).toEqual([]);
   });
@@ -146,6 +173,53 @@ describe("createGitHubRefClient", () => {
     expect(calls[0].method).toBe("PATCH");
     expect(JSON.parse(calls[0].body)).toEqual({ sha: "base123", force: true });
   });
+
+  it("reuses an existing open audit pull request", async () => {
+    const calls: Array<{ url: string; method: string }> = [];
+    const request = async (url: string, init?: RequestInit) => {
+      calls.push({ url, method: String(init?.method || "GET") });
+      return new Response(JSON.stringify([{
+        html_url: "https://github.com/ulle73/content-engine/pull/12",
+        base: { ref: "opportunity-os-qa", repo: { full_name: "ulle73/content-engine" } },
+        head: { ref: "opportunity-os/opp-1", repo: { full_name: "ulle73/content-engine" } },
+      }]), { status: 200 });
+    };
+
+    const client = createGitHubRefClient("token-value", request as typeof fetch);
+    await expect(client.createOrReusePullRequest(
+      "ulle73/content-engine",
+      "opportunity-os-qa",
+      "opportunity-os/opp-1",
+    )).resolves.toEqual({ url: "https://github.com/ulle73/content-engine/pull/12" });
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0].method).toBe("GET");
+    expect(calls[0].url).toContain("/repos/ulle73/content-engine/pulls?");
+    expect(calls[0].url).toContain("base=opportunity-os-qa");
+  });
+
+  it("creates an audit pull request when no matching open request exists", async () => {
+    const calls: Array<{ method: string; body: string }> = [];
+    const request = async (_url: string, init?: RequestInit) => {
+      const method = String(init?.method || "GET");
+      calls.push({ method, body: String(init?.body || "") });
+      if (method === "GET") return new Response("[]", { status: 200 });
+      return new Response(JSON.stringify({ html_url: "https://github.com/ulle73/content-engine/pull/42" }), { status: 201 });
+    };
+
+    const client = createGitHubRefClient("token-value", request as typeof fetch);
+    await expect(client.createOrReusePullRequest(
+      "ulle73/content-engine",
+      "opportunity-os-qa",
+      "opportunity-os/opp-1",
+    )).resolves.toEqual({ url: "https://github.com/ulle73/content-engine/pull/42" });
+
+    expect(calls.map((call) => call.method)).toEqual(["GET", "POST"]);
+    expect(JSON.parse(calls[1].body)).toMatchObject({
+      base: "opportunity-os-qa",
+      head: "opportunity-os/opp-1",
+    });
+  });
 });
 
 
@@ -153,7 +227,7 @@ describe("finalizeGitHubBuild", () => {
   it("fails closed before deployment when the exact target is not approved", async () => {
     const client = new MemoryRefClient();
     client.refs.set("ulle73/content-engine@main", "base123");
-    const statuses: string[] = [];
+    const statuses: Array<{ status: string; resultRef?: string }> = [];
 
     const status = await finalizeGitHubBuild({
       client,
@@ -161,18 +235,52 @@ describe("finalizeGitHubBuild", () => {
       branch: "main",
       baseSha: "base123",
       headSha: "head456",
+      workBranch: "opportunity-os/opp-1",
       allowTargets: "ulle73/content-engine@opportunity-os-qa",
-      onStatus: async (value) => { statuses.push(value); },
+      onStatus: async (status, resultRef) => { statuses.push({ status, resultRef }); },
     });
 
-    expect(status).toBe("BLOCKED_CAPABILITY");
-    expect(statuses).toEqual(["BLOCKED_CAPABILITY"]);
+    expect(status).toBe("FAILED");
+    expect(statuses).toEqual([{ status: "FAILED" }]);
     expect(client.updates).toEqual([]);
+    expect(client.pullRequests).toEqual([]);
   });
 
   it("deploys, verifies and succeeds for an exact approved target", async () => {
     const client = new MemoryRefClient();
     client.refs.set("ulle73/content-engine@opportunity-os-qa", "base123");
+    client.refs.set("ulle73/content-engine@opportunity-os/opp-1", "head456");
+    const statuses: Array<{ status: string; resultRef?: string }> = [];
+
+    const status = await finalizeGitHubBuild({
+      client,
+      repo: "ulle73/content-engine",
+      branch: "opportunity-os-qa",
+      baseSha: "base123",
+      headSha: "head456",
+      workBranch: "opportunity-os/opp-1",
+      allowTargets: "ulle73/content-engine@opportunity-os-qa",
+      onStatus: async (status, resultRef) => { statuses.push({ status, resultRef }); },
+    });
+
+    expect(status).toBe("SUCCEEDED");
+    expect(statuses).toEqual([
+      { status: "DEPLOYING", resultRef: "https://github.com/ulle73/content-engine/pull/42" },
+      { status: "VERIFYING", resultRef: "https://github.com/ulle73/content-engine/pull/42" },
+      { status: "SUCCEEDED", resultRef: "https://github.com/ulle73/content-engine/pull/42" },
+    ]);
+    expect(client.pullRequests).toEqual([{
+      repo: "ulle73/content-engine",
+      baseBranch: "opportunity-os-qa",
+      headBranch: "opportunity-os/opp-1",
+    }]);
+    expect(await client.getRef("ulle73/content-engine", "opportunity-os-qa")).toBe("head456");
+  });
+
+  it("fails before creating a PR when the worker branch head changed", async () => {
+    const client = new MemoryRefClient();
+    client.refs.set("ulle73/content-engine@opportunity-os-qa", "base123");
+    client.refs.set("ulle73/content-engine@opportunity-os/opp-1", "different-head");
     const statuses: string[] = [];
 
     const status = await finalizeGitHubBuild({
@@ -181,18 +289,21 @@ describe("finalizeGitHubBuild", () => {
       branch: "opportunity-os-qa",
       baseSha: "base123",
       headSha: "head456",
+      workBranch: "opportunity-os/opp-1",
       allowTargets: "ulle73/content-engine@opportunity-os-qa",
       onStatus: async (value) => { statuses.push(value); },
     });
 
-    expect(status).toBe("SUCCEEDED");
-    expect(statuses).toEqual(["DEPLOYING", "VERIFYING", "SUCCEEDED"]);
-    expect(await client.getRef("ulle73/content-engine", "opportunity-os-qa")).toBe("head456");
+    expect(status).toBe("FAILED");
+    expect(statuses).toEqual(["FAILED"]);
+    expect(client.pullRequests).toEqual([]);
+    expect(client.updates).toEqual([]);
   });
 
   it("rolls back when post-deploy verification fails", async () => {
     const client = new MemoryRefClient();
     client.refs.set("ulle73/content-engine@opportunity-os-qa", "base123");
+    client.refs.set("ulle73/content-engine@opportunity-os/opp-1", "head456");
     const statuses: string[] = [];
 
     const status = await finalizeGitHubBuild({
@@ -201,6 +312,7 @@ describe("finalizeGitHubBuild", () => {
       branch: "opportunity-os-qa",
       baseSha: "base123",
       headSha: "head456",
+      workBranch: "opportunity-os/opp-1",
       allowTargets: "ulle73/content-engine@opportunity-os-qa",
       verify: async () => false,
       onStatus: async (value) => { statuses.push(value); },
@@ -209,5 +321,31 @@ describe("finalizeGitHubBuild", () => {
     expect(status).toBe("ROLLED_BACK");
     expect(statuses).toEqual(["DEPLOYING", "VERIFYING", "ROLLED_BACK"]);
     expect(await client.getRef("ulle73/content-engine", "opportunity-os-qa")).toBe("base123");
+  });
+
+  it("does not roll back when the target moves again after deployment", async () => {
+    const client = new MemoryRefClient();
+    client.refs.set("ulle73/content-engine@opportunity-os-qa", "base123");
+    client.refs.set("ulle73/content-engine@opportunity-os/opp-1", "head456");
+    const statuses: string[] = [];
+
+    const status = await finalizeGitHubBuild({
+      client,
+      repo: "ulle73/content-engine",
+      branch: "opportunity-os-qa",
+      baseSha: "base123",
+      headSha: "head456",
+      workBranch: "opportunity-os/opp-1",
+      allowTargets: "ulle73/content-engine@opportunity-os-qa",
+      verify: async () => {
+        client.refs.set("ulle73/content-engine@opportunity-os-qa", "third-party-head");
+        return false;
+      },
+      onStatus: async (value) => { statuses.push(value); },
+    });
+
+    expect(status).toBe("FAILED");
+    expect(statuses).toEqual(["DEPLOYING", "VERIFYING", "FAILED"]);
+    expect(client.restores).toEqual([]);
   });
 });
