@@ -1,5 +1,5 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { signHmac, verifyHmac } from "./auth.js";
+import { authorizeWorkerRequest, signHmac } from "./auth.js";
 import { evaluatePolicy } from "./policies.js";
 import { runGithubCodexBuild } from "./codex-runner.js";
 import type { BuildJobRequest, JobProgress, TargetType } from "./types.js";
@@ -61,7 +61,12 @@ const server = createServer(async (req, res) => {
   if (req.method === "GET" && req.url === "/health") return json(res, 200, { ok: true });
   if (req.method === "GET" && req.url === "/v1/capabilities") {
     return json(res, 200, {
-      github: { implemented: true, credentialReady: credentialReady("github"), productionAllowlistConfigured: Boolean(process.env.GITHUB_AUTOMERGE_REPOS) },
+      github: {
+        implemented: true,
+        credentialReady: credentialReady("github"),
+        productionAllowlistConfigured: Boolean(process.env.GITHUB_AUTOMERGE_REPOS),
+        privateUnsignedDispatch: process.env.ALLOW_PRIVATE_UNSIGNED === "true" && !process.env.RAILWAY_PUBLIC_DOMAIN,
+      },
       n8n: { implemented: false, credentialReady: credentialReady("n8n") },
       railway: { implemented: false, credentialReady: credentialReady("railway") },
       shopify: { implemented: false, credentialReady: credentialReady("shopify"), mainAlwaysRequiresSeparateApproval: true },
@@ -70,10 +75,15 @@ const server = createServer(async (req, res) => {
   if (req.method !== "POST" || req.url !== "/v1/jobs") return json(res, 404, { error: "not_found" });
 
   const raw = await body(req);
-  const secret = process.env.WORKER_HMAC_SECRET || "";
-  if (!verifyHmac({ secret, timestamp: String(req.headers["x-os-timestamp"] || ""), body: raw, signature: String(req.headers["x-os-signature"] || "") })) {
-    return json(res, 401, { error: "invalid_signature" });
-  }
+  const authorized = authorizeWorkerRequest({
+    secret: process.env.WORKER_HMAC_SECRET || "",
+    timestamp: String(req.headers["x-os-timestamp"] || ""),
+    body: raw,
+    signature: String(req.headers["x-os-signature"] || ""),
+    allowPrivateUnsigned: process.env.ALLOW_PRIVATE_UNSIGNED === "true",
+    publicDomain: process.env.RAILWAY_PUBLIC_DOMAIN || "",
+  });
+  if (!authorized) return json(res, 401, { error: "invalid_signature" });
 
   let job: BuildJobRequest;
   try { job = JSON.parse(raw) as BuildJobRequest; } catch { return json(res, 400, { error: "invalid_json" }); }
