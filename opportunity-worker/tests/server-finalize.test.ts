@@ -16,7 +16,7 @@ const config: WorkerConfig = {
   allowPrivateUnsigned: false,
   publicDomain: "worker.example.com",
   githubToken: "github-token",
-  openAiApiKey: "openai-key",
+  openRouterApiKey: "openrouter-key",
   githubAutomergeRepos: "ulle73/content-engine",
   githubAutodeployTargets: "ulle73/content-engine@opportunity-os-qa",
   n8nApiKey: "",
@@ -274,6 +274,18 @@ describe("POST /v1/finalize", () => {
 });
 
 describe("GET /v1/capabilities", () => {
+  it("requires OpenRouter rather than OpenAI for GitHub build readiness", async () => {
+    const readyServer = createWorkerServer(config, { githubClient: new FinalizeClient() });
+    const readyUrl = await start(readyServer);
+    const ready = await fetch(`${readyUrl}/v1/capabilities`);
+    expect((await ready.json()).github.credentialReady).toBe(true);
+
+    const missingServer = createWorkerServer({ ...config, openRouterApiKey: "" }, { githubClient: new FinalizeClient() });
+    const missingUrl = await start(missingServer);
+    const missing = await fetch(`${missingUrl}/v1/capabilities`);
+    expect((await missing.json()).github.credentialReady).toBe(false);
+  });
+
   it("reports whether the exact auto-deploy target allowlist is configured", async () => {
     const enabledServer = createWorkerServer(config, { githubClient: new FinalizeClient() });
     const enabledUrl = await start(enabledServer);

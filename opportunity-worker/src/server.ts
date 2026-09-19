@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { authorizeWorkerRequest, signHmac } from "./auth.js";
 import { runGithubCodexBuild } from "./codex-runner.js";
+import { isBuildModelTier } from "./model-routing.js";
 import { createGitHubRefClient, finalizeGitHubBuild, type GitHubRefClient } from "./github-deploy.js";
 import { evaluatePolicy } from "./policies.js";
 import type {
@@ -21,7 +22,7 @@ export interface WorkerConfig {
   allowPrivateUnsigned: boolean;
   publicDomain: string;
   githubToken: string;
-  openAiApiKey: string;
+  openRouterApiKey: string;
   githubAutomergeRepos: string;
   githubAutodeployTargets: string;
   n8nApiKey: string;
@@ -43,7 +44,7 @@ function configFromProcess(): WorkerConfig {
     allowPrivateUnsigned: process.env.ALLOW_PRIVATE_UNSIGNED === "true",
     publicDomain: process.env.RAILWAY_PUBLIC_DOMAIN || "",
     githubToken: process.env.GITHUB_TOKEN || "",
-    openAiApiKey: process.env.OPENAI_API_KEY || "",
+    openRouterApiKey: process.env.OPENROUTER_API_KEY || "",
     githubAutomergeRepos: process.env.GITHUB_AUTOMERGE_REPOS || "",
     githubAutodeployTargets: process.env.GITHUB_AUTODEPLOY_TARGETS || "",
     n8nApiKey: process.env.N8N_API_KEY || "",
@@ -66,7 +67,7 @@ async function body(req: IncomingMessage): Promise<string> {
 }
 
 function credentialReady(target: TargetType, config: WorkerConfig): boolean {
-  if (target === "github") return Boolean(config.githubToken && config.openAiApiKey);
+  if (target === "github") return Boolean(config.githubToken && config.openRouterApiKey);
   if (target === "n8n") return Boolean(config.n8nApiKey);
   if (target === "railway") return Boolean(config.railwayApiToken);
   if (target === "shopify") return Boolean(config.shopifyAdminAccessToken && config.shopifyExperimentThemeId);
@@ -240,6 +241,7 @@ export function createWorkerServer(config: WorkerConfig, dependencies: WorkerDep
 
     if (!parsed || typeof parsed !== "object") return json(res, 400, { error: "invalid_job" });
     const job = parsed as BuildJobRequest;
+    if (job.modelTier !== undefined && !isBuildModelTier(job.modelTier)) return json(res, 400, { error: "invalid_model_tier" });
     if (!job.jobId || active.has(job.jobId)) {
       return json(res, active.has(job.jobId) ? 409 : 400, {
         error: active.has(job.jobId) ? "job_active" : "invalid_job",

@@ -2,16 +2,8 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync } from "node:fs";
 import path from "node:path";
 import { Codex } from "@openai/codex-sdk";
+import { resolveModelAttempts, type LlmAttempt } from "./model-routing.js";
 import type { BuildJobRequest } from "./types.js";
-
-const DEFAULT_OPENROUTER_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
-const DEFAULT_OPENAI_FALLBACK_MODEL = "gpt-5.6-sol";
-
-type LlmAttempt = {
-  provider: "openrouter" | "openai";
-  model: string;
-  apiKey: string;
-};
 
 function run(cmd: string, args: string[], cwd: string, env: NodeJS.ProcessEnv = process.env): string {
   try {
@@ -66,29 +58,6 @@ function ensureNoSecretLeak(dir: string, secrets: string[]): void {
   }
 }
 
-function llmAttempts(): LlmAttempt[] {
-  const openRouterKey = (process.env.OPENROUTER_API_KEY ?? "").trim();
-  const openAiKey = (process.env.OPENAI_API_KEY ?? "").trim();
-  const attempts: LlmAttempt[] = [];
-
-  if (openRouterKey) {
-    attempts.push({
-      provider: "openrouter",
-      model: (process.env.OPENROUTER_MODEL ?? "").trim() || DEFAULT_OPENROUTER_MODEL,
-      apiKey: openRouterKey,
-    });
-  }
-  if (openAiKey) {
-    attempts.push({
-      provider: "openai",
-      model: (process.env.OPENAI_FALLBACK_MODEL ?? "").trim() || DEFAULT_OPENAI_FALLBACK_MODEL,
-      apiKey: openAiKey,
-    });
-  }
-
-  return attempts;
-}
-
 function codexEnv(codexHome: string, extra: Record<string, string> = {}): Record<string, string> {
   return {
     PATH: process.env.PATH || "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
@@ -110,31 +79,20 @@ function shellEnvironmentPolicy(): Record<string, string | boolean | string[]> {
 }
 
 function createCodex(attempt: LlmAttempt, codexHome: string): Codex {
-  if (attempt.provider === "openrouter") {
-    return new Codex({
-      codexPathOverride: "/usr/local/bin/codex-unprivileged",
-      env: codexEnv(codexHome, { OPENROUTER_API_KEY: attempt.apiKey }),
-      config: {
-        model_provider: "openrouter",
-        model_providers: {
-          openrouter: {
-            name: "OpenRouter",
-            base_url: "https://openrouter.ai/api/v1",
-            env_key: "OPENROUTER_API_KEY",
-            wire_api: "responses",
-            supports_websockets: false,
-          },
-        },
-        shell_environment_policy: shellEnvironmentPolicy(),
-      },
-    });
-  }
-
   return new Codex({
-    apiKey: attempt.apiKey,
     codexPathOverride: "/usr/local/bin/codex-unprivileged",
-    env: codexEnv(codexHome),
+    env: codexEnv(codexHome, { OPENROUTER_API_KEY: attempt.apiKey }),
     config: {
+      model_provider: "openrouter",
+      model_providers: {
+        openrouter: {
+          name: "OpenRouter",
+          base_url: "https://openrouter.ai/api/v1",
+          env_key: "OPENROUTER_API_KEY",
+          wire_api: "responses",
+          supports_websockets: false,
+        },
+      },
       shell_environment_policy: shellEnvironmentPolicy(),
     },
   });
@@ -160,8 +118,9 @@ function errorDetail(error: unknown): string {
 
 export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resultRef: string; rollback: Record<string, unknown> }> {
   const token = (process.env.GITHUB_TOKEN ?? "").trim();
-  const attempts = llmAttempts();
-  if (!token || attempts.length === 0) throw new Error("Missing GitHub/LLM credential");
+  const modelTier = job.modelTier ?? "free";
+  const attempts = resolveModelAttempts(modelTier);
+  if (!token || attempts.length === 0) throw new Error("Missing GitHub/OpenRouter credential");
   const { repo, branch } = parseRepo(job.targetRef);
   const allow = new Set((process.env.GITHUB_AUTOMERGE_REPOS ?? "").split(",").map(s => s.trim()).filter(Boolean));
   if (!allow.has(repo)) throw new Error("Repository is not in GITHUB_AUTOMERGE_REPOS; production path is not verified");
@@ -196,7 +155,7 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
 
   for (const [index, attempt] of attempts.entries()) {
     if (index > 0) resetWorkspace(dir, baseSha);
-    const codexHome = path.join(root, `${job.jobId}-${attempt.provider}-codex-home`);
+    const codexHome = path.join(root, `${job.jobId}-${index}-${attempt.provider}-codex-home`);
     rmSync(codexHome, { recursive: true, force: true });
     prepareWorkspaceForCodex(dir, codexHome);
 
@@ -225,7 +184,7 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
       selectedAttempt = attempt;
       break;
     } catch (error) {
-      // A provider/model failure may fall back, but a Git integrity violation never does.
+      // Only the free tier can fall back automatically; paid tiers contain one explicit model.
       assertWorkspaceIntegrity(dir, workBranch, baseSha, cloneUrl);
       providerErrors.push(`${attempt.provider}/${attempt.model}: ${errorDetail(error)}`);
     }
@@ -256,6 +215,7 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
       baseSha,
       headSha,
       workBranch,
+      requestedModelTier: modelTier,
       llmProvider: selectedAttempt.provider,
       llmModel: selectedAttempt.model,
     },

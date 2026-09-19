@@ -1,4 +1,5 @@
 export type TargetType = "github" | "n8n" | "railway" | "shopify";
+export type BuildModelTier = "free" | "premium" | "premium_max";
 export type JobStatus =
   | "QUEUED" | "POLICY_CHECK" | "BLOCKED_CAPABILITY" | "WAITING_COST_APPROVAL"
   | "BUILDING" | "TESTING" | "READY_TO_DEPLOY" | "WAITING_SHOPIFY_MAIN"
@@ -16,6 +17,7 @@ export interface BuildJobRequest {
   shopifyMainRequired: boolean;
   callbackUrl: string;
   callbackNonce: string;
+  modelTier?: BuildModelTier;
 }
 
 export interface GitHubRollbackMetadata {
