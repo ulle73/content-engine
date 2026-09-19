@@ -4,11 +4,26 @@ Long-running build worker for Opportunity OS. n8n owns policy and orchestration;
 
 ## LLM routing
 
-Build jobs prefer OpenRouter when `OPENROUTER_API_KEY` is configured. The default primary model is `nvidia/nemotron-3-ultra-550b-a55b:free`. If the OpenRouter attempt fails, the worker resets the worktree and retries with OpenAI using `OPENAI_API_KEY`; the default fallback model is `gpt-5.6-sol`.
+All coding builds run through OpenRouter.
 
-Optional overrides:
+Model tiers:
+
+- `free` (default): `z-ai/glm-5.2:free`
+- automatic free fallback: `openrouter/free`
+- `premium` (explicit only): `z-ai/glm-5.3-flash`
+- `premium_max` (explicit only): `qwen/qwen3.8-max-0902`
+
+Paid tiers never activate automatically and never silently downgrade to a free model. A build must explicitly carry `modelTier: "premium"` or `modelTier: "premium_max"`. Jobs without a tier remain on the free path.
+
+Optional Railway overrides:
 
 - `OPENROUTER_MODEL`
-- `OPENAI_FALLBACK_MODEL`
+- `OPENROUTER_FREE_FALLBACK_MODEL`
+- `OPENROUTER_PREMIUM_MODEL`
+- `OPENROUTER_PREMIUM_MAX_MODEL`
 
-Provider credentials are available to the Codex process for API authentication but are excluded from the shell environment exposed to the coding agent. The worker also scans staged changes for configured secrets before committing.
+The OpenRouter credential is available to the Codex process for API authentication but is excluded from the shell environment exposed to the coding agent. The worker also scans staged changes for configured secrets before committing.
+
+## Safety
+
+The worker builds on a separate `opportunity-os/<opportunity-id>` branch. n8n owns the later finalization decision, and only exact targets in `GITHUB_AUTODEPLOY_TARGETS` can be finalized.
