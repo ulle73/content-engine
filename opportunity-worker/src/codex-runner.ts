@@ -60,14 +60,14 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
     "",
     ...job.plan.map((s, i) => `${i + 1}. ${s}`),
   ].join("\n");
-  await thread.run(prompt);
+  const turn = await thread.run(prompt);
 
   if (existsSync(path.join(dir, "package.json"))) {
     run("npm", ["test", "--if-present"], dir);
     run("npm", ["run", "build", "--if-present"], dir);
   }
   const status = run("git", ["status", "--porcelain"], dir).trim();
-  if (!status) throw new Error("Codex produced no repository change");
+  if (!status) {\n    const detail = String(turn.finalResponse || "").trim().slice(-1500);\n    throw new Error(`Codex produced no repository change${detail ? `: ${detail}` : ""}`);\n  }
   run("git", ["add", "-A"], dir);
   run("git", ["commit", "-m", `feat: Opportunity OS ${job.opportunityId}`], dir);
   const headSha = run("git", ["rev-parse", "HEAD"], dir).trim();
