@@ -9,8 +9,8 @@
     "start": "node dist/src/server.js"
   },
   "dependencies": {
-    "@openai/codex": "0.155.1",
-    "@openai/codex-sdk": "0.155.1"
+    "@openai/codex": "0.147.0",
+    "@openai/codex-sdk": "0.147.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
