@@ -495,6 +495,8 @@ flowchart LR
 
 BYGG ska endast kunna autoaktivera en ny extern betaltjänst om kostnaden var tydligt angiven i Discord-kortet och ligger under en konfigurerad autonom kostnadsgräns.
 
+Standardgränsen är 0 kr/mån för nya externa betaltjänster tills Jonas uttryckligen ändrar den. Det innebär att gratis verktyg kan aktiveras inom ett BYGG-beslut, medan varje ny betaltjänst kräver ett separat kostnadsgodkännande.
+
 Okänd kostnad eller kostnad över gränsen stoppar före köp/aktivering och kräver Jonas-beslut.
 
 ## 14. Outcome Tracker
