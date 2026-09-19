@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createGitHubRefClient,
   deployVerifiedRevision,
+  finalizeGitHubBuild,
   isAutoDeployTarget,
   rollbackVerifiedRevision,
   type GitHubRefClient,
@@ -144,5 +145,69 @@ describe("createGitHubRefClient", () => {
 
     expect(calls[0].method).toBe("PATCH");
     expect(JSON.parse(calls[0].body)).toEqual({ sha: "base123", force: true });
+  });
+});
+
+
+describe("finalizeGitHubBuild", () => {
+  it("fails closed before deployment when the exact target is not approved", async () => {
+    const client = new MemoryRefClient();
+    client.refs.set("ulle73/content-engine@main", "base123");
+    const statuses: string[] = [];
+
+    const status = await finalizeGitHubBuild({
+      client,
+      repo: "ulle73/content-engine",
+      branch: "main",
+      baseSha: "base123",
+      headSha: "head456",
+      allowTargets: "ulle73/content-engine@opportunity-os-qa",
+      onStatus: async (value) => { statuses.push(value); },
+    });
+
+    expect(status).toBe("BLOCKED_CAPABILITY");
+    expect(statuses).toEqual(["BLOCKED_CAPABILITY"]);
+    expect(client.updates).toEqual([]);
+  });
+
+  it("deploys, verifies and succeeds for an exact approved target", async () => {
+    const client = new MemoryRefClient();
+    client.refs.set("ulle73/content-engine@opportunity-os-qa", "base123");
+    const statuses: string[] = [];
+
+    const status = await finalizeGitHubBuild({
+      client,
+      repo: "ulle73/content-engine",
+      branch: "opportunity-os-qa",
+      baseSha: "base123",
+      headSha: "head456",
+      allowTargets: "ulle73/content-engine@opportunity-os-qa",
+      onStatus: async (value) => { statuses.push(value); },
+    });
+
+    expect(status).toBe("SUCCEEDED");
+    expect(statuses).toEqual(["DEPLOYING", "VERIFYING", "SUCCEEDED"]);
+    expect(await client.getRef("ulle73/content-engine", "opportunity-os-qa")).toBe("head456");
+  });
+
+  it("rolls back when post-deploy verification fails", async () => {
+    const client = new MemoryRefClient();
+    client.refs.set("ulle73/content-engine@opportunity-os-qa", "base123");
+    const statuses: string[] = [];
+
+    const status = await finalizeGitHubBuild({
+      client,
+      repo: "ulle73/content-engine",
+      branch: "opportunity-os-qa",
+      baseSha: "base123",
+      headSha: "head456",
+      allowTargets: "ulle73/content-engine@opportunity-os-qa",
+      verify: async () => false,
+      onStatus: async (value) => { statuses.push(value); },
+    });
+
+    expect(status).toBe("ROLLED_BACK");
+    expect(statuses).toEqual(["DEPLOYING", "VERIFYING", "ROLLED_BACK"]);
+    expect(await client.getRef("ulle73/content-engine", "opportunity-os-qa")).toBe("base123");
   });
 });
