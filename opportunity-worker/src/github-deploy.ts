@@ -33,6 +33,12 @@ class GitHubApiError extends Error {
 
 class PostDeployVerificationError extends Error {}
 
+function failureReason(error: unknown): string {
+  if (error instanceof GitHubApiError) return `GitHub API failed (${error.status})`;
+  if (error instanceof Error) return error.message.slice(0, 500);
+  return "Unknown GitHub finalization error";
+}
+
 export function createGitHubRefClient(token: string, request: RequestFn = fetch): GitHubRefClient {
   if (!token) throw new Error("Missing GITHUB_TOKEN");
 
@@ -176,12 +182,16 @@ export async function finalizeGitHubBuild(args: {
   headSha: string;
   workBranch: string;
   allowTargets: string;
-  onStatus: (status: "DEPLOYING" | "VERIFYING" | "SUCCEEDED" | "ROLLED_BACK" | "FAILED", resultRef?: string) => Promise<void>;
+  onStatus: (
+    status: "DEPLOYING" | "VERIFYING" | "SUCCEEDED" | "ROLLED_BACK" | "FAILED",
+    resultRef?: string,
+    error?: string,
+  ) => Promise<void>;
   verify?: () => Promise<boolean>;
 }): Promise<"SUCCEEDED" | "ROLLED_BACK" | "FAILED"> {
   const { client, repo, branch, baseSha, headSha, workBranch, allowTargets, onStatus } = args;
   if (!isAutoDeployTarget(repo, branch, allowTargets)) {
-    await onStatus("FAILED");
+    await onStatus("FAILED", undefined, `Auto-deploy target is not allowlisted: ${repo}@${branch}`);
     return "FAILED";
   }
 
@@ -209,23 +219,38 @@ export async function finalizeGitHubBuild(args: {
     await onStatus("SUCCEEDED", pullRequestUrl);
     return "SUCCEEDED";
   } catch (error) {
+    const reason = failureReason(error);
     if (rollbackAllowed || error instanceof PostDeployVerificationError) {
-      const current = await client.getRef(repo, branch).catch(() => "");
+      let current: string;
+      try {
+        current = await client.getRef(repo, branch);
+      } catch (rollbackCheckError) {
+        await onStatus(
+          "FAILED",
+          pullRequestUrl,
+          `${reason}; rollback safety check failed: ${failureReason(rollbackCheckError)}`,
+        );
+        return "FAILED";
+      }
       if (current !== headSha) {
-        await onStatus("FAILED", pullRequestUrl);
+        await onStatus(
+          "FAILED",
+          pullRequestUrl,
+          `${reason}; rollback not attempted because target no longer matches deployed revision`,
+        );
         return "FAILED";
       }
       try {
         await rollbackVerifiedRevision({ client, repo, branch, baseSha, deployedSha: headSha });
         await onStatus("ROLLED_BACK", pullRequestUrl);
         return "ROLLED_BACK";
-      } catch {
-        await onStatus("FAILED", pullRequestUrl);
+      } catch (rollbackError) {
+        await onStatus("FAILED", pullRequestUrl, `${reason}; rollback failed: ${failureReason(rollbackError)}`);
         return "FAILED";
       }
     }
 
-    await onStatus("FAILED", pullRequestUrl);
+    await onStatus("FAILED", pullRequestUrl, reason);
     return "FAILED";
   }
 }

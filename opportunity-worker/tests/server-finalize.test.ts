@@ -78,6 +78,12 @@ class VerificationFailureClient extends FinalizeClient {
   }
 }
 
+class DeploymentFailureClient extends FinalizeClient {
+  override async setRef() {
+    throw new Error("GitHub ref update failed");
+  }
+}
+
 const servers: Server[] = [];
 afterEach(async () => {
   await Promise.all(servers.splice(0).map(async (server) => {
@@ -234,6 +240,36 @@ describe("POST /v1/finalize", () => {
     expect(progress.map(({ status }) => status)).toEqual(["DEPLOYING", "VERIFYING", "ROLLED_BACK"]);
     expect(progress.at(-1)?.resultRef).toBe("https://github.com/ulle73/content-engine/pull/42");
     expect(client.refs.get("ulle73/content-engine@opportunity-os-qa")).toBe(baseSha);
+  });
+
+  it("sends finalization failure reasons to n8n and preserves the audit PR URL", async () => {
+    const progress: JobProgress[] = [];
+    let finish!: () => void;
+    const finished = new Promise<void>((resolve) => { finish = resolve; });
+    const server = createWorkerServer(config, {
+      githubClient: new DeploymentFailureClient(),
+      sendCallback: async (_job, update) => {
+        progress.push(update);
+        if (update.status === "FAILED") finish();
+      },
+    });
+    const url = await start(server);
+    const raw = JSON.stringify(finalizeJob);
+
+    const response = await fetch(`${url}/v1/finalize`, {
+      method: "POST",
+      headers: signedHeaders(raw),
+      body: raw,
+    });
+
+    expect(response.status).toBe(202);
+    await finished;
+    expect(progress.at(-1)).toMatchObject({
+      status: "FAILED",
+      phase: "finalization_failed",
+      resultRef: "https://github.com/ulle73/content-engine/pull/42",
+      error: "GitHub ref update failed",
+    });
   });
 });
 

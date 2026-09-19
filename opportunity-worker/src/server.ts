@@ -166,12 +166,13 @@ export function createWorkerServer(config: WorkerConfig, dependencies: WorkerDep
         client,
         ...job.rollback,
         allowTargets: config.githubAutodeployTargets,
-        onStatus: async (status, resultRef) => {
+        onStatus: async (status, resultRef, error) => {
           await sendCallback(job, {
             jobId: job.jobId,
             status,
             phase: finalizationPhase(status),
             ...(resultRef ? { resultRef } : {}),
+            ...(status === "FAILED" && error ? { error } : {}),
           });
         },
       });
