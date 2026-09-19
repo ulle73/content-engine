@@ -93,3 +93,53 @@ export async function rollbackVerifiedRevision(args: {
   }
   return { ok: true, restoredSha: baseSha };
 }
+
+
+export async function finalizeGitHubBuild(args: {
+  client: GitHubRefClient;
+  repo: string;
+  branch: string;
+  baseSha: string;
+  headSha: string;
+  allowTargets: string;
+  onStatus: (status: string) => Promise<void>;
+  verify?: () => Promise<boolean>;
+}): Promise<"BLOCKED_CAPABILITY" | "SUCCEEDED" | "ROLLED_BACK" | "FAILED"> {
+  const { client, repo, branch, baseSha, headSha, allowTargets, onStatus } = args;
+  if (!isAutoDeployTarget(repo, branch, allowTargets)) {
+    await onStatus("BLOCKED_CAPABILITY");
+    return "BLOCKED_CAPABILITY";
+  }
+
+  try {
+    await onStatus("DEPLOYING");
+    await deployVerifiedRevision({ client, repo, branch, baseSha, headSha });
+    await onStatus("VERIFYING");
+
+    const verified = args.verify
+      ? await args.verify()
+      : (await client.getRef(repo, branch)) === headSha;
+
+    if (!verified) {
+      throw new Error("Post-deploy verification failed");
+    }
+
+    await onStatus("SUCCEEDED");
+    return "SUCCEEDED";
+  } catch {
+    const current = await client.getRef(repo, branch).catch(() => "");
+    if (current === headSha) {
+      try {
+        await rollbackVerifiedRevision({ client, repo, branch, baseSha, deployedSha: headSha });
+        await onStatus("ROLLED_BACK");
+        return "ROLLED_BACK";
+      } catch {
+        await onStatus("FAILED");
+        return "FAILED";
+      }
+    }
+
+    await onStatus("FAILED");
+    return "FAILED";
+  }
+}
