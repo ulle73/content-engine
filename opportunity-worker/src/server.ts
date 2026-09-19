@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { authorizeWorkerRequest, signHmac } from "./auth.js";
 import { evaluatePolicy } from "./policies.js";
 import { runGithubCodexBuild } from "./codex-runner.js";
+import { createGitHubRefClient, finalizeGitHubBuild } from "./github-deploy.js";
 import type { BuildJobRequest, JobProgress, TargetType } from "./types.js";
 
 const active = new Set<string>();
@@ -48,8 +49,43 @@ async function execute(job: BuildJobRequest) {
   try {
     await callback(job, { jobId: job.jobId, status: "BUILDING", phase: "worker_started" });
     if (job.targetType !== "github") throw new Error("Adapter not implemented");
+    await callback(job, { jobId: job.jobId, status: "TESTING", phase: "implementation_and_repository_tests" });
     const result = await runGithubCodexBuild(job);
     await callback(job, { jobId: job.jobId, status: "READY_TO_DEPLOY", phase: "repository_tests_passed", resultRef: result.resultRef, rollback: result.rollback });
+
+    const repo = String(result.rollback.repo || "");
+    const branch = String(result.rollback.branch || "");
+    const baseSha = String(result.rollback.baseSha || "");
+    const headSha = String(result.rollback.headSha || "");
+    if (!repo || !branch || !baseSha || !headSha) throw new Error("GitHub build result is missing deployment metadata");
+
+    const client = createGitHubRefClient(process.env.GITHUB_TOKEN || "");
+    await finalizeGitHubBuild({
+      client,
+      repo,
+      branch,
+      baseSha,
+      headSha,
+      allowTargets: process.env.GITHUB_AUTODEPLOY_TARGETS || "",
+      onStatus: async (status) => {
+        const phases: Record<string, string> = {
+          BLOCKED_CAPABILITY: "deployment_target_not_allowlisted",
+          DEPLOYING: "github_ref_deploy",
+          VERIFYING: "github_ref_verify",
+          SUCCEEDED: "github_ref_verified",
+          ROLLED_BACK: "github_ref_rolled_back",
+          FAILED: "github_ref_deploy_failed",
+        };
+        await callback(job, {
+          jobId: job.jobId,
+          status: status as JobProgress["status"],
+          phase: phases[status] || "github_deploy",
+          resultRef: result.resultRef,
+          rollback: result.rollback,
+          error: status === "BLOCKED_CAPABILITY" ? "Ingen verifierad auto-deploy target är godkänd för denna repo/branch." : undefined,
+        });
+      },
+    });
   } catch (e) {
     await callback(job, { jobId: job.jobId, status: "FAILED", phase: "worker_failed", error: e instanceof Error ? e.message.slice(0, 2000) : String(e).slice(0, 2000) });
   } finally {
@@ -65,6 +101,7 @@ const server = createServer(async (req, res) => {
         implemented: true,
         credentialReady: credentialReady("github"),
         productionAllowlistConfigured: Boolean(process.env.GITHUB_AUTOMERGE_REPOS),
+        autoDeployTargetsConfigured: Boolean(process.env.GITHUB_AUTODEPLOY_TARGETS),
         privateUnsignedDispatch: process.env.ALLOW_PRIVATE_UNSIGNED === "true" && !process.env.RAILWAY_PUBLIC_DOMAIN,
       },
       n8n: { implemented: false, credentialReady: credentialReady("n8n") },
