@@ -4,6 +4,51 @@ export interface GitHubRefClient {
   restoreRef(repo: string, branch: string, sha: string): Promise<void>;
 }
 
+type RequestFn = typeof fetch;
+
+function refUrl(repo: string, branch: string): string {
+  const [owner, name] = repo.split("/");
+  if (!owner || !name) throw new Error("Invalid GitHub repository");
+  return `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/git/ref/heads/${encodeURIComponent(branch)}`;
+}
+
+export function createGitHubRefClient(token: string, request: RequestFn = fetch): GitHubRefClient {
+  if (!token) throw new Error("Missing GITHUB_TOKEN");
+
+  async function call(repo: string, branch: string, init?: RequestInit): Promise<any> {
+    const response = await request(refUrl(repo, branch), {
+      ...init,
+      headers: {
+        accept: "application/vnd.github+json",
+        authorization: `Bearer ${token}`,
+        "x-github-api-version": "2022-11-28",
+        "content-type": "application/json",
+        ...(init?.headers || {}),
+      },
+    });
+    if (!response.ok) {
+      const detail = (await response.text().catch(() => "")).slice(0, 1000);
+      throw new Error(`GitHub refs API failed (${response.status}): ${detail}`);
+    }
+    return response.json();
+  }
+
+  return {
+    async getRef(repo, branch) {
+      const data = await call(repo, branch, { method: "GET" });
+      const sha = String(data?.object?.sha || "");
+      if (!sha) throw new Error("GitHub ref response did not contain a SHA");
+      return sha;
+    },
+    async setRef(repo, branch, sha) {
+      await call(repo, branch, { method: "PATCH", body: JSON.stringify({ sha, force: false }) });
+    },
+    async restoreRef(repo, branch, sha) {
+      await call(repo, branch, { method: "PATCH", body: JSON.stringify({ sha, force: true }) });
+    },
+  };
+}
+
 export function isAutoDeployTarget(repo: string, branch: string, raw: string): boolean {
   const target = repo + "@" + branch;
   return new Set(raw.split(",").map((value) => value.trim()).filter(Boolean)).has(target);
