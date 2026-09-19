@@ -4,6 +4,15 @@ import path from "node:path";
 import { Codex } from "@openai/codex-sdk";
 import type { BuildJobRequest } from "./types.js";
 
+const DEFAULT_OPENROUTER_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free";
+const DEFAULT_OPENAI_FALLBACK_MODEL = "gpt-5.6-sol";
+
+type LlmAttempt = {
+  provider: "openrouter" | "openai";
+  model: string;
+  apiKey: string;
+};
+
 function run(cmd: string, args: string[], cwd: string, env: NodeJS.ProcessEnv = process.env): string {
   try {
     return execFileSync(cmd, args, { cwd, env, encoding: "utf8", timeout: 10 * 60 * 1000, stdio: ["ignore", "pipe", "pipe"] });
@@ -57,19 +66,109 @@ function ensureNoSecretLeak(dir: string, secrets: string[]): void {
   }
 }
 
+function llmAttempts(): LlmAttempt[] {
+  const openRouterKey = (process.env.OPENROUTER_API_KEY ?? "").trim();
+  const openAiKey = (process.env.OPENAI_API_KEY ?? "").trim();
+  const attempts: LlmAttempt[] = [];
+
+  if (openRouterKey) {
+    attempts.push({
+      provider: "openrouter",
+      model: (process.env.OPENROUTER_MODEL ?? "").trim() || DEFAULT_OPENROUTER_MODEL,
+      apiKey: openRouterKey,
+    });
+  }
+  if (openAiKey) {
+    attempts.push({
+      provider: "openai",
+      model: (process.env.OPENAI_FALLBACK_MODEL ?? "").trim() || DEFAULT_OPENAI_FALLBACK_MODEL,
+      apiKey: openAiKey,
+    });
+  }
+
+  return attempts;
+}
+
+function codexEnv(codexHome: string, extra: Record<string, string> = {}): Record<string, string> {
+  return {
+    PATH: process.env.PATH || "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    HOME: codexHome,
+    TMPDIR: codexHome,
+    USER: "codex",
+    LOGNAME: "codex",
+    LANG: process.env.LANG || "C.UTF-8",
+    ...extra,
+  };
+}
+
+function shellEnvironmentPolicy(): Record<string, string | boolean | string[]> {
+  return {
+    inherit: "core",
+    ignore_default_excludes: false,
+    include_only: ["PATH", "HOME", "TMPDIR", "USER", "LOGNAME", "LANG"],
+  };
+}
+
+function createCodex(attempt: LlmAttempt, codexHome: string): Codex {
+  if (attempt.provider === "openrouter") {
+    return new Codex({
+      codexPathOverride: "/usr/local/bin/codex-unprivileged",
+      env: codexEnv(codexHome, { OPENROUTER_API_KEY: attempt.apiKey }),
+      config: {
+        model_provider: "openrouter",
+        model_providers: {
+          openrouter: {
+            name: "OpenRouter",
+            base_url: "https://openrouter.ai/api/v1",
+            env_key: "OPENROUTER_API_KEY",
+            wire_api: "responses",
+            supports_websockets: false,
+          },
+        },
+        shell_environment_policy: shellEnvironmentPolicy(),
+      },
+    });
+  }
+
+  return new Codex({
+    apiKey: attempt.apiKey,
+    codexPathOverride: "/usr/local/bin/codex-unprivileged",
+    env: codexEnv(codexHome),
+    config: {
+      shell_environment_policy: shellEnvironmentPolicy(),
+    },
+  });
+}
+
+function assertWorkspaceIntegrity(dir: string, workBranch: string, baseSha: string, cloneUrl: string): void {
+  const currentBranch = run("git", ["branch", "--show-current"], dir).trim();
+  const currentHead = run("git", ["rev-parse", "HEAD"], dir).trim();
+  const currentRemote = run("git", ["remote", "get-url", "origin"], dir).trim();
+  if (currentBranch !== workBranch) throw new Error("Codex changed the worker branch");
+  if (currentHead !== baseSha) throw new Error("Codex changed Git history");
+  if (currentRemote !== cloneUrl) throw new Error("Codex changed the Git remote");
+}
+
+function resetWorkspace(dir: string, baseSha: string): void {
+  run("git", ["reset", "--hard", baseSha], dir);
+  run("git", ["clean", "-fdx"], dir);
+}
+
+function errorDetail(error: unknown): string {
+  return (error instanceof Error ? error.message : String(error)).trim().slice(-1800);
+}
+
 export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resultRef: string; rollback: Record<string, unknown> }> {
-  const token = process.env.GITHUB_TOKEN ?? "";
-  const apiKey = process.env.OPENAI_API_KEY ?? "";
-  if (!token || !apiKey) throw new Error("Missing GitHub/OpenAI credential");
+  const token = (process.env.GITHUB_TOKEN ?? "").trim();
+  const attempts = llmAttempts();
+  if (!token || attempts.length === 0) throw new Error("Missing GitHub/LLM credential");
   const { repo, branch } = parseRepo(job.targetRef);
   const allow = new Set((process.env.GITHUB_AUTOMERGE_REPOS ?? "").split(",").map(s => s.trim()).filter(Boolean));
   if (!allow.has(repo)) throw new Error("Repository is not in GITHUB_AUTOMERGE_REPOS; production path is not verified");
 
   const root = process.env.WORK_ROOT || "/tmp/opportunity-os";
   const dir = path.join(root, job.jobId);
-  const codexHome = path.join(root, `${job.jobId}-codex-home`);
   rmSync(dir, { recursive: true, force: true });
-  rmSync(codexHome, { recursive: true, force: true });
   mkdirSync(root, { recursive: true });
 
   const cloneUrl = `https://github.com/${repo}.git`;
@@ -81,33 +180,6 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
   run("git", ["config", "user.email", "opportunity-os@golfkuponger.se"], dir);
   run("git", ["config", "user.name", "Golfkuponger Opportunity OS"], dir);
 
-  prepareWorkspaceForCodex(dir, codexHome);
-
-  const codex = new Codex({
-    apiKey,
-    codexPathOverride: "/usr/local/bin/codex-unprivileged",
-    env: {
-      PATH: process.env.PATH || "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-      HOME: codexHome,
-      TMPDIR: codexHome,
-      USER: "codex",
-      LOGNAME: "codex",
-      LANG: process.env.LANG || "C.UTF-8",
-    },
-    config: {
-      shell_environment_policy: {
-        inherit: "core",
-        ignore_default_excludes: false,
-        include_only: ["PATH", "HOME", "TMPDIR", "USER", "LOGNAME", "LANG"],
-      },
-    },
-  });
-  const thread = codex.startThread({
-    workingDirectory: dir,
-    sandboxMode: "danger-full-access",
-    approvalPolicy: "never",
-    modelReasoningEffort: "high",
-  });
   const prompt = [
     "Implementera endast den godkända Golfkuponger-planen nedan.",
     "Läs repo-dokumentation och befintliga mönster först.",
@@ -118,29 +190,55 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
     "",
     ...job.plan.map((s, i) => `${i + 1}. ${s}`),
   ].join("\n");
-  const turn = await thread.run(prompt);
 
-  const currentBranch = run("git", ["branch", "--show-current"], dir).trim();
-  const currentHead = run("git", ["rev-parse", "HEAD"], dir).trim();
-  const currentRemote = run("git", ["remote", "get-url", "origin"], dir).trim();
-  if (currentBranch !== workBranch) throw new Error("Codex changed the worker branch");
-  if (currentHead !== baseSha) throw new Error("Codex changed Git history");
-  if (currentRemote !== cloneUrl) throw new Error("Codex changed the Git remote");
+  const providerErrors: string[] = [];
+  let selectedAttempt: LlmAttempt | undefined;
 
-  if (existsSync(path.join(dir, "package.json"))) {
-    run("npm", ["test", "--if-present"], dir);
-    run("npm", ["run", "build", "--if-present"], dir);
+  for (const [index, attempt] of attempts.entries()) {
+    if (index > 0) resetWorkspace(dir, baseSha);
+    const codexHome = path.join(root, `${job.jobId}-${attempt.provider}-codex-home`);
+    rmSync(codexHome, { recursive: true, force: true });
+    prepareWorkspaceForCodex(dir, codexHome);
+
+    try {
+      const codex = createCodex(attempt, codexHome);
+      const thread = codex.startThread({
+        workingDirectory: dir,
+        sandboxMode: "danger-full-access",
+        approvalPolicy: "never",
+        model: attempt.model,
+        modelReasoningEffort: "high",
+      });
+      const turn = await thread.run(prompt);
+
+      assertWorkspaceIntegrity(dir, workBranch, baseSha, cloneUrl);
+      if (existsSync(path.join(dir, "package.json"))) {
+        run("npm", ["test", "--if-present"], dir);
+        run("npm", ["run", "build", "--if-present"], dir);
+      }
+      const status = run("git", ["status", "--porcelain"], dir).trim();
+      if (!status) {
+        const detail = String(turn.finalResponse || "").trim().slice(-1500);
+        throw new Error(`Codex produced no repository change${detail ? `: ${detail}` : ""}`);
+      }
+
+      selectedAttempt = attempt;
+      break;
+    } catch (error) {
+      // A provider/model failure may fall back, but a Git integrity violation never does.
+      assertWorkspaceIntegrity(dir, workBranch, baseSha, cloneUrl);
+      providerErrors.push(`${attempt.provider}/${attempt.model}: ${errorDetail(error)}`);
+    }
   }
-  const status = run("git", ["status", "--porcelain"], dir).trim();
-  if (!status) {
-    const detail = String(turn.finalResponse || "").trim().slice(-1500);
-    throw new Error(`Codex produced no repository change${detail ? `: ${detail}` : ""}`);
+
+  if (!selectedAttempt) {
+    throw new Error(`All configured LLM providers failed. ${providerErrors.join(" | ")}`.slice(-5000));
   }
 
   run("git", ["add", "-A"], dir);
   ensureNoSecretLeak(dir, [
     token,
-    apiKey,
+    ...attempts.map(attempt => attempt.apiKey),
     process.env.CALLBACK_HMAC_SECRET ?? "",
     process.env.WORKER_HMAC_SECRET ?? "",
   ]);
@@ -152,6 +250,14 @@ export async function runGithubCodexBuild(job: BuildJobRequest): Promise<{ resul
   // creates and pushes a separate branch; n8n owns any later deploy decision.
   return {
     resultRef: `https://github.com/${repo}/tree/${workBranch}`,
-    rollback: { repo, branch, baseSha, headSha, workBranch },
+    rollback: {
+      repo,
+      branch,
+      baseSha,
+      headSha,
+      workBranch,
+      llmProvider: selectedAttempt.provider,
+      llmModel: selectedAttempt.model,
+    },
   };
 }
