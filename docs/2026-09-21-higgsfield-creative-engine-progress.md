@@ -6,10 +6,11 @@
 - Transfer cleanup commit: `ac727ab8594e7546d8f7eb090bfdca7b5bc8c2f4` (temporary verification workflow removed).
 - Baseline commit: `1b6ae03a342a95c0e43690625bfeab2cce72e040`.
 - Main reference: `d88524467ef216cf521d2e8fcf9bd54741eb3dc7`.
-- Deploy: NOT changed or verified in this session.
-- Blocker: Render connector has no selected workspace. It lists `My Workspace` (`tea-d06041ali9vc73bqfn80`), but its contract requires explicit user confirmation before use. No Render service read/write will be attempted until Jonas explicitly selects that workspace.
-- Verification: GitHub Actions run `35658336105` verified exact payload SHA-256, all 25 product blob hashes, migrations/check/static/MCP startup, 173 SQLite tests and 173 PostgreSQL tests. Transfer-only files are absent from the product tree.
-- Next exact task: after explicit Render workspace selection, inspect the existing `content-engine-mcp` service/config, deploy the verified branch safely, then verify startup, health, MCP, OAuth, logs and non-billable provider readiness.
+- Deploy: LIVE on Render service `content-engine-mcp` in confirmed workspace `My Workspace` (`tea-d06041ali9vc73bqfn80`), deploy `dep-daoqaldg1s2s73889n4g`, branch `feature/chatgpt-content-engine-mcp`, deployed head `dbba2e54fe2cae44a698955ceae4cfbc6d40e902`.
+- Production startup: Neon migration `engine.0013_prompt_library` applied successfully; MCP StreamableHTTP session manager and Uvicorn started; Render marked service live at `https://content-engine-mcp.onrender.com`.
+- Verification: GitHub Actions run `35658336105` verified exact payload SHA-256, all 25 product blob hashes, migrations/check/static/MCP startup, 173 SQLite tests and 173 PostgreSQL tests. Production live checks additionally verified health 200, login/root 200 after redirect, OAuth status/discovery 200, protected-resource metadata 200 and unauthenticated MCP 401 with Bearer challenge. No Render error/critical logs were present after deploy.
+- Remaining external verification: the Render connector cannot reveal secret environment values, so Golfkupongers server-side Higgsfield credential/account availability is not claimed as verified. Do not substitute Jonas personal Higgsfield workspace. Account-scoped estimate/preflight must pass through the deployed server before any paid generation.
+- Next exact task: perform the server-side non-billable Higgsfield account estimate/preflight through an authenticated Content Engine call when available, then present the exact priced paid smoke-test proposal and stop for explicit approval.
 - Paid generations: ZERO; explicit approval is required before any real paid smoke test.
 
 ## Binding brief
@@ -426,3 +427,53 @@ After explicit Render workspace selection, inspect the existing service and depl
 ### Commit
 Verified product commit: `67c6751179d96c4b910f022ccfce817d46d0633f`.
 Transfer-workflow cleanup: `ac727ab8594e7546d8f7eb090bfdca7b5bc8c2f4`.
+
+
+## Task 8: Render production deploy and live non-billable service verification
+
+### Status
+DONE for deployment, database migration, process startup, public health/OAuth/MCP boundary and post-deploy error review. Golfkupongers Higgsfield server credential/account availability remains intentionally UNVERIFIED until an authenticated server-side estimate can be exercised; no personal Higgsfield connection is an acceptable substitute.
+
+### Render target
+- Workspace: `My Workspace` (`tea-d06041ali9vc73bqfn80`) — explicitly confirmed by Jonas.
+- Service: `content-engine-mcp` (`srv-daj9cfgae00c7392t5c0`).
+- Repo/branch: `ulle73/content-engine` → `feature/chatgpt-content-engine-mcp`.
+- Auto deploy: off.
+- Build command: `bash scripts/build.sh`.
+- Start command: `bash scripts/start-mcp.sh`.
+- Region: Frankfurt.
+- Production URL: `https://content-engine-mcp.onrender.com`.
+
+### Deployment
+Triggered manual Render deploy `dep-daoqaldg1s2s73889n4g` after confirming the service already targeted the verified feature branch. Render checked out `dbba2e54fe2cae44a698955ceae4cfbc6d40e902`; this is the documentation head immediately above verified product commit `67c6751179d96c4b910f022ccfce817d46d0633f`. The ordinary repository CI for that head had already passed both verify and PostgreSQL jobs.
+
+### Production verification
+Render build/start logs:
+- build successful
+- `engine.0013_prompt_library... OK` against production Neon
+- server process started
+- `StreamableHTTP session manager started`
+- `Application startup complete`
+- Uvicorn bound `0.0.0.0:10000`
+- Render status: `live`
+
+External read-only HTTP checks:
+- `GET /health/` → 200, `{"status":"ok"}`
+- root/login flow → 200 login page after expected redirect
+- `GET /oauth/status/` → 200, unauthenticated status
+- `GET /.well-known/oauth-authorization-server` → 200; issuer and OAuth endpoints use the production Render origin and scope `content-engine.operate`
+- `GET /.well-known/oauth-protected-resource` → 200; resource is `https://content-engine-mcp.onrender.com/mcp`
+- unauthenticated `GET /mcp` → 401 with Bearer challenge and resource metadata, as required
+
+Post-deploy Render log review found no `error` or `critical` entries in the deployment/live-check window.
+
+### What is deliberately not claimed
+The Render connector supports environment-variable updates but does not expose existing secret values. Therefore this task does not claim that `HIGGSFIELD_API_KEY_GK`, R2 credentials or any other secret was read back. R2/Neon operational continuity is supported by successful production startup/migration and existing architecture, but a new media write was not created merely to test storage.
+
+Golfkupongers Higgsfield account-scoped model/credit availability also remains unverified. The connected Higgsfield ChatGPT app is not a valid substitute for the server credential and previously returned a workspace-read error. The correct next provider check is a non-billable estimate/preflight executed by the deployed Content Engine using its own server credential. A paid generation must not be used as a credential test.
+
+### Paid activity
+ZERO paid Higgsfield generations. ZERO paid smoke tests.
+
+### Next exact task
+Execute an authenticated, server-side non-billable Higgsfield estimate/preflight through Content Engine once that call path can be exercised without exposing credentials. If it passes, present the exact model, duration/parameters and estimated price for one minimal paid smoke test and stop for Jonas explicit approval before submission.
