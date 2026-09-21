@@ -63,12 +63,26 @@ def generate_images(job):
     )
 
 
+def _higgsfield_credential():
+    """Return the complete Higgsfield credential without exposing it.
+
+    Current Higgsfield UI/SDK can provide one complete API credential. Older
+    Content Engine deployments stored key id + secret separately, so keep that
+    format as a backwards-compatible fallback.
+    """
+    key = os.environ.get("HIGGSFIELD_API_KEY", "").strip()
+    secret = os.environ.get("HIGGSFIELD_API_SECRET", "").strip()
+    if not key:
+        raise MediaError("Videogenerering behöver Higgsfields API-nyckel i serverns inställningar.")
+    if ":" in key or not secret:
+        return key
+    return f"{key}:{secret}"
+
+
 def higgs(method, path, **kwargs):
-    key, secret = os.environ.get("HIGGSFIELD_API_KEY"), os.environ.get("HIGGSFIELD_API_SECRET")
-    if not key or not secret:
-        raise MediaError("Videogenerering behöver Higgsfields API-nyckel och secret i serverns inställningar.")
+    credential = _higgsfield_credential()
     try:
-        response = httpx.request(method, HIGGS_ROOT + path, headers={"Authorization": f"Key {key}:{secret}"},
+        response = httpx.request(method, HIGGS_ROOT + path, headers={"Authorization": f"Key {credential}"},
                                  timeout=40, **kwargs)
         if response.is_error:
             try:
