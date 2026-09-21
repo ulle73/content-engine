@@ -70,10 +70,18 @@ def _higgsfield_credential():
     Content Engine deployments stored key id + secret separately, so keep that
     format as a backwards-compatible fallback.
     """
-    key = os.environ.get("HIGGSFIELD_API_KEY", "").strip()
-    secret = os.environ.get("HIGGSFIELD_API_SECRET", "").strip()
+    # Golfkuponger's Content Engine uses its dedicated Higgsfield API credential.
+    # Keep the generic names as a backwards-compatible deployment fallback.
+    key = (
+        os.environ.get("HIGGSFIELD_API_KEY_GK", "").strip()
+        or os.environ.get("HIGGSFIELD_API_KEY", "").strip()
+    )
+    secret = (
+        os.environ.get("HIGGSFIELD_API_SECRET_GK", "").strip()
+        or os.environ.get("HIGGSFIELD_API_SECRET", "").strip()
+    )
     if not key:
-        raise MediaError("Videogenerering behöver Higgsfields API-nyckel i serverns inställningar.")
+        raise MediaError("Videogenerering behöver Golfkupongers Higgsfield API-nyckel i serverns inställningar.")
     if ":" in key or not secret:
         return key
     return f"{key}:{secret}"
