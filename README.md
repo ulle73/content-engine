@@ -39,6 +39,8 @@ Den nya databasen `content_engine_app` ligger på samma Neon-projekt/branch som 
 
 Den riktiga bildkedjan till R2 och ett valt inlägg är verifierad. Higgsfields nycklar, startbilduppladdning och prisförfrågan fungerar; verklig videogenerering är ännu blockerad av `not_enough_credits` på API-kontot. Ett vanligt Higgsfield-abonnemang ska inte antas innebära att det aktuella API-saldot räcker.
 
+Planen för nästa generation av Higgsfield-stödet — gemensam Creative Engine för Content Engine + ChatGPT via remote MCP, officiellt Python-SDK, modellrouter och prompt director — finns i [Higgsfield Creative Engine + ChatGPT MCP](docs/2026-09-21-higgsfield-creative-engine-mcp-plan.md).
+
 ## Competitor Intelligence
 
 Öppna **Konkurrentsignaler** för företaget. Lägg till Instagram-profiler, hämta historik, aktivera/inaktivera konton och skapa egna idéer från signalerna. All historik ligger i befintlig PostgreSQL. Apify sköter scraping via befintlig httpx; inga mediefiler hämtas till appen.
