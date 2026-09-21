@@ -2,12 +2,11 @@ name: Creative Engine verified patch preparation
 on:
   push:
     branches: [feature/chatgpt-content-engine-mcp]
-    paths: [.creative-work.patch]
+    paths: [.creative-patch-ready]
 permissions:
   contents: read
 jobs:
   prepare:
-    if: "startsWith(github.event.head_commit.message, 'ci: verify')"
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -35,46 +34,53 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          fetch-depth: 2
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: pip
-      - name: Apply exact verified patch without moving any branch
+      - name: Assemble and apply exact verified patch in isolated worktree
         run: |
           python - <<'PY'
-          import base64, json, pathlib, subprocess, zlib
-          raw = pathlib.Path('.creative-work.patch').read_text()
+          import hashlib, json, pathlib, subprocess, zlib, base64
+          expected = pathlib.Path('.creative-patch-ready').read_text().strip()
+          chunks = sorted(pathlib.Path('.creative-patch-chunks').glob('*.txt'))
+          assert chunks, 'No patch chunks found'
+          payload = b''.join(path.read_bytes() for path in chunks)
+          assert hashlib.sha256(payload).hexdigest() == expected, 'Patch payload SHA-256 mismatch'
+          raw = payload.decode('utf-8')
           header, patch = raw.split('\n--- PATCH ---\n', 1)
           meta = json.loads(header)
-          if meta.get('encoding') == 'zlib-base64':
-              decoder = zlib.decompressobj()
-              decoded = decoder.decompress(base64.b64decode(''.join(patch.split()), validate=True), 2000001)
-              assert decoder.eof and not decoder.unconsumed_tail and len(decoded) <= 2000000, 'Invalid compressed patch'
-              patch = decoded.decode('utf-8')
-          parent = subprocess.check_output(['git', 'rev-parse', 'HEAD^'], text=True).strip()
-          assert parent == meta['base_commit'], 'Base moved; regenerate patch'
-          assert len(patch.encode()) <= 2000000, 'Patch too large'
-          subprocess.run(['git', 'apply', '--check', '-'], input=patch, text=True, check=True)
-          paths = subprocess.check_output(['git', 'apply', '--numstat', '-'], input=patch, text=True)
+          assert meta.get('encoding') == 'zlib-base64', 'Unexpected patch encoding'
+          decoder = zlib.decompressobj()
+          decoded = decoder.decompress(base64.b64decode(''.join(patch.split()), validate=True), 2000001)
+          assert decoder.eof and not decoder.unconsumed_tail and len(decoded) <= 2000000, 'Invalid compressed patch'
+          patch = decoded.decode('utf-8')
+          subprocess.run(['git', 'merge-base', '--is-ancestor', meta['base_commit'], 'HEAD'], check=True)
+          product = pathlib.Path('/tmp/creative-product')
+          subprocess.run(['git', 'worktree', 'add', '--detach', str(product), meta['base_commit']], check=True)
+          subprocess.run(['git', 'apply', '--check', '-'], input=patch, text=True, cwd=product, check=True)
+          paths = subprocess.check_output(['git', 'apply', '--numstat', '-'], input=patch, text=True, cwd=product)
           changed = [line.split('\t', 2)[2] for line in paths.splitlines()]
           assert set(changed) == set(meta['hashes']), 'Manifest/path mismatch'
           allowed_roots = ('engine/', 'operator_bridge/', 'templates/', 'scripts/', 'docs/')
-          allowed_files = {'README.md', '.env.example', 'requirements.txt', 'render.yaml', '.github/workflows/creative-workspace.yml', '.github/workflows/creative-prepare.yml'}
+          allowed_files = {'README.md', '.env.example', 'requirements.txt', 'render.yaml'}
           for path in changed:
               assert path.startswith(allowed_roots) or path in allowed_files, 'Path outside approved scope'
-              assert '..' not in pathlib.PurePosixPath(path).parts and not pathlib.Path(path).is_symlink(), 'Unsafe path'
-          subprocess.run(['git', 'apply', '--index', '-'], input=patch, text=True, check=True)
-          for path, expected in meta['hashes'].items():
-              actual = subprocess.check_output(['git', 'hash-object', path], text=True).strip() if pathlib.Path(path).exists() else None
-              assert actual == expected, 'Transferred bytes differ from tested bytes: ' + path
-          subprocess.run(['git', 'rm', '.creative-work.patch'], check=True)
+              assert '..' not in pathlib.PurePosixPath(path).parts and not (product / path).is_symlink(), 'Unsafe path'
+          subprocess.run(['git', 'apply', '--index', '-'], input=patch, text=True, cwd=product, check=True)
+          for path, wanted in meta['hashes'].items():
+              actual = subprocess.check_output(['git', 'hash-object', path], text=True, cwd=product).strip()
+              assert actual == wanted, 'Transferred bytes differ from tested bytes: ' + path
           pathlib.Path('/tmp/creative-meta.json').write_text(json.dumps(meta))
+          print('PAYLOAD_SHA256=' + expected)
           print('Verified exact file hashes:', len(meta['hashes']))
           PY
-      - run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r /tmp/creative-product/requirements.txt
       - name: Verify migrations, startup and full SQLite/PostgreSQL suites
+        working-directory: /tmp/creative-product
         run: |
           mkdir -p data
           python manage.py makemigrations --check --dry-run
@@ -84,7 +90,7 @@ jobs:
           APP_URL=http://127.0.0.1:8766 DJANGO_SETTINGS_MODULE=engine.mcp_settings python -c 'from engine.mcp_app import app; assert app is not None'
           python manage.py test
           python manage.py test engine operator_bridge --settings=engine.postgres_test_settings
-      - name: Prepare Git object only; connector must explicitly advance branch
+      - name: Prepare verified Git commit object; connector advances branch explicitly
         env:
           PREPARE_TOKEN: ${{ github.token }}
         run: |
@@ -92,6 +98,7 @@ jobs:
           import json, os, pathlib, subprocess, urllib.request
           repo = os.environ['GITHUB_REPOSITORY']
           head = os.environ['GITHUB_SHA']
+          product = pathlib.Path('/tmp/creative-product')
           meta = json.loads(pathlib.Path('/tmp/creative-meta.json').read_text())
           def api(path, data=None):
               request = urllib.request.Request('https://api.github.com/repos/' + repo + '/git/' + path,
@@ -99,22 +106,18 @@ jobs:
                   headers={'Authorization': 'Bearer ' + os.environ['PREPARE_TOKEN'], 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'Content-Type': 'application/json'})
               with urllib.request.urlopen(request, timeout=40) as response:
                   return json.load(response)
-          base_tree = api('commits/' + head)['tree']['sha']
+          base_tree = api('commits/' + meta['base_commit'])['tree']['sha']
           entries = []
-          changed = subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z']).decode().split('\0')
-          for path in filter(None, changed):
-              entry = {'path': path, 'mode': '100644', 'type': 'blob'}
-              if pathlib.Path(path).exists():
-                  entry['mode'] = subprocess.check_output(['git', 'ls-files', '-s', '--', path], text=True).split()[0]
-                  entry['content'] = subprocess.check_output(['git', 'show', ':' + path]).decode()
-              else:
-                  entry['sha'] = None
-              entries.append(entry)
+          for path in meta['hashes']:
+              mode = subprocess.check_output(['git', '-C', str(product), 'ls-files', '-s', '--', path], text=True).split()[0]
+              entries.append({'path': path, 'mode': mode, 'type': 'blob', 'content': (product / path).read_text()})
+          entries.append({'path': '.creative-work.patch', 'mode': '100644', 'type': 'blob', 'sha': None})
           tree = api('trees', {'base_tree': base_tree, 'tree': entries})['sha']
           commit = api('commits', {'message': meta['message'], 'tree': tree, 'parents': [head]})['sha']
+          result = {'commit': commit, 'tree': tree, 'parent': head, 'base_commit': meta['base_commit'], 'verified_hashes': meta['hashes']}
+          pathlib.Path('/tmp/creative-prepared.json').write_text(json.dumps(result, indent=2))
           print('PREPARED_COMMIT=' + commit)
           print('PREPARED_TREE=' + tree)
-          pathlib.Path('/tmp/creative-prepared.json').write_text(json.dumps({'commit': commit, 'tree': tree, 'parent': head, 'verified_hashes': meta['hashes']}, indent=2))
           PY
       - uses: actions/upload-artifact@v4
         with:
