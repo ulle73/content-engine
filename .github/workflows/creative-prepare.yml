@@ -7,6 +7,7 @@ permissions:
   contents: read
 jobs:
   prepare:
+    if: "startsWith(github.event.head_commit.message, 'ci: verify')"
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -19,7 +20,7 @@ jobs:
           POSTGRES_DB: content_engine_test
         ports: ['5432:5432']
         options: >-
-          --health-cmd pg_isready --health-interval 5s
+          --health-cmd "pg_isready -U postgres" --health-interval 5s
           --health-timeout 5s --health-retries 10
     env:
       SECRET_KEY: test-only-mcp-secret
@@ -43,10 +44,15 @@ jobs:
       - name: Apply exact verified patch without moving any branch
         run: |
           python - <<'PY'
-          import json, pathlib, subprocess
+          import base64, json, pathlib, subprocess, zlib
           raw = pathlib.Path('.creative-work.patch').read_text()
           header, patch = raw.split('\n--- PATCH ---\n', 1)
           meta = json.loads(header)
+          if meta.get('encoding') == 'zlib-base64':
+              decoder = zlib.decompressobj()
+              decoded = decoder.decompress(base64.b64decode(''.join(patch.split()), validate=True), 2000001)
+              assert decoder.eof and not decoder.unconsumed_tail and len(decoded) <= 2000000, 'Invalid compressed patch'
+              patch = decoded.decode('utf-8')
           parent = subprocess.check_output(['git', 'rev-parse', 'HEAD^'], text=True).strip()
           assert parent == meta['base_commit'], 'Base moved; regenerate patch'
           assert len(patch.encode()) <= 2000000, 'Patch too large'
@@ -99,6 +105,7 @@ jobs:
           for path in filter(None, changed):
               entry = {'path': path, 'mode': '100644', 'type': 'blob'}
               if pathlib.Path(path).exists():
+                  entry['mode'] = subprocess.check_output(['git', 'ls-files', '-s', '--', path], text=True).split()[0]
                   entry['content'] = subprocess.check_output(['git', 'show', ':' + path]).decode()
               else:
                   entry['sha'] = None
