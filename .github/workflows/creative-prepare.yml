@@ -77,6 +77,18 @@ jobs:
           print('PAYLOAD_SHA256=' + expected)
           print('Verified exact file hashes:', len(meta['hashes']))
           PY
+      - name: Populate pinned skills submodule in isolated worktree
+        run: |
+          python - <<'PY'
+          import pathlib, shutil
+          source = pathlib.Path('vendor/social-media-skills')
+          target = pathlib.Path('/tmp/creative-product/vendor/social-media-skills')
+          assert (source / 'skills/caption-writer/SKILL.md').is_file(), 'Pinned skills source missing'
+          target.mkdir(parents=True, exist_ok=True)
+          shutil.copytree(source, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns('.git'))
+          assert (target / 'skills/caption-writer/SKILL.md').is_file()
+          assert (target / 'skills/idea-generation-and-ideation/SKILL.md').is_file()
+          PY
       - name: Install dependencies
         run: pip install -r /tmp/creative-product/requirements.txt
       - name: Verify migrations, startup and full SQLite/PostgreSQL suites
