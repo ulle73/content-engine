@@ -2,10 +2,19 @@
 import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
+class PromptQuerySet(models.QuerySet):
+    def update(self, **kwargs):
+        if set(kwargs) & {"original_text", "original_hash", "company", "company_id"}:
+            raise ValidationError("Original prompt and company cannot be changed.")
+        return super().update(**kwargs)
+
+
 class PromptEntry(models.Model):
+    objects = PromptQuerySet.as_manager()
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company = models.ForeignKey("engine.Company", on_delete=models.CASCADE, related_name="prompts")
     author = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
@@ -23,6 +32,13 @@ class PromptEntry(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     archived_at = models.DateTimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self._state.adding:
+            previous = type(self).objects.filter(pk=self.pk).values("original_text", "original_hash", "company_id").first()
+            if previous and any(getattr(self, field) != value for field, value in previous.items()):
+                raise ValidationError("Original prompt and company cannot be changed.")
+        super().save(*args, **kwargs)
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["company", "original_hash"], name="unique_company_prompt_original")]

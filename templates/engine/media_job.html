@@ -22,6 +22,7 @@
     <div class="media-grid">{% for asset in job.assets.all %}{% if not asset.expires_at or asset.expires_at > now %}{% include 'engine/media_asset.html' %}{% else %}<div class="empty-state"><p>En oanvänd förhandsvisning har gått ut.</p></div>{% endif %}{% empty %}{% if not pending %}<div class="empty-state"><h3>Inget färdigt alternativ</h3><p>Kontrollera generationens status eller justera beskrivningen.</p></div>{% endif %}{% endfor %}</div>
   </section>
 
+  <form method="post" action="{% url 'engine:prompt_save_generation' workspace_id=workspace.pk job_id=job.pk %}">{% csrf_token %}<button type="submit">Spara prompt till bibliotek</button></form>
   <details class="open-section"><summary>Beskrivningen som användes</summary><p class="media-description">{{ job.brief }}</p></details>
   <p><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?retry={{ job.pk }}#generate">Justera beskrivningen och generera igen →</a></p>
 </main>

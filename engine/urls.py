@@ -2,12 +2,17 @@ from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
 
-from . import ads_views, intelligence_views, media_views, views
+from . import ads_views, intelligence_views, media_views, prompt_views, views
 from .onboarding import SignInView, setup
 from .company_settings import company_settings, costs
 from .performance_views import performance
 
 engine_urls = [
+    path("prompts/", prompt_views.prompt_library, name="prompt_library"),
+    path("prompts/<uuid:prompt_id>/", prompt_views.prompt_detail, name="prompt_detail"),
+    path("prompts/<uuid:prompt_id>/favorite/", prompt_views.prompt_favorite, name="prompt_favorite"),
+    path("prompts/<uuid:prompt_id>/archive/", prompt_views.prompt_archive, name="prompt_archive"),
+    path("prompts/from-generation/<uuid:job_id>/", prompt_views.prompt_save_generation, name="prompt_save_generation"),
     path("intelligence/own/",performance,name="own_performance"),
     path("intelligence/ads/<int:ad_id>/detail/", ads_views.detail, name="ad_detail"),
     path("intelligence/ads/accounts/<int:account_id>/", ads_views.account_action, name="ad_account_action"),

@@ -2,7 +2,7 @@
 <a class="{{ link_class }} {% if page == 'home' or page == 'review' %}is-active{% endif %}" {% if page == 'home' or page == 'review' %}aria-current="page"{% endif %} href="{% url 'engine:home' workspace_id=workspace.pk %}">
   <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg><span>Skapa</span>
 </a>
-<a class="{{ link_class }} {% if page == 'media_library' or page == 'media' or page == 'media_job' %}is-active{% endif %}" {% if page == 'media_library' or page == 'media' or page == 'media_job' %}aria-current="page"{% endif %} href="{% url 'engine:media_library' workspace_id=workspace.pk %}">
+<a class="{{ link_class }} {% if page == 'media_library' or page == 'media' or page == 'media_job' or page == 'prompt_library' or page == 'prompt_detail' %}is-active{% endif %}" {% if page == 'media_library' or page == 'media' or page == 'media_job' or page == 'prompt_library' or page == 'prompt_detail' %}aria-current="page"{% endif %} href="{% url 'engine:media_library' workspace_id=workspace.pk %}">
   <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"></rect><path d="M7 15l3.2-3.3 2.7 2.6 2.1-2.2 2 2.1M8.5 9h.01"></path></svg><span>Media</span>
 </a>
 <a class="{{ link_class }} {% if page == 'intelligence' or page == 'analyze_signal' or page == 'ad_analyze' %}is-active{% endif %}" {% if page == 'intelligence' or page == 'analyze_signal' or page == 'ad_analyze' %}aria-current="page"{% endif %} href="{% url 'engine:intelligence' workspace_id=workspace.pk %}">

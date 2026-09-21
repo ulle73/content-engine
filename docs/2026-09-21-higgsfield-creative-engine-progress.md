@@ -1,13 +1,14 @@
 # CURRENT STATE
 
-- Latest completed step: Prompt Library additive schema, migration and regression tests verified (120 tests).
+- Latest completed step: Prompt Library service and UI verified (148 tests); offline Chromium layout checked at 1440px and 390px.
 - Branch: `feature/chatgpt-content-engine-mcp`.
+- Latest shipped product commit: `15c76aef9a084eb9e1cf97eccd880172a5815802` (schema; 120 SQLite and 120 PostgreSQL CI tests passed).
 - Baseline commit: `1b6ae03a342a95c0e43690625bfeab2cce72e040`.
 - Main reference: `d88524467ef216cf521d2e8fcf9bd54741eb3dc7`.
 - Deploy: NOT changed or verified in this session.
 - Blocker: Render connector has no selected workspace. It lists `My Workspace` (`tea-d06041ali9vc73bqfn80`), but its contract requires explicit user confirmation before use. Asked Jonas; continue independent repository work.
 - Local environment: complete tracked snapshot of `dce11df7aa2b51f2235a071819706cea2d67b2c2`, including submodule sources; isolated Python 3.13.5 virtualenv with offline wheels. No production credentials/data. Baseline CI and 119 local tests pass.
-- Next exact task: implement/test prompt saving, immutable original text, indexed retrieval, tenant boundaries and Prompt Library UI.
+- Next exact task: implement the structured Creative Brief, versioned registry, compiler and Creative Director tests.
 - Paid generations: ZERO; explicit approval is required before any real paid smoke test.
 
 ## Binding brief
@@ -22,7 +23,7 @@ The user supplied the full implementation brief in `Inklistrad text(7).txt` on 2
 - [ ] Updated implementation plan and architecture rulings
 - [ ] Structured creative brief and context boundary
 - [ ] Versioned model intelligence, router, prompt/parameter compiler, preflight
-- [ ] Prompt Library persistence, retrieval and UI
+- [x] Prompt Library persistence, retrieval and UI
 - [ ] Official SDK adapter and fail-closed cost policy
 - [ ] Durable duplicate-safe lifecycle, webhook, polling/recovery and R2 completion
 - [ ] Shared UI and MCP integration, ownership tests
@@ -143,3 +144,65 @@ https://github.com/higgsfield-ai/higgsfield-client/tree/aefd1ca677929762b9f69a7a
 ## Transfer verification ruling
 
 A full-file connector transfer accidentally omitted `OwnOutcome.recorded_at(auto_now_add=True)`. Blob-hash verification caught it before any branch was advanced; the defective unattached commit was not shipped. To avoid reserializing unchanged legacy files, temporary `creative-prepare.yml` now applies only an exact manifest-checked patch, runs migrations/MCP startup/full SQLite and PostgreSQL tests, and creates a Git commit object without updating any branch. The authenticated GitHub connector alone advances the existing feature branch after verification. No production secrets/data are used, and the temporary workflow will be removed at handoff. Local source remains the tested authoritative bytes.
+
+## Task 2b: Prompt Library service and original protection
+
+### Status
+DONE for service; UI and generation-engine integration remain separate tasks.
+
+### Files changed
+`engine/prompt_library.py`, `engine/creative_models.py`, `engine/test_creative_library.py`, temporary `creative-prepare.yml`, this ledger.
+
+### What changed / why
+Exact text preservation, SHA-256 per-company duplicate protection, original/company immutability enforced on model save and QuerySet update, independent editable copy, favorites, tags, archive/restore, generation provenance with explicit safe parameter allowlist. Added indexed multilingual concept and word retrieval, capped at five short inspiration examples and two database queries, with explicit HEURISTIC/untrusted labeling. No embeddings or paid analysis are claimed. Bulk input splits only on an explicit delimiter and requires a UI preview to follow. Temporary CI now ignores removal commits and uses the correct PostgreSQL healthcheck user.
+
+### Verification / tests
+- RED service suite: 15 failing tests because the service did not exist.
+- GREEN initial service suite: 16 passed.
+- Extra original-bulk-update and bounded-query tests added.
+- `python manage.py test`: 137 passed in 8.147 seconds, system checks clean.
+- `python manage.py makemigrations --check --dry-run`: no changes detected.
+- Schema preparation run `35620499883`: 120 tests passed on SQLite and 120 on PostgreSQL; exact hash manifest matched. Prepared/advanced commit `15c76aef9a084eb9e1cf97eccd880172a5815802`; no Render deployment performed.
+
+### External verification / known issues
+Service locally verified; no production credentials or paid requests. UI not built yet. Render workspace confirmation remains outstanding. Handwritten semantic concept mapping is not an embedding system and cannot promise arbitrary paraphrase matching.
+
+### Next exact task
+Implement the usable Prompt Library page and security/form tests.
+
+### Commit
+Schema: `15c76aef9a084eb9e1cf97eccd880172a5815802`. Service is staged for the next logical library commit.
+
+
+## Task 2c: Prompt Library UI and generation provenance
+
+### Status
+DONE for library UI and service integration. Use-in-Creative-Studio integration follows the studio task.
+
+### Files changed
+`engine/prompt_views.py`, `engine/test_prompt_ui.py`, `engine/urls.py`, `engine/static/css/creative-screen.css`, `engine/static/js/prompt-library.js`, `templates/engine/prompt_library.html`, `prompt_detail.html`, `prompt_bulk.html`, `prompt_extra_fields.html`, `library_tabs.html`, existing `media_library.html`, `media_job.html`, `templates/base.html`, `templates/components/navigation_links.html`, this ledger.
+
+### What changed / why
+Paste-save redirects to a fresh input without requiring metadata. A separate, signed 10-minute bulk preview is bound to authenticated user and company before atomic confirmation. Original and editable text are displayed separately. Search, kinds, labels, favorites, copying, removal and save-from-generation use the shared scoped service. Media has library subtabs rather than overcrowding the existing mobile navigation. All mutations use POST and CSRF; external prompt text is escaped and never treated as instructions.
+
+### Verification / tests
+- RED: `python manage.py test engine.test_prompt_ui`: 11 failures because the route did not exist.
+- First GREEN attempt exposed an unbound-form error on an invalid signed token; fixed by validating a bound empty form. A text assertion incorrectly matched the page's explanatory copy; corrected to assert the actual empty result collection.
+- `python manage.py test`: 148 passed in 8.361 seconds; system checks clean.
+- `python manage.py makemigrations --check --dry-run`: no changes.
+- Chromium offline render of real authenticated Django HTML and application CSS at 1440x1000 and 390x844: no horizontal overflow, primary save button visible, no page errors. Screenshots visually reviewed; improved the subtab contrast. Browser network policy blocks loopback navigation, so this is explicitly offline layout verification, not a browser/server end-to-end test. Django client tests do exercise the real authenticated views and database.
+
+### Result / external verification
+Local unit, integration, route/form/CSRF tests and offline visual checks pass. Library not yet deployed to Render. No paid model calls.
+
+### Known issues
+The Creative Studio use action will be added after its route exists; copy works now. Render workspace selection remains unconfirmed.
+
+### Next exact task
+Build and test typed brief, bounded company context, model registry, model-specific prompt/parameter compiler and preflight; then add the shared durable generation service.
+
+### Commit
+Previous shipped schema: `15c76aef9a084eb9e1cf97eccd880172a5815802`. Verified transfer configuration: `cb8286d26f8048e5eced04cd4e70cedca5525398`. Current library commit will be recorded after CI preparation and connector branch advancement.
+
+### Transfer verification update
+Temporary CI now also accepts size-bounded zlib/base64 transport of the native Git diff while still verifying every exact decoded file hash. This avoids manual reserialization of long source files over the connector. It preserves tracked executable modes, skips payload-deletion commits, and uses the explicit PostgreSQL test user in its health check. YAML and embedded Python were parsed/compiled locally; remove this temporary workflow after final handoff.
