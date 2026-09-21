@@ -46,7 +46,8 @@ jobs:
             /tmp/creative-transfer/original-main-plan.md
           retention-days: 1
       - name: Download public dependency wheels for offline tests
-        run: python -m pip download --only-binary=:all: -r requirements.txt --dest /tmp/creative-transfer/wheels
+        run: |
+          python -m pip download --only-binary=:all: -r requirements.txt --dest /tmp/creative-transfer/wheels
       - uses: actions/upload-artifact@v4
         with:
           name: creative-test-wheels
