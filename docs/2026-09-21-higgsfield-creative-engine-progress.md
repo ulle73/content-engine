@@ -1,14 +1,15 @@
 # CURRENT STATE
 
-- Latest completed step: shared Creative Engine exposed through MCP and human-first Content Engine media UX; 173 SQLite tests pass.
+- Latest completed step: exact Creative Engine product tree transferred and verified in GitHub CI; 173/173 SQLite and 173/173 PostgreSQL tests pass.
 - Branch: `feature/chatgpt-content-engine-mcp`.
-- Latest shipped product commit: `15c76aef9a084eb9e1cf97eccd880172a5815802` (schema; 120 SQLite and 120 PostgreSQL CI tests passed).
+- Latest shipped product commit: `67c6751179d96c4b910f022ccfce817d46d0633f` (`feat(creative): complete shared Higgsfield Creative Engine`).
+- Transfer cleanup commit: `ac727ab8594e7546d8f7eb090bfdca7b5bc8c2f4` (temporary verification workflow removed).
 - Baseline commit: `1b6ae03a342a95c0e43690625bfeab2cce72e040`.
 - Main reference: `d88524467ef216cf521d2e8fcf9bd54741eb3dc7`.
 - Deploy: NOT changed or verified in this session.
-- Blocker: Render connector has no selected workspace. It lists `My Workspace` (`tea-d06041ali9vc73bqfn80`), but its contract requires explicit user confirmation before use. Asked Jonas; continue independent repository work.
-- Local environment: exact current feature-branch snapshot was recovered and re-baselined after the interrupted transfer; isolated Python 3.13.5 virtualenv with offline wheels. No production credentials/data. Current local suite: 173 tests pass.
-- Next exact task: remove temporary recovery artifacts, create the exact hash-manifested transfer patch, run GitHub SQLite/PostgreSQL verification and advance the feature branch only if green.
+- Blocker: Render connector has no selected workspace. It lists `My Workspace` (`tea-d06041ali9vc73bqfn80`), but its contract requires explicit user confirmation before use. No Render service read/write will be attempted until Jonas explicitly selects that workspace.
+- Verification: GitHub Actions run `35658336105` verified exact payload SHA-256, all 25 product blob hashes, migrations/check/static/MCP startup, 173 SQLite tests and 173 PostgreSQL tests. Transfer-only files are absent from the product tree.
+- Next exact task: after explicit Render workspace selection, inspect the existing `content-engine-mcp` service/config, deploy the verified branch safely, then verify startup, health, MCP, OAuth, logs and non-billable provider readiness.
 - Paid generations: ZERO; explicit approval is required before any real paid smoke test.
 
 ## Binding brief
@@ -373,3 +374,55 @@ Build a transfer patch against remote feature-branch state `685da1b0fa96fda50c44
 
 ### Commit
 Product code is in local commits through `237e5be550187f88d6da464611caf58f320426f6`; this ledger update follows as documentation-only commit before transfer.
+
+
+## Task 7: Exact GitHub transfer and PostgreSQL verification
+
+### Status
+DONE for repository transfer and CI. Production deployment remains BLOCKED only by the Render connector's required workspace selection.
+
+### Files changed
+No additional product behavior was added during transfer. Temporary transfer-only GitHub files/workflows were removed after verification; this ledger was updated.
+
+### What changed
+- Rebuilt the interrupted transfer from the exact locally verified Git diff rather than trusting the corrupt earlier payload.
+- Encoded the transfer as six bounded chunks plus a SHA-256 readiness marker. GitHub CI reconstructed the bytes, verified payload SHA-256 `bf39f757dc6820b7f4ca7dba2e212d16e4e24fa1bc25040c516c13940a56d619`, decoded the native patch and checked all 25 expected Git blob hashes before testing.
+- The first transfer run `35658061690` correctly failed closed because the isolated Git worktree did not contain the already-pinned `vendor/social-media-skills` submodule working files. The failure was two `FileNotFoundError` errors in old source-quote tests, not a product-code regression; the branch was not advanced.
+- The CI harness was fixed to populate that pinned, already-checked-out submodule into the isolated worktree without changing product bytes.
+- Rerun `35658336105` passed all gates and prepared commit `67c6751179d96c4b910f022ccfce817d46d0633f`.
+- The GitHub connector advanced `feature/chatgpt-content-engine-mcp` to that prepared commit with a non-force ref update.
+- Verified transfer artifacts `.creative-work.patch`, `.creative-patch-ready` and `.creative-patch-chunks/*` are absent from the shipped product tree.
+- Removed temporary `.github/workflows/creative-prepare.yml` in cleanup commit `ac727ab8594e7546d8f7eb090bfdca7b5bc8c2f4`.
+
+### Why
+The transfer path deliberately fails closed: locally tested bytes must equal GitHub-tested bytes before a branch moves. A CI/worktree infrastructure mistake therefore cannot silently ship different product code.
+
+### Verification / tests
+Successful GitHub Actions run `35658336105`:
+- exact payload SHA-256: matched
+- exact expected product Git blob hashes: 25/25 matched
+- migrations applied including `engine.0013_prompt_library`
+- Django system check: clean
+- collectstatic: success
+- MCP app import/start check: success
+- SQLite: 173 tests in 14.814s, `OK`
+- PostgreSQL: 173 tests in 8.796s, `OK`
+- prepared commit: `67c6751179d96c4b910f022ccfce817d46d0633f`
+- prepared tree: `100c116068e594ed83b7aa008b2922dc5f59c5ce`
+- feature branch updated without force
+- temporary transfer payload/chunks verified absent afterward
+
+### External verification
+GitHub repository and GitHub Actions: VERIFIED. Render deployment/startup: NOT YET VERIFIED. Higgsfield real provider write: NOT RUN. Paid generation: ZERO.
+
+### Known issues
+- Render connector requires Jonas to explicitly select `My Workspace` (`tea-d06041ali9vc73bqfn80`) before the existing `content-engine-mcp` service can be inspected or changed.
+- Chromium screenshot QA remains blocked by the execution environment's navigation policy and is not claimed as verified.
+- A real paid Higgsfield smoke test still requires explicit approval after deployment and non-billable verification.
+
+### Next exact task
+After explicit Render workspace selection, inspect the existing service and deploy only the verified branch. Verify build/startup, migrations, health, MCP endpoint, OAuth flow, logs, environment readiness and webhook URL without creating a paid generation. Then document the exact priced paid smoke-test proposal and stop for approval.
+
+### Commit
+Verified product commit: `67c6751179d96c4b910f022ccfce817d46d0633f`.
+Transfer-workflow cleanup: `ac727ab8594e7546d8f7eb090bfdca7b5bc8c2f4`.
