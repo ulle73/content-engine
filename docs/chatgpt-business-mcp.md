@@ -136,9 +136,14 @@ These reuse the existing daily/performance/learning code and its existing Apify 
 
 - `generate_media`
 - `poll_media_generation`
+- `get_media_generation`
+- `list_recent_media_generations`
+- `cancel_media_generation`
 - `save_chatgpt_image`
 - `save_chatgpt_image_url`
 - `select_media`
+
+`generate_media` is a thin MCP entrypoint into the same Creative Engine and `MediaGeneration` lifecycle used by the web UI. ChatGPT supplies natural concepts (request, media kind, optional reference, format and `quality`/`balanced`/`economy` priority); Content Engine owns structured brief creation, bounded company context, model routing, model-specific prompt/parameter compilation, preflight and cost protection. Diagnostics are available on generation reads without exposing credentials. Generation history and cancellation are always scoped through the authenticated company/run boundary.
 
 There are two supported image paths:
 
@@ -187,6 +192,8 @@ Every MCP mutation takes an `idempotency_key`. ChatGPT should:
 - stop if Content Engine reports an uncertain external result.
 
 Postiz/network timeouts after a POST are treated as uncertain because the remote service may already have accepted the write. The run moves to `unknown` and automatic replay is blocked. `reset_unknown_postiz_delivery` may only be used after a human/operator explicitly verifies that no corresponding Postiz object exists.
+
+Higgsfield generation writes use the same stricter principle. The provider currently documents no idempotency key for a generation POST, so a potentially billable submit is never automatically repeated after an ambiguous timeout. `poll_media_generation`, the webhook handler, recovery command and generation-read tools only reconcile an already-created `MediaGeneration`; they do not create replacement paid jobs. Completed video is not marked `completed` until its output is secured in Content Engine storage.
 
 ## ChatGPT Business setup
 

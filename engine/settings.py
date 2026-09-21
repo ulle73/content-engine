@@ -98,6 +98,7 @@ MEDIA_ROOT = ENGINE_ROOT / "media"
 OPENAI_IMAGE_MODEL = env("OPENAI_IMAGE_MODEL", default="gpt-image-2")
 # Official Higgsfield OpenAPI, checked 2026-09-08. Model names stay out of the editor UI.
 HIGGSFIELD_VIDEO_MODEL = "kling-video/v2.5-turbo/pro"
+HIGGSFIELD_WEBHOOK_ENABLED = env.bool("HIGGSFIELD_WEBHOOK_ENABLED", default=False)
 if LOCAL_HTTP:
     ALLOWED_HOSTS += ["localhost", "127.0.0.1", "testserver"]
 else:

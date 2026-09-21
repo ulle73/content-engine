@@ -27,7 +27,7 @@ from mcp.types import ToolAnnotations
 from .mcp_db import database_tool
 from .delivery import deliver_to_postiz, reset_unknown_delivery
 from .mcp_auth import OIDCTokenVerifier, current_django_user
-from .mcp_operations import poll_generation, prepare_best_content, refresh_company_once, refresh_performance_once
+from .mcp_operations import cancel_generation, list_recent_generations, poll_generation, prepare_best_content, refresh_company_once, refresh_performance_once, serialize_generation
 from .media_storage import MediaError, open_asset
 from .models import ContentRun, MediaAsset, MediaGeneration
 from .operator import (
@@ -373,6 +373,7 @@ def generate_media(
     shape: Literal["portrait", "square", "landscape"] = "portrait",
     include_logo: bool = False,
     source_asset_id: str | None = None,
+    priority: Literal["quality", "balanced", "economy"] = "balanced",
 ) -> dict:
     run = _run(company_ref, run_id)
     job = _safe_call(
@@ -387,6 +388,7 @@ def generate_media(
         source_asset_id=source_asset_id,
         expected_revision=expected_revision,
         idempotency_key=idempotency_key,
+        priority=priority,
     )
     return {
         "job_id": str(job.pk),
@@ -394,6 +396,7 @@ def generate_media(
         "error": job.error,
         "run": serialize_run(run),
         "assets": media_options(run),
+        "generation": serialize_generation(job, diagnostics=True),
     }
 
 
@@ -409,7 +412,46 @@ def poll_media_generation(company_ref: str, run_id: str, job_id: str) -> dict:
     if not job:
         raise ToolError("Mediajobbet finns inte för ContentRun.")
     job = _safe_call(poll_generation, job)
-    return {"job_id": str(job.pk), "status": job.status, "error": job.error, "assets": media_options(run)}
+    return {**serialize_generation(job, diagnostics=True), "assets": media_options(run)}
+
+
+@mcp.tool(
+    title="Get media generation",
+    description="Read one company-scoped generation with human status and safe diagnostics. Does not start or retry generation.",
+    annotations=ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False),
+)
+@database_tool
+def get_media_generation(company_ref: str, run_id: str, job_id: str) -> dict:
+    run = _run(company_ref, run_id)
+    job = MediaGeneration.objects.prefetch_related("assets").filter(pk=job_id, run=run).first()
+    if not job:
+        raise ToolError("Mediajobbet finns inte för ContentRun.")
+    return serialize_generation(job, diagnostics=True)
+
+
+@mcp.tool(
+    title="List recent media generations",
+    description="List recent generation jobs only for the authenticated Content Engine company. Does not contact providers.",
+    annotations=ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False),
+)
+@database_tool
+def list_recent_media_generations(company_ref: str, limit: int = 10) -> list[dict]:
+    return list_recent_generations(_company(company_ref), limit=limit)
+
+
+@mcp.tool(
+    title="Cancel media generation",
+    description="Cancel a queued local job or request cancellation of a known queued Higgsfield request. Never starts or retries generation.",
+    annotations=ToolAnnotations(read_only_hint=False, destructive_hint=True, idempotent_hint=True, open_world_hint=True),
+)
+@database_tool
+def cancel_media_generation(company_ref: str, run_id: str, job_id: str) -> dict:
+    run = _run(company_ref, run_id)
+    job = MediaGeneration.objects.filter(pk=job_id, run=run).first()
+    if not job:
+        raise ToolError("Mediajobbet finns inte för ContentRun.")
+    job = _safe_call(cancel_generation, job)
+    return serialize_generation(job, diagnostics=True)
 
 
 @mcp.tool(

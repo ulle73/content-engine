@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from .daily import AlreadyRunning, run_daily
 from .models import ContentRun, MediaGeneration, OwnPost
+from .media import cancel_job
 from .operator import (
     OperatorError,
     _durable_error,
@@ -180,3 +181,64 @@ def poll_generation(job: MediaGeneration) -> MediaGeneration:
     from .media import advance_job
 
     return advance_job(job)
+
+
+GENERATION_STATUS_COPY = {
+    "queued": "Sparad och väntar på start.",
+    "starting": "Skickar till leverantören.",
+    "running": "Genereras hos leverantören.",
+    "saving": "Resultatet är klart och sparas i Content Engine.",
+    "completed": "Klar och säkrad i Content Engine.",
+    "failed": "Genereringen misslyckades.",
+    "nsfw": "Stoppad av leverantörens innehållskontroll.",
+    "canceled": "Avbruten.",
+    "unknown": "Starten kan ha debiterats men kunde inte bekräftas. Ingen automatisk retry görs.",
+}
+
+
+def serialize_generation(job: MediaGeneration, *, diagnostics=False) -> dict[str, Any]:
+    creative = job.parameters.get("creative", {}) if isinstance(job.parameters, dict) else {}
+    estimate = job.usage.get("estimate", {}) if isinstance(job.usage, dict) else {}
+    data = {
+        "job_id": str(job.pk),
+        "run_id": str(job.run_id),
+        "kind": job.kind,
+        "status": job.status,
+        "status_message": GENERATION_STATUS_COPY.get(job.status, "Okänd intern status."),
+        "error": job.error,
+        "model": job.parameters.get("model") if isinstance(job.parameters, dict) else None,
+        "estimated_usd": estimate.get("usd"),
+        "created_at": job.created_at.isoformat(),
+        "updated_at": job.updated_at.isoformat(),
+        "asset_ids": [str(value) for value in job.assets.values_list("pk", flat=True)[:8]],
+    }
+    if diagnostics:
+        safe_parameters = {
+            key: value for key, value in (job.parameters or {}).items()
+            if key in {"model", "count", "size", "duration", "aspect_ratio"}
+        }
+        data["diagnostics"] = {
+            "provider": job.provider,
+            "provider_request_id": job.provider_id or None,
+            "original_request": job.brief,
+            "compiled_prompt": job.prompt,
+            "parameters": safe_parameters,
+            "structured_brief": creative.get("brief", {}),
+            "complexity": creative.get("complexity"),
+            "model_selection": creative.get("selection", {}),
+            "preflight": creative.get("preflight", []),
+            "inspiration_ids": creative.get("inspiration_ids", []),
+            "compiler_version": creative.get("compiler_version"),
+            "registry_version": creative.get("registry_version"),
+        }
+    return data
+
+
+def list_recent_generations(company, *, limit=10) -> list[dict[str, Any]]:
+    limit = max(1, min(int(limit), 50))
+    jobs = MediaGeneration.objects.filter(run__workspace=company).prefetch_related("assets").order_by("-created_at", "-id")[:limit]
+    return [serialize_generation(job) for job in jobs]
+
+
+def cancel_generation(job: MediaGeneration) -> MediaGeneration:
+    return cancel_job(job)

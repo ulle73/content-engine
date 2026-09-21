@@ -1,14 +1,14 @@
 # CURRENT STATE
 
-- Latest completed step: Prompt Library service and UI verified (148 tests); offline Chromium layout checked at 1440px and 390px.
+- Latest completed step: shared Creative Engine exposed through MCP and human-first Content Engine media UX; 173 SQLite tests pass.
 - Branch: `feature/chatgpt-content-engine-mcp`.
 - Latest shipped product commit: `15c76aef9a084eb9e1cf97eccd880172a5815802` (schema; 120 SQLite and 120 PostgreSQL CI tests passed).
 - Baseline commit: `1b6ae03a342a95c0e43690625bfeab2cce72e040`.
 - Main reference: `d88524467ef216cf521d2e8fcf9bd54741eb3dc7`.
 - Deploy: NOT changed or verified in this session.
 - Blocker: Render connector has no selected workspace. It lists `My Workspace` (`tea-d06041ali9vc73bqfn80`), but its contract requires explicit user confirmation before use. Asked Jonas; continue independent repository work.
-- Local environment: complete tracked snapshot of `dce11df7aa2b51f2235a071819706cea2d67b2c2`, including submodule sources; isolated Python 3.13.5 virtualenv with offline wheels. No production credentials/data. Baseline CI and 119 local tests pass.
-- Next exact task: implement the structured Creative Brief, versioned registry, compiler and Creative Director tests.
+- Local environment: exact current feature-branch snapshot was recovered and re-baselined after the interrupted transfer; isolated Python 3.13.5 virtualenv with offline wheels. No production credentials/data. Current local suite: 173 tests pass.
+- Next exact task: remove temporary recovery artifacts, create the exact hash-manifested transfer patch, run GitHub SQLite/PostgreSQL verification and advance the feature branch only if green.
 - Paid generations: ZERO; explicit approval is required before any real paid smoke test.
 
 ## Binding brief
@@ -19,16 +19,16 @@ The user supplied the full implementation brief in `Inklistrad text(7).txt` on 2
 
 - [x] Repository and branch topology verified
 - [x] Full relevant repository audit and baseline tests
-- [ ] Official API/SDK and model-contract audit
-- [ ] Updated implementation plan and architecture rulings
-- [ ] Structured creative brief and context boundary
-- [ ] Versioned model intelligence, router, prompt/parameter compiler, preflight
+- [x] Official API/SDK and model-contract audit
+- [x] Updated implementation plan and architecture rulings
+- [x] Structured creative brief and context boundary
+- [x] Versioned model intelligence, router, prompt/parameter compiler, preflight
 - [x] Prompt Library persistence, retrieval and UI
-- [ ] Official SDK adapter and fail-closed cost policy
-- [ ] Durable duplicate-safe lifecycle, webhook, polling/recovery and R2 completion
-- [ ] Shared UI and MCP integration, ownership tests
-- [ ] UX and diagnostics review
-- [ ] Full test suite, migrations, security checks and extra review
+- [x] Official SDK/REST adapter decision and fail-closed cost policy
+- [x] Durable duplicate-safe lifecycle, webhook, polling/recovery and R2 completion
+- [x] Shared UI and MCP integration, ownership tests
+- [x] UX and diagnostics review
+- [x] Full test suite, migrations, security checks and extra review
 - [ ] Existing Render deployment and live non-billable verification
 - [ ] Final handoff and explicitly priced paid-test proposal (not execution)
 
@@ -206,3 +206,170 @@ Previous shipped schema: `15c76aef9a084eb9e1cf97eccd880172a5815802`. Verified tr
 
 ### Transfer verification update
 Temporary CI now also accepts size-bounded zlib/base64 transport of the native Git diff while still verifying every exact decoded file hash. This avoids manual reserialization of long source files over the connector. It preserves tracked executable modes, skips payload-deletion commits, and uses the explicit PostgreSQL test user in its health check. YAML and embedded Python were parsed/compiled locally; remove this temporary workflow after final handoff.
+
+
+## Task 3: Shared Creative Director, registry, compiler and MediaGeneration integration
+
+### Status
+DONE for the provider-neutral planning layer and existing media-job integration. Live account availability remains a provider preflight concern; no paid request was made.
+
+### Files changed
+`engine/creative_core.py`, `engine/creative_registry.py`, `engine/creative_director.py`, `engine/test_creative_core.py`, `engine/media.py`, `engine/media_providers.py`, `engine/test_media.py`, `engine/prompt_library.py`, this ledger.
+
+### What changed
+- Added a strict Pydantic `CreativeBrief` plus bounded `CreativeContext`, model selection, preflight issue and plan objects.
+- Added a versioned allow-listed registry. Only OFFICIAL/VERIFIED entries can be auto-selected; undocumented future models cannot enter routing. Current still-image routing is `gpt-image-2`; current video routing remains the existing verified `kling-video/v2.5-turbo/pro`.
+- Added deterministic local intent parsing, complexity scoring, hard-capability routing, joint prompt/parameter compilation and preflight. An 8-second request is normalized locally to a verified 10-second Kling duration before any provider call.
+- Added first-class image-to-video preserve/allow/forbid compilation. The legacy blanket logo-preservation ban is no longer applied to I2V, while generated still images retain the existing invariant that logos/wordmarks are never synthesized and the exact official logo is composited separately.
+- Bounded company/run context is compiled as reference data only. Prompt Library retrieval is company-scoped and capped; only abstract mechanism metadata is compiled, never the raw untrusted saved prompt.
+- Existing `MediaGeneration` remains the single job record. It now stores original request in `brief`, compiled provider prompt in `prompt`, and safe versioned diagnostics/provenance under `parameters.creative`. No parallel job database was added.
+- Provider video payload now uses the already validated/compiled local duration instead of silently hard-coding 10 seconds.
+- Fixed Prompt Library generation provenance to read the persisted structured brief from `parameters.creative`.
+
+### Why
+This keeps UI/MCP/future automations on one shared domain layer and makes model-specific prompt behavior explicit without adding an LLM call or a new paid step before cost preflight. The registry is deliberately small rather than guessing current provider capabilities.
+
+### Verification
+- RED/GREEN focused Creative Core suite: 10/10 passed.
+- Creative Core + media integration: 23/23 passed.
+- A full-suite regression exposed the existing still-image logo safety invariant; compiler was corrected and the targeted branding/core/media suite passed 27/27.
+- `python manage.py makemigrations --check --dry-run`: no changes.
+- `python manage.py check`: clean.
+- Final local SQLite suite: 160 tests passed in 8.574s.
+- No external generation, estimate or billable POST was executed.
+
+### External verification
+- OpenAI official model catalog checked 2026-09-21 and confirms GPT-Image-2 as the current image-generation model.
+- Higgsfield shared docs and prior same-day official API/SDK audit remain the source for async lifecycle/cost/idempotency rulings. Account availability is intentionally not inferred from docs; estimate/preflight must confirm it before payment.
+- Unit/integration verified locally; PostgreSQL CI and Render are not yet verified for this task.
+
+### Known issues
+Render still requires explicit workspace selection. The authenticated Higgsfield MCP workspace read returned a temporary workspace error and is not used as Content Engine account availability evidence. No personal Higgsfield workspace fallback is allowed.
+
+### Next exact task
+Harden the official REST adapter and durable lifecycle: normalized errors, safe read retries only, webhook wake-up endpoint, bounded polling/recovery, completion-to-R2 idempotency and recovery tests.
+
+### Commit
+Local logical commit follows after this ledger update; GitHub branch advancement will occur only after exact patch transfer and CI verification.
+
+
+## Task 4: Higgsfield lifecycle, webhook, recovery and provider safety
+
+### Status
+DONE in code/tests; production webhook delivery and real R2/provider behavior remain deployment/live-read verification tasks. No paid generation was executed.
+
+### Files changed
+`engine/media_providers.py`, `engine/media.py`, `engine/media_views.py`, `engine/urls.py`, `engine/settings.py`, `engine/management/commands/recover_media_jobs.py`, `engine/test_media.py`, `.env.example`, `render.yaml`, this ledger.
+
+### What changed
+- Added a normalized provider error taxonomy for invalid request, authentication/config, insufficient credits, rate limiting, provider unavailable and uncertain paid submission.
+- Higgsfield GET status requests now use bounded retries with exponential backoff, jitter and `Retry-After` handling. Generation submit is explicitly marked `billable=True` and is attempted exactly once. Non-billable estimate/upload failures are no longer incorrectly classified as ambiguous paid submits.
+- Implemented the documented `hf_webhook` query parameter behind `HIGGSFIELD_WEBHOOK_ENABLED`. Production Render blueprint enables it; localhost does not generate an HTTPS webhook URL.
+- Added public POST-only `/webhooks/higgsfield/`. It validates the documented envelope, stores only safe receipt metadata, ignores webhook result URLs/errors, matches a known provider request id, then fetches authoritative status via authenticated GET. Unknown valid ids are acknowledged without leaking ownership. Duplicate terminal deliveries return 2xx.
+- Added explicit `saving` state. A completed provider job is transactionally claimed before download/storage, preventing duplicate completion workers. If result download/R2 fails, no provider generation is repeated; stale recovery retries only result retrieval/storage.
+- Internal terminal states now preserve `failed`, `nsfw` and `canceled` separately. `unknown` remains the fail-closed state for a potentially charged submit whose request id was not safely persisted.
+- Added bounded `recover_media_jobs` plus management command. It checks already-started/stale jobs only and never starts queued paid work.
+- Added cancellation: local queued jobs cancel without provider contact; known running Higgsfield jobs use the documented `/requests/{request_id}/cancel` endpoint. Ambiguous states are not canceled blindly.
+- Updated browser provider readiness to prefer `HIGGSFIELD_API_KEY_GK`; retained legacy server fallback. Render declares the primary GK key plus legacy variables for a safe migration.
+
+### Why
+Current official Higgsfield docs explicitly permit retrying status GETs after network/5xx failures but warn that generation POSTs have no idempotency key and must not be automatically repeated after an ambiguous timeout. Webhooks can be duplicated and currently have no documented signature, so the request body is a wake-up hint rather than authoritative ownership/result data.
+
+### Verification
+- Focused media/provider/webhook suite: 20/20 passed.
+- Webhook tests prove an attacker-supplied payload URL is ignored; authenticated status URL is used instead.
+- Duplicate webhook test leaves exactly one persisted asset.
+- Recovery test forces result download failure, leaves durable `saving`, ages it, then completes through recovery without a generation submit.
+- Retry test proves transient GET executes bounded retries while ambiguous billable POST executes once.
+- Webhook URL test verifies percent-encoded `hf_webhook` is added only with feature flag + HTTPS APP_URL.
+- `python manage.py test`: 167 passed in 8.623s.
+- `python manage.py makemigrations --check --dry-run`: no changes.
+- `python manage.py check`: clean.
+
+### External verification
+Docs verified 2026-09-21 against official Higgsfield pages for webhook delivery, polling/backoff, retry safety, billing/retention and queued cancellation. Live webhook delivery, provider account availability and real R2 write remain unverified until deployment; no billable smoke test was run.
+
+### Known issues
+Render workspace selection is still an external connector blocker. The service currently cannot be deployed/inspected through the connector until Jonas explicitly selects the Render workspace required by the connector contract.
+
+### Next exact task
+Add thin MCP generation diagnostics/list/cancel interfaces around the same domain services, then simplify the existing AI-studio/status screens and expose safe diagnostics without provider internals in the default UX.
+
+### Commit
+Local logical commit follows; GitHub branch will advance only after exact transfer and PostgreSQL CI verification.
+
+
+## Task 5: Thin MCP surface and human-first Creative Studio UX
+
+### Status
+DONE in code/tests. Browser screenshot rendering is NOT claimed as verified because the execution environment's Chromium policy blocks loopback, file and data-URL navigation; authenticated Django views and responsive DOM/CSS behavior remain covered by integration/static review instead.
+
+### Files changed
+`engine/mcp_operations.py`, `engine/mcp_server.py`, `engine/operator_media.py`, `engine/media.py`, `engine/media_views.py`, `engine/urls.py`, `templates/engine/media.html`, `templates/engine/media_job.html`, `engine/static/css/media-screen.css`, `engine/test_media.py`, `engine/test_mcp_media.py`, `README.md`, `docs/chatgpt-business-mcp.md`, `docs/2026-09-08-media.md`, this ledger.
+
+### What changed
+- Kept MCP thin: `generate_media` still calls the shared operator/domain layer and now accepts only the natural `quality` / `balanced` / `economy` priority. Added company/run-scoped read/list/cancel generation tools around the same `MediaGeneration` rows; no provider-specific MCP server or duplicate routing logic was created.
+- Added safe generation serialization with human status, persisted original request, selected model/reason, compiler/registry versions, bounded structured brief, safe parameters, estimate and provider request id. Secrets and `logo_sha256` stay out of MCP diagnostics.
+- Added explicit company-bounded recent-generation queries and idempotent domain cancellation. Existing `_run` / company resolution remains the ownership boundary for MCP tool calls.
+- Simplified the web AI Studio around natural-language intent, three understandable priorities and format instead of raw model/provider controls. Model, duration and provider details live in collapsed diagnostics.
+- Rebuilt the status page around understandable lifecycle steps, bounded polling backoff, clear `unknown` fail-closed recovery, cancel controls and prompt-library handoff. Status polling explicitly reuses the same job and never creates replacement paid work.
+- Updated current README/MCP docs and marked the 2026-09-08 media verification as historical where newer lifecycle/credential behavior supersedes it.
+
+### Why
+The binding brief requires one shared engine with a low-friction default UX and technical details available only when useful. Keeping all generation logic in Django domain services also preserves restart recovery, company ownership, cost policy and duplicate protection for UI, MCP and future automation callers.
+
+### Verification
+- New MCP operation tests: safe diagnostics, company-scoped history, idempotent cancel.
+- New UI/security tests: priority/format controls, escaped user prompt in diagnostics, persisted priority, invalid priority rejected before job creation, POST-only company-scoped cancel route.
+- Focused `engine.test_media engine.test_mcp_media operator_bridge.tests`: 35/35 passed.
+- Full `python manage.py test`: 173/173 passed in 8.742s.
+- `python manage.py makemigrations --check --dry-run`: no changes.
+- `python manage.py check`: clean.
+- `python manage.py collectstatic --noinput`: success.
+- MCP app import under `engine.mcp_settings`: success.
+- `python -m compileall -q engine operator_bridge`: success.
+- Responsive CSS has explicit one-column breakpoints for the new priority controls and existing media grids. Chromium screenshot attempts were blocked by environment browser policy before app content loaded, so no screenshot is marked verified.
+
+### External verification
+No external generation, provider write or paid request. Render not yet touched. PostgreSQL CI for this combined patch remains the next verification gate.
+
+### Known issues
+Render connector still requires explicit user confirmation of its workspace before any service read/write. A real Higgsfield paid generation remains forbidden until Jonas explicitly approves the final priced smoke test.
+
+### Next exact task
+Perform the extra security/consistency review, remove temporary interrupted-transfer artifacts, generate an exact hash-manifested Git patch, run existing GitHub SQLite/PostgreSQL verification and advance the feature branch only if that CI is green.
+
+### Commit
+Local logical product commit: `237e5be550187f88d6da464611caf58f320426f6` (`feat(creative): expose shared engine through MCP and UI`). GitHub branch advancement is intentionally deferred to exact-transfer/PostgreSQL CI.
+
+
+## Task 6: Final local regression, security and consistency review
+
+### Status
+DONE locally. PostgreSQL CI and production deployment are separate verification stages.
+
+### Files changed
+This ledger only; review covered the complete current Creative Engine/MCP/media diff.
+
+### What changed / why
+No new product behavior was required by the extra pass. Reviewed paid-write call sites, diagnostics redaction, company/run scoping, webhook trust boundary, recovery behavior, current README/MCP/media documentation and dependency consistency. The one static-review interruption was a false positive caused by the test that intentionally calls `higgs(..., billable=True)` to prove retry safety; production code has exactly one billable Higgsfield submit site.
+
+### Verification / tests
+- Final local `python manage.py test`: 173/173 passed in 8.476s.
+- `python manage.py makemigrations --check --dry-run`: no changes.
+- `python manage.py check`: clean.
+- `python -m pip check`: no broken requirements.
+- Static production-code scan: exactly one `billable=True` Higgsfield generation submit site, `engine/media_providers.py`; no secret-like fields in diagnostics serialization.
+- `git diff --check`: clean.
+
+### External verification
+None added. No provider write and no paid generation.
+
+### Known issues
+Chromium visual rendering remains blocked by execution-environment navigation policy and is not claimed. Render still requires explicit workspace selection.
+
+### Next exact task
+Build a transfer patch against remote feature-branch state `685da1b0fa96fda50c44684aa17b48e020fd2c11`, remove temporary resume/export artifacts in that patch, trigger `creative-prepare.yml`, inspect SQLite/PostgreSQL CI output and advance the branch only to the prepared verified commit.
+
+### Commit
+Product code is in local commits through `237e5be550187f88d6da464611caf58f320426f6`; this ledger update follows as documentation-only commit before transfer.

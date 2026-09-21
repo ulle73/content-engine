@@ -1,6 +1,0 @@
-{"base_commit":"dd6929e71b2c6c349e2fbf753f780b7d87100fa5","message":"feat(creative): add structured direction and verified model-specific compilation","encoding":"zlib-base64","hashes":{"docs/2026-09-21-higgsfield-creative-engine-progress.md":"583d940cc75fb9126c153fff323a712da6b017f0","engine/creative_core.py":"6b89133848373d0ee384bf8d96eb47a537a53ac7","engine/creative_director.py":"37decc5f398172bd1266dc1417e4a7fc3e1a9976","engine/creative_registry.py":"16d420088a686488da8ef9618f1a6a9adc9732d9","engine/test_creative_core.py":"b9bb8702e65f556ece1bbd8f00c1b86fd4c21a11"}}
---- PATCH ---
-eNrFfWl320aW6Hf9ipru8x7ICNwlSqKbmSi2ktbEsT2WnD79FB0aBIokIhJgA6BkxtZ/n7tUFQoLtcTpeenTllRA7XffEISzmWi15mEmvE4Q+2mn3+0PW92T
-Vr/XWoTzeToL5TJo+Yn0svBWtmQ0DyPZWifxPJFp2l4FYvoHO+6FUSA/iV7XPzwZDjyvN+37B4ODQX/WP5n2ZHDU9Q6nJ7I/GMjuyfFxu314PAhODrq+f3Q4
-m570+kO/dziYzWaD/sA76vUDbzjt9o5mXRiyOzw42Gu1Wn94V3v7+/t/fGfffSdaPbd3IPbp3+++2xN/FS8/vH9/9uZSXFyeXp7tCVieeO1lMs2EH6/WS5nJ
-QKSZXI/EuwQaMvE6nCZeshWpTG5DXwovCsSHc3ErkxCWEIhG7+BY4ABp84WIZ7MlLEO8XEDncLMSS28bb2DshfRv4Rv?AAAAAAAAAAAA

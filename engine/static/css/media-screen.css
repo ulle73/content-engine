@@ -159,3 +159,23 @@
 @media (prefers-reduced-motion: reduce) {
   .generation-chevron { transition: none; }
 }
+
+/* Creative Engine: human-first generation controls. */
+.generation-priority { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin: 8px 0 4px; padding: 0; border: 0; }
+.generation-priority legend { grid-column: 1 / -1; margin-bottom: 2px; color: #56635a; font-size: 9px; font-weight: 670; }
+.generation-priority label { position: relative; min-height: 70px; padding: 10px; border: 1px solid #dbe1dc; border-radius: 9px; background: #fff; cursor: pointer; }
+.generation-priority input { position: absolute; top: 10px; right: 10px; }
+.generation-priority span { display: grid; gap: 4px; padding-right: 18px; }
+.generation-priority strong { color: #334139; font-size: 9px; }
+.generation-priority small { color: #79847d; font-size: 8px; line-height: 1.35; }
+.generation-priority label:has(input:checked) { border-color: #73917f; background: #f1f6f3; box-shadow: 0 0 0 2px rgba(49,91,69,.06); }
+.generation-steps { display: grid; gap: 8px; margin: 16px 0; padding: 14px; border: 1px solid #e1e6e2; border-radius: 10px; background: #fafbfa; }
+.generation-step { display: flex; align-items: center; gap: 9px; color: #869087; font-size: 9px; }
+.generation-step::before { content: ''; width: 8px; height: 8px; flex: 0 0 8px; border: 1px solid #b9c3bc; border-radius: 50%; background: #fff; }
+.generation-step.done { color: #3d5d49; font-weight: 650; }
+.generation-step.done::before { border-color: #51745e; background: #51745e; }
+.generation-step.active { color: #243d2e; font-weight: 700; }
+.generation-step.active::before { border-color: #315b45; box-shadow: 0 0 0 3px rgba(49,91,69,.12); }
+.generation-diagnostics pre { max-height: 320px; overflow: auto; white-space: pre-wrap; word-break: break-word; padding: 11px; border-radius: 8px; background: #f5f7f5; font-size: 8px; line-height: 1.45; }
+.generation-job-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+@media (max-width: 680px) { .generation-priority { grid-template-columns: 1fr; } }

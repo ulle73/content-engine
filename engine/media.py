@@ -9,16 +9,21 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Q
 from django.utils import timezone
 from openai import APIConnectionError, APIError
 from PIL import Image, UnidentifiedImageError
 import av
 
 from . import media_providers as providers
+from .creative_director import build_plan
+from .prompt_library import retrieve_inspiration
 from .media_storage import MediaError, check_storage, delete_file, put
 from .models import Company, ContentEvent, ContentRun, MediaAsset, MediaGeneration
 
-ACTIVE = ("queued", "starting", "running", "unknown")
+PENDING = ("queued", "starting", "running", "saving")
+ACTIVE = PENDING + ("unknown",)
+TERMINAL = ("completed", "failed", "nsfw", "canceled", "unknown")
 
 
 def describe_file(data):
@@ -116,20 +121,18 @@ def generation_prompt(run, brief, kind):
             "Competitor mechanisms are inspiration, never a source to copy.\n" + json.dumps(context, ensure_ascii=False))
 
 
-def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, include_logo=False):
+def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, include_logo=False, priority="balanced"):
     check_storage()
     if kind not in {"image", "video"} or not brief.strip() or len(brief) > 6000:
         raise MediaError("Beskrivningen behövs och får vara högst 6000 tecken.")
+    if priority not in {"quality", "balanced", "economy"}:
+        raise MediaError("Välj Bäst resultat, Balanserad eller Spara kostnad.")
     if source and (source.company_id != run.workspace_id or source.kind != "image" or source.purpose == "logo"):
         raise MediaError("Startbilden ska tillhöra företaget.")
     if not run.draft or run.delivery_status != "draft":
         raise MediaError("Skapa ett redigerbart utkast innan du väljer media.")
-    params = {"count": max(1, min(count, 4)), "size": {"square": "1024x1024", "portrait": "1024x1536", "landscape": "1536x1024"}.get(shape, "1024x1536")}
-    if kind == "video":
-        params = {"duration": 10}
-    params["model"] = settings.OPENAI_IMAGE_MODEL if kind == "image" else settings.HIGGSFIELD_VIDEO_MODEL
     with transaction.atomic():
-        locked = ContentRun.objects.select_for_update().get(pk=run.pk)
+        locked = ContentRun.objects.select_for_update().select_related("workspace").get(pk=run.pk)
         if locked.delivery_status != "draft":
             raise MediaError("Utkastet har redan skickats till Postiz.")
         existing = locked.media_jobs.filter(pk=token).first() or locked.media_jobs.filter(status__in=ACTIVE).first()
@@ -142,13 +145,100 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         if logo:
             if logo.company_id != company.pk or logo.purpose != "logo":
                 raise MediaError("Den officiella loggan är inte korrekt kopplad till företaget.")
-            params["logo_sha256"] = logo.sha256
         if source:
             source = MediaAsset.objects.select_for_update().get(pk=source.pk)
             if source.expires_at and source.expires_at <= timezone.now():
                 raise MediaError("Startbildens förhandsvisning har gått ut.")
-        return MediaGeneration.objects.create(id=token, run=locked, kind=kind, provider="openai" if kind == "image" else "higgsfield",
-                                               brief=brief, prompt=generation_prompt(run, brief, kind), parameters=params, source_asset=source, logo_asset=logo)
+
+        # Prompt Library is untrusted inspiration only. Retrieval is company scoped
+        # and bounded, and its raw prompt text is never copied into the provider prompt.
+        inspirations = retrieve_inspiration(company.owner, company.pk, brief, limit=3)
+        try:
+            plan = build_plan(locked, brief, kind=kind, source=source, shape=shape, count=count,
+                              priority=priority, inspirations=inspirations)
+        except ValueError as exc:
+            raise MediaError("Kreativ kontroll stoppade generationen: " + str(exc)) from exc
+
+        params = dict(plan.parameters)
+        params["aspect_ratio"] = plan.brief.aspect_ratio
+        params["creative"] = {
+            "brief": plan.brief.model_dump(mode="json"),
+            "context": plan.context.model_dump(mode="json"),
+            "complexity": plan.complexity.value,
+            "selection": plan.selection.model_dump(mode="json"),
+            "preflight": [item.model_dump(mode="json") for item in plan.preflight],
+            "inspiration_ids": plan.inspiration_ids,
+            "compiler_version": plan.compiler_version,
+            "registry_version": plan.registry_version,
+        }
+        if logo:
+            params["logo_sha256"] = logo.sha256
+
+        return MediaGeneration.objects.create(
+            id=token,
+            run=locked,
+            kind=kind,
+            provider=plan.selection.provider,
+            brief=brief,
+            prompt=plan.prompt,
+            parameters=params,
+            source_asset=source,
+            logo_asset=logo,
+        )
+
+
+def _mark_provider_error(job, exc, *, status=None):
+    usage = dict(job.usage or {})
+    usage["provider_error"] = {"code": providers.provider_error_code(exc), "message": str(exc)[:300]}
+    fields = {"usage": usage, "error": str(exc)[:500], "updated_at": timezone.now()}
+    if status:
+        fields["status"] = status
+    MediaGeneration.objects.filter(pk=job.pk).update(**fields)
+
+
+def reconcile_video_job(job):
+    """Read provider status and persist a terminal result without new paid submits."""
+    job.refresh_from_db()
+    if job.status in {"completed", "failed", "nsfw", "canceled", "unknown"} or not job.provider_id:
+        return job
+    if job.status == "saving" and job.updated_at >= timezone.now() - timedelta(seconds=10):
+        return job
+
+    remote = providers.video_status(job)
+    remote_status = remote.get("status")
+    if remote_status == "completed":
+        now = timezone.now()
+        if job.status == "running":
+            claimed = MediaGeneration.objects.filter(pk=job.pk, status="running").update(status="saving", error="", updated_at=now)
+        else:
+            claimed = MediaGeneration.objects.filter(pk=job.pk, status="saving", updated_at=job.updated_at).update(error="", updated_at=now)
+        if not claimed:
+            job.refresh_from_db()
+            return job
+        try:
+            video = remote.get("video") or remote.get("payload", {}).get("video") or {}
+            url = video.get("url")
+            if not url:
+                raise MediaError("Videoleverantören markerade jobbet klart men saknade resultatlänk.")
+            data = providers.download_output(url)
+            store_asset(job.run.workspace, data, job=job)
+            MediaGeneration.objects.filter(pk=job.pk, status="saving").update(status="completed", error="", updated_at=timezone.now())
+        except MediaError as exc:
+            # Provider work is already complete. Keep a durable saving state so
+            # recovery may retry download/storage without creating a new generation.
+            _mark_provider_error(job, exc)
+            raise
+    elif remote_status in {"failed", "nsfw", "canceled"}:
+        messages = {
+            "failed": "Videoleverantören kunde inte slutföra generationen.",
+            "nsfw": "Videoleverantören stoppade generationen i sin innehållskontroll.",
+            "canceled": "Videogenereringen avbröts innan den slutfördes.",
+        }
+        MediaGeneration.objects.filter(pk=job.pk, status__in=("running", "saving")).update(
+            status=remote_status, error=messages[remote_status], updated_at=timezone.now()
+        )
+    job.refresh_from_db()
+    return job
 
 
 def advance_job(job):
@@ -167,28 +257,75 @@ def advance_job(job):
                     store_asset(job.run.workspace, data, job=job, index=index)
                 if not images:
                     raise MediaError("Bildtjänsten returnerade inget färdigt alternativ.")
-                MediaGeneration.objects.filter(pk=job.pk).update(status="completed", usage=usage, updated_at=timezone.now())
+                MediaGeneration.objects.filter(pk=job.pk).update(status="completed", usage=usage, error="", updated_at=timezone.now())
             else:
                 remote, usage = providers.start_video(job)
                 request_id = str(uuid.UUID(remote["request_id"]))
-                MediaGeneration.objects.filter(pk=job.pk).update(status="running", provider_id=request_id, usage=usage, updated_at=timezone.now())
-        except (providers.UncertainGeneration, APIConnectionError):
-            MediaGeneration.objects.filter(pk=job.pk).update(status="unknown", error="Starten kunde inte bekräftas. Kontrollera leverantörens konto innan du tillåter ett nytt försök.", updated_at=timezone.now())
-        except (MediaError, APIError, ValueError, KeyError, TypeError) as exc:
+                MediaGeneration.objects.filter(pk=job.pk, status="starting").update(
+                    status="running", provider_id=request_id, usage=usage, error="", updated_at=timezone.now()
+                )
+        except (providers.UncertainGeneration, APIConnectionError) as exc:
+            _mark_provider_error(job, exc, status="unknown")
+        except (providers.ProviderError, MediaError, APIError, ValueError, KeyError, TypeError) as exc:
             detail = str(exc) if isinstance(exc, MediaError) else f"Genereringen kunde inte slutföras (HTTP {getattr(exc, 'status_code', 'okänd')}). Kontrollera leverantörsåtkomst och lagring."
-            MediaGeneration.objects.filter(pk=job.pk).update(status="failed", error=detail[:500], updated_at=timezone.now())
+            usage = dict(job.usage or {})
+            if isinstance(exc, providers.ProviderError):
+                usage["provider_error"] = {"code": providers.provider_error_code(exc), "message": detail[:300]}
+            MediaGeneration.objects.filter(pk=job.pk).update(status="failed", error=detail[:500], usage=usage, updated_at=timezone.now())
     elif job.status == "running" and job.provider_id:
-        remote = providers.video_status(job)
-        if remote["status"] == "completed":
-            store_asset(job.run.workspace, providers.download_output(remote["video"]["url"]), job=job)
-            MediaGeneration.objects.filter(pk=job.pk).update(status="completed", updated_at=timezone.now())
-        elif remote["status"] in {"failed", "nsfw", "canceled"}:
-            MediaGeneration.objects.filter(pk=job.pk).update(status="failed", error="Videoleverantören kunde inte slutföra den här generationen.", updated_at=timezone.now())
+        return reconcile_video_job(job)
+    elif job.status == "saving" and job.provider_id:
+        return reconcile_video_job(job)
     elif job.status == "starting" and job.updated_at < timezone.now() - timedelta(minutes=10):
-        # A killed synchronous image request cannot be safely replayed as a paid generation.
-        MediaGeneration.objects.filter(pk=job.pk, status="starting").update(status="unknown", error="Genereringen avbröts eller tog för lång tid. Kontrollera leverantörens konto innan ett nytt försök.")
+        # A process can die after a paid POST but before the request id is stored.
+        # That state is deliberately terminal until a human reconciles the account.
+        MediaGeneration.objects.filter(pk=job.pk, status="starting").update(
+            status="unknown", error="Genereringen avbröts eller tog för lång tid. Kontrollera leverantörens konto innan ett nytt försök."
+        )
     job.refresh_from_db()
     return job
+
+
+def cancel_job(job):
+    """Cancel without ever creating or retrying a generation request."""
+    job.refresh_from_db()
+    if job.status == "queued":
+        MediaGeneration.objects.filter(pk=job.pk, status="queued").update(
+            status="canceled", error="Jobbet avbröts innan leverantören anropades.", updated_at=timezone.now()
+        )
+    elif job.status == "running" and job.provider_id:
+        providers.cancel_video(job)
+        MediaGeneration.objects.filter(pk=job.pk, status="running").update(
+            status="canceled", error="Avbokning accepterad av videoleverantören.", updated_at=timezone.now()
+        )
+    elif job.status in {"completed", "failed", "nsfw", "canceled"}:
+        return job
+    else:
+        raise MediaError("Jobbet kan inte avbrytas säkert i sitt nuvarande läge. Kontrollera leverantörsstatus först.")
+    job.refresh_from_db()
+    return job
+
+
+def recover_media_jobs(*, limit=25):
+    """Bounded recovery pass. Never submits a new paid provider request."""
+    limit = max(1, min(int(limit), 100))
+    cutoff = timezone.now() - timedelta(seconds=10)
+    jobs = list(
+        MediaGeneration.objects.filter(
+            Q(status="running") | Q(status="saving", updated_at__lt=cutoff) | Q(status="starting", updated_at__lt=timezone.now() - timedelta(minutes=10))
+        ).select_related("run__workspace", "source_asset", "logo_asset").order_by("updated_at", "pk")[:limit]
+    )
+    result = {"checked": 0, "completed": 0, "failed": 0, "nsfw": 0, "canceled": 0, "unknown": 0, "pending": 0, "errors": 0}
+    for job in jobs:
+        result["checked"] += 1
+        try:
+            advance_job(job)
+        except MediaError:
+            result["errors"] += 1
+            job.refresh_from_db()
+        key = job.status if job.status in result else "pending"
+        result[key] += 1
+    return result
 
 
 def select_asset(run, asset):

@@ -42,10 +42,16 @@ services:
         sync: false
       - key: R2_REGION
         value: auto
+      - key: HIGGSFIELD_API_KEY_GK
+        sync: false
       - key: HIGGSFIELD_API_KEY
         sync: false
       - key: HIGGSFIELD_API_SECRET
         sync: false
+      - key: HIGGSFIELD_WEBHOOK_ENABLED
+        value: "true"
+      # Legacy split credential names remain accepted in code during migration,
+      # but production should use only Golfkuponger's dedicated complete key above.
       - key: HIGGSFIELD_MAX_USD
         value: "2"
       # OAuth is hosted by this service and uses normal Content Engine users. No external IdP.

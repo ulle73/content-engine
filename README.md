@@ -37,9 +37,11 @@ Redigerare, OAuth och MCP körs tillsammans på `https://content-engine-mcp.onre
 
 ## Media och AI-generering
 
-**Välj bild eller video** öppnar företagets media i innehållsflödet. Egna uppladdningar prioriteras, OpenAI skapar bildalternativ/varianter och Higgsfields officiella API kan skapa video från text eller en startbild. Filer ligger i privat R2; metadata och val ligger i befintlig Neon. Använd media skyddas mot radering. Se [konfiguration, API-kontrakt, verifiering och begränsningar](docs/2026-09-08-media.md).
+**Välj bild eller video** öppnar företagets media i innehållsflödet. Egna uppladdningar prioriteras. Den gemensamma Creative Engine-motorn används både av webbgränssnittet och ChatGPT MCP: en naturlig beskrivning blir en strukturerad brief med begränsad företagskontext, verifierat modellval, modell-specifik prompt/parametrar, lokal preflight och kostnadsskydd. Prompt Library kan bidra med ett fåtal abstrakta inspirationsmekanismer men dess råtext behandlas som opålitlig data och kopieras inte in i provider-prompten.
 
-Den riktiga bildkedjan till R2 och ett valt inlägg är verifierad. Higgsfields nycklar, startbilduppladdning och prisförfrågan fungerar; verklig videogenerering är ännu blockerad av `not_enough_credits` på API-kontot. Ett vanligt Higgsfield-abonnemang ska inte antas innebära att det aktuella API-saldot räcker.
+OpenAI används för bild och Higgsfields officiella API för video från text eller startbild. Färdig media sparas i privat R2 och befintliga `MediaGeneration`/`MediaAsset` i Neon; ingen separat generation-databas har införts. Higgsfield-webhook används som completion-signal när den är aktiverad, medan autentiserad statusläsning och bounded polling/recovery är sanningskälla. En möjlig betald generation-POST retrias aldrig automatiskt efter ett oklart svar. Resultat markeras inte som klara förrän de säkrats i Content Engine storage.
+
+Golfkupongers serverflöde använder `HIGGSFIELD_API_KEY_GK` som primär credential och får inte falla tillbaka till Jonas personliga Higgsfield-workspace/subscription. Äldre servervariabler finns kvar endast för bakåtkompatibel migrering. Kontots aktuella modell-/kredittillgänglighet verifieras fail-closed med leverantörens estimate innan betalning; den tidigare 2026-09-08-observationen `not_enough_credits` ska därför inte behandlas som aktuell status. Ingen betald videogeneration kördes i Creative Engine-implementationen 2026-09-21. Se [löpande Creative Engine-status](docs/2026-09-21-higgsfield-creative-engine-progress.md) och [äldre mediareferens](docs/2026-09-08-media.md).
 
 ## Competitor Intelligence
 

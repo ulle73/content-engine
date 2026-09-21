@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import uuid
@@ -8,10 +9,12 @@ from django.db.models import Case, IntegerField, Q, Value, When
 from django.http import FileResponse, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from .media import ACTIVE, advance_job, cleanup_expired, create_job, default_brief, remove_asset, select_asset, store_asset
+from .media import ACTIVE, PENDING, advance_job, cancel_job, cleanup_expired, create_job, default_brief, reconcile_video_job, remove_asset, select_asset, store_asset
 from .media_storage import MediaError, download_url, local_path
+from . import media_providers as providers
 from .models import ContentRun, MediaAsset, MediaGeneration
 from .ownership import company_required
 
@@ -98,7 +101,7 @@ def picker(request, workspace_id, run_id):
         "workspace": request.workspace, "run": run, "kind": kind, "assets": assets, "jobs": jobs,
         "source": source, "brief": retry.brief if retry else source.brief if source and kind == "image" and source.brief else default_brief(run, kind),
         "token": uuid.uuid4(), "can_edit": run.delivery_status == "draft",
-        "higgs_ready": bool(os.environ.get("HIGGSFIELD_API_KEY") and os.environ.get("HIGGSFIELD_API_SECRET")),
+        "higgs_ready": bool(os.environ.get("HIGGSFIELD_API_KEY_GK") or os.environ.get("HIGGSFIELD_API_KEY")),
         "filter_value": filter_value, "now": timezone.now(), "active_statuses": ACTIVE,
     })
 
@@ -135,7 +138,8 @@ def generate_media(request, workspace_id, run_id):
         source = get_object_or_404(MediaAsset, pk=request.POST["source_asset"], company=request.workspace, kind="image") if request.POST.get("source_asset") else None
         job = create_job(run, token=uuid.UUID(request.POST.get("token", "")), kind=request.POST.get("kind"),
                          brief=request.POST.get("brief", ""), count=int(request.POST.get("count", "2")),
-                         shape=request.POST.get("shape", "portrait"), source=source, include_logo=bool(request.POST.get("include_logo")))
+                         shape=request.POST.get("shape", "portrait"), source=source, include_logo=bool(request.POST.get("include_logo")),
+                         priority=request.POST.get("priority", "balanced"))
         messages.success(request, "Genereringen är sparad. Du kan lämna sidan och återkomma till samma jobb.")
         return redirect("engine:media_job", workspace_id=workspace_id, run_id=run.pk, job_id=job.pk)
     except (MediaError, ValueError) as exc:
@@ -148,8 +152,15 @@ def generate_media(request, workspace_id, run_id):
 def job_page(request, workspace_id, run_id, job_id):
     run = run_for(request, run_id)
     job = get_object_or_404(MediaGeneration, pk=job_id, run=run)
-    return render(request, "engine/media_job.html", {"workspace": request.workspace, "run": run, "job": job,
-                  "pending": job.status in ("queued", "starting", "running"), "now": timezone.now()})
+    creative = job.parameters.get("creative", {}) if isinstance(job.parameters, dict) else {}
+    safe_parameters = {key: value for key, value in (job.parameters or {}).items() if key in {"model", "count", "size", "duration", "aspect_ratio"}}
+    status_index = {"queued": 2, "starting": 2, "running": 3, "saving": 4, "completed": 5}.get(job.status, -1)
+    return render(request, "engine/media_job.html", {
+        "workspace": request.workspace, "run": run, "job": job, "pending": job.status in PENDING, "now": timezone.now(),
+        "creative": creative, "safe_parameters": safe_parameters, "status_index": status_index,
+        "structured_brief_json": json.dumps(creative.get("brief", {}), ensure_ascii=False, indent=2),
+        "parameters_json": json.dumps(safe_parameters, ensure_ascii=False, indent=2),
+    })
 
 
 @login_required
@@ -160,9 +171,23 @@ def job_status(request, workspace_id, run_id, job_id):
     job = get_object_or_404(MediaGeneration.objects.select_related("run__workspace", "source_asset"), pk=job_id, run=run)
     try:
         job = advance_job(job)
-        return JsonResponse({"status": job.status, "pending": job.status in ("queued", "starting", "running"), "error": job.error})
+        return JsonResponse({"status": job.status, "pending": job.status in PENDING, "error": job.error})
     except (MediaError, KeyError, ValueError):
         return JsonResponse({"error": "Status kunde inte hämtas. Försök igen; befintligt jobb återanvänds."}, status=502)
+
+
+@login_required
+@company_required
+@require_POST
+def cancel_generation(request, workspace_id, run_id, job_id):
+    run = run_for(request, run_id)
+    job = get_object_or_404(MediaGeneration, pk=job_id, run=run)
+    try:
+        job = cancel_job(job)
+        messages.success(request, "Genereringen är avbruten." if job.status == "canceled" else "Jobbet var redan avslutat.")
+    except MediaError as exc:
+        messages.error(request, str(exc))
+    return redirect("engine:media_job", workspace_id=workspace_id, run_id=run.pk, job_id=job.pk)
 
 
 @login_required
@@ -204,6 +229,53 @@ def delete_asset(request, workspace_id, run_id, asset_id):
     except MediaError as exc:
         messages.error(request, str(exc))
     return redirect("engine:media", workspace_id=workspace_id, run_id=run.pk)
+
+
+@csrf_exempt
+@require_POST
+def higgsfield_webhook(request):
+    """Untrusted completion hint; authoritative state is always re-fetched from Higgsfield."""
+    if request.content_type != "application/json" or len(request.body) > 64 * 1024:
+        return JsonResponse({"error": "invalid webhook envelope"}, status=400)
+    try:
+        body = json.loads(request.body)
+        request_id = str(uuid.UUID(body["request_id"]))
+        status = body["status"]
+        if status not in {"completed", "failed", "nsfw"} or "error" not in body or "payload" not in body:
+            raise ValueError("invalid status")
+    except (ValueError, TypeError, KeyError, json.JSONDecodeError):
+        return JsonResponse({"error": "invalid webhook envelope"}, status=400)
+
+    # Do not expose whether a provider id exists. Unknown but well-formed deliveries
+    # are acknowledged; polling/recovery remains the fallback for races.
+    job = MediaGeneration.objects.select_related("run__workspace", "source_asset", "logo_asset").filter(
+        provider="higgsfield", provider_id=request_id
+    ).first()
+    if not job:
+        return HttpResponse(status=204)
+
+    # Persist only the safe envelope metadata. Payload URLs/errors are untrusted and
+    # deliberately ignored; result retrieval happens through authenticated GET.
+    usage = dict(job.usage or {})
+    prior = usage.get("webhook", {})
+    usage["webhook"] = {
+        "last_status": status,
+        "received_at": timezone.now().isoformat(),
+        "deliveries": min(int(prior.get("deliveries", 0)) + 1, 1_000_000),
+    }
+    MediaGeneration.objects.filter(pk=job.pk).update(usage=usage)
+    if job.status in {"completed", "failed", "nsfw", "canceled", "unknown"}:
+        return HttpResponse(status=204)
+    try:
+        reconcile_video_job(job)
+    except providers.ProviderUnavailableError:
+        # A 5xx makes Higgsfield retry the webhook. No generation is submitted here.
+        return HttpResponse(status=503)
+    except MediaError:
+        # Completed output could not yet be secured to Content Engine storage.
+        # Ask for another delivery; stale recovery can also retry later.
+        return HttpResponse(status=503)
+    return HttpResponse(status=204)
 
 
 @login_required

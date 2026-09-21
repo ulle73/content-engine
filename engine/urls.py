@@ -28,6 +28,7 @@ engine_urls = [
     path("runs/<uuid:run_id>/media/generate/", media_views.generate_media, name="media_generate"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/", media_views.job_page, name="media_job"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/status/", media_views.job_status, name="media_job_status"),
+    path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/cancel/", media_views.cancel_generation, name="media_job_cancel"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/reset/", media_views.reset_job, name="media_job_reset"),
     path("runs/<uuid:run_id>/media/<uuid:asset_id>/use/", media_views.use_asset, name="media_use"),
     path("runs/<uuid:run_id>/media/<uuid:asset_id>/delete/", media_views.delete_asset, name="media_delete"),
@@ -48,5 +49,6 @@ urlpatterns = [
     path("accounts/login/", SignInView.as_view(), name="login"),
     path("accounts/logout/", LogoutView.as_view(), name="logout"),
     path("health/", lambda request: JsonResponse({"status": "ok"})),
+    path("webhooks/higgsfield/", media_views.higgsfield_webhook, name="higgsfield_webhook"),
     path("company/<uuid:workspace_id>/", include((engine_urls, "engine"))),
 ]

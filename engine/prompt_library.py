@@ -225,7 +225,7 @@ def save_from_generation(user, company_id, generation_id):
         "id": str(job.pk), "run_id": str(job.run_id), "user_request": job.brief,
         "parameters": {k: v for k, v in job.parameters.items() if k in safe_keys},
         "estimated_usd": job.usage.get("estimated_usd"),
-        "structured_brief": getattr(job, "creative", {}).get("brief", {}),
+        "structured_brief": job.parameters.get("creative", {}).get("brief", {}),
         "asset_ids": [str(value) for value in job.assets.values_list("pk", flat=True)[:8]],
     }}
     prompt.save()

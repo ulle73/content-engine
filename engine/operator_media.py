@@ -111,6 +111,7 @@ def start_media_generation(
     source_asset_id: str | None = None,
     token: str | None = None,
     expected_revision: int | None = None,
+    priority: str = "balanced",
 ) -> MediaGeneration:
     with transaction.atomic():
         locked = ContentRun.objects.select_for_update().select_related("workspace").get(pk=run.pk)
@@ -140,6 +141,7 @@ def start_media_generation(
         shape=shape,
         source=source,
         include_logo=include_logo,
+        priority=priority,
     )
     return advance_job(job)
 
@@ -284,6 +286,7 @@ def generate_media_once(
     source_asset_id: str | None,
     expected_revision: int | None,
     idempotency_key: str,
+    priority: str = "balanced",
 ) -> MediaGeneration:
     action, execute = begin_action(
         run.workspace,
@@ -293,7 +296,7 @@ def generate_media_once(
         payload={
             "run_id": str(run.pk), "kind": kind, "brief": brief, "count": count, "shape": shape,
             "include_logo": include_logo, "source_asset_id": source_asset_id,
-            "expected_revision": expected_revision,
+            "expected_revision": expected_revision, "priority": priority,
         },
         run=run,
     )
@@ -315,6 +318,7 @@ def generate_media_once(
             source_asset_id=source_asset_id,
             token=str(job_token),
             expected_revision=expected_revision,
+            priority=priority,
         )
         status = "unknown" if job.status == "unknown" else ("failed" if job.status == "failed" else "succeeded")
         finish_action(
