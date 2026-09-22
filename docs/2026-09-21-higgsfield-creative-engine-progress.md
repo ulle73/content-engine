@@ -1,6 +1,6 @@
 # CURRENT STATE
 
-> **2026-09-22 audit in progress:** the historical completion claims below are not a production-readiness verdict. The audit found missing user-visible preflight, recovery scheduling, restore UI and several safety/edge-case defects. See Task 9 below for current evidence. No paid generation is authorized by this audit.
+> **2026-09-22 audit verdict: not fully production-ready.** Fixes and HOW TO are live at `6e644fc`. Current full local suite: 206 tests green (2 PostgreSQL-only skips); previous full Linux/PostgreSQL CI green at `a81f5b2`. Latest CI cannot start due GitHub billing/spending restrictions. Live Higgsfield preflight fails HTTP 401, so model access and price remain unverified. Render Free sleeps. See Task 9 and `docs/2026-09-22-creative-audit.md` for evidence and exact follow-ups. ZERO paid generation.
 
 - Latest completed step: exact Creative Engine product tree transferred and verified in GitHub CI; 173/173 SQLite and 173/173 PostgreSQL tests pass.
 - Branch: `feature/chatgpt-content-engine-mcp`.
@@ -527,3 +527,12 @@ Full local baseline: 173 tests, 2 failures and 3 errors. Four stem from Windows 
 - Failed preflight now persists its error safely on the job (previously only a one-request flash message); test demonstrated RED then GREEN. Browser-follow-up regression run: 65 passed.
 - Free-plan cold start was also observed dropping an unprocessed form submission. No blind duplicate submission: empty DB/library verified before repeating. Continuous availability remains a deployment-plan decision.
 - Detailed scope and residual risks: `docs/2026-09-22-creative-audit.md`.
+
+### Final verification and handoff
+
+- Final runtime `6e644fcb422a75a778f919ae4a4ea608aea9d71d` deployed **live** as `dep-dapbbh5bedkc7388e9c0` at 17:09:25 UTC. Browser confirms 16px help disclosures and that a failed preflight survives reload with paid start absent. Dedicated GK credential still returns 401; no estimate is invented.
+- **Final local full suite: 206 tests, OK (2 PostgreSQL-only skips), 35.397 seconds.** Django check and migration drift check pass. Earlier Windows SciPy blocks did not recur; no OS protection was disabled. Exact-current CI run `35758303565` did not start due account billing/spending restriction (check annotations, not test failures). PostgreSQL concurrency code is unchanged from green run `35725147029`.
+- Real image review: gpt-image-2, one 1024x1024 image, quality low; canceled before provider call. Actual dummy image used in second draft and Neon confirms R2, retained state and no expiry. I2V selects that reference but cannot reach provider upload/estimate because of authentication.
+- Audit prompt was re-archived after retrieval verification so it does not influence future work. One clearly marked dummy image and two unpaid drafts remain, plus one canceled image job and two queued video plans; all provider IDs empty. Nothing published or sent to Postiz.
+- Remaining external actions: correct matched GK API credential; restore GitHub Actions availability; decide on always-on Render compute; verify actual ChatGPT OAuth/tool session. Paid end-to-end provider completion requires a separate, exact-price approval after preflight is working. No paid approval is requested while price/account access is unknown.
+- `main` remains `e92f85b9317ba7e9ac40baf990e01072c8073c8e`; all code stays on the requested feature branch. The final subsequent commit contains documentation evidence only and does not change the deployed runtime.
