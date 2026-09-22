@@ -57,6 +57,14 @@
   {% endif %}
 
   {% if job.error %}<p class="notice error">{{ job.error }}</p>{% endif %}
+  {% if job.provider == 'higgsfield' and job.provider_id %}
+    {% if job.status == 'failed' or job.status == 'nsfw' or job.status == 'canceled' %}
+      <form method="post" action="{% url 'engine:media_job_refresh_provider' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}" class="generation-job-actions">
+        {% csrf_token %}
+        <button type="submit" class="button-secondary">Hämta exakt felorsak från Higgsfield</button>
+      </form>
+    {% endif %}
+  {% endif %}
   {% if job.status == 'unknown' %}
     <section class="settings-section"><div class="settings-section-body">
       <h2>Kontroll krävs innan nytt försök</h2>
