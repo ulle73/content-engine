@@ -394,3 +394,6 @@ class OwnSnapshot(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["post","source_day","contract","checkpoint"],name="unique_own_snapshot_checkpoint")]
+
+# Kept in a separate module for readability, registered with the same Django app/database.
+from .creative_models import PromptEntry, PromptTerm  # noqa: E402,F401

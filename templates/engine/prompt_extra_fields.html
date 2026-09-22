@@ -1,0 +1,1 @@
+<div class="creative-form optional-fields">{% for field in form %}{% if field.name != 'text' %}<div><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field.errors }}{{ field }}</div>{% endif %}{% endfor %}</div>

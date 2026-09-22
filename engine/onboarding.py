@@ -58,7 +58,7 @@ class SignInView(LoginView):
 
 def setup(request):
     if get_user_model().objects.exists():
-        return redirect("dashboard" if request.user.is_authenticated else "login")
+        return redirect(settings.LOGIN_REDIRECT_URL if request.user.is_authenticated else "login")
     form = FirstAdminForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         with transaction.atomic():
@@ -74,5 +74,5 @@ def setup(request):
             state.completed = True
             state.save(update_fields=["completed"])
         login(request, user)
-        return redirect("dashboard")
+        return redirect(settings.LOGIN_REDIRECT_URL)
     return render(request, "registration/setup.html", {"form": form})

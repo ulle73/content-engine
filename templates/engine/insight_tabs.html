@@ -1,5 +1,4 @@
-<nav class="insight-tabs" aria-label="Typ av insikt">
-  <a href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"{% if channel != 'paid' and channel != 'own' %} aria-current="page"{% endif %}>Organiskt</a>
+<nav class="insight-tabs" aria-label="Inspiration från konkurrenter">
+  <a href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"{% if channel != 'paid' and channel != 'own' %} aria-current="page"{% endif %}>Inlägg</a>
   <a href="{% url 'engine:intelligence' workspace_id=workspace.pk %}?channel=paid"{% if channel == 'paid' %} aria-current="page"{% endif %}>Annonser</a>
-  <a href="{% url 'engine:own_performance' workspace_id=workspace.pk %}"{% if channel == 'own' %} aria-current="page"{% endif %}>Egna resultat</a>
 </nav>

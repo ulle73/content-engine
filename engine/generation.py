@@ -49,7 +49,6 @@ def grounded_ideas_schema(context):
     )
     if not quotes:
         raise ValueError("Fyll i företagsprofil och aktuella uppgifter först.")
-    # Constrain the existing quote field to source text, instead of asking the model to transcribe it.
     signal_ids = ("", *(s["id"] for s in context.get("competitor_signals", [])))
     idea = create_model(
         "GroundedIdea", __base__=IdeaOutput, source_quote=(Literal[quotes], ...), signal_id=(Literal[signal_ids], ...)
@@ -97,9 +96,11 @@ Vid copy: skriv primärtext för Facebook och Instagram, rubrik, beskrivning, CT
 Landing_page får bara vara en exakt verifierad URL i vårt företagsunderlag, annars tom sträng med kontrollpunkt.
 Rubrik/erbjudande måste stödjas av våra fakta. Bild/video beskrivs i photo_brief; originalproduktion görs i befintligt mediaflöde.
 Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att köpa annonser."""
-    # The writing step needs the chosen editorial brief, not internal ranking/provenance metadata.
-    # That evidence stays in the saved ContentRun and its review panel.
-    writing_context = {k: v for k, v in context.items() if k != "competitor_signals"} if writing else context
+    writing_context = (
+        {k: v for k, v in context.items() if k != "competitor_signals" and not str(k).startswith("_")}
+        if writing
+        else context
+    )
     selected_brief = {k: idea[k] for k in ("title", "angle", "photo_brief") if k in idea} if writing else None
     with OpenAI(timeout=100, max_retries=0) as client:
         response = client.responses.parse(
@@ -133,4 +134,13 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
         if not url.startswith("https://") or url not in "\n".join(context.get(k, "") for k in ("profile", "current", "source")):
             output["landing_page"] = ""
             output["checks"].append("Ange och kontrollera företagets landningssida.")
+    from .provider_costs import openai_usage_meta
+
+    usage_meta = openai_usage_meta(response, "draft" if writing else "ideas")
+    if not isinstance(usage_meta.get("usage"), dict):
+        usage_meta["usage"] = {}
+    if writing:
+        output["_provider_usage"] = usage_meta
+    else:
+        context["_provider_usage_ideas"] = usage_meta
     return output

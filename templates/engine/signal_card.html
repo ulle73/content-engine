@@ -2,7 +2,7 @@
   <summary class="signal-row">
     <span class="signal-account">{{ signal.post.competitor.name }}</span>
     <span class="signal-content">
-      <span class="signal-title">{{ signal.post.caption|default:'Ingen caption'|truncatechars:72 }}</span>
+      <span class="signal-title">{{ signal.post.caption|default:'Ingen text'|truncatechars:72 }}</span>
       <span class="signal-subtitle">{% if signal.momentum.likes_percent != None %}{{ signal.momentum.likes_percent }} % likes senaste {{ signal.momentum.hours }} h{% else %}{{ signal.momentum.label }}{% endif %}</span>
     </span>
     <span class="signal-format">{{ signal.post.get_format_display }}</span>
@@ -15,7 +15,7 @@
   <div class="signal-detail">
     <div class="signal-detail-inner">
       <div>
-        <h3>Resultat och signal</h3>
+        <h3>Resultat</h3>
         <p>Likes: <strong>{{ signal.likes|default_if_none:'Saknas' }}</strong> · Kommentarer: <strong>{{ signal.comments|default_if_none:'Saknas' }}</strong>{% if signal.views != None %} · Videovisningar: <strong>{{ signal.views }}</strong>{% endif %}</p>
         {% if signal.relative != None %}
           {% if signal.baseline_type == 'mature_low_confidence' %}
@@ -41,14 +41,14 @@
           <p>{{ signal.post.classification.adaptation }}</p>
         {% else %}
           <h3>Detaljerad analys</h3>
-          <p class="small">Analysera caption för att få en mekanism och en egen vinkel för företaget.</p>
-          <form method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Förklara mekanismen</button></form>
+          <p class="small">Få en egen idé utifrån inlägget.</p>
+          <form method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Analysera inlägget</button></form>
         {% endif %}
       </div>
     </div>
 
     <div class="signal-actions">
-      <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.pk %}">{% csrf_token %}<input type="hidden" name="signal_id" value="{{ signal.id }}"><button>Skapa innehåll</button></form>
+      <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.pk %}">{% csrf_token %}<input type="hidden" name="signal_id" value="{{ signal.id }}"><button>Skapa egna idéer</button></form>
       <a class="action button-secondary" href="{{ signal.post.url }}" target="_blank" rel="noopener">Visa original ↗</a>
     </div>
 

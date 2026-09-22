@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}Media · {{ workspace.name }}{% endblock %}
+{% block content %}
+<main class="engine media-library-page">
+  <header class="page-header media-library-header">
+    <div class="page-heading">
+      <p class="eyebrow">Bibliotek</p>
+      <h1>Media</h1>
+      <p class="intro">Alla bilder och videor som tillhör {{ workspace.name }} samlade på ett ställe. Uppladdade filer blir direkt tillgängliga när du väljer media i ett utkast.</p>
+    </div>
+    <div class="media-library-summary" aria-label="Media i biblioteket">
+      <span>Bibliotek</span>
+      <strong>{{ assets|length }} filer</strong>
+    </div>
+  </header>
+{% include 'engine/creative_help.html' %}
+  {% include 'engine/library_tabs.html' %}
+  <form method="post" action="{% url 'engine:media_new' workspace_id=workspace.pk %}" class="creative-actions">{% csrf_token %}<input type="hidden" name="token" value="{{ studio_token }}"><button type="submit">Skapa bild eller video</button><span class="small">Öppnar AI-studion. Ingen betald generation startas.</span></form>
+
+  <section class="media-library-upload-card" id="upload">
+    <div class="media-library-upload-copy">
+      <span class="media-library-upload-icon" aria-hidden="true">↑</span>
+      <div>
+        <span class="media-library-kicker">Lägg till</span>
+        <h2>Ladda upp till biblioteket</h2>
+        <p>Bilder sparas för återanvändning i framtida inlägg. JPEG, PNG och WebP upp till 8 MB. MP4 upp till 80 MB.</p>
+      </div>
+    </div>
+    <form class="media-library-upload-form" method="post" enctype="multipart/form-data" action="{% url 'engine:media_library_upload' workspace_id=workspace.pk %}">
+      {% csrf_token %}
+      <div class="media-library-file-field">
+        <label for="library-media-file">Bild eller video</label>
+        <input id="library-media-file" type="file" name="file" accept="image/jpeg,image/png,image/webp,video/mp4" required>
+      </div>
+      <div class="media-library-alt-field">
+        <label for="library-alt-text">Beskrivning <span>Valfritt</span></label>
+        <input id="library-alt-text" type="text" name="alt_text" maxlength="500" placeholder="Till exempel: Golfare på green i kvällsljus">
+      </div>
+      <button type="submit">Ladda upp</button>
+    </form>
+  </section>
+
+  {% if unfinished_jobs %}
+  <section class="creative-panel"><h2>Fortsätt där du var</h2>
+    {% for job in unfinished_jobs %}<p><a href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=job.run_id job_id=job.pk %}">{{ job.brief|truncatechars:90 }}</a> · {% if job.status == 'queued' %}Väntar på ditt godkännande{% elif job.status == 'unknown' %}Behöver kontrolleras{% elif job.status == 'saving' %}Sparar{% else %}Genererar{% endif %}</p>{% endfor %}
+  </section>
+  {% endif %}
+  {% if recent_jobs %}
+  <section class="media-library-recent-section">
+    <div class="media-library-section-head">
+      <div><span class="media-library-kicker">AI-historik</span><h2>Senaste genereringarna</h2><p>Klicka på en generering för att se exakt vilket material den skapade.</p></div>
+    </div>
+    <div class="media-generation-strip">
+      {% for job in recent_jobs %}
+        {% with generated_assets=job.assets.all %}
+        <button type="button" class="media-generation-tile" {% if generated_assets %}onclick="document.getElementById('generation-{{ job.pk }}').showModal()"{% else %}disabled{% endif %}>
+          <span class="media-generation-mark {% if job.kind == 'video' %}video{% endif %}">{% if job.kind == 'video' %}▶{% else %}✦{% endif %}</span>
+          <span class="media-generation-copy"><strong>{% if job.kind == 'video' %}Video{% else %}Bildgenerering{% endif %}</strong><small>{{ job.created_at|date:'j M H:i' }} · {{ job.provider|title }}</small></span>
+          <span class="media-generation-count">{{ generated_assets|length }} filer</span>
+          <span class="media-generation-arrow" aria-hidden="true">›</span>
+        </button>
+        {% if generated_assets %}
+        <dialog class="media-preview-dialog" id="generation-{{ job.pk }}">
+          <div class="media-preview-dialog-head">
+            <div><span class="media-library-kicker">Generering</span><h2>{{ job.created_at|date:'j M Y H:i' }}</h2><p>{{ job.brief }}</p></div>
+            <button type="button" class="media-dialog-close" aria-label="Stäng" onclick="this.closest('dialog').close()">×</button>
+          </div>
+          <div class="media-preview-dialog-grid">
+            {% for asset in generated_assets %}
+              <figure>
+                {% if asset.kind == 'image' %}<img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Genererad bild' }}">{% else %}<video controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}"></video>{% endif %}
+                <figcaption>{{ asset.get_kind_display }}{% if asset.width %} · {{ asset.width }} × {{ asset.height }}{% endif %}</figcaption>
+              </figure>
+            {% endfor %}
+          </div>
+        </dialog>
+        {% endif %}
+        {% endwith %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="media-library-browser">
+    <div class="media-library-section-head media-library-browser-head">
+      <div><span class="media-library-kicker">Bibliotek</span><h2>Alla filer</h2><p>AI-genererat, uppladdat och varumärkesmaterial som fortfarande finns tillgängligt.</p></div>
+      <nav class="media-nav premium-media-nav media-library-filters" aria-label="Filtrera media">
+        <a href="?filter=all" {% if filter_value == 'all' %}aria-current="page"{% endif %}>Alla</a>
+        <a href="?filter=image" {% if filter_value == 'image' %}aria-current="page"{% endif %}>Bilder</a>
+        <a href="?filter=video" {% if filter_value == 'video' %}aria-current="page"{% endif %}>Video</a>
+        <a href="?filter=uploaded" {% if filter_value == 'uploaded' %}aria-current="page"{% endif %}>Uppladdat</a>
+        <a href="?filter=generated" {% if filter_value == 'generated' %}aria-current="page"{% endif %}>AI-genererat</a>
+        <a href="?filter=logo" {% if filter_value == 'logo' %}aria-current="page"{% endif %}>Loggor</a>
+      </nav>
+    </div>
+
+    <div class="media-library-grid">
+      {% for asset in assets %}
+        <button type="button" class="media-library-asset-card" onclick="document.getElementById('asset-{{ asset.pk }}').showModal()">
+          <span class="media-library-thumb-wrap">
+            {% if asset.kind == 'image' %}<img loading="lazy" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Media' }}">{% else %}<video muted preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}#t=0.1"></video><span class="media-library-play" aria-hidden="true">▶</span>{% endif %}
+            <span class="media-library-origin-badge">{% if asset.purpose == 'logo' %}Logga{% elif asset.origin == 'generated' %}AI{% else %}Uppladdad{% endif %}</span>
+          </span>
+          <span class="media-library-card-body">
+            <span class="media-library-card-title">{% if asset.alt_text %}{{ asset.alt_text|truncatechars:48 }}{% elif asset.brief %}{{ asset.brief|truncatechars:48 }}{% elif asset.kind == 'video' %}Video{% else %}Bild{% endif %}</span>
+            <span class="media-library-card-meta">{{ asset.created_at|date:'j M Y' }}{% if asset.width %} · {{ asset.width }} × {{ asset.height }}{% endif %}</span>
+          </span>
+        </button>
+
+        <dialog class="media-preview-dialog asset-preview-dialog" id="asset-{{ asset.pk }}">
+          <div class="media-preview-dialog-head">
+            <div><span class="media-library-kicker">{{ asset.get_origin_display }}</span><h2>{% if asset.alt_text %}{{ asset.alt_text }}{% elif asset.brief %}{{ asset.brief|truncatechars:80 }}{% else %}{{ asset.get_kind_display }}{% endif %}</h2><p>{{ asset.created_at|date:'j M Y H:i' }}{% if asset.width %} · {{ asset.width }} × {{ asset.height }}{% endif %}{% if asset.duration_seconds %} · {{ asset.duration_seconds|floatformat:1 }} sek{% endif %}</p></div>
+            <button type="button" class="media-dialog-close" aria-label="Stäng" onclick="this.closest('dialog').close()">×</button>
+          </div>
+          <div class="media-preview-dialog-single">
+            {% if asset.kind == 'image' %}<img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Media' }}">{% else %}<video controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}"></video>{% endif %}
+          </div>
+          <div class="media-preview-dialog-foot">
+            <div><span>Typ</span><strong>{{ asset.get_kind_display }}</strong></div>
+            <div><span>Källa</span><strong>{{ asset.get_origin_display }}{% if asset.provider %} · {{ asset.provider }}{% endif %}</strong></div>
+            <div><span>Användning</span><strong>{% if asset.used_at %}Använd i sparat innehåll{% else %}Tillgänglig i nya utkast{% endif %}</strong></div>
+            <a class="button button-secondary" href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" target="_blank" rel="noopener">Öppna original</a>
+          </div>
+        </dialog>
+      {% empty %}
+        <div class="media-library-empty-state">
+          <span aria-hidden="true">▧</span>
+          <h3>Inga filer i den här vyn</h3>
+          <p>Ladda upp en fil ovan eller byt filter.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+<script>
+document.querySelectorAll('.media-preview-dialog').forEach(dialog => {
+  dialog.addEventListener('click', event => {
+    if (event.target === dialog) dialog.close();
+  });
+});
+</script>
+{% endblock %}

@@ -1,10 +1,13 @@
 import io
 import base64
+import json
 import uuid
 from datetime import timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch, Mock
+
+import httpx
 
 import av
 from PIL import Image
@@ -14,8 +17,8 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from .media import advance_job, cleanup_expired, create_job, describe_file, remove_asset, select_asset, store_asset
-from .media_providers import UncertainGeneration, generate_images, start_video, upload_input
+from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, recover_media_jobs, remove_asset, select_asset, store_asset
+from .media_providers import ProviderUnavailableError, UncertainGeneration, generate_images, higgs, start_video, upload_input
 from .media_storage import MediaError, local_path
 from .models import Company, ContentRun, MediaAsset, MediaGeneration
 
@@ -72,7 +75,9 @@ class MediaTests(TestCase):
         self.assertEqual((original.origin, original.width, original.height), ("uploaded", 64, 96))
         preview = self.client.get(self.url("asset_file", asset_id=original.pk))
         self.assertEqual(preview.status_code, 200)
-        preview.close()
+        # Consume the streaming response through Django's test-client wrapper;
+        # direct close() fires request_finished inside TestCase's DB transaction.
+        self.assertEqual(b"".join(preview.streaming_content), picture())
         next_asset = store_asset(self.company, picture())
         select_asset(self.run, next_asset)
         with self.assertRaises(MediaError):
@@ -110,6 +115,67 @@ class MediaTests(TestCase):
         self.assertContains(self.client.get(self.url("media")), "Förhandsvisning i 7 dagar", count=2)
         response = self.client.get(self.url("media")+f"?retry={job.pk}")
         self.assertContains(response, job.brief)
+
+    def test_generation_job_uses_shared_creative_plan_and_keeps_original_request(self):
+        brief = "Premium reel cirka 8 sekunder i 9:16 med cinematic push-in"
+        job = create_job(self.run, token=uuid.uuid4(), kind="video", brief=brief)
+        self.assertEqual(job.brief, brief)
+        self.assertEqual(job.provider, "higgsfield")
+        self.assertEqual(job.parameters["duration"], 10)
+        self.assertEqual(job.parameters["aspect_ratio"], "9:16")
+        self.assertEqual(job.parameters["creative"]["brief"]["user_intent"], brief)
+        self.assertEqual(job.parameters["creative"]["selection"]["model_id"], job.parameters["model"])
+        self.assertIn("SCENE:", job.prompt)
+        self.assertTrue(any(item["code"] == "duration_normalized" for item in job.parameters["creative"]["preflight"]))
+
+    def test_reference_video_preservation_is_compiled_without_old_logo_ban(self):
+        source = store_asset(self.company, picture())
+        job = create_job(self.run, token=uuid.uuid4(), kind="video", source=source,
+            brief="Animera bilden. Behåll klubbhuset, skylten och all text exakt. Låt flaggan röra sig.")
+        self.assertIn("PRESERVE EXACTLY", job.prompt)
+        self.assertIn("architecture", job.prompt)
+        self.assertNotIn("Never draw, recreate or preserve logos", job.prompt)
+        self.assertEqual(job.parameters["creative"]["brief"]["mode"], "image-to-video")
+
+    def test_ai_studio_exposes_priority_format_and_safe_diagnostics(self):
+        page = self.client.get(self.url("media"), {"kind": "video"})
+        self.assertContains(page, "Bäst resultat")
+        self.assertContains(page, "Balanserad")
+        self.assertContains(page, "Spara kostnad")
+        self.assertContains(page, "Stående / Reel")
+        self.assertNotContains(page, "Bildförslag eller 10 sekunders video")
+
+        brief = '<script>alert("x")</script> Premium reel cirka 8 sekunder'
+        job = create_job(self.run, token=uuid.uuid4(), kind="video", brief=brief, priority="economy")
+        detail = self.client.get(self.url("media_job", job_id=job.pk))
+        self.assertContains(detail, "Avancerad diagnostik")
+        self.assertContains(detail, "Provider-prompt")
+        self.assertContains(detail, "Prompt som skickas till Higgsfield")
+        body = detail.content.decode()
+        self.assertLess(body.index("Prompt som skickas till Higgsfield"), body.index("Starta betald generation"))
+        self.assertContains(detail, "economy")
+        self.assertNotContains(detail, '<script>alert("x")</script>')
+        self.assertContains(detail, '&lt;script&gt;')
+        self.assertEqual(job.parameters["creative"]["brief"]["quality_preference"], "economy")
+
+    def test_invalid_priority_is_rejected_before_job_creation(self):
+        with self.assertRaises(MediaError):
+            create_job(self.run, token=uuid.uuid4(), kind="video", brief="Video", priority="hidden-expensive-mode")
+        self.assertEqual(MediaGeneration.objects.count(), 0)
+
+    def test_cancel_view_is_company_scoped_and_only_post(self):
+        job = self.job("video")
+        url = self.url("media_job_cancel", job_id=job.pk)
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertEqual(self.client.post(url).status_code, 302)
+        job.refresh_from_db()
+        self.assertEqual(job.status, "canceled")
+
+        outsider = get_user_model().objects.create_user(username="cancel-outsider")
+        foreign_company = Company.objects.create(owner=outsider, name="Other")
+        foreign_run = ContentRun.objects.create(workspace=foreign_company, author=outsider, context={}, ideas=[], draft={"instagram": "x"}, model="test")
+        foreign_job = MediaGeneration.objects.create(run=foreign_run, kind="video", provider="higgsfield", brief="x", prompt="x")
+        self.assertEqual(self.client.post(reverse("engine:media_job_cancel", kwargs={"workspace_id": self.company.pk, "run_id": foreign_run.pk, "job_id": foreign_job.pk})).status_code, 404)
 
     @patch("engine.media.providers.start_video", side_effect=UncertainGeneration("unconfirmed"))
     def test_uncertain_start_retains_job_and_blocks_automatic_paid_retry(self, start):
@@ -158,6 +224,30 @@ class MediaTests(TestCase):
         self.client.force_login(outsider)
         self.assertEqual(self.client.post(self.url("media_job_status", job_id=job.pk)).status_code, 404)
 
+    @patch("engine.media.providers.video_status")
+    @patch("engine.media.providers.start_video")
+    def test_terminal_higgsfield_error_is_preserved_and_can_be_refreshed(self, start, status):
+        remote_id = str(uuid.uuid4())
+        start.return_value = ({"request_id": remote_id}, {"estimate": {"usd": "0.30"}})
+        status.return_value = {"status": "failed", "request_id": remote_id, "error": "Generation failed upstream"}
+        job = self.job("video")
+        advance_job(job)
+        job.refresh_from_db()
+        self.assertEqual(job.status, "running")
+        advance_job(job)
+        job.refresh_from_db()
+        self.assertEqual(job.status, "failed")
+        self.assertEqual(job.error, "Generation failed upstream")
+        self.assertEqual(job.usage["provider_terminal"]["status"], "failed")
+
+        MediaGeneration.objects.filter(pk=job.pk).update(error="Videoleverantören kunde inte slutföra generationen.")
+        response = self.client.post(self.url("media_job_refresh_provider", job_id=job.pk))
+        self.assertEqual(response.status_code, 302)
+        job.refresh_from_db()
+        self.assertEqual(job.error, "Generation failed upstream")
+        self.assertContains(self.client.get(self.url("media_job", job_id=job.pk)), "Generation failed upstream")
+
+
     @patch("engine.postiz.request")
     def test_selected_mp4_streams_through_existing_postiz_draft_path(self, postiz):
         asset = store_asset(self.company, movie())
@@ -195,6 +285,16 @@ class MediaTests(TestCase):
         self.assertEqual(job.usage["estimate"]["usd"], "0.70")
         self.assertEqual(higgs.call_args_list[1].kwargs["json"], {"prompt":job.prompt, "duration":10})
 
+    @override_settings(HIGGSFIELD_WEBHOOK_ENABLED=True, APP_URL="https://content-engine.example")
+    @patch("engine.media_providers.higgs")
+    def test_video_submit_uses_documented_webhook_query_parameter(self, higgs):
+        job = self.job("video")
+        higgs.side_effect = [{"usd": "0.70"}, {"request_id": str(uuid.uuid4())}]
+        start_video(job)
+        submit_path = higgs.call_args_list[1].args[1]
+        self.assertIn("?hf_webhook=", submit_path)
+        self.assertIn("https%3A%2F%2Fcontent-engine.example%2Fwebhooks%2Fhiggsfield%2F", submit_path)
+
     @patch("engine.media_providers.OpenAI")
     def test_variant_uses_image_edit_with_stored_source(self, client):
         source = store_asset(self.company, picture())
@@ -210,7 +310,7 @@ class MediaTests(TestCase):
         api.images.generate.assert_not_called()
 
     @patch("engine.media_providers.public_url", side_effect=lambda url: url)
-    @patch("engine.media_providers.httpx.put")
+    @patch("engine.media_providers.public_stream")
     @patch("engine.media_providers.higgs")
     def test_higgs_source_upload_keeps_auth_off_storage_request(self, higgs, put, validate):
         source = store_asset(self.company, picture())
@@ -220,6 +320,110 @@ class MediaTests(TestCase):
         self.assertEqual(put.call_args.kwargs["content"], picture())
         self.assertEqual(put.call_args.kwargs["headers"], higgs.return_value["upload_headers"])
         self.assertNotIn("Authorization", put.call_args.kwargs["headers"])
+
+
+    @patch.dict("os.environ", {"HIGGSFIELD_API_KEY_GK": "test-key"}, clear=False)
+    @patch("engine.media_providers.time.sleep")
+    @patch("engine.media_providers.random.uniform", return_value=0)
+    @patch("engine.media_providers.httpx.request")
+    def test_higgs_get_retries_transient_failures_but_paid_post_never_retries(self, request, jitter, sleep):
+        unavailable = Mock(status_code=503, is_error=True, headers={})
+        unavailable.json.return_value = {"detail": "temporarily unavailable"}
+        success = Mock(status_code=200, is_error=False, headers={})
+        success.json.return_value = {"status": "processing"}
+        request.side_effect = [unavailable, unavailable, success]
+        self.assertEqual(higgs("GET", "/requests/abc/status"), {"status": "processing"})
+        self.assertEqual(request.call_count, 3)
+        self.assertEqual(sleep.call_count, 2)
+
+        request.reset_mock()
+        request.side_effect = httpx.ReadTimeout("ambiguous")
+        with self.assertRaises(UncertainGeneration):
+            higgs("POST", "/some-generation", json={"prompt": "x"}, billable=True)
+        self.assertEqual(request.call_count, 1)
+
+    @patch("engine.media.providers.download_output")
+    @patch("engine.media.providers.video_status")
+    def test_higgs_webhook_is_untrusted_hint_and_duplicate_safe(self, status, download):
+        remote_id = str(uuid.uuid4())
+        job = self.job("video")
+        MediaGeneration.objects.filter(pk=job.pk).update(status="running", provider_id=remote_id)
+        status.return_value = {"status": "completed", "video": {"url": "https://trusted.example/result.mp4"}}
+        download.return_value = movie()
+        body = {
+            "request_id": remote_id, "status": "completed", "error": None,
+            "payload": {"video": {"url": "https://attacker.invalid/not-used.mp4"}},
+        }
+        response = self.client.post("/webhooks/higgsfield/", data=json.dumps(body), content_type="application/json")
+        self.assertEqual(response.status_code, 204)
+        status.assert_not_called()
+        recover_media_jobs(limit=5)
+        job.refresh_from_db()
+        self.assertEqual(job.status, "completed")
+        self.assertEqual(job.assets.count(), 1)
+        download.assert_called_once_with("https://trusted.example/result.mp4")
+        self.assertEqual(job.usage["webhook"]["deliveries"], 1)
+
+        response = self.client.post("/webhooks/higgsfield/", data=json.dumps(body), content_type="application/json")
+        self.assertEqual(response.status_code, 204)
+        job.refresh_from_db()
+        self.assertEqual(job.assets.count(), 1)
+        self.assertEqual(job.usage["webhook"]["deliveries"], 2)
+        self.assertEqual(status.call_count, 1)
+
+    def test_higgs_webhook_rejects_bad_envelope_and_hides_unknown_request(self):
+        self.assertEqual(self.client.post("/webhooks/higgsfield/", data="{}", content_type="application/json").status_code, 400)
+        body = {"request_id": str(uuid.uuid4()), "status": "failed", "error": "x", "payload": None}
+        self.assertEqual(self.client.post("/webhooks/higgsfield/", data=json.dumps(body), content_type="application/json").status_code, 204)
+
+    @patch("engine.media.providers.video_status", side_effect=ProviderUnavailableError("temporary"))
+    def test_higgs_webhook_records_hint_while_authoritative_status_is_unavailable(self, status):
+        remote_id = str(uuid.uuid4())
+        job = self.job("video")
+        MediaGeneration.objects.filter(pk=job.pk).update(status="running", provider_id=remote_id)
+        body = {"request_id": remote_id, "status": "completed", "error": None, "payload": {"video": {"url": "https://ignored"}}}
+        response = self.client.post("/webhooks/higgsfield/", data=json.dumps(body), content_type="application/json")
+        self.assertEqual(response.status_code, 204)
+        status.assert_not_called()
+        self.assertEqual(recover_media_jobs(limit=5)["errors"], 1)
+        job.refresh_from_db()
+        self.assertEqual(job.status, "running")
+
+    @patch("engine.media.providers.download_output")
+    @patch("engine.media.providers.video_status")
+    def test_stale_saving_job_recovers_result_without_new_paid_submit(self, status, download):
+        remote_id = str(uuid.uuid4())
+        job = self.job("video")
+        MediaGeneration.objects.filter(pk=job.pk).update(status="running", provider_id=remote_id)
+        status.return_value = {"status": "completed", "video": {"url": "https://trusted.example/result.mp4"}}
+        download.side_effect = [MediaError("storage/download temporary"), movie()]
+        with self.assertRaises(MediaError):
+            advance_job(MediaGeneration.objects.get(pk=job.pk))
+        job.refresh_from_db()
+        self.assertEqual(job.status, "saving")
+        MediaGeneration.objects.filter(pk=job.pk).update(updated_at=timezone.now() - timedelta(minutes=11))
+        result = recover_media_jobs(limit=5)
+        job.refresh_from_db()
+        self.assertEqual(job.status, "completed")
+        self.assertEqual(job.assets.count(), 1)
+        self.assertEqual(result["completed"], 1)
+        self.assertEqual(download.call_count, 2)
+
+    @patch("engine.media.providers.cancel_video", return_value=True)
+    def test_cancel_job_never_submits_generation(self, cancel):
+        queued = self.job("video")
+        cancel_job(queued)
+        queued.refresh_from_db()
+        self.assertEqual(queued.status, "canceled")
+        cancel.assert_not_called()
+
+        # Active-job cancel uses only the provider cancel endpoint for a known request id.
+        active = create_job(self.run, token=uuid.uuid4(), kind="video", brief="Ny video")
+        MediaGeneration.objects.filter(pk=active.pk).update(status="running", provider_id=str(uuid.uuid4()))
+        cancel_job(active)
+        active.refresh_from_db()
+        self.assertEqual(active.status, "canceled")
+        cancel.assert_called_once()
 
     @override_settings(MEDIA_STORAGE="r2")
     @patch.dict("os.environ", {"R2_BUCKET_NAME":"test-bucket"})

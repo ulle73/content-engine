@@ -82,14 +82,14 @@ def collect_media(job):
     data["assets"] = [str(value) for value in data["assets"]]
     if result.status == "completed":
         return Result(data=data)
-    if result.status in ("running", "starting"):
+    if result.status in ("running", "starting", "saving"):
         return Result("pending", "Generation pågår; inget nytt betalt anrop startas.", data)
     return Result("attention", "Genereringen behöver kontroll i appen.", data)
 
 
 def media_units(company):
     return [(str(j.pk), partial(collect_media, j)) for j in MediaGeneration.objects.filter(run__workspace=company).filter(
-        Q(status__in=("queued", "starting", "running", "unknown")) | Q(updated_at__gte=timezone.now()-timedelta(hours=24)))]
+        Q(status__in=("queued", "starting", "running", "saving", "unknown")) | Q(updated_at__gte=timezone.now()-timedelta(hours=24)))]
 
 
 def expire_asset(asset):

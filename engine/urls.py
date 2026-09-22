@@ -2,24 +2,37 @@ from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
 
-from . import ads_views, intelligence_views, media_views, views
+from . import ads_views, intelligence_views, media_views, prompt_views, views
 from .onboarding import SignInView, setup
-from .company_settings import company_settings
+from .company_settings import company_settings, costs
 from .performance_views import performance
 
 engine_urls = [
+    path("prompts/", prompt_views.prompt_library, name="prompt_library"),
+    path("prompts/<uuid:prompt_id>/", prompt_views.prompt_detail, name="prompt_detail"),
+    path("prompts/<uuid:prompt_id>/favorite/", prompt_views.prompt_favorite, name="prompt_favorite"),
+    path("prompts/<uuid:prompt_id>/archive/", prompt_views.prompt_archive, name="prompt_archive"),
+    path("prompts/<uuid:prompt_id>/restore/", prompt_views.prompt_restore, name="prompt_restore"),
+    path("prompts/from-generation/<uuid:job_id>/", prompt_views.prompt_save_generation, name="prompt_save_generation"),
     path("intelligence/own/",performance,name="own_performance"),
     path("intelligence/ads/<int:ad_id>/detail/", ads_views.detail, name="ad_detail"),
     path("intelligence/ads/accounts/<int:account_id>/", ads_views.account_action, name="ad_account_action"),
     path("intelligence/ads/analyze/<int:ad_id>/", ads_views.analyze, name="ad_analyze"),
     path("runs/<uuid:run_id>/outcome/", ads_views.outcome, name="outcome"),
     path("settings/", company_settings, name="settings"),
+    path("costs/", costs, name="costs"),
+    path("media/", media_views.library, name="media_library"),
+    path("media/new/", media_views.new_studio, name="media_new"),
+    path("media/upload/", media_views.library_upload, name="media_library_upload"),
     path("media/<uuid:asset_id>/file/", media_views.asset_file, name="asset_file"),
     path("runs/<uuid:run_id>/media/", media_views.picker, name="media"),
     path("runs/<uuid:run_id>/media/upload/", media_views.upload, name="media_upload"),
     path("runs/<uuid:run_id>/media/generate/", media_views.generate_media, name="media_generate"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/", media_views.job_page, name="media_job"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/status/", media_views.job_status, name="media_job_status"),
+    path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/refresh-provider/", media_views.refresh_provider_status, name="media_job_refresh_provider"),
+    path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/start/", media_views.job_start, name="media_job_start"),
+    path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/cancel/", media_views.cancel_generation, name="media_job_cancel"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/reset/", media_views.reset_job, name="media_job_reset"),
     path("runs/<uuid:run_id>/media/<uuid:asset_id>/use/", media_views.use_asset, name="media_use"),
     path("runs/<uuid:run_id>/media/<uuid:asset_id>/delete/", media_views.delete_asset, name="media_delete"),
@@ -40,5 +53,6 @@ urlpatterns = [
     path("accounts/login/", SignInView.as_view(), name="login"),
     path("accounts/logout/", LogoutView.as_view(), name="logout"),
     path("health/", lambda request: JsonResponse({"status": "ok"})),
+    path("webhooks/higgsfield/", media_views.higgsfield_webhook, name="higgsfield_webhook"),
     path("company/<uuid:workspace_id>/", include((engine_urls, "engine"))),
 ]

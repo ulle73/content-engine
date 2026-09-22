@@ -2,27 +2,102 @@
 {% block title %}Generering · {{ run.title }}{% endblock %}
 {% block content %}
 <main class="engine media-workspace media-job-page">
-  <a class="back-link" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Till media</a>
-  <header class="page-header"><div class="page-heading"><span class="editorial-eyebrow">Generation</span><h1>{% if job.kind == 'image' %}Dina bildalternativ{% else %}Din video{% endif %}</h1><p class="intro">{{ run.title }}</p></div><div class="page-actions"><span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' %}warning{% else %}muted{% endif %}">{{ job.status }}</span></div></header>
+  <a class="back-link" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Bilder och videor</a>
+  <header class="page-header">
+    <div class="page-heading">
+      <p class="eyebrow">AI-studio</p>
+      <h1>{% if job.kind == 'image' %}Dina bildalternativ{% else %}Din video{% endif %}</h1>
+      <p class="intro">{{ run.title }}</p>
+    </div>
+    <div class="page-actions">
+      <span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' or job.status == 'nsfw' %}warning{% else %}muted{% endif %}">
+        {% if job.status == 'completed' %}Klar{% elif job.status == 'failed' %}Misslyckades{% elif job.status == 'nsfw' %}Stoppad{% elif job.status == 'canceled' %}Avbruten{% elif job.status == 'unknown' %}Behöver kontrolleras{% elif job.status == 'queued' %}Väntar på ditt godkännande{% elif job.status == 'saving' %}Sparar resultat{% else %}Pågår{% endif %}
+      </span>
+    </div>
+  </header>
+{% include 'engine/creative_help.html' %}
 
-  {% if pending %}<div class="media-progress" role="status"><p id="job-progress">Genereringen arbetar. Du kan lämna sidan och komma tillbaka via utkastets media.</p><progress aria-label="Genereringen pågår"></progress></div><form id="job-poll" method="post" action="{% url 'engine:media_job_status' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<button>Kontrollera status</button></form>
-  <script>
-  const form=document.getElementById('job-poll');let busy=false,delay=3000;
-  async function check(event){if(event)event.preventDefault();if(busy)return;busy=true;form.querySelector('button').disabled=true;
-  try{const response=await fetch(form.action,{method:'POST',body:new FormData(form)});const data=await response.json();if(!response.ok){document.getElementById('job-progress').textContent=data.error;return;}if(!data.pending){location.reload();return;}delay=Math.min(delay*1.5,10000);setTimeout(check,delay);}catch{document.getElementById('job-progress').textContent='Kontakten avbröts. Kontrollera status igen för samma generation.';}finally{busy=false;form.querySelector('button').disabled=false;}}
-  form.addEventListener('submit',check);check();
-  </script>{% endif %}
-
-  {% if job.error %}<p class="notice error">{{ job.error }}</p>{% endif %}
-  {% if job.status == 'unknown' %}<section class="settings-section"><div class="settings-section-body"><form method="post" action="{% url 'engine:media_job_reset' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<label class="channel-option"><input type="checkbox" required name="checked_provider"><span>Jag har kontrollerat leverantörens konto och vill tillåta ett nytt betalt försök.</span></label><button>Tillåt nytt försök</button></form></div></section>{% endif %}
-  {% if job.usage.estimate.usd %}<p class="small">Leverantörens uppskattning: {{ job.usage.estimate.usd }} USD. Slutlig debitering visas hos leverantören.</p>{% endif %}
-
-  <section class="media-section">
-    <div class="product-section-head"><div><span class="editorial-eyebrow">Resultat</span><h2>{% if job.kind == 'image' %}Välj ett alternativ{% else %}Förhandsgranska videon{% endif %}</h2><p class="small">Vald media behålls. Oanvända förhandsvisningar kan löpa ut.</p></div></div>
-    <div class="media-grid">{% for asset in job.assets.all %}{% if not asset.expires_at or asset.expires_at > now %}{% include 'engine/media_asset.html' %}{% else %}<div class="empty-state"><p>En oanvänd förhandsvisning har gått ut.</p></div>{% endif %}{% empty %}{% if not pending %}<div class="empty-state"><h3>Inget färdigt alternativ</h3><p>Kontrollera generationens status eller justera beskrivningen.</p></div>{% endif %}{% endfor %}</div>
+  <section class="generation-steps" aria-label="Generationens steg">
+    <div class="generation-step done">Brief förberedd</div>
+    <div class="generation-step done">Modell och inställningar valda</div>
+    <div class="generation-step {% if status_index >= 3 %}done{% elif status_index == 2 %}active{% endif %}">Kostnad och leverantör kontrolleras</div>
+    <div class="generation-step {% if status_index >= 4 %}done{% elif status_index == 3 %}active{% endif %}">Genererar</div>
+    <div class="generation-step {% if status_index >= 5 %}done{% elif status_index == 4 %}active{% endif %}">Sparar media</div>
+    <div class="generation-step {% if job.status == 'completed' %}done{% endif %}">Klar</div>
   </section>
 
-  <details class="open-section"><summary>Beskrivningen som användes</summary><p class="media-description">{{ job.brief }}</p></details>
-  <p><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?retry={{ job.pk }}#generate">Justera beskrivningen och generera igen →</a></p>
+  {% if queued %}
+    <section class="creative-panel"><h2>Granska före start</h2><p>Inget betalt uppdrag har skickats. Kontrollera inställningarna och välj sedan om du vill starta.</p>
+      <dl><dt>Modell</dt><dd>{{ job.parameters.model }}</dd>{% if job.kind == 'video' %}<dt>Längd</dt><dd>{{ job.parameters.duration }} sekunder</dd><dt>Format</dt><dd>Önskemål: {{ job.parameters.aspect_ratio }}. Modellen följer startbilden vid animation; textinstruktion garanterar inte exakt format.</dd>{% else %}<dt>Bildalternativ</dt><dd>{{ job.parameters.count }} × {{ job.parameters.size }} · {{ job.parameters.quality|default:'medium' }}</dd>{% endif %}</dl>
+      <div class="generation-prompt-review">
+        <h3>Prompt som skickas till {% if job.provider == 'higgsfield' %}Higgsfield{% else %}leverantören{% endif %}</h3>
+        <p class="small">Detta är den exakta provider-prompt som används om du startar generationen.</p>
+        <pre>{{ job.prompt }}</pre>
+      </div>
+      {% for issue in creative.preflight %}<p class="notice">{{ issue.message }}</p>{% endfor %}
+      {% if job.usage.estimate %}<p><strong>Uppskattat pris: {{ job.usage.estimate.usd }} USD</strong> för ett klipp. Priset kontrolleras igen vid start; ett högre pris stoppas.</p>{% endif %}
+      {% if job.kind == 'image' %}<p>OpenAI debiterar bildgenerering efter användning. Bindande förhandspris saknas här. Högre kvalitet och fler bilder kostar mer.</p>{% endif %}
+      <div class="creative-actions"><form method="post" action="{% url 'engine:media_job_start' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}{% if job.usage.reviewed_at %}<button type="submit">Starta betald generation</button>{% endif %}<button type="submit" name="action" value="preview" class="button-secondary">Uppdatera priskontroll</button></form><form method="post" action="{% url 'engine:media_job_cancel' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<button class="button-secondary">Avbryt</button></form></div>
+    </section>
+  {% elif pending %}
+    <div class="media-progress" role="status">
+      <p id="job-progress">Jobbet är sparat och kan fortsätta även om du lämnar sidan. Samma jobb-id återanvänds vid statuskontroll.</p>
+      <progress aria-label="Genereringen pågår"></progress>
+    </div>
+    <div class="generation-job-actions">
+      <form id="job-poll" method="post" action="{% url 'engine:media_job_status' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<button>Kontrollera status</button></form>
+      {% if job.status == 'queued' or job.status == 'running' %}<form method="post" action="{% url 'engine:media_job_cancel' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<button class="button-secondary">Avbryt</button></form>{% endif %}
+    </div>
+    <script>
+    const form=document.getElementById('job-poll');let busy=false,delay=2000;
+    async function check(event){if(event)event.preventDefault();if(busy)return;busy=true;form.querySelector('button').disabled=true;
+    try{const response=await fetch(form.action,{method:'POST',body:new FormData(form)});const data=await response.json();if(!response.ok){document.getElementById('job-progress').textContent=data.error;return;}if(!data.pending){location.reload();return;}if(data.status==='saving'){document.getElementById('job-progress').textContent='Resultatet är klart och sparas säkert i Content Engine.';}else if(data.status==='running'){document.getElementById('job-progress').textContent='Genereringen pågår hos leverantören. Ingen ny generation startas av statuskontrollen.';}delay=Math.min(delay*1.5,10000);setTimeout(check,delay);}catch{document.getElementById('job-progress').textContent='Kontakten avbröts. Kontrollera status igen för samma generation.';}finally{busy=false;form.querySelector('button').disabled=false;}}
+    form.addEventListener('submit',check);check();
+    </script>
+  {% endif %}
+
+  {% if job.error %}<p class="notice error">{{ job.error }}</p>{% endif %}
+  {% if job.provider == 'higgsfield' and job.provider_id %}
+    {% if job.status == 'failed' or job.status == 'nsfw' or job.status == 'canceled' %}
+      <form method="post" action="{% url 'engine:media_job_refresh_provider' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}" class="generation-job-actions">
+        {% csrf_token %}
+        <button type="submit" class="button-secondary">Hämta exakt felorsak från Higgsfield</button>
+      </form>
+    {% endif %}
+  {% endif %}
+  {% if job.status == 'unknown' %}
+    <section class="settings-section"><div class="settings-section-body">
+      <h2>Kontroll krävs innan nytt försök</h2>
+      <p>Det går inte att avgöra säkert om leverantören hann ta emot den betalda begäran. Systemet startar därför aldrig automatiskt en ny generation.</p>
+      <form method="post" action="{% url 'engine:media_job_reset' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<label class="channel-option"><input type="checkbox" required name="checked_provider"><span>Jag har kontrollerat leverantörens konto och vill tillåta ett nytt betalt försök.</span></label><button>Tillåt nytt försök</button></form>
+    </div></section>
+  {% endif %}
+  {% if not queued and job.usage.estimate.usd %}<div class="generation-info-box"><strong>Pris kontrollerat före start</strong><span>Leverantörens uppskattning: {{ job.usage.estimate.usd }} USD. Slutlig debitering visas hos leverantören.</span></div>{% endif %}
+
+  <section class="media-section">
+    <div class="product-section-head"><div><h2>{% if job.kind == 'image' %}Välj ett alternativ{% else %}Förhandsgranska videon{% endif %}</h2><p class="small">Vald media behålls. Oanvända förhandsvisningar kan löpa ut.</p></div></div>
+    <div class="media-grid">{% for asset in job.assets.all %}{% if not asset.expires_at or asset.expires_at > now %}{% include 'engine/media_asset.html' %}{% else %}<div class="empty-state"><p>En oanvänd förhandsvisning har gått ut.</p></div>{% endif %}{% empty %}{% if not pending %}<div class="empty-state"><h3>Inget färdigt alternativ</h3><p>{% if job.status == 'canceled' %}Genereringen avbröts innan ett resultat sparades.{% elif job.status == 'nsfw' %}Leverantörens innehållskontroll stoppade jobbet.{% else %}Kontrollera generationens status eller justera beskrivningen.{% endif %}</p></div>{% endif %}{% endfor %}</div>
+  </section>
+
+  <div class="generation-job-actions">
+    <form method="post" action="{% url 'engine:prompt_save_generation' workspace_id=workspace.pk job_id=job.pk %}">{% csrf_token %}<button type="submit" class="button-secondary">Spara prompt till bibliotek</button></form>
+    {% if not pending %}<a class="button" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?retry={{ job.pk }}#generate">Justera och skapa nytt</a>{% endif %}
+  </div>
+
+  <details class="open-section"><summary>Din ursprungliga beskrivning</summary><p class="media-description">{{ job.brief }}</p></details>
+  <details class="open-section generation-diagnostics">
+    <summary>Avancerad diagnostik</summary>
+    <dl>
+      <div><dt>Vald modell</dt><dd>{{ job.parameters.model|default:'–' }}</dd></div>
+      <div><dt>Varför</dt><dd>{% for reason in creative.selection.reason_codes %}{{ reason }}{% if not forloop.last %} · {% endif %}{% empty %}–{% endfor %}</dd></div>
+      <div><dt>Komplexitet</dt><dd>{{ creative.complexity|default:'–' }}</dd></div>
+      <div><dt>Compiler</dt><dd>{{ creative.compiler_version|default:'–' }}</dd></div>
+      <div><dt>Registry</dt><dd>{{ creative.registry_version|default:'–' }}</dd></div>
+      {% if job.provider_id %}<div><dt>Provider request ID</dt><dd>{{ job.provider_id }}</dd></div>{% endif %}
+    </dl>
+    <h3>Strukturerad brief</h3><pre>{{ structured_brief_json }}</pre>
+    <h3>Provider-prompt</h3><pre>{{ job.prompt }}</pre>
+    <h3>Parametrar</h3><pre>{{ parameters_json }}</pre>
+  </details>
 </main>
 {% endblock %}

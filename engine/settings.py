@@ -18,6 +18,8 @@ ALLOWED_HOSTS = [urlparse(APP_URL).hostname]
 DATABASES = {"default": env.db("DATABASE_URL", default=f"sqlite:///{ENGINE_ROOT / 'data' / 'app.sqlite3'}")}
 if DATABASES["default"]["ENGINE"].endswith("postgresql"):
     DATABASES["default"]["CONN_MAX_AGE"] = 60
+    DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+    DATABASES["default"]["OPTIONS"].setdefault("connect_timeout", 15)
     DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
 INSTALLED_APPS = [
     "django.contrib.auth",
@@ -25,7 +27,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "oauth2_provider",
     "engine",
+    "operator_bridge",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -94,6 +98,7 @@ MEDIA_ROOT = ENGINE_ROOT / "media"
 OPENAI_IMAGE_MODEL = env("OPENAI_IMAGE_MODEL", default="gpt-image-2")
 # Official Higgsfield OpenAPI, checked 2026-09-08. Model names stay out of the editor UI.
 HIGGSFIELD_VIDEO_MODEL = "kling-video/v2.5-turbo/pro"
+HIGGSFIELD_WEBHOOK_ENABLED = env.bool("HIGGSFIELD_WEBHOOK_ENABLED", default=False)
 if LOCAL_HTTP:
     ALLOWED_HOSTS += ["localhost", "127.0.0.1", "testserver"]
 else:

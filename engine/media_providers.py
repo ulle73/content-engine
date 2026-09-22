@@ -1,42 +1,102 @@
-"""Official OpenAI Images and Higgsfield REST contracts, checked 2026-09-08."""
+"""Official OpenAI Images and Higgsfield REST adapters, audited 2026-09-22."""
 
 import base64
 import ipaddress
 import os
 import socket
 import uuid
+import random
+import time
+from contextlib import contextmanager
 from decimal import Decimal, InvalidOperation
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 
 import httpx
 from django.conf import settings
 from openai import OpenAI
 
+from .creative_director import HIGGSFIELD_SAFE_PROMPT_CHARS
 from .media_storage import MediaError, open_asset
 
 HIGGS_ROOT = "https://api.higgsfield.ai"
 
 
-class UncertainGeneration(MediaError):
-    pass
+class ProviderError(MediaError):
+    code = "provider_error"
+    transient = False
 
 
-def public_url(url):
-    parsed = urlparse(url)
-    if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password or parsed.port not in (None, 443):
-        raise MediaError("Leverantören gav en ogiltig fillänk.")
+class InvalidProviderRequest(ProviderError):
+    code = "invalid_request"
+
+
+class ProviderAuthenticationError(ProviderError):
+    code = "authentication_config"
+
+
+class InsufficientCreditsError(ProviderError):
+    code = "insufficient_credits"
+
+
+class RateLimitedError(ProviderError):
+    code = "rate_limited"
+    transient = True
+
+
+class ProviderUnavailableError(ProviderError):
+    code = "provider_unavailable"
+    transient = True
+
+
+class UncertainGeneration(ProviderError):
+    code = "uncertain_submission"
+    transient = False
+
+
+def provider_error_code(exc):
+    return getattr(exc, "code", "provider_error")
+
+
+def _public_address(url):
+    try:
+        if not isinstance(url, str) or any(ord(c) < 32 for c in url):
+            raise ValueError("invalid URL")
+        parsed = urlparse(url)
+        if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password or parsed.port not in (None, 443):
+            raise ValueError("invalid URL")
+    except ValueError as exc:
+        raise MediaError("Leverantören gav en ogiltig fillänk.") from exc
     try:
         addresses = socket.getaddrinfo(parsed.hostname, 443)
         if not addresses or any(not ipaddress.ip_address(item[4][0]).is_global for item in addresses):
             raise MediaError("Leverantörens fillänk kan inte användas.")
     except OSError as exc:
         raise MediaError("Leverantörens filserver kunde inte nås.") from exc
+    return parsed, addresses[0][4][0]
+
+
+def public_url(url):
+    _public_address(url)
     return url
+
+
+@contextmanager
+def public_stream(method, url, *, headers=None, timeout=120, **kwargs):
+    # Pin the validated DNS result for the actual connection (prevent rebinding).
+    # Keep Host and TLS SNI/certificate validation bound to the original hostname.
+    parsed, address = _public_address(url)
+    target = httpx.URL(url).copy_with(host=address)
+    safe_headers = {key: value for key, value in (headers or {}).items() if key.lower() != "host"}
+    safe_headers["Host"] = parsed.hostname
+    with httpx.Client(timeout=timeout, follow_redirects=False, trust_env=False) as client:
+        with client.stream(method, target, headers=safe_headers,
+                           extensions={"sni_hostname": parsed.hostname}, **kwargs) as response:
+            yield response
 
 
 def download_output(url, limit=80 * 1024 * 1024):
     try:
-        with httpx.stream("GET", public_url(url), timeout=120, follow_redirects=False) as response:
+        with public_stream("GET", url) as response:
             response.raise_for_status()
             data = bytearray()
             for chunk in response.iter_bytes():
@@ -50,7 +110,7 @@ def download_output(url, limit=80 * 1024 * 1024):
 
 def generate_images(job):
     params = {"model": job.parameters.get("model", settings.OPENAI_IMAGE_MODEL), "prompt": job.prompt, "n": job.parameters["count"],
-              "size": job.parameters["size"], "quality": "medium", "output_format": "png"}
+              "size": job.parameters["size"], "quality": job.parameters.get("quality", "medium"), "output_format": "png"}
     with OpenAI(timeout=240, max_retries=0) as client:
         if job.source_asset:
             with open_asset(job.source_asset, unbranded=True) as source:
@@ -58,54 +118,138 @@ def generate_images(job):
                                                    source, job.source_asset.mime_type), **params)
         else:
             result = client.images.generate(**params)
-    return [base64.b64decode(item.b64_json, validate=True) for item in result.data], (
-        result.usage.model_dump() if result.usage else {}
-    )
-
-
-def higgs(method, path, **kwargs):
-    key, secret = os.environ.get("HIGGSFIELD_API_KEY"), os.environ.get("HIGGSFIELD_API_SECRET")
-    if not key or not secret:
-        raise MediaError("Videogenerering behöver Higgsfields API-nyckel och secret i serverns inställningar.")
     try:
-        response = httpx.request(method, HIGGS_ROOT + path, headers={"Authorization": f"Key {key}:{secret}"},
-                                 timeout=40, **kwargs)
+        return [base64.b64decode(item.b64_json, validate=True) for item in result.data], (
+            result.usage.model_dump() if result.usage else {}
+        )
+    except (ValueError, TypeError, AttributeError) as exc:
+        raise UncertainGeneration("Bildtjänsten svarade men bilden kunde inte avkodas. Kontrollera kontot före nytt betalt försök.") from exc
+
+
+def _higgsfield_credential():
+    """Return the complete Higgsfield credential without exposing it.
+
+    Current Higgsfield UI/SDK can provide one complete API credential. Older
+    Content Engine deployments stored key id + secret separately, so keep that
+    format as a backwards-compatible fallback.
+    """
+    # Golfkuponger's Content Engine uses its dedicated Higgsfield API credential.
+    # Keep the generic names as a backwards-compatible deployment fallback.
+    primary = os.environ.get("HIGGSFIELD_API_KEY_GK", "").strip()
+    key = primary or os.environ.get("HIGGSFIELD_API_KEY", "").strip()
+    secret = os.environ.get("HIGGSFIELD_API_SECRET_GK" if primary else "HIGGSFIELD_API_SECRET", "").strip()
+    if not key:
+        raise MediaError("Videogenerering behöver Golfkupongers Higgsfield API-nyckel i serverns inställningar.")
+    if ":" in key or not secret:
+        return key
+    return f"{key}:{secret}"
+
+
+def _error_for_response(method, response, *, billable=False):
+    try:
+        body = response.json()
+        detail = body.get("detail") if isinstance(body, dict) else None
+    except ValueError:
+        detail = None
+    status = response.status_code
+    if detail == "not_enough_credits" or status == 403:
+        return InsufficientCreditsError("Higgsfields API-konto saknar krediter. Fyll på API-saldot och försök igen.")
+    if status == 401:
+        return ProviderAuthenticationError("Higgsfield-autentiseringen är ogiltig. Kontrollera serverns API-nyckel.")
+    if detail == "model_not_found" or status == 404:
+        return InvalidProviderRequest("Videomodellen eller request-id är inte tillgängligt för API-kontot.")
+    if status in {400, 422}:
+        return InvalidProviderRequest("Higgsfield avvisade parametrarna. Ingen automatisk ny generation startades.")
+    if status == 429:
+        return RateLimitedError("Higgsfield har tillfälligt begränsat anropstakten.")
+    if status in {408, 423, 500, 502, 503, 504}:
+        if billable:
+            return UncertainGeneration(f"Higgsfield svarade med HTTP {status} efter ett möjligt betalt submit. Ingen automatisk retry görs.")
+        return ProviderUnavailableError(f"Higgsfield är tillfälligt otillgängligt (HTTP {status}).")
+    if billable and status >= 500:
+        return UncertainGeneration(f"Higgsfield svarade med HTTP {status}. Ingen automatisk retry görs.")
+    return ProviderError(f"Higgsfield svarade med HTTP {status}.")
+
+
+def _retry_after_seconds(response, attempt):
+    value = response.headers.get("Retry-After", "").strip()
+    try:
+        explicit = float(value)
+        if explicit >= 0:
+            return min(explicit, 5.0) + random.uniform(0, 0.25)
+    except (TypeError, ValueError):
+        pass
+    return min(0.4 * (2 ** attempt), 2.0) + random.uniform(0, 0.25)
+
+
+def higgs(method, path, *, billable=False, **kwargs):
+    """Official REST adapter with method-aware retry safety.
+
+    GET status reads may retry transient failures. POST is attempted exactly once
+    because generation submissions currently have no idempotency key.
+    """
+    credential = _higgsfield_credential()
+    method = method.upper()
+    attempts = 3 if method == "GET" else 1
+    last_error = None
+    for attempt in range(attempts):
+        try:
+            response = httpx.request(method, HIGGS_ROOT + path, headers={"Authorization": f"Key {credential}"},
+                                     timeout=40, **kwargs)
+        except httpx.HTTPError as exc:
+            if method == "GET" and attempt + 1 < attempts:
+                time.sleep(min(0.4 * (2 ** attempt), 2.0) + random.uniform(0, 0.25))
+                last_error = exc
+                continue
+            if billable:
+                raise UncertainGeneration("Det betalda submit-anropet kunde inte bekräftas. Ingen automatisk ny generation görs.") from exc
+            raise ProviderUnavailableError("Higgsfield kunde inte nås för detta säkra anrop.") from exc
         if response.is_error:
-            try:
-                body = response.json()
-                detail = body.get("detail") if isinstance(body, dict) else None
-            except ValueError:
-                detail = None
-            if detail == "not_enough_credits":
-                raise MediaError("Higgsfields API-konto saknar krediter. Fyll på API-saldot på cloud.higgsfield.ai och försök igen.")
-            if detail == "model_not_found":
-                raise MediaError("Videomodellen är inte tillgänglig hos Higgsfield. Driftansvarig behöver kontrollera modellstödet.")
-            error = UncertainGeneration if method == "POST" and response.status_code >= 500 else MediaError
-            raise error(f"Higgsfield svarade med HTTP {response.status_code}. Kontrollera API-kontot.")
-        return response.json()
-    except (httpx.HTTPError, ValueError) as exc:
-        raise UncertainGeneration("Anropet kunde inte bekräftas. Ingen automatisk ny generation görs.") from exc
+            error = _error_for_response(method, response, billable=billable)
+            if method == "GET" and getattr(error, "transient", False) and attempt + 1 < attempts:
+                time.sleep(_retry_after_seconds(response, attempt))
+                last_error = error
+                continue
+            raise error
+        try:
+            data = response.json()
+            if not isinstance(data, dict):
+                raise ValueError("Expected provider object")
+            return data
+        except ValueError as exc:
+            if billable:
+                raise UncertainGeneration("Higgsfield returnerade ett otydligt svar efter möjligt betalt submit. Ingen retry görs.") from exc
+            raise ProviderUnavailableError("Higgsfields svar kunde inte läsas.") from exc
+    raise ProviderUnavailableError("Higgsfields status kunde inte hämtas efter begränsade retries.") from last_error
 
 
 def video_payload(job):
     # Kling's official schema accepts 5 or 10 seconds. I2V follows the source image.
-    return {"prompt": job.prompt, "duration": 10}
+    return {"prompt": job.prompt, "duration": int(job.parameters.get("duration", 10))}
 
 
 def upload_input(asset):
     result = higgs("POST", "/files/generate-upload-url", json={"content_type": asset.mime_type})
-    with open_asset(asset, unbranded=True) as source:
+    if not isinstance(result.get("upload_url"), str) or not isinstance(result.get("public_url"), str) or not isinstance(result.get("upload_headers"), dict):
+        raise MediaError("Videotjänsten kunde inte förbereda startbildens uppladdning.")
+    with open_asset(asset) as source:
         try:
             # Storage receives only its upload headers, never the Higgsfield credential.
-            response = httpx.put(public_url(result["upload_url"]), content=source.read(),
-                                 headers=result["upload_headers"], timeout=90)
-            response.raise_for_status()
+            with public_stream("PUT", result["upload_url"], content=source.read(),
+                               headers=result["upload_headers"], timeout=90) as response:
+                response.raise_for_status()
         except httpx.HTTPError as exc:
             raise MediaError("Startbilden kunde inte skickas till videoleverantören.") from exc
     return public_url(result["public_url"])
 
 
-def start_video(job):
+def estimate_video(job):
+    """Account-scoped, non-billable preflight. I2V uploads its input, never submits a generation."""
+    if len(job.prompt or "") > HIGGSFIELD_SAFE_PROMPT_CHARS:
+        raise MediaError(
+            "Videoprompten är för lång för den säkra Higgsfield-gränsen. "
+            "Justera beskrivningen och skapa ett nytt jobb; ingen betald generation startades."
+        )
     mode = "image-to-video" if job.source_asset else "text-to-video"
     model = job.parameters.get("model", settings.HIGGSFIELD_VIDEO_MODEL) + "/" + mode
     body = video_payload(job)
@@ -114,17 +258,36 @@ def start_video(job):
     estimate = higgs("POST", "/estimate/" + model, json=body)
     try:
         price = Decimal(estimate["usd"])
-        if not price.is_finite() or price < 0 or price > Decimal(os.environ.get("HIGGSFIELD_MAX_USD", "2")):
+        ceiling = Decimal(os.environ.get("HIGGSFIELD_MAX_USD", "2"))
+        if not ceiling.is_finite() or ceiling < 0 or not price.is_finite() or price < 0 or price > ceiling:
             raise MediaError("Videons pris överskrider serverns kostnadsgräns. Ingen generation startades.")
     except (KeyError, InvalidOperation, TypeError) as exc:
         raise MediaError("Videotjänsten kunde inte bekräfta priset. Ingen generation startades.") from exc
-    usage = {"estimate": {k: estimate[k] for k in ("credits", "usd") if k in estimate}, "model": model}
+    return model, body, {"estimate": {k: str(estimate[k]) for k in ("credits", "usd") if k in estimate}, "model": model}
+
+
+def start_video(job):
+    model, body, usage = estimate_video(job)
+    approved = (job.usage or {}).get("approved_max_usd")
+    if approved is not None:
+        try:
+            approved = Decimal(approved)
+            if not approved.is_finite() or Decimal(usage["estimate"]["usd"]) > approved:
+                raise MediaError("Priset har ökat sedan granskningen. Granska det nya priset innan en betald start.")
+        except (InvalidOperation, TypeError) as exc:
+            raise MediaError("Prisgodkännandet är ogiltigt. Granska på nytt.") from exc
+    usage = {**(job.usage or {}), **usage}
     job.usage = usage
     job.save(update_fields=["usage"])
-    result = higgs("POST", "/" + model, json=body)
+    submit_path = "/" + model
+    if getattr(settings, "HIGGSFIELD_WEBHOOK_ENABLED", False):
+        webhook = settings.APP_URL.rstrip("/") + "/webhooks/higgsfield/"
+        if webhook.startswith("https://"):
+            submit_path += "?" + urlencode({"hf_webhook": webhook})
+    result = higgs("POST", submit_path, json=body, billable=True)
     try:
         result["request_id"] = str(uuid.UUID(result["request_id"]))
-    except (KeyError, ValueError, TypeError) as exc:
+    except (KeyError, ValueError, TypeError, AttributeError) as exc:
         raise UncertainGeneration("Videotjänsten bekräftade inte ett giltigt jobb-id.") from exc
     return result, usage
 
@@ -134,3 +297,17 @@ def video_status(job):
     import uuid
     request_id = str(uuid.UUID(job.provider_id))
     return higgs("GET", f"/requests/{request_id}/status")
+
+
+def cancel_video(job):
+    """Request cancellation only for a known provider request. Never submits generation."""
+    request_id = str(uuid.UUID(job.provider_id))
+    credential = _higgsfield_credential()
+    try:
+        response = httpx.request("POST", f"{HIGGS_ROOT}/requests/{request_id}/cancel",
+                                 headers={"Authorization": f"Key {credential}"}, timeout=40)
+    except httpx.HTTPError as exc:
+        raise ProviderUnavailableError("Avbokningen kunde inte bekräftas. Kontrollera jobbstatus innan nytt försök.") from exc
+    if response.status_code == 202:
+        return True
+    raise _error_for_response("CANCEL", response)

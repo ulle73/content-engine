@@ -1,27 +1,35 @@
 services:
   - type: web
-    name: content-engine
+    name: content-engine-mcp
+    branch: feature/chatgpt-content-engine-mcp
     runtime: python
-    plan: starter
+    # Current plan. Upgrade to starter for always-on operation after approving its cost.
+    plan: free
     region: frankfurt
     buildCommand: bash scripts/build.sh
-    startCommand: bash scripts/start.sh
-    healthCheckPath: /health/
+    startCommand: bash scripts/start-mcp.sh
+    healthCheckPath: /healthz
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.15
+      # One service hosts the existing editor, OAuth and MCP on the same system of record.
       - key: DATABASE_URL
         sync: false
       - key: SECRET_KEY
-        generateValue: true
+        sync: false
+      # Preserve the source database's Postiz encryption secret exactly.
       - key: POSTIZ_ENCRYPTION_SECRET
-        generateValue: true
+        sync: false
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL
         value: gpt-5.6-luna
-      - key: SETUP_TOKEN
-        generateValue: true
+      - key: APIFY_API_TOKEN
+        sync: false
+      - key: SCRAPER_DAILY_BUDGET_USD
+        value: "1.00"
+      - key: INTELLIGENCE_DAILY_ANALYSES
+        value: "12"
       - key: MEDIA_STORAGE
         value: r2
       - key: R2_ENDPOINT_URL
@@ -34,7 +42,20 @@ services:
         sync: false
       - key: R2_REGION
         value: auto
+      - key: HIGGSFIELD_API_KEY_GK
+        sync: false
       - key: HIGGSFIELD_API_KEY
         sync: false
       - key: HIGGSFIELD_API_SECRET
         sync: false
+      - key: HIGGSFIELD_WEBHOOK_ENABLED
+        value: "true"
+      # Legacy split credential names remain accepted in code during migration,
+      # but production should use only Golfkuponger's dedicated complete key above.
+      - key: HIGGSFIELD_MAX_USD
+        value: "2"
+      # OAuth is hosted by this service and uses normal Content Engine users. No external IdP.
+      - key: MCP_REQUIRED_SCOPE
+        value: content-engine.operate
+      - key: MCP_OAUTH_ALLOWED_CLIENT_HOSTS
+        value: chatgpt.com,openai.com,connectors.api.openai.org

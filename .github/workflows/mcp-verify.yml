@@ -1,0 +1,73 @@
+name: Content Engine MCP Verify
+on:
+  push:
+    branches:
+      - feature/chatgpt-content-engine-mcp
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SECRET_KEY: test-only-mcp-secret
+      POSTIZ_ENCRYPTION_SECRET: test-only-postiz-secret
+      APP_URL: http://127.0.0.1:8765
+      MEDIA_STORAGE: local
+      MCP_ALLOW_INSECURE_LOCAL: "true"
+      MCP_DEV_BEARER_TOKEN: test-only-mcp-token
+      MCP_DEV_USER_EMAIL: operator@example.com
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: mkdir -p data
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py migrate --noinput
+      - run: python manage.py migrate --check
+      - run: python manage.py check
+      - run: APP_URL=http://127.0.0.1:8766 DJANGO_SETTINGS_MODULE=engine.mcp_settings python manage.py check
+      - run: python manage.py collectstatic --noinput
+      - run: python -m py_compile engine/mcp_server.py engine/mcp_app.py engine/mcp_auth.py engine/mcp_oauth.py engine/mcp_settings.py engine/mcp_auth_urls.py engine/operator.py engine/delivery.py engine/mcp_operations.py operator_bridge/models.py
+      - run: APP_URL=http://127.0.0.1:8766 DJANGO_SETTINGS_MODULE=engine.mcp_settings python -c "from engine.mcp_app import app; assert app is not None"
+      - run: python manage.py test
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: content_engine_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      SECRET_KEY: isolated-test-secret
+      POSTIZ_ENCRYPTION_SECRET: isolated-test-postiz
+      APP_URL: http://127.0.0.1:8765
+      MEDIA_STORAGE: local
+      MCP_ALLOW_INSECURE_LOCAL: 'true'
+      MCP_DEV_BEARER_TOKEN: test-only-mcp-token
+      MCP_DEV_USER_EMAIL: operator@example.com
+      TEST_DATABASE_URL: postgres://postgres:isolated-test-only@localhost:5432/content_engine_test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python manage.py test engine operator_bridge --settings=engine.postgres_test_settings

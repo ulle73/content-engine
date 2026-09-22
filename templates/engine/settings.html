@@ -1,63 +1,153 @@
 {% extends 'base.html' %}
 {% block title %}Inställningar · {{ workspace.name }}{% endblock %}
 {% block content %}
-<main class="engine settings-page">
-  <header class="page-header">
+<main class="engine settings-page settings-page-premium">
+  <header class="page-header settings-page-header">
     <div class="page-heading">
-      <span class="editorial-eyebrow">Workspace settings</span>
+      <p class="eyebrow">Workspace</p>
       <h1>Inställningar</h1>
-      <p class="intro">{{ workspace.name }} · företagets fakta, kopplingar, varumärkesfiler och driftstatus på ett ställe.</p>
+      <p class="intro">Hantera företagsprofil, publiceringskanaler, varumärke och automatiska uppdateringar på ett ställe.</p>
+    </div>
+    <div class="settings-workspace-chip" aria-label="Aktivt workspace">
+      <span class="settings-workspace-mark">{{ workspace.name|slice:':1'|upper }}</span>
+      <span class="settings-workspace-copy"><strong>{{ workspace.name }}</strong><span>Aktivt workspace</span></span>
     </div>
   </header>
 
   <div class="settings-layout">
     <nav class="settings-nav" aria-label="Inställningssektioner">
-      <span class="settings-nav-label">Sektioner</span>
-      <a href="#brand">Varumärke</a>
-      <a href="#connections">Kopplingar</a>
-      <a href="#scraping">Scraping</a>
-      <a href="#daily">Daglig körning</a>
+      <p class="settings-nav-label">Workspace</p>
+      <a href="#connections">
+        <span class="settings-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M7 4v6M4 17h16M17 14v6"></path></svg></span>
+        <span>Företag och kanaler</span>
+      </a>
+      <a href="#brand">
+        <span class="settings-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l7 4v10l-7 4-7-4V7z"></path><path d="M9 12h6M12 9v6"></path></svg></span>
+        <span>Varumärke</span>
+      </a>
+      <a href="#advanced">
+        <span class="settings-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path><circle cx="9" cy="6" r="2"></circle><circle cx="15" cy="12" r="2"></circle><circle cx="11" cy="18" r="2"></circle></svg></span>
+        <span>Drift och automation</span>
+      </a>
+      <div class="settings-nav-note">
+        <span class="settings-nav-note-dot" aria-hidden="true"></span>
+        <span>Ändringar sparas per workspace.</span>
+      </div>
     </nav>
 
     <div class="settings-content">
       <div class="settings-grid">
-        <section class="settings-section" id="brand">
-          <div class="settings-section-head"><div><span class="editorial-eyebrow">Varumärke</span><h2>Officiell företagslogga</h2><p class="small">Den här filen är enda källan när Content Engine använder företagets logga i genererad media.</p></div></div>
-          <div class="settings-section-body">
-            {% if workspace.official_logo %}
-              <div class="logo-preview"><img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=workspace.official_logo.pk %}" alt="Officiell logga för {{ workspace.name }}"></div>
-              <p><strong>{{ workspace.official_logo.alt_text|default:'Officiell logga' }}</strong></p>
-              <p class="small">Uppladdad {{ workspace.official_logo.created_at|date:'j M Y H:i' }} · {{ workspace.official_logo.width }} × {{ workspace.official_logo.height }} px</p>
-              <details><summary>Filens identitet</summary><p class="small break-anywhere">Version {{ workspace.official_logo.pk }}<br>SHA-256 {{ workspace.official_logo.sha256 }}</p></details>
-            {% else %}
-              <div class="empty-state"><h3>Ingen logga uppladdad</h3><p>Content Engine skapar ingen ungefärlig ersättare.</p></div>
-            {% endif %}
-            <form method="post" enctype="multipart/form-data">{% csrf_token %}<label for="official-logo">{% if workspace.official_logo %}Byt officiell logga{% else %}Ladda upp officiell logga{% endif %}</label><input id="official-logo" type="file" name="logo" accept="image/png,image/webp,image/jpeg" required><p class="small">PNG, WebP eller JPEG, högst 8 MB. Transparent PNG rekommenderas.</p><button>Spara officiell logga</button></form>
-            <p class="small">Originalfilen placeras deterministiskt efter AI-genereringen. AI:n ritar inte om loggan och tidigare versioner behålls för redan skapade jobb.</p>
+        <section class="settings-section settings-card" id="connections">
+          <div class="settings-section-head settings-card-head">
+            <div>
+              <span class="settings-section-kicker">Grundkonfiguration</span>
+              <h2>Företag och kanaler</h2>
+              <p class="small">Det Content Engine behöver för att skapa relevant innehåll och skicka det till rätt plats.</p>
+            </div>
           </div>
-        </section>
+          <div class="settings-section-body settings-card-body settings-card-body-flush">
+            <div class="settings-option-list">
+              <a class="settings-option" href="{% url 'engine:home' workspace_id=workspace.pk %}#company-context">
+                <span class="settings-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V8l8-4 8 4v12"></path><path d="M9 20v-5h6v5M8 10h.01M12 10h.01M16 10h.01"></path></svg></span>
+                <span class="settings-option-copy">
+                  <strong>Företagsuppgifter</strong>
+                  <span>Profil, tonalitet, aktuella erbjudanden och källor.</span>
+                </span>
+                <span class="settings-option-meta">
+                  {% if workspace.profile and workspace.current %}<span class="settings-state success">Konfigurerat</span>{% else %}<span class="settings-state warning">Behöver fyllas i</span>{% endif %}
+                  <span class="settings-option-arrow" aria-hidden="true">›</span>
+                </span>
+              </a>
 
-        <section class="settings-section" id="connections">
-          <div class="settings-section-head"><div><span class="editorial-eyebrow">Kopplingar</span><h2>Företag och tjänster</h2><p class="small">Det som styr Content Engine för just den här arbetsytan.</p></div></div>
-          <div class="settings-section-body">
-            <div class="link-list">
-              <a class="link-row" href="{% url 'engine:home' workspace_id=workspace.pk %}#company-context"><span><strong>Företagsunderlag</strong><br><span>Profil, ton, aktuellt och källa</span></span><span aria-hidden="true">›</span></a>
-              <a class="link-row" href="{% url 'engine:connect' workspace_id=workspace.pk %}"><span><strong>Postiz</strong><br><span>{% if workspace.postiz_channels %}{{ workspace.postiz_channels|length }} valda kanaler{% else %}Inte anslutet{% endif %}</span></span><span aria-hidden="true">›</span></a>
-              <a class="link-row" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"><span><strong>Konkurrentbevakning</strong><br><span>Organiskt och Meta Ads</span></span><span aria-hidden="true">›</span></a>
+              <a class="settings-option" href="{% url 'engine:connect' workspace_id=workspace.pk %}">
+                <span class="settings-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 12h8M12 8v8"></path><circle cx="12" cy="12" r="8"></circle></svg></span>
+                <span class="settings-option-copy">
+                  <strong>Publiceringskanaler</strong>
+                  <span>Postiz-koppling för Facebook, Instagram och övriga kanaler.</span>
+                </span>
+                <span class="settings-option-meta">
+                  {% if workspace.postiz_channels %}<span class="settings-state success">{{ workspace.postiz_channels|length }} anslutna</span>{% else %}<span class="settings-state muted">Inte anslutet</span>{% endif %}
+                  <span class="settings-option-arrow" aria-hidden="true">›</span>
+                </span>
+              </a>
+
+              <a class="settings-option" href="{% url 'engine:intelligence' workspace_id=workspace.pk %}">
+                <span class="settings-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 18V9M12 18V5M19 18v-7"></path></svg></span>
+                <span class="settings-option-copy">
+                  <strong>Konkurrentbevakning</strong>
+                  <span>Konton, annonser och signaler som används som inspiration.</span>
+                </span>
+                <span class="settings-option-meta"><span class="settings-state neutral">Hantera</span><span class="settings-option-arrow" aria-hidden="true">›</span></span>
+              </a>
             </div>
           </div>
         </section>
 
-        <div id="scraping">{% include 'engine/scraper_stats.html' %}</div>
+        <section class="settings-section settings-card settings-brand-card" id="brand">
+          <div class="settings-section-head settings-card-head">
+            <div>
+              <span class="settings-section-kicker">Varumärke</span>
+              <h2>Företagets logga</h2>
+              <p class="small">En verifierad logga som Content Engine kan återanvända i mediaflöden.</p>
+            </div>
+            {% if workspace.official_logo %}<span class="settings-state success">Aktiv</span>{% endif %}
+          </div>
+          <div class="settings-section-body settings-brand-body">
+            <div class="brand-preview-shell">
+              <div class="brand-preview-stage">
+                {% if workspace.official_logo %}
+                  <img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=workspace.official_logo.pk %}" alt="Officiell logga för {{ workspace.name }}">
+                {% else %}
+                  <div class="brand-placeholder" aria-hidden="true"><span>{{ workspace.name|slice:':1'|upper }}</span></div>
+                {% endif %}
+              </div>
+              <div class="brand-preview-meta">
+                {% if workspace.official_logo %}
+                  <div><strong>{{ workspace.official_logo.alt_text|default:'Officiell logga' }}</strong><span>{{ workspace.official_logo.width }} × {{ workspace.official_logo.height }} px · uppladdad {{ workspace.official_logo.created_at|date:'j M Y' }}</span></div>
+                  <details><summary>Filinformation</summary><p class="small break-anywhere">Version {{ workspace.official_logo.pk }}<br>SHA-256 {{ workspace.official_logo.sha256 }}</p></details>
+                {% else %}
+                  <div><strong>Ingen logga uppladdad</strong><span>Lägg till företagets officiella logga för ett konsekvent visuellt uttryck.</span></div>
+                {% endif %}
+              </div>
+            </div>
 
-        <section class="settings-section" id="daily">
-          <div class="settings-section-head"><div><span class="editorial-eyebrow">Drift</span><h2>Daglig körning</h2><p class="small">Lyckade delar sparas även om något annat behöver uppmärksamhet.</p></div></div>
-          <div class="settings-section-body">
-            {% if steps %}
-              <div class="table-scroll"><table class="daily-table mobile-table"><thead><tr><th>Dag</th><th>Moment</th><th>Status</th><th>Detaljer</th></tr></thead><tbody>{% for step in steps %}<tr><td data-label="Dag">{{ step.run.day|date:'j M' }}</td><td data-label="Moment">{{ step.label }}<br><span class="small">{{ step.subject }}</span></td><td data-label="Status">{% if step.status == 'success' %}<span class="status-badge success">Klart</span>{% elif step.status == 'skipped' %}<span class="status-badge muted">Ingen åtgärd</span>{% elif step.status == 'pending' or step.status == 'blocked' %}<span class="status-badge warning">Väntar</span>{% elif step.status == 'running' %}<span class="status-badge warning">Pågår</span>{% else %}<span class="status-badge warning">Kontrollera</span>{% endif %}</td><td data-label="Detaljer">{% if step.message %}<span>{{ step.message }}</span>{% endif %}{% if step.target %}<br><a href="{{ step.target }}">Öppna →</a>{% endif %}<details><summary>Tekniskt</summary><p class="small break-anywhere">{{ step.stage }} · {{ step.version }}<br>{{ step.key }}<br>{{ step.attempts }} försök</p></details></td></tr>{% endfor %}</tbody></table></div>
-            {% else %}<div class="empty-state"><h3>Ingen daily-körning ännu</h3><p>När GitHub Actions har kört visas status här.</p></div>{% endif %}
+            <form class="logo-upload-form brand-upload-panel" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="brand-upload-copy">
+                <span class="brand-upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V5M8 9l4-4 4 4M5 19h14"></path></svg></span>
+                <div><strong>{% if workspace.official_logo %}Byt logga{% else %}Ladda upp logga{% endif %}</strong><span>Transparent PNG rekommenderas. WebP och JPEG stöds också.</span></div>
+              </div>
+              <label class="sr-only" for="official-logo">{% if workspace.official_logo %}Byt logga{% else %}Välj logga{% endif %}</label>
+              <input id="official-logo" type="file" name="logo" accept="image/png,image/webp,image/jpeg" required>
+              <div class="brand-upload-footer"><span>Max 8 MB</span><button>Spara logga</button></div>
+            </form>
           </div>
         </section>
+
+        <details class="advanced-settings settings-card" id="advanced">
+          <summary class="advanced-settings-summary">
+            <span class="advanced-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"></path><circle cx="9" cy="7" r="3"></circle><circle cx="15" cy="17" r="3"></circle></svg></span>
+            <span class="advanced-summary-copy"><strong>Drift och automation</strong><span>Scraping, kostnadseffektivitet och automatiska uppdateringar.</span></span>
+            <span class="advanced-summary-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="advanced-body">
+            <div class="advanced-status-strip">
+              <div><span class="advanced-status-dot"></span><strong>Automation aktiv</strong><span>Systemet samlar och uppdaterar data enligt konfigurationen.</span></div>
+              <span class="settings-state neutral">Teknisk vy</span>
+            </div>
+
+            <div id="scraping">{% include 'engine/scraper_stats.html' %}</div>
+
+            <section class="settings-section settings-card settings-daily-card" id="daily">
+              <div class="settings-section-head settings-card-head"><div><span class="settings-section-kicker">Historik</span><h2>Automatiska uppdateringar</h2><p class="small">Senaste jobb, status och eventuella åtgärder.</p></div></div>
+              <div class="settings-section-body">
+                {% if steps %}
+                  <div class="table-scroll"><table class="daily-table mobile-table"><thead><tr><th>Dag</th><th>Moment</th><th>Status</th><th>Detaljer</th></tr></thead><tbody>{% for step in steps %}<tr><td data-label="Dag">{{ step.run.day|date:'j M' }}</td><td data-label="Moment">{{ step.label }}<br><span class="small">{{ step.subject }}</span></td><td data-label="Status">{% if step.status == 'success' %}<span class="status-badge success">Klart</span>{% elif step.status == 'skipped' %}<span class="status-badge muted">Ingen åtgärd</span>{% elif step.status == 'pending' or step.status == 'blocked' %}<span class="status-badge warning">Väntar</span>{% elif step.status == 'running' %}<span class="status-badge warning">Pågår</span>{% else %}<span class="status-badge warning">Kontrollera</span>{% endif %}</td><td data-label="Detaljer">{% if step.message %}<span>{{ step.message }}</span>{% endif %}{% if step.target %}<br><a href="{{ step.target }}">Öppna →</a>{% endif %}<details><summary>Tekniskt</summary><p class="small break-anywhere">{{ step.stage }} · {{ step.version }}<br>{{ step.key }}<br>{{ step.attempts }} försök</p></details></td></tr>{% endfor %}</tbody></table></div>
+                {% else %}<div class="empty-state"><h3>Ingen uppdatering ännu</h3><p>Historik visas här när den första automatiska körningen är klar.</p></div>{% endif %}
+              </div>
+            </section>
+          </div>
+        </details>
       </div>
     </div>
   </div>

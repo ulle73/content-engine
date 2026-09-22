@@ -1,0 +1,56 @@
+/* Scoped Creative Engine additions: preserve existing application screens. */
+.creative-help-trigger { min-height: 44px; margin: 0 0 16px; }
+.creative-help { width: min(760px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 0; border: 1px solid #dce3dd; border-radius: 16px; color: #19241d; background: #fff; }
+.creative-help::backdrop { background: #10251c99; }
+.creative-help .media-preview-dialog-head { position: sticky; top: 0; background: #fff; padding: 20px; border-bottom: 1px solid #e6e9e6; z-index: 1; }
+.creative-help h2 { margin: 0; font-size: clamp(20px, 4vw, 28px); }
+.creative-help-body { padding: 0 24px 24px; line-height: 1.65; overflow-wrap: anywhere; }
+.creative-help-steps { padding-left: 24px; }
+.creative-help-steps li { padding-left: 6px; margin: 18px 0; }
+.creative-help-steps li::marker { color: #315b45; font-weight: 700; }
+.creative-help details { border-top: 1px solid #e6e9e6; padding: 12px 0; }
+.creative-help summary { cursor: pointer; padding: 10px 0; font-weight: 650; min-height: 44px; }
+.creative-example { background: #f3f6f2; border-left: 3px solid #315b45; padding: 12px; border-radius: 4px; }
+.creative-statuses dt { margin-top: 12px; font-weight: 650; }
+.creative-statuses dd { margin-left: 0; }
+.creative-help :focus-visible { outline: 3px solid #315b45; outline-offset: 3px; }
+@media (max-width: 540px) { .creative-help-body { padding: 0 16px 16px; } .creative-help .media-preview-dialog-head { padding: 16px; gap: 12px; } }
+.creative-page { max-width: 1160px; min-width: 0; }
+.creative-page h1 { letter-spacing: -.035em; }
+.creative-panel { min-width: 0; margin: 22px 0; padding: clamp(18px, 3vw, 30px); border: 1px solid var(--v3-line, #e6e9e6); border-radius: 14px; background: var(--v3-surface, white); }
+.creative-panel h2, .creative-panel h3 { margin-top: 0; }
+.creative-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 24px; padding: 5px; background: #f1f4f0; border-radius: 12px; width: fit-content; max-width: 100%; }
+.creative-tabs a { padding: 12px 18px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 8px; text-decoration: none; color: var(--v3-muted, #667069); }
+.creative-tabs a[aria-current=page] { color: var(--v3-text, #151916); background: white; box-shadow: 0 1px 4px #0000000f; font-weight: 650; }
+.creative-form { display: grid; gap: 12px; min-width: 0; }
+.creative-page input:not([type=checkbox]), .creative-page textarea, .creative-page select { width: 100%; min-width: 0; max-width: 100%; font: inherit; font-size: 16px; padding: 12px; border: 1px solid var(--v3-line, #e6e9e6); border-radius: 8px; background: white; }
+.creative-page textarea { resize: vertical; line-height: 1.6; }
+.creative-page label { display: block; font-weight: 600; margin-bottom: 5px; }
+.creative-page button, .creative-page .button { min-height: 44px; white-space: normal; }
+.creative-page .secondary { color: var(--v3-green, #315b45); background: #f7f8f6; border: 1px solid #e6e9e6; }
+.creative-page :is(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid #315b45; outline-offset: 3px; }
+.creative-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 8px 0; }
+.creative-actions form { margin: 0; }
+.creative-actions .button { display: inline-flex; align-items: center; padding: 10px 16px; border-radius: 8px; text-decoration: none; }
+.creative-details { margin: 14px 0; }
+.creative-details summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
+.creative-details .optional-fields { margin-top: 14px; }
+.creative-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.creative-filter { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; margin: 20px 0; }
+.creative-filter > div:first-child { flex: 2 1 240px; }
+.creative-filter > div { flex: 1 1 130px; min-width: 0; }
+.creative-filter .creative-checkbox { display: flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 400; }
+.creative-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 18px; }
+.creative-grid .creative-panel { margin: 0; }
+.prompt-card { display: flex; flex-direction: column; }
+.prompt-card .creative-actions { margin-top: auto; padding-top: 20px; }
+.prompt-excerpt { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--v3-muted, #667069); line-height: 1.65; }
+.creative-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.creative-tags span { padding: 4px 8px; border-radius: 6px; font-size: 12px; color: #315b45; background: #f0f4ef; overflow-wrap: anywhere; }
+.creative-original { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 100%; font: inherit; line-height: 1.7; padding: 16px; border-radius: 8px; background: #f7f8f6; }
+.creative-empty { grid-column: 1 / -1; text-align: center; padding: 44px 20px; }
+.creative-page .errorlist { color: #8a2930; list-style: none; padding: 0; }
+@media (max-width: 600px) { .creative-filter { display: grid; grid-template-columns: minmax(0, 1fr); } .creative-section-heading h3 { overflow-wrap: anywhere; } .creative-page .creative-panel { padding: 18px; } }
+
+/* Keep help disclosures readable despite the compact global summary style. */
+dialog.creative-help .creative-help-body summary { font-size: 16px; line-height: 1.5; }

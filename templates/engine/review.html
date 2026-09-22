@@ -2,85 +2,86 @@
 {% block title %}{{ run.title }} · {{ workspace.name }}{% endblock %}
 {% block content %}
 <main class="engine review-page">
-  <a class="back-link" href="{% url 'engine:home' workspace_id=workspace.id %}">← Till översikten</a>
-  <header class="page-header editor-header">
+  <a class="back-link review-back-link" href="{% url 'engine:home' workspace_id=workspace.id %}?channel={{ run.channel }}#recent-work">← Mina utkast</a>
+  <header class="page-header editor-header review-page-header">
     <div class="page-heading">
-      <span class="editorial-eyebrow">{% if run.channel == 'paid' %}Paid creative{% else %}Organic creative{% endif %}</span>
+      <p class="eyebrow">{% if run.channel == 'paid' %}Annonsutkast{% else %}Inläggsutkast{% endif %}</p>
       <h1>{{ run.title }}</h1>
-      <p class="intro">{% if run.channel == 'paid' %}Annonsutkast{% else %}Organiskt utkast{% endif %} · källa {{ run.context.source }} · underlaget gäller t.o.m. {{ run.context.valid_until }}</p>
+      <p class="intro">Finjustera text och media innan utkastet lämnar Content Engine.</p>
     </div>
-    <div class="page-actions"><span class="status-badge {% if run.delivery_status == 'sent' %}success{% elif run.delivery_status == 'draft' %}muted{% else %}warning{% endif %}">{% if run.delivery_status == 'sent' %}I Postiz{% elif run.delivery_status == 'draft' %}Utkast{% else %}Kontroll krävs{% endif %}</span></div>
+    <div class="page-actions"><span class="review-status-pill {% if run.delivery_status == 'sent' %}success{% elif run.delivery_status == 'draft' %}muted{% else %}warning{% endif %}"><span class="review-status-dot"></span>{% if run.delivery_status == 'sent' %}I Postiz{% elif run.delivery_status == 'draft' %}Utkast{% else %}Kontroll krävs{% endif %}</span></div>
   </header>
 
-  <nav class="review-progress" aria-label="Arbetsflöde">
-    <span class="review-step is-complete"><span class="review-step-index">1</span><span>Idé</span></span>
-    <span class="review-step is-current"><span class="review-step-index">2</span><span>Text</span></span>
-    <span class="review-step {% if run.media_asset %}is-complete{% endif %}"><span class="review-step-index">3</span><span>Media</span></span>
-    <span class="review-step {% if run.delivery_status == 'sent' %}is-complete{% endif %}"><span class="review-step-index">4</span><span>{% if run.channel == 'paid' %}Export{% else %}Postiz{% endif %}</span></span>
+  {% if run.delivery_status == 'draft' %}
+  <nav class="review-progress premium-review-progress" aria-label="Arbetsflöde">
+    <a href="#edit-text" class="review-step is-current"><span class="review-step-index">1</span><span><strong>Text</strong><small>Redigera copy</small></span></a>
+    <a href="#choose-media" class="review-step"><span class="review-step-index">2</span><span><strong>Media</strong><small>Bild eller video</small></span></a>
+    <a href="#review-send" class="review-step"><span class="review-step-index">3</span><span><strong>{% if run.channel == 'paid' %}Använd annons{% else %}Skicka vidare{% endif %}</strong><small>{% if run.channel == 'paid' %}Till Ads Manager{% else %}Till Postiz{% endif %}</small></span></a>
   </nav>
+  {% endif %}
 
   {% if run.influencing_signal %}
-    <details class="open-section">
-      <summary>Inspirationen bakom idén</summary>
-      <p><a href="{{ run.influencing_signal.url }}" target="_blank" rel="noopener">{{ run.influencing_signal.account }} · original ↗</a></p>
-      <p class="small">{{ run.influencing_signal.classification.mechanisms|join:' + ' }} · signalpoäng {{ run.influencing_signal.score }}. Egna företagsuppgifter är alltid faktakällan.</p>
+    <details class="open-section review-source-card">
+      <summary><span>Inspirationen bakom idén</span><span class="small">Visa underlag</span></summary>
+      <div class="review-source-body"><p><a href="{{ run.influencing_signal.url }}" target="_blank" rel="noopener">{{ run.influencing_signal.account }} · original ↗</a></p><p class="small">{{ run.influencing_signal.classification.mechanisms|join:' + ' }} · signalpoäng {{ run.influencing_signal.score }}. Egna företagsuppgifter är alltid faktakällan.</p></div>
     </details>
   {% endif %}
 
   {% if run.delivery_status == 'sent' %}
-    <div class="editor-layout">
-      <section class="editor-panel"><div class="editor-panel-head"><h2>Text</h2><span class="status-badge success">Överförd</span></div><div class="editor-panel-body"><h3>Facebook</h3><p class="text-prewrap">{{ run.draft.facebook }}</p><div class="rule"></div><h3>Instagram</h3><p class="text-prewrap">{{ run.draft.instagram }}</p></div></section>
-      <aside class="editor-side"><section class="editor-panel"><div class="editor-panel-head"><h2>Nästa steg</h2></div><div class="editor-panel-body"><p>Utkastet finns i Postiz. Slutgranska och välj publiceringstid där.</p><a class="button" href="https://platform.postiz.com" target="_blank" rel="noopener">Öppna Postiz ↗</a></div></section>{% if run.media_asset %}<section class="editor-panel"><div class="editor-panel-head"><h2>Vald media</h2></div><div class="editor-panel-body"><div class="media-preview-wrap">{% if run.media_asset.kind == 'image' %}<img class="media-preview" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}" alt="{{ run.media_asset.alt_text|default:'Vald bild' }}">{% else %}<video class="media-preview" controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}"></video>{% endif %}</div></div></section>{% endif %}</aside>
+    <section class="review-sent-banner"><span class="review-sent-icon" aria-hidden="true">✓</span><div><strong>Utkastet är överfört till Postiz</strong><span>Slutgranska och välj publiceringstid i Postiz. Content Engine följer resultatet automatiskt efter publicering.</span></div><a class="button" href="https://platform.postiz.com" target="_blank" rel="noopener">Öppna Postiz ↗</a></section>
+    <div class="editor-layout sent-editor-layout">
+      <section class="editor-panel premium-editor-panel"><div class="editor-panel-head"><div><span class="editor-panel-kicker">Copy</span><h2>Publiceringstext</h2></div><span class="status-badge success">Överförd</span></div><div class="editor-panel-body"><div class="sent-copy-block"><span>Facebook</span><p class="text-prewrap">{{ run.draft.facebook }}</p></div><div class="sent-copy-block"><span>Instagram</span><p class="text-prewrap">{{ run.draft.instagram }}</p></div></div></section>
+      <aside class="editor-side">{% if run.media_asset %}<section class="editor-panel premium-editor-panel"><div class="editor-panel-head"><div><span class="editor-panel-kicker">Media</span><h2>Vald media</h2></div></div><div class="editor-panel-body"><div class="media-preview-wrap premium-media-preview">{% if run.media_asset.kind == 'image' %}<img class="media-preview" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}" alt="{{ run.media_asset.alt_text|default:'Vald bild' }}">{% else %}<video class="media-preview" controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}"></video>{% endif %}</div></div></section>{% endif %}</aside>
     </div>
   {% elif run.delivery_status != 'draft' %}
-    <section class="settings-section">
-      <div class="settings-section-head"><h2>Överföringen behöver kontrolleras</h2></div>
-      <div class="settings-section-body"><p>Kontrollera i Postiz om utkastet skapades innan något skickas igen.</p><a class="button" href="https://platform.postiz.com" target="_blank" rel="noopener">Kontrollera Postiz ↗</a>{% if run.delivery_status == 'unknown' %}<form method="post">{% csrf_token %}<label class="channel-option"><input name="checked_postiz" type="checkbox" required><span>Jag har kontrollerat att inget utkast skapats i Postiz.</span></label><button name="action" value="reset">Tillåt ett nytt försök</button></form>{% endif %}</div>
+    <section class="review-error-card">
+      <div class="review-error-head"><span class="review-error-icon" aria-hidden="true">!</span><div><h2>Överföringen behöver kontrolleras</h2><p>Kontrollera i Postiz om utkastet skapades innan något skickas igen.</p></div></div>
+      <div class="review-error-actions"><a class="button" href="https://platform.postiz.com" target="_blank" rel="noopener">Kontrollera Postiz ↗</a>{% if run.delivery_status == 'unknown' %}<form method="post">{% csrf_token %}<label class="channel-option"><input name="checked_postiz" type="checkbox" required><span>Jag har kontrollerat att inget utkast skapats i Postiz.</span></label><button name="action" value="reset">Tillåt ett nytt försök</button></form>{% endif %}</div>
     </section>
   {% else %}
-    <form method="post" enctype="multipart/form-data">{% csrf_token %}
-      <div class="editor-layout">
-        <section class="editor-panel">
-          <div class="editor-panel-head"><div><span class="editorial-eyebrow">Steg 2</span><h2>Copy</h2></div><span class="small">Redigera innan godkännande</span></div>
+    <form method="post" enctype="multipart/form-data" data-track-changes>{% csrf_token %}
+      <div class="editor-layout premium-editor-layout">
+        <section class="editor-panel premium-editor-panel copy-editor-panel" id="edit-text">
+          <div class="editor-panel-head"><div><span class="editor-panel-kicker">Steg 1</span><h2>Redigera texten</h2></div><span class="editor-panel-hint">Sparas som utkast</span></div>
           <div class="editor-panel-body">
-            <div class="editor-copy-section"><label for="facebook">Facebook</label><textarea id="facebook" name="facebook" rows="9" required>{{ run.draft.facebook }}</textarea></div>
-            <div class="editor-copy-section"><label for="instagram">Instagram</label><textarea id="instagram" name="instagram" rows="9" maxlength="2200" required>{{ run.draft.instagram }}</textarea><p class="small">Max 2 200 tecken.</p></div>
+            <div class="editor-copy-section premium-copy-section"><div class="platform-label"><span class="platform-dot facebook"></span><label for="facebook">Facebook</label></div><textarea id="facebook" name="facebook" rows="6" required>{{ run.draft.facebook }}</textarea></div>
+            <div class="editor-copy-section premium-copy-section"><div class="platform-label"><span class="platform-dot instagram"></span><label for="instagram">Instagram</label><span class="char-limit">Max 2 200 tecken</span></div><textarea id="instagram" name="instagram" rows="6" maxlength="2200" required>{{ run.draft.instagram }}</textarea></div>
             {% if run.channel == 'paid' %}
-              <div class="editor-copy-section"><h3>Annonsfält</h3><label for="headline">Rubrik</label><input id="headline" name="headline" value="{{ run.draft.headline }}"><label for="description">Beskrivning</label><input id="description" name="description" value="{{ run.draft.description }}"><label for="cta">CTA</label><input id="cta" name="cta" value="{{ run.draft.cta }}"><label for="landing_page">Verifierad landningssida</label><input type="url" id="landing_page" name="landing_page" value="{{ run.draft.landing_page }}"></div>
+              <div class="editor-copy-section ad-fields-section"><div class="ad-fields-head"><span class="editor-panel-kicker">Meta-annons</span><h3>Annonsfält</h3></div><div class="ad-fields-grid"><div><label for="headline">Rubrik</label><input id="headline" name="headline" value="{{ run.draft.headline }}"></div><div><label for="cta">Knapptext</label><input id="cta" name="cta" value="{{ run.draft.cta }}"></div><div class="span-two"><label for="description">Beskrivning</label><input id="description" name="description" value="{{ run.draft.description }}"></div><div class="span-two"><label for="landing_page">Länk till erbjudandet</label><input type="url" id="landing_page" name="landing_page" value="{{ run.draft.landing_page }}"></div></div></div>
             {% endif %}
-            <div class="editor-footer"><span class="small">Ändringar sparas i Content Engine.</span><button name="action" value="save">Spara text</button></div>
+            <div class="editor-footer"><span class="editor-save-note">Ändringar stannar i Content Engine tills du skickar vidare.</span><button name="action" value="save">Spara text</button></div>
           </div>
         </section>
 
-        <aside class="editor-side">
-          <section class="editor-panel">
-            <div class="editor-panel-head"><div><span class="editorial-eyebrow">Steg 3</span><h2>Media</h2></div>{% if run.media_asset %}<span class="status-badge success">Vald</span>{% endif %}</div>
-            <div class="editor-panel-body">
+        <aside class="editor-side premium-editor-side">
+          <section class="editor-panel premium-editor-panel" id="choose-media">
+            <div class="editor-panel-head"><div><span class="editor-panel-kicker">Steg 2</span><h2>Välj media</h2></div>{% if run.media_asset %}<span class="status-badge success">Vald</span>{% endif %}</div>
+            <div class="editor-panel-body media-choice-body">
               {% if run.media_asset %}
-                <div class="media-preview-wrap">{% if run.media_asset.kind == 'image' %}<img class="media-preview" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}" alt="{{ run.media_asset.alt_text|default:'Vald bild' }}">{% else %}<video class="media-preview" controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}"></video>{% endif %}</div>
-                <p class="small">{{ run.media_asset.get_origin_display }} · {{ run.media_asset.get_kind_display }}</p>
-                <a class="button button-secondary" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}">Byt media</a>
+                <div class="media-preview-wrap premium-media-preview">{% if run.media_asset.kind == 'image' %}<img class="media-preview" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}" alt="{{ run.media_asset.alt_text|default:'Vald bild' }}">{% else %}<video class="media-preview" controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}"></video>{% endif %}</div>
+                <div class="selected-media-meta"><span>{{ run.media_asset.get_origin_display }}</span><strong>{{ run.media_asset.get_kind_display }}</strong></div>
+                <a class="button button-secondary full-width-button" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}">Byt media</a>
               {% else %}
-                <div class="empty-state"><h3>Ingen media vald</h3><p>Välj företagets fil, ladda upp eller generera ett alternativ.</p></div>
-                <a class="button button-secondary" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}">Välj bild eller video</a>
+                <div class="empty-state media-empty-state"><span class="media-empty-icon" aria-hidden="true">+</span><h3>Ingen media vald</h3><p>Välj en befintlig fil, ladda upp eller generera nytt.</p></div>
+                <a class="button button-secondary full-width-button" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}">Välj media</a>
               {% endif %}
-              <p class="small">Bildbrief: {{ run.draft.photo_brief }}</p>
+              <details class="media-brief-disclosure"><summary>Bildförslag</summary><p class="small">{{ run.draft.photo_brief }}</p></details>
             </div>
           </section>
 
-          <section class="editor-panel">
-            <div class="editor-panel-head"><div><span class="editorial-eyebrow">Steg 4</span><h2>Granskning</h2></div></div>
+          <section class="editor-panel premium-editor-panel send-panel" id="review-send">
+            <div class="editor-panel-head"><div><span class="editor-panel-kicker">Steg 3</span><h2>{% if run.channel == 'paid' %}Använd annonsen{% else %}Granska och skicka{% endif %}</h2></div></div>
             <div class="editor-panel-body">
-              <ul class="check-list">{% for check in run.draft.checks %}<li>{{ check }}</li>{% empty %}<li>Kontrollera fakta, tonalitet och vald media.</li>{% endfor %}</ul>
+              <ul class="check-list premium-check-list">{% for check in run.draft.checks %}<li>{{ check }}</li>{% empty %}<li>Kontrollera text, fakta och media.</li>{% endfor %}</ul>
               {% if run.channel == 'paid' %}
-                <p class="small">Annonscopy och media används i Meta Ads Manager. Content Engine publicerar inte paid-annonser via Postiz.</p>
-                {% if run.media_asset %}<p><a href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}" download>Hämta vald media</a></p>{% endif %}
+                <div class="delivery-info-box"><strong>Redo för Meta Ads Manager</strong><span>Spara texten och använd den tillsammans med vald media i Ads Manager.</span></div>
+                {% if run.media_asset %}<a class="text-link compact-link" href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}" download>Ladda ner media ↓</a>{% endif %}
               {% else %}
-                <h3>Postiz-kanaler</h3>
-                <div class="channel-list">{% for channel in brand.postiz_channels %}<label class="channel-option"><input type="checkbox" name="channels" value="{{ channel.id }}"><span>{{ channel.name }} · {{ channel.identifier }}</span></label>{% empty %}<p class="small"><a href="{% url 'engine:connect' workspace_id=workspace.id %}">Anslut företagets Postiz-kanaler först.</a></p>{% endfor %}</div>
-                <label class="channel-option"><input type="checkbox" name="reviewed"><span>Jag har kontrollerat uppgifterna och har rätt att använda vald media.</span></label>
-                <button name="action" value="send">Skicka utkast till Postiz</button>
-                <p class="small">Detta skapar ett utkast. Slutligt godkännande och schemaläggning görs i Postiz.</p>
+                <h3 class="channel-heading">Välj kanaler</h3>
+                <div class="channel-list premium-channel-list">{% for channel in brand.postiz_channels %}<label class="channel-option"><input type="checkbox" name="channels" value="{{ channel.id }}"><span><strong>{{ channel.name }}</strong><small>{{ channel.identifier }}</small></span></label>{% empty %}<div class="channel-empty"><span>Inga kanaler anslutna.</span><a href="{% url 'engine:connect' workspace_id=workspace.id %}">Anslut publiceringskanaler →</a></div>{% endfor %}</div>
+                <label class="channel-option review-confirmation"><input type="checkbox" name="reviewed"><span>Jag har granskat texten och har rätt att använda bilden eller videon.</span></label>
+                {% if brand.postiz_channels %}<button class="full-width-button send-to-postiz" name="action" value="send">Skicka utkast till Postiz <span aria-hidden="true">→</span></button>{% endif %}
+                <p class="small delivery-note">Ingen publicering sker här. Publiceringstid väljer du sedan i Postiz.</p>
               {% endif %}
             </div>
           </section>
@@ -89,6 +90,6 @@
     </form>
   {% endif %}
 
-  <section class="review-learning-link"><a href="{% url 'engine:outcome' workspace_id=workspace.pk run_id=run.pk %}">Registrera verifierat resultat för learning →</a></section>
+  <details class="review-learning-link premium-review-learning"><summary>Mer om utkastet</summary><div class="review-learning-body"><p class="small">Källa: {{ run.context.source }} · gäller till {{ run.context.valid_until }}</p>{% if run.channel != 'paid' %}<p class="small automatic-learning-note"><span class="automatic-learning-dot"></span>Resultat och learning samlas in automatiskt efter publicering via Postiz.</p>{% endif %}<a href="{% url 'engine:outcome' workspace_id=workspace.pk run_id=run.pk %}">Registrera resultat manuellt →</a></div></details>
 </main>
 {% endblock %}

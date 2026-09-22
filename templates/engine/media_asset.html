@@ -1,11 +1,17 @@
-<article class="media-item">
-  {% if asset.kind == 'image' %}<img class="media-thumb" loading="lazy" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Bildalternativ' }}">{% else %}<video class="media-thumb" controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}#t=0.1"></video>{% endif %}
-  <p class="small">{{ asset.get_origin_display }} · {{ asset.get_kind_display }} · {{ asset.created_at|date:'j M' }}{% if asset.used_at %} · används i innehåll{% elif asset.expires_at %} · Förhandsvisning i 7 dagar{% endif %}</p>
-  <p class="small">{% if asset.width %}{{ asset.width }} × {{ asset.height }}{% endif %}{% if asset.duration_seconds %}{% if asset.width %} · {% endif %}{{ asset.duration_seconds|floatformat:1 }} sek{% endif %}</p>
-  <div class="media-actions">
-    {% if run.delivery_status == 'draft' %}<form method="post" action="{% url 'engine:media_use' workspace_id=workspace.pk run_id=run.pk asset_id=asset.pk %}">{% csrf_token %}<button>Använd</button></form>{% endif %}
-    <a class="button button-secondary" href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" target="_blank" rel="noopener">Öppna</a>
+<article class="media-item premium-media-item">
+  <div class="media-thumb-shell">
+    {% if asset.kind == 'image' %}<img class="media-thumb" loading="lazy" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Bildalternativ' }}">{% else %}<video class="media-thumb" controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}#t=0.1"></video>{% endif %}
+    <span class="media-kind-badge">{{ asset.get_kind_display }}</span>
+    {% if asset.used_at %}<span class="media-selected-badge">Används</span>{% endif %}
   </div>
-  {% if asset.kind == 'image' and run.delivery_status == 'draft' %}<p class="small"><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=image#generate">Gör variant</a> · <a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=video#generate">Animera</a></p>{% endif %}
-  {% if not asset.used_at %}<form method="post" action="{% url 'engine:media_delete' workspace_id=workspace.pk run_id=run.pk asset_id=asset.pk %}">{% csrf_token %}<button class="quiet button-danger">Ta bort oanvänd media</button></form>{% endif %}
+  <div class="media-item-body">
+    <div class="media-item-meta"><strong>{{ asset.get_origin_display }}</strong><span>{{ asset.created_at|date:'j M' }}{% if asset.width %} · {{ asset.width }} × {{ asset.height }}{% endif %}{% if asset.duration_seconds %} · {{ asset.duration_seconds|floatformat:1 }} sek{% endif %}</span></div>
+    {% if asset.expires_at and not asset.used_at %}<span class="media-expiry-note">Förhandsvisning i 7 dagar</span>{% endif %}
+    <div class="media-actions premium-media-actions">
+      {% if run.delivery_status == 'draft' %}<form method="post" action="{% url 'engine:media_use' workspace_id=workspace.pk run_id=run.pk asset_id=asset.pk %}">{% csrf_token %}<button>Använd</button></form>{% endif %}
+      <a class="button button-secondary" href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" target="_blank" rel="noopener">Öppna</a>
+    </div>
+    {% if asset.kind == 'image' and run.delivery_status == 'draft' %}<div class="media-quick-actions"><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=image#generate">Gör variant</a><span>·</span><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=video#generate">Animera</a></div>{% endif %}
+    {% if not asset.used_at %}<form class="media-delete-form" method="post" action="{% url 'engine:media_delete' workspace_id=workspace.pk run_id=run.pk asset_id=asset.pk %}">{% csrf_token %}<button class="quiet button-danger">Ta bort oanvänd media</button></form>{% endif %}
+  </div>
 </article>

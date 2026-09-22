@@ -1,0 +1,32 @@
+<button type="button" class="button-secondary creative-help-trigger" onclick="document.getElementById('creative-help').showModal()" aria-haspopup="dialog" aria-controls="creative-help">? Hur fungerar det?</button>
+<dialog id="creative-help" class="media-preview-dialog creative-help" aria-labelledby="creative-help-title">
+  <div class="media-preview-dialog-head"><div><p class="eyebrow">Kom igång · cirka 2 minuter</p><h2 id="creative-help-title">Så använder du Creative Engine</h2></div><button type="button" class="media-dialog-close" aria-label="Stäng hjälpen" autofocus onclick="this.closest('dialog').close()">×</button></div>
+  <div class="creative-help-body">
+    <p>Gör din idé till bilder och korta videor för ett inlägg. Du beskriver resultatet, granskar inställningarna och väljer sedan vad du vill använda.</p>
+    <ol class="creative-help-steps">
+      <li><strong>Öppna AI-studion.</strong> Välj företag → Media → <b>Skapa bild eller video</b>. Har du ett utkast redan? Öppna det under <b>Skapa → Mina utkast</b> och välj <b>Välj bild eller video → Skapa med AI</b>.</li>
+      <li><strong>Välj Bild eller Video och beskriv motivet.</strong> Skriv vad som ska synas, miljö, ljus och stil. För video: lägg till längd och kamerarörelse. För att animera en egen bild: ladda upp den, välj <b>Animera</b> på bildkortet och beskriv vad som får röra sig.</li>
+      <li><strong>Välj prioritet och format.</strong> Balanserad passar första försöket. Bäst resultat ger högre bildkvalitet; Spara kostnad ger lägre. För video finns för närvarande en verifierad modell, så prioriteten garanterar inte olika pris. Motorn sammanställer prompt och parametrar automatiskt. Kontrollera faktisk längd och bildstorlek i nästa steg.</li>
+      <li><strong>Granska före betalning.</strong> Tryck <b>Granska före start</b>. Video får ett aktuellt prisestimat från serverns Higgsfield-konto; inget klipp skapas ännu. Saknat pris eller överskriden kostnadsgräns stoppar start. Bilder debiteras av OpenAI och saknar bindande förhandspris här. Först <b>Starta betald generation</b> skickar uppdraget.</li>
+      <li><strong>Granska resultatet och välj Använd.</strong> Färdiga filer finns på generationens sida och under Media för företaget. Använd kopplar filen till utkastet och behåller den. Oanvända AI-alternativ löper ut efter sju dagar. Granska text och media innan du skickar vidare till Postiz.</li>
+    </ol>
+    <details><summary>Tre exempel att börja med</summary>
+      <h3>Bild</h3><p class="creative-example">Skapa en premium annonsbild för Golfkuponger där en golfare står på en svensk golfbana i solnedgång. Modernt, exklusivt och realistiskt. Ingen text i bilden.</p>
+      <h3>Video</h3><p class="creative-example">Skapa en cinematic 10-sekunders video där kameran långsamt flyger över en svensk golfbana i morgonljus.</p>
+      <h3>Animera bild · image-to-video</h3><p class="creative-example">Behåll golfaren, kläderna och miljön exakt som i originalbilden. Lägg endast till en långsam kamerarörelse framåt och subtil rörelse i gräset.</p>
+      <p class="small">Välj startbilden först. Bevarande är en instruktion till modellen, ingen garanti: granska alltid ansikten, text och detaljer. Använd ett tydligt motiv och en rörelse åt gången. Undvik motsägande instruktioner.</p>
+    </details>
+    <details><summary>Spara och återanvänd i Promptbibliotek</summary><p>En prompt är din textinstruktion. Under <b>Media → Promptbibliotek</b> kan du klistra in och spara bra exempel, redigera din version, markera favoriter och söka. Originalet bevaras. <b>Arkiverade</b> låter dig återställa borttagna promptar.</p><p>Öppna en prompt och välj <b>Kopiera prompt</b>, klistra sedan in den i AI-studion och anpassa motivet. Biblioteket används även automatiskt för liknande inspirationsmekanismer inom samma företag. Etiketter är enkla textbaserade förslag. Efter en generation väljer du <b>Spara prompt till bibliotek</b>; kopplingen till generationen följer med.</p></details>
+    <details><summary>Status, avbryt och försök igen</summary><dl class="creative-statuses">
+      <dt>Väntar · queued</dt><dd>Sparat för granskning, ännu inte skickat för generering.</dd>
+      <dt>Startar · starting</dt><dd>Begäran skickas. Starta inte en kopia.</dd>
+      <dt>Genererar · running</dt><dd>Leverantören arbetar. Kontrollera samma jobb.</dd>
+      <dt>Sparar · saving</dt><dd>Resultatet hämtas till Content Engines lagring.</dd>
+      <dt>Klar · completed</dt><dd>Filen är sparad och kan användas.</dd>
+      <dt>Misslyckades / stoppad · failed / nsfw</dt><dd>Läs felet och rätta orsaken innan du väljer Justera och skapa nytt. En ny start kan kosta pengar.</dd>
+      <dt>Avbruten · canceled</dt><dd>Jobbet har avbrutits. Leverantören kan neka avbokning om arbetet redan börjat.</dd>
+      <dt>Behöver kontrolleras · unknown</dt><dd>Start eller sparande kunde inte bekräftas. Det kan redan ha debiterats. Kontrollera leverantörskontot och sparade filer; systemet skickar aldrig automatiskt en ny betald begäran.</dd>
+    </dl><p><b>Avbryt</b> fungerar före start eller när leverantören accepterar det. <b>Kontrollera status</b> och automatisk återhämtning hämtar samma resultat, utan ny generation. Om tjänsten sover kan återhämtningen dröja tills den är aktiv igen.</p></details>
+    <details><summary>Använd via ChatGPT</summary><p>Anslut Content Engine i ChatGPT och logga in med ditt vanliga konto. Be exempelvis: ”Välj Golfkuponger och förhandsgranska en 5-sekunders golfvideo för mitt utkast. Visa modell, parametrar och pris. Starta inte förrän jag godkänt.”</p><p>ChatGPT använder samma företag, utkast och media via MCP. Be om förhandsgranskning före generering, kontrollera samma jobb och välj sedan filen. Publicering och schemaläggning kräver en separat instruktion.</p></details>
+  </div>
+</dialog>
