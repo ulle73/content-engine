@@ -121,13 +121,23 @@ def analysis(company, key, model, work, *, scrape_request_id=None):
                 cached = dict(memo.result or {})
                 cached.pop("_provider_usage", None)
                 return cached
-            if memo.status == "rejected" and (memo.last_attempt_at or memo.created_at) <= timezone.now() - timedelta(hours=23):
+            last_attempt = memo.last_attempt_at or memo.created_at
+            openrouter_stale = (
+                str(model).startswith("openrouter:")
+                and memo.status in {"started", "unknown"}
+                and last_attempt <= timezone.now() - timedelta(seconds=30)
+            )
+            rejected_retry = memo.status == "rejected" and last_attempt <= timezone.now() - timedelta(hours=23)
+            if openrouter_stale or rejected_retry:
+                # OpenRouter classification is side-effect free and cheap/free-first.
+                # A worker restart can interrupt us after the provider responded but
+                # before the memo was committed, so recycle stale text memos quickly.
                 memo.status, memo.last_attempt_at = "started", timezone.now()
                 memo.attempts += 1
                 memo.save(update_fields=["status", "last_attempt_at", "attempts"])
             else:
                 raise ValueError(
-                    "Analysen har redan startats men kunde inte bekräftas. Kontrollera analysloggen före nytt betalt försök."
+                    "Analysen kör redan eller väntar på bekräftelse. Försök igen om en kort stund."
                 )
         limit = min(50, max(0, int(os.environ.get("INTELLIGENCE_DAILY_ANALYSES", "12"))))
         from django.db.models import Q
