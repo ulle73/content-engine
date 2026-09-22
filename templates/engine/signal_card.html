@@ -30,6 +30,15 @@
           <p class="small">{{ signal.sample_size }} jämförbara poster. Vi inväntar mer data innan överprestation bedöms.</p>
         {% endif %}
         <p class="small">{{ signal.momentum.label }}</p>
+
+        <div class="signal-original-post">
+          <h3>Originalinlägg</h3>
+          {% if signal.post.caption %}
+            <p class="signal-original-caption">{{ signal.post.caption|linebreaksbr }}</p>
+          {% else %}
+            <p class="small">Inlägget saknar caption/text.</p>
+          {% endif %}
+        </div>
       </div>
 
       <div>
