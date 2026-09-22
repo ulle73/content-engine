@@ -51,3 +51,6 @@
 .creative-empty { grid-column: 1 / -1; text-align: center; padding: 44px 20px; }
 .creative-page .errorlist { color: #8a2930; list-style: none; padding: 0; }
 @media (max-width: 600px) { .creative-filter { display: grid; grid-template-columns: minmax(0, 1fr); } .creative-section-heading h3 { overflow-wrap: anywhere; } .creative-page .creative-panel { padding: 18px; } }
+
+/* Keep help disclosures readable despite the compact global summary style. */
+dialog.creative-help .creative-help-body summary { font-size: 16px; line-height: 1.5; }

@@ -298,6 +298,7 @@ class CreativeAuditTests(TestCase):
             preview_job(job)
         job.refresh_from_db()
         self.assertNotIn("reviewed_at", job.usage)
+        self.assertIn("No estimate", job.error)
         with self.assertRaises(providers.MediaError):
             start_reviewed_job(job)
 

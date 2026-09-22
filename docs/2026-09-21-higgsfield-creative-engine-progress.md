@@ -515,3 +515,15 @@ Full local baseline: 173 tests, 2 failures and 3 errors. Four stem from Windows 
 - Media library links unfinished jobs, including queued reviews and UNKNOWN jobs. Removed the unused legacy generation prompt implementation. Compiler/brief versions bumped to `2026-09-22.1`; verified model registry unchanged.
 - Latest local full run: **206 tests**, 2 failures + 2 errors from the known Windows SciPy application-control blocks, 2 PostgreSQL lock tests skipped on SQLite. No additional failures. Django check, migration drift check, dependency consistency, and whitespace check pass. Previous focused run: 108 passed (2 PostgreSQL-only skips). Full Linux/PostgreSQL CI is the deployment gate.
 - Live Neon read-only check confirms `engine.0013_prompt_library` and `operator_bridge.0001_initial` applied. No schema changes required by this audit.
+
+### Verified deployment and browser findings
+
+- Commit `a81f5b213c5efb11db72af3f481ef8ab37975610`: full [CI 35725147029](https://github.com/ulle73/content-engine/actions/runs/35725147029) green (206 PostgreSQL tests, no skips; 206 SQLite tests, two PostgreSQL-only skips). Render deploy `dep-dap6usbm8hqs739vf0i0` live, startup migrations clean.
+- User signed into Render. Set existing service Health Check Path to `/healthz`; connector read-back confirms it. `/healthz` and OAuth authorization metadata return 200; unauthenticated `/mcp` returns 401 with challenge.
+- Production prompt `7dc7f522-dae9-4d86-9e67-04438f441b55`: create, edit, favorite, archive and restore verified in browser. Original morning-light instruction retained after editing to evening light.
+- HOW TO opens with focus on Close, Escape closes and returns focus to trigger. At 390px viewport the dialog is 352px wide with no horizontal overflow. Found inherited 10px disclosure text: fixed to 16px. Aligned the help's animation label with the actual `Animera` control; archive action now states its recoverability.
+- Dummy PNG `1b9e1ec4-929b-4e00-b14b-ad1e79d2a476` uploaded to production and loaded at 1024x1024. New unpaid studio run `48afc937-48c6-48c5-affe-0e39342f2c42` created.
+- **Production blocker:** real server-side 5-second T2V estimate rejected with Higgsfield HTTP 401. Job `aa6d2e49-2538-4c3e-9b02-743fe2853e33` remains queued, no paid provider id, no start button. Render contains both GK key/secret names; values remain masked. User asked to correct the matched credential in Render, never paste it into chat. Account/model availability and price remain unverified.
+- Failed preflight now persists its error safely on the job (previously only a one-request flash message); test demonstrated RED then GREEN. Browser-follow-up regression run: 65 passed.
+- Free-plan cold start was also observed dropping an unprocessed form submission. No blind duplicate submission: empty DB/library verified before repeating. Continuous availability remains a deployment-plan decision.
+- Detailed scope and residual risks: `docs/2026-09-22-creative-audit.md`.

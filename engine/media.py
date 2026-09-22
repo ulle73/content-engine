@@ -177,11 +177,19 @@ def preview_job(job):
         usage.pop(key, None)
     MediaGeneration.objects.filter(pk=job.pk, status="queued").update(usage=usage)
     if job.provider == "higgsfield":
-        _, _, estimate = providers.estimate_video(job)
+        try:
+            _, _, estimate = providers.estimate_video(job)
+        except MediaError as exc:
+            usage["provider_error"] = {"code": providers.provider_error_code(exc), "message": str(exc)[:300]}
+            MediaGeneration.objects.filter(pk=job.pk, status="queued").update(
+                usage=usage, error=str(exc)[:500], updated_at=timezone.now()
+            )
+            raise
         usage.update(estimate)
     else:
         usage["price_note"] = "OpenAI-bilder debiteras efter användning. Bindande prisestimat är inte tillgängligt här."
     usage["reviewed_at"] = timezone.now().isoformat()
+    usage.pop("provider_error", None)
     MediaGeneration.objects.filter(pk=job.pk, status="queued").update(usage=usage, error="", updated_at=timezone.now())
     job.refresh_from_db()
     return job

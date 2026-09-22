@@ -181,7 +181,7 @@ def job_page(request, workspace_id, run_id, job_id):
     run = run_for(request, run_id)
     job = get_object_or_404(MediaGeneration, pk=job_id, run=run)
     creative = job.parameters.get("creative", {}) if isinstance(job.parameters, dict) else {}
-    safe_parameters = {key: value for key, value in (job.parameters or {}).items() if key in {"model", "count", "size", "duration", "aspect_ratio"}}
+    safe_parameters = {key: value for key, value in (job.parameters or {}).items() if key in {"model", "count", "size", "quality", "duration", "aspect_ratio"}}
     status_index = {"queued": 2, "starting": 2, "running": 3, "saving": 4, "completed": 5}.get(job.status, -1)
     return render(request, "engine/media_job.html", {
         "workspace": request.workspace, "run": run, "job": job, "pending": job.status in PENDING, "now": timezone.now(),
