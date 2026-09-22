@@ -228,6 +228,44 @@ def _mark_provider_error(job, exc, *, status=None):
     MediaGeneration.objects.filter(pk=job.pk).update(**fields)
 
 
+def _persist_terminal_provider_status(job, remote_status, remote, *, expected_statuses=None):
+    """Persist Higgsfield's terminal status and error without starting or retrying work."""
+    provider_error = remote.get("error")
+    provider_error = provider_error.strip()[:500] if isinstance(provider_error, str) and provider_error.strip() else ""
+    defaults = {
+        "failed": "Videoleverantören kunde inte slutföra generationen.",
+        "nsfw": "Videoleverantören stoppade generationen i sin innehållskontroll.",
+        "canceled": "Videogenereringen avbröts innan den slutfördes.",
+    }
+    message = provider_error or defaults.get(remote_status, "Videoleverantören returnerade ett terminalt fel.")
+    usage = dict(job.usage or {})
+    usage["provider_terminal"] = {
+        "status": remote_status,
+        "error": provider_error,
+        "checked_at": timezone.now().isoformat(),
+    }
+    query = MediaGeneration.objects.filter(pk=job.pk)
+    if expected_statuses:
+        query = query.filter(status__in=expected_statuses)
+    query.update(status=remote_status, error=message, usage=usage, updated_at=timezone.now())
+
+
+def refresh_terminal_provider_status(job):
+    """Re-read a terminal Higgsfield request to recover the provider's actual error text."""
+    job.refresh_from_db()
+    if job.provider != "higgsfield" or not job.provider_id or job.status not in {"failed", "nsfw", "canceled"}:
+        return job
+    remote = providers.video_status(job)
+    if not isinstance(remote, dict):
+        raise MediaError("Leverantörens status kunde inte läsas.")
+    remote_status = remote.get("status")
+    if remote_status not in {"failed", "nsfw", "canceled"}:
+        raise MediaError("Higgsfield returnerar inte längre samma terminala status för jobbet.")
+    _persist_terminal_provider_status(job, remote_status, remote)
+    job.refresh_from_db()
+    return job
+
+
 def reconcile_video_job(job):
     """Read provider status and persist a terminal result without new paid submits."""
     job.refresh_from_db()
@@ -268,14 +306,7 @@ def reconcile_video_job(job):
             _mark_provider_error(job, exc)
             raise
     elif remote_status in {"failed", "nsfw", "canceled"}:
-        messages = {
-            "failed": "Videoleverantören kunde inte slutföra generationen.",
-            "nsfw": "Videoleverantören stoppade generationen i sin innehållskontroll.",
-            "canceled": "Videogenereringen avbröts innan den slutfördes.",
-        }
-        MediaGeneration.objects.filter(pk=job.pk, status__in=("running", "saving")).update(
-            status=remote_status, error=messages[remote_status], updated_at=timezone.now()
-        )
+        _persist_terminal_provider_status(job, remote_status, remote, expected_statuses=("running", "saving"))
     else:
         # Fair scheduling: an old, slow request must not starve all newer jobs.
         MediaGeneration.objects.filter(pk=job.pk, status="running").update(updated_at=timezone.now())
