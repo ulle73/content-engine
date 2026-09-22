@@ -30,6 +30,7 @@ engine_urls = [
     path("runs/<uuid:run_id>/media/generate/", media_views.generate_media, name="media_generate"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/", media_views.job_page, name="media_job"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/status/", media_views.job_status, name="media_job_status"),
+    path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/refresh-provider/", media_views.refresh_provider_status, name="media_job_refresh_provider"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/start/", media_views.job_start, name="media_job_start"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/cancel/", media_views.cancel_generation, name="media_job_cancel"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/reset/", media_views.reset_job, name="media_job_reset"),
