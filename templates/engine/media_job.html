@@ -29,6 +29,11 @@
   {% if queued %}
     <section class="creative-panel"><h2>Granska före start</h2><p>Inget betalt uppdrag har skickats. Kontrollera inställningarna och välj sedan om du vill starta.</p>
       <dl><dt>Modell</dt><dd>{{ job.parameters.model }}</dd>{% if job.kind == 'video' %}<dt>Längd</dt><dd>{{ job.parameters.duration }} sekunder</dd><dt>Format</dt><dd>Önskemål: {{ job.parameters.aspect_ratio }}. Modellen följer startbilden vid animation; textinstruktion garanterar inte exakt format.</dd>{% else %}<dt>Bildalternativ</dt><dd>{{ job.parameters.count }} × {{ job.parameters.size }} · {{ job.parameters.quality|default:'medium' }}</dd>{% endif %}</dl>
+      <div class="generation-prompt-review">
+        <h3>Prompt som skickas till {% if job.provider == 'higgsfield' %}Higgsfield{% else %}leverantören{% endif %}</h3>
+        <p class="small">Detta är den exakta provider-prompt som används om du startar generationen.</p>
+        <pre>{{ job.prompt }}</pre>
+      </div>
       {% for issue in creative.preflight %}<p class="notice">{{ issue.message }}</p>{% endfor %}
       {% if job.usage.estimate %}<p><strong>Uppskattat pris: {{ job.usage.estimate.usd }} USD</strong> för ett klipp. Priset kontrolleras igen vid start; ett högre pris stoppas.</p>{% endif %}
       {% if job.kind == 'image' %}<p>OpenAI debiterar bildgenerering efter användning. Bindande förhandspris saknas här. Högre kvalitet och fler bilder kostar mer.</p>{% endif %}
