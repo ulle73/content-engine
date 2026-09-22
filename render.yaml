@@ -30,6 +30,12 @@ services:
         value: "1.00"
       - key: INTELLIGENCE_DAILY_ANALYSES
         value: "12"
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_ANALYSIS_MODEL
+        value: "@preset/gk-free"
+      - key: OPENROUTER_ANALYSIS_FALLBACK_MODEL
+        value: z-ai/glm-5.3-flash
       - key: MEDIA_STORAGE
         value: r2
       - key: R2_ENDPOINT_URL
