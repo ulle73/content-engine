@@ -79,6 +79,35 @@ class OpenRouterAnalysisTests(TestCase):
         clear=False,
     )
     @patch("engine.openrouter.httpx.post")
+    def test_reasoning_details_response_is_accepted_like_n8n(self, post):
+        post.return_value = FakeResponse(
+            body={
+                "id": "reasoning-only",
+                "model": "some/free-model",
+                "choices": [{"message": {"content": "", "reasoning_details": [{"text": __import__("json").dumps(classification_payload())}]}}],
+                "usage": {"cost": 0},
+            }
+        )
+        parsed, _ = structured_analysis(
+            system="Analyze.",
+            payload={"caption": "Golf"},
+            schema=Classification,
+        )
+        self.assertEqual(parsed.topic, "Kvällsträning")
+        request = post.call_args.kwargs["json"]
+        self.assertEqual(request["temperature"], 0)
+        self.assertEqual(request["max_tokens"], 4000)
+
+    @patch.dict(
+        os.environ,
+        {
+            "OPENROUTER_API_KEY": "test-key",
+            "OPENROUTER_ANALYSIS_MODEL": "@preset/gk-free",
+            "OPENROUTER_ANALYSIS_FALLBACK_MODEL": "z-ai/glm-5.3-flash",
+        },
+        clear=False,
+    )
+    @patch("engine.openrouter.httpx.post")
     def test_invalid_free_output_falls_back_to_glm_53_flash(self, post):
         post.side_effect = [
             FakeResponse(
