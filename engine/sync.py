@@ -149,10 +149,15 @@ def analysis(company, key, model, work, *, scrape_request_id=None):
     try:
         raw_result = work()
     except Exception as exc:
-        status = getattr(exc, "status_code", None)
-        AnalysisMemo.objects.filter(pk=memo.pk).update(
-            status="rejected" if isinstance(status, int) and 400 <= status < 500 else "unknown"
-        )
+        if getattr(exc, "retryable", False):
+            # Text classification has no external side effect. A provider/routing
+            # failure must not lock the same analysis for 23 hours.
+            AnalysisMemo.objects.filter(pk=memo.pk).delete()
+        else:
+            status = getattr(exc, "status_code", None)
+            AnalysisMemo.objects.filter(pk=memo.pk).update(
+                status="rejected" if isinstance(status, int) and 400 <= status < 500 else "unknown"
+            )
         raise
     result = dict(raw_result) if isinstance(raw_result, dict) else raw_result
     stored = result
