@@ -15,6 +15,7 @@ import httpx
 from django.conf import settings
 from openai import OpenAI
 
+from .creative_director import HIGGSFIELD_SAFE_PROMPT_CHARS
 from .media_storage import MediaError, open_asset
 
 HIGGS_ROOT = "https://api.higgsfield.ai"
@@ -244,6 +245,11 @@ def upload_input(asset):
 
 def estimate_video(job):
     """Account-scoped, non-billable preflight. I2V uploads its input, never submits a generation."""
+    if len(job.prompt or "") > HIGGSFIELD_SAFE_PROMPT_CHARS:
+        raise MediaError(
+            "Videoprompten är för lång för den säkra Higgsfield-gränsen. "
+            "Justera beskrivningen och skapa ett nytt jobb; ingen betald generation startades."
+        )
     mode = "image-to-video" if job.source_asset else "text-to-video"
     model = job.parameters.get("model", settings.HIGGSFIELD_VIDEO_MODEL) + "/" + mode
     body = video_payload(job)
