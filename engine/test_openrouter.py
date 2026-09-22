@@ -141,6 +141,31 @@ class OpenRouterAnalysisTests(TestCase):
         self.assertEqual(parsed.topic, "Kvällsträning")
         self.assertEqual(post.call_count, 2)
 
+    @patch("engine.sync.timezone.now")
+    def test_stale_openrouter_started_memo_recovers_after_worker_restart(self, now):
+        base = __import__("django.utils.timezone", fromlist=["now"]).now()
+        now.return_value = base
+        key_parts = ["organic", "stale"]
+        model = "openrouter:@preset/gk-free>z-ai/glm-5.3-flash"
+        from .sync import fingerprint
+        memo = AnalysisMemo.objects.create(
+            company=self.company,
+            key=fingerprint([key_parts, model]),
+            model=model,
+            status="started",
+            last_attempt_at=base - __import__("datetime").timedelta(seconds=45),
+        )
+        result = analysis(
+            self.company,
+            key_parts,
+            model,
+            lambda: {"ok": True},
+        )
+        self.assertEqual(result, {"ok": True})
+        memo.refresh_from_db()
+        self.assertEqual(memo.status, "completed")
+        self.assertEqual(memo.attempts, 2)
+
     def test_retryable_provider_failure_does_not_lock_analysis_for_23_hours(self):
         with self.assertRaises(OpenRouterError):
             analysis(
