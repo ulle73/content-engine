@@ -36,16 +36,29 @@ def _content_text(message):
     if not isinstance(message, dict):
         return ""
     content = message.get("content")
-    if isinstance(content, str):
+    if isinstance(content, str) and content.strip():
         return content.strip()
     if isinstance(content, list):
-        return "".join(
+        text = "".join(
             str(part.get("text", ""))
             for part in content
             if isinstance(part, dict) and part.get("text")
         ).strip()
+        if text:
+            return text
     reasoning = message.get("reasoning")
-    return reasoning.strip() if isinstance(reasoning, str) else ""
+    if isinstance(reasoning, str) and reasoning.strip():
+        return reasoning.strip()
+    reasoning_details = message.get("reasoning_details")
+    if isinstance(reasoning_details, list):
+        text = "".join(
+            str(part.get("text", ""))
+            for part in reasoning_details
+            if isinstance(part, dict) and part.get("text")
+        ).strip()
+        if text:
+            return text
+    return ""
 
 
 def _json_object(text):
@@ -103,8 +116,8 @@ def _call(model, *, system, payload, schema, operation):
             },
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
         ],
-        "temperature": 0.1,
-        "max_tokens": 1800,
+        "temperature": 0,
+        "max_tokens": 4000,
         "usage": {"include": True},
     }
     try:
