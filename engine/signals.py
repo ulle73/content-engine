@@ -5,7 +5,6 @@ import json
 from datetime import timedelta
 from statistics import median
 
-from django.conf import settings
 from django.utils import timezone
 from pydantic import BaseModel, Field
 
