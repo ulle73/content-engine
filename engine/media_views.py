@@ -18,7 +18,7 @@ from .media import ACTIVE, PENDING, advance_job, cancel_job, cleanup_expired, cr
 from .media_storage import MediaError, download_url, local_path
 from .models import ContentRun, MediaAsset, MediaGeneration
 from .ownership import company_required
-from .media import preview_job, start_reviewed_job
+from .media import preview_job, refresh_terminal_provider_status, start_reviewed_job
 
 
 def run_for(request, run_id):
@@ -220,6 +220,20 @@ def job_status(request, workspace_id, run_id, job_id):
         return JsonResponse({"status": job.status, "pending": job.status in PENDING, "error": job.error})
     except (MediaError, KeyError, ValueError):
         return JsonResponse({"error": "Status kunde inte hämtas. Försök igen; befintligt jobb återanvänds."}, status=502)
+
+
+@login_required
+@company_required
+@require_POST
+def refresh_provider_status(request, workspace_id, run_id, job_id):
+    run = run_for(request, run_id)
+    job = get_object_or_404(MediaGeneration, pk=job_id, run=run)
+    try:
+        job = refresh_terminal_provider_status(job)
+        messages.success(request, "Higgsfields senaste felorsak har hämtats för samma request-id.")
+    except MediaError as exc:
+        messages.error(request, str(exc))
+    return redirect("engine:media_job", workspace_id=workspace_id, run_id=run.pk, job_id=job.pk)
 
 
 @login_required
