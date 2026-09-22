@@ -143,6 +143,12 @@ def _call(model, *, system, payload, schema, operation):
     return parsed, _usage_meta(body, model, operation)
 
 
+def route_signature():
+    free_model = os.environ.get("OPENROUTER_ANALYSIS_MODEL", "@preset/gk-free").strip() or "@preset/gk-free"
+    paid_model = os.environ.get("OPENROUTER_ANALYSIS_FALLBACK_MODEL", "z-ai/glm-5.3-flash").strip() or "z-ai/glm-5.3-flash"
+    return f"openrouter:{free_model}>{paid_model}"
+
+
 def structured_analysis(*, system, payload, schema: type[T], operation="analysis"):
     free_model = os.environ.get("OPENROUTER_ANALYSIS_MODEL", "@preset/gk-free").strip() or "@preset/gk-free"
     paid_model = os.environ.get("OPENROUTER_ANALYSIS_FALLBACK_MODEL", "z-ai/glm-5.3-flash").strip() or "z-ai/glm-5.3-flash"
