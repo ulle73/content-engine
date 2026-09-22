@@ -12,9 +12,11 @@ from django.core.asgi import get_asgi_application
 from starlette.routing import Mount
 
 from . import mcp_server
+from .media_recovery import install_recovery
 
 
 app = mcp_server.build_app()
+install_recovery(app)
 # MCP and its RFC 9728 metadata stay first. Browser-based OAuth/login is served by
 # Django for every remaining route on the same origin, keeping deployment to one service.
 app.routes.append(Mount("/", app=get_asgi_application()))

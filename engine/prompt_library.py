@@ -172,12 +172,12 @@ def archive_prompt(user, company_id, prompt_id):
     PromptEntry.objects.filter(pk=prompt_id, company=company).update(archived_at=timezone.now(), updated_at=timezone.now())
 
 
-def search_prompts(user, company_id, *, query="", tag="", favorites=False, kind="", limit=40):
+def search_prompts(user, company_id, *, query="", tag="", favorites=False, kind="", limit=40, archived=False):
     company = _owned_company(user, company_id)
     limit = max(1, min(int(limit), 100))
     if not isinstance(query, str) or len(query) > 1000:
         raise ValidationError("S\u00f6kningen f\u00e5r vara h\u00f6gst 1 000 tecken.")
-    entries = PromptEntry.objects.filter(company=company, archived_at__isnull=True)
+    entries = PromptEntry.objects.filter(company=company, archived_at__isnull=not archived)
     if favorites:
         entries = entries.filter(favorite=True)
     if kind in {"image", "video", "i2v", "unknown"}:
@@ -197,7 +197,7 @@ def search_prompts(user, company_id, *, query="", tag="", favorites=False, kind=
 
 
 def retrieve_inspiration(user, company_id, query: str, *, limit=3):
-    entries = search_prompts(user, company_id, query=query, limit=min(max(1, limit), 5))
+    entries = search_prompts(user, company_id, query=query[:1000], limit=min(max(1, limit), 5))
     return [{"id": str(p.pk), "text": p.text[:1200], "mechanisms": p.metadata.get("mechanisms", []),
              "tags": p.metadata.get("tags", []), "trust": "untrusted_inspiration", "origin": p.origin} for p in entries]
 
@@ -216,17 +216,25 @@ def save_from_generation(user, company_id, generation_id):
     company = _owned_company(user, company_id)
     job = MediaGeneration.objects.select_related("run").get(pk=generation_id, run__workspace=company)
     prompt, created = save_prompt(user, company.pk, job.prompt)
+    if prompt.generation_id is not None:
+        return prompt, created  # Keep the original provenance internally consistent.
     if prompt.generation_id is None:
         prompt.generation = job
     if created:
         prompt.origin = "generation"
-    safe_keys = {"model", "duration", "aspect_ratio", "resolution", "sound", "generate_audio", "shape"}
+    safe_keys = {"model", "duration", "aspect_ratio", "resolution", "sound", "generate_audio", "shape", "size", "count", "quality"}
     prompt.metadata = {**prompt.metadata, "generation": {
         "id": str(job.pk), "run_id": str(job.run_id), "user_request": job.brief,
         "parameters": {k: v for k, v in job.parameters.items() if k in safe_keys},
-        "estimated_usd": job.usage.get("estimated_usd"),
+        "estimated_usd": job.usage.get("estimate", {}).get("usd"),
         "structured_brief": job.parameters.get("creative", {}).get("brief", {}),
         "asset_ids": [str(value) for value in job.assets.values_list("pk", flat=True)[:8]],
     }}
     prompt.save()
     return prompt, created
+
+
+@transaction.atomic
+def restore_prompt(user, company_id, prompt_id):
+    company = _owned_company(user, company_id)
+    PromptEntry.objects.filter(pk=prompt_id, company=company).update(archived_at=None, updated_at=timezone.now())

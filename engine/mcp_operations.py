@@ -180,7 +180,8 @@ def prepare_best_content(
 def poll_generation(job: MediaGeneration) -> MediaGeneration:
     from .media import advance_job
 
-    return advance_job(job)
+    job.refresh_from_db()
+    return advance_job(job) if job.status != "queued" else job
 
 
 GENERATION_STATUS_COPY = {
@@ -215,7 +216,7 @@ def serialize_generation(job: MediaGeneration, *, diagnostics=False) -> dict[str
     if diagnostics:
         safe_parameters = {
             key: value for key, value in (job.parameters or {}).items()
-            if key in {"model", "count", "size", "duration", "aspect_ratio"}
+            if key in {"model", "count", "size", "quality", "duration", "aspect_ratio"}
         }
         data["diagnostics"] = {
             "provider": job.provider,

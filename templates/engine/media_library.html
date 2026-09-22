@@ -13,7 +13,9 @@
       <strong>{{ assets|length }} filer</strong>
     </div>
   </header>
+{% include 'engine/creative_help.html' %}
   {% include 'engine/library_tabs.html' %}
+  <form method="post" action="{% url 'engine:media_new' workspace_id=workspace.pk %}" class="creative-actions">{% csrf_token %}<input type="hidden" name="token" value="{{ studio_token }}"><button type="submit">Skapa bild eller video</button><span class="small">Öppnar AI-studion. Ingen betald generation startas.</span></form>
 
   <section class="media-library-upload-card" id="upload">
     <div class="media-library-upload-copy">
@@ -38,6 +40,11 @@
     </form>
   </section>
 
+  {% if unfinished_jobs %}
+  <section class="creative-panel"><h2>Fortsätt där du var</h2>
+    {% for job in unfinished_jobs %}<p><a href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=job.run_id job_id=job.pk %}">{{ job.brief|truncatechars:90 }}</a> · {% if job.status == 'queued' %}Väntar på ditt godkännande{% elif job.status == 'unknown' %}Behöver kontrolleras{% elif job.status == 'saving' %}Sparar{% else %}Genererar{% endif %}</p>{% endfor %}
+  </section>
+  {% endif %}
   {% if recent_jobs %}
   <section class="media-library-recent-section">
     <div class="media-library-section-head">

@@ -283,7 +283,7 @@ class MediaTests(TestCase):
         api.images.generate.assert_not_called()
 
     @patch("engine.media_providers.public_url", side_effect=lambda url: url)
-    @patch("engine.media_providers.httpx.put")
+    @patch("engine.media_providers.public_stream")
     @patch("engine.media_providers.higgs")
     def test_higgs_source_upload_keeps_auth_off_storage_request(self, higgs, put, validate):
         source = store_asset(self.company, picture())
@@ -329,6 +329,8 @@ class MediaTests(TestCase):
         }
         response = self.client.post("/webhooks/higgsfield/", data=json.dumps(body), content_type="application/json")
         self.assertEqual(response.status_code, 204)
+        status.assert_not_called()
+        recover_media_jobs(limit=5)
         job.refresh_from_db()
         self.assertEqual(job.status, "completed")
         self.assertEqual(job.assets.count(), 1)
@@ -348,13 +350,15 @@ class MediaTests(TestCase):
         self.assertEqual(self.client.post("/webhooks/higgsfield/", data=json.dumps(body), content_type="application/json").status_code, 204)
 
     @patch("engine.media.providers.video_status", side_effect=ProviderUnavailableError("temporary"))
-    def test_higgs_webhook_requests_retry_when_authoritative_status_is_unavailable(self, status):
+    def test_higgs_webhook_records_hint_while_authoritative_status_is_unavailable(self, status):
         remote_id = str(uuid.uuid4())
         job = self.job("video")
         MediaGeneration.objects.filter(pk=job.pk).update(status="running", provider_id=remote_id)
         body = {"request_id": remote_id, "status": "completed", "error": None, "payload": {"video": {"url": "https://ignored"}}}
         response = self.client.post("/webhooks/higgsfield/", data=json.dumps(body), content_type="application/json")
-        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.status_code, 204)
+        status.assert_not_called()
+        self.assertEqual(recover_media_jobs(limit=5)["errors"], 1)
         job.refresh_from_db()
         self.assertEqual(job.status, "running")
 
@@ -370,7 +374,7 @@ class MediaTests(TestCase):
             advance_job(MediaGeneration.objects.get(pk=job.pk))
         job.refresh_from_db()
         self.assertEqual(job.status, "saving")
-        MediaGeneration.objects.filter(pk=job.pk).update(updated_at=timezone.now() - timedelta(seconds=20))
+        MediaGeneration.objects.filter(pk=job.pk).update(updated_at=timezone.now() - timedelta(minutes=11))
         result = recover_media_jobs(limit=5)
         job.refresh_from_db()
         self.assertEqual(job.status, "completed")

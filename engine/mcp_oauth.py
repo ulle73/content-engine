@@ -35,7 +35,12 @@ class ChatGPTDCRPermission:
         for value in redirect_uris:
             if not isinstance(value, str):
                 return False
-            parsed = urlparse(value)
+            try:
+                parsed = urlparse(value)
+                if parsed.port not in (None, 443):
+                    return False
+            except ValueError:
+                return False
             if (
                 parsed.scheme != "https"
                 or not parsed.hostname
@@ -46,7 +51,7 @@ class ChatGPTDCRPermission:
             ):
                 return False
         grant_types = payload.get("grant_types") or ["authorization_code"]
-        if not isinstance(grant_types, list) or not set(grant_types).issubset({"authorization_code", "refresh_token"}):
+        if not isinstance(grant_types, list) or not all(isinstance(grant, str) for grant in grant_types) or not set(grant_types).issubset({"authorization_code", "refresh_token"}):
             return False
         auth_method = payload.get("token_endpoint_auth_method", "client_secret_basic")
         if auth_method not in {"none", "client_secret_basic", "client_secret_post"}:

@@ -91,7 +91,8 @@ def prompt_library(request, workspace_id):
             status = 400
     try:
         entries = library.search_prompts(request.user, workspace_id, query=request.GET.get('q', ''),
-            tag=request.GET.get('tag', ''), favorites=request.GET.get('favorites') == '1', kind=request.GET.get('kind', ''))
+            tag=request.GET.get('tag', ''), favorites=request.GET.get('favorites') == '1', kind=request.GET.get('kind', ''),
+            archived=request.GET.get('archived') == '1')
     except ValidationError as exc:
         entries = []
         if not form.is_bound:
@@ -141,6 +142,16 @@ def prompt_archive(request, workspace_id, prompt_id):
     get_object_or_404(PromptEntry, pk=prompt_id, company=request.workspace)
     library.archive_prompt(request.user, workspace_id, prompt_id)
     messages.success(request, 'Prompten \u00e4r borttagen fr\u00e5n biblioteket. Sparade generationer p\u00e5verkas inte.')
+    return redirect('engine:prompt_library', workspace_id=workspace_id)
+
+
+@login_required
+@company_required
+@require_POST
+def prompt_restore(request, workspace_id, prompt_id):
+    get_object_or_404(PromptEntry, pk=prompt_id, company=request.workspace)
+    library.restore_prompt(request.user, workspace_id, prompt_id)
+    messages.success(request, 'Prompten är återställd med original och redigeringar bevarade.')
     return redirect('engine:prompt_library', workspace_id=workspace_id)
 
 

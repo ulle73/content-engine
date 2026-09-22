@@ -61,8 +61,11 @@ def parse_brief(request: str, *, kind: str, has_reference=False, shape="portrait
     mode = ("image-to-video" if kind == "video" else "image-to-image") if has_reference else ("text-to-video" if kind == "video" else "text-to-image")
 
     duration = None
-    match = re.search(r"\b(?:ca\.?\s*)?(\d{1,3})\s*(?:s|sek|sekunder|seconds?)\b", folded)
-    if match:
+    timeline = re.findall(r"\b\d{1,3}\s*[–—-]\s*(\d{1,3})\s*(?:s|sek|sekunder|seconds?)\b", folded)
+    match = re.search(r"\b(?:ca\.?\s*)?(\d{1,3})[\s-]*(?:s|sek|sekunder(?:s)?|seconds?)\b", folded)
+    if timeline:
+        duration = max(1, min(max(map(int, timeline)), 120))
+    elif match:
         duration = max(1, min(int(match.group(1)), 120))
     elif kind == "video":
         duration = 10
@@ -183,10 +186,14 @@ def route_model(brief: CreativeBrief, complexity: Complexity) -> tuple[ModelInte
 def compile_parameters(brief: CreativeBrief, model: ModelIntelligence, *, count=2, shape="portrait") -> tuple[dict, list[PreflightIssue]]:
     issues = []
     if brief.kind == "image":
-        size = {"square": "1024x1024", "portrait": "1024x1536", "landscape": "1536x1024"}.get(shape, "1024x1536")
+        size = {"1:1": "1024x1024", "9:16": "1024x1536", "4:5": "1024x1536", "16:9": "1536x1024"}.get(brief.aspect_ratio, "1024x1536")
         if size not in model.resolutions:
             raise ValueError("The verified image model does not support the requested size.")
-        return {"model": model.model_id, "count": max(1, min(int(count), 4)), "size": size}, issues
+        if brief.aspect_ratio in {"9:16", "4:5", "16:9"}:
+            issues.append(PreflightIssue(code="image_ratio_normalized", severity="warning",
+                message=f"Bilden skapas i {size} pixlar. Önskat bildförhållande är kompositionsstöd, inte exakt beskärning.", auto_fixed=True))
+        return {"model": model.model_id, "count": max(1, min(int(count), 4)), "size": size,
+                "quality": {"economy": "low", "balanced": "medium", "quality": "high"}[brief.quality_preference]}, issues
 
     requested = brief.duration_seconds or 10
     if not model.durations:

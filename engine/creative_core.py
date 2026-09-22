@@ -12,8 +12,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 REGISTRY_VERSION = "2026-09-21.1"
-COMPILER_VERSION = "2026-09-21.1"
-BRIEF_VERSION = "2026-09-21.1"
+COMPILER_VERSION = "2026-09-22.1"
+BRIEF_VERSION = "2026-09-22.1"
 
 
 class Complexity(str, Enum):

@@ -1,4 +1,20 @@
 /* Scoped Creative Engine additions: preserve existing application screens. */
+.creative-help-trigger { min-height: 44px; margin: 0 0 16px; }
+.creative-help { width: min(760px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 0; border: 1px solid #dce3dd; border-radius: 16px; color: #19241d; background: #fff; }
+.creative-help::backdrop { background: #10251c99; }
+.creative-help .media-preview-dialog-head { position: sticky; top: 0; background: #fff; padding: 20px; border-bottom: 1px solid #e6e9e6; z-index: 1; }
+.creative-help h2 { margin: 0; font-size: clamp(20px, 4vw, 28px); }
+.creative-help-body { padding: 0 24px 24px; line-height: 1.65; overflow-wrap: anywhere; }
+.creative-help-steps { padding-left: 24px; }
+.creative-help-steps li { padding-left: 6px; margin: 18px 0; }
+.creative-help-steps li::marker { color: #315b45; font-weight: 700; }
+.creative-help details { border-top: 1px solid #e6e9e6; padding: 12px 0; }
+.creative-help summary { cursor: pointer; padding: 10px 0; font-weight: 650; min-height: 44px; }
+.creative-example { background: #f3f6f2; border-left: 3px solid #315b45; padding: 12px; border-radius: 4px; }
+.creative-statuses dt { margin-top: 12px; font-weight: 650; }
+.creative-statuses dd { margin-left: 0; }
+.creative-help :focus-visible { outline: 3px solid #315b45; outline-offset: 3px; }
+@media (max-width: 540px) { .creative-help-body { padding: 0 16px 16px; } .creative-help .media-preview-dialog-head { padding: 16px; gap: 12px; } }
 .creative-page { max-width: 1160px; min-width: 0; }
 .creative-page h1 { letter-spacing: -.035em; }
 .creative-panel { min-width: 0; margin: 22px 0; padding: clamp(18px, 3vw, 30px); border: 1px solid var(--v3-line, #e6e9e6); border-radius: 14px; background: var(--v3-surface, white); }

@@ -3,6 +3,7 @@
 {% block content %}
 <main class="engine creative-page">
   <header class="page-header"><div><p class="eyebrow">Din kreativa samling</p><h1>Promptbibliotek</h1><p class="intro">Spara idéer du vill använda igen. Originalet bevaras, även när du redigerar din egen version.</p></div></header>
+{% include 'engine/creative_help.html' %}
   {% include 'engine/library_tabs.html' %}
   <section class="creative-panel" aria-labelledby="save-heading">
     <h2 id="save-heading">Klistra in. Spara. Fortsätt.</h2>
@@ -17,19 +18,19 @@
     </form>
   </section>
   <section aria-labelledby="saved-heading">
-    <div class="creative-section-heading"><h2 id="saved-heading">Sparade promptar</h2><span class="small">{{ entries|length }} visas · högst 40 per sökning</span></div>
-    <form method="get" class="creative-filter" role="search">
-      <div><label for="prompt-query">Sök</label><input id="prompt-query" name="q" maxlength="1000" value="{{ filters.q }}" placeholder="Till exempel cinematic drone golf"></div>
+    <div class="creative-section-heading"><h2 id="saved-heading">{% if filters.archived == "1" %}Arkiverade promptar{% else %}Sparade promptar{% endif %}</h2><span class="small">{{ entries|length }} visas · högst 40 per sökning</span></div>
+    <nav class="creative-tabs" aria-label="Promptstatus"><a href="?">Aktiva</a><a href="?archived=1">Arkiverade</a></nav><form method="get" class="creative-filter" role="search">
+      {% if filters.archived == "1" %}<input type="hidden" name="archived" value="1">{% endif %}<div><label for="prompt-query">Sök</label><input id="prompt-query" name="q" maxlength="1000" value="{{ filters.q }}" placeholder="Till exempel cinematic drone golf"></div>
       <div><label for="prompt-kind">Typ</label><select id="prompt-kind" name="kind"><option value="">Alla</option value="image" {% if filters.kind == 'image' %}selected{% endif %}>Bild</option><option value="video" {% if filters.kind == 'video' %}selected{% endif %}>Video</option><option value="i2v" {% if filters.kind == 'i2v' %}selected{% endif %}>Animera bild</option><option value="unknown" {% if filters.kind == 'unknown' %}selected{% endif %}>Ej klassificerad</option></select></div>
       <div><label for="prompt-tag">Etikett</label><input id="prompt-tag" name="tag" maxlength="64" value="{{ filters.tag }}" placeholder="Alla etiketter"></div>
       <label class="creative-checkbox"><input type="checkbox" name="favorites" value="1" {% if filters.favorites == '1' %}checked{% endif %}>Bara favoriter</label><button type="submit" class="secondary">Sök</button>
     </form>
     <div class="creative-grid">{% for prompt in entries %}
       <article class="creative-panel prompt-card">
-        <div class="creative-section-heading"><h3><a href="{% url 'engine:prompt_detail' workspace_id=workspace.pk prompt_id=prompt.pk %}">{{ prompt.title|default:'Sparad prompt' }}</a></h3><span class="small">{{ prompt.created_at|date:'j M' }}</span></div>
+        <div class="creative-section-heading"><h3>{% if prompt.archived_at %}{{ prompt.title|default:'Sparad prompt' }}{% else %}<a href="{% url 'engine:prompt_detail' workspace_id=workspace.pk prompt_id=prompt.pk %}">{{ prompt.title|default:'Sparad prompt' }}</a>{% endif %}</h3><span class="small">{{ prompt.created_at|date:'j M' }}</span></div>
         <p class="prompt-excerpt">{{ prompt.text|truncatechars:380 }}</p>
         <div class="creative-tags">{% for tag in prompt.metadata.tags %}<span>{{ tag }}</span>{% endfor %}{% for tag in prompt.metadata.user_tags %}<span>{{ tag }}</span>{% endfor %}</div>
-        <div class="creative-actions"><a class="button secondary" href="{% url 'engine:prompt_detail' workspace_id=workspace.pk prompt_id=prompt.pk %}">Visa / redigera</a><form method="post" action="{% url 'engine:prompt_favorite' workspace_id=workspace.pk prompt_id=prompt.pk %}">{% csrf_token %}<input type="hidden" name="favorite" value="{% if prompt.favorite %}0{% else %}1{% endif %}"><button type="submit" class="secondary" aria-pressed="{% if prompt.favorite %}true{% else %}false{% endif %}">{% if prompt.favorite %}★ Favorit{% else %}☆ Favorit{% endif %}</button></form></div>
+        <div class="creative-actions">{% if prompt.archived_at %}<form method="post" action="{% url 'engine:prompt_restore' workspace_id=workspace.pk prompt_id=prompt.pk %}">{% csrf_token %}<button type="submit">Återställ</button></form>{% else %}<a class="button secondary" href="{% url 'engine:prompt_detail' workspace_id=workspace.pk prompt_id=prompt.pk %}">Visa / redigera</a><form method="post" action="{% url 'engine:prompt_favorite' workspace_id=workspace.pk prompt_id=prompt.pk %}">{% csrf_token %}<input type="hidden" name="favorite" value="{% if prompt.favorite %}0{% else %}1{% endif %}"><button type="submit" class="secondary" aria-pressed="{% if prompt.favorite %}true{% else %}false{% endif %}">{% if prompt.favorite %}★ Favorit{% else %}☆ Favorit{% endif %}</button></form>{% endif %}</div>
       </article>
     {% empty %}<div class="creative-panel creative-empty"><h3>{% if filters %}Inga träffar{% else %}Din samling börjar här{% endif %}</h3><p>Klistra in din första prompt ovanför, eller prova en annan sökning.</p></div>{% endfor %}</div>
     <p class="small">Automatiska etiketter är förslag baserade på texten, inte verifierade fakta om en modell.</p>

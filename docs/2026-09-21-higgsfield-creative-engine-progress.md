@@ -1,5 +1,7 @@
 # CURRENT STATE
 
+> **2026-09-22 audit in progress:** the historical completion claims below are not a production-readiness verdict. The audit found missing user-visible preflight, recovery scheduling, restore UI and several safety/edge-case defects. See Task 9 below for current evidence. No paid generation is authorized by this audit.
+
 - Latest completed step: exact Creative Engine product tree transferred and verified in GitHub CI; 173/173 SQLite and 173/173 PostgreSQL tests pass.
 - Branch: `feature/chatgpt-content-engine-mcp`.
 - Latest shipped product commit: `67c6751179d96c4b910f022ccfce817d46d0633f` (`feat(creative): complete shared Higgsfield Creative Engine`).
@@ -477,3 +479,39 @@ ZERO paid Higgsfield generations. ZERO paid smoke tests.
 
 ### Next exact task
 Execute an authenticated, server-side non-billable Higgsfield estimate/preflight through Content Engine once that call path can be exercised without exposing credentials. If it passes, present the exact model, duration/parameters and estimated price for one minimal paid smoke test and stop for Jonas explicit approval before submission.
+
+## Task 9: Independent end-to-end audit, 2026-09-22
+
+### Scope and baseline
+
+Requested branch fast-forwarded cleanly from `690defa` to `11a1082`. Local `main` remains `e92f85b9317ba7e9ac40baf990e01072c8073c8e`; no merge into main. Existing production service and workspace reverified with Render: free plan, auto deploy off, healthCheckPath **empty** despite `/healthz` in the blueprint. Current deployment remains `dbba2e54` at this stage. Error/critical log query since the prior deployment returned none. Browser witnessed the free-plan cold start before login. User completed ordinary production login; company-scoped Golfkuponger views work, with no existing runs or media.
+
+Full local baseline: 173 tests, 2 failures and 3 errors. Four stem from Windows application control blocking SciPy native DLL imports (learning/own-performance); one from missing local MCP test environment. These are not hidden or reported as passing. CI must rerun the entire suite on the deployment's supported Python 3.13, including PostgreSQL.
+
+### Implemented audit corrections (verification ongoing)
+
+- User-visible review step: queued jobs no longer submit through browser or MCP status polling. Video price/parameters are obtained separately, explicit start requires a review less than ten minutes old, and a fresh higher estimate blocks payment. Image price uncertainty is explicitly shown. Tests reproduce the old unintended paid poll and missing preview.
+- Reusable accessible native HOW TO dialog on Creative/Prompt/Media pages, with five first-use steps, three dummy examples, statuses, preservation caveat, prompt reuse and ChatGPT flow. Additional detail is collapsed. Uses existing dialog styling and keyboard behavior.
+- Direct Media → AI studio entry creates only a local empty draft, avoiding a prerequisite paid text-generation step. Per-form UUID deduplicates repeated creation; foreign company tokens are rejected.
+- Explicit archived prompt filter/restore, immutable original retained. Generation provenance keeps its first consistent generation link and records the estimate from the correct usage field, along with image size/count/quality.
+- Long (up to 6000 character) valid briefs no longer violate the library search's 1000-character limit. Timeline ranges use their final endpoint; Swedish `5-sekunders` is parsed. Explicit image ratio determines actual image size; unsupported exact ratios are disclosed. Image priority now selects low/medium/high quality instead of all options silently using medium.
+- Dedicated GK key no longer combines with another account's legacy secret. Billable HTTP 408 and non-object responses become UNKNOWN, not retryable failures. OpenAI ambiguous server responses, invalid output encoding and storage failures after accepted image output block automatic/new duplicate submission.
+- Image-to-video sends the actual visible source asset, including its existing branding; only still-image editing uses the unbranded base.
+- Webhook envelope rejects scalars and malformed types, records a hint under row lock, and returns without provider/storage I/O. Payload URLs remain untrusted. Authenticated reconciliation runs in the existing ASGI lifespan and never submits queued jobs. Recovery includes old saving jobs and rotates pending jobs fairly. Saving leases increased to ten minutes to avoid competing download/storage attempts during slow I/O.
+- OAuth DCR rejects malformed IPv6 URLs, unexpected HTTPS ports and non-string grant types without a server error.
+
+### Verification ledger
+
+- RED: new audit tests reproduced long-brief exception, duration/format/quality mismatches, paid status poll, malformed webhook handling, missing restore/help/preflight, credential mixing and inconsistent provenance.
+- First focused GREEN after initial fixes: **79 tests passed**, including media, prompt UI/library and creative core.
+- Additional RED: synchronous webhook I/O, missing standalone entry, malformed DCR, OpenAI 500 ambiguity, I2V wrong reference and start after delivery reproduced. Follow-up verification pending.
+- No live provider generation, no paid smoke test, no Postiz delivery/publication.
+
+### Further completed audit corrections
+
+- New MCP `preview_media` and `start_prepared_media` separate non-billable preparation from explicit paid start, enforce company/user ownership and revision, and return safe diagnostics. `search_creative_prompts`, `save_creative_prompt`, and `update_creative_prompt` expose scoped search/edit/favorite/archive/restore. Existing direct generation tools remain compatible and explicitly describe their paid effect.
+- Media downloads and signed input uploads pin the validated public DNS address while preserving the original Host and TLS SNI/certificate validation; redirects/private addresses are rejected. Real read-only pinned HTTPS request to the official Higgsfield docs returned 200. Credentials are never forwarded to storage URLs.
+- Invalid fresh preflight clears prior review/price approval. Malformed upload metadata/status responses produce recoverable errors. Recovery rotates failed status reads so one bad request cannot starve all work. All ambiguous OpenAI 5xx responses block duplicate paid retry.
+- Media library links unfinished jobs, including queued reviews and UNKNOWN jobs. Removed the unused legacy generation prompt implementation. Compiler/brief versions bumped to `2026-09-22.1`; verified model registry unchanged.
+- Latest local full run: **206 tests**, 2 failures + 2 errors from the known Windows SciPy application-control blocks, 2 PostgreSQL lock tests skipped on SQLite. No additional failures. Django check, migration drift check, dependency consistency, and whitespace check pass. Previous focused run: 108 passed (2 PostgreSQL-only skips). Full Linux/PostgreSQL CI is the deployment gate.
+- Live Neon read-only check confirms `engine.0013_prompt_library` and `operator_bridge.0001_initial` applied. No schema changes required by this audit.

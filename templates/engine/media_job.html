@@ -11,10 +11,11 @@
     </div>
     <div class="page-actions">
       <span class="status-badge {% if job.status == 'completed' %}success{% elif job.status == 'failed' or job.status == 'unknown' or job.status == 'nsfw' %}warning{% else %}muted{% endif %}">
-        {% if job.status == 'completed' %}Klar{% elif job.status == 'failed' %}Misslyckades{% elif job.status == 'nsfw' %}Stoppad{% elif job.status == 'canceled' %}Avbruten{% elif job.status == 'unknown' %}Behöver kontrolleras{% elif job.status == 'saving' %}Sparar resultat{% else %}Pågår{% endif %}
+        {% if job.status == 'completed' %}Klar{% elif job.status == 'failed' %}Misslyckades{% elif job.status == 'nsfw' %}Stoppad{% elif job.status == 'canceled' %}Avbruten{% elif job.status == 'unknown' %}Behöver kontrolleras{% elif job.status == 'queued' %}Väntar på ditt godkännande{% elif job.status == 'saving' %}Sparar resultat{% else %}Pågår{% endif %}
       </span>
     </div>
   </header>
+{% include 'engine/creative_help.html' %}
 
   <section class="generation-steps" aria-label="Generationens steg">
     <div class="generation-step done">Brief förberedd</div>
@@ -25,7 +26,15 @@
     <div class="generation-step {% if job.status == 'completed' %}done{% endif %}">Klar</div>
   </section>
 
-  {% if pending %}
+  {% if queued %}
+    <section class="creative-panel"><h2>Granska före start</h2><p>Inget betalt uppdrag har skickats. Kontrollera inställningarna och välj sedan om du vill starta.</p>
+      <dl><dt>Modell</dt><dd>{{ job.parameters.model }}</dd>{% if job.kind == 'video' %}<dt>Längd</dt><dd>{{ job.parameters.duration }} sekunder</dd><dt>Format</dt><dd>Önskemål: {{ job.parameters.aspect_ratio }}. Modellen följer startbilden vid animation; textinstruktion garanterar inte exakt format.</dd>{% else %}<dt>Bildalternativ</dt><dd>{{ job.parameters.count }} × {{ job.parameters.size }} · {{ job.parameters.quality|default:'medium' }}</dd>{% endif %}</dl>
+      {% for issue in creative.preflight %}<p class="notice">{{ issue.message }}</p>{% endfor %}
+      {% if job.usage.estimate %}<p><strong>Uppskattat pris: {{ job.usage.estimate.usd }} USD</strong> för ett klipp. Priset kontrolleras igen vid start; ett högre pris stoppas.</p>{% endif %}
+      {% if job.kind == 'image' %}<p>OpenAI debiterar bildgenerering efter användning. Bindande förhandspris saknas här. Högre kvalitet och fler bilder kostar mer.</p>{% endif %}
+      <div class="creative-actions"><form method="post" action="{% url 'engine:media_job_start' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}{% if job.usage.reviewed_at %}<button type="submit">Starta betald generation</button>{% endif %}<button type="submit" name="action" value="preview" class="button-secondary">Uppdatera priskontroll</button></form><form method="post" action="{% url 'engine:media_job_cancel' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<button class="button-secondary">Avbryt</button></form></div>
+    </section>
+  {% elif pending %}
     <div class="media-progress" role="status">
       <p id="job-progress">Jobbet är sparat och kan fortsätta även om du lämnar sidan. Samma jobb-id återanvänds vid statuskontroll.</p>
       <progress aria-label="Genereringen pågår"></progress>
@@ -50,7 +59,7 @@
       <form method="post" action="{% url 'engine:media_job_reset' workspace_id=workspace.pk run_id=run.pk job_id=job.pk %}">{% csrf_token %}<label class="channel-option"><input type="checkbox" required name="checked_provider"><span>Jag har kontrollerat leverantörens konto och vill tillåta ett nytt betalt försök.</span></label><button>Tillåt nytt försök</button></form>
     </div></section>
   {% endif %}
-  {% if job.usage.estimate.usd %}<div class="generation-info-box"><strong>Pris kontrollerat före start</strong><span>Leverantörens uppskattning: {{ job.usage.estimate.usd }} USD. Slutlig debitering visas hos leverantören.</span></div>{% endif %}
+  {% if not queued and job.usage.estimate.usd %}<div class="generation-info-box"><strong>Pris kontrollerat före start</strong><span>Leverantörens uppskattning: {{ job.usage.estimate.usd }} USD. Slutlig debitering visas hos leverantören.</span></div>{% endif %}
 
   <section class="media-section">
     <div class="product-section-head"><div><h2>{% if job.kind == 'image' %}Välj ett alternativ{% else %}Förhandsgranska videon{% endif %}</h2><p class="small">Vald media behålls. Oanvända förhandsvisningar kan löpa ut.</p></div></div>

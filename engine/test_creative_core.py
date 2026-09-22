@@ -126,6 +126,6 @@ class CreativeCoreTests(TestCase):
     def test_plan_provenance_is_json_serializable_and_contains_versions(self):
         plan = build_plan(self.run, "Skapa en lugn premium reel 10 sekunder", kind="video")
         payload = plan.model_dump(mode="json")
-        self.assertEqual(payload["brief"]["version"], "2026-09-21.1")
+        self.assertEqual(payload["brief"]["version"], "2026-09-22.1")
         self.assertEqual(payload["registry_version"], "2026-09-21.1")
-        self.assertEqual(payload["compiler_version"], "2026-09-21.1")
+        self.assertEqual(payload["compiler_version"], "2026-09-22.1")
