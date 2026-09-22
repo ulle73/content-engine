@@ -9,6 +9,7 @@ from openai import APIError
 from . import apify
 from .competitors import OPEN_STATUSES, collect_import, instagram_username, start_import
 from .models import Competitor, CompetitorImport, CompetitorPost, ContentEvent, ContentRun
+from .openrouter import OpenRouterError
 from .ownership import company_required
 from .signals import analyze_top, catalog, classification_hash, classify, recurring_patterns
 
@@ -139,6 +140,8 @@ def analyze_signal(request, workspace_id, post_id):
     try:
         classify(post, request.workspace)
         messages.success(request, "Mekanismen är analyserad utifrån caption och metadata.")
+    except OpenRouterError as exc:
+        messages.error(request, str(exc))
     except (ValueError, APIError):
         messages.error(request, "AI-analysen kunde inte slutföras. Den hämtade statistiken finns kvar.")
     return redirect("engine:intelligence", workspace_id=workspace_id)
