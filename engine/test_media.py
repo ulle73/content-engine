@@ -224,6 +224,30 @@ class MediaTests(TestCase):
         self.client.force_login(outsider)
         self.assertEqual(self.client.post(self.url("media_job_status", job_id=job.pk)).status_code, 404)
 
+    @patch("engine.media.providers.video_status")
+    @patch("engine.media.providers.start_video")
+    def test_terminal_higgsfield_error_is_preserved_and_can_be_refreshed(self, start, status):
+        remote_id = str(uuid.uuid4())
+        start.return_value = ({"request_id": remote_id}, {"estimate": {"usd": "0.30"}})
+        status.return_value = {"status": "failed", "request_id": remote_id, "error": "Generation failed upstream"}
+        job = self.job("video")
+        advance_job(job)
+        job.refresh_from_db()
+        self.assertEqual(job.status, "running")
+        advance_job(job)
+        job.refresh_from_db()
+        self.assertEqual(job.status, "failed")
+        self.assertEqual(job.error, "Generation failed upstream")
+        self.assertEqual(job.usage["provider_terminal"]["status"], "failed")
+
+        MediaGeneration.objects.filter(pk=job.pk).update(error="Videoleverantören kunde inte slutföra generationen.")
+        response = self.client.post(self.url("media_job_refresh_provider", job_id=job.pk))
+        self.assertEqual(response.status_code, 302)
+        job.refresh_from_db()
+        self.assertEqual(job.error, "Generation failed upstream")
+        self.assertContains(self.client.get(self.url("media_job", job_id=job.pk)), "Generation failed upstream")
+
+
     @patch("engine.postiz.request")
     def test_selected_mp4_streams_through_existing_postiz_draft_path(self, postiz):
         asset = store_asset(self.company, movie())
