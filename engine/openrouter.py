@@ -7,6 +7,7 @@ allowed. No retries are hidden inside httpx; the routing policy stays explicit.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 from typing import TypeVar
@@ -18,6 +19,7 @@ from pydantic import BaseModel, ValidationError
 T = TypeVar("T", bound=BaseModel)
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
+logger = logging.getLogger(__name__)
 
 
 class OpenRouterError(ValueError):
@@ -120,14 +122,32 @@ def _call(model, *, system, payload, schema, operation):
         raise OpenRouterError("OpenRouter svarade inte i tid. Försök igen.", status_code=503) from exc
 
     if response.status_code < 200 or response.status_code >= 300:
+        safe_detail = ""
+        try:
+            error_body = response.json()
+            raw_detail = (
+                (error_body.get("error") or {}).get("message")
+                if isinstance(error_body.get("error"), dict)
+                else error_body.get("message")
+            )
+            safe_detail = str(raw_detail or "").strip()[:300]
+        except ValueError:
+            safe_detail = ""
         if response.status_code == 429:
-            message = "OpenRouter är tillfälligt rate-limitad. Försök igen."
+            message = "OpenRouter är tillfälligt rate-limitad."
+        elif response.status_code == 402:
+            message = "OpenRouter-kontot saknar tillgängliga credits för den här modellen."
         elif response.status_code in {401, 403}:
             message = "OpenRouter-autentiseringen fungerar inte. Kontrollera API-nyckeln i Render."
+        elif response.status_code == 404:
+            message = "OpenRouter-modellen eller preset-routen hittades inte för detta konto."
         elif response.status_code >= 500:
             message = "OpenRouter eller modellleverantören är tillfälligt otillgänglig."
         else:
             message = f"OpenRouter avvisade analysen (HTTP {response.status_code})."
+        if safe_detail:
+            message += " " + safe_detail
+        logger.warning("OpenRouter analysis attempt failed model=%s status=%s detail=%s", model, response.status_code, safe_detail)
         raise OpenRouterError(message, status_code=response.status_code)
 
     try:
@@ -163,8 +183,10 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
                 break
 
     if errors:
+        details = " | ".join(f"{model}: {exc}" for model, exc in errors)
+        logger.warning("OpenRouter analysis route exhausted: %s", details)
         raise OpenRouterError(
-            "AI-analysen kunde inte slutföras via OpenRouter. Gratisrouten och den billiga GLM-fallbacken misslyckades; försök igen om en stund.",
+            "AI-analysen kunde inte slutföras via OpenRouter. " + details,
             status_code=errors[-1][1].status_code,
         ) from errors[-1][1]
     raise OpenRouterError("AI-analysen kunde inte startas via OpenRouter.")
