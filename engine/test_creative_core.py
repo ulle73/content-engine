@@ -10,6 +10,7 @@ from .creative_director import (
     analyze_complexity,
     build_content_context,
     build_plan,
+    HIGGSFIELD_SAFE_PROMPT_CHARS,
     compile_parameters,
     parse_brief,
     preflight,
@@ -114,6 +115,24 @@ class CreativeCoreTests(TestCase):
         self.assertEqual(plan.inspiration_ids, ["p1"])
         self.assertEqual(plan.parameters["duration"], 10)
         self.assertTrue(any(i.code == "duration_normalized" for i in plan.preflight))
+
+    def test_higgsfield_prompt_is_compact_and_never_dumps_company_context(self):
+        plan = build_plan(
+            self.run,
+            "Skapa en realistisk 5-sekunders video med långsam kamerarörelse framåt över en svensk golfbana i morgonljus. Ingen text, inga loggor.",
+            kind="video",
+        )
+        self.assertLessEqual(len(plan.prompt), HIGGSFIELD_SAFE_PROMPT_CHARS)
+        self.assertNotIn("COMPANY CONTEXT", plan.prompt)
+        self.assertNotIn("P" * 100, plan.prompt)
+        self.assertNotIn("V" * 100, plan.prompt)
+        self.assertNotIn("C" * 100, plan.prompt)
+        self.assertIn("Golfkuponger", plan.prompt)
+
+    def test_higgsfield_prompt_over_safe_ceiling_is_rejected_before_provider_use(self):
+        with self.assertRaisesRegex(ValueError, "safe provider ceiling"):
+            build_plan(self.run, "Skapa video: " + ("detaljerad scen " * 250), kind="video")
+
 
     @override_settings(OPENAI_IMAGE_MODEL="gpt-image-2")
     def test_image_plan_uses_different_prompt_shape_and_verified_size(self):
