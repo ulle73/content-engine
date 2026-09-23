@@ -68,6 +68,12 @@ class OpenRouterAnalysisTests(TestCase):
         request = post.call_args.kwargs["json"]
         self.assertEqual(request["max_tokens"], 5000)
         self.assertEqual(request["temperature"], 0.2)
+        self.assertEqual(request["response_format"]["type"], "json_schema")
+        self.assertTrue(request["response_format"]["json_schema"]["strict"])
+        self.assertFalse(request["response_format"]["json_schema"]["schema"]["additionalProperties"])
+        self.assertEqual(request["provider"]["require_parameters"], True)
+        self.assertEqual(request["provider"]["sort"], "throughput")
+        self.assertEqual(request["plugins"], [{"id": "response-healing"}])
         self.assertEqual(post.call_count, 1)
         self.assertEqual(post.call_args.kwargs["json"]["model"], "@preset/gk-free")
         self.assertEqual(meta["provider"], "openrouter")

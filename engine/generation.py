@@ -103,17 +103,27 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
         else context
     )
     selected_brief = {k: idea[k] for k in ("title", "angle", "photo_brief") if k in idea} if writing else None
-    schema = (AdDraftOutput if paid else DraftOutput) if writing else grounded_ideas_schema(context)
+    schema = (AdDraftOutput if paid else DraftOutput) if writing else IdeasOutput
+    request_payload = {"company_context": writing_context, "selected_idea": selected_brief}
+    if not writing:
+        request_payload["allowed_source_quotes"] = [
+            part.strip()
+            for field in ("current", "profile")
+            for part in re.split(r"(?<=[.!?])\s+|\n+", context.get(field, ""))
+            if part.strip()
+        ]
+        request_payload["allowed_signal_ids"] = ["", *(str(s["id"]) for s in context.get("competitor_signals", []))]
     parsed, usage_meta = structured_analysis(
         system=instructions + "\n\nHantverksreferenser:\n" + skill_text(*skills),
-        payload={"company_context": writing_context, "selected_idea": selected_brief},
+        payload=request_payload,
         schema=schema,
         operation="draft" if writing else "ideas",
-        max_tokens=5000,
-        temperature=0.2 if not writing else 0.1,
+        max_tokens=2600 if writing else 1800,
+        temperature=0.1 if writing else 0.2,
     )
     output = parsed.model_dump()
     if not writing:
+        allowed_signal_ids = {"", *(str(s["id"]) for s in context.get("competitor_signals", []))}
         for item in output["ideas"]:
             source_field = next(
                 (
@@ -126,6 +136,8 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
             if source_field is None:
                 raise ValueError("En idé saknade korrekt källcitat. Ingen idé sparades; försök igen.")
             item["source_field"] = source_field
+            if str(item.get("signal_id", "")) not in allowed_signal_ids:
+                item["signal_id"] = ""
     elif len(output["instagram"]) > 2200:
         raise ValueError("Instagramtexten blev för lång. Försök igen.")
     if writing and paid and output.get("landing_page"):
