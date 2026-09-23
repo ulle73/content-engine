@@ -10,19 +10,13 @@ from .creative_core import (
     CreativeBrief,
     CreativeRecipe,
     EvidenceLevel,
+    ReferenceRole,
     RecipeSelection,
     RECIPE_REGISTRY_VERSION,
 )
 
 
-def registry() -> tuple[CreativeRecipe, ...]:
-    """Return trusted recipes available to the planning layer.
-
-    A1 intentionally starts with compatibility recipes only. Automatic semantic
-    recipe selection is added in A2; these defaults preserve all existing media
-    behavior while establishing provenance and a trusted extension point.
-    """
-    return (
+_RECIPES: tuple[CreativeRecipe, ...] = (
         CreativeRecipe(
             recipe_id="generic_image",
             version="1.0.0",
@@ -32,6 +26,7 @@ def registry() -> tuple[CreativeRecipe, ...]:
             supported_modes=("text-to-image", "image-to-image"),
             goal_tags=("general",),
             format_tags=("image",),
+            optional_reference_roles=(ReferenceRole.start_image,),
             draft_policy="single_pass",
             evaluation_rules=("prompt_adherence", "brand_safety"),
             supported_model_families=("openai",),
@@ -48,7 +43,7 @@ def registry() -> tuple[CreativeRecipe, ...]:
             supported_modes=("text-to-video", "image-to-video"),
             goal_tags=("general",),
             format_tags=("video", "social"),
-            optional_reference_roles=(),
+            optional_reference_roles=(ReferenceRole.start_image,),
             draft_policy="single_pass",
             evaluation_rules=("prompt_adherence", "subject_consistency", "motion_coherence"),
             supported_model_families=("higgsfield",),
@@ -58,9 +53,23 @@ def registry() -> tuple[CreativeRecipe, ...]:
         ),
     )
 
+_RECIPE_BY_ID = {item.recipe_id: item for item in _RECIPES}
+if len(_RECIPE_BY_ID) != len(_RECIPES):
+    raise RuntimeError("Creative Recipe registry contains duplicate recipe ids.")
+
+
+def registry() -> tuple[CreativeRecipe, ...]:
+    """Return trusted recipes available to the planning layer.
+
+    A1 intentionally starts with compatibility recipes only. Automatic semantic
+    recipe selection is added in A2; these defaults preserve all existing media
+    behavior while establishing provenance and a trusted extension point.
+    """
+    return _RECIPES
+
 
 def get_recipe(recipe_id: str) -> CreativeRecipe | None:
-    return next((item for item in registry() if item.recipe_id == recipe_id), None)
+    return _RECIPE_BY_ID.get(recipe_id)
 
 
 def _default_recipe_id(brief: CreativeBrief) -> str:
