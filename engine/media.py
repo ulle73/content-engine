@@ -19,6 +19,7 @@ from .creative_director import build_plan
 from .prompt_library import retrieve_inspiration
 from .media_storage import MediaError, check_storage, delete_file, put
 from .models import Company, ContentEvent, ContentRun, MediaAsset, MediaGeneration
+from .media_references import add_generation_reference
 
 PENDING = ("queued", "starting", "running", "saving")
 ACTIVE = PENDING + ("unknown",)
@@ -155,7 +156,7 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         if logo:
             params["logo_sha256"] = logo.sha256
 
-        return MediaGeneration.objects.create(
+        job = MediaGeneration.objects.create(
             id=token,
             run=locked,
             kind=kind,
@@ -166,6 +167,9 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
             source_asset=source,
             logo_asset=logo,
         )
+        if source:
+            add_generation_reference(job, source, "START_IMAGE")
+        return job
 
 
 def preview_job(job):
@@ -432,7 +436,7 @@ def select_asset(run, asset):
 def remove_asset(asset):
     with transaction.atomic():
         locked = MediaAsset.objects.select_for_update().get(pk=asset.pk)
-        if locked.purpose == "logo" or locked.used_at or locked.content_runs.exists() or locked.logo_generations.exists() or locked.official_for.exists() or locked.variations.filter(status__in=ACTIVE).exists():
+        if locked.purpose == "logo" or locked.used_at or locked.content_runs.exists() or locked.logo_generations.exists() or locked.official_for.exists() or locked.generation_references.exists() or locked.variations.filter(status__in=ACTIVE).exists():
             raise MediaError("Media som används av ett sparat inlägg eller en pågående generation kan inte tas bort.")
         delete_file(locked)
         locked.delete()

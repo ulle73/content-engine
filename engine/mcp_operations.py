@@ -10,6 +10,7 @@ from django.utils import timezone
 from .daily import AlreadyRunning, run_daily
 from .models import ContentRun, MediaGeneration, OwnPost
 from .media import cancel_job
+from .media_references import serialize_generation_references
 from .operator import (
     OperatorError,
     _durable_error,
@@ -212,11 +213,12 @@ def serialize_generation(job: MediaGeneration, *, diagnostics=False) -> dict[str
         "created_at": job.created_at.isoformat(),
         "updated_at": job.updated_at.isoformat(),
         "asset_ids": [str(value) for value in job.assets.values_list("pk", flat=True)[:8]],
+        "references": serialize_generation_references(job),
     }
     if diagnostics:
         safe_parameters = {
             key: value for key, value in (job.parameters or {}).items()
-            if key in {"model", "count", "size", "quality", "duration", "aspect_ratio"}
+            if key in {"model", "provider_model", "count", "size", "quality", "duration", "aspect_ratio", "resolution", "generate_audio", "output_format"}
         }
         data["diagnostics"] = {
             "provider": job.provider,
@@ -237,7 +239,7 @@ def serialize_generation(job: MediaGeneration, *, diagnostics=False) -> dict[str
 
 def list_recent_generations(company, *, limit=10) -> list[dict[str, Any]]:
     limit = max(1, min(int(limit), 50))
-    jobs = MediaGeneration.objects.filter(run__workspace=company).prefetch_related("assets").order_by("-created_at", "-id")[:limit]
+    jobs = MediaGeneration.objects.filter(run__workspace=company).select_related("source_asset").prefetch_related("assets", "references__asset").order_by("-created_at", "-id")[:limit]
     return [serialize_generation(job) for job in jobs]
 
 
