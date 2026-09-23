@@ -1,6 +1,6 @@
 import json
 from datetime import timedelta
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
@@ -12,12 +12,16 @@ from .postiz import make_payload
 
 
 class SourceQuoteTests(TestCase):
-    @patch("engine.generation.OpenAI")
-    def test_draft_writer_receives_editorial_brief_without_ranking_metadata(self, client):
+    @patch("engine.generation.structured_analysis")
+    def test_draft_writer_receives_editorial_brief_without_ranking_metadata(self, structured):
         from .generation import generate
 
-        api = client.return_value.__enter__.return_value.responses.parse
-        api.return_value.output_parsed.model_dump.return_value = DRAFT
+        parsed = Mock()
+        parsed.model_dump.return_value = DRAFT
+        structured.return_value = (
+            parsed,
+            {"provider": "openrouter", "service": "text", "model": "free-test", "usage": {}, "cost_usd": 0},
+        )
         generate(
             {"profile": "Golf", "competitor_signals": [{"id": "7", "score": 81}]},
             idea={
@@ -28,12 +32,13 @@ class SourceQuoteTests(TestCase):
                 "signal_id": "7",
             },
         )
-        payload = json.loads(api.call_args.kwargs["input"])
+        payload = structured.call_args.kwargs["payload"]
         self.assertNotIn("competitor_signals", payload["company_context"])
         self.assertEqual(set(payload["selected_idea"]), {"title", "angle", "photo_brief"})
+        self.assertEqual(structured.call_args.kwargs["operation"], "draft")
 
-    @patch("engine.generation.OpenAI")
-    def test_quotes_accept_only_exact_current_or_profile_text(self, client):
+    @patch("engine.generation.structured_analysis")
+    def test_quotes_accept_only_exact_current_or_profile_text(self, structured):
         from copy import deepcopy
 
         from .generation import generate
@@ -45,10 +50,16 @@ class SourceQuoteTests(TestCase):
         }
         output = deepcopy(IDEAS)
         output["ideas"][1]["source_quote"] = context["profile"]
-        client.return_value.__enter__.return_value.responses.parse.return_value.output_parsed.model_dump.return_value = output
+        parsed = Mock()
+        parsed.model_dump.return_value = output
+        structured.return_value = (
+            parsed,
+            {"provider": "openrouter", "service": "text", "model": "free-test", "usage": {}, "cost_usd": 0},
+        )
         result = generate(context)
         self.assertEqual(result["ideas"][0]["source_field"], "current")
         self.assertEqual(result["ideas"][1]["source_field"], "profile")
+        self.assertEqual(context["_provider_usage_ideas"]["provider"], "openrouter")
         for invalid in (context["voice"], "Vi hjälper alla golfare.", ""):
             output["ideas"][1]["source_quote"] = invalid
             with self.assertRaisesRegex(ValueError, "källcitat"):

@@ -35,7 +35,7 @@
       <section class="app-main">
         {% include 'components/topbar.html' %}
         {% include 'components/mobile_header.html' %}
-        {% for message in messages %}<div class="notice {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
+        {% if messages %}<div class="app-notices">{% for message in messages %}<div class="notice {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}</div>{% endif %}
   {% else %}
     <header class="public-topbar">
       <a class="logo" href="{% url 'dashboard' %}">Content Engine</a>

@@ -5,8 +5,9 @@ import re
 from typing import Literal
 
 from django.conf import settings
-from openai import OpenAI
 from pydantic import BaseModel, Field, create_model
+
+from .openrouter import structured_analysis
 
 
 class IdeaOutput(BaseModel):
@@ -102,18 +103,16 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
         else context
     )
     selected_brief = {k: idea[k] for k in ("title", "angle", "photo_brief") if k in idea} if writing else None
-    with OpenAI(timeout=100, max_retries=0) as client:
-        response = client.responses.parse(
-            model=settings.OPENAI_MODEL,
-            instructions=instructions + "\n\nHantverksreferenser:\n" + skill_text(*skills),
-            input=json.dumps({"company_context": writing_context, "selected_idea": selected_brief}, ensure_ascii=False),
-            text_format=(AdDraftOutput if paid else DraftOutput) if writing else grounded_ideas_schema(context),
-            max_output_tokens=5000,
-            store=False,
-        )
-    if response.output_parsed is None:
-        raise ValueError("AI-tjänsten gav inget färdigt resultat. Underlaget finns kvar; försök igen.")
-    output = response.output_parsed.model_dump()
+    schema = (AdDraftOutput if paid else DraftOutput) if writing else grounded_ideas_schema(context)
+    parsed, usage_meta = structured_analysis(
+        system=instructions + "\n\nHantverksreferenser:\n" + skill_text(*skills),
+        payload={"company_context": writing_context, "selected_idea": selected_brief},
+        schema=schema,
+        operation="draft" if writing else "ideas",
+        max_tokens=5000,
+        temperature=0.2 if not writing else 0.1,
+    )
+    output = parsed.model_dump()
     if not writing:
         for item in output["ideas"]:
             source_field = next(
@@ -134,9 +133,6 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
         if not url.startswith("https://") or url not in "\n".join(context.get(k, "") for k in ("profile", "current", "source")):
             output["landing_page"] = ""
             output["checks"].append("Ange och kontrollera företagets landningssida.")
-    from .provider_costs import openai_usage_meta
-
-    usage_meta = openai_usage_meta(response, "draft" if writing else "ideas")
     if not isinstance(usage_meta.get("usage"), dict):
         usage_meta["usage"] = {}
     if writing:

@@ -79,15 +79,16 @@ class CostScreenTests(TestCase):
         ContentRun.objects.create(
             workspace=self.company,
             author=self.user,
-            model="gpt-5.6-luna",
+            model="z-ai/glm-5.3-flash",
             context={
                 "_provider_usage_ideas": {
-                    "provider": "openai",
+                    "provider": "openrouter",
                     "service": "text",
                     "operation": "ideas",
-                    "model": "gpt-5.6-luna",
-                    "response_id": "resp-test",
-                    "usage": {"input_tokens": 1000, "output_tokens": 500},
+                    "model": "z-ai/glm-5.3-flash",
+                    "response_id": "or-test",
+                    "usage": {"prompt_tokens": 1000, "completion_tokens": 500, "cost": 0.0002},
+                    "cost_usd": 0.0002,
                 }
             },
             ideas=[],
@@ -97,9 +98,10 @@ class CostScreenTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Kostnadsgränsen är nådd")
         self.assertContains(response, "Använt denna Apify-period")
-        self.assertContains(response, "OpenAI · text")
+        self.assertContains(response, "OpenRouter · text")
         self.assertContains(response, "OpenAI · bilder")
         self.assertContains(response, "Higgsfield · video")
         self.assertContains(response, "Totalt registrerat")
         self.assertContains(response, "$5,00")
+        self.assertContains(response, "$0,000200")
         self.assertNotContains(response, "APIFY_API_TOKEN")

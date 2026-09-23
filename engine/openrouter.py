@@ -94,7 +94,7 @@ def _usage_meta(body, requested_model, operation):
     }
 
 
-def _call(model, *, system, payload, schema, operation):
+def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0):
     api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not api_key:
         raise OpenRouterError(
@@ -160,7 +160,7 @@ def _call(model, *, system, payload, schema, operation):
             message = f"OpenRouter avvisade analysen (HTTP {response.status_code})."
         if safe_detail:
             message += " " + safe_detail
-        logger.warning("OpenRouter analysis attempt failed model=%s status=%s detail=%s", model, response.status_code, safe_detail)
+        logger.warning("OpenRouter structured attempt failed model=%s status=%s detail=%s", model, response.status_code, safe_detail)
         raise OpenRouterError(message, status_code=response.status_code)
 
     try:
@@ -172,7 +172,7 @@ def _call(model, *, system, payload, schema, operation):
     try:
         parsed = schema.model_validate(_json_object(_content_text(message)))
     except (ValueError, ValidationError, json.JSONDecodeError) as exc:
-        raise OpenRouterError("Modellen returnerade inte ett giltigt strukturerat analyssvar.", status_code=502) from exc
+        raise OpenRouterError("Modellen returnerade inte ett giltigt strukturerat svar.", status_code=502) from exc
     return parsed, _usage_meta(body, model, operation)
 
 
@@ -189,7 +189,7 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
 
     for model in dict.fromkeys((free_model, paid_model)):
         try:
-            return _call(model, system=system, payload=payload, schema=schema, operation=operation)
+            return _call(model, system=system, payload=payload, schema=schema, operation=operation, max_tokens=max_tokens, temperature=temperature)
         except OpenRouterError as exc:
             errors.append((model, exc))
             if exc.status_code in {401, 403} or "inte konfigurerat" in str(exc):
@@ -197,9 +197,9 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
 
     if errors:
         details = " | ".join(f"{model}: {exc}" for model, exc in errors)
-        logger.warning("OpenRouter analysis route exhausted: %s", details)
+        logger.warning("OpenRouter structured route exhausted: %s", details)
         raise OpenRouterError(
-            "AI-analysen kunde inte slutföras via OpenRouter. " + details,
+            "AI-anropet kunde inte slutföras via OpenRouter. " + details,
             status_code=errors[-1][1].status_code,
         ) from errors[-1][1]
-    raise OpenRouterError("AI-analysen kunde inte startas via OpenRouter.")
+    raise OpenRouterError("AI-anropet kunde inte startas via OpenRouter.")

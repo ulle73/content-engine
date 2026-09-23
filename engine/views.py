@@ -1,13 +1,11 @@
 from datetime import date
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from openai import APIError
 
 from .forms import BrandForm, CompanyForm, validate_context
 from .generation import generate
@@ -92,7 +90,7 @@ def ideas(request, workspace_id):
             author=request.user,
             context=snapshot,
             ideas=ranked,
-            model=settings.OPENAI_MODEL,
+            model=str((snapshot.get("_provider_usage_ideas") or {}).get("model") or "openrouter")[:100],
             channel=channel,
         )
         from .learning import record_predictions
@@ -109,11 +107,6 @@ def ideas(request, workspace_id):
         messages.success(request, "Tre idéer är klara. Välj vilken du vill skriva.")
     except ValueError as exc:
         messages.error(request, str(exc))
-    except APIError as exc:
-        messages.error(
-            request,
-            f"AI-anropet misslyckades ({getattr(exc, 'status_code', None) or 'anslutning'}). Inga nya idéer sparades.",
-        )
     from django.urls import reverse
     return redirect(reverse("engine:home", kwargs={"workspace_id":workspace_id})+"?channel="+channel)
 
@@ -156,11 +149,6 @@ def draft(request, workspace_id, run_id, idea_index):
         return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
     except ValueError as exc:
         messages.error(request, str(exc))
-    except APIError as exc:
-        messages.error(
-            request,
-            f"AI-anropet misslyckades ({getattr(exc, 'status_code', None) or 'anslutning'}). Idéerna finns kvar.",
-        )
     return redirect("engine:home", workspace_id=workspace_id)
 
 
