@@ -61,8 +61,13 @@ class OpenRouterAnalysisTests(TestCase):
             payload={"caption": "Golf"},
             schema=Classification,
             operation="competitor_analysis",
+            max_tokens=5000,
+            temperature=0.2,
         )
         self.assertEqual(parsed.topic, "Kvällsträning")
+        request = post.call_args.kwargs["json"]
+        self.assertEqual(request["max_tokens"], 5000)
+        self.assertEqual(request["temperature"], 0.2)
         self.assertEqual(post.call_count, 1)
         self.assertEqual(post.call_args.kwargs["json"]["model"], "@preset/gk-free")
         self.assertEqual(meta["provider"], "openrouter")
