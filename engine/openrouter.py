@@ -235,7 +235,7 @@ def structured_generation(*, system, payload, schema: type[T], operation="genera
     providers serving the same model. Reasoning is disabled so the completion
     budget is reserved for the actual JSON response.
     """
-    model = os.environ.get("OPENROUTER_ANALYSIS_FALLBACK_MODEL", "z-ai/glm-5.3-flash").strip() or "z-ai/glm-5.3-flash"
+    model = (os.environ.get("OPENROUTER_GENERATION_MODEL", "").strip() or os.environ.get("OPENROUTER_ANALYSIS_FALLBACK_MODEL", "z-ai/glm-5.3-flash").strip() or "z-ai/glm-5.3-flash")
     try:
         return _call(
             model,
