@@ -1,36 +1,35 @@
 <details class="signal-item">
   <summary class="signal-row">
-    <span class="signal-account">{{ signal.post.competitor.name }}</span>
+    <span class="signal-rank {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}" title="Prioritet {{ forloop.counter }}">{{ forloop.counter }}</span>
+    <span class="signal-account">
+      <span class="signal-account-avatar" aria-hidden="true">{{ signal.post.competitor.name|slice:":1"|upper }}</span>
+      <span class="signal-account-name">{{ signal.post.competitor.name }}</span>
+    </span>
     <span class="signal-content">
-      <span class="signal-title">{{ signal.post.caption|default:'Ingen text'|truncatechars:72 }}</span>
+      <span class="signal-title">{{ signal.post.caption|default:'Ingen text'|truncatechars:90 }}</span>
       <span class="signal-subtitle">{% if signal.momentum.likes_percent != None %}{{ signal.momentum.likes_percent }} % likes senaste {{ signal.momentum.hours }} h{% else %}{{ signal.momentum.label }}{% endif %}</span>
     </span>
     <span class="signal-format">{{ signal.post.get_format_display }}</span>
-    <span>{{ signal.age_days|floatformat:0 }} dagar</span>
-    <span>{{ signal.likes|default_if_none:'–' }}</span>
-    <span class="signal-relative">{% if signal.relative != None %}{{ signal.relative|floatformat:1 }}×{% else %}–{% endif %}</span>
+    <span class="signal-age">{{ signal.age_days|floatformat:0 }} dagar</span>
+    <span class="signal-likes">{{ signal.likes|default_if_none:'–' }}</span>
+    <span class="signal-relative-cell {% if signal.relative != None %}{% if signal.relative >= 1.25 %}is-strong{% elif signal.relative >= 1.05 %}is-positive{% elif signal.relative >= 0.95 %}is-neutral{% else %}is-negative{% endif %}{% else %}is-neutral{% endif %}">
+      <span class="signal-relative-value">{% if signal.relative != None %}{{ signal.relative|floatformat:1 }}×{% else %}–{% endif %}</span>
+      <span class="signal-relative-label">
+        {% if signal.relative == None %}För lite historik
+        {% elif signal.relative >= 1.25 %}Tydligt över normalt
+        {% elif signal.relative >= 1.05 %}Över normalt
+        {% elif signal.relative >= 0.95 %}I nivå med vanligt
+        {% else %}Under normalt{% endif %}
+      </span>
+      <span class="signal-relative-meter" aria-hidden="true"><i></i></span>
+    </span>
     <span class="signal-chevron">›</span>
   </summary>
 
   <div class="signal-detail">
     <div class="signal-detail-inner">
-      <div>
-        <h3>Resultat</h3>
-        <p>Likes: <strong>{{ signal.likes|default_if_none:'Saknas' }}</strong> · Kommentarer: <strong>{{ signal.comments|default_if_none:'Saknas' }}</strong>{% if signal.views != None %} · Videovisningar: <strong>{{ signal.views }}</strong>{% endif %}</p>
-        {% if signal.relative != None %}
-          {% if signal.baseline_type == 'mature_low_confidence' %}
-            <p><strong>{{ signal.relative|floatformat:1 }}× äldre posters nivå</strong> · låg säkerhet</p>
-            <p class="small">Tillfällig baslinje mot {{ signal.sample_size }} äldre poster från samma konto och format. När minst fem mätningar vid liknande postålder finns prioriteras de automatiskt.</p>
-          {% else %}
-            <p><strong>{{ signal.relative|floatformat:1 }}× kontots norm</strong></p>
-            <p class="small">{{ signal.metric }} jämfört med medianen för {{ signal.sample_size }} poster av samma format och liknande ålder.</p>
-          {% endif %}
-        {% else %}
-          <p><strong>För lite jämförbar historik</strong></p>
-          <p class="small">{{ signal.sample_size }} jämförbara poster. Vi inväntar mer data innan överprestation bedöms.</p>
-        {% endif %}
-        <p class="small">{{ signal.momentum.label }}</p>
-
+      <div class="signal-detail-pane">
+        <div class="signal-flow-label"><span>1</span>Källmaterial</div>
         <div class="signal-original-post">
           <h3>Originalinlägg</h3>
           {% if signal.post.caption %}
@@ -39,19 +38,47 @@
             <p class="small">Inlägget saknar caption/text.</p>
           {% endif %}
         </div>
+
+        <div class="signal-result-card">
+          <h3>Resultat</h3>
+          <p>Likes: <strong>{{ signal.likes|default_if_none:'Saknas' }}</strong> · Kommentarer: <strong>{{ signal.comments|default_if_none:'Saknas' }}</strong>{% if signal.views != None %} · Videovisningar: <strong>{{ signal.views }}</strong>{% endif %}</p>
+          {% if signal.relative != None %}
+            {% if signal.baseline_type == 'mature_low_confidence' %}
+              <p><strong>{{ signal.relative|floatformat:1 }}× äldre posters nivå</strong> · låg säkerhet</p>
+              <p class="small">Tillfällig baslinje mot {{ signal.sample_size }} äldre poster från samma konto och format. När minst fem mätningar vid liknande postålder finns prioriteras de automatiskt.</p>
+            {% else %}
+              <p><strong>{{ signal.relative|floatformat:1 }}× kontots norm</strong></p>
+              <p class="small">{{ signal.metric }} jämfört med medianen för {{ signal.sample_size }} poster av samma format och liknande ålder.</p>
+            {% endif %}
+          {% else %}
+            <p><strong>För lite jämförbar historik</strong></p>
+            <p class="small">{{ signal.sample_size }} jämförbara poster. Vi inväntar mer data innan överprestation bedöms.</p>
+          {% endif %}
+          <p class="small">{{ signal.momentum.label }}</p>
+        </div>
       </div>
 
-      <div>
+      <div class="signal-detail-pane">
         {% if signal.analysis_current and signal.post.classification %}
-          <h3>Varför den verkar fungera</h3>
-          <p>{{ signal.post.classification.why }}</p>
-          <p class="small">{{ signal.post.classification.topic }} · {{ signal.post.classification.mechanisms|join:' + ' }}. Hypotes utifrån caption och metadata.</p>
-          <h3>Förslag för {{ workspace.name }}</h3>
-          <p>{{ signal.post.classification.adaptation }}</p>
+          <div class="signal-flow-label"><span>2</span>Analys</div>
+          <div class="signal-analysis-card">
+            <h3>Varför den verkar fungera</h3>
+            <p>{{ signal.post.classification.why }}</p>
+            <p class="small">{{ signal.post.classification.topic }} · {{ signal.post.classification.mechanisms|join:' + ' }}. Hypotes utifrån caption och metadata.</p>
+          </div>
+
+          <div class="signal-flow-label" style="margin-top:12px"><span>3</span>Golfkupongers vinkel</div>
+          <div class="signal-adaptation-card">
+            <h3>Förslag för {{ workspace.name }}</h3>
+            <p>{{ signal.post.classification.adaptation }}</p>
+          </div>
         {% else %}
-          <h3>Detaljerad analys</h3>
-          <p class="small">Få en egen idé utifrån inlägget.</p>
-          <form method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Analysera inlägget</button></form>
+          <div class="signal-flow-label"><span>2</span>Analys</div>
+          <div class="signal-analysis-card">
+            <h3>Detaljerad analys</h3>
+            <p class="small">Analysera caption och metadata för att se mekanismen bakom signalen och få en egen Golfkuponger-vinkel.</p>
+            <form method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Analysera inlägget</button></form>
+          </div>
         {% endif %}
       </div>
     </div>

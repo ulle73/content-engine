@@ -29,18 +29,33 @@
   {% endif %}
 
   <section class="insight-summary-strip" aria-label="Översikt">
-    <div><span>Signaler i vyn</span><strong>{{ weekly|length }}</strong></div>
-    <div><span>Bevakade konton</span><strong>{{ competitors|length }}</strong></div>
-    <div class="insight-summary-copy"><span>Hur det används</span><strong>Konkurrentdata är inspiration – aldrig facit.</strong></div>
+    <div class="insight-summary-card">
+      <span class="insight-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 18l4-7 4 4 4-9 4 4"></path></svg></span>
+      <span>Signaler i vyn</span><strong>{{ weekly|length }}</strong><small>Aktuella inlägg i prioriteringen</small>
+    </div>
+    <div class="insight-summary-card">
+      <span class="insight-summary-icon blue" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"></circle><circle cx="16" cy="9" r="2.5"></circle><path d="M3.5 19c.4-4 2.4-6 5.5-6s5.1 2 5.5 6M14 14c3.4 0 5.4 1.7 5.8 5"></path></svg></span>
+      <span>Bevakade konton</span><strong>{{ competitors|length }}</strong><small>Konton som bygger jämförelseunderlag</small>
+    </div>
+    <div class="insight-summary-copy">
+      <span class="insight-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M8 14a6 6 0 1 1 8 0l-1 4H9z"></path></svg></span>
+      <span>Hur det används</span><strong>Konkurrentdata är inspiration – aldrig facit.</strong><small>Jämför signaler, läs originalet och skapa sedan en egen Golfkuponger-vinkel.</small>
+    </div>
   </section>
 
   <section class="product-section insight-feed-section">
     <div class="product-section-head">
       <div><span class="insight-section-kicker">Organiskt</span><h2>Inlägg att inspireras av</h2><p class="small">Prioriterade efter relativ prestation, aktualitet och datakvalitet.</p></div>
-      <span class="meta-pill">{{ competitors|length }} konton</span>
+      <div class="signal-head-actions">
+        <div class="signal-legend" aria-label="Förklaring">
+          <span class="is-positive"><i></i> Bättre än vanligt</span>
+          <span class="is-negative"><i></i> Svagare än vanligt</span>
+        </div>
+        <span class="meta-pill">{{ competitors|length }} konton</span>
+      </div>
     </div>
     <div class="signal-board premium-signal-board">
-      <div class="signal-board-header" aria-hidden="true"><span>Konto</span><span>Innehåll</span><span>Typ</span><span>Ålder</span><span>Gilla</span><span>Jämfört med vanligt</span><span></span></div>
+      <div class="signal-board-header" aria-hidden="true"><span>#</span><span>Konto</span><span>Innehåll</span><span>Typ</span><span>Ålder</span><span>Gilla</span><span>Jämfört med vanligt</span><span></span></div>
       {% for signal in weekly %}{% include 'engine/signal_card.html' %}{% empty %}<div class="empty-state inspiration-empty-state"><h3>Vem vill du inspireras av?</h3><p>Lägg till relevanta Instagramkonton så börjar Content Engine bygga jämförelseunderlag.</p><a class="button button-secondary" href="#accounts">Lägg till Instagramkonto</a></div>{% endfor %}
     </div>
   </section>

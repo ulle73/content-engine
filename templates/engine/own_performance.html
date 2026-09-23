@@ -12,9 +12,18 @@
   </header>
 
   <section class="results-summary-strip" aria-label="Resultatöversikt">
-    <div><span>Publicerade inlägg</span><strong>{{ own_posts|length }}</strong></div>
-    <div class="results-summary-copy"><span>Jämförelse</span><strong>Varje inlägg mäts mot er egen norm för format och ålder.</strong></div>
-    <div class="results-summary-copy"><span>Learning</span><strong>Verifierade 7-dagarsresultat matas tillbaka automatiskt.</strong></div>
+    <div class="results-summary-card">
+      <span class="insight-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 19V11M12 19V5M19 19v-7"></path></svg></span>
+      <span>Publicerade inlägg</span><strong>{{ own_posts|length }}</strong><small>Inlägg som Content Engine kan följa</small>
+    </div>
+    <div class="results-summary-copy">
+      <span class="insight-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17l5-5 4 3 7-8"></path><path d="M15 7h5v5"></path></svg></span>
+      <span>Jämförelse</span><strong>Varje inlägg mäts mot er egen norm för format och ålder.</strong>
+    </div>
+    <div class="results-summary-copy">
+      <span class="insight-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 7a8 8 0 0 0-14-2L4 7"></path><path d="M4 3v4h4M4 17a8 8 0 0 0 14 2l2-2"></path><path d="M20 21v-4h-4"></path></svg></span>
+      <span>Learning</span><strong>Verifierade 7-dagarsresultat matas tillbaka automatiskt.</strong>
+    </div>
   </section>
 
   {% if own_posts %}
@@ -25,7 +34,7 @@
           <h2>{{ lead.caption|striptags|default:'Senaste publiceringen'|truncatechars:120 }}</h2>
           <p>{{ lead.platform|title }} · publicerad {{ lead.published_at|date:'j M Y' }}{% if lead.latest %} · följs automatiskt{% endif %}</p>
         </div>
-        <div class="performance-highlight-value">
+        <div class="performance-highlight-value {% if lead.latest and lead.latest.baseline.relative != None %}{% if lead.latest.baseline.relative >= 1.05 %}is-positive{% elif lead.latest.baseline.relative < 0.95 %}is-negative{% endif %}{% endif %}">
           <span class="performance-value-label">Relativ nivå</span>
           <strong>{% if lead.latest and lead.latest.baseline.relative != None %}{{ lead.latest.baseline.relative|floatformat:1 }}×{% else %}–{% endif %}</strong>
           <span>mot er normala nivå</span>
@@ -44,7 +53,7 @@
             <span class="signal-format performance-platform">{{ post.platform|title }}</span>
             <span class="performance-copy">{{ post.caption|striptags|default:'Ingen text'|truncatechars:95 }}</span>
             <span class="small">{{ post.published_at|date:'j M Y' }}</span>
-            <span class="performance-relative">{% if post.latest and post.latest.baseline.relative != None %}{{ post.latest.baseline.relative|floatformat:1 }}×{% else %}–{% endif %}</span>
+            <span class="performance-relative {% if post.latest and post.latest.baseline.relative != None %}{% if post.latest.baseline.relative >= 1.05 %}is-positive{% elif post.latest.baseline.relative < 0.95 %}is-negative{% else %}is-neutral{% endif %}{% endif %}">{% if post.latest and post.latest.baseline.relative != None %}{{ post.latest.baseline.relative|floatformat:1 }}×{% else %}–{% endif %}</span>
             <span class="status-badge {% if post.finalized_at %}muted{% elif post.latest %}success{% else %}warning{% endif %}">{% if post.finalized_at %}Klar{% elif post.latest %}Följs{% else %}Inväntar{% endif %}</span>
             <span class="signal-chevron">›</span>
           </summary>
