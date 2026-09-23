@@ -36,7 +36,22 @@ def home(request, workspace_id):
         messages.success(request, "Företagsunderlaget är sparat.")
         return redirect("engine:home", workspace_id=workspace_id)
     channel = "paid" if request.GET.get("channel") == "paid" else "organic"
-    runs = ContentRun.objects.filter(workspace=workspace, channel=channel).order_by("-created_at")[:10]
+    runs = list(
+        ContentRun.objects.filter(workspace=workspace, channel=channel)
+        .prefetch_related("events")
+        .order_by("-created_at")[:10]
+    )
+    for run in runs:
+        rejected = {
+            event.idea_index
+            for event in run.events.all()
+            if event.action == "rejected" and event.idea_index is not None
+        }
+        run.visible_ideas = [
+            {"index": index, "idea": idea}
+            for index, idea in enumerate(run.ideas)
+            if index not in rejected
+        ]
     return render(request, "engine/home.html", {"form": form, "runs": runs, "workspace": workspace, "channel":channel})
 
 

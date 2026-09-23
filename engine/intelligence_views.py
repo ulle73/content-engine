@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 from openai import APIError
 
@@ -152,9 +153,18 @@ def analyze_signal(request, workspace_id, post_id):
 @require_POST
 def reject_idea(request, workspace_id, run_id, idea_index):
     run = get_object_or_404(ContentRun, pk=run_id, workspace=request.workspace)
-    if idea_index < len(run.ideas):
-        ContentEvent.objects.create(
-            run=run, idea_index=idea_index, action="rejected", data={"idea": run.ideas[idea_index]}
+    if 0 <= idea_index < len(run.ideas):
+        ContentEvent.objects.get_or_create(
+            run=run,
+            idea_index=idea_index,
+            action="rejected",
+            defaults={"data": {"idea": run.ideas[idea_index]}},
         )
-        messages.success(request, "Ditt avvisande är sparat som återkoppling.")
-    return redirect("engine:home", workspace_id=workspace_id)
+        messages.success(request, "Idén är markerad som inte relevant och dold från arbetsytan.")
+    channel = "paid" if run.channel == "paid" else "organic"
+    return redirect(
+        reverse("engine:home", kwargs={"workspace_id": workspace_id})
+        + "?channel="
+        + channel
+        + "#recent-work"
+    )

@@ -79,24 +79,39 @@
           </div>
         {% else %}
           <section class="idea-batch editorial-idea-batch create-idea-batch">
-            <div class="idea-batch-head"><div><span class="create-kicker">Tre förslag</span><h3>Välj en idé</h3></div><span class="small">{{ run.created_at|date:"j M H:i" }}</span></div>
-            <div class="ideas">
-              {% for idea in run.ideas %}
-                <article class="idea create-idea-card">
-                  <div class="create-idea-number">0{{ forloop.counter }}</div>
-                  <h3>{{ idea.title }}</h3><p>{{ idea.angle }}</p>
-                  <div class="idea-actions">
-                    <form method="post" action="{% url 'engine:draft' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}" data-busy-label="Skriver utkast…">{% csrf_token %}<button type="submit">Välj och skriv utkast</button></form>
-                    <form method="post" action="{% url 'engine:reject_idea' workspace_id=workspace.id run_id=run.id idea_index=forloop.counter0 %}">{% csrf_token %}<button type="submit" class="quiet">Inte relevant</button></form>
-                  </div>
-                  <details><summary>Varför den här idén?</summary>
-                    <p>{{ idea.reason }}</p><blockquote>{{ idea.source_quote }}{% if idea.source_field %}<br><small>{% if idea.source_field == 'profile' %}Ur företagsuppgifterna{% else %}Ur aktuella uppgifter{% endif %}</small>{% endif %}</blockquote>
-                    <p class="small">Bildidé: {{ idea.photo_brief }}</p>
-                    {% if idea.ranking %}<details><summary>Bedömningsunderlag</summary><p class="small">{{ idea.ranking.score }} poäng · egna fakta {{ idea.ranking.parts.current_facts }} · profil {{ idea.ranking.parts.profile_relevance }} · aktuellt {{ idea.ranking.parts.current_relevance }} · konkurrentsignal {{ idea.ranking.parts.competitor }}.</p></details>{% endif %}
-                  </details>
-                </article>
-              {% endfor %}
+            <div class="idea-batch-head">
+              <div>
+                <span class="create-kicker">{{ run.visible_ideas|length }} förslag kvar</span>
+                <h3>{% if run.visible_ideas %}Välj en idé{% else %}Inga relevanta idéer kvar{% endif %}</h3>
+              </div>
+              <span class="small">{{ run.created_at|date:"j M H:i" }}</span>
             </div>
+            {% if run.visible_ideas %}
+              <div class="ideas">
+                {% for item in run.visible_ideas %}
+                  {% with idea=item.idea idea_index=item.index %}
+                    <article class="idea create-idea-card">
+                      <div class="create-idea-number">0{{ idea_index|add:"1" }}</div>
+                      <h3>{{ idea.title }}</h3><p>{{ idea.angle }}</p>
+                      <div class="idea-actions">
+                        <form method="post" action="{% url 'engine:draft' workspace_id=workspace.id run_id=run.id idea_index=idea_index %}" data-busy-label="Skriver utkast…">{% csrf_token %}<button type="submit">Välj och skriv utkast</button></form>
+                        <form method="post" action="{% url 'engine:reject_idea' workspace_id=workspace.id run_id=run.id idea_index=idea_index %}" data-busy-label="Döljer…">{% csrf_token %}<button type="submit" class="quiet">Inte relevant</button></form>
+                      </div>
+                      <details><summary>Varför den här idén?</summary>
+                        <p>{{ idea.reason }}</p><blockquote>{{ idea.source_quote }}{% if idea.source_field %}<br><small>{% if idea.source_field == 'profile' %}Ur företagsuppgifterna{% else %}Ur aktuella uppgifter{% endif %}</small>{% endif %}</blockquote>
+                        <p class="small">Bildidé: {{ idea.photo_brief }}</p>
+                        {% if idea.ranking %}<details><summary>Bedömningsunderlag</summary><p class="small">{{ idea.ranking.score }} poäng · egna fakta {{ idea.ranking.parts.current_facts }} · profil {{ idea.ranking.parts.profile_relevance }} · aktuellt {{ idea.ranking.parts.current_relevance }} · konkurrentsignal {{ idea.ranking.parts.competitor }}.</p></details>{% endif %}
+                      </details>
+                    </article>
+                  {% endwith %}
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="empty-state create-empty-state">
+                <strong>Alla idéer är markerade som inte relevanta</strong>
+                <p>Återkopplingen är sparad för lärandet. Skapa tre nya förslag när du vill.</p>
+              </div>
+            {% endif %}
           </section>
         {% endif %}
       {% empty %}<div class="empty-state create-empty-state"><strong>Här samlas ditt arbete</strong><p>Dina idéer och utkast visas här när du skapar ditt första innehåll.</p></div>{% endfor %}
