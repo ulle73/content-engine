@@ -136,6 +136,35 @@ class MediaGenerationReferenceTests(TestCase):
                 position=0,
             )
 
+    def test_start_and_end_references_are_singleton_position_zero(self):
+        first = self.image_asset()
+        second = self.image_asset()
+        job = self.raw_job()
+        with self.assertRaises(MediaError):
+            add_generation_reference(job, first, ReferenceRole.start_image, position=1)
+        with self.assertRaises(MediaError):
+            add_generation_reference(job, second, ReferenceRole.end_image, position=2)
+        with self.assertRaises(ValidationError):
+            MediaGenerationReference.objects.create(
+                generation=job,
+                asset=first,
+                role=ReferenceRole.end_image.value,
+                position=1,
+            )
+
+    def test_typed_start_and_legacy_source_mismatch_fails_closed_on_read(self):
+        legacy = self.image_asset()
+        typed = self.image_asset()
+        job = self.raw_job(source=legacy)
+        MediaGenerationReference.objects.create(
+            generation=job,
+            asset=typed,
+            role=ReferenceRole.start_image.value,
+            position=0,
+        )
+        with self.assertRaises(MediaError):
+            generation_reference_records(job)
+
     def test_reference_roles_enforce_media_kind_and_reserve_audio(self):
         image = self.image_asset()
         video = self.video_asset_row()
