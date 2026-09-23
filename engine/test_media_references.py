@@ -199,6 +199,15 @@ class MediaGenerationReferenceTests(TestCase):
         with self.assertRaises(MediaError):
             add_generation_reference(job, first, ReferenceRole.style_reference, position=2)
 
+    def test_future_expiring_reference_is_promoted_to_persistent_media(self):
+        asset = self.image_asset()
+        MediaAsset.objects.filter(pk=asset.pk).update(expires_at=timezone.now() + timedelta(days=1))
+        asset.refresh_from_db()
+        job = self.raw_job()
+        add_generation_reference(job, asset, ReferenceRole.style_reference)
+        asset.refresh_from_db()
+        self.assertIsNone(asset.expires_at)
+
     def test_reference_asset_cannot_be_deleted_while_provenance_points_to_it(self):
         source = self.image_asset()
         job = self.raw_job()
