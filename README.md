@@ -33,7 +33,7 @@ Konfiguration: `.env.example`. Hemligheter hör hemma i `.env` lokalt eller webb
 
 Produktionsdatabasen `content_engine_app` ligger sedan 2026-09-13 i Neon-projektet `orange-band-72152493`, under ägarens verifierade konto. Befintliga användare, företag, ContentRuns, observations- och lärhistorik har kopierats från den tidigare Neon-servern och jämförts med radantal och SHA-256 över fullständiga rader. Media ligger kvar i samma privata R2-bucket och Postiz-krypteringsnyckeln är bevarad. Den gamla databasen är kvar för återgång. Se [migreringsrapporten](docs/2026-09-13-production-migration.md) innan eventuell återställning; byt aldrig tillbaka utan att först bevara data som skapats efter migreringen.
 
-Redigerare, OAuth och MCP körs tillsammans på `https://content-engine-mcp.onrender.com/`, med MCP på `/mcp`. Endast `feature/chatgpt-content-engine-mcp` används för denna driftsättning; `main` har inte ändrats eller mergats.
+Redigerare, OAuth och MCP körs tillsammans på `https://content-engine-mcp.onrender.com/`, med MCP på `/mcp`. Render-tjänsten deployar från `feature/chatgpt-content-engine-mcp`. Per 2026-09-23 är `main` synkroniserad med den deployade feature-grenen; verifiera alltid aktuella branch-heads och Render-deploy före nästa ändring.
 
 ## Media och AI-generering
 
@@ -43,7 +43,7 @@ OpenAI används för bild och Higgsfields officiella API för video från text e
 
 Golfkupongers serverflöde använder `HIGGSFIELD_API_KEY_GK` som primär credential och får inte falla tillbaka till Jonas personliga Higgsfield-workspace/subscription. Äldre servervariabler finns kvar endast för bakåtkompatibel migrering. Kontots aktuella modell-/kredittillgänglighet verifieras fail-closed med leverantörens estimate innan betalning; den tidigare 2026-09-08-observationen `not_enough_credits` ska därför inte behandlas som aktuell status. Ingen betald videogeneration kördes i Creative Engine-implementationen 2026-09-21. Se [löpande Creative Engine-status](docs/2026-09-21-higgsfield-creative-engine-progress.md) och [äldre mediareferens](docs/2026-09-08-media.md).
 
-Planen för nästa generation av Higgsfield-stödet — gemensam Creative Engine för Content Engine + ChatGPT via remote MCP, officiellt Python-SDK, modellrouter och prompt director — finns i [Higgsfield Creative Engine + ChatGPT MCP](docs/2026-09-21-higgsfield-creative-engine-mcp-plan.md).
+Den gemensamma Creative Engine-arkitekturen med strukturerad brief, verifierad modellregistry/router, modell-specifik promptkompilering, Prompt Library, kostnadspreflight och MCP är nu implementerad. Historiken finns i [Creative Engine progress](docs/2026-09-21-higgsfield-creative-engine-progress.md) och [Creative Engine audit](docs/2026-09-22-creative-audit.md). Nästa additiva steg mot bredare Creative Intelligence beskrivs i [Creative Intelligence delta spec](docs/2026-09-23-content-engine-creative-intelligence-delta-spec.md).
 
 ## Competitor Intelligence
 
