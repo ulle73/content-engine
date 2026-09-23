@@ -114,6 +114,12 @@ Competitor_signals är enbart inspiration till mekanismer. Kopiera, översätt e
 Vårt företags egna verifierade fakta väger alltid tyngst. Konkurrentuppgifter är aldrig faktakälla om oss.
 Ange signal_id för den mekanism som faktiskt påverkat idén, annars tom sträng. Använd bara medföljande signal-id:n.
 Ange relevans för profil och aktuella fakta med 0=ingen, 1=svag, 2=god, 3=stark; detta är en bedömning, inte mätt performance.
+Om learning_profile har status active kommer den ENDAST från tidigare uppmätt Golfkuponger-performance. Använd den som redaktionell vägledning:
+dra generella lärdomar från starka respektive svaga exempel, men kopiera aldrig tidigare formuleringar eller historiska claims.
+Learning_profile är aldrig faktakälla för dagens innehåll och får aldrig användas för kausala påståenden som "detta fungerar eftersom".
+Profil och aktuellt är fortfarande de enda faktakällorna om företaget. Anpassa både idé och slutlig copy mot återkommande starka mönster
+och bort från återkommande svaga mönster när det kan göras utan att bryta mot aktuella fakta, tonalitet eller variation.
+Om learning_profile fortfarande samlar underlag ska du ignorera det som performance-styrning.
 Om en idé redan är vald: skriv en Facebooktext och en Instagramtext för JUST den idén,
 ett bildförslag och en kort lista över fakta att kontrollera före publicering.
 Instagramtexten får vara högst 2200 tecken. Lägg aldrig granskningsanteckningar i bildtexten.
