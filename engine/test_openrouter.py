@@ -66,7 +66,7 @@ class OpenRouterAnalysisTests(TestCase):
         )
         self.assertEqual(parsed.topic, "Kvällsträning")
         request = post.call_args.kwargs["json"]
-        self.assertEqual(request["max_tokens"], 5000)
+        self.assertEqual(request["max_completion_tokens"], 5000)
         self.assertEqual(request["temperature"], 0.2)
         self.assertEqual(request["response_format"]["type"], "json_object")
         self.assertNotIn("require_parameters", request["provider"])
@@ -87,7 +87,7 @@ class OpenRouterAnalysisTests(TestCase):
         clear=False,
     )
     @patch("engine.openrouter.httpx.post")
-    def test_generation_uses_glm_directly_with_reasoning_disabled(self, post):
+    def test_generation_uses_glm_directly_with_low_reasoning_and_strict_schema(self, post):
         post.return_value = FakeResponse(
             body={
                 "id": "gen-glm",
@@ -107,9 +107,11 @@ class OpenRouterAnalysisTests(TestCase):
         self.assertEqual(parsed.topic, "Kvällsträning")
         request = post.call_args.kwargs["json"]
         self.assertEqual(request["model"], "z-ai/glm-5.3-flash")
-        self.assertEqual(request["reasoning_effort"], "none")
-        self.assertEqual(request["response_format"]["type"], "json_object")
-        self.assertEqual(request["max_tokens"], 1200)
+        self.assertEqual(request["reasoning"], {"effort": "low"})
+        self.assertEqual(request["response_format"]["type"], "json_schema")
+        self.assertTrue(request["response_format"]["json_schema"]["strict"])
+        self.assertTrue(request["provider"]["require_parameters"])
+        self.assertEqual(request["max_completion_tokens"], 4000)
         self.assertEqual(post.call_count, 1)
         self.assertEqual(meta["model"], "z-ai/glm-5.3-flash")
 
@@ -140,7 +142,7 @@ class OpenRouterAnalysisTests(TestCase):
         self.assertEqual(parsed.topic, "Kvällsträning")
         request = post.call_args.kwargs["json"]
         self.assertEqual(request["temperature"], 0)
-        self.assertEqual(request["max_tokens"], 4000)
+        self.assertEqual(request["max_completion_tokens"], 4000)
 
     @patch.dict(
         os.environ,
@@ -188,7 +190,7 @@ class OpenRouterAnalysisTests(TestCase):
         self.assertNotIn("require_parameters", free_request["provider"])
         self.assertEqual(fallback_request["response_format"]["type"], "json_object")
         self.assertNotIn("require_parameters", fallback_request["provider"])
-        self.assertGreaterEqual(fallback_request["max_tokens"], 1600)
+        self.assertGreaterEqual(fallback_request["max_completion_tokens"], 1600)
         self.assertEqual(meta["model"], "z-ai/glm-5.3-flash")
 
     @patch.dict(
