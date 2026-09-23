@@ -246,9 +246,9 @@ Next exact task: B2
 
 ## Task B2 — Re-audit current Higgsfield video models
 
-- [ ] Re-read current official Higgsfield model catalog/API docs at implementation time.
-- [ ] Verify exact current model IDs and request fields.
-- [ ] Verify Seedance variants relevant to:
+- [x] Re-read current official Higgsfield model catalog/API docs at implementation time.
+- [x] Verify exact current model IDs and request fields.
+- [x] Verify Seedance variants relevant to:
   - image-to-video,
   - start/end frame,
   - continuity,
@@ -256,8 +256,8 @@ Next exact task: B2
   - resolution,
   - audio,
   - current price-estimate endpoint behavior.
-- [ ] Record evidence in code metadata and this ledger.
-- [ ] Do not infer server-account access from public docs.
+- [x] Record evidence in code metadata and this ledger.
+- [x] Do not infer server-account access from public docs.
 
 ### Acceptance criteria
 
@@ -267,10 +267,15 @@ Next exact task: B2
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —  
-Official evidence: —
+Status: DONE — current provider-contract audit completed; no model enabled and no generation submitted.  
+Artifact: `docs/2026-09-23-higgsfield-seedance-model-audit.md`.  
+What was verified: Exact current API model paths and request schemas for Seedance 2.5 T2V/I2V/reference-to-video, Seedance 2.0 T2V/I2V/reference-to-video, shared authenticated estimate behavior, official Seedance continuity guidance, and Kling O3 First/Last Frame as an additional continuity candidate.  
+Key B3 discoveries: Seedance duration is a range rather than the old fixed 5/10 tuple; endpoint/request capabilities differ by mode; Seedance defaults `generate_audio=true` while Content Engine defaults audio intent to none; Seedance 2.5 T2V exposes aspect ratio while its I2V API currently does not; exact provider path therefore belongs in the mode contract rather than being inferred globally.  
+Official evidence: Higgsfield `docs/llms.txt` source-priority guidance; billing/retention estimate contract; current model-specific Open Higgsfield API pages for Seedance 2.5, Seedance 2.0 and Kling O3; Higgsfield Seedance help center and 2.5 prompt guide.  
+Account evidence: A read-only Higgsfield MCP `seedance` catalog query was attempted and failed with workspace read error `423`. This is neither positive nor negative evidence for Golfkuponger's dedicated server credential. Account availability remains fail-closed until Content Engine's authenticated estimate succeeds.  
+Tests: Documentation/contract audit only; no runtime code changed in B2. B3 must add unit tests for every exact endpoint path and payload before enabling models.  
+Deploy: none  
+Next exact task: B3
 
 ---
 
@@ -984,7 +989,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task B2 — Re-audit the current Higgsfield model catalog and Seedance contracts from official documentation before enabling any new model.**
+> **Task B3 — Make Higgsfield request compilation mode-aware and add verified Seedance 2.5/2.0 to the existing Auto router without breaking current Kling behavior.**
 
 Do not begin by building the timeline UI.
 
