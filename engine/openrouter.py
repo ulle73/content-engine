@@ -113,7 +113,7 @@ def _usage_meta(body, requested_model, operation):
     }
 
 
-def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0, timeout_seconds=35):
+def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0, timeout_seconds=35, strict_schema=False):
     api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not api_key:
         raise OpenRouterError(
@@ -122,35 +122,45 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
 
     schema_dict = _strict_json_schema(schema.model_json_schema())
     schema_name = re.sub(r"[^A-Za-z0-9_-]+", "_", schema.__name__)[:48] or "content_engine_output"
+    schema_json = json.dumps(schema_dict, ensure_ascii=False, separators=(",", ":"))
+
+    system_message = system
     request_body = {
         "model": model,
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    system
-                    + "\nSvara kort och konkret. Svaret måste följa det påtvingade JSON-schemat exakt."
-                ),
-            },
-            {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
-        ],
+        "messages": [],
         "temperature": temperature,
         "max_tokens": max_tokens,
-        "response_format": {
+        "plugins": [{"id": "response-healing"}],
+        "provider": {"sort": "throughput"},
+        "usage": {"include": True},
+    }
+
+    if strict_schema:
+        system_message += "\nSvara kort och konkret. Svaret måste följa det påtvingade JSON-schemat exakt."
+        request_body["response_format"] = {
             "type": "json_schema",
             "json_schema": {
                 "name": schema_name,
                 "strict": True,
                 "schema": schema_dict,
             },
-        },
-        "plugins": [{"id": "response-healing"}],
-        "provider": {
-            "require_parameters": True,
-            "sort": "throughput",
-        },
-        "usage": {"include": True},
-    }
+        }
+        request_body["provider"]["require_parameters"] = True
+    else:
+        # Presets/free routers can contain endpoints that do not support native
+        # json_schema. JSON object mode keeps the free route compatible while
+        # the explicit schema in the prompt plus Pydantic validation still
+        # prevents unvalidated data from reaching the product.
+        system_message += (
+            "\nReturnera ENDAST ett kompakt JSON-objekt som följer detta schema exakt. "
+            "Ingen markdown eller annan text.\nSCHEMA:\n" + schema_json
+        )
+        request_body["response_format"] = {"type": "json_object"}
+
+    request_body["messages"] = [
+        {"role": "system", "content": system_message},
+        {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+    ]
     try:
         response = httpx.post(
             API_URL,
@@ -189,7 +199,7 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
             message = "OpenRouter eller modellleverantören är tillfälligt otillgänglig."
         else:
             message = f"OpenRouter avvisade analysen (HTTP {response.status_code})."
-        if safe_detail:
+        if safe_detail and response.status_code not in {404}:
             message += " " + safe_detail
         logger.warning("OpenRouter structured attempt failed model=%s status=%s detail=%s", model, response.status_code, safe_detail)
         raise OpenRouterError(message, status_code=response.status_code)
@@ -228,16 +238,19 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
 
     for model in dict.fromkeys((free_model, paid_model)):
         try:
-            timeout_seconds = 25 if model == free_model else 45
+            is_fallback = model == paid_model and paid_model != free_model
+            timeout_seconds = 18 if not is_fallback else 40
+            route_max_tokens = max(max_tokens, 5000) if is_fallback else max_tokens
             return _call(
                 model,
                 system=system,
                 payload=payload,
                 schema=schema,
                 operation=operation,
-                max_tokens=max_tokens,
+                max_tokens=route_max_tokens,
                 temperature=temperature,
                 timeout_seconds=timeout_seconds,
+                strict_schema=is_fallback,
             )
         except OpenRouterError as exc:
             errors.append((model, exc))
