@@ -121,7 +121,7 @@ Granskningslistan ska bara innehålla konkreta redaktionella kontroller på vanl
 """
     if paid:
         skills = (*skills, "campaign-and-launch-planning")
-        instructions += """\nUppgiften gäller betalda Meta-annonser, inte organiska inlägg. Skapa tre egna annonsvinklar eller vald annonscopy.
+        instructions += """\nUppgiften gäller betalda Meta-annonser, inte organiska inlägg. Skapa en egen annonsvinkel per idéanrop eller vald annonscopy.
 Konkurrenternas Ads Library-data visar kreativa mekanismer, INTE prestation. Hitta aldrig på CTR, CPA, ROAS, konverteringar eller lönsamhet.
 Livslängd, synlighet och varianter bevisar inte framgång. Kopiera aldrig konkurrentens erbjudande eller kreativ.
 Vid copy: skriv primärtext för Facebook och Instagram, rubrik, beskrivning, CTA och landing_page.
