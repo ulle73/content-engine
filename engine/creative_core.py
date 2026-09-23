@@ -14,6 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field
 REGISTRY_VERSION = "2026-09-21.1"
 COMPILER_VERSION = "2026-09-22.1"
 BRIEF_VERSION = "2026-09-22.1"
+RECIPE_REGISTRY_VERSION = "2026-09-23.1"
 
 
 class Complexity(str, Enum):
@@ -26,6 +27,62 @@ class EvidenceLevel(str, Enum):
     official = "OFFICIAL"
     verified = "VERIFIED"
     heuristic = "HEURISTIC"
+
+
+class ReferenceRole(str, Enum):
+    start_image = "START_IMAGE"
+    end_image = "END_IMAGE"
+    product_reference = "PRODUCT_REFERENCE"
+    character_reference = "CHARACTER_REFERENCE"
+    location_reference = "LOCATION_REFERENCE"
+    style_reference = "STYLE_REFERENCE"
+    video_reference = "VIDEO_REFERENCE"
+    audio_reference = "AUDIO_REFERENCE"
+
+
+class CreativeRecipe(BaseModel):
+    """Trusted, versioned production method selected from the internal registry.
+
+    Recipes are executable Creative Engine policy, unlike Prompt Library entries,
+    which remain untrusted inspiration data.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    recipe_id: str = Field(pattern=r"^[a-z0-9][a-z0-9_]{2,79}$")
+    version: str = Field(min_length=1, max_length=40)
+    name: str = Field(min_length=1, max_length=160)
+    description: str = Field(default="", max_length=1000)
+    kinds: tuple[Literal["image", "video"], ...]
+    supported_modes: tuple[
+        Literal["text-to-image", "image-to-image", "text-to-video", "image-to-video"], ...
+    ]
+    goal_tags: tuple[str, ...] = ()
+    format_tags: tuple[str, ...] = ()
+    required_reference_roles: tuple[ReferenceRole, ...] = ()
+    optional_reference_roles: tuple[ReferenceRole, ...] = ()
+    camera_strategy: tuple[str, ...] = ()
+    motion_strategy: tuple[str, ...] = ()
+    continuity_strategy: tuple[str, ...] = ()
+    negative_constraints: tuple[str, ...] = ()
+    default_duration_intent: int | None = Field(default=None, ge=1, le=120)
+    default_format_intent: str = "auto"
+    draft_policy: Literal["single_pass", "draft_then_final"] = "single_pass"
+    evaluation_rules: tuple[str, ...] = ()
+    supported_model_families: tuple[str, ...] = ()
+    evidence_sources: tuple[str, ...] = ()
+    verified_at: str
+    evidence_level: EvidenceLevel
+
+
+class RecipeSelection(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    recipe_id: str
+    version: str
+    reason_codes: list[str]
+    evidence_level: EvidenceLevel
+    registry_version: str = RECIPE_REGISTRY_VERSION
 
 
 class CreativeBrief(BaseModel):
@@ -118,9 +175,11 @@ class CreativePlan(BaseModel):
     context: CreativeContext
     complexity: Complexity
     selection: ModelSelection
+    recipe: RecipeSelection
     prompt: str
     parameters: dict
     inspiration_ids: list[str] = Field(default_factory=list)
     preflight: list[PreflightIssue] = Field(default_factory=list)
     compiler_version: str = COMPILER_VERSION
     registry_version: str = REGISTRY_VERSION
+    recipe_registry_version: str = RECIPE_REGISTRY_VERSION

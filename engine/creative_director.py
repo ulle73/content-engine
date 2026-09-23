@@ -17,6 +17,7 @@ from .creative_core import (
     PreflightIssue,
 )
 from .creative_registry import ModelIntelligence, verified_models
+from .creative_recipes import resolve_recipe
 
 
 MAX_CONTEXT_FIELD = 1400
@@ -290,9 +291,10 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
     return "\n".join(sections)
 
 
-def build_plan(run, request: str, *, kind: str, source=None, shape="portrait", count=2, priority="balanced", inspirations=None) -> CreativePlan:
+def build_plan(run, request: str, *, kind: str, source=None, shape="portrait", count=2, priority="balanced", inspirations=None, recipe_id=None) -> CreativePlan:
     context = build_content_context(run)
     brief = parse_brief(request, kind=kind, has_reference=bool(source), shape=shape, priority=priority)
+    _, recipe_selection = resolve_recipe(brief, recipe_id=recipe_id)
     complexity = analyze_complexity(brief)
     model, selection = route_model(brief, complexity)
     params, normalization = compile_parameters(brief, model, count=count, shape=shape)
@@ -307,6 +309,7 @@ def build_plan(run, request: str, *, kind: str, source=None, shape="portrait", c
         context=context,
         complexity=complexity,
         selection=selection,
+        recipe=recipe_selection,
         prompt=prompt,
         parameters=params,
         inspiration_ids=[str(item.get("id")) for item in inspirations[:MAX_INSPIRATION] if item.get("id")],
