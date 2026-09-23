@@ -77,7 +77,7 @@ def registry() -> tuple[ModelIntelligence, ...]:
             evidence_level=EvidenceLevel.official,
             verified_date="2026-09-23",
             source="https://developers.openai.com/api/docs/models/gpt-image-2",
-            evidence_version="gpt-image-2-2026-04-21",
+            profile_version="2026-09-23.1",\n            profile_status="verified",\n            evidence_version="gpt-image-2-2026-04-21",
             sources=(
                 "https://developers.openai.com/api/docs/models/gpt-image-2",
                 "https://developers.openai.com/api/docs/guides/image-generation",
@@ -126,7 +126,7 @@ def registry() -> tuple[ModelIntelligence, ...]:
             evidence_level=EvidenceLevel.official,
             verified_date="2026-09-23",
             source="https://docs.higgsfield.ai/docs/models/kling-2-5-turbo/pro-image-to-video",
-            evidence_version="kling-2.5-turbo-pro-api-2026-09-23",
+            profile_version="2026-09-23.1",\n            profile_status="verified",\n            evidence_version="kling-2.5-turbo-pro-api-2026-09-23",
             sources=(
                 "https://docs.higgsfield.ai/docs/models/kling-2-5-turbo/pro-text-to-video",
                 "https://docs.higgsfield.ai/docs/models/kling-2-5-turbo/pro-image-to-video",
@@ -172,14 +172,24 @@ def registry() -> tuple[ModelIntelligence, ...]:
 
 
 def _verified_profile(item: ModelIntelligence) -> bool:
+    contracts = [contract.mode for contract in item.reference_contracts]
+    contract_set = set(contracts)
+    references_are_valid = all(
+        not (set(contract.required_reference_roles) & set(contract.optional_reference_roles))
+        for contract in item.reference_contracts
+    )
     return (
         item.profile_status == "verified"
         and bool(item.profile_version)
         and bool(item.verified_date)
         and bool(item.source)
         and bool(item.sources)
-        and bool(item.prompt_strategy)
+        and bool(item.evidence_version)
+        and item.prompt_strategy in {"natural_scene", "ordered_motion"}
         and bool(item.prompt_sections)
+        and len(contracts) == len(contract_set)
+        and contract_set == set(item.modes)
+        and references_are_valid
     )
 
 
