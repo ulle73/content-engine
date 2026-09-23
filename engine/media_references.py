@@ -62,6 +62,9 @@ def add_generation_reference(
             raise MediaError("Företagets logga hanteras separat och kan inte vara generationreferens.")
         if locked_asset.expires_at and locked_asset.expires_at <= timezone.now():
             raise MediaError("Referensmediets förhandsvisning har gått ut.")
+        if locked_asset.expires_at is not None:
+            locked_asset.expires_at = None
+            locked_asset.save(update_fields=["expires_at"])
 
         if role == ReferenceRole.start_image and position == 0:
             if locked_job.source_asset_id and locked_job.source_asset_id != locked_asset.pk:
