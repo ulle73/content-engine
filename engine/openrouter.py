@@ -182,7 +182,7 @@ def route_signature():
     return f"openrouter:{free_model}>{paid_model}"
 
 
-def structured_analysis(*, system, payload, schema: type[T], operation="analysis"):
+def structured_analysis(*, system, payload, schema: type[T], operation="analysis", max_tokens=4000, temperature=0):
     free_model = os.environ.get("OPENROUTER_ANALYSIS_MODEL", "@preset/gk-free").strip() or "@preset/gk-free"
     paid_model = os.environ.get("OPENROUTER_ANALYSIS_FALLBACK_MODEL", "z-ai/glm-5.3-flash").strip() or "z-ai/glm-5.3-flash"
     errors = []
