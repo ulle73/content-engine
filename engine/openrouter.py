@@ -6,6 +6,7 @@ allowed. No retries are hidden inside httpx; the routing policy stays explicit.
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import os
@@ -77,6 +78,24 @@ def _json_object(text):
     return parsed
 
 
+def _strict_json_schema(schema):
+    """Make Pydantic object schemas explicit enough for strict JSON-schema providers."""
+    value = copy.deepcopy(schema)
+
+    def walk(node):
+        if isinstance(node, dict):
+            if node.get("type") == "object" or "properties" in node:
+                node.setdefault("additionalProperties", False)
+            for child in node.values():
+                walk(child)
+        elif isinstance(node, list):
+            for child in node:
+                walk(child)
+
+    walk(value)
+    return value
+
+
 def _usage_meta(body, requested_model, operation):
     usage = body.get("usage") if isinstance(body, dict) else {}
     usage = usage if isinstance(usage, dict) else {}
@@ -94,14 +113,15 @@ def _usage_meta(body, requested_model, operation):
     }
 
 
-def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0):
+def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0, timeout_seconds=35):
     api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not api_key:
         raise OpenRouterError(
             "OpenRouter är inte konfigurerat på Content Engine-servern. Lägg in OPENROUTER_API_KEY i Render."
         )
 
-    schema_json = json.dumps(schema.model_json_schema(), ensure_ascii=False, separators=(",", ":"))
+    schema_dict = _strict_json_schema(schema.model_json_schema())
+    schema_name = re.sub(r"[^A-Za-z0-9_-]+", "_", schema.__name__)[:48] or "content_engine_output"
     request_body = {
         "model": model,
         "messages": [
@@ -109,15 +129,26 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
                 "role": "system",
                 "content": (
                     system
-                    + "\nReturnera ENDAST ett kompakt JSON-objekt som följer detta schema exakt. "
-                    + "Ingen markdown, inga kodblock och ingen dold resonemangstext.\nSCHEMA:\n"
-                    + schema_json
+                    + "\nSvara kort och konkret. Svaret måste följa det påtvingade JSON-schemat exakt."
                 ),
             },
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
         ],
-        "temperature": 0,
-        "max_tokens": 4000,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": schema_name,
+                "strict": True,
+                "schema": schema_dict,
+            },
+        },
+        "plugins": [{"id": "response-healing"}],
+        "provider": {
+            "require_parameters": True,
+            "sort": "throughput",
+        },
         "usage": {"include": True},
     }
     try:
@@ -129,7 +160,7 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
                 "X-Title": "Golfkuponger Content Engine",
             },
             json=request_body,
-            timeout=60,
+            timeout=httpx.Timeout(timeout_seconds, connect=5.0, read=timeout_seconds, write=10.0, pool=5.0),
         )
     except (httpx.TimeoutException, httpx.NetworkError) as exc:
         raise OpenRouterError("OpenRouter svarade inte i tid. Försök igen.", status_code=503) from exc
@@ -172,6 +203,14 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
     try:
         parsed = schema.model_validate(_json_object(_content_text(message)))
     except (ValueError, ValidationError, json.JSONDecodeError) as exc:
+        choice = choices[0] if isinstance(choices, list) and choices else {}
+        logger.warning(
+            "OpenRouter structured validation failed requested_model=%s response_model=%s finish_reason=%s error=%s",
+            model,
+            body.get("model") if isinstance(body, dict) else "",
+            choice.get("finish_reason") if isinstance(choice, dict) else "",
+            str(exc)[:500],
+        )
         raise OpenRouterError("Modellen returnerade inte ett giltigt strukturerat svar.", status_code=502) from exc
     return parsed, _usage_meta(body, model, operation)
 
@@ -189,7 +228,17 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
 
     for model in dict.fromkeys((free_model, paid_model)):
         try:
-            return _call(model, system=system, payload=payload, schema=schema, operation=operation, max_tokens=max_tokens, temperature=temperature)
+            timeout_seconds = 25 if model == free_model else 45
+            return _call(
+                model,
+                system=system,
+                payload=payload,
+                schema=schema,
+                operation=operation,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                timeout_seconds=timeout_seconds,
+            )
         except OpenRouterError as exc:
             errors.append((model, exc))
             if exc.status_code in {401, 403} or "inte konfigurerat" in str(exc):
