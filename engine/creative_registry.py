@@ -45,8 +45,8 @@ class ModelIntelligence:
     speed_tier: int = 2
     cost_tier: int = 2
     prompt_strategy: str = "natural"
-    profile_version: str = "2026-09-23.1"
-    profile_status: Literal["verified", "stale"] = "verified"
+    profile_version: str = ""
+    profile_status: Literal["verified", "stale"] = "stale"
     evidence_version: str = ""
     sources: tuple[str, ...] = ()
     reference_contracts: tuple[ModeReferenceContract, ...] = ()
@@ -77,14 +77,16 @@ def registry() -> tuple[ModelIntelligence, ...]:
             evidence_level=EvidenceLevel.official,
             verified_date="2026-09-23",
             source="https://developers.openai.com/api/docs/models/gpt-image-2",
-            profile_version="2026-09-23.1",\n            profile_status="verified",\n            evidence_version="gpt-image-2-2026-04-21",
+            profile_version="2026-09-23.1",
+            profile_status="verified",
+            evidence_version="gpt-image-2-2026-04-21",
             sources=(
                 "https://developers.openai.com/api/docs/models/gpt-image-2",
                 "https://developers.openai.com/api/docs/guides/image-generation",
             ),
             resolutions=("1024x1024", "1024x1536", "1536x1024"),
-            explicit_aspect_ratio=True,
-            aspect_ratio_behavior="explicit",
+            explicit_aspect_ratio=False,
+            aspect_ratio_behavior="derived",
             reference_support=True,
             reference_contracts=(
                 ModeReferenceContract(mode="text-to-image"),
@@ -126,7 +128,9 @@ def registry() -> tuple[ModelIntelligence, ...]:
             evidence_level=EvidenceLevel.official,
             verified_date="2026-09-23",
             source="https://docs.higgsfield.ai/docs/models/kling-2-5-turbo/pro-image-to-video",
-            profile_version="2026-09-23.1",\n            profile_status="verified",\n            evidence_version="kling-2.5-turbo-pro-api-2026-09-23",
+            profile_version="2026-09-23.1",
+            profile_status="verified",
+            evidence_version="kling-2.5-turbo-pro-api-2026-09-23",
             sources=(
                 "https://docs.higgsfield.ai/docs/models/kling-2-5-turbo/pro-text-to-video",
                 "https://docs.higgsfield.ai/docs/models/kling-2-5-turbo/pro-image-to-video",
