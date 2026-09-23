@@ -1,8 +1,11 @@
 <details class="learning-disclosure"><summary>Om rekommendationerna</summary><div class="advanced-body">
   <span class="learning-label">{% if learning.channel == 'paid' %}Annonser{% else %}Inlägg{% endif %}</span>
   <span class="learning-copy">{{ learning.labels }} egna resultat · {{ learning.predictions }} innehåll med frysta features{% if learning.model %} · {{ learning.model.mode }} · {{ learning.model.target }}{% else %} · samlar underlag före första modellträningen{% endif %}</span>
+  {% if learning.generation %}
+    <p class="small"><strong>Generatorns lärprofil:</strong> {{ learning.generation.performance_examples }} verifierade performance-exempel · {{ learning.generation.editorial_signals }} redaktionella signaler · nivå {{ learning.generation.performance_confidence }}.</p>
+  {% endif %}
   <details>
     <summary>Detaljer</summary>
-    {% if learning.model %}<p class="small">Modell {{ learning.model.version }} · MAE {{ learning.model.evaluation.mae|floatformat:2 }} · baseline {{ learning.model.evaluation.baseline_mae|floatformat:2 }}. Nya modeller går först i shadow och ändrar inte rekommendationerna automatiskt.</p>{% else %}<p class="small">Minst 80 egna resultat för samma mål och tillräcklig tidsmässig historik behövs före första träningen. Konkurrentdata är signaler, aldrig performance-labels.</p>{% endif %}
+    {% if learning.model %}<p class="small">Modell {{ learning.model.version }} · MAE {{ learning.model.evaluation.mae|floatformat:2 }} · baseline {{ learning.model.evaluation.baseline_mae|floatformat:2 }}. Nya modeller går först i shadow och ändrar inte rekommendationerna automatiskt.</p>{% else %}<p class="small">Minst 80 egna resultat för samma mål och tillräcklig tidsmässig historik behövs före första rankingmodellens träning. Generatorn kan däremot redan använda sparade redaktionella preferenser och börjar använda verifierade performance-mönster när minst tre jämförbara egna resultat finns. Konkurrentdata är signaler, aldrig performance-labels.</p>{% endif %}
   </details>
 </div></details>
