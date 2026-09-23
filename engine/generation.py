@@ -7,7 +7,7 @@ from typing import Literal
 from django.conf import settings
 from pydantic import BaseModel, Field, create_model
 
-from .openrouter import structured_analysis
+from .openrouter import structured_generation
 
 
 class IdeaOutput(BaseModel):
@@ -136,7 +136,7 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
     selected_brief = {k: idea[k] for k in ("title", "angle", "photo_brief") if k in idea} if writing else None
     system_prompt = instructions + "\n\nHantverksreferenser:\n" + skill_text(*skills)
     if writing:
-        parsed, usage_meta = structured_analysis(
+        parsed, usage_meta = structured_generation(
             system=system_prompt,
             payload={"company_context": writing_context, "selected_idea": selected_brief},
             schema=AdDraftOutput if paid else DraftOutput,
@@ -163,7 +163,7 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
         ideas = []
         usage_metas = []
         for index, variation_goal in enumerate(variation_goals, start=1):
-            parsed, meta = structured_analysis(
+            parsed, meta = structured_generation(
                 system=system_prompt,
                 payload={
                     "company_context": writing_context,
@@ -177,8 +177,8 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
                 },
                 schema=IdeaOutput,
                 operation=f"idea_{index}",
-                max_tokens=1000,
-                temperature=0.25,
+                max_tokens=1200,
+                temperature=0.2,
             )
             item = parsed.model_dump()
             source_field = next(

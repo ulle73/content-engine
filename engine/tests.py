@@ -12,7 +12,7 @@ from .postiz import make_payload
 
 
 class SourceQuoteTests(TestCase):
-    @patch("engine.generation.structured_analysis")
+    @patch("engine.generation.structured_generation")
     def test_draft_writer_receives_editorial_brief_without_ranking_metadata(self, structured):
         from .generation import generate
 
@@ -37,7 +37,7 @@ class SourceQuoteTests(TestCase):
         self.assertEqual(set(payload["selected_idea"]), {"title", "angle", "photo_brief"})
         self.assertEqual(structured.call_args.kwargs["operation"], "draft")
 
-    @patch("engine.generation.structured_analysis")
+    @patch("engine.generation.structured_generation")
     def test_quotes_accept_only_exact_current_or_profile_text(self, structured):
         from copy import deepcopy
 
@@ -77,7 +77,7 @@ class SourceQuoteTests(TestCase):
             [call.kwargs["operation"] for call in structured.call_args_list],
             ["idea_1", "idea_2", "idea_3"],
         )
-        self.assertTrue(all(call.kwargs["max_tokens"] == 1000 for call in structured.call_args_list))
+        self.assertTrue(all(call.kwargs["max_tokens"] == 1200 for call in structured.call_args_list))
         self.assertEqual(structured.call_args_list[1].kwargs["payload"]["variation"]["avoid_titles"], ["Idé 0"])
 
         for invalid in (context["voice"], "Vi hjälper alla golfare.", ""):
