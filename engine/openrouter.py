@@ -239,8 +239,8 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
     for model in dict.fromkeys((free_model, paid_model)):
         try:
             is_fallback = model == paid_model and paid_model != free_model
-            timeout_seconds = 18 if not is_fallback else 40
-            route_max_tokens = max(max_tokens, 5000) if is_fallback else max_tokens
+            timeout_seconds = 18 if not is_fallback else 35
+            route_max_tokens = max(max_tokens, 1600) if is_fallback else max_tokens
             return _call(
                 model,
                 system=system,
@@ -250,7 +250,7 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
                 max_tokens=route_max_tokens,
                 temperature=temperature,
                 timeout_seconds=timeout_seconds,
-                strict_schema=is_fallback,
+                strict_schema=False,
             )
         except OpenRouterError as exc:
             errors.append((model, exc))
