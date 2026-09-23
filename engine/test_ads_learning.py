@@ -254,6 +254,8 @@ class AdsSyncTests(TestCase):
         url = reverse("engine:ideas",kwargs={"workspace_id":self.company.pk})
         response = self.client.post(url,{"channel":"paid","signal_id":ad.pk})
         self.assertEqual(response.status_code,302)
+        idea_context = generate.call_args_list[0].args[0]
+        self.assertEqual(idea_context["learning_profile"]["status"], "collecting")
         run = ContentRun.objects.get()
         self.assertEqual(run.channel,"paid")
         self.assertEqual(run.predictions.count(),3)
