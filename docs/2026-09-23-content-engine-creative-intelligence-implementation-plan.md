@@ -200,8 +200,8 @@ Goal: make existing Auto routing meaningful for video and grounded in current of
 
 ## Task B1 — Extend model intelligence with prompt/reference profiles
 
-- [ ] Extend current `ModelIntelligence` or add an adjacent trusted `ModelPromptProfile`.
-- [ ] Represent model-specific:
+- [x] Extend current `ModelIntelligence` or add an adjacent trusted `ModelPromptProfile`.
+- [x] Represent model-specific:
   - supported reference roles,
   - start/end frame support,
   - audio support,
@@ -212,8 +212,8 @@ Goal: make existing Auto routing meaningful for video and grounded in current of
   - known constraints/failure modes,
   - compatible recipe capabilities,
   - official evidence URL/date/version.
-- [ ] Keep capability facts separate from account availability.
-- [ ] Account availability remains provider preflight/estimate truth.
+- [x] Keep capability facts separate from account availability.
+- [x] Account availability remains provider preflight/estimate truth.
 
 ### Acceptance criteria
 
@@ -230,10 +230,17 @@ Goal: make existing Auto routing meaningful for video and grounded in current of
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —  
-Evidence: —
+Status: DONE — provider-neutral profile/capability foundation implemented and reviewed. GitHub-hosted Django/PostgreSQL execution remains blocked by the known account-level Actions billing/spending restriction before application steps start. Latest run `35924160444` completed as failure within ~5 seconds; both `verify` and `postgres` jobs failed before normal test execution.  
+Files changed: `engine/creative_core.py`, `engine/creative_registry.py`, `engine/creative_director.py`, `engine/test_creative_core.py`. No migration.  
+What changed: Extended the single existing `ModelIntelligence` with fail-closed versioned model profiles, mode-specific `ModeReferenceContract`, canonical reference-role capability checks, aspect-ratio behavior, prompt sections, negative-prompt capability, known constraints and recipe capabilities. New profiles default to `stale` and cannot enter Auto routing until explicitly verified and complete. Prompt compilation is now driven by trusted `prompt_strategy` + `prompt_sections`, not provider name. `ModelSelection` persists `profile_version` and `evidence_version` for reproducibility.  
+Tests: Focused Python 3.13 contract smoke PASS for verified/stale gating, complete per-mode contracts, overlapping-role rejection logic, START_IMAGE support, END_IMAGE non-support for current Kling, and serialized profile/evidence provenance. Added Django regression tests for profile lookup, stale/incomplete exclusion, reference-role preflight and profile-driven compiler sections. Static branch-head verification confirms no accidental literal escape sequences remain after a connector patch was caught and corrected before merge.  
+Official/provider evidence: OpenAI GPT-Image-2 model page + image-generation guide rechecked 2026-09-23: image input/output supported, high-fidelity image input, snapshot `gpt-image-2-2026-04-21`, recommended 1K sizes, and fixed high input fidelity for GPT-Image-2. Higgsfield Kling 2.5 Turbo Pro T2V/I2V docs rechecked 2026-09-23: 5/10 second durations, negative_prompt capability, no sound/aspect_ratio field, and `image_url` required for I2V. Public docs are capability evidence only; server account availability remains estimate/preflight truth.  
+Live verification: Not required; no provider payload or live behavior changed and Render was intentionally not deployed.  
+Known limitations: Current provider adapter does not yet send Kling `negative_prompt`; B1 records verified capability only. Current app still has one source image relation; C1 introduces persisted typed multi-reference relations. No Seedance/new model is enabled until B2/B3. Full Django/PostgreSQL CI must be rerun when GitHub Actions billing is restored.  
+Code branch head before checklist closeout: `bdc38763c872c64d85b2007a7fed2cbe7a20b820`  
+PR: #36  
+Deploy: none  
+Next exact task: B2
 
 ---
 
@@ -977,7 +984,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task B1 — Extend the existing model intelligence with trusted prompt/reference profiles while preserving the single current router.**
+> **Task B2 — Re-audit the current Higgsfield model catalog and Seedance contracts from official documentation before enabling any new model.**
 
 Do not begin by building the timeline UI.
 

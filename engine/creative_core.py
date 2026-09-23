@@ -11,7 +11,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
-REGISTRY_VERSION = "2026-09-21.1"
+REGISTRY_VERSION = "2026-09-23.1"
 COMPILER_VERSION = "2026-09-22.1"
 BRIEF_VERSION = "2026-09-22.1"
 RECIPE_REGISTRY_VERSION = "2026-09-23.1"
@@ -165,6 +165,8 @@ class ModelSelection(BaseModel):
     mode: str
     reason_codes: list[str]
     evidence_level: EvidenceLevel
+    profile_version: str = ""
+    evidence_version: str = ""
     registry_version: str = REGISTRY_VERSION
 
 

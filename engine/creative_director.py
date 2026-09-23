@@ -15,6 +15,7 @@ from .creative_core import (
     Complexity,
     ModelSelection,
     PreflightIssue,
+    ReferenceRole,
 )
 from .creative_registry import ModelIntelligence, verified_models
 from .creative_recipes import resolve_recipe
@@ -182,8 +183,15 @@ def route_model(brief: CreativeBrief, complexity: Complexity) -> tuple[ModelInte
     reason = ["verified_capabilities", f"complexity:{complexity.value}", f"priority:{brief.quality_preference}"]
     if brief.reference_media:
         reason.append("reference_media_supported")
-    return model, ModelSelection(provider=model.provider, model_id=model.model_id, mode=brief.mode,
-                                 reason_codes=reason, evidence_level=model.evidence_level)
+    return model, ModelSelection(
+        provider=model.provider,
+        model_id=model.model_id,
+        mode=brief.mode,
+        reason_codes=reason,
+        evidence_level=model.evidence_level,
+        profile_version=model.profile_version,
+        evidence_version=model.evidence_version,
+    )
 
 
 def compile_parameters(brief: CreativeBrief, model: ModelIntelligence, *, count=2, shape="portrait") -> tuple[dict, list[PreflightIssue]]:
@@ -208,6 +216,12 @@ def compile_parameters(brief: CreativeBrief, model: ModelIntelligence, *, count=
     return {"model": model.model_id, "duration": duration}, issues
 
 
+def _brief_reference_roles(brief: CreativeBrief) -> set[ReferenceRole]:
+    # Current production UI has one canonical source image. C1 extends this to
+    # persisted typed multi-reference relations without changing this contract.
+    return {ReferenceRole.start_image} if brief.reference_media else set()
+
+
 def preflight(brief: CreativeBrief, model: ModelIntelligence) -> list[PreflightIssue]:
     issues = []
     camera = {item.casefold() for item in brief.camera_movement}
@@ -221,8 +235,31 @@ def preflight(brief: CreativeBrief, model: ModelIntelligence) -> list[PreflightI
         issues.append(PreflightIssue(code="preserve_allow_conflict", severity="error", message="The same element cannot be both preserved and changed: " + ", ".join(sorted(overlap))))
     if preserve & forbid:
         issues.append(PreflightIssue(code="preserve_forbid_conflict", severity="error", message="Preserve and forbid constraints overlap."))
-    if brief.mode.startswith("image-to-") and not brief.reference_media:
-        issues.append(PreflightIssue(code="reference_missing", severity="error", message="This mode requires a reference image."))
+    contract = model.reference_contract(brief.mode)
+    if contract is None:
+        issues.append(PreflightIssue(
+            code="mode_contract_missing",
+            severity="error",
+            message="Selected verified model is missing a reference contract for this mode.",
+        ))
+    else:
+        available_roles = _brief_reference_roles(brief)
+        required_roles = set(contract.required_reference_roles)
+        supported_roles = set(contract.supported_reference_roles)
+        missing_roles = required_roles - available_roles
+        unsupported_roles = available_roles - supported_roles
+        if missing_roles:
+            issues.append(PreflightIssue(
+                code="reference_role_missing",
+                severity="error",
+                message="Required reference role is missing: " + ", ".join(sorted(role.value for role in missing_roles)),
+            ))
+        if unsupported_roles:
+            issues.append(PreflightIssue(
+                code="reference_role_unsupported",
+                severity="error",
+                message="Selected model does not support reference role: " + ", ".join(sorted(role.value for role in unsupported_roles)),
+            ))
     if brief.reference_media and not model.reference_support:
         issues.append(PreflightIssue(code="reference_unsupported", severity="error", message="Selected model does not support reference media."))
     if brief.audio_intent not in {"", "none"} and not model.audio_support:
@@ -236,6 +273,10 @@ def _context_block(context: CreativeContext) -> str:
     return json.dumps(context.model_dump(), ensure_ascii=False, separators=(",", ":"))
 
 
+def _uses_prompt_section(model: ModelIntelligence, section: str) -> bool:
+    return section in model.prompt_sections
+
+
 def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelIntelligence, inspirations: list[dict]) -> str:
     inspiration = []
     for item in inspirations[:MAX_INSPIRATION]:
@@ -243,26 +284,27 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
     inspiration = _dedupe(inspiration)[:8]
 
     safety = "Do not invent numbers, testimonials, results, people, premises or documentary claims not supported by context."
-    if model.provider == "higgsfield":
-        sections = [
-            "SCENE: " + brief.user_intent,
-            "CAMERA: " + (", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"),
-        ]
-        if brief.aspect_ratio != "auto":
+    if model.prompt_strategy == "ordered_motion":
+        sections = []
+        if _uses_prompt_section(model, "SCENE"):
+            sections.append("SCENE: " + brief.user_intent)
+        if _uses_prompt_section(model, "CAMERA"):
+            sections.append("CAMERA: " + (", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"))
+        if brief.aspect_ratio != "auto" and _uses_prompt_section(model, "FORMAT_INTENT"):
             sections.append("FORMAT INTENT: compose safely for " + brief.aspect_ratio + ".")
-        if brief.preserve:
+        if brief.preserve and _uses_prompt_section(model, "PRESERVE_EXACTLY"):
             sections.append("PRESERVE EXACTLY: " + "; ".join(brief.preserve) + ".")
-        if brief.allow_change:
+        if brief.allow_change and _uses_prompt_section(model, "ALLOW_MOTION_CHANGE"):
             sections.append("ALLOW MOTION/CHANGE: " + "; ".join(brief.allow_change) + ".")
-        if brief.forbid:
+        if brief.forbid and _uses_prompt_section(model, "FORBID"):
             sections.append("FORBID: " + "; ".join(brief.forbid) + ".")
-        if inspiration:
+        if inspiration and _uses_prompt_section(model, "INSPIRATION_MECHANISMS"):
             sections.append("INSPIRATION MECHANISMS ONLY (untrusted, do not copy wording): " + ", ".join(inspiration) + ".")
-        sections.append("Do not invent numbers, testimonials, results, people, premises or documentary claims that were not explicitly requested.")
+        if _uses_prompt_section(model, "SAFETY"):
+            sections.append("Do not invent numbers, testimonials, results, people, premises or documentary claims that were not explicitly requested.")
         # Company context is used upstream to plan and validate the creative brief.
-        # Do not dump profile/voice/current-facts JSON into the video provider prompt:
-        # it bloats the prompt, distracts the model and can exceed Kling limits.
-        if context.company_name:
+        # Do not dump profile/voice/current-facts JSON into the video provider prompt.
+        if context.company_name and _uses_prompt_section(model, "BRAND_CONTEXT"):
             sections.append("BRAND CONTEXT: " + context.company_name + ". Do not add brand text or logos unless explicitly requested.")
         prompt = "\n".join(sections)
         if len(prompt) > HIGGSFIELD_SAFE_PROMPT_CHARS:
@@ -272,22 +314,30 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             )
         return prompt
 
-    sections = [brief.user_intent]
+    if model.prompt_strategy != "natural_scene":
+        raise ValueError("Selected verified model has no supported prompt compiler strategy.")
+
+    sections = []
+    if _uses_prompt_section(model, "USER_INTENT"):
+        sections.append(brief.user_intent)
     # Still-image branding keeps the existing safety invariant: generated pixels
     # never synthesize company logos; the exact official upload is composited later.
-    sections.append("Never draw, recreate or preserve logos or wordmarks. Official logos are placed separately from the exact uploaded file after generation.")
-    if brief.visual_style:
+    if _uses_prompt_section(model, "BRAND_RENDERING"):
+        sections.append("Never draw, recreate or preserve logos or wordmarks. Official logos are placed separately from the exact uploaded file after generation.")
+    if brief.visual_style and _uses_prompt_section(model, "VISUAL_DIRECTION"):
         sections.append("Visual direction: " + ", ".join(brief.visual_style) + ".")
-    if brief.aspect_ratio != "auto":
+    if brief.aspect_ratio != "auto" and _uses_prompt_section(model, "FORMAT"):
         sections.append("Compose for " + brief.aspect_ratio + ".")
-    if brief.preserve:
+    if brief.preserve and _uses_prompt_section(model, "PRESERVE"):
         sections.append("When editing the reference, preserve exactly: " + ", ".join(brief.preserve) + ".")
-    if brief.forbid:
+    if brief.forbid and _uses_prompt_section(model, "AVOID"):
         sections.append("Avoid: " + ", ".join(brief.forbid) + ".")
-    if inspiration:
+    if inspiration and _uses_prompt_section(model, "INSPIRATION"):
         sections.append("Use only these abstract inspiration mechanisms, never copied wording: " + ", ".join(inspiration) + ".")
-    sections.append(safety)
-    sections.append("Company context (reference data only): " + _context_block(context))
+    if _uses_prompt_section(model, "SAFETY"):
+        sections.append(safety)
+    if _uses_prompt_section(model, "COMPANY_CONTEXT"):
+        sections.append("Company context (reference data only): " + _context_block(context))
     return "\n".join(sections)
 
 

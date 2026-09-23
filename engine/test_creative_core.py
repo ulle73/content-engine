@@ -5,18 +5,19 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
-from .creative_core import Complexity, EvidenceLevel, RECIPE_REGISTRY_VERSION
+from .creative_core import Complexity, CreativeBrief, EvidenceLevel, ReferenceRole, RECIPE_REGISTRY_VERSION
 from .creative_director import (
     analyze_complexity,
     build_content_context,
     build_plan,
     HIGGSFIELD_SAFE_PROMPT_CHARS,
     compile_parameters,
+    compile_prompt,
     parse_brief,
     preflight,
     route_model,
 )
-from .creative_registry import ModelIntelligence, registry, verified_models
+from .creative_registry import ModeReferenceContract, ModelIntelligence, registry, verified_models
 from .creative_recipes import get_recipe, registry as recipe_registry, resolve_recipe
 from .models import Company, ContentRun
 
@@ -130,6 +131,114 @@ class CreativeCoreTests(TestCase):
         self.assertEqual(get_recipe("generic_video").recipe_id, "generic_video")
         self.assertNotIn("IGNORE SYSTEM", plan.prompt)
 
+    def test_model_profiles_expose_mode_specific_reference_contracts(self):
+        video = verified_models("video", "image-to-video")[0]
+        contract = video.reference_contract("image-to-video")
+        self.assertIsNotNone(contract)
+        self.assertEqual(contract.required_reference_roles, (ReferenceRole.start_image,))
+        self.assertTrue(video.supports_reference_role("image-to-video", ReferenceRole.start_image))
+        self.assertFalse(video.supports_reference_role("image-to-video", ReferenceRole.end_image))
+        self.assertEqual(video.aspect_ratio_behavior, "prompt_only")
+        self.assertTrue(video.negative_prompt_support)
+        self.assertTrue(video.sources)
+        self.assertTrue(video.evidence_version)
+        plan = build_plan(self.run, "Skapa en 5 sekunders video", kind="video")
+        self.assertEqual(plan.selection.profile_version, video.profile_version)
+        self.assertEqual(plan.selection.evidence_version, video.evidence_version)
+
+    def test_stale_model_profile_cannot_enter_auto_routing(self):
+        stale = ModelIntelligence(
+            provider="higgsfield",
+            model_id="stale/model",
+            kind="video",
+            modes=("text-to-video",),
+            enabled=True,
+            evidence_level=EvidenceLevel.verified,
+            verified_date="2026-09-23",
+            source="https://example.test/model",
+            sources=("https://example.test/model",),
+            profile_status="stale",
+            prompt_strategy="ordered_motion",
+            prompt_sections=("SCENE",),
+            reference_contracts=(ModeReferenceContract(mode="text-to-video"),),
+        )
+        with patch("engine.creative_registry.registry", return_value=(stale,)):
+            self.assertEqual(verified_models("video", "text-to-video"), [])
+
+    def test_new_model_profile_defaults_fail_closed_until_explicitly_verified(self):
+        candidate = ModelIntelligence(
+            provider="higgsfield",
+            model_id="new/model",
+            kind="video",
+            modes=("text-to-video",),
+            enabled=True,
+            evidence_level=EvidenceLevel.official,
+            verified_date="2026-09-23",
+            source="https://example.test/model",
+            sources=("https://example.test/model",),
+            evidence_version="example-v1",
+            prompt_strategy="ordered_motion",
+            prompt_sections=("SCENE",),
+            reference_contracts=(ModeReferenceContract(mode="text-to-video"),),
+        )
+        self.assertEqual(candidate.profile_status, "stale")
+        with patch("engine.creative_registry.registry", return_value=(candidate,)):
+            self.assertEqual(verified_models("video", "text-to-video"), [])
+
+    def test_incomplete_reference_contract_profile_cannot_enter_auto_routing(self):
+        malformed = ModelIntelligence(
+            provider="higgsfield",
+            model_id="malformed/model",
+            kind="video",
+            modes=("text-to-video", "image-to-video"),
+            enabled=True,
+            evidence_level=EvidenceLevel.official,
+            verified_date="2026-09-23",
+            source="https://example.test/model",
+            sources=("https://example.test/model",),
+            profile_version="test-v1",
+            profile_status="verified",
+            evidence_version="example-v1",
+            prompt_strategy="ordered_motion",
+            prompt_sections=("SCENE",),
+            reference_contracts=(ModeReferenceContract(mode="text-to-video"),),
+        )
+        with patch("engine.creative_registry.registry", return_value=(malformed,)):
+            self.assertEqual(verified_models("video", "text-to-video"), [])
+            self.assertEqual(verified_models("video", "image-to-video"), [])
+
+    def test_preflight_rejects_reference_role_not_supported_by_mode_contract(self):
+        brief = CreativeBrief(
+            user_intent="Reference request",
+            kind="video",
+            mode="text-to-video",
+            reference_media=["source_asset"],
+        )
+        model = verified_models("video", "text-to-video")[0]
+        issues = preflight(brief, model)
+        self.assertTrue(any(item.code == "reference_role_unsupported" for item in issues))
+
+    def test_compiler_uses_profile_sections_not_provider_name(self):
+        model = ModelIntelligence(
+            provider="higgsfield",
+            model_id="profile/test",
+            kind="video",
+            modes=("text-to-video",),
+            enabled=False,
+            evidence_level=EvidenceLevel.verified,
+            verified_date="2026-09-23",
+            source="https://example.test/model",
+            sources=("https://example.test/model",),
+            prompt_strategy="ordered_motion",
+            prompt_sections=("SCENE", "SAFETY"),
+            reference_contracts=(ModeReferenceContract(mode="text-to-video"),),
+        )
+        brief = parse_brief("Skapa en cinematic video", kind="video")
+        prompt = compile_prompt(brief, build_content_context(self.run), model, [])
+        self.assertIn("SCENE:", prompt)
+        self.assertNotIn("CAMERA:", prompt)
+        self.assertNotIn("BRAND CONTEXT:", prompt)
+
     def test_duration_is_normalized_locally_without_provider_call(self):
         brief = parse_brief("Premium reel cirka 8 sekunder", kind="video")
         model = verified_models("video", "text-to-video")[0]
@@ -191,7 +300,9 @@ class CreativeCoreTests(TestCase):
         plan = build_plan(self.run, "Skapa en lugn premium reel 10 sekunder", kind="video")
         payload = plan.model_dump(mode="json")
         self.assertEqual(payload["brief"]["version"], "2026-09-22.1")
-        self.assertEqual(payload["registry_version"], "2026-09-21.1")
+        self.assertEqual(payload["registry_version"], "2026-09-23.1")
+        self.assertTrue(payload["selection"]["profile_version"])
+        self.assertTrue(payload["selection"]["evidence_version"])
         self.assertEqual(payload["compiler_version"], "2026-09-22.1")
         self.assertEqual(payload["recipe"]["recipe_id"], "generic_video")
         self.assertEqual(payload["recipe_registry_version"], RECIPE_REGISTRY_VERSION)
