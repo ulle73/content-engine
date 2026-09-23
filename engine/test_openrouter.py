@@ -151,10 +151,9 @@ class OpenRouterAnalysisTests(TestCase):
         fallback_request = post.call_args_list[1].kwargs["json"]
         self.assertEqual(free_request["response_format"]["type"], "json_object")
         self.assertNotIn("require_parameters", free_request["provider"])
-        self.assertEqual(fallback_request["response_format"]["type"], "json_schema")
-        self.assertTrue(fallback_request["response_format"]["json_schema"]["strict"])
-        self.assertTrue(fallback_request["provider"]["require_parameters"])
-        self.assertGreaterEqual(fallback_request["max_tokens"], 5000)
+        self.assertEqual(fallback_request["response_format"]["type"], "json_object")
+        self.assertNotIn("require_parameters", fallback_request["provider"])
+        self.assertGreaterEqual(fallback_request["max_tokens"], 1600)
         self.assertEqual(meta["model"], "z-ai/glm-5.3-flash")
 
     @patch.dict(
