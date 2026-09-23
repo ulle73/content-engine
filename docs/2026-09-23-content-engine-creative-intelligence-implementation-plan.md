@@ -108,9 +108,9 @@ Goal: create a trusted, structured production-method layer without weakening Pro
 
 ## Task A1 — Define trusted CreativeRecipe domain model
 
-- [ ] Add a versioned provider-neutral `CreativeRecipe` domain object/registry.
-- [ ] Keep trusted recipes separate from user Prompt Library entries.
-- [ ] Support at minimum:
+- [x] Add a versioned provider-neutral `CreativeRecipe` domain object/registry.
+- [x] Keep trusted recipes separate from user Prompt Library entries.
+- [x] Support at minimum:
   - stable recipe id,
   - version,
   - name/description,
@@ -126,8 +126,8 @@ Goal: create a trusted, structured production-method layer without weakening Pro
   - evidence sources,
   - verified date,
   - confidence/evidence level.
-- [ ] Recipe provenance is persisted into `MediaGeneration.parameters.creative`.
-- [ ] Existing jobs without recipe metadata remain readable.
+- [x] Recipe provenance is persisted into `MediaGeneration.parameters.creative`.
+- [x] Existing jobs without recipe metadata remain readable.
 
 ### Acceptance criteria
 
@@ -147,11 +147,17 @@ Goal: create a trusted, structured production-method layer without weakening Pro
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —  
-Evidence: —  
-Next exact task: A1
+Status: DONE — code + focused domain verification; repository CI is externally blocked before test execution by the already-known GitHub Actions billing/spending restriction. No application test step ran in workflow run `35923242551`; both jobs failed within ~2 seconds. This infrastructure blocker is unrelated to the code change and remains explicitly unresolved.  
+Files changed: `engine/creative_core.py`, new `engine/creative_recipes.py`, `engine/creative_director.py`, `engine/media.py`, focused tests in `engine/test_creative_core.py` and `engine/test_media.py`.  
+What changed: Added frozen/versioned trusted `CreativeRecipe` + `RecipeSelection`, canonical reference-role vocabulary, immutable indexed recipe registry, generic compatibility recipes for existing image/video paths, fail-closed explicit recipe resolution, and persisted recipe provenance. Existing Prompt Library remains untrusted and cannot select a recipe. No DB migration and no provider behavior change.  
+Tests: Local Python 3.13 / Pydantic 2.13 focused smoke PASS for registry construction, JSON serialization, START_IMAGE role serialization, default video recipe, explicit/fail-closed recipe resolution and incompatible recipe rejection. Static integration review confirms `build_plan()` resolves recipes independently of Prompt Library inspiration and `create_job()` persists recipe id/version. New Django regression tests were added but GitHub-hosted execution is blocked by the account-level Actions restriction before steps start.  
+Official/provider evidence: Not applicable; A1 changes no provider contract.  
+Live verification: Not required for this provider-neutral, non-UI foundation. Render was not changed.  
+Known limitations: Automatic semantic recipe selection is A2. Model-specific recipe compatibility/routing is B1/B3. Full Django/PostgreSQL CI must be rerun when GitHub Actions billing is restored.  
+Commit: `b54d74e5b71cf2fd9247ebf1ae7c92e5175bd65b` (A1 branch head before merge)  
+PR: #35  
+Deploy: none  
+Next exact task: B1
 
 ---
 
@@ -971,7 +977,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task A1 — Define and test the trusted CreativeRecipe domain model while preserving the existing CreativeBrief/router/compiler/Prompt Library architecture.**
+> **Task B1 — Extend the existing model intelligence with trusted prompt/reference profiles while preserving the single current router.**
 
 Do not begin by building the timeline UI.
 

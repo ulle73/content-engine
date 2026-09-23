@@ -145,10 +145,12 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
             "context": plan.context.model_dump(mode="json"),
             "complexity": plan.complexity.value,
             "selection": plan.selection.model_dump(mode="json"),
+            "recipe": plan.recipe.model_dump(mode="json"),
             "preflight": [item.model_dump(mode="json") for item in plan.preflight],
             "inspiration_ids": plan.inspiration_ids,
             "compiler_version": plan.compiler_version,
             "registry_version": plan.registry_version,
+            "recipe_registry_version": plan.recipe_registry_version,
         }
         if logo:
             params["logo_sha256"] = logo.sha256
