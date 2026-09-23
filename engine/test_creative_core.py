@@ -162,6 +162,48 @@ class CreativeCoreTests(TestCase):
         with patch("engine.creative_registry.registry", return_value=(stale,)):
             self.assertEqual(verified_models("video", "text-to-video"), [])
 
+    def test_new_model_profile_defaults_fail_closed_until_explicitly_verified(self):
+        candidate = ModelIntelligence(
+            provider="higgsfield",
+            model_id="new/model",
+            kind="video",
+            modes=("text-to-video",),
+            enabled=True,
+            evidence_level=EvidenceLevel.official,
+            verified_date="2026-09-23",
+            source="https://example.test/model",
+            sources=("https://example.test/model",),
+            evidence_version="example-v1",
+            prompt_strategy="ordered_motion",
+            prompt_sections=("SCENE",),
+            reference_contracts=(ModeReferenceContract(mode="text-to-video"),),
+        )
+        self.assertEqual(candidate.profile_status, "stale")
+        with patch("engine.creative_registry.registry", return_value=(candidate,)):
+            self.assertEqual(verified_models("video", "text-to-video"), [])
+
+    def test_incomplete_reference_contract_profile_cannot_enter_auto_routing(self):
+        malformed = ModelIntelligence(
+            provider="higgsfield",
+            model_id="malformed/model",
+            kind="video",
+            modes=("text-to-video", "image-to-video"),
+            enabled=True,
+            evidence_level=EvidenceLevel.official,
+            verified_date="2026-09-23",
+            source="https://example.test/model",
+            sources=("https://example.test/model",),
+            profile_version="test-v1",
+            profile_status="verified",
+            evidence_version="example-v1",
+            prompt_strategy="ordered_motion",
+            prompt_sections=("SCENE",),
+            reference_contracts=(ModeReferenceContract(mode="text-to-video"),),
+        )
+        with patch("engine.creative_registry.registry", return_value=(malformed,)):
+            self.assertEqual(verified_models("video", "text-to-video"), [])
+            self.assertEqual(verified_models("video", "image-to-video"), [])
+
     def test_preflight_rejects_reference_role_not_supported_by_mode_contract(self):
         brief = CreativeBrief(
             user_intent="Reference request",
