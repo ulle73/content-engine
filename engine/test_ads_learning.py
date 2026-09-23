@@ -12,7 +12,7 @@ from .competitors import start_import
 from .daily import run_daily
 from .daily_stages import ads_units, ads_analysis_units, learning_units
 from .daily import Stage
-from .learning import FEATURE_VERSION, TARGETS, dataset, features, predict, promote, record_outcome, record_predictions, train
+from .learning import FEATURE_VERSION, TARGETS, dataset, features, generation_learning_profile, predict, promote, record_outcome, record_predictions, train
 from .models import (AdAccount, AdObservation, AnalysisMemo, Company, Competitor, CompetitorAd, ContentRun,
                      LearningModel, OwnOutcome, Prediction, ScrapeRequest)
 from .sync import analysis, dispatch, organic_plan, state_for
@@ -361,6 +361,40 @@ class LearningTests(TestCase):
             self.outcome(b, source="manual_verified")
         with self.assertRaises(ValueError):
             self.outcome(a, metrics={"impressions":1000, "likes":40,"comments":3})
+
+    def test_generation_profile_uses_only_prior_measured_own_outcomes(self):
+        values = [10, 20, 40, 5]
+        titles = []
+        for i, value in enumerate(values):
+            run = self.content_run(days_ago=40 + i * 2)
+            run.ideas[0]["title"] = f"Own idea {i}"
+            run.ideas[0]["angle"] = f"Angle {i}"
+            run.draft = {"instagram": f"Published-style copy {i}"}
+            run.save(update_fields=["ideas", "draft"])
+            titles.append(run.ideas[0]["title"])
+            self.outcome(
+                run,
+                days_ago=39 + i * 2,
+                index=f"profile-post-{i}",
+                metrics={"impressions": 1000, "likes": value, "comments": 0},
+            )
+
+        profile = generation_learning_profile(self.company, "organic")
+        self.assertEqual(profile["status"], "active")
+        self.assertEqual(profile["confidence"], "early")
+        self.assertEqual(profile["usable_examples"], 4)
+        self.assertEqual(profile["strong_examples"][0]["title"], "Own idea 2")
+        self.assertEqual(profile["weak_examples"][0]["title"], "Own idea 3")
+        self.assertIn("Published-style copy", profile["strong_examples"][0]["copy_excerpt"])
+        self.assertTrue(all("relative_to_own_median" in row for row in profile["strong_examples"]))
+
+        before_results = generation_learning_profile(
+            self.company,
+            "organic",
+            cutoff=self.now - timedelta(days=100),
+        )
+        self.assertEqual(before_results["status"], "collecting")
+        self.assertEqual(before_results["usable_examples"], 0)
 
     def test_training_is_time_purged_cached_and_shadow_does_not_change_ranking(self):
         for i in range(100):
