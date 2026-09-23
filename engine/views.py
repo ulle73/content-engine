@@ -98,6 +98,8 @@ def ideas(request, workspace_id):
             snapshot["competitor_signals"] = signals(request.workspace, signal_id)
         else:
             snapshot["competitor_signals"] = inspiration(request.workspace, signal_id)
+        from .learning import generation_guidance
+        snapshot["generation_learning"] = generation_guidance(request.workspace, channel)
         output = generate(snapshot)
         ranked = rank_ideas(output["ideas"], snapshot)
         new_run = ContentRun.objects.create(
