@@ -183,8 +183,15 @@ def route_model(brief: CreativeBrief, complexity: Complexity) -> tuple[ModelInte
     reason = ["verified_capabilities", f"complexity:{complexity.value}", f"priority:{brief.quality_preference}"]
     if brief.reference_media:
         reason.append("reference_media_supported")
-    return model, ModelSelection(provider=model.provider, model_id=model.model_id, mode=brief.mode,
-                                 reason_codes=reason, evidence_level=model.evidence_level)
+    return model, ModelSelection(
+        provider=model.provider,
+        model_id=model.model_id,
+        mode=brief.mode,
+        reason_codes=reason,
+        evidence_level=model.evidence_level,
+        profile_version=model.profile_version,
+        evidence_version=model.evidence_version,
+    )
 
 
 def compile_parameters(brief: CreativeBrief, model: ModelIntelligence, *, count=2, shape="portrait") -> tuple[dict, list[PreflightIssue]]:
