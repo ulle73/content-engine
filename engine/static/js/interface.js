@@ -20,9 +20,10 @@
       form.setAttribute('aria-busy', 'true');
       const button = event.submitter;
       if (button) {
-        button.dataset.originalLabel = button.textContent;
+        button.dataset.originalHtml = button.innerHTML;
         button.textContent = form.dataset.busyLabel;
         button.setAttribute('aria-disabled', 'true');
+        button.disabled = true;
       }
     });
   });
@@ -30,9 +31,11 @@
     document.querySelectorAll('form[data-busy-label]').forEach(form => {
       delete form.dataset.busy;
       form.removeAttribute('aria-busy');
-      form.querySelectorAll('[data-original-label]').forEach(button => {
-        button.textContent = button.dataset.originalLabel;
+      form.querySelectorAll('[data-original-html]').forEach(button => {
+        button.innerHTML = button.dataset.originalHtml;
+        delete button.dataset.originalHtml;
         button.removeAttribute('aria-disabled');
+        button.disabled = false;
       });
     });
   });
