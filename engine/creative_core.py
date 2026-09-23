@@ -165,6 +165,8 @@ class ModelSelection(BaseModel):
     mode: str
     reason_codes: list[str]
     evidence_level: EvidenceLevel
+    profile_version: str = ""
+    evidence_version: str = ""
     registry_version: str = REGISTRY_VERSION
 
 
