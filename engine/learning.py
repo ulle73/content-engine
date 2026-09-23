@@ -5,6 +5,7 @@ Editorial choices/rejections and competitor observations are never performance l
 """
 import math
 from datetime import timedelta
+from statistics import median
 
 from django.db import transaction
 from django.utils import timezone
@@ -30,6 +31,190 @@ def features(idea, context):
     return {"numeric":numeric, "signal":signal, "context_hash":fingerprint(context),
             "idea_hash":fingerprint({k:v for k,v in idea.items() if k not in ("ranking", "learning")}),
             "available_at":context.get("captured_at"), "feature_version":FEATURE_VERSION}
+
+
+def _clip(value, limit=360):
+    text = " ".join(str(value or "").split())
+    return text if len(text) <= limit else text[: max(0, limit - 1)].rstrip() + "…"
+
+
+def _run_generation_example(run):
+    if run.selected is None or run.selected >= len(run.ideas):
+        return None
+    idea = run.ideas[run.selected] or {}
+    draft = run.draft or {}
+    final_copy = draft.get("instagram") or draft.get("facebook") or ""
+    return {
+        "title": _clip(idea.get("title"), 120),
+        "angle": _clip(idea.get("angle"), 260),
+        "photo_brief": _clip(idea.get("photo_brief"), 220),
+        "final_copy_excerpt": _clip(final_copy, 420),
+    }
+
+
+def _outcome_relative(outcome, target_medians):
+    baseline = (outcome.snapshot.baseline or {}) if outcome.snapshot_id else {}
+    relative = baseline.get("relative")
+    peers = int(baseline.get("peers") or 0)
+    if isinstance(relative, (int, float)) and math.isfinite(relative) and relative >= 0 and peers >= 3:
+        return min(float(relative), 5.0), {
+            "basis": "own_age_baseline",
+            "peers": peers,
+            "confidence": baseline.get("confidence_label") or "low",
+        }
+
+    values = target_medians.get(outcome.target)
+    if not values or len(values) < 3:
+        return None, None
+    benchmark = median(values)
+    if not math.isfinite(benchmark) or benchmark <= 0 or not math.isfinite(outcome.label) or outcome.label < 0:
+        return None, None
+    higher_is_better = spec(outcome.target)[3]
+    if higher_is_better:
+        relative = outcome.label / benchmark
+    elif outcome.label == 0:
+        relative = 5.0
+    else:
+        relative = benchmark / outcome.label
+    return min(max(float(relative), 0.0), 5.0), {
+        "basis": "same_target_median",
+        "target": outcome.target,
+        "sample_size": len(values),
+    }
+
+
+def generation_guidance(company, channel):
+    """Compact closed-loop guidance for future generation.
+
+    Verified own outcomes may guide performance patterns. Editorial choices,
+    rejections and edits are separate preference signals and are never treated
+    as performance labels. Historical copy is reference material only, never a
+    source of current company facts.
+    """
+    outcomes = list(
+        OwnOutcome.objects.filter(
+            prediction__run__workspace=company,
+            prediction__channel=channel,
+        )
+        .select_related("prediction__run", "snapshot")
+        .order_by("-recorded_at")[:120]
+    )
+    target_values = {}
+    for outcome in outcomes:
+        if isinstance(outcome.label, (int, float)) and math.isfinite(outcome.label):
+            target_values.setdefault(outcome.target, []).append(float(outcome.label))
+
+    by_run = {}
+    for outcome in outcomes:
+        run = outcome.prediction.run
+        if run.selected is None or outcome.prediction.idea_index != run.selected:
+            continue
+        relative, basis = _outcome_relative(outcome, target_values)
+        if relative is None:
+            continue
+        row = by_run.setdefault(
+            run.pk,
+            {"run": run, "relative": [], "bases": [], "observed_at": outcome.observed_at},
+        )
+        row["relative"].append(relative)
+        row["bases"].append(basis)
+        row["observed_at"] = max(row["observed_at"], outcome.observed_at)
+
+    performance_rows = []
+    for row in by_run.values():
+        example = _run_generation_example(row["run"])
+        if not example:
+            continue
+        score = sum(row["relative"]) / len(row["relative"])
+        performance_rows.append(
+            {
+                **example,
+                "relative_to_own_norm": round(score, 2),
+                "signal": "stronger" if score >= 1.05 else ("weaker" if score < 0.95 else "typical"),
+                "measurement": row["bases"],
+                "observed_at": row["observed_at"].isoformat(),
+            }
+        )
+    performance_rows.sort(key=lambda item: item["relative_to_own_norm"], reverse=True)
+    sample_size = len(performance_rows)
+    confidence = "none" if sample_size < 3 else ("early" if sample_size < 8 else ("growing" if sample_size < 20 else "established"))
+    strong = performance_rows[: min(3, sample_size)] if sample_size >= 3 else []
+    weak_candidates = [item for item in reversed(performance_rows) if item["relative_to_own_norm"] < 0.95]
+    weak = weak_candidates[:2] if sample_size >= 5 else []
+
+    events = list(
+        ContentEvent.objects.filter(
+            run__workspace=company,
+            run__channel=channel,
+            action__in=("selected", "rejected", "edited"),
+        )
+        .select_related("run")
+        .order_by("-created_at")[:80]
+    )
+    selected, rejected, edits = [], [], []
+    selected_seen, rejected_seen = set(), set()
+    for event in events:
+        if event.action in {"selected", "rejected"}:
+            idea = (event.data or {}).get("idea") or {}
+            title = _clip(idea.get("title"), 120)
+            angle = _clip(idea.get("angle"), 240)
+            if not title and not angle:
+                continue
+            key = (title, angle)
+            bucket = selected if event.action == "selected" else rejected
+            seen = selected_seen if event.action == "selected" else rejected_seen
+            if key not in seen and len(bucket) < 4:
+                bucket.append({"title": title, "angle": angle})
+                seen.add(key)
+        elif event.action == "edited" and len(edits) < 3:
+            data = event.data or {}
+            before = data.get("before") if isinstance(data.get("before"), dict) else {}
+            after = data.get("after") if isinstance(data.get("after"), dict) else {}
+            before_copy = before.get("instagram") or before.get("facebook") or ""
+            after_copy = after.get("instagram") or after.get("facebook") or ""
+            if before_copy and after_copy and before_copy != after_copy:
+                edits.append(
+                    {
+                        "before_excerpt": _clip(before_copy, 320),
+                        "after_excerpt": _clip(after_copy, 320),
+                    }
+                )
+
+    editorial_count = sum(1 for event in events if event.action in {"selected", "rejected"})
+    return {
+        "version": "generation-learning-v1",
+        "performance": {
+            "sample_size": sample_size,
+            "confidence": confidence,
+            "strong_examples": strong,
+            "weak_examples": weak,
+            "instruction": (
+                "Lär mekanism, struktur och tonalitet från egna verifierade resultat. "
+                "Kopiera aldrig historiska formuleringar eller fakta. Svagare exempel är varningssignaler, inte absoluta förbud."
+            ),
+        },
+        "editorial": {
+            "signal_count": editorial_count,
+            "selected_examples": selected,
+            "rejected_examples": rejected,
+            "edit_examples": edits,
+            "instruction": (
+                "Detta visar redaktionell preferens, inte performance. Följ återkommande stilval och undvik tydligt avvisade vinklar, "
+                "men låt verifierad performance väga tyngre."
+            ),
+        },
+    }
+
+
+def generation_guidance_summary(company, channel):
+    guidance = generation_guidance(company, channel)
+    return {
+        "performance_examples": guidance["performance"]["sample_size"],
+        "performance_confidence": guidance["performance"]["confidence"],
+        "editorial_signals": guidance["editorial"]["signal_count"],
+        "edit_examples": len(guidance["editorial"]["edit_examples"]),
+        "version": guidance["version"],
+    }
 
 
 def predict(model, values):
