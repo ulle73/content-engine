@@ -350,7 +350,6 @@ def registry() -> tuple[ModelIntelligence, ...]:
                     aspect_ratios=SEEDANCE_RATIOS,
                     audio_parameter="generate_audio",
                     audio_default=True,
-                    output_formats=("mp4", "mov"),
                 ),
                 ModeRequestContract(
                     mode="image-to-video",
@@ -366,7 +365,6 @@ def registry() -> tuple[ModelIntelligence, ...]:
                     aspect_ratio_behavior="derived",
                     audio_parameter="generate_audio",
                     audio_default=True,
-                    output_formats=("mp4", "mov"),
                     prompt_required=False,
                 ),
             ),
