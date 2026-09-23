@@ -44,7 +44,7 @@ def add_generation_reference(
 ) -> MediaGenerationReference:
     """Persist one canonical reference without leaking provider field names."""
     role = normalize_reference_role(role)
-    if isinstance(position, bool) or not isinstance(position, int) or not 0 <= position <= 65535:
+    if isinstance(position, bool) or not isinstance(position, int) or not 0 <= position <= 32767:
         raise MediaError("Referensens position är ogiltig.")
 
     with transaction.atomic():
