@@ -160,7 +160,7 @@ def reject_idea(request, workspace_id, run_id, idea_index):
             action="rejected",
             defaults={"data": {"idea": run.ideas[idea_index]}},
         )
-        messages.success(request, "Idén är markerad som inte relevant och dold från arbetsytan.")
+        messages.success(request, "Idén är markerad som inte relevant, sparad som återkoppling och dold från arbetsytan.")
     channel = "paid" if run.channel == "paid" else "organic"
     return redirect(
         reverse("engine:home", kwargs={"workspace_id": workspace_id})
