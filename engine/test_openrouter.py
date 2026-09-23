@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from .models import AnalysisMemo, Company
-from .openrouter import OpenRouterError, structured_analysis
+from .openrouter import OpenRouterError, structured_analysis, structured_generation
 from .signals import Classification
 from .sync import analysis
 
@@ -77,6 +77,41 @@ class OpenRouterAnalysisTests(TestCase):
         self.assertEqual(meta["provider"], "openrouter")
         self.assertEqual(meta["model"], "some/free-model")
         self.assertEqual(meta["cost_usd"], 0)
+
+    @patch.dict(
+        os.environ,
+        {
+            "OPENROUTER_API_KEY": "test-key",
+            "OPENROUTER_ANALYSIS_FALLBACK_MODEL": "z-ai/glm-5.3-flash",
+        },
+        clear=False,
+    )
+    @patch("engine.openrouter.httpx.post")
+    def test_generation_uses_glm_directly_with_reasoning_disabled(self, post):
+        post.return_value = FakeResponse(
+            body={
+                "id": "gen-glm",
+                "model": "z-ai/glm-5.3-flash",
+                "choices": [{"message": {"content": __import__("json").dumps(classification_payload())}}],
+                "usage": {"prompt_tokens": 100, "completion_tokens": 60, "cost": 0.0001},
+            }
+        )
+        parsed, meta = structured_generation(
+            system="Create.",
+            payload={"topic": "Golf"},
+            schema=Classification,
+            operation="idea_1",
+            max_tokens=1200,
+            temperature=0.2,
+        )
+        self.assertEqual(parsed.topic, "Kvällsträning")
+        request = post.call_args.kwargs["json"]
+        self.assertEqual(request["model"], "z-ai/glm-5.3-flash")
+        self.assertEqual(request["reasoning_effort"], "none")
+        self.assertEqual(request["response_format"]["type"], "json_object")
+        self.assertEqual(request["max_tokens"], 1200)
+        self.assertEqual(post.call_count, 1)
+        self.assertEqual(meta["model"], "z-ai/glm-5.3-flash")
 
     @patch.dict(
         os.environ,
