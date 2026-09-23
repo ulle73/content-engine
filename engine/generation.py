@@ -16,9 +16,9 @@ class IdeaOutput(BaseModel):
     reason: str
     source_quote: str
     photo_brief: str
-    signal_id: str
-    profile_relevance: int = Field(ge=0, le=3)
-    current_relevance: int = Field(ge=0, le=3)
+    signal_id: str = ""
+    profile_relevance: int = Field(default=0, ge=0, le=3)
+    current_relevance: int = Field(default=0, ge=0, le=3)
 
 
 class IdeasOutput(BaseModel):
@@ -62,6 +62,37 @@ def skill_text(*names):
     return "\n\n".join((root / name / "SKILL.md").read_text(encoding="utf-8") for name in names)
 
 
+def _combine_usage(metas, operation):
+    metas = [meta for meta in metas if isinstance(meta, dict)]
+    if not metas:
+        return {"provider": "openrouter", "service": "text", "operation": operation, "usage": {}}
+    usage = {}
+    for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+        values = [
+            int((meta.get("usage") or {}).get(key) or 0)
+            for meta in metas
+            if isinstance(meta.get("usage"), dict)
+        ]
+        if values:
+            usage[key] = sum(values)
+    costs = [meta.get("cost_usd") for meta in metas if meta.get("cost_usd") is not None]
+    models = list(dict.fromkeys(str(meta.get("model") or "") for meta in metas if meta.get("model")))
+    response_ids = [str(meta.get("response_id") or "") for meta in metas if meta.get("response_id")]
+    return {
+        "provider": "openrouter",
+        "service": "text",
+        "operation": operation,
+        "model": " + ".join(models),
+        "requested_model": "three-small-idea-calls",
+        "response_id": ",".join(response_ids)[:500],
+        "usage": usage,
+        "cost_usd": sum(float(value or 0) for value in costs) if costs else None,
+        "recorded_at": metas[-1].get("recorded_at"),
+        "pricing_basis": "provider_reported",
+        "calls": len(metas),
+    }
+
+
 def generate(context, *, idea=None):
     writing = idea is not None
     paid = context.get("channel") == "paid"
@@ -78,7 +109,7 @@ kundfrågor, öppettider eller egenskaper. Hänvisa oklarheter till mänsklig gr
 Skriv naturlig svenska med företagets ton. Undvik generisk reklam och fabricerad brådska.
 Publicering sker i Postiz efter mänskligt godkännande; du har inga publiceringsverktyg.
 Låt nya idéer skilja sig från medföljande historik. Återge source_quote ordagrant från aktuellt eller profil, aldrig från stil-/röstexempel.
-Ge tre tydligt olika idéer med motivering och konkret förslag på en riktig företagsbild.
+När du skapar en idé: skapa exakt EN tydlig idé med kort motivering och konkret förslag på en riktig företagsbild.
 Competitor_signals är enbart inspiration till mekanismer. Kopiera, översätt eller parafrasera aldrig konkurrentinnehåll.
 Vårt företags egna verifierade fakta väger alltid tyngst. Konkurrentuppgifter är aldrig faktakälla om oss.
 Ange signal_id för den mekanism som faktiskt påverkat idén, annars tom sträng. Använd bara medföljande signal-id:n.
@@ -103,28 +134,53 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
         else context
     )
     selected_brief = {k: idea[k] for k in ("title", "angle", "photo_brief") if k in idea} if writing else None
-    schema = (AdDraftOutput if paid else DraftOutput) if writing else IdeasOutput
-    request_payload = {"company_context": writing_context, "selected_idea": selected_brief}
-    if not writing:
-        request_payload["allowed_source_quotes"] = [
+    system_prompt = instructions + "\n\nHantverksreferenser:\n" + skill_text(*skills)
+    if writing:
+        parsed, usage_meta = structured_analysis(
+            system=system_prompt,
+            payload={"company_context": writing_context, "selected_idea": selected_brief},
+            schema=AdDraftOutput if paid else DraftOutput,
+            operation="draft",
+            max_tokens=2600,
+            temperature=0.1,
+        )
+        output = parsed.model_dump()
+    else:
+        allowed_quotes = [
             part.strip()
             for field in ("current", "profile")
             for part in re.split(r"(?<=[.!?])\s+|\n+", context.get(field, ""))
             if part.strip()
         ]
-        request_payload["allowed_signal_ids"] = ["", *(str(s["id"]) for s in context.get("competitor_signals", []))]
-    parsed, usage_meta = structured_analysis(
-        system=instructions + "\n\nHantverksreferenser:\n" + skill_text(*skills),
-        payload=request_payload,
-        schema=schema,
-        operation="draft" if writing else "ideas",
-        max_tokens=2600 if writing else 1800,
-        temperature=0.1 if writing else 0.2,
-    )
-    output = parsed.model_dump()
-    if not writing:
+        if not allowed_quotes:
+            raise ValueError("Fyll i företagsprofil och aktuella uppgifter först.")
         allowed_signal_ids = {"", *(str(s["id"]) for s in context.get("competitor_signals", []))}
-        for item in output["ideas"]:
+        variation_goals = (
+            "mest konkret och nyttig för målgruppen",
+            "mest engagerande och oväntad utan clickbait",
+            "mest handlingsnära och säljbar utan fabricerad brådska",
+        )
+        ideas = []
+        usage_metas = []
+        for index, variation_goal in enumerate(variation_goals, start=1):
+            parsed, meta = structured_analysis(
+                system=system_prompt,
+                payload={
+                    "company_context": writing_context,
+                    "allowed_source_quotes": allowed_quotes,
+                    "allowed_signal_ids": sorted(allowed_signal_ids),
+                    "variation": {
+                        "number": index,
+                        "goal": variation_goal,
+                        "avoid_titles": [item["title"] for item in ideas],
+                    },
+                },
+                schema=IdeaOutput,
+                operation=f"idea_{index}",
+                max_tokens=1000,
+                temperature=0.25,
+            )
+            item = parsed.model_dump()
             source_field = next(
                 (
                     field
@@ -138,7 +194,11 @@ Annonsen sätts upp i Meta Ads Manager; Postiz är inte ett verktyg för att kö
             item["source_field"] = source_field
             if str(item.get("signal_id", "")) not in allowed_signal_ids:
                 item["signal_id"] = ""
-    elif len(output["instagram"]) > 2200:
+            ideas.append(item)
+            usage_metas.append(meta)
+        output = {"ideas": ideas}
+        usage_meta = _combine_usage(usage_metas, "ideas")
+    if writing and len(output["instagram"]) > 2200:
         raise ValueError("Instagramtexten blev för lång. Försök igen.")
     if writing and paid and output.get("landing_page"):
         url = output["landing_page"]
