@@ -4,6 +4,8 @@
 **Purpose:** Add only the missing capabilities needed to reach the agreed Creative Engine end-state.  
 **Do not use this document as a rewrite plan. Existing working architecture must be preserved and extended.**
 
+**Execution checklist:** `docs/2026-09-23-content-engine-creative-intelligence-implementation-plan.md` — this is the active task ledger and must be updated/checkmarked only after implementation and verification.
+
 ---
 
 ## 0. Verified current baseline
