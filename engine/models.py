@@ -225,6 +225,8 @@ class MediaGenerationReference(models.Model):
             raise ValidationError({"asset": "Reference asset must belong to the generation company."})
         if self.asset.purpose == "logo":
             raise ValidationError({"asset": "Official logo assets are not generation references."})
+        if self.role in {ReferenceRole.start_image.value, ReferenceRole.end_image.value} and self.position != 0:
+            raise ValidationError({"position": "START_IMAGE and END_IMAGE must use position 0."})
         if self.role in self.IMAGE_ROLES and self.asset.kind != "image":
             raise ValidationError({"asset": "This reference role requires an image asset."})
         if self.role == ReferenceRole.video_reference.value and self.asset.kind != "video":
