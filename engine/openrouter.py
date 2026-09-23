@@ -129,13 +129,13 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
         "model": model,
         "messages": [],
         "temperature": temperature,
-        "max_tokens": max_tokens,
+        "max_completion_tokens": max_tokens,
         "plugins": [{"id": "response-healing"}],
         "provider": {"sort": "throughput"},
         "usage": {"include": True},
     }
     if reasoning_effort:
-        request_body["reasoning_effort"] = reasoning_effort
+        request_body["reasoning"] = {"effort": reasoning_effort}
 
     if strict_schema:
         system_message += "\nSvara kort och konkret. Svaret måste följa det påtvingade JSON-schemat exakt."
@@ -232,8 +232,8 @@ def structured_generation(*, system, payload, schema: type[T], operation="genera
 
     Content generation intentionally skips the flaky free preset. GLM 5.3 Flash
     is cheap enough for these small outputs and OpenRouter can fail over across
-    providers serving the same model. Reasoning is disabled so the completion
-    budget is reserved for the actual JSON response.
+    providers serving the same model. Reasoning stays enabled at low effort and
+    the model returns native structured output.
     """
     model = (os.environ.get("OPENROUTER_GENERATION_MODEL", "").strip() or os.environ.get("OPENROUTER_ANALYSIS_FALLBACK_MODEL", "z-ai/glm-5.3-flash").strip() or "z-ai/glm-5.3-flash")
     try:
@@ -243,11 +243,11 @@ def structured_generation(*, system, payload, schema: type[T], operation="genera
             payload=payload,
             schema=schema,
             operation=operation,
-            max_tokens=max_tokens,
+            max_tokens=max(max_tokens, 4000),
             temperature=temperature,
-            timeout_seconds=30,
-            strict_schema=False,
-            reasoning_effort="none",
+            timeout_seconds=40,
+            strict_schema=True,
+            reasoning_effort="low",
         )
     except OpenRouterError as exc:
         logger.warning("OpenRouter generation failed model=%s status=%s detail=%s", model, exc.status_code, exc)
