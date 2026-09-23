@@ -138,9 +138,10 @@ def generation_guidance(company, channel):
     performance_rows.sort(key=lambda item: item["relative_to_own_norm"], reverse=True)
     sample_size = len(performance_rows)
     confidence = "none" if sample_size < 3 else ("early" if sample_size < 8 else ("growing" if sample_size < 20 else "established"))
-    strong = performance_rows[: min(3, sample_size)] if sample_size >= 3 else []
+    strong_candidates = [item for item in performance_rows if item["relative_to_own_norm"] >= 1.05]
     weak_candidates = [item for item in reversed(performance_rows) if item["relative_to_own_norm"] < 0.95]
-    weak = weak_candidates[:2] if sample_size >= 5 else []
+    strong = strong_candidates[:3] if sample_size >= 3 else []
+    weak = weak_candidates[:2] if sample_size >= 3 else []
 
     events = list(
         ContentEvent.objects.filter(
