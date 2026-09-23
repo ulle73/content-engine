@@ -4,6 +4,7 @@ JSON model coefficients are portable and inspectable. No pickle, service or trai
 Editorial choices/rejections and competitor observations are never performance labels.
 """
 import math
+from statistics import median
 from datetime import timedelta
 
 from django.db import transaction
@@ -126,6 +127,102 @@ def dataset(company, channel, cutoff=None, target=None):
     return list(OwnOutcome.objects.filter(prediction__run__workspace=company, prediction__channel=channel,
         prediction__feature_version=FEATURE_VERSION, target=target or TARGETS[channel], recorded_at__lte=cutoff,
         observed_at__lte=cutoff, window_end__lte=cutoff).select_related("prediction").order_by("prediction__created_at", "pk"))
+
+
+def generation_learning_profile(company, channel, cutoff=None, limit=60):
+    """Compact, leakage-safe performance guidance for future generation.
+
+    Only measured own outcomes available before *cutoff* are eligible. Editorial
+    choices/rejections never become performance labels. Different metric targets
+    are normalized against their own historical medians before examples are
+    compared, so incompatible units are never mixed.
+    """
+    cutoff = cutoff or timezone.now()
+    rows = list(
+        OwnOutcome.objects.filter(
+            prediction__run__workspace=company,
+            prediction__channel=channel,
+            prediction__feature_version=FEATURE_VERSION,
+            recorded_at__lte=cutoff,
+            observed_at__lte=cutoff,
+            window_end__lte=cutoff,
+        )
+        .select_related("prediction__run", "snapshot__post")
+        .order_by("-window_end", "-pk")[:limit]
+    )
+    by_target = {}
+    for outcome in rows:
+        by_target.setdefault(outcome.target, []).append(outcome)
+
+    baselines = {
+        target: median(item.label for item in outcomes)
+        for target, outcomes in by_target.items()
+        if len(outcomes) >= 3
+    }
+    candidates = []
+    seen_runs = set()
+    for outcome in rows:
+        baseline = baselines.get(outcome.target)
+        if baseline is None or outcome.prediction.run_id in seen_runs:
+            continue
+        higher_is_better = spec(outcome.target)[3]
+        if higher_is_better:
+            if baseline <= 0:
+                continue
+            relative = outcome.label / baseline
+        else:
+            if baseline <= 0:
+                continue
+            relative = (baseline / outcome.label) if outcome.label > 0 else 3.0
+        relative = max(0.0, min(float(relative), 3.0))
+        run = outcome.prediction.run
+        if run.selected is None or run.selected >= len(run.ideas):
+            continue
+        idea = run.ideas[run.selected]
+        published_copy = ""
+        if outcome.snapshot_id and outcome.snapshot and outcome.snapshot.post:
+            published_copy = outcome.snapshot.post.caption or ""
+        if not published_copy:
+            published_copy = str((run.draft or {}).get("instagram") or (run.draft or {}).get("facebook") or "")
+        candidates.append(
+            {
+                "title": str(idea.get("title") or "")[:160],
+                "angle": str(idea.get("angle") or "")[:500],
+                "copy_excerpt": published_copy[:900],
+                "photo_brief": str(idea.get("photo_brief") or "")[:300],
+                "target": outcome.target,
+                "relative_to_own_median": round(relative, 2),
+                "sample_size_for_target": len(by_target[outcome.target]),
+            }
+        )
+        seen_runs.add(run.pk)
+
+    if len(candidates) < 3:
+        return {
+            "version": "generation-learning-v1",
+            "status": "collecting",
+            "outcomes": len(rows),
+            "usable_examples": len(candidates),
+            "minimum_usable_examples": 3,
+        }
+
+    ordered = sorted(candidates, key=lambda item: item["relative_to_own_median"], reverse=True)
+    confidence = "early" if len(candidates) < 10 else ("growing" if len(candidates) < 30 else "established")
+    return {
+        "version": "generation-learning-v1",
+        "status": "active",
+        "confidence": confidence,
+        "outcomes": len(rows),
+        "usable_examples": len(candidates),
+        "strong_examples": ordered[:3],
+        "weak_examples": list(reversed(ordered[-3:])),
+        "instructions": [
+            "Use only broad editorial patterns from these examples, never historical wording as new facts.",
+            "Do not copy prior copy or claims. Current company profile/current facts remain the only factual source.",
+            "Treat performance as correlation, not proof of causation.",
+            "Prefer patterns repeated across several own outcomes over one-off examples.",
+        ],
+    }
 
 
 def train(company, channel, target=None):
