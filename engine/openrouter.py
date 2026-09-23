@@ -113,7 +113,7 @@ def _usage_meta(body, requested_model, operation):
     }
 
 
-def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0, timeout_seconds=35, strict_schema=False):
+def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0, timeout_seconds=35, strict_schema=False, reasoning_effort=None):
     api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not api_key:
         raise OpenRouterError(
@@ -134,6 +134,8 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
         "provider": {"sort": "throughput"},
         "usage": {"include": True},
     }
+    if reasoning_effort:
+        request_body["reasoning_effort"] = reasoning_effort
 
     if strict_schema:
         system_message += "\nSvara kort och konkret. Svaret måste följa det påtvingade JSON-schemat exakt."
@@ -223,6 +225,36 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
         )
         raise OpenRouterError("Modellen returnerade inte ett giltigt strukturerat svar.", status_code=502) from exc
     return parsed, _usage_meta(body, model, operation)
+
+
+def structured_generation(*, system, payload, schema: type[T], operation="generation", max_tokens=2000, temperature=0.1):
+    """Reliable low-cost generation path.
+
+    Content generation intentionally skips the flaky free preset. GLM 5.3 Flash
+    is cheap enough for these small outputs and OpenRouter can fail over across
+    providers serving the same model. Reasoning is disabled so the completion
+    budget is reserved for the actual JSON response.
+    """
+    model = os.environ.get("OPENROUTER_ANALYSIS_FALLBACK_MODEL", "z-ai/glm-5.3-flash").strip() or "z-ai/glm-5.3-flash"
+    try:
+        return _call(
+            model,
+            system=system,
+            payload=payload,
+            schema=schema,
+            operation=operation,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            timeout_seconds=30,
+            strict_schema=False,
+            reasoning_effort="none",
+        )
+    except OpenRouterError as exc:
+        logger.warning("OpenRouter generation failed model=%s status=%s detail=%s", model, exc.status_code, exc)
+        raise OpenRouterError(
+            "AI-anropet kunde inte slutföras. Försök igen.",
+            status_code=exc.status_code,
+        ) from exc
 
 
 def route_signature():
