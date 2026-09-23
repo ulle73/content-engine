@@ -3,9 +3,11 @@ import uuid
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from .creative_core import ReferenceRole
 from .mcp_operations import cancel_generation, list_recent_generations, serialize_generation
 from .media import create_job
-from .models import Company, ContentRun, MediaGeneration
+from .media_references import add_generation_reference
+from .models import Company, ContentRun, MediaAsset, MediaGeneration
 
 
 class MCPMediaOperationTests(TestCase):
@@ -30,6 +32,28 @@ class MCPMediaOperationTests(TestCase):
         self.assertEqual(data["diagnostics"]["structured_brief"]["duration_seconds"], 8)
         self.assertIn("registry_version", data["diagnostics"])
         self.assertNotIn("logo_sha256", data["diagnostics"]["parameters"])
+
+    def test_generation_diagnostics_include_typed_reference_provenance(self):
+        job = self.job()
+        asset = MediaAsset.objects.create(
+            company=self.company,
+            kind="image",
+            origin="uploaded",
+            provider="user",
+            storage_backend="local",
+            storage_key=f"{self.company.pk}/reference.png",
+            mime_type="image/png",
+            byte_size=10,
+            width=10,
+            height=10,
+            purpose="content",
+            sha256="b" * 64,
+        )
+        add_generation_reference(job, asset, ReferenceRole.style_reference)
+        data = serialize_generation(job, diagnostics=True)
+        self.assertEqual(data["references"][0]["role"], "STYLE_REFERENCE")
+        self.assertEqual(data["references"][0]["asset_id"], str(asset.pk))
+        self.assertFalse(data["references"][0]["legacy_source_asset"])
 
     def test_recent_generations_are_company_scoped_and_bounded(self):
         own = self.job()
