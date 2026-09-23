@@ -152,16 +152,26 @@ class MediaGenerationReferenceTests(TestCase):
                 position=1,
             )
 
-    def test_typed_start_and_legacy_source_mismatch_fails_closed_on_read(self):
+    def test_typed_start_and_legacy_source_mismatch_is_rejected_and_read_still_fails_closed(self):
         legacy = self.image_asset()
         typed = self.image_asset()
         job = self.raw_job(source=legacy)
-        MediaGenerationReference.objects.create(
-            generation=job,
-            asset=typed,
-            role=ReferenceRole.start_image.value,
-            position=0,
-        )
+        with self.assertRaises(ValidationError):
+            MediaGenerationReference.objects.create(
+                generation=job,
+                asset=typed,
+                role=ReferenceRole.start_image.value,
+                position=0,
+            )
+        # Simulate corrupted/pre-C1 bulk data that bypassed model validation.
+        MediaGenerationReference.objects.bulk_create([
+            MediaGenerationReference(
+                generation=job,
+                asset=typed,
+                role=ReferenceRole.start_image.value,
+                position=0,
+            )
+        ])
         with self.assertRaises(MediaError):
             generation_reference_records(job)
 
