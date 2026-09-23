@@ -18,19 +18,44 @@
       </div>
       <div class="create-hero-action">
       {% if not workspace.profile or not workspace.current or not workspace.source or not workspace.valid_until %}
-        <div><strong>Företagsuppgifter saknas</strong><span>Fyll i grunden först så att idéerna bygger på riktiga fakta.</span></div>
+        <div class="create-ready-state">
+          <span class="create-ready-icon warning" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8v5M12 17h.01"></path><path d="M10.3 4.7L3.7 16.1A2 2 0 0 0 5.4 19h13.2a2 2 0 0 0 1.7-2.9L13.7 4.7a2 2 0 0 0-3.4 0z"></path></svg></span>
+          <span class="create-ready-copy"><strong>Företagsuppgifter saknas</strong><span>Fyll i grunden först så att idéerna bygger på riktiga fakta.</span></span>
+        </div>
         <a class="button" href="#company-context">Fyll i företagsuppgifter</a>
       {% elif workspace.valid_until|date:'Y-m-d' < today %}
-        <div><strong>Företagsuppgifterna behöver uppdateras</strong><span>Senast giltiga till {{ workspace.valid_until|date:'j M Y' }}.</span></div>
+        <div class="create-ready-state">
+          <span class="create-ready-icon warning" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8v5M12 17h.01"></path><path d="M10.3 4.7L3.7 16.1A2 2 0 0 0 5.4 19h13.2a2 2 0 0 0 1.7-2.9L13.7 4.7a2 2 0 0 0-3.4 0z"></path></svg></span>
+          <span class="create-ready-copy"><strong>Företagsuppgifterna behöver uppdateras</strong><span>Senast giltiga till {{ workspace.valid_until|date:'j M Y' }}.</span></span>
+        </div>
         <a class="button" href="#company-context">Uppdatera företagsuppgifter</a>
       {% else %}
-        <div><strong>Redo att skapa</strong><span>Du får tre separata idéer att välja mellan innan något utkast skrivs.</span></div>
-        <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.id %}" data-busy-label="Tar fram idéer…">{% csrf_token %}<input type="hidden" name="channel" value="{{ channel }}"><button type="submit">Ge mig tre idéer <span aria-hidden="true">→</span></button></form>
+        <div class="create-ready-state">
+          <span class="create-ready-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"></path><path d="M7 7l2 2M15 15l2 2M17 7l-2 2M9 15l-2 2"></path></svg></span>
+          <span class="create-ready-copy"><strong>Redo att skapa</strong><span>Tre olika idéer tas fram från era fakta, aktuella signaler och tidigare arbete.</span></span>
+        </div>
+        <form method="post" action="{% url 'engine:ideas' workspace_id=workspace.id %}" data-busy-label="Tar fram idéer…">{% csrf_token %}<input type="hidden" name="channel" value="{{ channel }}"><button class="create-primary-action" type="submit"><span>Ge mig tre idéer</span><span class="create-button-arrow" aria-hidden="true">→</span></button></form>
       {% endif %}
       </div>
     </section>
     <details class="company-details create-context-card" id="company-context" {% if form.errors or not workspace.profile or not workspace.current or not workspace.source or not workspace.valid_until or workspace.valid_until|date:'Y-m-d' < today %}open{% endif %}>
-      <summary><span><strong>Om {{ workspace.name }}</strong><span class="small">{% if not workspace.profile or not workspace.current or not workspace.source or not workspace.valid_until %}Behöver fyllas i{% elif workspace.valid_until|date:'Y-m-d' < today %}Behöver uppdateras{% else %}Fakta som används i innehållet{% endif %}</span></span><span class="context-summary-action">Redigera</span></summary>
+      <summary>
+        <span class="create-context-summary-main">
+          <span class="create-context-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 20V8l7-4 7 4v12"></path><path d="M9 20v-5h6v5M8 10h.01M12 10h.01M16 10h.01"></path></svg></span>
+          <span class="create-context-summary-copy">
+            <span class="create-kicker">Underlag</span>
+            <strong>Om {{ workspace.name }}</strong>
+            <span class="small">{% if not workspace.profile or not workspace.current or not workspace.source or not workspace.valid_until %}Komplettera underlaget innan du skapar{% elif workspace.valid_until|date:'Y-m-d' < today %}Underlaget behöver uppdateras{% else %}Fakta som används när idéerna skapas{% endif %}</span>
+          </span>
+        </span>
+        <span class="context-summary-action">Redigera</span>
+        <span class="create-context-status-grid">
+          <span><small>Profil</small><strong>{% if workspace.profile %}Klar{% else %}Saknas{% endif %}</strong></span>
+          <span><small>Aktuellt</small><strong>{% if workspace.current %}Klar{% else %}Saknas{% endif %}</strong></span>
+          <span><small>Källa</small><strong>{% if workspace.source %}Angiven{% else %}Saknas{% endif %}</strong></span>
+          <span><small>Giltighet</small><strong>{% if workspace.valid_until %}{{ workspace.valid_until|date:'j M Y' }}{% else %}Saknas{% endif %}</strong></span>
+        </span>
+      </summary>
       <form method="post" class="company-form">{% csrf_token %}
         {{ form.non_field_errors }}
         <div class="field">{{ form.profile.label_tag }}{{ form.profile }}{{ form.profile.errors }}</div>
