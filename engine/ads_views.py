@@ -67,6 +67,8 @@ def destination(company):
 
 
 def overview(company, channel):
+    from .learning import generation_guidance_summary
+
     model = LearningModel.objects.filter(company=company, channel=channel).order_by("-trained_at").first()
     return {
         "channel": channel,
@@ -79,6 +81,7 @@ def overview(company, channel):
             channel=channel,
             predictions__isnull=False,
         ).distinct().count(),
+        "generation": generation_guidance_summary(company, channel),
     }
 
 

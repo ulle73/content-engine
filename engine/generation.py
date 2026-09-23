@@ -112,6 +112,12 @@ Låt nya idéer skilja sig från medföljande historik. Återge source_quote ord
 När du skapar en idé: skapa exakt EN tydlig idé med kort motivering och konkret förslag på en riktig företagsbild.
 Competitor_signals är enbart inspiration till mekanismer. Kopiera, översätt eller parafrasera aldrig konkurrentinnehåll.
 Vårt företags egna verifierade fakta väger alltid tyngst. Konkurrentuppgifter är aldrig faktakälla om oss.
+generation_learning är ett separat lärunderlag från våra egna historiska resultat och redaktionella val.
+Performance-exempel bygger endast på verifierade egna resultat och får styra mekanism, struktur, ton och ambitionsnivå.
+Redaktionella val, avvisanden och redigeringar visar preferens men är INTE performance-bevis.
+Historiska exempel i generation_learning är aldrig källa för aktuella fakta, datum, priser eller erbjudanden.
+Kopiera inte gamla formuleringar eller ämnen; generalisera mönstret och skapa något nytt för dagens underlag.
+Om performance-underlaget är litet eller märkt early ska det behandlas försiktigt och aldrig som en säker regel.
 Ange signal_id för den mekanism som faktiskt påverkat idén, annars tom sträng. Använd bara medföljande signal-id:n.
 Ange relevans för profil och aktuella fakta med 0=ingen, 1=svag, 2=god, 3=stark; detta är en bedömning, inte mätt performance.
 Om en idé redan är vald: skriv en Facebooktext och en Instagramtext för JUST den idén,
