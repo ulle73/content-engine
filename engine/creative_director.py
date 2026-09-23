@@ -185,9 +185,32 @@ def analyze_complexity(brief: CreativeBrief) -> Complexity:
 
 
 def _brief_reference_roles(brief: CreativeBrief) -> set[ReferenceRole]:
-    # Current production UI has one source image. C1 extends this to persisted
-    # typed multi-reference relations, including END_IMAGE.
-    return {ReferenceRole.start_image} if brief.reference_media else set()
+    """Normalize provider-neutral brief references into canonical roles.
+
+    Current production jobs only persist source_asset/START_IMAGE. C1/C2 will
+    persist typed references, but routing can already reason about future roles
+    without leaking provider field names.
+    """
+    role_map = {
+        "source_asset": ReferenceRole.start_image,
+        "start_image": ReferenceRole.start_image,
+        ReferenceRole.start_image.value: ReferenceRole.start_image,
+        "end_image": ReferenceRole.end_image,
+        ReferenceRole.end_image.value: ReferenceRole.end_image,
+        "product_reference": ReferenceRole.product_reference,
+        ReferenceRole.product_reference.value: ReferenceRole.product_reference,
+        "character_reference": ReferenceRole.character_reference,
+        ReferenceRole.character_reference.value: ReferenceRole.character_reference,
+        "location_reference": ReferenceRole.location_reference,
+        ReferenceRole.location_reference.value: ReferenceRole.location_reference,
+        "style_reference": ReferenceRole.style_reference,
+        ReferenceRole.style_reference.value: ReferenceRole.style_reference,
+        "video_reference": ReferenceRole.video_reference,
+        ReferenceRole.video_reference.value: ReferenceRole.video_reference,
+        "audio_reference": ReferenceRole.audio_reference,
+        ReferenceRole.audio_reference.value: ReferenceRole.audio_reference,
+    }
+    return {role_map[value] for value in brief.reference_media if value in role_map}
 
 
 def _hard_compatible(model: ModelIntelligence, brief: CreativeBrief, recipe=None) -> bool:
