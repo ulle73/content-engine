@@ -23,12 +23,12 @@
     </div>
     <div class="cost-breakdown" aria-label="Kostnad per leverantör">
       <div class="cost-breakdown-item"><span class="provider-mark apify">A</span><span><small>Apify</small><strong>${{ costs.apify_usd|floatformat:4 }}</strong></span></div>
-      <div class="cost-breakdown-item"><span class="provider-mark openai">O</span><span><small>OpenAI · text</small><strong>${{ costs.openai_text_usd|floatformat:4 }}</strong></span></div>
+      <div class="cost-breakdown-item"><span class="provider-mark openai">OR</span><span><small>OpenRouter · text</small><strong>${{ costs.openrouter_text_usd|floatformat:4 }}</strong></span></div>
       <div class="cost-breakdown-item"><span class="provider-mark image">I</span><span><small>OpenAI · bilder</small><strong>${{ costs.openai_image_usd|floatformat:4 }}</strong></span></div>
       <div class="cost-breakdown-item"><span class="provider-mark video">H</span><span><small>Higgsfield · video</small><strong>${{ costs.higgsfield_usd|floatformat:4 }}</strong></span></div>
     </div>
     <div class="cost-overview-foot">
-      <p>Apify rapporteras av leverantören. OpenAI beräknas från faktisk usage. Higgsfield bygger på accepterade prisestimat för startade videokörningar.</p>
+      <p>Apify och OpenRouter använder leverantörsrapporterad kostnad. OpenAI-bilder beräknas från faktisk usage. Higgsfield bygger på accepterade prisestimat för startade videokörningar.</p>
       {% if costs.unknown_cost_count %}<span class="cost-warning-pill">{{ costs.unknown_cost_count }} kostnader behöver granskas</span>{% endif %}
     </div>
   </section>
@@ -64,16 +64,16 @@
 
       <article class="cost-provider-card provider-openai">
         <div class="cost-provider-head">
-          <div class="cost-provider-title"><span class="provider-mark openai">O</span><div><h3>OpenAI · text</h3><p>Idéer, copy och AI-analyser</p></div></div>
-          <span class="cost-provider-amount">${{ costs.openai_text_usd|floatformat:4 }}</span>
+          <div class="cost-provider-title"><span class="provider-mark openai">OR</span><div><h3>OpenRouter · text</h3><p>Idéer, copy och AI-analyser</p></div></div>
+          <span class="cost-provider-amount">${{ costs.openrouter_text_usd|floatformat:4 }}</span>
         </div>
         <div class="cost-provider-body">
-          <div class="cost-provider-summary"><span>Registrerat</span><strong>${{ costs.openai_text_usd|floatformat:6 }}</strong><small>${{ costs.openai_text_month_usd|floatformat:6 }} denna månad</small></div>
+          <div class="cost-provider-summary"><span>Registrerat</span><strong>${{ costs.openrouter_text_usd|floatformat:6 }}</strong><small>${{ costs.openrouter_text_month_usd|floatformat:6 }} denna månad</small></div>
           <div class="cost-info-list">
-            <div><span>Anrop</span><strong>{{ costs.text_calls }} spårade</strong></div>
-            <div><span>Beräkning</span><strong>Faktisk token-usage</strong></div>
+            <div><span>Anrop</span><strong>{{ costs.text_calls }} spårade totalt</strong></div>
+            <div><span>Routing</span><strong>Gratis först · GLM fallback</strong></div>
           </div>
-          {% if costs.text_tracking_started_at %}<p class="cost-provider-note">Exakt text-usage sparas från {{ costs.text_tracking_started_at|date:"j M Y H:i" }}. Äldre textanrop saknar historisk token-usage.</p>{% else %}<p class="cost-provider-note">Inga nya textanrop har ännu gjorts sedan kostnadsspårningen aktiverades.</p>{% endif %}
+          <p class="cost-provider-note">OpenRouter-kostnad sparas från leverantörens usage-svar per anrop.{% if costs.openai_text_usd %} Historisk OpenAI-text som fortfarande är spårbar: ${{ costs.openai_text_usd|floatformat:6 }}.{% endif %}</p>
         </div>
       </article>
 
@@ -160,7 +160,7 @@
     </div>
   </section>
 
-  <p class="cost-page-footnote">”Totalt registrerat” omfattar endast kostnader som kan knytas säkert till detta workspace. Historisk OpenAI-text från tiden innan token-spårningen infördes räknas inte in retroaktivt.</p>
+  <p class="cost-page-footnote">”Totalt registrerat” omfattar endast kostnader som kan knytas säkert till detta workspace. Historiska textanrop utan sparad usage räknas inte in retroaktivt.</p>
 </main>
 <script>
 document.querySelectorAll('.cost-media-dialog').forEach(dialog => {
