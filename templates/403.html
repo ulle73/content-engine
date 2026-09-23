@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Åtkomst saknas · Content Engine{% endblock %}
+{% block content %}
+<main id="main-content" tabindex="-1" class="auth-shell"><section class="auth-card">
+  <span class="editorial-eyebrow">403 · Åtkomst saknas</span>
+  <h1>Du kan inte öppna den här sidan.</h1>
+  <p class="intro">Gå till dina arbetsytor för att se det innehåll du har tillgång till.</p>
+  <a class="button" href="{% url 'dashboard' %}">Till mina arbetsytor</a>
+</section></main>
+{% endblock %}

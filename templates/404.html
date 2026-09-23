@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Sidan finns inte · Content Engine{% endblock %}
+{% block content %}
+<main id="main-content" tabindex="-1" class="auth-shell"><section class="auth-card">
+  <span class="editorial-eyebrow">404 · Sidan saknas</span>
+  <h1>Här finns inget att visa.</h1>
+  <p class="intro">Länken kan ha ändrats eller innehållet tagits bort. Gå till dina arbetsytor och fortsätt därifrån.</p>
+  <a class="button" href="{% url 'dashboard' %}">Till mina arbetsytor</a>
+</section></main>
+{% endblock %}

@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from django.template.loader import render_to_string
 
 from .models import AdAccount, Company, CompetitorAd, ContentRun
 
@@ -20,14 +21,13 @@ class AppShellTests(TestCase):
             reverse("engine:intelligence", kwargs={"workspace_id": self.workspace.pk})
         )
 
-        self.assertContains(response, 'href="/static/css/app.css"')
-        self.assertContains(response, 'href="/static/css/responsive-v2.css"')
+        self.assertContains(response, 'href="/static/css/studio.css"')
+        self.assertContains(response, 'src="/static/js/studio.js"')
         self.assertContains(response, 'class="app-sidebar"')
         self.assertContains(response, 'class="app-topbar"')
         self.assertContains(response, "Insikter")
 
-        self.assertEqual(self.client.get("/static/css/app.css").status_code, 200)
-        self.assertEqual(self.client.get("/static/css/responsive-v2.css").status_code, 200)
+        self.assertEqual(self.client.get("/static/css/studio.css").status_code, 200)
 
     def test_workspace_shell_loads_htmx_and_editorial_workspace_styles(self):
         response = self.client.get(
@@ -35,10 +35,8 @@ class AppShellTests(TestCase):
         )
 
         self.assertContains(response, "htmx.org@2.0.10")
-        self.assertContains(response, 'href="/static/css/workspace-v3.css"')
-        self.assertContains(response, 'href="/static/css/product-polish.css"')
-        self.assertEqual(self.client.get("/static/css/workspace-v3.css").status_code, 200)
-        self.assertEqual(self.client.get("/static/css/product-polish.css").status_code, 200)
+        self.assertContains(response, 'href="/static/css/studio.css"')
+        self.assertEqual(response.content.count(b'rel="stylesheet"'), 1)
 
     def test_workspace_shell_has_mobile_header_and_bottom_navigation(self):
         response = self.client.get(
@@ -54,14 +52,14 @@ class AppShellTests(TestCase):
         self.assertContains(response, ">Inställningar<")
 
     def test_responsive_styles_include_touch_targets_safe_area_and_mobile_cards(self):
-        stylesheet = self.client.get("/static/css/responsive-v2.css")
+        stylesheet = self.client.get("/static/css/studio.css")
         css = b"".join(stylesheet.streaming_content).decode("utf-8")
 
         self.assertIn(".mobile-bottom-nav", css)
         self.assertIn("env(safe-area-inset-bottom)", css)
         self.assertIn("min-height: 44px", css)
         self.assertIn(".mobile-table", css)
-        self.assertIn("@media (max-width: 720px)", css)
+        self.assertIn("@media (max-width: 600px)", css)
 
     def test_settings_exposes_mobile_friendly_operational_table(self):
         response = self.client.get(
@@ -183,3 +181,27 @@ class AdsWorkspaceTests(TestCase):
             kwargs={"workspace_id": other.pk, "ad_id": self.ad.pk},
         )
         self.assertEqual(self.client.get(cross_company_url).status_code, 404)
+
+    def test_original_precedes_analysis_and_adaptation_without_losing_long_copy(self):
+        self.ad.creative["text"] = "ORIGINAL " + "Lång caption utan förkortning. " * 150
+        self.ad.analysis_current = True
+        html = render_to_string("engine/ad_detail.html", {"ad": self.ad, "workspace": self.workspace})
+        self.assertIn(self.ad.creative["text"], html)
+        self.assertLess(html.index("Originalannons"), html.index("Budskap och mekanism"))
+        self.assertLess(html.index("Budskap och mekanism"), html.index("Sänk Dig Golfs idé"))
+        self.assertIn('name="channel" value="paid"', html)
+        self.assertIn(f'name="signal_id" value="{self.ad.pk}"', html)
+
+    def test_organic_original_is_complete_and_escaped_before_interpretation(self):
+        from types import SimpleNamespace
+        caption = "<script>alert(1)</script> " + "Originalinlägg med lång text. " * 100
+        post = SimpleNamespace(pk=1, competitor=self.account, caption=caption,
+            url="https://example.test/original", classification={"why": "ANALYS", "adaptation": "EGEN IDE"})
+        html = render_to_string("engine/signal_card.html", {
+            "workspace": self.workspace, "signal": {"id": "1", "post": post, "analysis_current": True},
+        })
+        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", html)
+        self.assertNotIn("<script>alert(1)</script>", html)
+        self.assertIn("Originalinlägg med lång text. " * 100, html)
+        self.assertLess(html.index('class="source-caption"'), html.index("ANALYS"))
+        self.assertLess(html.index("ANALYS"), html.index("EGEN IDE"))

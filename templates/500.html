@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Något gick fel · Content Engine{% endblock %}
+{% block content %}
+<main id="main-content" tabindex="-1" class="auth-shell"><section class="auth-card">
+  <span class="editorial-eyebrow">500 · Tillfälligt fel</span>
+  <h1>Vi kunde inte visa sidan.</h1>
+  <p class="intro">Försök öppna arbetsytan igen. Om du precis startade en generering eller överföring, kontrollera dess status innan du försöker på nytt.</p>
+  <a class="button" href="{% url 'dashboard' %}">Till mina arbetsytor</a>
+</section></main>
+{% endblock %}

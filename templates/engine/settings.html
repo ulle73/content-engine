@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Inställningar · {{ workspace.name }}{% endblock %}
 {% block content %}
-<main class="engine settings-page">
+<main id="main-content" tabindex="-1" class="engine settings-page">
   <header class="page-header">
     <div class="page-heading">
-      <span class="editorial-eyebrow">Workspace settings</span>
+      <span class="editorial-eyebrow">Din arbetsyta</span>
       <h1>Inställningar</h1>
       <p class="intro">{{ workspace.name }} · företagets fakta, kopplingar, varumärkesfiler och driftstatus på ett ställe.</p>
     </div>
@@ -33,7 +33,7 @@
               <div class="empty-state"><h3>Ingen logga uppladdad</h3><p>Content Engine skapar ingen ungefärlig ersättare.</p></div>
             {% endif %}
             <form method="post" enctype="multipart/form-data">{% csrf_token %}<label for="official-logo">{% if workspace.official_logo %}Byt officiell logga{% else %}Ladda upp officiell logga{% endif %}</label><input id="official-logo" type="file" name="logo" accept="image/png,image/webp,image/jpeg" required><p class="small">PNG, WebP eller JPEG, högst 8 MB. Transparent PNG rekommenderas.</p><button>Spara officiell logga</button></form>
-            <p class="small">Originalfilen placeras deterministiskt efter AI-genereringen. AI:n ritar inte om loggan och tidigare versioner behålls för redan skapade jobb.</p>
+            <p class="small">Din originallogga läggs på efter genereringen. Tidigare versioner behålls för redan skapade bilder.</p>
           </div>
         </section>
 
@@ -55,7 +55,7 @@
           <div class="settings-section-body">
             {% if steps %}
               <div class="table-scroll"><table class="daily-table mobile-table"><thead><tr><th>Dag</th><th>Moment</th><th>Status</th><th>Detaljer</th></tr></thead><tbody>{% for step in steps %}<tr><td data-label="Dag">{{ step.run.day|date:'j M' }}</td><td data-label="Moment">{{ step.label }}<br><span class="small">{{ step.subject }}</span></td><td data-label="Status">{% if step.status == 'success' %}<span class="status-badge success">Klart</span>{% elif step.status == 'skipped' %}<span class="status-badge muted">Ingen åtgärd</span>{% elif step.status == 'pending' or step.status == 'blocked' %}<span class="status-badge warning">Väntar</span>{% elif step.status == 'running' %}<span class="status-badge warning">Pågår</span>{% else %}<span class="status-badge warning">Kontrollera</span>{% endif %}</td><td data-label="Detaljer">{% if step.message %}<span>{{ step.message }}</span>{% endif %}{% if step.target %}<br><a href="{{ step.target }}">Öppna →</a>{% endif %}<details><summary>Tekniskt</summary><p class="small break-anywhere">{{ step.stage }} · {{ step.version }}<br>{{ step.key }}<br>{{ step.attempts }} försök</p></details></td></tr>{% endfor %}</tbody></table></div>
-            {% else %}<div class="empty-state"><h3>Ingen daily-körning ännu</h3><p>När GitHub Actions har kört visas status här.</p></div>{% endif %}
+            {% else %}<div class="empty-state"><h3>Ingen daglig körning ännu</h3><p>Här visas status när den första automatiska körningen är klar.</p></div>{% endif %}
           </div>
         </section>
       </div>

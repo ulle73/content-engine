@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}{{ run.title }} · {{ workspace.name }}{% endblock %}
 {% block content %}
-<main class="engine review-page">
+<main id="main-content" tabindex="-1" class="engine review-page">
   <a class="back-link" href="{% url 'engine:home' workspace_id=workspace.id %}">← Till översikten</a>
   <header class="page-header editor-header">
     <div class="page-heading">
-      <span class="editorial-eyebrow">{% if run.channel == 'paid' %}Paid creative{% else %}Organic creative{% endif %}</span>
+      <span class="editorial-eyebrow">{% if run.channel == 'paid' %}Annonsutkast{% else %}Inläggsutkast{% endif %}</span>
       <h1>{{ run.title }}</h1>
       <p class="intro">{% if run.channel == 'paid' %}Annonsutkast{% else %}Organiskt utkast{% endif %} · källa {{ run.context.source }} · underlaget gäller t.o.m. {{ run.context.valid_until }}</p>
     </div>
@@ -14,18 +14,20 @@
 
   <nav class="review-progress" aria-label="Arbetsflöde">
     <span class="review-step is-complete"><span class="review-step-index">1</span><span>Idé</span></span>
-    <span class="review-step is-current"><span class="review-step-index">2</span><span>Text</span></span>
+    <span class="review-step {% if run.delivery_status == 'draft' %}is-current{% else %}is-complete{% endif %}"><span class="review-step-index">2</span><span>Text</span></span>
     <span class="review-step {% if run.media_asset %}is-complete{% endif %}"><span class="review-step-index">3</span><span>Media</span></span>
     <span class="review-step {% if run.delivery_status == 'sent' %}is-complete{% endif %}"><span class="review-step-index">4</span><span>{% if run.channel == 'paid' %}Export{% else %}Postiz{% endif %}</span></span>
   </nav>
 
   {% if run.influencing_signal %}
-    <details class="open-section">
+    <details class="open-section" open>
       <summary>Inspirationen bakom idén</summary>
       <p><a href="{{ run.influencing_signal.url }}" target="_blank" rel="noopener">{{ run.influencing_signal.account }} · original ↗</a></p>
       <p class="small">{{ run.influencing_signal.classification.mechanisms|join:' + ' }} · signalpoäng {{ run.influencing_signal.score }}. Egna företagsuppgifter är alltid faktakällan.</p>
     </details>
   {% endif %}
+
+  {% for idea in run.ideas %}{% if forloop.counter0 == run.selected %}<details class="open-section"><summary>Faktaunderlaget bakom utkastet</summary><blockquote>{{ idea.source_quote }}</blockquote><p class="small">{{ idea.reason }}</p></details>{% endif %}{% endfor %}
 
   {% if run.delivery_status == 'sent' %}
     <div class="editor-layout">
@@ -41,7 +43,7 @@
     <form method="post" enctype="multipart/form-data">{% csrf_token %}
       <div class="editor-layout">
         <section class="editor-panel">
-          <div class="editor-panel-head"><div><span class="editorial-eyebrow">Steg 2</span><h2>Copy</h2></div><span class="small">Redigera innan godkännande</span></div>
+          <div class="editor-panel-head"><div><span class="editorial-eyebrow">Steg 2</span><h2>Redigera text</h2></div><span class="small">Redigera innan godkännande</span></div>
           <div class="editor-panel-body">
             <div class="editor-copy-section"><label for="facebook">Facebook</label><textarea id="facebook" name="facebook" rows="9" required>{{ run.draft.facebook }}</textarea></div>
             <div class="editor-copy-section"><label for="instagram">Instagram</label><textarea id="instagram" name="instagram" rows="9" maxlength="2200" required>{{ run.draft.instagram }}</textarea><p class="small">Max 2 200 tecken.</p></div>
@@ -64,7 +66,7 @@
                 <div class="empty-state"><h3>Ingen media vald</h3><p>Välj företagets fil, ladda upp eller generera ett alternativ.</p></div>
                 <a class="button button-secondary" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}">Välj bild eller video</a>
               {% endif %}
-              <p class="small">Bildbrief: {{ run.draft.photo_brief }}</p>
+              <details><summary>Bildbeskrivningen</summary><p class="small">{{ run.draft.photo_brief }}</p></details>
             </div>
           </section>
 
@@ -89,6 +91,6 @@
     </form>
   {% endif %}
 
-  <section class="review-learning-link"><a href="{% url 'engine:outcome' workspace_id=workspace.pk run_id=run.pk %}">Registrera verifierat resultat för learning →</a></section>
+  <section class="review-learning-link"><a href="{% url 'engine:outcome' workspace_id=workspace.pk run_id=run.pk %}">Registrera ett verifierat resultat →</a></section>
 </main>
 {% endblock %}

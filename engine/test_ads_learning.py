@@ -278,7 +278,7 @@ class AdsSyncTests(TestCase):
         url = reverse("engine:intelligence", kwargs={"workspace_id":self.company.pk})+"?channel=paid"
         response = self.client.get(url)
         self.assertContains(response, "Bevakade annonsörer")
-        self.assertContains(response, "Learning · Paid")
+        self.assertContains(response, "Lärdomar · Annonser")
         other = get_user_model().objects.create_user(username="other")
         self.client.force_login(other)
         self.assertEqual(self.client.get(url).status_code, 404)

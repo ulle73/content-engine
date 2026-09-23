@@ -1,17 +1,47 @@
 {% extends 'base.html' %}
 {% block title %}Resultat · {{ run.title }}{% endblock %}
 {% block content %}
-<main class="engine narrow outcome-page">
+<main id="main-content" tabindex="-1" class="engine narrow outcome-page">
   <a class="back-link" href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">← Till utkastet</a>
   <header class="page-header">
-    <div class="page-heading"><span class="editorial-eyebrow">Learning outcome</span><h1>Registrera verifierat resultat</h1><p class="intro">{{ run.title }} · {{ run.get_channel_display }}. Spara bara mätvärden som kan kopplas till en verklig källa.</p></div>
+    <div class="page-heading"><span class="editorial-eyebrow">Uppföljning</span><h1>Registrera verifierat resultat</h1><p class="intro">{{ run.title }} · {{ run.get_channel_display }}. Spara bara mätvärden som kan kopplas till en verklig källa.</p></div>
   </header>
 
   <section class="settings-section">
-    <div class="settings-section-head"><div><span class="editorial-eyebrow">Verifierad data</span><h2>Resultatunderlag</h2><p class="small">Lämna okända fält tomma. Saknade värden blir aldrig automatiskt 0 och historiska labels skrivs inte över.</p></div></div>
+    <div class="settings-section-head"><div><span class="editorial-eyebrow">Verifierad data</span><h2>Resultatunderlag</h2><p class="small">Börja med källan. Lägg sedan till mätperiod och de värden du kan verifiera. Lämna okända värden tomma.</p></div></div>
     <div class="settings-section-body">
-      <p class="small">Mätningen ska avse det dokumenterade mätfönstret för valt learning-mål. Paid kan använda klick, konverteringar, CPA, ROAS eller revenue när rätt verifierade metrics och valuta finns.</p>
-      <form method="post">{% csrf_token %}{{ form.as_p }}<button>Spara verifierat resultat</button></form>
+      <form method="post">{% csrf_token %}
+        {{ form.non_field_errors }}
+        <fieldset class="form-section"><legend class="stage-label"><b>01</b> Var finns resultatet?</legend>
+          <div class="form-field">{{ form.source.as_field_group }}</div>
+          <div class="form-field">{{ form.external_id.as_field_group }}</div>
+          <div class="form-field">{{ form.evidence.as_field_group }}</div>
+        </fieldset>
+        <fieldset class="form-section"><legend class="stage-label"><b>02</b> Vilken period mättes?</legend>
+          <div class="form-field">{{ form.published_at.as_field_group }}</div>
+          <div class="form-field">{{ form.window_end.as_field_group }}</div>
+          <div class="form-field">{{ form.observed_at.as_field_group }}</div>
+        </fieldset>
+        <fieldset class="form-section"><legend class="stage-label"><b>03</b> Vad blev resultatet?</legend>
+          <div class="form-grid">
+            <div class="form-field">{{ form.impressions.as_field_group }}</div>
+            <div class="form-field">{{ form.likes.as_field_group }}</div>
+            <div class="form-field">{{ form.comments.as_field_group }}</div>
+            <div class="form-field">{{ form.clicks.as_field_group }}</div>
+          </div>
+          <details {% if form.conversions.errors or form.spend.errors or form.revenue.errors or form.currency.errors %}open{% endif %}>
+            <summary>Konverteringar, kostnad & intäkt</summary>
+            <div class="form-grid">
+              <div class="form-field">{{ form.conversions.as_field_group }}</div>
+              <div class="form-field">{{ form.spend.as_field_group }}</div>
+              <div class="form-field">{{ form.revenue.as_field_group }}</div>
+              <div class="form-field">{{ form.currency.as_field_group }}</div>
+            </div>
+          </details>
+        </fieldset>
+        <button>Spara verifierat resultat</button>
+      </form>
+      <details class="method-note"><summary>Så används resultatet</summary><p class="small">Mätningen ska avse det dokumenterade mätfönstret för valt learning-mål. Paid kan använda klick, konverteringar, CPA, ROAS eller revenue när rätt verifierade metrics och valuta finns. Saknade värden blir aldrig automatiskt 0 och historiska labels skrivs inte över.</p></details>
     </div>
   </section>
 </main>

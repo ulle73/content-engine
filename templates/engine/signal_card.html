@@ -13,8 +13,23 @@
   </summary>
 
   <div class="signal-detail">
-    <div class="signal-detail-inner">
-      <div>
+    <div class="source-flow">
+      <section class="source-stage">
+        <div class="stage-label"><b>01</b> Originalinlägg</div>
+        <h3>{{ signal.post.competitor.name }}</h3>
+        {% include 'components/source_text.html' with text=signal.post.caption %}
+        <a href="{{ signal.post.url }}" target="_blank" rel="noopener">Se originalets bild eller video ↗</a>
+      </section>
+      <section class="source-stage">
+        <div class="stage-label"><b>02</b> Varför det verkar fungera</div>
+        {% if signal.analysis_current and signal.post.classification %}
+          <p>{{ signal.post.classification.why }}</p>
+          <p class="small">{{ signal.post.classification.topic }} · {{ signal.post.classification.mechanisms|join:' + ' }}. Hypotes utifrån caption och metadata.</p>
+        {% else %}
+          <p class="small">Ingen aktuell analys ännu. Utgå från originalet och låt AI:n förklara den möjliga mekanismen.</p>
+          <form data-loading="Analyserar originaltexten…" method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Förklara mekanismen</button></form>
+        {% endif %}
+        <details><summary>Resultat och jämförelse</summary>
         <h3>Resultat och signal</h3>
         <p>Likes: <strong>{{ signal.likes|default_if_none:'Saknas' }}</strong> · Kommentarer: <strong>{{ signal.comments|default_if_none:'Saknas' }}</strong>{% if signal.views != None %} · Videovisningar: <strong>{{ signal.views }}</strong>{% endif %}</p>
         {% if signal.relative != None %}
@@ -30,21 +45,13 @@
           <p class="small">{{ signal.sample_size }} jämförbara poster. Vi inväntar mer data innan överprestation bedöms.</p>
         {% endif %}
         <p class="small">{{ signal.momentum.label }}</p>
-      </div>
 
-      <div>
-        {% if signal.analysis_current and signal.post.classification %}
-          <h3>Varför den verkar fungera</h3>
-          <p>{{ signal.post.classification.why }}</p>
-          <p class="small">{{ signal.post.classification.topic }} · {{ signal.post.classification.mechanisms|join:' + ' }}. Hypotes utifrån caption och metadata.</p>
-          <h3>Förslag för {{ workspace.name }}</h3>
-          <p>{{ signal.post.classification.adaptation }}</p>
-        {% else %}
-          <h3>Detaljerad analys</h3>
-          <p class="small">Analysera caption för att få en mekanism och en egen vinkel för företaget.</p>
-          <form method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Förklara mekanismen</button></form>
-        {% endif %}
-      </div>
+        </details>
+      </section>
+      <section class="source-stage adaptation-panel">
+        <div class="stage-label"><b>03</b> {{ workspace.name }}s idé</div>
+        {% if signal.analysis_current and signal.post.classification %}<p>{{ signal.post.classification.adaptation }}</p>{% else %}<p class="small">Skapa en egen idé med företagets verifierade uppgifter som grund.</p>{% endif %}
+      </section>
     </div>
 
     <div class="signal-actions">

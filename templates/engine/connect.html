@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Postiz · {{ workspace.name }}{% endblock %}
 {% block content %}
-<main class="engine narrow integration-page">
+<main id="main-content" tabindex="-1" class="engine narrow integration-page">
   <a class="back-link" href="{% url 'engine:settings' workspace_id=workspace.id %}">← Till inställningar</a>
   <header class="page-header"><div class="page-heading"><span class="editorial-eyebrow">Integration</span><h1>Postiz</h1><p class="intro">Anslut bara de Facebook- och Instagramkanaler som faktiskt tillhör {{ workspace.name }}.</p></div></header>
 

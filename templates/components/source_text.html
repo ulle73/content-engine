@@ -1,0 +1,6 @@
+{% if text|length > 700 %}
+  <p class="source-caption">{{ text|truncatechars:420 }}</p>
+  <details class="source-full"><summary>Läs hela originaltexten · {{ text|length }} tecken</summary><p class="source-caption">{{ text }}</p></details>
+{% else %}
+  <p class="source-caption">{{ text|default:'Originaltext saknas i det sparade underlaget.' }}</p>
+{% endif %}

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}{{ workspace.name }} · Insikter{% endblock %}
 {% block content %}
-<main class="engine intelligence-page organic-insights-page">
+<main id="main-content" tabindex="-1" class="engine intelligence-page organic-insights-page">
   <header class="page-header">
     <div class="page-heading">
-      <span class="editorial-eyebrow">Organic intelligence</span>
+      <span class="editorial-eyebrow">Inspiration</span>
       <h1>Insikter</h1>
       <p class="intro">Se vad som sticker ut hos konkurrenterna, förstå mekanismen och omsätt den till eget innehåll utan att kopiera.</p>
     </div>
@@ -30,7 +30,6 @@
     {% endwith %}
   {% endif %}
 
-  {% include 'engine/learning_panel.html' %}
 
   {% if pending %}
     <p id="import-status" class="notice" role="status">Apify hämtar. Resultatet visas här när körningen är kontrollerad.</p>
@@ -58,6 +57,8 @@
       {% for signal in weekly %}{% include 'engine/signal_card.html' %}{% empty %}<div class="empty-state"><h3>Inga aktuella signaler ännu</h3><p>Lägg till referenskonton längre ner eller kör nästa begränsade hämtning.</p></div>{% endfor %}
     </div>
   </section>
+
+  {% include 'engine/learning_panel.html' %}
 
   <div class="section-stack">
     {% if patterns %}

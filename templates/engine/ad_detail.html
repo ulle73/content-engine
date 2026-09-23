@@ -17,19 +17,13 @@
       </span>
     </div>
 
+    <div class="stage-label"><b>01</b> Originalannons</div>
     <h2 class="ad-detail-title">{{ ad.creative.headline|default:'Annons utan rubrik' }}</h2>
-    <p class="ad-detail-copy">{{ ad.creative.text|default:'Annonstext saknas' }}</p>
+    {% include 'components/source_text.html' with text=ad.creative.text %}
 
     {% if ad.analysis_current %}
       <div class="ad-detail-block">
-        <div class="ad-analysis-callout">
-          <h3>Varför signalen är intressant</h3>
-          <p>{{ ad.classification.adaptation }}</p>
-        </div>
-      </div>
-
-      <div class="ad-detail-block">
-        <h3>Budskap och hook</h3>
+        <div class="stage-label"><b>02</b> Budskap och mekanism</div>
         <dl class="ad-fact-list">
           <div class="ad-fact-row"><dt>Hook</dt><dd>{{ ad.classification.hook|default:'Okänd' }}</dd></div>
           <div class="ad-fact-row"><dt>Budskap</dt><dd>{{ ad.classification.message|default:'Okänt' }}</dd></div>
@@ -40,10 +34,17 @@
           <div class="ads-theme-strip">{% for item in ad.classification.themes %}<span class="theme-tag">{{ item }}</span>{% endfor %}</div>
         {% endif %}
       </div>
+      <div class="ad-detail-block">
+        <div class="ad-analysis-callout">
+          <div class="stage-label"><b>03</b> {{ workspace.name }}s idé</div>
+          <p>{{ ad.classification.adaptation }}</p>
+        </div>
+      </div>
+
     {% endif %}
 
-    <div class="ad-detail-block">
-      <h3>Observerade fakta</h3>
+    <details class="ad-detail-block">
+      <summary>Observerade fakta</summary>
       <dl class="ad-fact-list">
         <div class="ad-fact-row"><dt>Format</dt><dd>{{ ad.creative.format|default:'Okänt' }}</dd></div>
         <div class="ad-fact-row"><dt>Plattform</dt><dd>{{ ad.creative.platforms|join:' / '|default:'Okänd' }}</dd></div>
@@ -53,7 +54,7 @@
         <div class="ad-fact-row"><dt>Varianter</dt><dd>{{ ad.creative.variant_count|default_if_none:'Okänt' }}</dd></div>
         {% if ad.creative.description %}<div class="ad-fact-row"><dt>Beskrivning</dt><dd>{{ ad.creative.description }}</dd></div>{% endif %}
       </dl>
-    </div>
+    </details>
 
     <div class="ad-detail-block">
       <h3>Vad vi inte vet</h3>
