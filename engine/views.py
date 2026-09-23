@@ -76,6 +76,8 @@ def ideas(request, workspace_id):
                 CompetitorPost, pk=signal_id, competitor__company=request.workspace, competitor__active=True
             )
             classify(signal_post, request.workspace)
+        captured_at = timezone.now()
+        from .learning import generation_learning_profile
         snapshot = {
             "company": request.workspace.name,
             "channel":channel,
@@ -84,7 +86,8 @@ def ideas(request, workspace_id):
             "current": context.current,
             "source": context.source,
             "valid_until": context.valid_until.isoformat(),
-            "captured_at": timezone.now().isoformat(),
+            "captured_at": captured_at.isoformat(),
+            "learning_profile": generation_learning_profile(request.workspace, channel, cutoff=captured_at),
             "recent_posts": [
                 item.get("facebook", "")
                 for item in ContentRun.objects.filter(workspace=request.workspace, channel=channel)
