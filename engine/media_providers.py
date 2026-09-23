@@ -224,8 +224,14 @@ def higgs(method, path, *, billable=False, **kwargs):
 
 
 def video_payload(job):
-    # Kling's official schema accepts 5 or 10 seconds. I2V follows the source image.
-    return {"prompt": job.prompt, "duration": int(job.parameters.get("duration", 10))}
+    """Compile only allow-listed provider parameters persisted by Creative Director."""
+    payload = {"prompt": job.prompt, "duration": int(job.parameters.get("duration", 10))}
+    for key in ("resolution", "generate_audio", "output_format"):
+        if key in job.parameters:
+            payload[key] = job.parameters[key]
+    if job.parameters.get("provider_aspect_ratio"):
+        payload["aspect_ratio"] = job.parameters["provider_aspect_ratio"]
+    return payload
 
 
 def upload_input(asset):
@@ -251,10 +257,16 @@ def estimate_video(job):
             "Justera beskrivningen och skapa ett nytt jobb; ingen betald generation startades."
         )
     mode = "image-to-video" if job.source_asset else "text-to-video"
-    model = job.parameters.get("model", settings.HIGGSFIELD_VIDEO_MODEL) + "/" + mode
+    model = job.parameters.get("provider_model") or (
+        job.parameters.get("model", settings.HIGGSFIELD_VIDEO_MODEL) + "/" + mode
+    )
     body = video_payload(job)
     if job.source_asset:
-        body["image_url"] = upload_input(job.source_asset)
+        reference_fields = job.parameters.get("reference_fields") or {}
+        start_field = reference_fields.get("START_IMAGE", "image_url")
+        if not isinstance(start_field, str) or not start_field:
+            raise MediaError("Videomodellen saknar verifierad mappning för startbilden.")
+        body[start_field] = upload_input(job.source_asset)
     estimate = higgs("POST", "/estimate/" + model, json=body)
     try:
         price = Decimal(estimate["usd"])
