@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -322,6 +323,41 @@ class CreativeCoreTests(TestCase):
         self.assertEqual(brief.audio_intent, "native")
         silent = parse_brief("Video med ljud men utan ljud", kind="video")
         self.assertEqual(silent.audio_intent, "none")
+
+    def test_end_frame_capability_routes_only_to_models_that_support_it(self):
+        brief = CreativeBrief(
+            user_intent="Bridge two canonical frames",
+            kind="video",
+            mode="image-to-video",
+            reference_media=["START_IMAGE", "END_IMAGE"],
+            aspect_ratio="9:16",
+        )
+        model, selection = route_model(brief, Complexity.medium)
+        self.assertEqual(model.model_id, "bytedance/seedance-2.5")
+        self.assertTrue(model.supports_reference_role("image-to-video", ReferenceRole.end_image))
+        self.assertEqual(selection.model_id, model.model_id)
+
+    def test_economy_video_keeps_lower_cost_kling_default(self):
+        plan = build_plan(self.run, "Skapa en 10 sekunders reel", kind="video", priority="economy")
+        self.assertEqual(plan.selection.model_id, "kling-video/v2.5-turbo/pro")
+
+    def test_router_falls_back_when_quality_candidate_is_disabled(self):
+        models = tuple(
+            replace(item, enabled=False) if item.model_id == "bytedance/seedance-2.5" else item
+            for item in registry()
+        )
+        with patch("engine.creative_registry.registry", return_value=models):
+            plan = build_plan(
+                self.run,
+                "Premium cinematic reel cirka 8 sekunder i 9:16",
+                kind="video",
+                priority="quality",
+            )
+        self.assertEqual(plan.selection.model_id, "kling-video/v2.5-turbo/pro")
+
+    def test_unsupported_resolution_and_ratio_fails_before_provider_use(self):
+        with self.assertRaisesRegex(ValueError, "No verified model supports"):
+            build_plan(self.run, "Skapa en 10 sekunders video i 4K och 4:5", kind="video")
 
     def test_duration_is_normalized_locally_without_provider_call(self):
         brief = parse_brief("Premium reel cirka 8 sekunder", kind="video")
