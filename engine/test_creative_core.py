@@ -142,6 +142,9 @@ class CreativeCoreTests(TestCase):
         self.assertTrue(video.negative_prompt_support)
         self.assertTrue(video.sources)
         self.assertTrue(video.evidence_version)
+        plan = build_plan(self.run, "Skapa en 5 sekunders video", kind="video")
+        self.assertEqual(plan.selection.profile_version, video.profile_version)
+        self.assertEqual(plan.selection.evidence_version, video.evidence_version)
 
     def test_stale_model_profile_cannot_enter_auto_routing(self):
         stale = ModelIntelligence(
@@ -298,6 +301,8 @@ class CreativeCoreTests(TestCase):
         payload = plan.model_dump(mode="json")
         self.assertEqual(payload["brief"]["version"], "2026-09-22.1")
         self.assertEqual(payload["registry_version"], "2026-09-23.1")
+        self.assertTrue(payload["selection"]["profile_version"])
+        self.assertTrue(payload["selection"]["evidence_version"])
         self.assertEqual(payload["compiler_version"], "2026-09-22.1")
         self.assertEqual(payload["recipe"]["recipe_id"], "generic_video")
         self.assertEqual(payload["recipe_registry_version"], RECIPE_REGISTRY_VERSION)
