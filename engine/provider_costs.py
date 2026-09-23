@@ -193,45 +193,71 @@ def cost_summary(company):
             )
         )
 
-    text_total = Decimal("0")
-    text_month = Decimal("0")
+    openai_text_total = Decimal("0")
+    openai_text_month = Decimal("0")
+    openrouter_text_total = Decimal("0")
+    openrouter_text_month = Decimal("0")
     text_calls = 0
     first_text_tracking = None
     seen_text = set()
 
     def add_text(meta, fallback_at, service="Text", status="completed"):
-        nonlocal text_total, text_month, text_calls, first_text_tracking, unknown
-        if not isinstance(meta, dict) or meta.get("provider") != "openai" or meta.get("service") != "text":
+        nonlocal openai_text_total, openai_text_month, openrouter_text_total, openrouter_text_month
+        nonlocal text_calls, first_text_tracking, unknown
+        if not isinstance(meta, dict) or meta.get("service") != "text":
+            return
+        provider = str(meta.get("provider") or "").lower()
+        if provider not in {"openai", "openrouter"}:
             return
         response_id = str(meta.get("response_id") or "")
-        dedupe = response_id or f"{meta.get('operation')}:{fallback_at.isoformat()}:{id(meta)}"
+        dedupe = response_id or f"{provider}:{meta.get('operation')}:{fallback_at.isoformat()}:{id(meta)}"
         if dedupe in seen_text:
             return
         seen_text.add(dedupe)
         at = _meta_time(meta, fallback_at)
-        cost = openai_text_cost(meta)
         text_calls += 1
         first_text_tracking = min(first_text_tracking or at, at)
+
+        if provider == "openai":
+            cost = openai_text_cost(meta)
+            provider_label = "OpenAI"
+            basis = "Beräknad från tokens"
+        else:
+            usage = meta.get("usage") if isinstance(meta.get("usage"), dict) else {}
+            raw_cost = meta.get("cost_usd")
+            if raw_cost is None:
+                raw_cost = usage.get("cost")
+            cost = None if raw_cost is None else _decimal(raw_cost, default=Decimal("-1"))
+            if cost is not None and cost < 0:
+                cost = None
+            provider_label = "OpenRouter"
+            basis = "Leverantör rapporterad"
+
         if cost is None:
             unknown += 1
             return
-        text_total += cost
-        if at >= month_start:
-            text_month += cost
+        if provider == "openai":
+            openai_text_total += cost
+            if at >= month_start:
+                openai_text_month += cost
+        else:
+            openrouter_text_total += cost
+            if at >= month_start:
+                openrouter_text_month += cost
         rows.append(
             _event_row(
                 at,
-                "OpenAI",
+                provider_label,
                 service,
                 meta.get("operation", service),
                 cost,
-                "Beräknad från tokens",
+                basis,
                 meta.get("model", ""),
                 status,
             )
         )
 
-    # Content generation usage is stored together with the run so the accounting
+    # Content generation usage is stored together with the run so accounting
     # follows the same source of truth as ideas and copy.
     for run in ContentRun.objects.filter(workspace=company).only("created_at", "context", "draft"):
         context = run.context or {}
@@ -304,8 +330,8 @@ def cost_summary(company):
             elif job.status == "unknown" and cost >= 0:
                 higgs_unknown += 1
 
-    known_total = apify_total + text_total + image_total + higgs_total
-    known_month = apify_month + text_month + image_month + higgs_month
+    known_total = apify_total + openai_text_total + openrouter_text_total + image_total + higgs_total
+    known_month = apify_month + openai_text_month + openrouter_text_month + image_month + higgs_month
     rows.sort(
         key=lambda row: row["at"] or datetime.min.replace(tzinfo=timezone.get_current_timezone()),
         reverse=True,
@@ -316,8 +342,10 @@ def cost_summary(company):
         "month_usd": known_month,
         "apify_usd": apify_total,
         "apify_month_usd": apify_month,
-        "openai_text_usd": text_total,
-        "openai_text_month_usd": text_month,
+        "openai_text_usd": openai_text_total,
+        "openai_text_month_usd": openai_text_month,
+        "openrouter_text_usd": openrouter_text_total,
+        "openrouter_text_month_usd": openrouter_text_month,
         "openai_image_usd": image_total,
         "openai_image_month_usd": image_month,
         "higgsfield_usd": higgs_total,
