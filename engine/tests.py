@@ -48,20 +48,44 @@ class SourceQuoteTests(TestCase):
             "profile": "Vi hjälper amatörgolfare.",
             "voice": "Garanterat tio slag bättre.",
         }
-        output = deepcopy(IDEAS)
-        output["ideas"][1]["source_quote"] = context["profile"]
-        parsed = Mock()
-        parsed.model_dump.return_value = output
-        structured.return_value = (
-            parsed,
-            {"provider": "openrouter", "service": "text", "model": "free-test", "usage": {}, "cost_usd": 0},
-        )
+
+        def response_for(item, index):
+            parsed = Mock()
+            parsed.model_dump.return_value = item
+            return (
+                parsed,
+                {
+                    "provider": "openrouter",
+                    "service": "text",
+                    "model": "free-test",
+                    "response_id": f"resp-{index}",
+                    "usage": {"prompt_tokens": 10, "completion_tokens": 20, "total_tokens": 30, "cost": 0},
+                    "cost_usd": 0,
+                },
+            )
+
+        ideas = deepcopy(IDEAS["ideas"])
+        ideas[1]["source_quote"] = context["profile"]
+        structured.side_effect = [response_for(item, index) for index, item in enumerate(ideas, start=1)]
         result = generate(context)
         self.assertEqual(result["ideas"][0]["source_field"], "current")
         self.assertEqual(result["ideas"][1]["source_field"], "profile")
         self.assertEqual(context["_provider_usage_ideas"]["provider"], "openrouter")
+        self.assertEqual(context["_provider_usage_ideas"]["calls"], 3)
+        self.assertEqual(context["_provider_usage_ideas"]["usage"]["total_tokens"], 90)
+        self.assertEqual(
+            [call.kwargs["operation"] for call in structured.call_args_list],
+            ["idea_1", "idea_2", "idea_3"],
+        )
+        self.assertTrue(all(call.kwargs["max_tokens"] == 1000 for call in structured.call_args_list))
+        self.assertEqual(structured.call_args_list[1].kwargs["payload"]["variation"]["avoid_titles"], ["Idé 0"])
+
         for invalid in (context["voice"], "Vi hjälper alla golfare.", ""):
-            output["ideas"][1]["source_quote"] = invalid
+            invalid_ideas = deepcopy(IDEAS["ideas"])
+            invalid_ideas[1]["source_quote"] = invalid
+            structured.side_effect = [
+                response_for(item, index) for index, item in enumerate(invalid_ideas, start=1)
+            ]
             with self.assertRaisesRegex(ValueError, "källcitat"):
                 generate(context)
 
