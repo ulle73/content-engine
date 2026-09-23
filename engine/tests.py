@@ -205,6 +205,33 @@ class ContentFlowTests(TestCase):
         self.assertEqual(run.events.get(action="rejected").idea_index, 1)
 
     @patch("engine.views.generate")
+    def test_rejected_idea_stays_saved_for_learning_but_is_hidden_from_workspace(self, generate):
+        generate.return_value = IDEAS
+        self.client.post(self.url("ideas"))
+        run = ContentRun.objects.get(workspace=self.workspace)
+        self.assertEqual(len(run.ideas), 3)
+        rejected_title = run.ideas[1]["title"]
+        kept_titles = [run.ideas[0]["title"], run.ideas[2]["title"]]
+
+        response = self.client.post(
+            self.url("reject_idea", run_id=run.pk, idea_index=1),
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("?channel=organic#recent-work", response["Location"])
+        run.refresh_from_db()
+        self.assertEqual(len(run.ideas), 3)
+        self.assertEqual(run.events.filter(action="rejected", idea_index=1).count(), 1)
+
+        page = self.client.get(self.url("home") + "?channel=organic")
+        self.assertNotContains(page, rejected_title)
+        for title in kept_titles:
+            self.assertContains(page, title)
+        self.assertContains(page, "2 förslag kvar")
+
+        self.client.post(self.url("reject_idea", run_id=run.pk, idea_index=1))
+        self.assertEqual(run.events.filter(action="rejected", idea_index=1).count(), 1)
+
+    @patch("engine.views.generate")
     def test_expired_context_never_calls_ai(self, generate):
         self.context.valid_until = timezone.localdate() - timedelta(days=1)
         self.context.save()
