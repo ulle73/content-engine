@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -17,7 +18,7 @@ from .creative_director import (
     preflight,
     route_model,
 )
-from .creative_registry import ModeReferenceContract, ModelIntelligence, registry, verified_models
+from .creative_registry import ModeReferenceContract, ModeRequestContract, ModelIntelligence, get_model, registry, verified_models
 from .creative_recipes import get_recipe, registry as recipe_registry, resolve_recipe
 from .models import Company, ContentRun
 
@@ -239,6 +240,125 @@ class CreativeCoreTests(TestCase):
         self.assertNotIn("CAMERA:", prompt)
         self.assertNotIn("BRAND CONTEXT:", prompt)
 
+    def test_balanced_eight_second_video_keeps_kling_backwards_compatible(self):
+        plan = build_plan(self.run, "Premium reel cirka 8 sekunder i 9:16", kind="video")
+        self.assertEqual(plan.selection.model_id, "kling-video/v2.5-turbo/pro")
+        self.assertEqual(plan.parameters["duration"], 10)
+        self.assertEqual(plan.parameters["provider_model"], "kling-video/v2.5-turbo/pro/text-to-video")
+        self.assertNotIn("resolution", plan.parameters)
+        self.assertNotIn("generate_audio", plan.parameters)
+
+    def test_quality_video_routes_to_seedance_25_with_explicit_silent_payload(self):
+        plan = build_plan(
+            self.run,
+            "Premium cinematic reel cirka 8 sekunder i 9:16",
+            kind="video",
+            priority="quality",
+        )
+        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.5")
+        self.assertEqual(plan.parameters["provider_model"], "bytedance/seedance-2.5/text-to-video")
+        self.assertEqual(plan.parameters["duration"], 8)
+        self.assertEqual(plan.parameters["resolution"], "720p")
+        self.assertEqual(plan.parameters["provider_aspect_ratio"], "9:16")
+        self.assertFalse(plan.parameters["generate_audio"])
+        self.assertEqual(plan.parameters["output_format"], "mp4")
+        self.assertIn("GLOBAL STYLE:", plan.prompt)
+        self.assertIn("SCENE:", plan.prompt)
+        self.assertIn("AUDIO: No generated audio.", plan.prompt)
+
+    def test_long_video_routes_to_seedance_25_without_duration_normalization(self):
+        plan = build_plan(self.run, "Skapa en cinematic video i 20 sekunder", kind="video")
+        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.5")
+        self.assertEqual(plan.parameters["duration"], 20)
+        self.assertIn("requested_duration_supported", plan.selection.reason_codes)
+        self.assertFalse(any(item.code == "duration_normalized" for item in plan.preflight))
+
+    def test_native_audio_request_routes_away_from_kling(self):
+        plan = build_plan(self.run, "Skapa en 10 sekunders reel med ljud och ambient sound", kind="video")
+        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.5")
+        self.assertEqual(plan.brief.audio_intent, "native")
+        self.assertTrue(plan.parameters["generate_audio"])
+        self.assertIn("native_audio_supported", plan.selection.reason_codes)
+
+    def test_explicit_4k_routes_to_seedance_20(self):
+        plan = build_plan(self.run, "Skapa en 10 sekunders premiumvideo i 4K", kind="video")
+        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.0")
+        self.assertEqual(plan.brief.resolution, "4k")
+        self.assertEqual(plan.parameters["resolution"], "4k")
+        self.assertEqual(plan.parameters["provider_model"], "bytedance/seedance-2.0/text-to-video")
+
+    def test_seedance_i2v_contract_records_future_end_frame_without_sending_one_yet(self):
+        model = get_model("higgsfield", "bytedance/seedance-2.5")
+        contract = model.request_contract("image-to-video")
+        self.assertEqual(contract.provider_field(ReferenceRole.start_image), "image_url")
+        self.assertEqual(contract.provider_field(ReferenceRole.end_image), "end_image_url")
+        self.assertIn(ReferenceRole.end_image, contract.optional_reference_roles)
+        plan = build_plan(
+            self.run,
+            "Animera bilden i 8 sekunder i 9:16 och behåll produkten exakt",
+            kind="video",
+            source=object(),
+            priority="quality",
+        )
+        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.5")
+        self.assertEqual(plan.parameters["provider_model"], "bytedance/seedance-2.5/image-to-video")
+        self.assertEqual(plan.parameters["reference_fields"]["START_IMAGE"], "image_url")
+        self.assertEqual(plan.parameters["reference_fields"]["END_IMAGE"], "end_image_url")
+        self.assertNotIn("provider_aspect_ratio", plan.parameters)
+        self.assertFalse(plan.parameters["generate_audio"])
+
+    def test_seedance_mode_contracts_expose_exact_current_provider_paths_and_ranges(self):
+        s25 = get_model("higgsfield", "bytedance/seedance-2.5")
+        s20 = get_model("higgsfield", "bytedance/seedance-2.0")
+        self.assertEqual(s25.request_contract("text-to-video").endpoint, "bytedance/seedance-2.5/text-to-video")
+        self.assertEqual(s25.request_contract("text-to-video").duration_range, (4, 30))
+        self.assertEqual(s25.request_contract("image-to-video").aspect_ratio_behavior, "derived")
+        self.assertEqual(s20.request_contract("text-to-video").duration_range, (4, 15))
+        self.assertIn("4k", s20.request_contract("text-to-video").resolutions)
+
+    def test_parse_brief_understands_resolution_audio_and_extended_ratios(self):
+        brief = parse_brief("Video i 21:9, 1080p, 12 sekunder med ljud", kind="video")
+        self.assertEqual(brief.aspect_ratio, "21:9")
+        self.assertEqual(brief.resolution, "1080p")
+        self.assertEqual(brief.audio_intent, "native")
+        silent = parse_brief("Video med ljud men utan ljud", kind="video")
+        self.assertEqual(silent.audio_intent, "none")
+
+    def test_end_frame_capability_routes_only_to_models_that_support_it(self):
+        brief = CreativeBrief(
+            user_intent="Bridge two canonical frames",
+            kind="video",
+            mode="image-to-video",
+            reference_media=["START_IMAGE", "END_IMAGE"],
+            aspect_ratio="9:16",
+        )
+        model, selection = route_model(brief, Complexity.medium)
+        self.assertEqual(model.model_id, "bytedance/seedance-2.5")
+        self.assertTrue(model.supports_reference_role("image-to-video", ReferenceRole.end_image))
+        self.assertEqual(selection.model_id, model.model_id)
+
+    def test_economy_video_keeps_lower_cost_kling_default(self):
+        plan = build_plan(self.run, "Skapa en 10 sekunders reel", kind="video", priority="economy")
+        self.assertEqual(plan.selection.model_id, "kling-video/v2.5-turbo/pro")
+
+    def test_router_falls_back_when_quality_candidate_is_disabled(self):
+        models = tuple(
+            replace(item, enabled=False) if item.model_id == "bytedance/seedance-2.5" else item
+            for item in registry()
+        )
+        with patch("engine.creative_registry.registry", return_value=models):
+            plan = build_plan(
+                self.run,
+                "Premium cinematic reel cirka 8 sekunder i 9:16",
+                kind="video",
+                priority="quality",
+            )
+        self.assertEqual(plan.selection.model_id, "kling-video/v2.5-turbo/pro")
+
+    def test_unsupported_resolution_and_ratio_fails_before_provider_use(self):
+        with self.assertRaisesRegex(ValueError, "No verified model supports"):
+            build_plan(self.run, "Skapa en 10 sekunders video i 4K och 4:5", kind="video")
+
     def test_duration_is_normalized_locally_without_provider_call(self):
         brief = parse_brief("Premium reel cirka 8 sekunder", kind="video")
         model = verified_models("video", "text-to-video")[0]
@@ -300,9 +420,9 @@ class CreativeCoreTests(TestCase):
         plan = build_plan(self.run, "Skapa en lugn premium reel 10 sekunder", kind="video")
         payload = plan.model_dump(mode="json")
         self.assertEqual(payload["brief"]["version"], "2026-09-22.1")
-        self.assertEqual(payload["registry_version"], "2026-09-23.1")
+        self.assertEqual(payload["registry_version"], "2026-09-23.2")
         self.assertTrue(payload["selection"]["profile_version"])
         self.assertTrue(payload["selection"]["evidence_version"])
-        self.assertEqual(payload["compiler_version"], "2026-09-22.1")
+        self.assertEqual(payload["compiler_version"], "2026-09-23.1")
         self.assertEqual(payload["recipe"]["recipe_id"], "generic_video")
         self.assertEqual(payload["recipe_registry_version"], RECIPE_REGISTRY_VERSION)

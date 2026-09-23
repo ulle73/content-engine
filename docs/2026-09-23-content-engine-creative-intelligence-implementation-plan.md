@@ -281,9 +281,9 @@ Next exact task: B3
 
 ## Task B3 — Add verified Seedance/multi-model entries to existing router
 
-- [ ] Add only currently verified compatible models.
-- [ ] Keep Kling if still valid.
-- [ ] Update scoring to consider:
+- [x] Add only currently verified compatible models.
+- [x] Keep Kling if still valid.
+- [x] Update scoring to consider:
   - recipe compatibility,
   - required reference roles,
   - quality,
@@ -291,8 +291,8 @@ Next exact task: B3
   - cost,
   - audio,
   - complexity.
-- [ ] Preserve current `route_model()` as the single Auto router.
-- [ ] Add reason codes showing why a model won.
+- [x] Preserve current `route_model()` as the single Auto router.
+- [x] Add reason codes showing why a model won.
 
 ### Acceptance criteria
 
@@ -313,10 +313,19 @@ Example:
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —  
-Evidence: —
+Status: DONE — verified multi-model routing and mode-aware Higgsfield request compilation implemented on the existing single router. Hosted GitHub tests remain externally blocked before application steps; latest branch-head workflow `35925500304` failed in ~6 seconds with **0 steps** in both `verify` and `postgres`, matching the documented Actions account billing/spending restriction rather than an application test failure.  
+Files changed: `engine/creative_core.py`, `engine/creative_registry.py`, `engine/creative_director.py`, `engine/media_providers.py`, `engine/media_views.py`, `templates/engine/media.html`, `engine/test_creative_core.py`, `engine/test_media.py`. No migration.  
+What changed: Evolved B1's mode reference contract into backwards-compatible `ModeRequestContract` with exact provider endpoint, fixed/range duration, resolution options, mode-specific aspect-ratio behavior, explicit audio parameter/default, output-format support and canonical media-field mapping. Added current verified Kling 2.5 Turbo Pro, Seedance 2.5 and Seedance 2.0 T2V/I2V profiles. Auto routing now applies hard capability filtering before scoring. Balanced/economy generic video remains Kling; quality can select Seedance 2.5; >10s selects a capable long-duration model; native audio routes away from Kling; explicit 1080p/4K routes to Seedance 2.0. START+END canonical roles already cause the router to exclude Kling and select a first/last-frame-capable Seedance mode, while persistence/upload of END_IMAGE remains C1/C2.  
+Provider compilation: New jobs persist exact `provider_model`; Seedance 2.5/2.0 receive only audited mode-specific fields. Seedance audio is explicitly set false unless requested, preventing provider default `generate_audio=true` from violating Content Engine intent. Seedance 2.5 T2V sends supported aspect ratio; 2.5 I2V deliberately sends no aspect-ratio field. Existing jobs retain the legacy root+mode fallback. Estimate and paid submit reuse the same compiled body/path. Current Kling body remains only `prompt + duration`.  
+Prompt compilation: Added `seedance_structured` using current official section guidance (GLOBAL STYLE, SCENE, optional FIRST FRAME/BLOCKING, CAMERA, PHYSICS, LIGHTING, AUDIO, BRAND CONTEXT) without adding scroll-specific continuity rules prematurely.  
+Tests added: balanced 8s→Kling/10s normalization; economy→Kling; quality 8s→Seedance 2.5/exact 8s; 20s→Seedance 2.5; native audio→Seedance; explicit 4K→Seedance 2.0; disabled preferred model fallback; unsupported 4K+4:5 fails before provider; canonical START+END routes only to an END_IMAGE-capable model; exact Seedance endpoint/range metadata; I2V START/END field mapping; resolution/audio parsing; Seedance T2V estimate payload; Seedance I2V source upload with no unsupported aspect ratio; audio true only when requested; Seedance 2.0 4K; estimate/paid-submit body identity; existing Kling submit JSON regression.  
+Static/branch verification: PR #38 is mergeable. Branch-head code review checked registry contracts, route decisions, compiler paths, legacy fallback and safe UI diagnostics. A too-broad Seedance 2.0 `output_format` assumption was caught against the B2 audit and removed before closeout. Container could not clone the private repository because this runtime has no external DNS/network; no false local Django-pass claim is made.  
+Official/provider evidence: `docs/2026-09-23-higgsfield-seedance-model-audit.md`, sourced from current Higgsfield model-specific API docs/help-center/prompt guide and shared estimate contract. Public capability evidence is still distinct from the dedicated Golfkuponger server account.  
+Live verification: intentionally deferred. No Render deploy and no provider estimate/generation in B3. D2 remains the first authenticated account-scoped non-billable provider verification.  
+Known limitations: Actual END_IMAGE persistence/upload is C1/C2. Seedance Reference-to-Video and Kling O3 remain disabled. Expert model override is B4. Full Django/PostgreSQL suite must be rerun when GitHub Actions billing is restored.  
+PR: #38  
+Deploy: none  
+Next exact task: C1
 
 ---
 
@@ -989,7 +998,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task B3 — Make Higgsfield request compilation mode-aware and add verified Seedance 2.5/2.0 to the existing Auto router without breaking current Kling behavior.**
+> **Task C1 — Add the canonical typed MediaGenerationReference relation while preserving source_asset compatibility and company isolation.**
 
 Do not begin by building the timeline UI.
 

@@ -75,9 +75,29 @@ def parse_brief(request: str, *, kind: str, has_reference=False, shape="portrait
         duration = 10
 
     ratio = "9:16" if shape == "portrait" else "1:1" if shape == "square" else "16:9" if shape == "landscape" else "auto"
-    explicit = re.search(r"(?<!\d)(9\s*:\s*16|16\s*:\s*9|1\s*:\s*1|4\s*:\s*5)(?!\d)", text)
+    explicit = re.search(r"(?<!\d)(9\s*:\s*16|16\s*:\s*9|1\s*:\s*1|4\s*:\s*5|4\s*:\s*3|3\s*:\s*4|21\s*:\s*9)(?!\d)", text)
     if explicit:
         ratio = explicit.group(1).replace(" ", "")
+
+    resolution = "auto"
+    if re.search(r"(?<!\w)(?:4k|2160p)(?!\w)", folded):
+        resolution = "4k"
+    elif re.search(r"(?<!\w)(?:1080p|full\s*hd)(?!\w)", folded):
+        resolution = "1080p"
+    elif re.search(r"(?<!\w)720p(?!\w)", folded):
+        resolution = "720p"
+    elif re.search(r"(?<!\w)480p(?!\w)", folded):
+        resolution = "480p"
+
+    audio_intent = "none"
+    if kind == "video" and _contains(
+        text, "med ljud", "with audio", "generate audio", "ljudeffekt", "sound effect",
+        "sfx", "ambient sound", "bakgrundsljud", "dialogue", "dialog", "voiceover", "voice over",
+    ):
+        audio_intent = "native"
+    if _contains(text, "utan ljud", "no audio", "silent", "muted", "ljudlös", "ljudlos"):
+        audio_intent = "none"
+
     platform = "instagram_reel" if _contains(text, "reel", "instagram") and kind == "video" else "auto"
 
     camera = []
@@ -134,6 +154,8 @@ def parse_brief(request: str, *, kind: str, has_reference=False, shape="portrait
         pacing=pacing,
         duration_seconds=duration,
         aspect_ratio=ratio,
+        resolution=resolution,
+        audio_intent=audio_intent,
         reference_media=["source_asset"] if has_reference else [],
         preserve=_dedupe(preserve),
         allow_change=_dedupe(allow),
@@ -162,12 +184,71 @@ def analyze_complexity(brief: CreativeBrief) -> Complexity:
     return Complexity.simple
 
 
-def route_model(brief: CreativeBrief, complexity: Complexity) -> tuple[ModelIntelligence, ModelSelection]:
-    candidates = verified_models(brief.kind, brief.mode)
+def _brief_reference_roles(brief: CreativeBrief) -> set[ReferenceRole]:
+    """Normalize provider-neutral brief references into canonical roles.
+
+    Current production jobs only persist source_asset/START_IMAGE. C1/C2 will
+    persist typed references, but routing can already reason about future roles
+    without leaking provider field names.
+    """
+    role_map = {
+        "source_asset": ReferenceRole.start_image,
+        "start_image": ReferenceRole.start_image,
+        ReferenceRole.start_image.value: ReferenceRole.start_image,
+        "end_image": ReferenceRole.end_image,
+        ReferenceRole.end_image.value: ReferenceRole.end_image,
+        "product_reference": ReferenceRole.product_reference,
+        ReferenceRole.product_reference.value: ReferenceRole.product_reference,
+        "character_reference": ReferenceRole.character_reference,
+        ReferenceRole.character_reference.value: ReferenceRole.character_reference,
+        "location_reference": ReferenceRole.location_reference,
+        ReferenceRole.location_reference.value: ReferenceRole.location_reference,
+        "style_reference": ReferenceRole.style_reference,
+        ReferenceRole.style_reference.value: ReferenceRole.style_reference,
+        "video_reference": ReferenceRole.video_reference,
+        ReferenceRole.video_reference.value: ReferenceRole.video_reference,
+        "audio_reference": ReferenceRole.audio_reference,
+        ReferenceRole.audio_reference.value: ReferenceRole.audio_reference,
+    }
+    return {role_map[value] for value in brief.reference_media if value in role_map}
+
+
+def _hard_compatible(model: ModelIntelligence, brief: CreativeBrief, recipe=None) -> bool:
+    contract = model.request_contract(brief.mode)
+    if contract is None:
+        return False
+    available_roles = _brief_reference_roles(brief)
+    if not available_roles <= set(contract.supported_reference_roles):
+        return False
+    if not set(contract.required_reference_roles) <= available_roles:
+        return False
+    if brief.audio_intent not in {"", "none"} and (not model.audio_support or not contract.audio_parameter):
+        return False
+    if brief.resolution != "auto":
+        if not contract.resolutions or brief.resolution not in contract.resolutions:
+            return False
+    if contract.aspect_ratio_behavior == "explicit" and brief.aspect_ratio != "auto":
+        if brief.aspect_ratio not in contract.aspect_ratios:
+            return False
+    if contract.aspect_ratio_behavior == "none" and brief.aspect_ratio != "auto" and brief.kind == "video":
+        return False
+    if recipe and recipe.supported_model_families:
+        families = set(recipe.supported_model_families)
+        if model.provider not in families and model.model_id not in families:
+            return False
+    return True
+
+
+def route_model(brief: CreativeBrief, complexity: Complexity, recipe=None) -> tuple[ModelIntelligence, ModelSelection]:
+    candidates = [
+        model for model in verified_models(brief.kind, brief.mode)
+        if _hard_compatible(model, brief, recipe)
+    ]
     if not candidates:
-        raise ValueError("No verified model supports the requested media mode.")
+        raise ValueError("No verified model supports the requested media capabilities.")
 
     def score(model: ModelIntelligence):
+        contract = model.request_contract(brief.mode)
         value = model.quality_tier * (3 if brief.quality_preference == "quality" else 2)
         value += model.speed_tier * (3 if brief.speed_preference == "fast" else 1)
         value -= model.cost_tier * (3 if brief.budget_preference == "economy" else 1)
@@ -177,12 +258,24 @@ def route_model(brief: CreativeBrief, complexity: Complexity) -> tuple[ModelInte
             value += 8
         if brief.audio_intent not in {"", "none"} and model.audio_support:
             value += 8
+        if brief.resolution != "auto" and contract and brief.resolution in contract.resolutions:
+            value += 10
+        requested = brief.duration_seconds or 10
+        if requested > 10 and contract and contract.supports_duration(requested):
+            value += 12
         return value
 
     model = max(candidates, key=lambda item: (score(item), item.model_id))
     reason = ["verified_capabilities", f"complexity:{complexity.value}", f"priority:{brief.quality_preference}"]
+    contract = model.request_contract(brief.mode)
     if brief.reference_media:
-        reason.append("reference_media_supported")
+        reason.append("reference_roles_supported")
+    if brief.audio_intent not in {"", "none"}:
+        reason.append("native_audio_supported")
+    if brief.resolution != "auto":
+        reason.append(f"resolution:{brief.resolution}")
+    if (brief.duration_seconds or 10) > 10 and contract and contract.supports_duration(brief.duration_seconds or 10):
+        reason.append("requested_duration_supported")
     return model, ModelSelection(
         provider=model.provider,
         model_id=model.model_id,
@@ -206,20 +299,40 @@ def compile_parameters(brief: CreativeBrief, model: ModelIntelligence, *, count=
         return {"model": model.model_id, "count": max(1, min(int(count), 4)), "size": size,
                 "quality": {"economy": "low", "balanced": "medium", "quality": "high"}[brief.quality_preference]}, issues
 
+    contract = model.request_contract(brief.mode)
+    if contract is None or not contract.endpoint:
+        raise ValueError("The verified video model has no request contract for this mode.")
     requested = brief.duration_seconds or 10
-    if not model.durations:
-        raise ValueError("The verified video model has no known duration contract.")
-    duration = min(model.durations, key=lambda item: (abs(item - requested), -item))
+    duration = contract.normalize_duration(requested)
     if duration != requested:
-        issues.append(PreflightIssue(code="duration_normalized", severity="warning",
-                                     message=f"Requested {requested}s; verified model supports {model.durations}, so {duration}s will be used.", auto_fixed=True))
-    return {"model": model.model_id, "duration": duration}, issues
+        label = contract.durations or contract.duration_range
+        issues.append(PreflightIssue(
+            code="duration_normalized",
+            severity="warning",
+            message=f"Requested {requested}s; verified mode supports {label}, so {duration}s will be used.",
+            auto_fixed=True,
+        ))
 
-
-def _brief_reference_roles(brief: CreativeBrief) -> set[ReferenceRole]:
-    # Current production UI has one canonical source image. C1 extends this to
-    # persisted typed multi-reference relations without changing this contract.
-    return {ReferenceRole.start_image} if brief.reference_media else set()
+    params = {
+        "model": model.model_id,
+        "provider_model": contract.endpoint,
+        "duration": duration,
+        "reference_fields": {role.value: field for role, field in contract.reference_fields},
+    }
+    if contract.resolutions:
+        resolution = brief.resolution if brief.resolution != "auto" else ("720p" if "720p" in contract.resolutions else contract.resolutions[0])
+        if resolution not in contract.resolutions:
+            raise ValueError("The verified video mode does not support the requested resolution.")
+        params["resolution"] = resolution
+    if contract.aspect_ratio_behavior == "explicit" and brief.aspect_ratio != "auto":
+        if brief.aspect_ratio not in contract.aspect_ratios:
+            raise ValueError("The verified video mode does not support the requested aspect ratio.")
+        params["provider_aspect_ratio"] = brief.aspect_ratio
+    if contract.audio_parameter:
+        params[contract.audio_parameter] = brief.audio_intent not in {"", "none"}
+    if contract.output_formats:
+        params["output_format"] = "mp4" if "mp4" in contract.output_formats else contract.output_formats[0]
+    return params, issues
 
 
 def preflight(brief: CreativeBrief, model: ModelIntelligence) -> list[PreflightIssue]:
@@ -262,8 +375,13 @@ def preflight(brief: CreativeBrief, model: ModelIntelligence) -> list[PreflightI
             ))
     if brief.reference_media and not model.reference_support:
         issues.append(PreflightIssue(code="reference_unsupported", severity="error", message="Selected model does not support reference media."))
-    if brief.audio_intent not in {"", "none"} and not model.audio_support:
-        issues.append(PreflightIssue(code="audio_unsupported", severity="error", message="Selected verified model does not support requested audio."))
+    if brief.audio_intent not in {"", "none"} and (not model.audio_support or not contract or not contract.audio_parameter):
+        issues.append(PreflightIssue(code="audio_unsupported", severity="error", message="Selected verified model mode does not support requested audio."))
+    if brief.kind == "video" and contract:
+        if brief.resolution != "auto" and (not contract.resolutions or brief.resolution not in contract.resolutions):
+            issues.append(PreflightIssue(code="resolution_unsupported", severity="error", message="Selected verified model mode does not support requested resolution."))
+        if contract.aspect_ratio_behavior == "explicit" and brief.aspect_ratio != "auto" and brief.aspect_ratio not in contract.aspect_ratios:
+            issues.append(PreflightIssue(code="aspect_ratio_unsupported", severity="error", message="Selected verified model mode does not support requested aspect ratio."))
     if len(brief.temporal_sequence) > 4 and (brief.duration_seconds or 10) <= 10:
         issues.append(PreflightIssue(code="too_many_actions", severity="warning", message="The requested sequence is dense for the selected duration."))
     return issues
@@ -314,6 +432,43 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             )
         return prompt
 
+    if model.prompt_strategy == "seedance_structured":
+        sections = []
+        if _uses_prompt_section(model, "GLOBAL_STYLE"):
+            style = ", ".join(_dedupe([*brief.visual_style, brief.realism])) or "follow the requested visual style"
+            sections.append("GLOBAL STYLE: " + style + ".")
+        if _uses_prompt_section(model, "SCENE"):
+            sections.append("SCENE: " + brief.user_intent)
+        if brief.environment and _uses_prompt_section(model, "LOCATION"):
+            sections.append("LOCATION: " + brief.environment + ".")
+        if brief.reference_media and _uses_prompt_section(model, "FIRST_FRAME_BLOCKING"):
+            blocking = "Use the supplied start image as the exact opening visual anchor."
+            if brief.preserve:
+                blocking += " Preserve exactly: " + "; ".join(brief.preserve) + "."
+            sections.append("FIRST FRAME AND BLOCKING: " + blocking)
+        if _uses_prompt_section(model, "CAMERA"):
+            sections.append("CAMERA: " + (", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene") + ".")
+        if _uses_prompt_section(model, "PHYSICS"):
+            physics = "Use physically plausible continuous motion."
+            if brief.allow_change:
+                physics += " Allowed motion/change: " + "; ".join(brief.allow_change) + "."
+            if brief.forbid:
+                physics += " Avoid: " + "; ".join(brief.forbid) + "."
+            sections.append("PHYSICS: " + physics)
+        if brief.lighting and _uses_prompt_section(model, "LIGHTING"):
+            sections.append("LIGHTING: " + brief.lighting + ".")
+        if _uses_prompt_section(model, "AUDIO"):
+            sections.append("AUDIO: " + ("Generate natural audio consistent with the scene." if brief.audio_intent not in {"", "none"} else "No generated audio."))
+        if context.company_name and _uses_prompt_section(model, "BRAND_CONTEXT"):
+            sections.append("BRAND CONTEXT: " + context.company_name + ". Do not add brand text or logos unless explicitly requested.")
+        prompt = "\n".join(sections)
+        if len(prompt) > HIGGSFIELD_SAFE_PROMPT_CHARS:
+            raise ValueError(
+                f"Compiled video prompt is {len(prompt)} characters; safe provider ceiling is "
+                f"{HIGGSFIELD_SAFE_PROMPT_CHARS}. Shorten the creative description before generation."
+            )
+        return prompt
+
     if model.prompt_strategy != "natural_scene":
         raise ValueError("Selected verified model has no supported prompt compiler strategy.")
 
@@ -344,9 +499,9 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
 def build_plan(run, request: str, *, kind: str, source=None, shape="portrait", count=2, priority="balanced", inspirations=None, recipe_id=None) -> CreativePlan:
     context = build_content_context(run)
     brief = parse_brief(request, kind=kind, has_reference=bool(source), shape=shape, priority=priority)
-    _, recipe_selection = resolve_recipe(brief, recipe_id=recipe_id)
+    recipe, recipe_selection = resolve_recipe(brief, recipe_id=recipe_id)
     complexity = analyze_complexity(brief)
-    model, selection = route_model(brief, complexity)
+    model, selection = route_model(brief, complexity, recipe=recipe)
     params, normalization = compile_parameters(brief, model, count=count, shape=shape)
     issues = preflight(brief, model) + normalization
     errors = [item.message for item in issues if item.severity == "error"]

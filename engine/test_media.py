@@ -18,7 +18,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, recover_media_jobs, remove_asset, select_asset, store_asset
-from .media_providers import ProviderUnavailableError, UncertainGeneration, generate_images, higgs, start_video, upload_input
+from .media_providers import ProviderUnavailableError, UncertainGeneration, estimate_video, generate_images, higgs, start_video, upload_input
 from .media_storage import MediaError, local_path
 from .models import Company, ContentRun, MediaAsset, MediaGeneration
 
@@ -146,6 +146,9 @@ class MediaTests(TestCase):
         self.assertContains(page, "Balanserad")
         self.assertContains(page, "Spara kostnad")
         self.assertContains(page, "Stående / Reel")
+        self.assertContains(page, "Auto väljer mellan verifierade videomodeller")
+        self.assertContains(page, "Längd, upplösning och modell anpassas")
+        self.assertNotContains(page, "Prioritet ändrar ännu inte videomodell")
         self.assertNotContains(page, "Bildförslag eller 10 sekunders video")
 
         brief = '<script>alert("x")</script> Premium reel cirka 8 sekunder'
@@ -157,6 +160,7 @@ class MediaTests(TestCase):
         body = detail.content.decode()
         self.assertLess(body.index("Prompt som skickas till Higgsfield"), body.index("Starta betald generation"))
         self.assertContains(detail, "economy")
+        self.assertContains(detail, "kling-video/v2.5-turbo/pro/text-to-video")
         self.assertNotContains(detail, '<script>alert("x")</script>')
         self.assertContains(detail, '&lt;script&gt;')
         self.assertEqual(job.parameters["creative"]["brief"]["quality_preference"], "economy")
@@ -287,6 +291,99 @@ class MediaTests(TestCase):
         job.refresh_from_db()
         self.assertEqual(job.usage["estimate"]["usd"], "0.70")
         self.assertEqual(higgs.call_args_list[1].kwargs["json"], {"prompt":job.prompt, "duration":10})
+
+    @patch("engine.media_providers.higgs")
+    def test_seedance_25_t2v_estimate_uses_exact_compiled_path_and_silent_payload(self, higgs):
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            brief="Premium cinematic reel cirka 8 sekunder i 9:16",
+            priority="quality",
+        )
+        self.assertEqual(job.parameters["model"], "bytedance/seedance-2.5")
+        higgs.return_value = {"usd": "0.70", "credits": "11"}
+        model, body, _ = estimate_video(job)
+        self.assertEqual(model, "bytedance/seedance-2.5/text-to-video")
+        self.assertEqual(higgs.call_args.args[1], "/estimate/bytedance/seedance-2.5/text-to-video")
+        self.assertEqual(body["duration"], 8)
+        self.assertEqual(body["resolution"], "720p")
+        self.assertEqual(body["aspect_ratio"], "9:16")
+        self.assertFalse(body["generate_audio"])
+        self.assertEqual(body["output_format"], "mp4")
+
+    def test_seedance_25_i2v_uses_start_image_field_but_not_aspect_ratio(self):
+        source = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            source=source,
+            brief="Animera denna bild i 8 sekunder i 9:16 och behåll motivet exakt",
+            priority="quality",
+        )
+        with patch("engine.media_providers.upload_input", return_value="https://cdn.example.test/start.png") as upload:
+            with patch("engine.media_providers.higgs", return_value={"usd": "0.80", "credits": "12"}) as provider:
+                model, body, _ = estimate_video(job)
+        self.assertEqual(model, "bytedance/seedance-2.5/image-to-video")
+        self.assertEqual(body["image_url"], "https://cdn.example.test/start.png")
+        self.assertNotIn("end_image_url", body)
+        self.assertNotIn("aspect_ratio", body)
+        self.assertEqual(body["resolution"], "720p")
+        self.assertFalse(body["generate_audio"])
+        upload.assert_called_once_with(source)
+        self.assertEqual(provider.call_args.args[1], "/estimate/bytedance/seedance-2.5/image-to-video")
+
+    @patch("engine.media_providers.higgs")
+    def test_seedance_audio_intent_is_explicitly_forwarded(self, higgs):
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            brief="Skapa en 10 sekunders reel med ljud och ambient sound",
+        )
+        self.assertEqual(job.parameters["model"], "bytedance/seedance-2.5")
+        higgs.return_value = {"usd": "0.90", "credits": "14"}
+        _, body, _ = estimate_video(job)
+        self.assertTrue(body["generate_audio"])
+
+    @patch("engine.media_providers.higgs")
+    def test_seedance_20_4k_uses_exact_model_and_resolution(self, higgs):
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            brief="Skapa en 10 sekunders premiumvideo i 4K",
+        )
+        self.assertEqual(job.parameters["model"], "bytedance/seedance-2.0")
+        higgs.return_value = {"usd": "1.20", "credits": "18"}
+        model, body, _ = estimate_video(job)
+        self.assertEqual(model, "bytedance/seedance-2.0/text-to-video")
+        self.assertEqual(body["resolution"], "4k")
+        self.assertFalse(body["generate_audio"])
+
+    @patch("engine.media_providers.higgs")
+    def test_seedance_estimate_and_paid_submit_reuse_identical_body_and_path(self, higgs):
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            brief="Premium cinematic reel cirka 8 sekunder i 9:16",
+            priority="quality",
+        )
+        remote_id = str(uuid.uuid4())
+        higgs.side_effect = [
+            {"usd": "0.70", "credits": "11"},
+            {"request_id": remote_id},
+        ]
+        result, _ = start_video(job)
+        self.assertEqual(result["request_id"], remote_id)
+        estimate_call, submit_call = higgs.call_args_list
+        self.assertEqual(estimate_call.args[1], "/estimate/bytedance/seedance-2.5/text-to-video")
+        self.assertEqual(submit_call.args[1], "/bytedance/seedance-2.5/text-to-video")
+        self.assertEqual(estimate_call.kwargs["json"], submit_call.kwargs["json"])
+        self.assertFalse(submit_call.kwargs["json"]["generate_audio"])
+        self.assertTrue(submit_call.kwargs["billable"])
 
     @override_settings(HIGGSFIELD_WEBHOOK_ENABLED=True, APP_URL="https://content-engine.example")
     @patch("engine.media_providers.higgs")
