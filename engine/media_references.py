@@ -46,6 +46,8 @@ def add_generation_reference(
     role = normalize_reference_role(role)
     if isinstance(position, bool) or not isinstance(position, int) or not 0 <= position <= 32767:
         raise MediaError("Referensens position är ogiltig.")
+    if role in {ReferenceRole.start_image, ReferenceRole.end_image} and position != 0:
+        raise MediaError("START_IMAGE och END_IMAGE måste använda position 0.")
 
     with transaction.atomic():
         locked_job = (
@@ -67,6 +69,8 @@ def add_generation_reference(
             if not locked_job.source_asset_id:
                 locked_job.source_asset = locked_asset
                 locked_job.save(update_fields=["source_asset"])
+                job.source_asset = locked_asset
+                job.source_asset_id = locked_asset.pk
 
         existing = MediaGenerationReference.objects.filter(
             generation=locked_job,
@@ -101,10 +105,16 @@ def generation_reference_records(job: MediaGeneration, *, include_legacy=True) -
         }
         for ref in job.references.all()
     ]
-    has_start_zero = any(
-        row["role"] == ReferenceRole.start_image.value and row["position"] == 0
-        for row in records
+    start_zero = next(
+        (
+            row for row in records
+            if row["role"] == ReferenceRole.start_image.value and row["position"] == 0
+        ),
+        None,
     )
+    has_start_zero = start_zero is not None
+    if has_start_zero and job.source_asset_id and start_zero["asset"].pk != job.source_asset_id:
+        raise MediaError("Typed START_IMAGE och legacy source_asset är inkonsekventa.")
     if include_legacy and job.source_asset_id and not has_start_zero:
         source = job.source_asset
         if source is None:
