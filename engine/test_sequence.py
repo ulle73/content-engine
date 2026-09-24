@@ -4,6 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+import av
 from PIL import Image
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -12,7 +13,7 @@ from django.db.models.deletion import ProtectedError
 from django.test import TestCase, override_settings
 
 from .media import remove_asset, store_asset
-from .media_storage import MediaError
+from .media_storage import MediaError, open_asset
 from .models import (
     Company,
     ContentRun,
@@ -29,6 +30,7 @@ from .sequence import (
     create_sequence_project,
     prepare_anchor_chain_version,
     preview_anchor_chain_version,
+    promote_output_chain_final_frame,
     regenerate_anchor_chain_clip,
     replace_anchor_asset,
     select_clip_version,
@@ -40,6 +42,21 @@ from .sequence import (
 def picture(rgb=(24, 92, 58)):
     out = io.BytesIO()
     Image.new("RGB", (64, 96), rgb).save(out, "PNG")
+    return out.getvalue()
+
+
+def sequence_movie(colors=((0, 0, 0), (255, 255, 255))):
+    out = io.BytesIO()
+    with av.open(out, mode="w", format="mp4") as container:
+        stream = container.add_stream("libx264", rate=10)
+        stream.width, stream.height, stream.pix_fmt = 64, 96, "yuv420p"
+        for rgb in colors:
+            image = Image.new("RGB", (64, 96), rgb)
+            for _ in range(3):
+                for packet in stream.encode(av.VideoFrame.from_image(image)):
+                    container.mux(packet)
+        for packet in stream.encode():
+            container.mux(packet)
     return out.getvalue()
 
 
@@ -454,3 +471,155 @@ class SequenceEngineE1Tests(TestCase):
             prepare_anchor_chain_version(clip, token=uuid.uuid4())
         self.assertEqual(clip.versions.count(), 0)
         self.assertFalse(ContentRun.objects.filter(model="sequence-anchor-chain").exists())
+
+
+    def selected_completed_sequence_version_with_video(self, clip):
+        version = prepare_anchor_chain_version(clip, token=uuid.uuid4())
+        MediaGeneration.objects.filter(pk=version.generation_id).update(status="completed")
+        SequenceClipVersion.objects.filter(pk=version.pk).update(status="ready")
+        version.refresh_from_db()
+        version.generation.refresh_from_db()
+        video = store_asset(
+            self.company,
+            sequence_movie(),
+            job=version.generation,
+            alt_text="Sequence output",
+        )
+        select_clip_version(clip, version)
+        version.refresh_from_db()
+        return version, video
+
+    def test_e3_output_chain_requires_explicit_unlock_and_selected_completed_version(self):
+        _, k1, _, clip1, _ = self.build_three_anchor_chain()
+        version, _ = self.selected_completed_sequence_version_with_video(clip1)
+        with patch("engine.media.providers.estimate_video") as estimate, patch("engine.media.providers.start_video") as start:
+            with self.assertRaisesRegex(SequenceError, "låst"):
+                promote_output_chain_final_frame(version)
+        estimate.assert_not_called()
+        start.assert_not_called()
+        k1.refresh_from_db()
+        self.assertNotEqual(k1.source_type, "output_chain")
+
+    def test_e3_promotes_actual_final_frame_to_shared_next_anchor_with_structured_provenance(self):
+        _, k1, _, clip1, clip2 = self.build_three_anchor_chain()
+        old_asset_id = k1.asset_id
+        version, video = self.selected_completed_sequence_version_with_video(clip1)
+        set_anchor_locked(k1, False)
+
+        with patch("engine.media.providers.estimate_video") as estimate, patch("engine.media.providers.start_video") as start:
+            promoted = promote_output_chain_final_frame(version)
+        estimate.assert_not_called()
+        start.assert_not_called()
+
+        promoted.refresh_from_db()
+        clip1.refresh_from_db()
+        clip2.refresh_from_db()
+        self.assertEqual(promoted.pk, k1.pk)
+        self.assertNotEqual(promoted.asset_id, old_asset_id)
+        self.assertEqual(clip1.end_anchor_id, promoted.pk)
+        self.assertEqual(clip2.start_anchor_id, promoted.pk)
+        self.assertEqual(promoted.source_type, "output_chain")
+        self.assertEqual(promoted.source_clip_version_id, version.pk)
+        self.assertEqual(promoted.source_metadata["mode"], "output_chain")
+        self.assertEqual(promoted.source_metadata["frame_selector"], "final")
+        self.assertEqual(promoted.source_metadata["source_video_asset_id"], str(video.pk))
+        self.assertEqual(promoted.source_metadata["source_generation_id"], str(version.generation_id))
+        self.assertEqual(promoted.source_metadata["previous_anchor_asset_id"], str(old_asset_id))
+        self.assertEqual(promoted.source_metadata["derived_asset_id"], str(promoted.asset_id))
+        self.assertEqual(promoted.source_metadata["frame"]["frame_selector"], "final")
+        self.assertGreaterEqual(promoted.source_metadata["frame"]["frame_index"], 0)
+        self.assertTrue(MediaAsset.objects.filter(pk=old_asset_id).exists())
+
+        derived = promoted.asset
+        self.assertEqual(derived.kind, "image")
+        self.assertEqual(derived.origin, "generated")
+        self.assertEqual(derived.generation_id, version.generation_id)
+        self.assertIsNone(derived.expires_at)
+        with open_asset(derived) as file:
+            with Image.open(file) as image:
+                pixel = image.convert("RGB").getpixel((32, 48))
+        self.assertTrue(all(channel > 235 for channel in pixel), pixel)
+
+    def test_e3_promotion_is_idempotent_for_same_selected_version(self):
+        _, k1, _, clip1, _ = self.build_three_anchor_chain()
+        version, _ = self.selected_completed_sequence_version_with_video(clip1)
+        set_anchor_locked(k1, False)
+        first = promote_output_chain_final_frame(version)
+        asset_id = first.asset_id
+        count = MediaAsset.objects.count()
+
+        set_anchor_locked(first, True)
+        second = promote_output_chain_final_frame(version)
+        self.assertEqual(second.asset_id, asset_id)
+        self.assertEqual(MediaAsset.objects.count(), count)
+
+    def test_e3_refuses_unselected_source_version(self):
+        _, k1, _, clip1, _ = self.build_three_anchor_chain()
+        version = prepare_anchor_chain_version(clip1, token=uuid.uuid4())
+        MediaGeneration.objects.filter(pk=version.generation_id).update(status="completed")
+        SequenceClipVersion.objects.filter(pk=version.pk).update(status="ready")
+        version.refresh_from_db()
+        version.generation.refresh_from_db()
+        store_asset(self.company, sequence_movie(), job=version.generation)
+        set_anchor_locked(k1, False)
+
+        with self.assertRaisesRegex(SequenceError, "Välj clip-versionen"):
+            promote_output_chain_final_frame(version)
+
+    def test_e3_refuses_to_invalidate_selected_downstream_clip(self):
+        _, k1, _, clip1, clip2 = self.build_three_anchor_chain()
+        source_version, _ = self.selected_completed_sequence_version_with_video(clip1)
+        downstream_version = prepare_anchor_chain_version(clip2, token=uuid.uuid4())
+        MediaGeneration.objects.filter(pk=downstream_version.generation_id).update(status="completed")
+        SequenceClipVersion.objects.filter(pk=downstream_version.pk).update(status="ready")
+        downstream_version.refresh_from_db()
+        select_clip_version(clip2, downstream_version)
+        set_anchor_locked(k1, False)
+        asset_count = MediaAsset.objects.count()
+
+        with self.assertRaisesRegex(SequenceError, "efterföljande clip"):
+            promote_output_chain_final_frame(source_version)
+        self.assertEqual(MediaAsset.objects.count(), asset_count)
+        k1.refresh_from_db()
+        self.assertNotEqual(k1.source_type, "output_chain")
+
+    def test_e3_refuses_promotion_when_end_anchor_is_not_next_clip_start(self):
+        k0 = add_anchor(self.project, self.asset(), position=0, locked=False)
+        k1 = add_anchor(self.project, self.asset((60, 120, 70)), position=1, locked=False)
+        clip = create_clip(
+            self.project,
+            k0,
+            k1,
+            position=0,
+            recipe_id="scroll_transition_bridge",
+        )
+        version, _ = self.selected_completed_sequence_version_with_video(clip)
+        with self.assertRaisesRegex(SequenceError, "efterföljande clip"):
+            promote_output_chain_final_frame(version)
+
+    def test_e3_old_downstream_candidate_becomes_stale_without_being_deleted(self):
+        _, k1, _, clip1, clip2 = self.build_three_anchor_chain()
+        source_version, _ = self.selected_completed_sequence_version_with_video(clip1)
+        old_downstream = prepare_anchor_chain_version(clip2, token=uuid.uuid4())
+        old_generation_id = old_downstream.generation_id
+        set_anchor_locked(k1, False)
+
+        promote_output_chain_final_frame(source_version)
+
+        self.assertTrue(SequenceClipVersion.objects.filter(pk=old_downstream.pk).exists())
+        self.assertTrue(MediaGeneration.objects.filter(pk=old_generation_id).exists())
+        with patch("engine.sequence.preview_job") as preview:
+            with self.assertRaisesRegex(SequenceError, "anchors har ändrats"):
+                preview_anchor_chain_version(old_downstream)
+        preview.assert_not_called()
+
+    def test_e3_output_chain_anchor_validation_requires_source_and_final_frame_metadata(self):
+        asset = self.asset()
+        with self.assertRaises(ValidationError):
+            SequenceAnchor(
+                project=self.project,
+                position=9,
+                asset=asset,
+                source_type="output_chain",
+                source_metadata={"mode": "output_chain", "frame_selector": "final"},
+            ).save()
