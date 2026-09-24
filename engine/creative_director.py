@@ -504,7 +504,7 @@ def build_plan(run, request: str, *, kind: str, source=None, end_source=None, sh
     if source:
         references.append("source_asset")
     if end_source:
-        references.append("end_image")
+        references.append(ReferenceRole.end_image.value)
     brief = parse_brief(request, kind=kind, has_reference=bool(source), reference_media=references, shape=shape, priority=priority)
     recipe, recipe_selection = resolve_recipe(brief, recipe_id=recipe_id)
     complexity = analyze_complexity(brief)
