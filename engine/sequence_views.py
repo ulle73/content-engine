@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import SequenceBridge, SequenceClip, SequenceProject
+from .models import SequenceProject
 from .ownership import company_required
 from .sequence import SequenceError, create_sequence_project
 
@@ -72,6 +72,9 @@ def sequence_list(request, workspace_id):
             messages.error(request, str(exc))
 
     projects = list(_project_queryset(request.workspace))
+    for project in projects:
+        project.format_label = FORMAT_CHOICES.get(project.format, project.format or "Ej angivet")
+        project.platform_label = PLATFORM_CHOICES.get(project.platform, project.platform or "Ej angivet")
     return render(
         request,
         "engine/sequence_list.html",
@@ -152,6 +155,7 @@ def sequence_workspace(request, workspace_id, project_id):
             "bridges": bridges,
             "timeline": timeline,
             "candidate_count": candidate_count,
+            "segment_count": len(clips) + len(bridges),
             "format_label": FORMAT_CHOICES.get(project.format, project.format or "Ej angivet"),
             "platform_label": PLATFORM_CHOICES.get(project.platform, project.platform or "Ej angivet"),
         },
