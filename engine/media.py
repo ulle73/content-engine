@@ -102,7 +102,7 @@ def default_brief(run, kind):
             "Skapa en enkel visuell sekvens i stående format. Undvik påhittade resultat och siffror.")
 
 
-def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced"):
+def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced", recipe_id=None):
     check_storage()
     if kind not in {"image", "video"} or not brief.strip() or len(brief) > 6000:
         raise MediaError("Beskrivningen behövs och får vara högst 6000 tecken.")
@@ -144,7 +144,7 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         inspirations = retrieve_inspiration(company.owner, company.pk, brief, limit=3)
         try:
             plan = build_plan(locked, brief, kind=kind, source=source, end_source=end_source, shape=shape, count=count,
-                              priority=priority, inspirations=inspirations)
+                              priority=priority, inspirations=inspirations, recipe_id=recipe_id)
         except ValueError as exc:
             raise MediaError("Kreativ kontroll stoppade generationen: " + str(exc)) from exc
 

@@ -22,7 +22,7 @@ from django.utils import timezone
 from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, preview_job, recover_media_jobs, remove_asset, select_asset, start_reviewed_job, store_asset
 from .media_providers import ProviderUnavailableError, UncertainGeneration, estimate_video, generate_images, higgs, start_video, upload_input
 from .media_storage import MediaError, local_path
-from .creative_core import ReferenceRole
+from .creative_core import EvidenceLevel, ReferenceRole
 from .media_references import add_generation_reference, reference_asset, serialize_generation_references
 from .models import Company, ContentRun, MediaAsset, MediaGeneration, MediaGenerationReference
 
@@ -131,6 +131,44 @@ class MediaTests(TestCase):
         self.assertEqual(refs[ReferenceRole.end_image.value], end.pk)
         self.assertIn("END_IMAGE", job.parameters["creative"]["brief"]["reference_media"])
         self.assertIn("END FRAME:", job.prompt)
+
+    def test_generic_start_end_video_does_not_inherit_scroll_recipe_rules(self):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            source=start,
+            end_source=end,
+            brief="Skapa en lugn övergång mellan bilderna",
+        )
+        self.assertEqual(job.parameters["creative"]["recipe"]["recipe_id"], "generic_video")
+        self.assertNotIn("FORMAT MODE: Single continuous shot.", job.prompt)
+        self.assertNotIn("CONTINUITY:", job.prompt)
+        self.assertIn("Avoid:", job.prompt)
+
+    def test_scroll_transition_bridge_recipe_is_persisted_on_media_job(self):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            source=start,
+            end_source=end,
+            brief="Bridge these anchors as a calm cinematic scroll transition with no audio",
+            recipe_id="scroll_transition_bridge",
+        )
+        recipe = job.parameters["creative"]["recipe"]
+        self.assertEqual(recipe["recipe_id"], "scroll_transition_bridge")
+        self.assertEqual(recipe["version"], "1.0.0")
+        self.assertEqual(recipe["evidence_level"], EvidenceLevel.official.value)
+        self.assertEqual(job.parameters["provider_model"], "bytedance/seedance-2.5/image-to-video")
+        self.assertIn("FORMAT MODE: Single continuous shot.", job.prompt)
+        self.assertIn("END FRAME:", job.prompt)
+        self.assertIn("FORBID:", job.prompt)
+        self.assertIn("No generated audio.", job.prompt)
 
     def test_end_frame_requires_start_and_same_company(self):
         end = store_asset(self.company, picture())

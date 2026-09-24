@@ -397,7 +397,7 @@ def _uses_prompt_section(model: ModelIntelligence, section: str) -> bool:
     return section in model.prompt_sections
 
 
-def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelIntelligence, inspirations: list[dict]) -> str:
+def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelIntelligence, inspirations: list[dict], recipe=None) -> str:
     inspiration = []
     for item in inspirations[:MAX_INSPIRATION]:
         inspiration.extend(item.get("mechanisms", [])[:6])
@@ -408,6 +408,8 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         sections = []
         if _uses_prompt_section(model, "SCENE"):
             sections.append("SCENE: " + brief.user_intent)
+        if recipe and recipe.recipe_id == "scroll_transition_bridge":
+            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene changes. Prioritize continuity over spectacle.")
         if _uses_prompt_section(model, "CAMERA"):
             sections.append("CAMERA: " + (", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"))
         if brief.aspect_ratio != "auto" and _uses_prompt_section(model, "FORMAT_INTENT"):
@@ -441,6 +443,8 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             sections.append("GLOBAL STYLE: " + style + ".")
         if _uses_prompt_section(model, "SCENE"):
             sections.append("SCENE: " + brief.user_intent)
+        if recipe and recipe.recipe_id == "scroll_transition_bridge":
+            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene changes. Prioritize continuity over spectacle.")
         if brief.environment and _uses_prompt_section(model, "LOCATION"):
             sections.append("LOCATION: " + brief.environment + ".")
         if brief.reference_media and _uses_prompt_section(model, "FIRST_FRAME_BLOCKING"):
@@ -451,13 +455,25 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         if ReferenceRole.end_image in _brief_reference_roles(brief) and _uses_prompt_section(model, "END_FRAME"):
             sections.append("END FRAME: Use the supplied end image as the exact closing visual anchor and arrive there naturally.")
         if _uses_prompt_section(model, "CAMERA"):
-            sections.append("CAMERA: " + (", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene") + ".")
+            camera_text = ", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene"
+            if recipe and recipe.camera_strategy:
+                camera_text += " " + " ".join(recipe.camera_strategy[:2])
+            sections.append("CAMERA: " + camera_text + ".")
         if _uses_prompt_section(model, "PHYSICS"):
             physics = "Use physically plausible continuous motion."
             if brief.allow_change:
                 physics += " Allowed motion/change: " + "; ".join(brief.allow_change) + "."
-            if brief.forbid:
-                physics += " Avoid: " + "; ".join(brief.forbid) + "."
+            if recipe and recipe.motion_strategy:
+                physics += " " + " ".join(recipe.motion_strategy[:2])
+            if recipe and recipe.continuity_strategy:
+                physics += " CONTINUITY: " + " ".join(recipe.continuity_strategy[:2])
+            forbidden = list(brief.forbid)
+            recipe_forbidden = list(recipe.negative_constraints) if recipe and recipe.negative_constraints else []
+            forbidden.extend(recipe_forbidden)
+            forbidden = _dedupe(forbidden)
+            if forbidden:
+                label = "FORBID" if recipe_forbidden else "Avoid"
+                physics += " " + label + ": " + "; ".join(forbidden) + "."
             sections.append("PHYSICS: " + physics)
         if brief.lighting and _uses_prompt_section(model, "LIGHTING"):
             sections.append("LIGHTING: " + brief.lighting + ".")
@@ -517,7 +533,7 @@ def build_plan(run, request: str, *, kind: str, source=None, end_source=None, sh
     if errors:
         raise ValueError(" ".join(errors))
     inspirations = inspirations or []
-    prompt = compile_prompt(brief, context, model, inspirations)
+    prompt = compile_prompt(brief, context, model, inspirations, recipe=recipe)
     return CreativePlan(
         brief=brief,
         context=context,
