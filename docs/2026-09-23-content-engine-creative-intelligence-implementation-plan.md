@@ -577,6 +577,8 @@ Goal: add a reusable project layer for reels, ads, product films and scroll expe
 
 ## Task E1 — Sequence domain/schema
 
+Execution ledger: `docs/2026-09-24-sequence-engine-e1-implementation-plan.md`
+
 - [ ] Add `SequenceProject`.
 - [ ] Add `SequenceAnchor`.
 - [ ] Add `SequenceClip`.

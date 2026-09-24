@@ -250,6 +250,210 @@ class MediaGenerationReference(models.Model):
         ordering = ["role", "position", "id"]
 
 
+class SequenceProject(models.Model):
+    """Company-scoped container for one connected creative sequence."""
+
+    STATUS_CHOICES = [
+        ("draft", "Draft"),
+        ("active", "Active"),
+        ("approved", "Approved"),
+        ("archived", "Archived"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sequence_projects")
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="sequence_projects"
+    )
+    title = models.CharField(max_length=200)
+    brief = models.TextField(blank=True)
+    goal = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
+    format = models.CharField(max_length=40, blank=True)
+    platform = models.CharField(max_length=40, blank=True)
+    blueprint_id = models.CharField(max_length=80, blank=True)
+    blueprint_version = models.CharField(max_length=40, blank=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at", "-created_at"]
+        indexes = [
+            models.Index(fields=["company", "status", "updated_at"], name="seq_project_company_idx"),
+        ]
+
+
+class SequenceAnchor(models.Model):
+    """Canonical visual keyframe. The MediaAsset is the source of visual truth."""
+
+    SOURCE_CHOICES = [
+        ("existing", "Existing asset"),
+        ("uploaded", "Uploaded"),
+        ("generated", "Generated"),
+        ("clip_frame", "Clip frame"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(SequenceProject, on_delete=models.CASCADE, related_name="anchors")
+    position = models.PositiveIntegerField()
+    asset = models.ForeignKey(MediaAsset, on_delete=models.PROTECT, related_name="sequence_anchors")
+    label = models.CharField(max_length=120, blank=True)
+    role = models.CharField(max_length=40, blank=True)
+    locked = models.BooleanField(default=False)
+    source_type = models.CharField(max_length=20, choices=SOURCE_CHOICES, default="existing")
+    source_clip_version = models.ForeignKey(
+        "SequenceClipVersion", null=True, blank=True, on_delete=models.SET_NULL, related_name="promoted_anchors"
+    )
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        super().clean()
+        if self.asset_id and self.project_id:
+            if self.asset.company_id != self.project.company_id:
+                raise ValidationError("Sequence anchor asset must belong to the project company.")
+            if self.asset.kind != "image" or self.asset.purpose == "logo":
+                raise ValidationError("Sequence anchors must use non-logo image assets.")
+        if self.source_clip_version_id and self.project_id:
+            if self.source_clip_version.clip.project_id != self.project_id:
+                raise ValidationError("Anchor source clip version must belong to the same project.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["position", "created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["project", "position"], name="uniq_seq_anchor_pos"),
+        ]
+        indexes = [
+            models.Index(fields=["project", "locked", "position"], name="seq_anchor_project_idx"),
+        ]
+
+
+class SequenceClip(models.Model):
+    """Logical clip between two canonical anchors."""
+
+    STATUS_CHOICES = [
+        ("draft", "Draft"),
+        ("generating", "Generating"),
+        ("review", "Review"),
+        ("selected", "Selected"),
+        ("approved", "Approved"),
+        ("archived", "Archived"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(SequenceProject, on_delete=models.CASCADE, related_name="clips")
+    position = models.PositiveIntegerField()
+    start_anchor = models.ForeignKey(
+        SequenceAnchor, on_delete=models.RESTRICT, related_name="starting_clips"
+    )
+    end_anchor = models.ForeignKey(
+        SequenceAnchor, on_delete=models.RESTRICT, related_name="ending_clips"
+    )
+    label = models.CharField(max_length=120, blank=True)
+    recipe_id = models.CharField(max_length=80)
+    recipe_version = models.CharField(max_length=40)
+    model_override = models.CharField(max_length=120, blank=True)
+    duration_seconds_target = models.PositiveSmallIntegerField(null=True, blank=True)
+    aspect_ratio = models.CharField(max_length=20, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
+    selected_version = models.ForeignKey(
+        "SequenceClipVersion", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        super().clean()
+        if self.project_id and self.start_anchor_id:
+            if self.start_anchor.project_id != self.project_id:
+                raise ValidationError("Start anchor must belong to the clip project.")
+        if self.project_id and self.end_anchor_id:
+            if self.end_anchor.project_id != self.project_id:
+                raise ValidationError("End anchor must belong to the clip project.")
+        if self.start_anchor_id and self.end_anchor_id:
+            if self.start_anchor.position >= self.end_anchor.position:
+                raise ValidationError("Sequence clip start anchor must precede end anchor.")
+        if self.selected_version_id and self.pk:
+            if self.selected_version.clip_id != self.pk:
+                raise ValidationError("Selected version must belong to this clip.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["position", "created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["project", "position"], name="uniq_seq_clip_pos"),
+            models.CheckConstraint(
+                condition=~models.Q(start_anchor=models.F("end_anchor")),
+                name="seq_clip_distinct_anchors",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["project", "status", "position"], name="seq_clip_project_idx"),
+        ]
+
+
+class SequenceClipVersion(models.Model):
+    """Immutable-ish generation candidate snapshot for one logical SequenceClip."""
+
+    STATUS_CHOICES = [
+        ("queued", "Queued"),
+        ("ready", "Ready"),
+        ("selected", "Selected"),
+        ("rejected", "Rejected"),
+        ("failed", "Failed"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    clip = models.ForeignKey(SequenceClip, on_delete=models.CASCADE, related_name="versions")
+    version_number = models.PositiveIntegerField()
+    generation = models.OneToOneField(
+        MediaGeneration, on_delete=models.PROTECT, related_name="sequence_clip_version"
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="queued")
+    recipe_id = models.CharField(max_length=80)
+    recipe_version = models.CharField(max_length=40)
+    model_id = models.CharField(max_length=120, blank=True)
+    provider_model = models.CharField(max_length=180, blank=True)
+    prompt_snapshot = models.TextField(blank=True)
+    reference_snapshot = models.JSONField(default=list)
+    usage_snapshot = models.JSONField(default=dict)
+    cost_snapshot = models.JSONField(default=dict)
+    review_notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+        super().clean()
+        if self.clip_id and self.generation_id:
+            if self.generation.run.workspace_id != self.clip.project.company_id:
+                raise ValidationError("Sequence clip generation must belong to the project company.")
+            if self.generation.kind != "video":
+                raise ValidationError("Sequence clip versions must reference video generations.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["version_number", "created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["clip", "version_number"], name="uniq_seq_version_num"),
+            models.CheckConstraint(condition=models.Q(version_number__gte=1), name="seq_version_num_gte_1"),
+        ]
+        indexes = [
+            models.Index(fields=["clip", "status", "version_number"], name="seq_version_clip_idx"),
+        ]
+
+
 class DailyRun(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     day = models.DateField(unique=True)
