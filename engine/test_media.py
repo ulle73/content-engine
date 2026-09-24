@@ -132,6 +132,28 @@ class MediaTests(TestCase):
         self.assertIn("END_IMAGE", job.parameters["creative"]["brief"]["reference_media"])
         self.assertIn("END FRAME:", job.prompt)
 
+    def test_scroll_transition_bridge_recipe_is_persisted_on_media_job(self):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            source=start,
+            end_source=end,
+            brief="Bridge these anchors as a calm cinematic scroll transition with no audio",
+            recipe_id="scroll_transition_bridge",
+        )
+        recipe = job.parameters["creative"]["recipe"]
+        self.assertEqual(recipe["recipe_id"], "scroll_transition_bridge")
+        self.assertEqual(recipe["version"], "1.0.0")
+        self.assertEqual(recipe["evidence_level"], "official")
+        self.assertEqual(job.parameters["provider_model"], "bytedance/seedance-2.5/image-to-video")
+        self.assertIn("FORMAT MODE: Single continuous shot.", job.prompt)
+        self.assertIn("END FRAME:", job.prompt)
+        self.assertIn("FORBID:", job.prompt)
+        self.assertIn("No generated audio.", job.prompt)
+
     def test_end_frame_requires_start_and_same_company(self):
         end = store_asset(self.company, picture())
         with self.assertRaisesRegex(MediaError, "startbild"):
