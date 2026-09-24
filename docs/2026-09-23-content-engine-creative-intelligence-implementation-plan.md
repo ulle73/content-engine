@@ -796,7 +796,7 @@ Goal: make a loose prompt powerful enough for non-experts.
 
 ## Task G1 — Sequence planner
 
-- [ ] Loose brief can produce proposed:
+- [x] Loose brief can produce proposed:
   - number of scenes,
   - narrative progression,
   - recipe per scene/transition,
@@ -804,8 +804,8 @@ Goal: make a loose prompt powerful enough for non-experts.
   - required references,
   - model capability requirements,
   - draft/final plan.
-- [ ] Company facts remain grounded in current verified context.
-- [ ] User can edit before any paid media generation.
+- [x] Company facts remain grounded in current verified context.
+- [x] User can edit before any paid media generation.
 
 ### Acceptance criteria
 
@@ -813,7 +813,28 @@ Goal: make a loose prompt powerful enough for non-experts.
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — a versioned, editable and media-provider-free Sequence planning layer is merged and live.
+
+Files changed: `engine/models.py`, `engine/migrations/0019_sequence_planner_g1.py`, new `engine/sequence_planner.py`, `engine/sequence_views.py`, `engine/urls.py`, `templates/engine/sequence_workspace.html`, `engine/static/css/sequence-screen.css`, and new `engine/test_sequence_g1.py`.
+
+What changed: `SequenceProject` now persists a structured plan, revision number, text-planner usage metadata and generated timestamp. A loose project brief is converted into an editable Draft blueprint containing scene count, narrative progression, canonical anchor descriptions, scene purposes/narratives/durations, transition intent, trusted recipe metadata, required reference roles, verified model-capability requirements and currently eligible verified model ids. The text model proposes only story structure; trusted recipes, references and model eligibility are compiled locally from the existing Creative Recipe registry and existing single model-routing/capability architecture. No second router was added. Users can edit the structured plan and explicitly mark it Draft or Final before any media production. Trusted recipe/model fields are not accepted from edits and are rebuilt locally. Stale concurrent edits fail closed.
+
+Grounding: The planner receives current `Company.profile` and `Company.current` as reference-only fact sources. Any explicit company fact reference returned by the planner must quote the corresponding current field verbatim; an unverified quote fails the whole plan before persistence. If the factual source is insufficient, the prompt instructs the planner to remain visual/generic and record an assumption instead of inventing a claim.
+
+Tests: Final clean PR CI run `36063147228` passed on exact head `3d6b796f850738b395f86b8eb8e64a30bc7e3e1e`: standard `verify` ran 376 tests in 33.229s, `OK (skipped=2)`; PostgreSQL ran 376 tests in 20.804s, `OK`. Migration drift, migration execution, Django checks, MCP checks, collectstatic and import/compile gates also passed. G1 regression coverage verifies the required 4-scene/5-anchor acceptance example, exact fact-reference grounding, fail-closed scene-count mismatch, trusted-metadata preservation/recomputation on edit, optimistic revision locking, company scoping, editable UI and zero `MediaGeneration` creation/provider-media calls from planning.
+
+UI verification: Real Chromium run `36062886046` passed on audit head `b9020502ccbd2dec8de8fa7e284a0e5ed3bf96a9` at 1440×1100 desktop and 390×844 mobile. It verified 4 scenes + 5 anchors, planner placement before production controls, no document/body horizontal overflow, one-column mobile scene reflow, 44 px primary mobile actions, and a real edit flow from Draft V1 to Final V2 after reload. Screenshot artifact: `10835271530` (`sequence-g1-screenshots`). The temporary Playwright workflow/harness was removed before the final clean CI run.
+
+Official/provider evidence: G1 changes no image/video provider contract and enables no new media model, so no new Higgsfield contract verification was required. It reuses the existing trusted Creative Recipe/model capability registries and the existing structured OpenRouter text adapter. Provider media estimate/submit code is never called by the planner.
+
+Live verification: PR #65 was squash-merged as `8324fd96c49ef3050ff940a05aee3fe045c530fb`. `feature/chatgpt-content-engine-mcp` was fast-forwarded to the same code commit and Render deploy `dep-daqpjhvlk1mc73ekupl0` completed `live` on that exact commit. Render reported build success; new instance `srv-daj9cfgae00c7392t5c0-8mr4k` applied `engine.0019_sequence_planner_g1... OK`, started the StreamableHTTP session manager and Uvicorn successfully, and returned `GET /healthz ... 200 OK`. Post-startup log review found no `error` or `critical` entries. Zero paid media generations or media-provider estimates were started for G1.
+
+Known limitations: G1 stores and edits the production blueprint only; it intentionally does not materialize proposed anchors or create clips. AI anchor materialization is G2. The planner's trusted recipe policy is deterministic from Sequence format for this workflow; broader automatic semantic recipe selection from arbitrary loose media briefs remains the separate A2 task. Company fact references are mechanically source-validated, while the planner prompt is also responsible for avoiding unsupported factual claims elsewhere in purely visual narrative text.
+
+Commit: `8324fd96c49ef3050ff940a05aee3fe045c530fb`  
+PR: #65  
+Deploy: `dep-daqpjhvlk1mc73ekupl0`  
+Next exact task: G2 — AI anchor generation.
 
 ---
 
@@ -1106,7 +1127,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task G1 — Sequence planner.**
+> **Task G2 — AI anchor generation.**
 
-Implement the editable, non-billable planning layer that turns a loose sequence brief into proposed scenes, narrative progression, per-scene/transition recipe intent, anchor descriptions, required references, model capability requirements and a draft/final plan. Keep company facts grounded in current verified context, reuse the existing Creative Director/Sequence architecture rather than adding a parallel router, and stop before any paid media generation.
+Materialize the G1 blueprint's proposed anchors through the existing image-generation review pipeline, preserving required company/product references when applicable. Let the user replace or upload anchors explicitly, keep canonical anchor/version history intact, and do not allow video generation until the required anchors for the planned sequence exist.
 
