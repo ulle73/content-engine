@@ -875,8 +875,8 @@ def attach_generation_to_clip(
         raise SequenceError("Generationens företag matchar inte sequence-projektet.")
     if generation.kind != "video":
         raise SequenceError("Sequence clips kan bara kopplas till videogenerationer.")
-    if hasattr(generation, "sequence_clip_version"):
-        raise SequenceError("Generationens provenance är redan kopplad till en clip-version.")
+    if hasattr(generation, "sequence_clip_version") or hasattr(generation, "sequence_bridge_version"):
+        raise SequenceError("Generationens provenance är redan kopplad till Sequence Engine.")
 
     creative = (generation.parameters or {}).get("creative") or {}
     recipe = creative.get("recipe") if isinstance(creative, dict) else {}
