@@ -11,7 +11,7 @@
       {% if run.delivery_status == 'draft' %}<form method="post" action="{% url 'engine:media_use' workspace_id=workspace.pk run_id=run.pk asset_id=asset.pk %}">{% csrf_token %}<button>Använd</button></form>{% endif %}
       <a class="button button-secondary" href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" target="_blank" rel="noopener">Öppna</a>
     </div>
-    {% if asset.kind == 'image' and run.delivery_status == 'draft' %}<div class="media-quick-actions"><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=image#generate">Gör variant</a><span>·</span><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=video#generate">Animera</a></div>{% endif %}
+    {% if asset.kind == 'image' and run.delivery_status == 'draft' %}<div class="media-quick-actions"><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=image#generate">Gör variant</a><span>·</span><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=video#generate">Animera</a>{% if kind == 'video' and source and asset.pk != source.pk %}<span>·</span><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ source.pk }}&end_source={{ asset.pk }}&kind=video#generate">Som slutbild</a>{% endif %}</div>{% endif %}
     {% if not asset.used_at %}<form class="media-delete-form" method="post" action="{% url 'engine:media_delete' workspace_id=workspace.pk run_id=run.pk asset_id=asset.pk %}">{% csrf_token %}<button class="quiet button-danger">Ta bort oanvänd media</button></form>{% endif %}
   </div>
 </article>

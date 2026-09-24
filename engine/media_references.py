@@ -1,6 +1,9 @@
 """Canonical provider-neutral references for media generation."""
 from __future__ import annotations
 
+import hashlib
+import json
+
 from django.db import transaction
 
 from .creative_core import ReferenceRole
@@ -79,6 +82,22 @@ def reference_asset(
     return None
 
 
+def generation_reference_signature(generation: MediaGeneration) -> str:
+    """Stable digest of reference identity/content, independent of provider upload URLs."""
+    payload = [
+        {
+            "role": row["role"],
+            "position": row["position"],
+            "asset_id": row["asset_id"],
+            "sha256": row["sha256"],
+            "available": row["available"],
+        }
+        for row in serialize_generation_references(generation)
+    ]
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode()).hexdigest()
+
+
 def serialize_generation_references(generation: MediaGeneration) -> list[dict]:
     """Safe provenance for UI/MCP; no provider URLs or storage keys."""
     rows = list(generation.references.select_related("asset").all())
@@ -115,6 +134,7 @@ def serialize_generation_references(generation: MediaGeneration) -> list[dict]:
 __all__ = [
     "add_generation_reference",
     "ensure_source_reference",
+    "generation_reference_signature",
     "reference_asset",
     "serialize_generation_references",
 ]

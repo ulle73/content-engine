@@ -57,11 +57,13 @@ def _dedupe(values):
     return list(dict.fromkeys(v for v in values if v))
 
 
-def parse_brief(request: str, *, kind: str, has_reference=False, shape="portrait", priority="balanced") -> CreativeBrief:
+def parse_brief(request: str, *, kind: str, has_reference=False, reference_media=None, shape="portrait", priority="balanced") -> CreativeBrief:
     if not isinstance(request, str) or not request.strip() or len(request) > 6000:
         raise ValueError("Creative request must contain 1-6000 characters.")
     text = request.strip()
     folded = text.casefold()
+    reference_media = list(reference_media or (["source_asset"] if has_reference else []))
+    has_reference = bool(reference_media)
     mode = ("image-to-video" if kind == "video" else "image-to-image") if has_reference else ("text-to-video" if kind == "video" else "text-to-image")
 
     duration = None
@@ -156,7 +158,7 @@ def parse_brief(request: str, *, kind: str, has_reference=False, shape="portrait
         aspect_ratio=ratio,
         resolution=resolution,
         audio_intent=audio_intent,
-        reference_media=["source_asset"] if has_reference else [],
+        reference_media=reference_media,
         preserve=_dedupe(preserve),
         allow_change=_dedupe(allow),
         forbid=_dedupe(forbid),
@@ -446,6 +448,8 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             if brief.preserve:
                 blocking += " Preserve exactly: " + "; ".join(brief.preserve) + "."
             sections.append("FIRST FRAME AND BLOCKING: " + blocking)
+        if ReferenceRole.end_image in _brief_reference_roles(brief) and _uses_prompt_section(model, "END_FRAME"):
+            sections.append("END FRAME: Use the supplied end image as the exact closing visual anchor and arrive there naturally.")
         if _uses_prompt_section(model, "CAMERA"):
             sections.append("CAMERA: " + (", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene") + ".")
         if _uses_prompt_section(model, "PHYSICS"):
@@ -496,9 +500,14 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
     return "\n".join(sections)
 
 
-def build_plan(run, request: str, *, kind: str, source=None, shape="portrait", count=2, priority="balanced", inspirations=None, recipe_id=None) -> CreativePlan:
+def build_plan(run, request: str, *, kind: str, source=None, end_source=None, shape="portrait", count=2, priority="balanced", inspirations=None, recipe_id=None) -> CreativePlan:
     context = build_content_context(run)
-    brief = parse_brief(request, kind=kind, has_reference=bool(source), shape=shape, priority=priority)
+    references = []
+    if source:
+        references.append("source_asset")
+    if end_source:
+        references.append(ReferenceRole.end_image.value)
+    brief = parse_brief(request, kind=kind, has_reference=bool(source), reference_media=references, shape=shape, priority=priority)
     recipe, recipe_selection = resolve_recipe(brief, recipe_id=recipe_id)
     complexity = analyze_complexity(brief)
     model, selection = route_model(brief, complexity, recipe=recipe)

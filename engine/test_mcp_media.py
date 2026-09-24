@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -5,6 +6,7 @@ from django.test import TestCase
 
 from .mcp_operations import cancel_generation, list_recent_generations, serialize_generation
 from .media import create_job, store_asset
+from .operator_media import start_media_generation
 from .creative_core import ReferenceRole
 from .media_references import add_generation_reference
 from .models import Company, ContentRun, MediaGeneration
@@ -42,6 +44,27 @@ class MCPMediaOperationTests(TestCase):
         self.assertEqual(data["diagnostics"]["references"][0]["role"], ReferenceRole.style_reference.value)
         self.assertEqual(data["diagnostics"]["references"][0]["asset_id"], str(reference.pk))
         self.assertNotIn("storage_key", data["diagnostics"]["references"][0])
+
+    def test_operator_media_accepts_company_scoped_end_frame(self):
+        from .test_media import picture
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        with patch(
+            "engine.media.providers.start_video",
+            return_value=({"request_id": str(uuid.uuid4())}, {"estimate": {"usd": "0.80"}}),
+        ):
+            job = start_media_generation(
+                self.run,
+                kind="video",
+                brief="Skapa en 8 sekunders övergång",
+                source_asset_id=str(start.pk),
+                end_asset_id=str(end.pk),
+            )
+        self.assertEqual(
+            job.references.get(role=ReferenceRole.end_image.value).asset_id,
+            end.pk,
+        )
+        self.assertIn("end_image_url", job.parameters["reference_fields"].values())
 
     def test_recent_generations_are_company_scoped_and_bounded(self):
         own = self.job()

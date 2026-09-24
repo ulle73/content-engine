@@ -18,7 +18,8 @@ from . import media_providers as providers
 from .creative_director import build_plan
 from .prompt_library import retrieve_inspiration
 from .media_storage import MediaError, check_storage, delete_file, put
-from .media_references import ensure_source_reference
+from .creative_core import ReferenceRole
+from .media_references import add_generation_reference, ensure_source_reference, generation_reference_signature
 from .models import Company, ContentEvent, ContentRun, MediaAsset, MediaGeneration
 
 PENDING = ("queued", "starting", "running", "saving")
@@ -101,7 +102,7 @@ def default_brief(run, kind):
             "Skapa en enkel visuell sekvens i stående format. Undvik påhittade resultat och siffror.")
 
 
-def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, include_logo=False, priority="balanced"):
+def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced"):
     check_storage()
     if kind not in {"image", "video"} or not brief.strip() or len(brief) > 6000:
         raise MediaError("Beskrivningen behövs och får vara högst 6000 tecken.")
@@ -109,6 +110,10 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         raise MediaError("Välj Bäst resultat, Balanserad eller Spara kostnad.")
     if source and (source.company_id != run.workspace_id or source.kind != "image" or source.purpose == "logo"):
         raise MediaError("Startbilden ska tillhöra företaget.")
+    if end_source and (kind != "video" or end_source.company_id != run.workspace_id or end_source.kind != "image" or end_source.purpose == "logo"):
+        raise MediaError("Slutbilden ska vara en vanlig bild som tillhör företaget och används för video.")
+    if end_source and not source:
+        raise MediaError("Välj en startbild innan du väljer en slutbild.")
     if not run.draft or run.delivery_status != "draft":
         raise MediaError("Skapa ett redigerbart utkast innan du väljer media.")
     with transaction.atomic():
@@ -129,12 +134,16 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
             source = MediaAsset.objects.select_for_update().get(pk=source.pk)
             if source.expires_at and source.expires_at <= timezone.now():
                 raise MediaError("Startbildens förhandsvisning har gått ut.")
+        if end_source:
+            end_source = MediaAsset.objects.select_for_update().get(pk=end_source.pk)
+            if end_source.expires_at and end_source.expires_at <= timezone.now():
+                raise MediaError("Slutbildens förhandsvisning har gått ut.")
 
         # Prompt Library is untrusted inspiration only. Retrieval is company scoped
         # and bounded, and its raw prompt text is never copied into the provider prompt.
         inspirations = retrieve_inspiration(company.owner, company.pk, brief, limit=3)
         try:
-            plan = build_plan(locked, brief, kind=kind, source=source, shape=shape, count=count,
+            plan = build_plan(locked, brief, kind=kind, source=source, end_source=end_source, shape=shape, count=count,
                               priority=priority, inspirations=inspirations)
         except ValueError as exc:
             raise MediaError("Kreativ kontroll stoppade generationen: " + str(exc)) from exc
@@ -169,6 +178,8 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         )
         if source:
             ensure_source_reference(job)
+        if end_source:
+            add_generation_reference(job, end_source, ReferenceRole.end_image)
         return job
 
 
@@ -179,7 +190,7 @@ def preview_job(job):
         return job
     usage = dict(job.usage or {})
     # An unsuccessful fresh check must not leave an older approval usable.
-    for key in ("reviewed_at", "approved_max_usd", "estimate"):
+    for key in ("reviewed_at", "reviewed_reference_signature", "approved_max_usd", "estimate"):
         usage.pop(key, None)
     MediaGeneration.objects.filter(pk=job.pk, status="queued").update(usage=usage)
     if job.provider == "higgsfield":
@@ -195,6 +206,7 @@ def preview_job(job):
     else:
         usage["price_note"] = "OpenAI-bilder debiteras efter användning. Bindande prisestimat är inte tillgängligt här."
     usage["reviewed_at"] = timezone.now().isoformat()
+    usage["reviewed_reference_signature"] = generation_reference_signature(job)
     usage.pop("provider_error", None)
     MediaGeneration.objects.filter(pk=job.pk, status="queued").update(usage=usage, error="", updated_at=timezone.now())
     job.refresh_from_db()
@@ -217,6 +229,8 @@ def start_reviewed_job(job, *, expected_revision=None):
         reviewed = parse_datetime(reviewed) if isinstance(reviewed, str) else None
         if not reviewed or timezone.is_naive(reviewed) or reviewed < timezone.now() - timedelta(minutes=10):
             raise MediaError("Granska inställningar och pris på nytt före start. Granskningen gäller i tio minuter.")
+        if locked.usage.get("reviewed_reference_signature") != generation_reference_signature(locked):
+            raise MediaError("Start- eller slutbilden har ändrats sedan granskningen. Uppdatera priskontrollen före start.")
         if locked.provider == "higgsfield":
             locked.usage["approved_max_usd"] = locked.usage.get("estimate", {}).get("usd")
             if locked.usage["approved_max_usd"] is None:

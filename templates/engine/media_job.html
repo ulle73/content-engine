@@ -28,6 +28,7 @@
 
   {% if queued %}
     <section class="creative-panel"><h2>Granska före start</h2><p>Inget betalt uppdrag har skickats. Kontrollera inställningarna och välj sedan om du vill starta.</p>
+      {% if start_reference or end_reference %}<div class="generation-reference-review">{% if start_reference %}<figure><img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=start_reference.pk %}" alt="Startbild"><figcaption>Startbild</figcaption></figure>{% endif %}{% if end_reference %}<figure><img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=end_reference.pk %}" alt="Slutbild"><figcaption>Slutbild</figcaption></figure>{% endif %}</div>{% endif %}
       <dl><dt>Modell</dt><dd>{{ job.parameters.model }}</dd>{% if job.kind == 'video' %}<dt>Längd</dt><dd>{{ job.parameters.duration }} sekunder</dd><dt>Format</dt><dd>Önskemål: {{ job.parameters.aspect_ratio }}. Modellen följer startbilden vid animation; textinstruktion garanterar inte exakt format.</dd>{% else %}<dt>Bildalternativ</dt><dd>{{ job.parameters.count }} × {{ job.parameters.size }} · {{ job.parameters.quality|default:'medium' }}</dd>{% endif %}</dl>
       <div class="generation-prompt-review">
         <h3>Prompt som skickas till {% if job.provider == 'higgsfield' %}Higgsfield{% else %}leverantören{% endif %}</h3>

@@ -19,7 +19,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, recover_media_jobs, remove_asset, select_asset, store_asset
+from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, preview_job, recover_media_jobs, remove_asset, select_asset, start_reviewed_job, store_asset
 from .media_providers import ProviderUnavailableError, UncertainGeneration, estimate_video, generate_images, higgs, start_video, upload_input
 from .media_storage import MediaError, local_path
 from .creative_core import ReferenceRole
@@ -112,6 +112,118 @@ class MediaTests(TestCase):
         self.assertEqual(row.asset_id, source.pk)
         self.assertEqual(row.asset_snapshot["asset_id"], str(source.pk))
         self.assertEqual(reference_asset(job, ReferenceRole.start_image).pk, source.pk)
+
+    def test_start_and_end_frames_route_to_verified_end_frame_model_and_persist_both(self):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            source=start,
+            end_source=end,
+            brief="Skapa en premium övergång på 8 sekunder från startbild till slutbild",
+        )
+        self.assertIn(job.parameters["model"], {"bytedance/seedance-2.5", "bytedance/seedance-2.0"})
+        self.assertEqual(job.parameters["provider_model"], "bytedance/seedance-2.5/image-to-video")
+        refs = {row.role: row.asset_id for row in job.references.all()}
+        self.assertEqual(refs[ReferenceRole.start_image.value], start.pk)
+        self.assertEqual(refs[ReferenceRole.end_image.value], end.pk)
+        self.assertIn("END_IMAGE", job.parameters["creative"]["brief"]["reference_media"])
+        self.assertIn("END FRAME:", job.prompt)
+
+    def test_end_frame_requires_start_and_same_company(self):
+        end = store_asset(self.company, picture())
+        with self.assertRaisesRegex(MediaError, "startbild"):
+            self.job("video", end_source=end)
+        outsider = get_user_model().objects.create_user(username="end-frame-outsider")
+        other = Company.objects.create(owner=outsider, name="Other end")
+        foreign = store_asset(other, picture())
+        start = store_asset(self.company, picture())
+        with self.assertRaisesRegex(MediaError, "Slutbilden"):
+            self.job("video", source=start, end_source=foreign)
+
+    @patch("engine.media_providers.upload_input")
+    @patch("engine.media_providers.higgs")
+    def test_seedance_end_frame_estimate_maps_both_canonical_reference_fields(self, higgs, upload):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            source=start,
+            end_source=end,
+            brief="Skapa en premium övergång på 8 sekunder",
+        )
+        upload.side_effect = ["https://cdn.example.test/start.png", "https://cdn.example.test/end.png"]
+        higgs.return_value = {"usd": "0.80", "credits": "12"}
+        model, body, _ = estimate_video(job)
+        self.assertEqual(model, "bytedance/seedance-2.5/image-to-video")
+        self.assertEqual(body["image_url"], "https://cdn.example.test/start.png")
+        self.assertEqual(body["end_image_url"], "https://cdn.example.test/end.png")
+        self.assertEqual(upload.call_args_list[0].args[0].pk, start.pk)
+        self.assertEqual(upload.call_args_list[1].args[0].pk, end.pk)
+
+    @patch("engine.media.providers.estimate_video")
+    def test_review_signature_blocks_changed_reference_before_paid_start(self, estimate):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        replacement = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            source=start,
+            end_source=end,
+            brief="Skapa en premium övergång på 8 sekunder",
+        )
+        estimate.return_value = (
+            job.parameters["provider_model"],
+            {"prompt": job.prompt},
+            {"estimate": {"usd": "0.80"}, "model": job.parameters["provider_model"]},
+        )
+        preview_job(job)
+        row = job.references.get(role=ReferenceRole.end_image.value)
+        MediaGenerationReference.objects.filter(pk=row.pk).update(asset=replacement)
+        job.refresh_from_db()
+        with self.assertRaisesRegex(MediaError, "ändrats sedan granskningen"):
+            start_reviewed_job(job)
+
+    def test_ai_studio_can_select_submit_and_review_start_and_end_frames(self):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        picker = self.client.get(self.url("media"), {
+            "kind": "video", "source": str(start.pk), "end_source": str(end.pk),
+        })
+        self.assertContains(picker, "Startbild vald")
+        self.assertContains(picker, "Slutbild vald")
+        self.assertContains(picker, f'name="end_asset" value="{end.pk}"', html=False)
+
+        with patch(
+            "engine.media.providers.estimate_video",
+            return_value=(
+                "bytedance/seedance-2.5/image-to-video",
+                {"prompt": "review-only"},
+                {"estimate": {"usd": "0.80"}, "model": "bytedance/seedance-2.5/image-to-video"},
+            ),
+        ):
+            response = self.client.post(self.url("media_generate"), {
+                "token": str(uuid.uuid4()),
+                "kind": "video",
+                "brief": "Skapa en premium övergång på 8 sekunder",
+                "count": "1",
+                "shape": "portrait",
+                "priority": "balanced",
+                "source_asset": str(start.pk),
+                "end_asset": str(end.pk),
+            })
+        self.assertEqual(response.status_code, 302)
+        job = self.run.media_jobs.latest("created_at")
+        detail = self.client.get(self.url("media_job", job_id=job.pk))
+        self.assertContains(detail, "Startbild")
+        self.assertContains(detail, "Slutbild")
+        self.assertEqual(reference_asset(job, ReferenceRole.end_image).pk, end.pk)
 
     def test_multiple_typed_references_are_ordered_and_slots_are_immutable(self):
         job = self.job("video")

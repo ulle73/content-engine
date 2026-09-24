@@ -15,6 +15,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from .media import ACTIVE, PENDING, advance_job, cancel_job, cleanup_expired, create_job, default_brief, remove_asset, select_asset, store_asset
+from .creative_core import ReferenceRole
+from .media_references import reference_asset, serialize_generation_references
 from .media_storage import MediaError, download_url, local_path
 from .models import ContentRun, MediaAsset, MediaGeneration
 from .ownership import company_required
@@ -109,11 +111,19 @@ def picker(request, workspace_id, run_id):
     if kind not in {"image", "video"}:
         kind = "image"
     source = None
+    end_source = None
     retry = get_object_or_404(MediaGeneration, pk=request.GET["retry"], run=run) if request.GET.get("retry") else None
     if retry:
         kind, source = retry.kind, retry.source_asset
+        end_source = reference_asset(retry, ReferenceRole.end_image)
     if request.GET.get("source"):
         source = get_object_or_404(MediaAsset, pk=request.GET["source"], company=request.workspace, kind="image")
+    if request.GET.get("end_source"):
+        end_source = get_object_or_404(MediaAsset, pk=request.GET["end_source"], company=request.workspace, kind="image")
+    if kind != "video":
+        end_source = None
+    if end_source and not source:
+        end_source = None
     assets = request.workspace.media_assets.filter(purpose="content").filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()))
     filter_value = request.GET.get("filter", "all")
     if filter_value in {"image", "video"}:
@@ -124,7 +134,8 @@ def picker(request, workspace_id, run_id):
     jobs = list(run.media_jobs.order_by("-created_at").prefetch_related("assets")[:10])
     return render(request, "engine/media.html", {
         "workspace": request.workspace, "run": run, "kind": kind, "assets": assets, "jobs": jobs,
-        "source": source, "brief": retry.brief if retry else source.brief if source and kind == "image" and source.brief else default_brief(run, kind),
+        "source": source, "end_source": end_source,
+        "brief": retry.brief if retry else source.brief if source and kind == "image" and source.brief else default_brief(run, kind),
         "token": uuid.uuid4(), "can_edit": run.delivery_status == "draft",
         "higgs_ready": bool(os.environ.get("HIGGSFIELD_API_KEY_GK") or os.environ.get("HIGGSFIELD_API_KEY")),
         "filter_value": filter_value, "now": timezone.now(), "active_statuses": ACTIVE,
@@ -161,9 +172,11 @@ def generate_media(request, workspace_id, run_id):
     try:
         cleanup_expired(request.workspace)
         source = get_object_or_404(MediaAsset, pk=request.POST["source_asset"], company=request.workspace, kind="image") if request.POST.get("source_asset") else None
+        end_source = get_object_or_404(MediaAsset, pk=request.POST["end_asset"], company=request.workspace, kind="image") if request.POST.get("end_asset") else None
         job = create_job(run, token=uuid.UUID(request.POST.get("token", "")), kind=request.POST.get("kind"),
                          brief=request.POST.get("brief", ""), count=int(request.POST.get("count", "2")),
-                         shape=request.POST.get("shape", "portrait"), source=source, include_logo=bool(request.POST.get("include_logo")),
+                         shape=request.POST.get("shape", "portrait"), source=source, end_source=end_source,
+                         include_logo=bool(request.POST.get("include_logo")),
                          priority=request.POST.get("priority", "balanced"))
         try:
             preview_job(job)
@@ -186,6 +199,9 @@ def job_page(request, workspace_id, run_id, job_id):
     return render(request, "engine/media_job.html", {
         "workspace": request.workspace, "run": run, "job": job, "pending": job.status in PENDING, "now": timezone.now(),
         "creative": creative, "safe_parameters": safe_parameters, "status_index": status_index,
+        "start_reference": reference_asset(job, ReferenceRole.start_image),
+        "end_reference": reference_asset(job, ReferenceRole.end_image),
+        "generation_references": serialize_generation_references(job),
         "structured_brief_json": json.dumps(creative.get("brief", {}), ensure_ascii=False, indent=2),
         "parameters_json": json.dumps(safe_parameters, ensure_ascii=False, indent=2),
         "queued": job.status == "queued",

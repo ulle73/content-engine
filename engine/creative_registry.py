@@ -255,6 +255,7 @@ def registry() -> tuple[ModelIntelligence, ...]:
                 "SCENE",
                 "LOCATION",
                 "FIRST_FRAME_BLOCKING",
+                "END_FRAME",
                 "CAMERA",
                 "PHYSICS",
                 "LIGHTING",
