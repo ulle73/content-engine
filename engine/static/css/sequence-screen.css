@@ -226,3 +226,155 @@
   .sequence-status-table { overflow-x: auto; }
   .sequence-status-row { min-width: 660px; }
 }
+
+
+/* F2 anchor controls */
+.sequence-anchor-control-section {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid var(--gk-line);
+  border-radius: var(--gk-radius-md);
+  background: #fff;
+  box-shadow: var(--gk-shadow-sm);
+}
+.sequence-anchor-add-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.sequence-control-card,
+.sequence-anchor-actions,
+.sequence-subcontrol {
+  border: 1px solid var(--gk-line);
+  border-radius: 11px;
+  background: #fff;
+}
+.sequence-control-card > summary,
+.sequence-anchor-actions > summary,
+.sequence-subcontrol > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 10px;
+  font-weight: 760;
+}
+.sequence-control-card > summary::-webkit-details-marker,
+.sequence-anchor-actions > summary::-webkit-details-marker,
+.sequence-subcontrol > summary::-webkit-details-marker { display: none; }
+.sequence-control-card > summary {
+  padding: 12px 13px;
+  background: var(--gk-surface-soft);
+}
+.sequence-control-card form {
+  display: grid;
+  gap: 9px;
+  padding: 12px;
+  border-top: 1px solid var(--gk-line);
+}
+.sequence-control-card textarea,
+.sequence-subcontrol textarea { min-height: 88px; }
+.sequence-control-card small,
+.sequence-subcontrol small { color: var(--gk-muted); font-size: 8px; }
+.sequence-control-inline {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.sequence-pending-anchor-jobs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f7f9f8;
+  font-size: 9px;
+}
+.sequence-pending-anchor-jobs a,
+.sequence-anchor-job-links a { color: var(--gk-green-dark); }
+
+.sequence-anchor-actions {
+  margin: 0 10px 10px;
+  background: var(--gk-surface-soft);
+}
+.sequence-anchor-actions > summary {
+  padding: 8px 9px;
+  color: var(--gk-green-dark);
+}
+.sequence-anchor-actions-body {
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+  border-top: 1px solid var(--gk-line);
+}
+.sequence-anchor-actions-body > form { margin: 0; }
+.sequence-control-warning {
+  margin: 0;
+  padding: 8px 9px;
+  border: 1px solid #ead7ab;
+  border-radius: 8px;
+  background: #fffaf0;
+  color: #6e5724;
+  font-size: 8px;
+  line-height: 1.4;
+}
+.sequence-subcontrol { background: #fff; }
+.sequence-subcontrol > summary { padding: 8px 9px; }
+.sequence-subcontrol form {
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+  border-top: 1px solid var(--gk-line);
+}
+.sequence-inline-confirm {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0;
+  color: var(--gk-muted);
+  font-size: 8px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+.sequence-inline-confirm input { width: auto; margin-top: 1px; }
+.sequence-revision-list { display: grid; gap: 6px; padding: 8px; border-top: 1px solid var(--gk-line); }
+.sequence-revision-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 30px;
+  padding: 6px 7px;
+  border-radius: 7px;
+  background: var(--gk-surface-soft);
+  font-size: 8px;
+}
+.sequence-revision-row form { padding: 0; border: 0; }
+.sequence-anchor-job-links {
+  display: grid;
+  gap: 4px;
+  padding-top: 7px;
+  border-top: 1px solid var(--gk-line);
+  font-size: 8px;
+}
+.sequence-ai-target-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid #cce8d8;
+  border-radius: 12px;
+  background: #f3fbf6;
+}
+.sequence-ai-target-banner strong { display: block; font-size: 12px; }
+.sequence-ai-target-banner p { margin: 4px 0 0; color: var(--gk-muted); font-size: 9px; line-height: 1.4; }
+
+@media (max-width: 920px) {
+  .sequence-anchor-add-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .sequence-ai-target-banner { flex-direction: column; }
+  .sequence-control-inline { grid-template-columns: 1fr; }
+}
