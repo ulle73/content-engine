@@ -15,6 +15,7 @@ from django.views.decorators.http import require_POST
 
 from .media import ACTIVE, PENDING, advance_job, cancel_job, cleanup_expired, create_job, default_brief, remove_asset, select_asset, store_asset
 from .creative_core import ReferenceRole
+from .creative_registry import verified_models
 from .media_references import reference_asset, serialize_generation_references
 from .media_providers import higgsfield_configured
 from .media_storage import MediaError, download_url, local_path
@@ -133,6 +134,14 @@ def picker(request, workspace_id, run_id):
         assets = assets.filter(origin=filter_value)
     assets = assets.order_by(Case(When(origin="uploaded", then=Value(0)), default=Value(1), output_field=IntegerField()), "-created_at")[:60]
     jobs = list(run.media_jobs.order_by("-created_at").prefetch_related("assets")[:10])
+    mode = ("image-to-video" if source else "text-to-video") if kind == "video" else ("image-to-image" if source else "text-to-image")
+    override_models = verified_models(kind, mode)
+    if kind == "video" and end_source:
+        override_models = [
+            model for model in override_models
+            if model.request_contract(mode)
+            and ReferenceRole.end_image in model.request_contract(mode).supported_reference_roles
+        ]
     return render(request, "engine/media.html", {
         "workspace": request.workspace, "run": run, "kind": kind, "assets": assets, "jobs": jobs,
         "source": source, "end_source": end_source,
@@ -140,6 +149,8 @@ def picker(request, workspace_id, run_id):
         "token": uuid.uuid4(), "can_edit": run.delivery_status == "draft",
         "higgs_ready": higgsfield_configured(),
         "filter_value": filter_value, "now": timezone.now(), "active_statuses": ACTIVE,
+        "override_models": override_models,
+        "model_override": (retry.parameters or {}).get("model_override", "") if retry else "",
     })
 
 
@@ -178,7 +189,8 @@ def generate_media(request, workspace_id, run_id):
                          brief=request.POST.get("brief", ""), count=int(request.POST.get("count", "2")),
                          shape=request.POST.get("shape", "portrait"), source=source, end_source=end_source,
                          include_logo=bool(request.POST.get("include_logo")),
-                         priority=request.POST.get("priority", "balanced"))
+                         priority=request.POST.get("priority", "balanced"),
+                         model_override=request.POST.get("model_override", ""))
         try:
             preview_job(job)
         except MediaError as exc:
