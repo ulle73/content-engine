@@ -132,6 +132,22 @@ class MediaTests(TestCase):
         self.assertIn("END_IMAGE", job.parameters["creative"]["brief"]["reference_media"])
         self.assertIn("END FRAME:", job.prompt)
 
+    def test_generic_start_end_video_does_not_inherit_scroll_recipe_rules(self):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            source=start,
+            end_source=end,
+            brief="Skapa en lugn övergång mellan bilderna",
+        )
+        self.assertEqual(job.parameters["creative"]["recipe"]["recipe_id"], "generic_video")
+        self.assertNotIn("FORMAT MODE: Single continuous shot.", job.prompt)
+        self.assertNotIn("CONTINUITY:", job.prompt)
+        self.assertIn("Avoid:", job.prompt)
+
     def test_scroll_transition_bridge_recipe_is_persisted_on_media_job(self):
         start = store_asset(self.company, picture())
         end = store_asset(self.company, picture())
