@@ -308,6 +308,68 @@ def _safe_estimate_shape(value):
     }
 
 
+SEEDANCE_25_PRICE_SOURCE = "higgsfield-official-2026-09-24"
+SEEDANCE_25_USD_PER_SECOND_MIN = Decimal("0.144")
+SEEDANCE_25_USD_PER_SECOND_MAX = Decimal("0.3236")
+SEEDANCE_25_PRICING_MARKERS = (
+    "Token-metered pricing.",
+    "$0.0214",
+    "480p or 720p",
+)
+
+
+def _cost_ceiling():
+    try:
+        ceiling = Decimal(os.environ.get("HIGGSFIELD_MAX_USD", "2"))
+    except (InvalidOperation, TypeError) as exc:
+        raise MediaError("Serverns videokostnadsgräns är ogiltig. Ingen generation startades.") from exc
+    if not ceiling.is_finite() or ceiling < 0:
+        raise MediaError("Serverns videokostnadsgräns är ogiltig. Ingen generation startades.")
+    return ceiling
+
+
+def _seedance25_description_estimate(model, body, estimate):
+    """Convert Higgsfield's current descriptive price response into a conservative reviewed ceiling."""
+    if not model.startswith("bytedance/seedance-2.5/"):
+        return None
+    if estimate.get("type") != "description":
+        return None
+    description = estimate.get("pricing_description")
+    if not isinstance(description, str) or not all(marker in description for marker in SEEDANCE_25_PRICING_MARKERS):
+        raise MediaError(
+            "Higgsfields Seedance 2.5-prissättning har ändrats. "
+            "Prisregeln måste verifieras innan någon generation kan startas."
+        )
+    try:
+        duration = Decimal(str(int(body["duration"])))
+    except (KeyError, TypeError, ValueError, InvalidOperation) as exc:
+        raise MediaError("Videons längd kunde inte prissättas säkert. Ingen generation startades.") from exc
+
+    lower = (duration * SEEDANCE_25_USD_PER_SECOND_MIN).quantize(Decimal("0.0001"))
+    upper = (duration * SEEDANCE_25_USD_PER_SECOND_MAX).quantize(Decimal("0.0001"))
+    if upper > _cost_ceiling():
+        raise MediaError(
+            "Videons konservativa maxkostnad överskrider serverns kostnadsgräns. "
+            "Ingen generation startades."
+        )
+    return {
+        "estimate": {
+            "usd": str(upper),
+            "usd_min": str(lower),
+            "usd_max": str(upper),
+            "basis": "official_published_range_upper_bound",
+            "pricing_source": SEEDANCE_25_PRICE_SOURCE,
+            "duration_seconds": str(int(duration)),
+            "resolution": str(body.get("resolution") or ""),
+        },
+        "model": model,
+        "price_note": (
+            "Konservativ maxkostnad från Higgsfields officiella Seedance 2.5-prisintervall. "
+            "Faktisk kostnad kan bli lägre; betalstart använder samma eller lägre godkända tak."
+        ),
+    }
+
+
 def estimate_video(job):
     """Account-scoped, non-billable preflight. I2V uploads its input, never submits a generation."""
     if len(job.prompt or "") > HIGGSFIELD_SAFE_PROMPT_CHARS:
@@ -333,12 +395,22 @@ def estimate_video(job):
             raise MediaError(f"Videomodellen saknar verifierad mappning för {role.value}.")
         body[field] = upload_input(asset)
     estimate = higgs("POST", "/estimate/" + model, json=body)
+    if "usd" not in estimate:
+        descriptive = _seedance25_description_estimate(model, body, estimate)
+        if descriptive is not None:
+            return model, body, descriptive
+        logger.warning(
+            "HIGGSFIELD_ESTIMATE_SHAPE %s",
+            json.dumps(_safe_estimate_shape(estimate), sort_keys=True, ensure_ascii=True),
+        )
+        raise MediaError("Videotjänsten kunde inte bekräfta priset. Ingen generation startades.")
+
     try:
         price = Decimal(estimate["usd"])
-        ceiling = Decimal(os.environ.get("HIGGSFIELD_MAX_USD", "2"))
-        if not ceiling.is_finite() or ceiling < 0 or not price.is_finite() or price < 0 or price > ceiling:
+        ceiling = _cost_ceiling()
+        if not price.is_finite() or price < 0 or price > ceiling:
             raise MediaError("Videons pris överskrider serverns kostnadsgräns. Ingen generation startades.")
-    except (KeyError, InvalidOperation, TypeError) as exc:
+    except (InvalidOperation, TypeError) as exc:
         logger.warning(
             "HIGGSFIELD_ESTIMATE_SHAPE %s",
             json.dumps(_safe_estimate_shape(estimate), sort_keys=True, ensure_ascii=True),

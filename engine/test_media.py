@@ -566,6 +566,89 @@ class MediaTests(TestCase):
         self.assertEqual(higgs.call_args_list[1].kwargs["json"], {"prompt":job.prompt, "duration":10})
 
     @patch("engine.media_providers.higgs")
+    @patch("engine.media_providers.upload_input")
+    def test_seedance_25_descriptive_pricing_uses_conservative_official_upper_bound(self, upload, higgs):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            brief="Create a 5 second simplest smooth continuous camera transition between these anchors.",
+            source=start,
+            end_source=end,
+            priority="economy",
+            recipe_id="scroll_transition_bridge",
+        )
+        self.assertEqual(job.parameters["model"], "bytedance/seedance-2.5")
+        self.assertEqual(job.parameters["duration"], 5)
+        upload.side_effect = ["https://cdn.example.test/start.png", "https://cdn.example.test/end.png"]
+        higgs.return_value = {
+            "type": "description",
+            "pricing_description": (
+                "Token-metered pricing. Billable video tokens depend on generated duration and output size. "
+                "At 480p or 720p, each 1,000 video tokens cost $0.0214. "
+                "Rates shown are before any applicable customer discount."
+            ),
+        }
+
+        model, body, usage = estimate_video(job)
+
+        self.assertEqual(model, "bytedance/seedance-2.5/image-to-video")
+        self.assertEqual(body["image_url"], "https://cdn.example.test/start.png")
+        self.assertEqual(body["end_image_url"], "https://cdn.example.test/end.png")
+        self.assertEqual(usage["estimate"]["usd_min"], "0.7200")
+        self.assertEqual(usage["estimate"]["usd_max"], "1.6180")
+        self.assertEqual(usage["estimate"]["usd"], "1.6180")
+        self.assertEqual(usage["estimate"]["basis"], "official_published_range_upper_bound")
+        self.assertIn("Konservativ maxkostnad", usage["price_note"])
+        self.assertEqual(higgs.call_count, 1)
+
+    @patch.dict("os.environ", {"HIGGSFIELD_MAX_USD": "2"}, clear=False)
+    @patch("engine.media_providers.higgs")
+    def test_seedance_25_descriptive_pricing_respects_server_cost_ceiling(self, higgs):
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            brief="Premium cinematic reel 10 sekunder i 9:16",
+            priority="quality",
+        )
+        self.assertEqual(job.parameters["model"], "bytedance/seedance-2.5")
+        self.assertEqual(job.parameters["duration"], 10)
+        higgs.return_value = {
+            "type": "description",
+            "pricing_description": (
+                "Token-metered pricing. Billable video tokens depend on generated duration and output size. "
+                "At 480p or 720p, each 1,000 video tokens cost $0.0214. "
+                "Rates shown are before any applicable customer discount."
+            ),
+        }
+        with self.assertRaisesRegex(MediaError, "konservativa maxkostnad"):
+            estimate_video(job)
+        self.assertEqual(higgs.call_count, 1)
+
+    @patch("engine.media_providers.higgs")
+    def test_seedance_25_changed_descriptive_rate_fails_closed(self, higgs):
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            brief="Premium cinematic reel 5 sekunder i 9:16",
+            priority="quality",
+        )
+        self.assertEqual(job.parameters["model"], "bytedance/seedance-2.5")
+        higgs.return_value = {
+            "type": "description",
+            "pricing_description": (
+                "Token-metered pricing. At 480p or 720p, each 1,000 video tokens cost $0.0300."
+            ),
+        }
+        with self.assertRaisesRegex(MediaError, "prissättning har ändrats"):
+            estimate_video(job)
+        self.assertEqual(higgs.call_count, 1)
+
+    @patch("engine.media_providers.higgs")
     def test_seedance_25_t2v_estimate_uses_exact_compiled_path_and_silent_payload(self, higgs):
         job = create_job(
             self.run,
