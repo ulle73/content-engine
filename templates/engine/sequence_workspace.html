@@ -21,11 +21,11 @@
 
   <section class="sequence-safety-banner" aria-label="Workspace-status">
     <div>
-      <span class="sequence-kicker">F1 · Säker projektvy</span>
-      <strong>Översikt utan dolda mutationer</strong>
-      <p>Det här workspacet visar den verifierade E1–E4-strukturen. F1 ändrar inte anchors, regenererar inte clips och startar ingen provider-generation.</p>
+      <span class="sequence-kicker">F2 · Anchor controls</span>
+      <strong>Alla anchor-ändringar är explicita och versionssparade</strong>
+      <p>Lock/unlock, upload, Media-val och AI-förslag använder samma canonical anchor-modell. Om ett byte påverkar tidigare clip/bridge-kandidater krävs separat bekräftelse och de bevaras som stale historik.</p>
     </div>
-    <span class="sequence-safe-pill">Read-safe</span>
+    <span class="sequence-safe-pill">Versioned</span>
   </section>
 
   <section class="sequence-metrics" aria-label="Projektöversikt">
@@ -33,6 +33,68 @@
     <div><span>Clips</span><strong>{{ clips|length }}</strong><small>Ordinarie segment</small></div>
     <div><span>Bridges</span><strong>{{ bridges|length }}</strong><small>Separata övergångar</small></div>
     <div><span>Kandidater</span><strong>{{ candidate_count }}</strong><small>Alla sparade versioner</small></div>
+  </section>
+
+  <section class="sequence-anchor-control-section" aria-labelledby="sequence-anchor-control-title">
+    <div class="sequence-section-head">
+      <div>
+        <span class="sequence-kicker">Anchors</span>
+        <h2 id="sequence-anchor-control-title">Lägg till anchor</h2>
+        <p>Ny anchor läggs sist i ordningen. Du kan använda en befintlig bild, ladda upp en ny eller förbereda AI-bilder via samma review-gate som AI Studio.</p>
+      </div>
+    </div>
+    <div class="sequence-anchor-add-grid">
+      <details class="sequence-control-card">
+        <summary>Välj från Media</summary>
+        <form method="post" action="{% url 'engine:sequence_anchor_add_existing' workspace_id=workspace.pk project_id=project.pk %}">
+          {% csrf_token %}
+          <label>Etikett <span>Valfritt</span></label>
+          <input name="label" maxlength="120" placeholder="Till exempel: Produktbild">
+          <label>Bild</label>
+          <select name="asset_id" required>
+            <option value="">Välj bild</option>
+            {% for image in available_images %}<option value="{{ image.pk }}">{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+          </select>
+          <button type="submit" {% if not available_images %}disabled{% endif %}>Lägg till anchor</button>
+        </form>
+      </details>
+      <details class="sequence-control-card">
+        <summary>Ladda upp bild</summary>
+        <form method="post" enctype="multipart/form-data" action="{% url 'engine:sequence_anchor_add_upload' workspace_id=workspace.pk project_id=project.pk %}">
+          {% csrf_token %}
+          <label>Etikett <span>Valfritt</span></label>
+          <input name="label" maxlength="120" placeholder="Till exempel: Slutbild">
+          <label>Bildfil</label>
+          <input type="file" name="file" accept="image/jpeg,image/png,image/webp" required>
+          <button type="submit">Ladda upp och lägg till</button>
+        </form>
+      </details>
+      <details class="sequence-control-card">
+        <summary>Skapa med AI</summary>
+        <form method="post" action="{% url 'engine:sequence_anchor_generate_new' workspace_id=workspace.pk project_id=project.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="token" value="{{ anchor_generation_token }}">
+          <label>Etikett <span>Valfritt</span></label>
+          <input name="label" maxlength="120" placeholder="Till exempel: Premium hero">
+          <label>Beskriv bilden</label>
+          <textarea name="brief" maxlength="6000" required placeholder="Beskriv exakt vilken canonical keyframe du vill skapa."></textarea>
+          <div class="sequence-control-inline">
+            <select name="shape"><option value="portrait">Stående</option><option value="landscape">Liggande</option><option value="square">Kvadrat</option></select>
+            <select name="count"><option value="1">1 förslag</option><option value="2" selected>2 förslag</option><option value="3">3 förslag</option><option value="4">4 förslag</option></select>
+          </div>
+          <button type="submit">Granska AI-generation</button>
+          <small>Ingen betald generation startas av den här knappen.</small>
+        </form>
+      </details>
+    </div>
+    {% if pending_new_anchor_targets %}
+      <div class="sequence-pending-anchor-jobs">
+        <strong>Pågående nya anchor-förslag</strong>
+        {% for target in pending_new_anchor_targets %}
+          <a href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=target.generation.run_id job_id=target.generation_id %}">{{ target.target_label|default:"Ny anchor" }} · {{ target.generation.status|title }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
   </section>
 
   <section class="sequence-timeline-section" aria-labelledby="sequence-timeline-title">
@@ -64,8 +126,92 @@
                 <div class="sequence-node-body">
                   <strong>{{ anchor.label|default:"Anchor" }}</strong>
                   <small>{{ anchor.get_source_type_display }} · {{ anchor.asset.width|default:"–" }} × {{ anchor.asset.height|default:"–" }}</small>
+                  <span>{{ anchor.asset.get_origin_display }} · {{ anchor.asset.provider }}{% if anchor.asset.generation_id %} · generation {{ anchor.asset.generation_id|truncatechars:12 }}{% endif %}</span>
                   {% if anchor.source_clip_version_id %}<span>Från clip-version {{ anchor.source_clip_version.version_number }}</span>{% endif %}
                 </div>
+                <details class="sequence-anchor-actions">
+                  <summary>Hantera K{{ anchor.position }}</summary>
+                  <div class="sequence-anchor-actions-body">
+                    <form method="post" action="{% url 'engine:sequence_anchor_lock' workspace_id=workspace.pk project_id=project.pk anchor_id=anchor.pk %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="locked" value="{% if anchor.locked %}0{% else %}1{% endif %}">
+                      <button class="button-secondary" type="submit">{% if anchor.locked %}Lås upp anchor{% else %}Lås anchor{% endif %}</button>
+                    </form>
+
+                    {% if anchor.locked %}
+                      <p class="sequence-control-warning">Ankaret är låst. Lås upp det innan bildbyte eller återställning.</p>
+                    {% else %}
+                      {% if anchor.change_impact.total_versions %}
+                        <p class="sequence-control-warning">{{ anchor.change_impact.total_versions }} clip/bridge-versioner använder ankaret. Ett byte bevarar dem men markerar dem stale{% if anchor.change_impact.selected_segments %} och avmarkerar {{ anchor.change_impact.selected_segments }} vald(a) segment{% endif %}.</p>
+                      {% endif %}
+
+                      <details class="sequence-subcontrol">
+                        <summary>Byt från Media</summary>
+                        <form method="post" action="{% url 'engine:sequence_anchor_replace_existing' workspace_id=workspace.pk project_id=project.pk anchor_id=anchor.pk %}">
+                          {% csrf_token %}
+                          <select name="asset_id" required>
+                            <option value="">Välj bild</option>
+                            {% for image in available_images %}<option value="{{ image.pk }}" {% if image.pk == anchor.asset_id %}disabled{% endif %}>{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+                          </select>
+                          {% if anchor.change_impact.total_versions %}<label class="sequence-inline-confirm"><input type="checkbox" name="confirm_stale" value="1" required><span>Jag bekräftar att {{ anchor.change_impact.total_versions }} versioner blir stale.</span></label>{% endif %}
+                          <button type="submit">Byt bild</button>
+                        </form>
+                      </details>
+
+                      <details class="sequence-subcontrol">
+                        <summary>Ladda upp ersättare</summary>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'engine:sequence_anchor_replace_upload' workspace_id=workspace.pk project_id=project.pk anchor_id=anchor.pk %}">
+                          {% csrf_token %}
+                          <input type="file" name="file" accept="image/jpeg,image/png,image/webp" required>
+                          {% if anchor.change_impact.total_versions %}<label class="sequence-inline-confirm"><input type="checkbox" name="confirm_stale" value="1" required><span>Jag bekräftar att {{ anchor.change_impact.total_versions }} versioner blir stale.</span></label>{% endif %}
+                          <button type="submit">Ladda upp och ersätt</button>
+                        </form>
+                      </details>
+
+                      <details class="sequence-subcontrol">
+                        <summary>Skapa ersättare med AI</summary>
+                        <form method="post" action="{% url 'engine:sequence_anchor_generate' workspace_id=workspace.pk project_id=project.pk anchor_id=anchor.pk %}">
+                          {% csrf_token %}
+                          <input type="hidden" name="token" value="{{ anchor.generation_token }}">
+                          <textarea name="brief" maxlength="6000" required placeholder="Beskriv den nya versionen av K{{ anchor.position }}."></textarea>
+                          <div class="sequence-control-inline">
+                            <select name="shape"><option value="portrait">Stående</option><option value="landscape">Liggande</option><option value="square">Kvadrat</option></select>
+                            <select name="count"><option value="1">1 förslag</option><option value="2" selected>2 förslag</option><option value="3">3 förslag</option><option value="4">4 förslag</option></select>
+                          </div>
+                          <button type="submit">Granska AI-generation</button>
+                          <small>Betald start sker först på AI-jobbets reviewsida.</small>
+                        </form>
+                      </details>
+
+                      <details class="sequence-subcontrol">
+                        <summary>Versionshistorik · {{ anchor.revision_list|length }}</summary>
+                        <div class="sequence-revision-list">
+                          {% for revision in anchor.revision_list %}
+                            <div class="sequence-revision-row">
+                              <span><strong>R{{ revision.revision_number }}</strong> · {{ revision.source_type|title }} · {{ revision.created_at|date:"j M H:i" }}</span>
+                              {% if revision.asset_id == anchor.asset_id %}<span class="status-badge success">Aktiv</span>{% else %}
+                                <form method="post" action="{% url 'engine:sequence_anchor_restore' workspace_id=workspace.pk project_id=project.pk anchor_id=anchor.pk revision_id=revision.pk %}">
+                                  {% csrf_token %}
+                                  {% if anchor.change_impact.total_versions %}<label class="sequence-inline-confirm"><input type="checkbox" name="confirm_stale" value="1" required><span>Bekräfta stale-versioner.</span></label>{% endif %}
+                                  <button class="quiet" type="submit">Återställ</button>
+                                </form>
+                              {% endif %}
+                            </div>
+                          {% empty %}<p>Ingen historik ännu.</p>{% endfor %}
+                        </div>
+                      </details>
+                    {% endif %}
+
+                    {% if anchor.latest_generation_targets %}
+                      <div class="sequence-anchor-job-links">
+                        <strong>Senaste AI-förslag</strong>
+                        {% for target in anchor.latest_generation_targets %}
+                          <a href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=target.generation.run_id job_id=target.generation_id %}">{{ target.generation.status|title }} · {{ target.created_at|date:"j M H:i" }}</a>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </details>
               </article>
               {% endwith %}
             {% elif item.type == 'clip' %}
@@ -114,7 +260,7 @@
       <div class="sequence-empty-state">
         <span class="sequence-empty-icon" aria-hidden="true">◇</span>
         <h3>Projektet är tomt</h3>
-        <p>F1 visar projektets struktur men skapar inga anchors eller clips. Anchor-kontroller kommer i F2.</p>
+        <p>Projektet har ännu inga anchors. Använd Anchor controls ovan för att välja Media, ladda upp eller förbereda ett AI-förslag.</p>
       </div>
     {% endif %}
   </section>

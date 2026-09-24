@@ -9,6 +9,13 @@
     {% if asset.expires_at and not asset.used_at %}<span class="media-expiry-note">Förhandsvisning i 7 dagar</span>{% endif %}
     <div class="media-actions premium-media-actions">
       {% if run.delivery_status == 'draft' %}<form method="post" action="{% url 'engine:media_use' workspace_id=workspace.pk run_id=run.pk asset_id=asset.pk %}">{% csrf_token %}<button>Använd</button></form>{% endif %}
+      {% if sequence_anchor_target and asset.kind == 'image' and asset.generation_id == sequence_anchor_target.generation_id %}
+        <form method="post" action="{% url 'engine:sequence_anchor_apply_generated' workspace_id=workspace.pk project_id=sequence_anchor_target.project_id target_id=sequence_anchor_target.pk asset_id=asset.pk %}">
+          {% csrf_token %}
+          {% if sequence_anchor_impact.total_versions %}<label class="sequence-inline-confirm"><input type="checkbox" name="confirm_stale" value="1" required><span>Jag förstår att {{ sequence_anchor_impact.total_versions }} versioner blir stale.</span></label>{% endif %}
+          <button type="submit">{% if sequence_anchor_target.mode == 'replace' %}Använd som K{{ sequence_anchor_target.target_anchor.position }}{% else %}Använd som ny anchor{% endif %}</button>
+        </form>
+      {% endif %}
       <a class="button button-secondary" href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" target="_blank" rel="noopener">Öppna</a>
     </div>
     {% if asset.kind == 'image' and run.delivery_status == 'draft' %}<div class="media-quick-actions"><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=image#generate">Gör variant</a><span>·</span><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ asset.pk }}&kind=video#generate">Animera</a>{% if kind == 'video' and source and asset.pk != source.pk %}<span>·</span><a href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?source={{ source.pk }}&end_source={{ asset.pk }}&kind=video#generate">Som slutbild</a>{% endif %}</div>{% endif %}

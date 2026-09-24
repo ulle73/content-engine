@@ -342,6 +342,107 @@ class SequenceAnchor(models.Model):
         ]
 
 
+class SequenceAnchorRevision(models.Model):
+    """Non-destructive history of each canonical anchor asset/provenance state."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    anchor = models.ForeignKey(SequenceAnchor, on_delete=models.CASCADE, related_name="revisions")
+    revision_number = models.PositiveIntegerField()
+    asset = models.ForeignKey(MediaAsset, on_delete=models.PROTECT, related_name="sequence_anchor_revisions")
+    source_type = models.CharField(max_length=20, choices=SequenceAnchor.SOURCE_CHOICES, default="existing")
+    source_clip_version = models.ForeignKey(
+        "SequenceClipVersion", null=True, blank=True, on_delete=models.SET_NULL, related_name="anchor_revisions"
+    )
+    source_metadata = models.JSONField(default=dict, blank=True)
+    reason = models.CharField(max_length=40, default="created")
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+        super().clean()
+        if self.anchor_id and self.asset_id:
+            if self.asset.company_id != self.anchor.project.company_id:
+                raise ValidationError("Anchor revision asset must belong to the project company.")
+            if self.asset.kind != "image" or self.asset.purpose == "logo":
+                raise ValidationError("Anchor revision must use a non-logo image.")
+        if self.source_clip_version_id and self.anchor_id:
+            if self.source_clip_version.clip.project_id != self.anchor.project_id:
+                raise ValidationError("Anchor revision source clip version must belong to the same project.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["revision_number", "created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["anchor", "revision_number"], name="uniq_seq_anchor_revision"),
+            models.CheckConstraint(
+                condition=models.Q(revision_number__gte=1), name="seq_anchor_revision_gte_1"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["anchor", "revision_number"], name="seq_anchor_revision_idx"),
+        ]
+
+
+class SequenceAnchorGenerationTarget(models.Model):
+    """Binds an existing reviewed image-generation job to one anchor action."""
+
+    MODE_CHOICES = [
+        ("create", "Create anchor"),
+        ("replace", "Replace anchor"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(SequenceProject, on_delete=models.CASCADE, related_name="anchor_generation_targets")
+    generation = models.OneToOneField(
+        MediaGeneration, on_delete=models.PROTECT, related_name="sequence_anchor_target"
+    )
+    mode = models.CharField(max_length=12, choices=MODE_CHOICES)
+    target_anchor = models.ForeignKey(
+        SequenceAnchor, null=True, blank=True, on_delete=models.SET_NULL, related_name="generation_targets"
+    )
+    applied_anchor = models.ForeignKey(
+        SequenceAnchor, null=True, blank=True, on_delete=models.SET_NULL, related_name="applied_generation_targets"
+    )
+    target_label = models.CharField(max_length=120, blank=True)
+    target_role = models.CharField(max_length=40, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+        super().clean()
+        if self.generation_id and self.project_id:
+            if self.generation.run.workspace_id != self.project.company_id:
+                raise ValidationError("Anchor generation must belong to the project company.")
+            if self.generation.kind != "image":
+                raise ValidationError("Anchor generation target must reference an image generation.")
+        if self.mode == "replace":
+            if not self.target_anchor_id:
+                raise ValidationError("Replace mode requires a target anchor.")
+            if self.target_anchor.project_id != self.project_id:
+                raise ValidationError("Target anchor must belong to the same project.")
+        if self.mode == "create" and self.target_anchor_id:
+            raise ValidationError("Create mode cannot point to an existing target anchor.")
+        if self.applied_anchor_id and self.applied_anchor.project_id != self.project_id:
+            raise ValidationError("Applied anchor must belong to the same project.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["project", "mode", "created_at"], name="seq_anchor_gen_target_idx"),
+        ]
+
+
 class SequenceClip(models.Model):
     """Logical clip between two canonical anchors."""
 
@@ -419,6 +520,7 @@ class SequenceClipVersion(models.Model):
         ("selected", "Selected"),
         ("rejected", "Rejected"),
         ("failed", "Failed"),
+        ("stale", "Stale"),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -561,6 +663,7 @@ class SequenceBridgeVersion(models.Model):
         ("selected", "Selected"),
         ("rejected", "Rejected"),
         ("failed", "Failed"),
+        ("stale", "Stale"),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

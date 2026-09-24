@@ -520,8 +520,8 @@ def select_asset(run, asset):
 def remove_asset(asset):
     with transaction.atomic():
         locked = MediaAsset.objects.select_for_update().get(pk=asset.pk)
-        if locked.purpose == "logo" or locked.used_at or locked.content_runs.exists() or locked.logo_generations.exists() or locked.official_for.exists() or locked.variations.filter(status__in=ACTIVE).exists() or locked.generation_references.filter(generation__status__in=ACTIVE).exists() or locked.sequence_anchors.exists():
-            raise MediaError("Media som används av ett sparat inlägg, en sequence-anchor eller en pågående generation kan inte tas bort.")
+        if locked.purpose == "logo" or locked.used_at or locked.content_runs.exists() or locked.logo_generations.exists() or locked.official_for.exists() or locked.variations.filter(status__in=ACTIVE).exists() or locked.generation_references.filter(generation__status__in=ACTIVE).exists() or locked.sequence_anchors.exists() or locked.sequence_anchor_revisions.exists():
+            raise MediaError("Media som används av ett sparat inlägg, en sequence-anchor/version eller en pågående generation kan inte tas bort.")
         delete_file(locked)
         locked.delete()
 
