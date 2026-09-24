@@ -425,9 +425,9 @@ class SequenceClipVersion(models.Model):
     model_id = models.CharField(max_length=120, blank=True)
     provider_model = models.CharField(max_length=180, blank=True)
     prompt_snapshot = models.TextField(blank=True)
-    reference_snapshot = models.JSONField(default=list)
-    usage_snapshot = models.JSONField(default=dict)
-    cost_snapshot = models.JSONField(default=dict)
+    reference_snapshot = models.JSONField(default=list, blank=True)
+    usage_snapshot = models.JSONField(default=dict, blank=True)
+    cost_snapshot = models.JSONField(default=dict, blank=True)
     review_notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
