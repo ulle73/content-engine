@@ -34,6 +34,7 @@ from .sequence import (
     create_transition_bridge,
     create_sequence_project,
     prepare_anchor_chain_version,
+    prepare_transition_bridge_version,
     preview_anchor_chain_version,
     preview_transition_bridge_version,
     promote_output_chain_final_frame,
