@@ -19,9 +19,9 @@ from .creative_registry import verified_models
 from .media_references import reference_asset, serialize_generation_references
 from .media_providers import higgsfield_configured
 from .media_storage import MediaError, download_url, local_path
-from .models import ContentRun, MediaAsset, MediaGeneration, SequenceAnchorGenerationTarget
+from .models import ContentRun, MediaAsset, MediaGeneration, SequenceAnchorGenerationTarget, SequenceBridgeVersion, SequenceClipVersion
 from .ownership import company_required
-from .sequence import anchor_change_impact
+from .sequence import anchor_change_impact, sync_sequence_generation
 from .media import preview_job, refresh_terminal_provider_status, start_reviewed_job
 
 
@@ -219,6 +219,16 @@ def job_page(request, workspace_id, run_id, job_id):
         if anchor_target and anchor_target.target_anchor_id
         else {"total_versions": 0, "selected_segments": 0}
     )
+    sequence_clip_version = (
+        SequenceClipVersion.objects.select_related("clip__project")
+        .filter(generation=job, clip__project__company=request.workspace)
+        .first()
+    )
+    sequence_bridge_version = (
+        SequenceBridgeVersion.objects.select_related("bridge__project")
+        .filter(generation=job, bridge__project__company=request.workspace)
+        .first()
+    )
     return render(request, "engine/media_job.html", {
         "workspace": request.workspace, "run": run, "job": job, "pending": job.status in PENDING, "now": timezone.now(),
         "creative": creative, "safe_parameters": safe_parameters, "status_index": status_index,
@@ -230,6 +240,8 @@ def job_page(request, workspace_id, run_id, job_id):
         "queued": job.status == "queued",
         "sequence_anchor_target": anchor_target,
         "sequence_anchor_impact": anchor_impact,
+        "sequence_clip_version": sequence_clip_version,
+        "sequence_bridge_version": sequence_bridge_version,
     })
 
 
@@ -241,9 +253,10 @@ def job_start(request, workspace_id, run_id, job_id):
     job = get_object_or_404(MediaGeneration, pk=job_id, run=run)
     try:
         if request.POST.get("action") == "preview":
-            preview_job(job)
+            job = preview_job(job)
         else:
-            start_reviewed_job(job)
+            job = start_reviewed_job(job)
+        sync_sequence_generation(job)
     except MediaError as exc:
         messages.error(request, str(exc))
     return redirect("engine:media_job", workspace_id=workspace_id, run_id=run.pk, job_id=job.pk)
@@ -258,6 +271,7 @@ def job_status(request, workspace_id, run_id, job_id):
     try:
         if job.status != "queued":
             job = advance_job(job)
+        sync_sequence_generation(job)
         return JsonResponse({"status": job.status, "pending": job.status in PENDING, "error": job.error})
     except (MediaError, KeyError, ValueError):
         return JsonResponse({"error": "Status kunde inte hämtas. Försök igen; befintligt jobb återanvänds."}, status=502)
@@ -271,6 +285,7 @@ def refresh_provider_status(request, workspace_id, run_id, job_id):
     job = get_object_or_404(MediaGeneration, pk=job_id, run=run)
     try:
         job = refresh_terminal_provider_status(job)
+        sync_sequence_generation(job)
         messages.success(request, "Higgsfields senaste felorsak har hämtats för samma request-id.")
     except MediaError as exc:
         messages.error(request, str(exc))
@@ -285,6 +300,7 @@ def cancel_generation(request, workspace_id, run_id, job_id):
     job = get_object_or_404(MediaGeneration, pk=job_id, run=run)
     try:
         job = cancel_job(job)
+        sync_sequence_generation(job)
         messages.success(request, "Genereringen är avbruten." if job.status == "canceled" else "Jobbet var redan avslutat.")
     except MediaError as exc:
         messages.error(request, str(exc))
