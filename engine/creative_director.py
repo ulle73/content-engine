@@ -448,6 +448,8 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             if brief.preserve:
                 blocking += " Preserve exactly: " + "; ".join(brief.preserve) + "."
             sections.append("FIRST FRAME AND BLOCKING: " + blocking)
+        if ReferenceRole.end_image in _brief_reference_roles(brief) and _uses_prompt_section(model, "END_FRAME"):
+            sections.append("END FRAME: Use the supplied end image as the exact closing visual anchor and arrive there naturally.")
         if _uses_prompt_section(model, "CAMERA"):
             sections.append("CAMERA: " + (", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene") + ".")
         if _uses_prompt_section(model, "PHYSICS"):
