@@ -201,7 +201,7 @@ def audit():
 
         assert page.locator(".sequence-workspace-page").count() == 1
         assert page.get_by_role("heading", name="Generera, jämför och välj clip").count() == 1
-        assert page.locator("button[aria-label^='Avbryt clip']").count() == 1
+        assert page.locator("button[aria-label^='Avbryt clip']").count() == 2
         assert page.locator(".sequence-version-card").count() == 3
         _assert_page_no_horizontal_overflow(page, "desktop")
         _assert_keyboard_focus_visible(page)
