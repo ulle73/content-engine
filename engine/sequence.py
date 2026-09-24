@@ -294,7 +294,6 @@ def prepare_anchor_chain_version(
                 "project__author",
                 "start_anchor__asset",
                 "end_anchor__asset",
-                "selected_version",
             )
             .get(pk=clip.pk)
         )
