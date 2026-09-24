@@ -293,9 +293,9 @@ def generate_media_once(
     shape: str,
     include_logo: bool,
     source_asset_id: str | None,
-    end_asset_id: str | None,
     expected_revision: int | None,
     idempotency_key: str,
+    end_asset_id: str | None = None,
     priority: str = "balanced",
 ) -> MediaGeneration:
     action, execute = begin_action(
