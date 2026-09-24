@@ -2,6 +2,7 @@ import io
 import uuid
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from PIL import Image
 from django.contrib.auth import get_user_model
@@ -26,6 +27,9 @@ from .sequence import (
     attach_generation_to_clip,
     create_clip,
     create_sequence_project,
+    prepare_anchor_chain_version,
+    preview_anchor_chain_version,
+    regenerate_anchor_chain_clip,
     replace_anchor_asset,
     select_clip_version,
     sequence_snapshot,
@@ -286,3 +290,167 @@ class SequenceEngineE1Tests(TestCase):
         attach_generation_to_clip(clip1, generation)
         with self.assertRaises(ProtectedError):
             generation.delete()
+
+
+    def test_e2_prepare_uses_exact_canonical_anchors_without_provider_call(self):
+        k0, k1, _, clip1, _ = self.build_three_anchor_chain()
+        with patch("engine.media.providers.estimate_video") as estimate, patch("engine.media.providers.start_video") as start:
+            version = prepare_anchor_chain_version(
+                clip1,
+                brief="Create a calm premium bridge between these anchors with no audio",
+                token=uuid.uuid4(),
+            )
+        estimate.assert_not_called()
+        start.assert_not_called()
+
+        generation = version.generation
+        generation.refresh_from_db()
+        refs = {row.role: row.asset_id for row in generation.references.all()}
+        self.assertEqual(generation.source_asset_id, k0.asset_id)
+        self.assertEqual(refs["START_IMAGE"], k0.asset_id)
+        self.assertEqual(refs["END_IMAGE"], k1.asset_id)
+        self.assertEqual(generation.parameters["sequence"]["mode"], "anchor_chain")
+        self.assertEqual(generation.parameters["sequence"]["clip_id"], str(clip1.pk))
+        self.assertEqual(generation.parameters["sequence"]["start_anchor_id"], str(k0.pk))
+        self.assertEqual(generation.parameters["sequence"]["end_anchor_id"], str(k1.pk))
+        self.assertEqual(generation.parameters["sequence"]["version_number"], 1)
+        self.assertEqual(generation.run.context["sequence"]["clip_id"], str(clip1.pk))
+        self.assertEqual(version.version_number, 1)
+        clip1.refresh_from_db()
+        self.assertEqual(clip1.status, "review")
+        self.assertIsNone(clip1.selected_version_id)
+
+    def test_e2_adjacent_clip_jobs_share_exact_same_k1_asset(self):
+        _, k1, _, clip1, clip2 = self.build_three_anchor_chain()
+        v1 = prepare_anchor_chain_version(clip1, token=uuid.uuid4())
+        v2 = prepare_anchor_chain_version(clip2, token=uuid.uuid4())
+
+        clip1_end = v1.generation.references.get(role="END_IMAGE")
+        clip2_start = v2.generation.references.get(role="START_IMAGE")
+        self.assertEqual(clip1_end.asset_id, k1.asset_id)
+        self.assertEqual(clip2_start.asset_id, k1.asset_id)
+        self.assertEqual(clip1.end_anchor_id, clip2.start_anchor_id)
+        self.assertEqual(clip1.end_anchor_id, k1.pk)
+
+    def test_e2_regenerating_clip2_does_not_mutate_anchors_clip1_or_selected_v1(self):
+        k0, k1, k2, clip1, clip2 = self.build_three_anchor_chain()
+        clip1_version = prepare_anchor_chain_version(clip1, token=uuid.uuid4())
+        clip2_v1 = prepare_anchor_chain_version(clip2, token=uuid.uuid4())
+
+        MediaGeneration.objects.filter(pk=clip2_v1.generation_id).update(status="completed")
+        SequenceClipVersion.objects.filter(pk=clip2_v1.pk).update(status="ready")
+        clip2_v1.refresh_from_db()
+        select_clip_version(clip2, clip2_v1)
+
+        anchor_state = {
+            k0.pk: (k0.asset_id, k0.locked),
+            k1.pk: (k1.asset_id, k1.locked),
+            k2.pk: (k2.asset_id, k2.locked),
+        }
+        clip1_generation_ids = list(clip1.versions.values_list("generation_id", flat=True))
+
+        clip2_v2 = regenerate_anchor_chain_clip(
+            clip2,
+            brief="Try a smoother, slower bridge while keeping the same anchors",
+            token=uuid.uuid4(),
+        )
+
+        for anchor in (k0, k1, k2):
+            anchor.refresh_from_db()
+            self.assertEqual((anchor.asset_id, anchor.locked), anchor_state[anchor.pk])
+        self.assertEqual(list(clip1.versions.values_list("generation_id", flat=True)), clip1_generation_ids)
+        self.assertEqual(clip1.versions.count(), 1)
+        self.assertEqual(clip2.versions.count(), 2)
+        self.assertNotEqual(clip2_v1.generation_id, clip2_v2.generation_id)
+        clip2.refresh_from_db()
+        self.assertEqual(clip2.selected_version_id, clip2_v1.pk)
+        self.assertEqual(clip2.status, "selected")
+
+    def test_e2_prepare_is_idempotent_for_same_token(self):
+        _, _, _, clip1, _ = self.build_three_anchor_chain()
+        token = uuid.uuid4()
+        first = prepare_anchor_chain_version(clip1, token=token)
+        second = prepare_anchor_chain_version(clip1, token=token)
+        self.assertEqual(first.pk, second.pk)
+        self.assertEqual(first.generation_id, token)
+        self.assertEqual(clip1.versions.count(), 1)
+
+    def test_e2_idempotency_token_cannot_cross_clips(self):
+        _, _, _, clip1, clip2 = self.build_three_anchor_chain()
+        token = uuid.uuid4()
+        prepare_anchor_chain_version(clip1, token=token)
+        with self.assertRaisesRegex(SequenceError, "annat sequence-clip"):
+            prepare_anchor_chain_version(clip2, token=token)
+
+    def test_e2_preview_is_nonbillable_and_refreshes_snapshot(self):
+        _, _, _, clip1, _ = self.build_three_anchor_chain()
+        version = prepare_anchor_chain_version(clip1, token=uuid.uuid4())
+
+        def fake_preview(job):
+            self.assertEqual(job.status, "queued")
+            self.assertFalse(job.provider_id)
+            job.usage = {
+                "estimate": {"usd": "0.42", "credits": 4},
+                "reviewed_at": "2026-09-24T10:00:00+00:00",
+            }
+            job.save(update_fields=["usage"])
+            return job
+
+        with patch("engine.sequence.preview_job", side_effect=fake_preview) as preview:
+            refreshed = preview_anchor_chain_version(version)
+
+        preview.assert_called_once()
+        refreshed.generation.refresh_from_db()
+        self.assertEqual(refreshed.generation.status, "queued")
+        self.assertFalse(refreshed.generation.provider_id)
+        self.assertEqual(refreshed.cost_snapshot["estimate_usd"], "0.42")
+        self.assertEqual(refreshed.usage_snapshot["estimate"]["credits"], 4)
+        self.assertEqual(
+            {item["role"] for item in refreshed.reference_snapshot},
+            {"START_IMAGE", "END_IMAGE"},
+        )
+
+    def test_e2_preview_fails_closed_if_current_anchor_asset_changed(self):
+        _, _, k2, _, clip2 = self.build_three_anchor_chain()
+        version = prepare_anchor_chain_version(clip2, token=uuid.uuid4())
+        set_anchor_locked(k2, False)
+        replacement = self.asset((90, 160, 95))
+        replace_anchor_asset(k2, replacement)
+
+        with patch("engine.sequence.preview_job") as preview:
+            with self.assertRaisesRegex(SequenceError, "anchors har ändrats"):
+                preview_anchor_chain_version(version)
+        preview.assert_not_called()
+
+    def test_e2_duration_and_aspect_ratio_are_compiled_from_clip_targets(self):
+        k0 = add_anchor(self.project, self.asset(), position=0)
+        k1 = add_anchor(self.project, self.asset((50, 100, 70)), position=1)
+        clip = create_clip(
+            self.project,
+            k0,
+            k1,
+            position=0,
+            recipe_id="scroll_transition_bridge",
+            duration_seconds_target=8,
+            aspect_ratio="16:9",
+        )
+        version = prepare_anchor_chain_version(clip, token=uuid.uuid4())
+        creative_brief = version.generation.parameters["creative"]["brief"]
+        self.assertEqual(creative_brief["duration_seconds"], 8)
+        self.assertEqual(creative_brief["aspect_ratio"], "16:9")
+
+    def test_e2_model_override_fails_closed_until_b4_exists(self):
+        k0 = add_anchor(self.project, self.asset(), position=0)
+        k1 = add_anchor(self.project, self.asset((50, 100, 70)), position=1)
+        clip = create_clip(
+            self.project,
+            k0,
+            k1,
+            position=0,
+            recipe_id="scroll_transition_bridge",
+            model_override="manual-model",
+        )
+        with self.assertRaisesRegex(SequenceError, "B4"):
+            prepare_anchor_chain_version(clip, token=uuid.uuid4())
+        self.assertEqual(clip.versions.count(), 0)
+        self.assertFalse(ContentRun.objects.filter(model="sequence-anchor-chain").exists())
