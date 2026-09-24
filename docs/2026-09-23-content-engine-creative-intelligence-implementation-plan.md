@@ -518,12 +518,12 @@ Next exact task: D2 — deploy current code and run one non-billable production 
 
 ## Task D2 — Non-billable production preflight for start→end
 
-- [ ] Deploy current code to Render.
-- [ ] Verify dedicated GK Higgsfield server credential works for estimate.
-- [ ] Verify actual provider accepts the selected model + both references for estimate.
-- [ ] Record exact returned model path and safe estimate metadata.
-- [ ] Do not substitute Jonas personal Higgsfield workspace.
-- [ ] Do not run paid generation merely to test credentials.
+- [x] Deploy current code to Render.
+- [x] Verify dedicated GK Higgsfield server credential works for estimate.
+- [x] Verify actual provider accepts the selected model + both references for estimate.
+- [x] Record exact returned model path and safe estimate metadata.
+- [x] Do not substitute Jonas personal Higgsfield workspace.
+- [x] Do not run paid generation merely to test credentials.
 
 ### Acceptance criteria
 
@@ -531,10 +531,18 @@ One production job reaches a valid reviewed/queued state with a real provider es
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —  
-Live evidence: —
+Status: DONE — production start→end preflight completed successfully without starting provider generation.  
+Production commit: `2718f3e30df7a90a8dcf30388091f3002302de7c`.  
+Render service: `content-engine-mcp`, branch `feature/chatgpt-content-engine-mcp`, Frankfurt.  
+Credential isolation: Production code accepts only `HIGGSFIELD_API_KEY_GK` (+ optional GK secret). Generic/personal Higgsfield variables are ignored and readiness fails closed without the GK credential.  
+Live provider evidence: Render emitted `D2_PREFLIGHT_OK` at 2026-09-24 09:34:59Z for token `d2-2026-09-24-4`. The real provider estimate selected `bytedance/seedance-2.5` with provider path `bytedance/seedance-2.5/image-to-video`, canonical references `START_IMAGE` + `END_IMAGE`, recipe `scroll_transition_bridge`, and safe estimate metadata `usd=1.6180`.  
+Non-billable proof: job status remained `queued` and `provider_id_present=false`; no `start_reviewed_job`/generation submit occurred.  
+Provider compatibility fix: Live diagnostics showed current Seedance 2.5 pricing is returned in the provider's token-based pricing shape rather than the previously assumed shape. PR #48 updated safe parsing for that current contract before the successful preflight.  
+Operational hook: PR #45 added an env-gated one-time production preflight command that creates temporary anchors, uses the real `create_job → preview_job` path, logs only safe metadata, and removes its temporary run/assets. After the successful proof, `D2_HIGGSFIELD_PREFLIGHT_TOKEN` was set to `0` so future deploys do not repeat the preflight.  
+Earlier diagnostics: PR #46 and PR #47 added safe diagnostics to identify the live estimate shape without exposing credentials or starting generation.  
+Paid generation: none.  
+Next paid gate: D3 remains BLOCKED until explicit authorization of the exact reviewed job and price.  
+Next non-paid implementation task: E1 — Sequence domain/schema.
 
 ---
 
