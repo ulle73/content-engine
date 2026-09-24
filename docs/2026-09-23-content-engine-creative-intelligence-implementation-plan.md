@@ -621,10 +621,10 @@ Evidence: see the dedicated E1 execution ledger for schema, ownership, versionin
 
 Execution ledger: `docs/2026-09-24-sequence-engine-e2-anchor-chain-plan.md`
 
-- [ ] Canonical anchor can be start of one clip and end of previous clip.
-- [ ] Same exact asset identity is preserved.
-- [ ] Regenerating a clip does not mutate anchors.
-- [ ] Locked anchors cannot be silently replaced.
+- [x] Canonical anchor can be start of one clip and end of previous clip.
+- [x] Same exact asset identity is preserved.
+- [x] Regenerating a clip does not mutate anchors.
+- [x] Locked anchors cannot be silently replaced.
 
 ### Acceptance criteria
 
@@ -632,7 +632,12 @@ Regenerate Clip2 without changing Clip1, K1 or K2.
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — non-destructive Anchor Chain execution is implemented and live.  
+CI: `35995732844` — full normal + PostgreSQL suites green (299 tests).  
+PR: #52  
+Commit: `b883b2febb85a907d0cc7f34da523bb7f520bcee`  
+Deploy: `dep-daqgvd67bikc738g27dg` — new instance healthy/live.  
+Evidence: see the dedicated E2 execution ledger for exact K1 identity, idempotency, stale-anchor safety and provider-free prepare proof.
 
 ---
 
@@ -1041,7 +1046,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task E2 — Implement Anchor Chain execution on top of the live E1 Sequence Engine foundation.**
+> **Task E3 — Implement explicit Output Chain promotion without silently replacing canonical anchors.**
 
-Do not begin by building the timeline UI; prove non-destructive Anchor Chain execution first.
+Do not begin by building the timeline UI; prove explicit, provenance-safe Output Chain promotion first.
 
