@@ -22,7 +22,7 @@ from django.utils import timezone
 from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, preview_job, recover_media_jobs, remove_asset, select_asset, start_reviewed_job, store_asset
 from .media_providers import ProviderUnavailableError, UncertainGeneration, estimate_video, generate_images, higgs, start_video, upload_input
 from .media_storage import MediaError, local_path
-from .creative_core import ReferenceRole
+from .creative_core import EvidenceLevel, ReferenceRole
 from .media_references import add_generation_reference, reference_asset, serialize_generation_references
 from .models import Company, ContentRun, MediaAsset, MediaGeneration, MediaGenerationReference
 
