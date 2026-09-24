@@ -524,6 +524,8 @@ class MediaTests(TestCase):
     def test_unknown_estimate_shape_logs_only_safe_price_metadata(self, higgs):
         job = self.job("video")
         higgs.return_value = {
+            "type": "fixed",
+            "pricing_description": "$0.42 / generation",
             "data": {
                 "cost_usd": "0.42",
                 "credits_required": "7",
@@ -537,6 +539,8 @@ class MediaTests(TestCase):
                 estimate_video(job)
         logged = "\n".join(captured.output)
         self.assertIn("data.cost_usd", logged)
+        self.assertIn('"type": "fixed"', logged)
+        self.assertIn('"pricing_description": "$0.42 / generation"', logged)
         self.assertIn("data.credits_required", logged)
         self.assertIn("0.42", logged)
         self.assertIn('"7"', logged)
