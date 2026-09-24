@@ -711,17 +711,23 @@ Evidence: see the dedicated F1 ledger for navigation, ownership, timeline, versi
 
 Execution ledger: `docs/2026-09-24-sequence-workspace-f2-anchor-controls-plan.md`
 
-- [ ] Upload anchor.
-- [ ] Choose existing MediaAsset.
-- [ ] Generate anchor with AI.
-- [ ] Replace anchor.
-- [ ] Lock anchor.
-- [ ] Duplicate/version anchor where appropriate.
-- [ ] Show provenance.
+- [x] Upload anchor.
+- [x] Choose existing MediaAsset.
+- [x] Generate anchor with AI.
+- [x] Replace anchor.
+- [x] Lock anchor.
+- [x] Duplicate/version anchor where appropriate.
+- [x] Show provenance.
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — explicit, revisioned Anchor Controls are implemented and live.  
+Migration: `0018_sequence_anchor_controls_f2`  
+CI: `36004141029` — full normal + PostgreSQL suites green after PostgreSQL row-lock hardening.  
+PR: #60  
+Commit: `7c2568982e29f8aa449301a1734ed3585ffd3426`  
+Deploy: `dep-daqi56gu01pc7388oqfg` — migration applied, new instance `g2ht2` healthy/live.  
+Evidence: see the dedicated F2 ledger for revision history, stale invalidation, Media/upload/AI controls and paid-start reuse proof.
 
 ---
 
@@ -1072,7 +1078,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task F2 — Add explicit anchor controls to the live Sequence workspace without bypassing E1–E4 safety.**
+> **Task F3 — Add explicit clip generation, regeneration, comparison, selection, cancellation and diagnostics to the live Sequence workspace.**
 
-Build the workspace as a thin UI over the verified E1–E4 domain/services; do not duplicate sequence logic in templates/views.
+Build F3 as a thin UI over the verified E2/E4 generation services and existing reviewed media lifecycle; do not introduce a second provider or billing path.
 
