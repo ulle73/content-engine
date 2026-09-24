@@ -211,16 +211,16 @@ class SequenceWorkspaceF1Tests(TestCase):
         self.assertContains(response, 'role="list"')
         self.assertContains(response, 'aria-label="Sekvensens ordning"')
 
-    def test_workspace_is_read_safe_and_exposes_no_generation_or_anchor_mutation_actions(self):
+    def test_workspace_exposes_explicit_anchor_controls_but_no_clip_or_paid_generation_actions(self):
         project, _, _, _, _ = self.build_workspace_project()
         response = self.client.get(
             reverse("engine:sequence_workspace", kwargs={"workspace_id": self.company.pk, "project_id": project.pk})
         )
-        self.assertContains(response, "Översikt utan dolda mutationer")
-        self.assertContains(response, "Read-safe")
-        self.assertNotContains(response, "Regenerera")
+        self.assertContains(response, "Alla anchor-ändringar är explicita och versionssparade")
+        self.assertContains(response, "Versioned")
+        self.assertContains(response, "Hantera K0")
+        self.assertNotContains(response, "Regenerera clip")
         self.assertNotContains(response, "Starta betald generation")
-        self.assertNotContains(response, "Byt anchor")
         self.assertNotContains(response, 'name="source_asset"')
         self.assertNotContains(response, 'name="end_asset"')
 
@@ -231,7 +231,7 @@ class SequenceWorkspaceF1Tests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Projektet är tomt")
-        self.assertContains(response, "Anchor-kontroller kommer i F2")
+        self.assertContains(response, "Använd Anchor controls ovan")
         self.assertContains(response, "<strong>0</strong>", count=4, html=True)
 
     def test_sequences_are_media_subnavigation_without_adding_seventh_primary_destination(self):
