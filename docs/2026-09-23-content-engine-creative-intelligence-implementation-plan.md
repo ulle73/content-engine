@@ -709,6 +709,8 @@ Evidence: see the dedicated F1 ledger for navigation, ownership, timeline, versi
 
 ## Task F2 — Anchor controls
 
+Execution ledger: `docs/2026-09-24-sequence-workspace-f2-anchor-controls-plan.md`
+
 - [ ] Upload anchor.
 - [ ] Choose existing MediaAsset.
 - [ ] Generate anchor with AI.
