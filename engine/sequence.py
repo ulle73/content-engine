@@ -260,7 +260,7 @@ def change_anchor_asset(
     with transaction.atomic():
         current = (
             SequenceAnchor.objects.select_for_update()
-            .select_related("project", "asset", "source_clip_version")
+            .select_related("project", "asset")
             .get(pk=anchor.pk)
         )
         if current.locked:
@@ -428,7 +428,7 @@ def apply_generated_anchor_asset(
     with transaction.atomic():
         current = (
             SequenceAnchorGenerationTarget.objects.select_for_update()
-            .select_related("project", "target_anchor", "applied_anchor", "generation")
+            .select_related("project", "generation")
             .get(pk=target.pk)
         )
         if current.applied_anchor_id:
