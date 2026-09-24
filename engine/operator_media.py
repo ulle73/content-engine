@@ -109,6 +109,7 @@ def start_media_generation(
     shape: str = "portrait",
     include_logo: bool = False,
     source_asset_id: str | None = None,
+    end_asset_id: str | None = None,
     token: str | None = None,
     expected_revision: int | None = None,
     priority: str = "balanced",
@@ -124,10 +125,17 @@ def start_media_generation(
     if not brief:
         brief = default_brief(run, kind)
     source = None
+    end_source = None
     if source_asset_id:
         source = MediaAsset.objects.filter(pk=source_asset_id, company=run.workspace, kind="image").first()
         if not source:
             raise OperatorError("Startbilden finns inte för företaget.")
+    if end_asset_id:
+        end_source = MediaAsset.objects.filter(pk=end_asset_id, company=run.workspace, kind="image").first()
+        if not end_source:
+            raise OperatorError("Slutbilden finns inte för företaget.")
+        if not source:
+            raise OperatorError("Välj en startbild innan du väljer en slutbild.")
     try:
         job_token = uuid.UUID(token) if token else uuid.uuid4()
     except ValueError as exc:
@@ -140,6 +148,7 @@ def start_media_generation(
         count=count,
         shape=shape,
         source=source,
+        end_source=end_source,
         include_logo=include_logo,
         priority=priority,
     )
@@ -284,6 +293,7 @@ def generate_media_once(
     shape: str,
     include_logo: bool,
     source_asset_id: str | None,
+    end_asset_id: str | None,
     expected_revision: int | None,
     idempotency_key: str,
     priority: str = "balanced",
@@ -295,7 +305,7 @@ def generate_media_once(
         key=idempotency_key,
         payload={
             "run_id": str(run.pk), "kind": kind, "brief": brief, "count": count, "shape": shape,
-            "include_logo": include_logo, "source_asset_id": source_asset_id,
+            "include_logo": include_logo, "source_asset_id": source_asset_id, "end_asset_id": end_asset_id,
             "expected_revision": expected_revision, "priority": priority,
         },
         run=run,
@@ -316,6 +326,7 @@ def generate_media_once(
             shape=shape,
             include_logo=include_logo,
             source_asset_id=source_asset_id,
+            end_asset_id=end_asset_id,
             token=str(job_token),
             expected_revision=expected_revision,
             priority=priority,
