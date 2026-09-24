@@ -263,6 +263,67 @@ class MediaTests(TestCase):
         self.assertContains(detail, "Slutbild")
         self.assertEqual(reference_asset(job, ReferenceRole.end_image).pk, end.pk)
 
+    def test_ai_studio_model_override_is_auto_first_and_reference_compatible(self):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        picker = self.client.get(self.url("media"), {
+            "kind": "video", "source": str(start.pk), "end_source": str(end.pk),
+        })
+        self.assertContains(picker, "Auto · rekommenderas")
+        self.assertContains(picker, "bytedance/seedance-2.5")
+        self.assertContains(picker, "bytedance/seedance-2.0")
+        self.assertNotContains(picker, 'value="kling-video/v2.5-turbo/pro"', html=False)
+
+    def test_media_job_persists_verified_manual_override_provenance(self):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        with patch(
+            "engine.media.providers.estimate_video",
+            return_value=(
+                "bytedance/seedance-2.0/image-to-video",
+                {"prompt": "review-only"},
+                {"estimate": {"usd": "0.70"}, "model": "bytedance/seedance-2.0/image-to-video"},
+            ),
+        ):
+            response = self.client.post(self.url("media_generate"), {
+                "token": str(uuid.uuid4()),
+                "kind": "video",
+                "brief": "Bridge these frames in 5 seconds",
+                "count": "1",
+                "shape": "portrait",
+                "priority": "balanced",
+                "source_asset": str(start.pk),
+                "end_asset": str(end.pk),
+                "model_override": "bytedance/seedance-2.0",
+            })
+        self.assertEqual(response.status_code, 302)
+        job = self.run.media_jobs.latest("created_at")
+        self.assertEqual(job.parameters["model_override"], "bytedance/seedance-2.0")
+        self.assertEqual(job.parameters["model"], "bytedance/seedance-2.0")
+        self.assertEqual(job.parameters["provider_model"], "bytedance/seedance-2.0/image-to-video")
+        self.assertTrue(job.parameters["creative"]["selection"]["manual_override"])
+        self.assertIn("manual_override", job.parameters["creative"]["selection"]["reason_codes"])
+
+    def test_invalid_manual_override_fails_before_estimate_or_paid_submit(self):
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        with patch("engine.media.providers.estimate_video") as estimate, patch("engine.media.providers.start_video") as start_video:
+            response = self.client.post(self.url("media_generate"), {
+                "token": str(uuid.uuid4()),
+                "kind": "video",
+                "brief": "Bridge these frames in 5 seconds",
+                "count": "1",
+                "shape": "portrait",
+                "priority": "balanced",
+                "source_asset": str(start.pk),
+                "end_asset": str(end.pk),
+                "model_override": "kling-video/v2.5-turbo/pro",
+            })
+        self.assertEqual(response.status_code, 302)
+        estimate.assert_not_called()
+        start_video.assert_not_called()
+        self.assertFalse(self.run.media_jobs.exists())
+
     def test_multiple_typed_references_are_ordered_and_slots_are_immutable(self):
         job = self.job("video")
         start = store_asset(self.company, picture())
