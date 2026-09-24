@@ -17,6 +17,7 @@ from .media_storage import MediaError, open_asset
 from .models import (
     Company,
     ContentRun,
+    MediaAsset,
     MediaGeneration,
     SequenceAnchor,
     SequenceClip,
