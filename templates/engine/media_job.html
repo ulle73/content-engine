@@ -121,6 +121,7 @@
     <summary>Avancerad diagnostik</summary>
     <dl>
       <div><dt>Vald modell</dt><dd>{{ job.parameters.model|default:'–' }}</dd></div>
+      <div><dt>Routing</dt><dd>{% if creative.selection.manual_override %}Manuell override{% else %}Auto{% endif %}</dd></div>
       <div><dt>Varför</dt><dd>{% for reason in creative.selection.reason_codes %}{{ reason }}{% if not forloop.last %} · {% endif %}{% empty %}–{% endfor %}</dd></div>
       <div><dt>Komplexitet</dt><dd>{{ creative.complexity|default:'–' }}</dd></div>
       <div><dt>Compiler</dt><dd>{{ creative.compiler_version|default:'–' }}</dd></div>
