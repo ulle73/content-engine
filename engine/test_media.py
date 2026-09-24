@@ -200,16 +200,24 @@ class MediaTests(TestCase):
         self.assertContains(picker, "Slutbild vald")
         self.assertContains(picker, f'name="end_asset" value="{end.pk}"', html=False)
 
-        response = self.client.post(self.url("media_generate"), {
-            "token": str(uuid.uuid4()),
-            "kind": "video",
-            "brief": "Skapa en premium övergång på 8 sekunder",
-            "count": "1",
-            "shape": "portrait",
-            "priority": "balanced",
-            "source_asset": str(start.pk),
-            "end_asset": str(end.pk),
-        })
+        with patch(
+            "engine.media.providers.estimate_video",
+            return_value=(
+                "bytedance/seedance-2.5/image-to-video",
+                {"prompt": "review-only"},
+                {"estimate": {"usd": "0.80"}, "model": "bytedance/seedance-2.5/image-to-video"},
+            ),
+        ):
+            response = self.client.post(self.url("media_generate"), {
+                "token": str(uuid.uuid4()),
+                "kind": "video",
+                "brief": "Skapa en premium övergång på 8 sekunder",
+                "count": "1",
+                "shape": "portrait",
+                "priority": "balanced",
+                "source_asset": str(start.pk),
+                "end_asset": str(end.pk),
+            })
         self.assertEqual(response.status_code, 302)
         job = self.run.media_jobs.latest("created_at")
         detail = self.client.get(self.url("media_job", job_id=job.pk))
