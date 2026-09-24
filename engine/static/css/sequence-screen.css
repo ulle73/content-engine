@@ -28,6 +28,16 @@
   text-transform: uppercase;
 }
 
+.sequence-workspace-page a:focus-visible,
+.sequence-workspace-page button:focus-visible,
+.sequence-workspace-page summary:focus-visible {
+  outline: 3px solid #1f5f3f;
+  outline-offset: 2px;
+}
+.sequence-workspace-page summary:focus-visible {
+  outline-offset: -3px;
+}
+
 .sequence-create-card {
   margin: 20px 0 26px;
   border: 1px solid var(--gk-line);
@@ -223,8 +233,49 @@
   .sequence-anchor-node { display: grid; grid-template-columns: 108px minmax(0,1fr); }
   .sequence-node-type { grid-column: 1 / -1; }
   .sequence-anchor-media { height: 96px; }
-  .sequence-status-table { overflow-x: auto; }
-  .sequence-status-row { min-width: 660px; }
+  .sequence-anchor-actions { grid-column: 1 / -1; }
+  .sequence-status-table {
+    display: grid;
+    gap: 10px;
+    overflow: visible;
+    border: 0;
+  }
+  .sequence-status-head { display: none; }
+  .sequence-status-row {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--gk-line);
+    border-radius: 10px;
+    background: #fff;
+  }
+  .sequence-status-row > span {
+    min-width: 0;
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--gk-line);
+    overflow-wrap: anywhere;
+  }
+  .sequence-status-row > span:first-child {
+    grid-column: 1 / -1;
+    background: var(--gk-surface-soft);
+  }
+  .sequence-status-row > span:not(:first-child)::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    color: var(--gk-soft);
+    font-size: 8px;
+    font-weight: 760;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .sequence-status-row > span:nth-child(2),
+  .sequence-status-row > span:nth-child(4) { border-right: 1px solid var(--gk-line); }
+  .sequence-status-row > span:nth-child(4),
+  .sequence-status-row > span:nth-child(5) { border-bottom: 0; }
 }
 
 
@@ -252,6 +303,9 @@
 .sequence-control-card > summary,
 .sequence-anchor-actions > summary,
 .sequence-subcontrol > summary {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   list-style: none;
   font-size: 10px;
@@ -458,6 +512,7 @@
 }
 .sequence-version-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
@@ -537,9 +592,12 @@
   border-top: 1px solid var(--gk-line);
 }
 .sequence-version-diagnostics > summary {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
   padding: 9px 11px;
   cursor: pointer;
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 740;
 }
 .sequence-version-diagnostics dl {
@@ -596,4 +654,21 @@
   .sequence-clip-options { grid-template-columns: 1fr; }
   .sequence-version-grid { grid-template-columns: 1fr; padding: 10px; }
   .sequence-version-meta > div { grid-template-columns: 76px minmax(0,1fr); }
+  .sequence-workspace-page button,
+  .sequence-workspace-page .button,
+  .sequence-control-card > summary,
+  .sequence-anchor-actions > summary,
+  .sequence-subcontrol > summary,
+  .sequence-version-diagnostics > summary {
+    min-height: 44px;
+  }
+  .sequence-version-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .sequence-version-actions form,
+  .sequence-version-actions button,
+  .sequence-version-actions .button {
+    width: 100%;
+  }
 }
