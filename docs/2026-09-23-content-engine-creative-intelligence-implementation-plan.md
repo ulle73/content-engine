@@ -579,15 +579,15 @@ Goal: add a reusable project layer for reels, ads, product films and scroll expe
 
 Execution ledger: `docs/2026-09-24-sequence-engine-e1-implementation-plan.md`
 
-- [ ] Add `SequenceProject`.
-- [ ] Add `SequenceAnchor`.
-- [ ] Add `SequenceClip`.
-- [ ] Add clip/candidate version representation.
-- [ ] Link generated assets through existing `MediaAsset`.
-- [ ] Link generation jobs through existing `MediaGeneration`.
-- [ ] Company ownership enforced everywhere.
-- [ ] Non-destructive versioning.
-- [ ] No duplicated media storage system.
+- [x] Add `SequenceProject`.
+- [x] Add `SequenceAnchor`.
+- [x] Add `SequenceClip`.
+- [x] Add clip/candidate version representation.
+- [x] Link generated assets through existing `MediaAsset`.
+- [x] Link generation jobs through existing `MediaGeneration`.
+- [x] Company ownership enforced everywhere.
+- [x] Non-destructive versioning.
+- [x] No duplicated media storage system.
 
 ### Acceptance criteria
 
@@ -607,9 +607,13 @@ with canonical shared K1.
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —
+Status: DONE — E1 is implemented, fully CI-verified and live on Render.  
+Migration: `0015_sequence_engine_e1`  
+CI: `35988142066` — normal + PostgreSQL suites green.  
+PR: #50  
+Commit: `65909657c1709af2411798dc8bb9de08a1bd1326`  
+Deploy: `dep-daqfqu0u01pc73811is0` — migration applied, new instance healthy and live.  
+Evidence: see the dedicated E1 execution ledger for schema, ownership, versioning and deletion/protection proof.
 
 ---
 
@@ -1035,7 +1039,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task C1 — Add the canonical typed MediaGenerationReference relation while preserving source_asset compatibility and company isolation.**
+> **Task E2 — Implement Anchor Chain execution on top of the live E1 Sequence Engine foundation.**
 
-Do not begin by building the timeline UI.
+Do not begin by building the timeline UI; prove non-destructive Anchor Chain execution first.
 
