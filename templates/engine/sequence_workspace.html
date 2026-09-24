@@ -192,7 +192,7 @@
                               {% if revision.asset_id == anchor.asset_id %}<span class="status-badge success">Aktiv</span>{% else %}
                                 <form method="post" action="{% url 'engine:sequence_anchor_restore' workspace_id=workspace.pk project_id=project.pk anchor_id=anchor.pk revision_id=revision.pk %}">
                                   {% csrf_token %}
-                                  {% if anchor.change_impact.total_versions %}<input type="hidden" name="confirm_stale" value="1">{% endif %}
+                                  {% if anchor.change_impact.total_versions %}<label class="sequence-inline-confirm"><input type="checkbox" name="confirm_stale" value="1" required><span>Bekräfta stale-versioner.</span></label>{% endif %}
                                   <button class="quiet" type="submit">Återställ</button>
                                 </form>
                               {% endif %}
