@@ -4,7 +4,10 @@ import uuid
 
 from cryptography.fernet import Fernet
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
+
+from .creative_core import ReferenceRole
 
 
 class SetupState(models.Model):
@@ -192,6 +195,59 @@ class MediaAsset(models.Model):
     sha256 = models.CharField(max_length=64, blank=True)
     # Clean generation before deterministic logo placement; never feed a rendered logo back to AI.
     generation_base_key = models.CharField(max_length=300, blank=True)
+
+
+class MediaGenerationReference(models.Model):
+    """Provider-neutral typed input reference with durable provenance.
+
+    The asset may be cleaned up after a terminal generation; asset_snapshot keeps
+    safe identity/provenance while active generations are protected in media.py.
+    """
+
+    generation = models.ForeignKey(MediaGeneration, on_delete=models.CASCADE, related_name="references")
+    asset = models.ForeignKey(
+        "MediaAsset", null=True, blank=True, on_delete=models.SET_NULL, related_name="generation_references"
+    )
+    role = models.CharField(max_length=30, choices=[(role.value, role.value) for role in ReferenceRole])
+    position = models.PositiveSmallIntegerField(default=0)
+    asset_snapshot = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+        super().clean()
+        if self.asset_id and self.generation_id:
+            generation_company_id = self.generation.run.workspace_id
+            if self.asset.company_id != generation_company_id:
+                raise ValidationError("Generation reference asset must belong to the generation company.")
+        if self.asset_id and self.role in {ReferenceRole.start_image.value, ReferenceRole.end_image.value}:
+            if self.asset.kind != "image" or self.asset.purpose == "logo":
+                raise ValidationError("Start/end references must be non-logo images.")
+        if self.asset_id and self.role == ReferenceRole.video_reference.value and self.asset.kind != "video":
+            raise ValidationError("VIDEO_REFERENCE must point to a video asset.")
+        if self.role == ReferenceRole.audio_reference.value:
+            raise ValidationError("AUDIO_REFERENCE is reserved until MediaAsset supports audio.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        if self.asset_id and not self.asset_snapshot:
+            self.asset_snapshot = {
+                "asset_id": str(self.asset_id),
+                "kind": self.asset.kind,
+                "sha256": self.asset.sha256,
+            }
+        super().save(*args, **kwargs)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["generation", "role", "position"], name="unique_generation_reference_slot"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["generation", "role", "position"], name="generation_reference_idx"),
+            models.Index(fields=["asset", "generation"], name="asset_generation_reference_idx"),
+        ]
+        ordering = ["role", "position", "id"]
 
 
 class DailyRun(models.Model):

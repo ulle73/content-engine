@@ -4,7 +4,9 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from .mcp_operations import cancel_generation, list_recent_generations, serialize_generation
-from .media import create_job
+from .media import create_job, store_asset
+from .creative_core import ReferenceRole
+from .media_references import add_generation_reference
 from .models import Company, ContentRun, MediaGeneration
 
 
@@ -30,6 +32,16 @@ class MCPMediaOperationTests(TestCase):
         self.assertEqual(data["diagnostics"]["structured_brief"]["duration_seconds"], 8)
         self.assertIn("registry_version", data["diagnostics"])
         self.assertNotIn("logo_sha256", data["diagnostics"]["parameters"])
+
+    def test_safe_generation_diagnostics_include_canonical_references(self):
+        from .test_media import picture
+        job = self.job()
+        reference = store_asset(self.company, picture())
+        add_generation_reference(job, reference, ReferenceRole.style_reference)
+        data = serialize_generation(job, diagnostics=True)
+        self.assertEqual(data["diagnostics"]["references"][0]["role"], ReferenceRole.style_reference.value)
+        self.assertEqual(data["diagnostics"]["references"][0]["asset_id"], str(reference.pk))
+        self.assertNotIn("storage_key", data["diagnostics"]["references"][0])
 
     def test_recent_generations_are_company_scoped_and_bounded(self):
         own = self.job()
