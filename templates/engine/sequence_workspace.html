@@ -42,7 +42,7 @@
         <h2 id="sequence-timeline-title">Anchor- och segmentordning</h2>
         <p>Anchors är visuella sanningar. Clips och bridges visas mellan sina exakta canonical endpoints.</p>
       </div>
-      <span class="sequence-section-meta">{{ anchors|length }} anchors · {{ clips|length|add:bridges|length }} segment</span>
+      <span class="sequence-section-meta">{{ anchors|length }} anchors · {{ segment_count }} segment</span>
     </div>
 
     {% if timeline %}
@@ -137,7 +137,7 @@
           <span role="cell">{{ clip.get_status_display }}</span>
           <span role="cell">{{ clip.candidate_count }}</span>
           <span role="cell">{% if clip.selected_version %}V{{ clip.selected_version.version_number }}{% else %}–{% endif %}</span>
-          <span role="cell">{% if clip.selected_version %}{{ clip.selected_version.generation.get_status_display }}{% else %}Ingen vald{% endif %}</span>
+          <span role="cell">{% if clip.selected_version %}{{ clip.selected_version.generation.status|title }}{% else %}Ingen vald{% endif %}</span>
         </div>
       {% endfor %}
       {% for bridge in bridges %}
@@ -146,7 +146,7 @@
           <span role="cell">{{ bridge.get_status_display }}</span>
           <span role="cell">{{ bridge.candidate_count }}</span>
           <span role="cell">{% if bridge.selected_version %}V{{ bridge.selected_version.version_number }}{% else %}–{% endif %}</span>
-          <span role="cell">{% if bridge.selected_version %}{{ bridge.selected_version.generation.get_status_display }}{% else %}Ingen vald{% endif %}</span>
+          <span role="cell">{% if bridge.selected_version %}{{ bridge.selected_version.generation.status|title }}{% else %}Ingen vald{% endif %}</span>
         </div>
       {% endfor %}
     </div>
