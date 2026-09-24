@@ -28,6 +28,169 @@
     <span class="sequence-safe-pill">Versioned</span>
   </section>
 
+  <section class="sequence-planner-section" aria-labelledby="sequence-planner-title">
+    <div class="sequence-section-head">
+      <div>
+        <span class="sequence-kicker">G1 · Sequence planner</span>
+        <h2 id="sequence-planner-title">Planera hela berättelsen före media</h2>
+        <p>Beskriv målet på vanlig svenska. Planner föreslår scenes, anchors och verifierade produktionskrav utan att skapa bilder, video eller starta en betald mediegenerering.</p>
+      </div>
+      {% if sequence_plan %}
+        <span class="sequence-plan-state {% if sequence_plan.status == 'final' %}is-final{% endif %}">
+          {{ sequence_plan.status|default:"draft"|title }} · V{{ project.plan_revision }}
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="sequence-planner-shell">
+      <form class="sequence-plan-generate-form" method="post" action="{% url 'engine:sequence_plan_generate' workspace_id=workspace.pk project_id=project.pk %}">
+        {% csrf_token %}
+        <div class="sequence-plan-generate-copy">
+          <strong>{% if sequence_plan %}Generera om planen{% else %}Skapa en första plan{% endif %}</strong>
+          <span>AI föreslår storyn. Trusted recipes, referenskrav och möjliga modeller läggs på lokalt från Content Engines verifierade register.</span>
+        </div>
+        <label for="sequence-plan-brief">Projektbrief</label>
+        <textarea id="sequence-plan-brief" name="brief" maxlength="6000" required placeholder="Exempel: Skapa en premium 4-scene Golfkuponger scroll story som går från inspiration till enkel användning.">{{ project.brief }}</textarea>
+        <label for="sequence-plan-goal">Mål <span>Valfritt</span></label>
+        <input id="sequence-plan-goal" name="goal" maxlength="2000" value="{{ project.goal }}" placeholder="Exempel: Kännas premium, enkelt och tydligt">
+        <div class="sequence-plan-generate-actions">
+          <button type="submit">{% if sequence_plan %}Generera ny Draft-plan{% else %}Skapa Draft-plan{% endif %}</button>
+          <small>Textplanering kan använda Content Engines textmodell. Ingen MediaGeneration skapas i detta steg.</small>
+        </div>
+      </form>
+
+      {% if sequence_plan %}
+      <form class="sequence-plan-editor" method="post" action="{% url 'engine:sequence_plan_save' workspace_id=workspace.pk project_id=project.pk %}">
+        {% csrf_token %}
+        <div class="sequence-plan-editor-head">
+          <div>
+            <span class="sequence-kicker">Editable blueprint</span>
+            <strong>{{ sequence_plan.scene_count }} scenes · {{ sequence_plan.anchors|length }} anchors</strong>
+          </div>
+          <label class="sequence-plan-status-control">
+            <span>Planstatus</span>
+            <select name="status">
+              <option value="draft" {% if sequence_plan.status != 'final' %}selected{% endif %}>Draft</option>
+              <option value="final" {% if sequence_plan.status == 'final' %}selected{% endif %}>Final</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="sequence-plan-overview-grid">
+          <div>
+            <label for="sequence-plan-summary">Sammanfattning</label>
+            <textarea id="sequence-plan-summary" name="summary" maxlength="1200" required>{{ sequence_plan.summary }}</textarea>
+          </div>
+          <div>
+            <label for="sequence-plan-progression">Narrativ progression <span>En rad per steg</span></label>
+            <textarea id="sequence-plan-progression" name="narrative_progression" maxlength="6400" required>{% for step in sequence_plan.narrative_progression %}{{ step }}{% if not forloop.last %}
+{% endif %}{% endfor %}</textarea>
+          </div>
+        </div>
+
+        <div class="sequence-plan-anchor-strip" role="list" aria-label="Planerade anchors">
+          {% for anchor in sequence_plan.anchors %}
+            <article class="sequence-plan-anchor-card" role="listitem">
+              <span class="sequence-plan-index">K{{ anchor.position }}</span>
+              <label>Etikett
+                <input name="anchor_{{ anchor.position }}_label" maxlength="120" required value="{{ anchor.label }}">
+              </label>
+              <label>Visuell anchor
+                <textarea name="anchor_{{ anchor.position }}_description" maxlength="1200" required>{{ anchor.description }}</textarea>
+              </label>
+              <label>Roll
+                <input name="anchor_{{ anchor.position }}_role" maxlength="80" value="{{ anchor.role }}">
+              </label>
+            </article>
+          {% endfor %}
+        </div>
+
+        <div class="sequence-plan-scenes">
+          {% for scene in sequence_plan.scenes %}
+            <article class="sequence-plan-scene">
+              <header>
+                <div>
+                  <span class="sequence-plan-index">Scene {{ scene.position|add:"1" }}</span>
+                  <strong>K{{ scene.start_anchor_position }} → K{{ scene.end_anchor_position }}</strong>
+                </div>
+                <span class="sequence-plan-recipe">{{ scene.recipe_id }} · {{ scene.recipe_version }}</span>
+              </header>
+              <div class="sequence-plan-scene-grid">
+                <label>Titel
+                  <input name="scene_{{ scene.position }}_title" maxlength="160" required value="{{ scene.title }}">
+                </label>
+                <label>Syfte
+                  <input name="scene_{{ scene.position }}_purpose" maxlength="500" required value="{{ scene.purpose }}">
+                </label>
+                <label class="sequence-plan-wide">Narrativ / visuell riktning
+                  <textarea name="scene_{{ scene.position }}_narrative" maxlength="1600" required>{{ scene.narrative }}</textarea>
+                </label>
+                <label>Duration
+                  <select name="scene_{{ scene.position }}_duration">
+                    <option value="{{ scene.duration_seconds }}" selected>{{ scene.duration_seconds }} s</option>
+                    {% if scene.duration_seconds != 5 %}<option value="5">5 s</option>{% endif %}
+                    {% if scene.duration_seconds != 8 %}<option value="8">8 s</option>{% endif %}
+                    {% if scene.duration_seconds != 10 %}<option value="10">10 s</option>{% endif %}
+                    {% if scene.duration_seconds != 15 %}<option value="15">15 s</option>{% endif %}
+                    {% if scene.duration_seconds != 20 %}<option value="20">20 s</option>{% endif %}
+                    {% if scene.duration_seconds != 30 %}<option value="30">30 s</option>{% endif %}
+                  </select>
+                </label>
+                <label>Övergång till nästa
+                  <input name="scene_{{ scene.position }}_transition" maxlength="800" value="{{ scene.transition_intent }}">
+                </label>
+              </div>
+              <div class="sequence-plan-requirements">
+                <span><b>Referenser</b> {{ scene.required_reference_roles|join:", " }}</span>
+                <span><b>Kapabiliteter</b> {{ scene.model_capability_requirements|join:", " }}</span>
+                <span><b>Verifierade modeller</b> {{ scene.eligible_model_ids|join:", " }}</span>
+                <span><b>Policy</b> {{ scene.production_policy }}</span>
+              </div>
+              {% if scene.transition_to_next %}
+                <div class="sequence-plan-transition">
+                  <b>Transition → Scene {{ scene.transition_to_next.to_scene_position|add:"1" }}</b>
+                  <span>{{ scene.transition_to_next.intent }}</span>
+                  <small>{{ scene.transition_to_next.recipe_id }} · {{ scene.transition_to_next.required_reference_roles|join:", " }}</small>
+                </div>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+
+        {% if sequence_plan.company_fact_refs or sequence_plan.assumptions %}
+          <div class="sequence-plan-evidence">
+            {% if sequence_plan.company_fact_refs %}
+              <div>
+                <span class="sequence-kicker">Verifierade fakta som användes</span>
+                <ul>{% for ref in sequence_plan.company_fact_refs %}<li><b>{{ ref.source_field|title }}:</b> “{{ ref.quote }}”</li>{% endfor %}</ul>
+              </div>
+            {% endif %}
+            {% if sequence_plan.assumptions %}
+              <div>
+                <span class="sequence-kicker">Antaganden att granska</span>
+                <ul>{% for assumption in sequence_plan.assumptions %}<li>{{ assumption }}</li>{% endfor %}</ul>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <div class="sequence-plan-save-row">
+          <button type="submit">Spara planändringar</button>
+          <span>Recipes, referenskrav och modellkrav är trusted metadata och skrivs om lokalt om du ändrar duration.</span>
+        </div>
+      </form>
+      {% else %}
+        <div class="sequence-plan-empty">
+          <span class="sequence-empty-icon" aria-hidden="true">✦</span>
+          <div>
+            <strong>Ingen storyboard-plan ännu</strong>
+            <p>Planner skapar först en redigerbar blueprint. Anchors och videoklipp skapas fortfarande separat och explicit i stegen nedanför.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
   <section class="sequence-metrics" aria-label="Projektöversikt">
     <div><span>Anchors</span><strong>{{ anchors|length }}</strong><small>Kanoniska keyframes</small></div>
     <div><span>Clips</span><strong>{{ clips|length }}</strong><small>Ordinarie segment</small></div>

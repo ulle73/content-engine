@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 from .media import MediaError, cancel_job, cleanup_expired, describe_file, store_asset
 from .models import MediaAsset, SequenceAnchorGenerationTarget, SequenceAnchorRevision, SequenceClipVersion, SequenceProject
 from .ownership import company_required
+from .openrouter import OpenRouterError
 from .sequence import (
     SequenceError,
     add_anchor,
@@ -29,6 +30,7 @@ from .sequence import (
     set_clip_model_override,
     sync_sequence_generation,
 )
+from .sequence_planner import SequencePlanError, generate_sequence_plan, update_sequence_plan
 
 
 FORMAT_CHOICES = {
@@ -271,8 +273,87 @@ def sequence_workspace(request, workspace_id, project_id):
                 mode="create", applied_anchor__isnull=True
             ).select_related("generation").order_by("-created_at")[:6],
             "anchor_generation_token": uuid.uuid4(),
+            "sequence_plan": project.plan if isinstance(project.plan, dict) else {},
         },
     )
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_plan_generate(request, workspace_id, project_id):
+    project = _project_for_request(request, project_id)
+    try:
+        project = generate_sequence_plan(
+            project,
+            brief=request.POST.get("brief"),
+            goal=request.POST.get("goal"),
+        )
+        messages.success(
+            request,
+            f"Sequence-plan V{project.plan_revision} är skapad som Draft. Ingen mediegenerering har startats.",
+        )
+    except (SequencePlanError, OpenRouterError, ValueError) as exc:
+        messages.error(request, str(exc))
+    return _workspace_redirect(request, project)
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_plan_save(request, workspace_id, project_id):
+    project = _project_for_request(request, project_id)
+    try:
+        plan = project.plan if isinstance(project.plan, dict) else {}
+        anchors = []
+        for anchor in plan.get("anchors", []):
+            position = int(anchor["position"])
+            anchors.append(
+                {
+                    "position": position,
+                    "label": request.POST.get(f"anchor_{position}_label", anchor.get("label", "")),
+                    "description": request.POST.get(
+                        f"anchor_{position}_description", anchor.get("description", "")
+                    ),
+                    "role": request.POST.get(f"anchor_{position}_role", anchor.get("role", "")),
+                }
+            )
+        scenes = []
+        for scene in plan.get("scenes", []):
+            position = int(scene["position"])
+            scenes.append(
+                {
+                    "position": position,
+                    "title": request.POST.get(f"scene_{position}_title", scene.get("title", "")),
+                    "purpose": request.POST.get(f"scene_{position}_purpose", scene.get("purpose", "")),
+                    "narrative": request.POST.get(f"scene_{position}_narrative", scene.get("narrative", "")),
+                    "duration_seconds": request.POST.get(
+                        f"scene_{position}_duration", scene.get("duration_seconds", 5)
+                    ),
+                    "transition_intent": request.POST.get(
+                        f"scene_{position}_transition", scene.get("transition_intent", "")
+                    ),
+                }
+            )
+        progression = [
+            line.strip()
+            for line in request.POST.get("narrative_progression", "").splitlines()
+            if line.strip()
+        ]
+        project = update_sequence_plan(
+            project,
+            {
+                "status": request.POST.get("status", "draft"),
+                "summary": request.POST.get("summary", ""),
+                "narrative_progression": progression,
+                "anchors": anchors,
+                "scenes": scenes,
+            },
+        )
+        messages.success(request, f"Sequence-plan V{project.plan_revision} är sparad.")
+    except (SequencePlanError, TypeError, ValueError) as exc:
+        messages.error(request, str(exc))
+    return _workspace_redirect(request, project)
 
 
 @login_required
