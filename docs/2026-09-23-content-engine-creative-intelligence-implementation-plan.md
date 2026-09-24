@@ -645,14 +645,20 @@ Evidence: see the dedicated E2 execution ledger for exact K1 identity, idempoten
 
 Execution ledger: `docs/2026-09-24-sequence-engine-e3-output-chain-plan.md`
 
-- [ ] User can explicitly promote a generated final frame into the next start anchor.
-- [ ] System labels this as output-chain behavior.
-- [ ] It never silently replaces canonical anchors.
-- [ ] Provenance records source clip/frame.
+- [x] User can explicitly promote a generated final frame into the next start anchor.
+- [x] System labels this as output-chain behavior.
+- [x] It never silently replaces canonical anchors.
+- [x] Provenance records source clip/frame.
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — explicit Output Chain promotion is implemented and live.  
+Migration: `0016_sequence_output_chain_provenance`  
+CI: `35996836039` — full normal + PostgreSQL suites green.  
+PR: #54  
+Commit: `468b26e534ac69ed83332a876a5164e813b219ed`  
+Deploy: `dep-daqh4rc9v7es73d5p03g` — migration applied, new instance healthy/live.  
+Evidence: see the dedicated E3 ledger for final-frame extraction, provenance, downstream safety and provider-free promotion proof.
 
 ---
 
@@ -1048,7 +1054,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task E3 — Implement explicit Output Chain promotion without silently replacing canonical anchors.**
+> **Task E4 — Implement explicit Transition Bridge orchestration without mutating existing clips.**
 
-Do not begin by building the timeline UI; prove explicit, provenance-safe Output Chain promotion first.
+Do not begin by building the timeline UI; prove non-destructive Transition Bridge orchestration first.
 
