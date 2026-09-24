@@ -2,7 +2,7 @@
 {% block title %}Generering · {{ run.title }}{% endblock %}
 {% block content %}
 <main class="engine media-workspace media-job-page">
-  {% if sequence_anchor_target %}<a class="back-link" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=sequence_anchor_target.project_id %}">← Sequence workspace</a>{% else %}<a class="back-link" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Bilder och videor</a>{% endif %}
+  {% if sequence_clip_version %}<a class="back-link" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=sequence_clip_version.clip.project_id %}">← Sequence workspace</a>{% elif sequence_bridge_version %}<a class="back-link" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=sequence_bridge_version.bridge.project_id %}">← Sequence workspace</a>{% elif sequence_anchor_target %}<a class="back-link" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=sequence_anchor_target.project_id %}">← Sequence workspace</a>{% else %}<a class="back-link" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Bilder och videor</a>{% endif %}
   <header class="page-header">
     <div class="page-heading">
       <p class="eyebrow">AI-studio</p>
@@ -17,7 +17,25 @@
   </header>
 {% include 'engine/creative_help.html' %}
 
-  {% if sequence_anchor_target %}
+  {% if sequence_clip_version %}
+    <section class="sequence-ai-target-banner">
+      <div>
+        <span class="sequence-kicker">F3 · Clip-kandidat V{{ sequence_clip_version.version_number }}</span>
+        <strong>Clip {{ sequence_clip_version.clip.position|add:"1" }} · {{ sequence_clip_version.clip.label|default:"Ordinarie clip" }}</strong>
+        <p>Det här är samma säkra MediaGeneration-lifecycle som AI Studio. Review/pris här måste vara aktuell innan betald start. Kandidaten ersätter aldrig en tidigare version automatiskt.</p>
+      </div>
+      <a class="button button-secondary" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=sequence_clip_version.clip.project_id %}">Till kandidaterna</a>
+    </section>
+  {% elif sequence_bridge_version %}
+    <section class="sequence-ai-target-banner">
+      <div>
+        <span class="sequence-kicker">Sequence · Bridge-kandidat V{{ sequence_bridge_version.version_number }}</span>
+        <strong>{{ sequence_bridge_version.bridge.label|default:"Transition Bridge" }}</strong>
+        <p>Bridge-jobbet använder samma review/start/status/cancel-lifecycle och ändrar inga anchors automatiskt.</p>
+      </div>
+      <a class="button button-secondary" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=sequence_bridge_version.bridge.project_id %}">Till sequence</a>
+    </section>
+  {% elif sequence_anchor_target %}
     <section class="sequence-ai-target-banner">
       <div>
         <span class="sequence-kicker">F2 · AI-anchor</span>
@@ -103,6 +121,7 @@
     <summary>Avancerad diagnostik</summary>
     <dl>
       <div><dt>Vald modell</dt><dd>{{ job.parameters.model|default:'–' }}</dd></div>
+      <div><dt>Routing</dt><dd>{% if creative.selection.manual_override %}Manuell override{% else %}Auto{% endif %}</dd></div>
       <div><dt>Varför</dt><dd>{% for reason in creative.selection.reason_codes %}{{ reason }}{% if not forloop.last %} · {% endif %}{% empty %}–{% endfor %}</dd></div>
       <div><dt>Komplexitet</dt><dd>{{ creative.complexity|default:'–' }}</dd></div>
       <div><dt>Compiler</dt><dd>{{ creative.compiler_version|default:'–' }}</dd></div>

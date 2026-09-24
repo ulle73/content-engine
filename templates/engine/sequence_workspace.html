@@ -265,6 +265,143 @@
     {% endif %}
   </section>
 
+  {% if clips %}
+  <section class="sequence-clip-control-section" aria-labelledby="sequence-clip-control-title">
+    <div class="sequence-section-head">
+      <div>
+        <span class="sequence-kicker">F3 · Clip controls</span>
+        <h2 id="sequence-clip-control-title">Generera, jämför och välj clip</h2>
+        <p>Varje försök blir en separat kandidat. Första steget skapar endast en reviewbar plan och kostnadskontroll; betald start sker alltid på Media-jobbets reviewsida.</p>
+      </div>
+    </div>
+
+    <div class="sequence-clip-workspaces">
+      {% for clip in clips %}
+        <article class="sequence-clip-workspace" id="clip-{{ clip.pk }}">
+          <header class="sequence-clip-workspace-head">
+            <div>
+              <span class="sequence-segment-kind">Clip {{ clip.position|add:"1" }}</span>
+              <h3>{{ clip.label|default:"Ordinarie clip" }}</h3>
+              <p>K{{ clip.start_anchor.position }} → K{{ clip.end_anchor.position }} · {{ clip.recipe_id }} v{{ clip.recipe_version }}</p>
+            </div>
+            <div class="sequence-clip-workspace-state">
+              <span class="status-badge {% if clip.status == 'selected' or clip.status == 'approved' %}success{% elif clip.status == 'generating' %}muted{% endif %}">{{ clip.get_status_display }}</span>
+              {% if clip.selected_version %}<span>Vald: V{{ clip.selected_version.version_number }}</span>{% endif %}
+            </div>
+          </header>
+
+          <form class="sequence-clip-generate-form" method="post" action="{% url 'engine:sequence_clip_prepare' workspace_id=workspace.pk project_id=project.pk clip_id=clip.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="token" value="{{ clip.generation_token }}">
+            <label for="clip-brief-{{ clip.pk }}">Creative direction</label>
+            <textarea id="clip-brief-{{ clip.pk }}" name="brief" maxlength="6000" rows="4" required>{{ clip.default_brief }}</textarea>
+            <div class="sequence-clip-options">
+              <div>
+                <label for="clip-priority-{{ clip.pk }}">Prioritet</label>
+                <select id="clip-priority-{{ clip.pk }}" name="priority">
+                  <option value="balanced" selected>Balanserad</option>
+                  <option value="quality">Bäst resultat</option>
+                  <option value="economy">Spara kostnad</option>
+                </select>
+              </div>
+              <div>
+                <label for="clip-model-{{ clip.pk }}">Modell</label>
+                <select id="clip-model-{{ clip.pk }}" name="model_override">
+                  <option value="">Auto · rekommenderas</option>
+                  {% for model in clip.model_options %}
+                    <option value="{{ model.model_id }}" {% if clip.model_override == model.model_id %}selected{% endif %}>{{ model.model_id }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <p class="sequence-form-note">Auto väljer endast verifierade modeller som stöder både start- och slut-anchor. Manuell override valideras lokalt mot exakt samma kontrakt före provider-anrop.</p>
+            <button type="submit">{% if clip.version_list %}Skapa ny kandidat{% else %}Förbered clip{% endif %} <span aria-hidden="true">→</span></button>
+          </form>
+
+          <div class="sequence-version-grid" aria-label="Kandidater för clip {{ clip.position|add:'1' }}">
+            {% for version in clip.version_list %}
+              <article class="sequence-version-card {% if clip.selected_version_id == version.pk %}is-selected{% endif %} {% if version.status == 'stale' %}is-stale{% endif %}">
+                <div class="sequence-version-head">
+                  <div>
+                    <span class="sequence-version-number">V{{ version.version_number }}</span>
+                    <span class="status-badge {% if version.status == 'selected' or version.status == 'ready' %}success{% elif version.status == 'failed' or version.status == 'stale' %}warning{% else %}muted{% endif %}">{{ version.get_status_display }}</span>
+                  </div>
+                  <span>{{ version.generation.status|title }}</span>
+                </div>
+
+                {% if version.asset_list %}
+                  <div class="sequence-version-media">
+                    {% for asset in version.asset_list %}
+                      <video controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}#t=0.1"></video>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="sequence-version-placeholder">
+                    <span>{% if version.generation.status == 'queued' %}Redo för review{% elif version.generation.status == 'running' or version.generation.status == 'starting' or version.generation.status == 'saving' %}Generering pågår{% elif version.status == 'stale' %}Historisk kandidat{% else %}Ingen video sparad{% endif %}</span>
+                  </div>
+                {% endif %}
+
+                <dl class="sequence-version-meta">
+                  <div><dt>Modell</dt><dd>{{ version.model_id|default:version.generation.parameters.model|default:"Auto" }}</dd></div>
+                  <div><dt>Provider-path</dt><dd>{{ version.provider_model|default:version.generation.parameters.provider_model|default:"–" }}</dd></div>
+                  <div><dt>Prisestimat</dt><dd>{% if version.cost_snapshot.estimate_usd %}{{ version.cost_snapshot.estimate_usd }} USD{% else %}–{% endif %}</dd></div>
+                  <div><dt>Recipe</dt><dd>{{ version.recipe_id }} v{{ version.recipe_version }}</dd></div>
+                </dl>
+
+                <div class="sequence-version-actions">
+                  <a class="button button-secondary" href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=version.generation.run_id job_id=version.generation_id %}">
+                    {% if version.generation.status == 'queued' %}Granska & starta{% else %}Öppna jobb{% endif %}
+                  </a>
+                  {% if version.generation.status == 'queued' or version.generation.status == 'running' %}
+                    <form method="post" action="{% url 'engine:sequence_clip_cancel' workspace_id=workspace.pk project_id=project.pk clip_id=clip.pk version_id=version.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="button-secondary">Avbryt</button>
+                    </form>
+                  {% endif %}
+                  {% if version.generation.status == 'completed' and version.status != 'stale' and version.status != 'rejected' and version.status != 'failed' %}
+                    {% if clip.selected_version_id != version.pk %}
+                      <form method="post" action="{% url 'engine:sequence_clip_select' workspace_id=workspace.pk project_id=project.pk clip_id=clip.pk version_id=version.pk %}">
+                        {% csrf_token %}
+                        <button type="submit">Välj vinnare</button>
+                      </form>
+                    {% else %}
+                      <span class="sequence-selected-label">Vald vinnare</span>
+                    {% endif %}
+                  {% endif %}
+                </div>
+
+                <details class="sequence-version-diagnostics">
+                  <summary>Diagnostik</summary>
+                  <dl>
+                    <div><dt>Routing</dt><dd>{% for reason in version.generation.parameters.creative.selection.reason_codes %}{{ reason }}{% if not forloop.last %} · {% endif %}{% empty %}–{% endfor %}</dd></div>
+                    <div><dt>Override</dt><dd>{% if version.generation.parameters.creative.selection.manual_override %}Manuell{% else %}Auto{% endif %}</dd></div>
+                    <div><dt>Generation ID</dt><dd>{{ version.generation_id }}</dd></div>
+                  </dl>
+                  <h4>Provider-prompt</h4>
+                  <pre>{{ version.prompt_snapshot|default:version.generation.prompt }}</pre>
+                  <h4>Referenser</h4>
+                  <ul>
+                    {% for reference in version.reference_snapshot %}
+                      <li>{{ reference.role }} · {{ reference.asset_id|default:"snapshot" }}</li>
+                    {% empty %}
+                      <li>Ingen referenssnapshot.</li>
+                    {% endfor %}
+                  </ul>
+                </details>
+              </article>
+            {% empty %}
+              <div class="sequence-empty-candidates">
+                <strong>Inga kandidater ännu</strong>
+                <span>Förbered första kandidaten ovan. Ingen betald generation startas automatiskt.</span>
+              </div>
+            {% endfor %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   {% if clips or bridges %}
   <section class="sequence-status-section" aria-labelledby="sequence-status-title">
     <div class="sequence-section-head">

@@ -241,13 +241,28 @@ def _hard_compatible(model: ModelIntelligence, brief: CreativeBrief, recipe=None
     return True
 
 
-def route_model(brief: CreativeBrief, complexity: Complexity, recipe=None) -> tuple[ModelIntelligence, ModelSelection]:
-    candidates = [
+def eligible_models(brief: CreativeBrief, recipe=None) -> list[ModelIntelligence]:
+    """Return only enabled, verified models that satisfy this exact request."""
+    return [
         model for model in verified_models(brief.kind, brief.mode)
         if _hard_compatible(model, brief, recipe)
     ]
+
+
+def route_model(
+    brief: CreativeBrief,
+    complexity: Complexity,
+    recipe=None,
+    *,
+    model_override: str = "",
+) -> tuple[ModelIntelligence, ModelSelection]:
+    candidates = eligible_models(brief, recipe)
     if not candidates:
         raise ValueError("No verified model supports the requested media capabilities.")
+
+    override = (model_override or "").strip()
+    if len(override) > 120:
+        raise ValueError("Model override is too long.")
 
     def score(model: ModelIntelligence):
         contract = model.request_contract(brief.mode)
@@ -267,8 +282,24 @@ def route_model(brief: CreativeBrief, complexity: Complexity, recipe=None) -> tu
             value += 12
         return value
 
-    model = max(candidates, key=lambda item: (score(item), item.model_id))
-    reason = ["verified_capabilities", f"complexity:{complexity.value}", f"priority:{brief.quality_preference}"]
+    if override:
+        model = next((item for item in candidates if item.model_id == override), None)
+        if model is None:
+            raise ValueError(
+                "The requested model override is not a verified compatible model for these references and settings."
+            )
+        override_contract = model.request_contract(brief.mode)
+        if brief.duration_seconds and override_contract and not override_contract.supports_duration(brief.duration_seconds):
+            raise ValueError("The requested model override does not support the exact requested duration.")
+        reason = [
+            "manual_override",
+            "verified_capabilities",
+            f"complexity:{complexity.value}",
+            f"priority:{brief.quality_preference}",
+        ]
+    else:
+        model = max(candidates, key=lambda item: (score(item), item.model_id))
+        reason = ["auto_route", "verified_capabilities", f"complexity:{complexity.value}", f"priority:{brief.quality_preference}"]
     contract = model.request_contract(brief.mode)
     if brief.reference_media:
         reason.append("reference_roles_supported")
@@ -286,6 +317,7 @@ def route_model(brief: CreativeBrief, complexity: Complexity, recipe=None) -> tu
         evidence_level=model.evidence_level,
         profile_version=model.profile_version,
         evidence_version=model.evidence_version,
+        manual_override=bool(override),
     )
 
 
@@ -516,7 +548,7 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
     return "\n".join(sections)
 
 
-def build_plan(run, request: str, *, kind: str, source=None, end_source=None, shape="portrait", count=2, priority="balanced", inspirations=None, recipe_id=None) -> CreativePlan:
+def build_plan(run, request: str, *, kind: str, source=None, end_source=None, shape="portrait", count=2, priority="balanced", inspirations=None, recipe_id=None, model_override="") -> CreativePlan:
     context = build_content_context(run)
     references = []
     if source:
@@ -526,7 +558,7 @@ def build_plan(run, request: str, *, kind: str, source=None, end_source=None, sh
     brief = parse_brief(request, kind=kind, has_reference=bool(source), reference_media=references, shape=shape, priority=priority)
     recipe, recipe_selection = resolve_recipe(brief, recipe_id=recipe_id)
     complexity = analyze_complexity(brief)
-    model, selection = route_model(brief, complexity, recipe=recipe)
+    model, selection = route_model(brief, complexity, recipe=recipe, model_override=model_override)
     params, normalization = compile_parameters(brief, model, count=count, shape=shape)
     issues = preflight(brief, model) + normalization
     errors = [item.message for item in issues if item.severity == "error"]

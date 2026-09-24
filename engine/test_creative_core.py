@@ -133,6 +133,57 @@ class CreativeCoreTests(TestCase):
         self.assertEqual(plan.parameters["reference_fields"]["START_IMAGE"], "image_url")
         self.assertEqual(plan.parameters["reference_fields"]["END_IMAGE"], "end_image_url")
 
+    def test_manual_model_override_selects_exact_verified_compatible_model(self):
+        plan = build_plan(
+            self.run,
+            "Bridge these two frames in 5 seconds with no audio",
+            kind="video",
+            source=object(),
+            end_source=object(),
+            recipe_id="scroll_transition_bridge",
+            model_override="bytedance/seedance-2.0",
+        )
+        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.0")
+        self.assertTrue(plan.selection.manual_override)
+        self.assertIn("manual_override", plan.selection.reason_codes)
+        self.assertEqual(plan.parameters["provider_model"], "bytedance/seedance-2.0/image-to-video")
+
+    def test_manual_model_override_rejects_incompatible_end_frame_model(self):
+        with self.assertRaisesRegex(ValueError, "verified compatible"):
+            build_plan(
+                self.run,
+                "Bridge these two frames in 5 seconds",
+                kind="video",
+                source=object(),
+                end_source=object(),
+                recipe_id="scroll_transition_bridge",
+                model_override="kling-video/v2.5-turbo/pro",
+            )
+
+    def test_manual_model_override_rejects_unsupported_exact_duration(self):
+        with self.assertRaisesRegex(ValueError, "exact requested duration"):
+            build_plan(
+                self.run,
+                "Bridge these two frames in 20 seconds",
+                kind="video",
+                source=object(),
+                end_source=object(),
+                recipe_id="scroll_transition_bridge",
+                model_override="bytedance/seedance-2.0",
+            )
+
+    def test_auto_route_remains_default_when_override_is_empty(self):
+        plan = build_plan(
+            self.run,
+            "Bridge these two frames in 5 seconds",
+            kind="video",
+            source=object(),
+            end_source=object(),
+            recipe_id="scroll_transition_bridge",
+        )
+        self.assertFalse(plan.selection.manual_override)
+        self.assertIn("auto_route", plan.selection.reason_codes)
+
     def test_scroll_transition_bridge_ignores_raw_prompt_library_instructions(self):
         plan = build_plan(
             self.run,

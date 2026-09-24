@@ -465,7 +465,29 @@ class SequenceEngineE1Tests(TestCase):
         self.assertEqual(creative_brief["duration_seconds"], 8)
         self.assertEqual(creative_brief["aspect_ratio"], "16:9")
 
-    def test_e2_model_override_fails_closed_until_b4_exists(self):
+    def test_e2_verified_model_override_is_now_routed_through_b4_core(self):
+        k0 = add_anchor(self.project, self.asset(), position=0)
+        k1 = add_anchor(self.project, self.asset((50, 100, 70)), position=1)
+        clip = create_clip(
+            self.project,
+            k0,
+            k1,
+            position=0,
+            recipe_id="scroll_transition_bridge",
+            model_override="bytedance/seedance-2.0",
+        )
+        version = prepare_anchor_chain_version(clip, token=uuid.uuid4())
+        selection = version.generation.parameters["creative"]["selection"]
+        self.assertEqual(version.generation.parameters["model"], "bytedance/seedance-2.0")
+        self.assertEqual(
+            version.generation.parameters["provider_model"],
+            "bytedance/seedance-2.0/image-to-video",
+        )
+        self.assertEqual(version.generation.parameters["model_override"], "bytedance/seedance-2.0")
+        self.assertTrue(selection["manual_override"])
+        self.assertIn("manual_override", selection["reason_codes"])
+
+    def test_e2_unverified_model_override_still_fails_closed_without_provider_call(self):
         k0 = add_anchor(self.project, self.asset(), position=0)
         k1 = add_anchor(self.project, self.asset((50, 100, 70)), position=1)
         clip = create_clip(
@@ -476,8 +498,11 @@ class SequenceEngineE1Tests(TestCase):
             recipe_id="scroll_transition_bridge",
             model_override="manual-model",
         )
-        with self.assertRaisesRegex(SequenceError, "B4"):
-            prepare_anchor_chain_version(clip, token=uuid.uuid4())
+        with patch("engine.media.providers.estimate_video") as estimate, patch("engine.media.providers.start_video") as start:
+            with self.assertRaisesRegex(MediaError, "modell|model|Kreativ kontroll"):
+                prepare_anchor_chain_version(clip, token=uuid.uuid4())
+        estimate.assert_not_called()
+        start.assert_not_called()
         self.assertEqual(clip.versions.count(), 0)
         self.assertFalse(ContentRun.objects.filter(model="sequence-anchor-chain").exists())
 

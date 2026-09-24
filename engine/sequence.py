@@ -14,6 +14,7 @@ from django.db.models import Max
 from django.utils import timezone
 
 from .creative_core import ReferenceRole
+from .creative_director import analyze_complexity, eligible_models, parse_brief, route_model
 from .creative_recipes import get_recipe
 from .media import create_job, extract_video_frame_png, preview_job, remove_asset, store_derived_image
 from .media_references import reference_asset, serialize_generation_references
@@ -565,6 +566,68 @@ def _sequence_run(clip: SequenceClip, *, brief: str) -> ContentRun:
     )
 
 
+
+def _clip_routing_brief(
+    clip: SequenceClip,
+    *,
+    brief: str = "",
+    priority: str = "balanced",
+):
+    request = _sequence_generation_brief(clip, brief)
+    return parse_brief(
+        request,
+        kind="video",
+        has_reference=True,
+        reference_media=["source_asset", ReferenceRole.end_image.value],
+        shape="portrait",
+        priority=priority,
+    )
+
+
+def available_clip_model_overrides(
+    clip: SequenceClip,
+    *,
+    brief: str = "",
+    priority: str = "balanced",
+) -> list:
+    routing_brief = _clip_routing_brief(clip, brief=brief, priority=priority)
+    recipe = get_recipe(clip.recipe_id)
+    models = eligible_models(routing_brief, recipe=recipe)
+    if routing_brief.duration_seconds:
+        models = [
+            model for model in models
+            if model.request_contract(routing_brief.mode)
+            and model.request_contract(routing_brief.mode).supports_duration(routing_brief.duration_seconds)
+        ]
+    return models
+
+
+def set_clip_model_override(
+    clip: SequenceClip,
+    model_override: str,
+    *,
+    brief: str = "",
+    priority: str = "balanced",
+) -> SequenceClip:
+    override = (model_override or "").strip()
+    if len(override) > 120:
+        raise SequenceError("Model override får vara högst 120 tecken.")
+    if override:
+        routing_brief = _clip_routing_brief(clip, brief=brief, priority=priority)
+        recipe = get_recipe(clip.recipe_id)
+        try:
+            route_model(
+                routing_brief,
+                analyze_complexity(routing_brief),
+                recipe=recipe,
+                model_override=override,
+            )
+        except ValueError as exc:
+            raise SequenceError("Vald modell stöder inte clipets verifierade krav: " + str(exc)) from exc
+    SequenceClip.objects.filter(pk=clip.pk).update(model_override=override, updated_at=timezone.now())
+    return SequenceClip.objects.select_related("start_anchor__asset", "end_anchor__asset").get(pk=clip.pk)
+
+
 def _normalize_generation_token(token) -> uuid.UUID:
     if token is None:
         return uuid.uuid4()
@@ -591,11 +654,17 @@ def _assert_generation_matches_current_anchors(version: SequenceClipVersion) -> 
 
 def _sync_clip_version_provenance(version: SequenceClipVersion) -> SequenceClipVersion:
     generation = MediaGeneration.objects.get(pk=version.generation_id)
-    status = (
-        "ready" if generation.status == "completed"
-        else "failed" if generation.status in {"failed", "nsfw", "canceled", "unknown"}
-        else version.status
-    )
+    current_status = SequenceClipVersion.objects.only("status").get(pk=version.pk).status
+    if current_status in {"stale", "rejected"}:
+        status = current_status
+    elif current_status == "selected" and generation.status == "completed":
+        status = "selected"
+    else:
+        status = (
+            "ready" if generation.status == "completed"
+            else "failed" if generation.status in {"failed", "nsfw", "canceled", "unknown"}
+            else current_status
+        )
     SequenceClipVersion.objects.filter(pk=version.pk).update(
         status=status,
         model_id=(generation.parameters or {}).get("model", ""),
@@ -606,6 +675,49 @@ def _sync_clip_version_provenance(version: SequenceClipVersion) -> SequenceClipV
         cost_snapshot=_cost_snapshot(generation),
     )
     return SequenceClipVersion.objects.select_related("generation", "clip").get(pk=version.pk)
+
+
+
+def sync_sequence_generation(generation: MediaGeneration):
+    """Synchronize sequence candidate snapshots after the shared media lifecycle changes."""
+    clip_version = (
+        SequenceClipVersion.objects.select_related("clip", "generation")
+        .filter(generation_id=generation.pk)
+        .first()
+    )
+    if clip_version:
+        version = _sync_clip_version_provenance(clip_version)
+        clip = SequenceClip.objects.get(pk=version.clip_id)
+        if clip.selected_version_id == version.pk and version.status == "selected":
+            desired = "selected"
+        elif clip.selected_version_id:
+            desired = clip.status
+        elif generation.status in {"starting", "running", "saving"}:
+            desired = "generating"
+        else:
+            desired = "review"
+        if clip.status != desired:
+            SequenceClip.objects.filter(pk=clip.pk).update(status=desired, updated_at=timezone.now())
+        return version
+
+    bridge_version = (
+        SequenceBridgeVersion.objects.select_related("bridge", "generation")
+        .filter(generation_id=generation.pk)
+        .first()
+    )
+    if bridge_version:
+        version = _sync_bridge_version_provenance(bridge_version)
+        bridge = SequenceBridge.objects.get(pk=version.bridge_id)
+        if bridge.selected_version_id == version.pk and version.status == "selected":
+            desired = "selected"
+        elif bridge.selected_version_id:
+            desired = bridge.status
+        else:
+            desired = "review"
+        if bridge.status != desired:
+            SequenceBridge.objects.filter(pk=bridge.pk).update(status=desired, updated_at=timezone.now())
+        return version
+    return None
 
 
 def prepare_anchor_chain_version(
@@ -639,10 +751,6 @@ def prepare_anchor_chain_version(
             )
             .get(pk=clip.pk)
         )
-        if locked.model_override:
-            raise SequenceError(
-                "Model override är ännu inte aktiverat för Sequence Engine. Använd Auto tills B4 är implementerad."
-            )
         _validate_anchor_asset(locked.project, locked.start_anchor.asset)
         _validate_anchor_asset(locked.project, locked.end_anchor.asset)
 
@@ -661,6 +769,7 @@ def prepare_anchor_chain_version(
                 include_logo=False,
                 priority=priority,
                 recipe_id=locked.recipe_id,
+                model_override=locked.model_override,
             )
         except Exception:
             # The surrounding transaction rolls back the internal ContentRun as well.
@@ -677,6 +786,7 @@ def prepare_anchor_chain_version(
             "end_asset_id": str(locked.end_anchor.asset_id),
             "recipe_id": locked.recipe_id,
             "recipe_version": locked.recipe_version,
+            "model_override": locked.model_override,
         }
         params = deepcopy(generation.parameters or {})
         params["sequence"] = sequence_meta
@@ -1047,11 +1157,17 @@ def _assert_bridge_generation_matches_current_anchors(version: SequenceBridgeVer
 
 def _sync_bridge_version_provenance(version: SequenceBridgeVersion) -> SequenceBridgeVersion:
     generation = MediaGeneration.objects.get(pk=version.generation_id)
-    status = (
-        "ready" if generation.status == "completed"
-        else "failed" if generation.status in {"failed", "nsfw", "canceled", "unknown"}
-        else version.status
-    )
+    current_status = SequenceBridgeVersion.objects.only("status").get(pk=version.pk).status
+    if current_status in {"stale", "rejected"}:
+        status = current_status
+    elif current_status == "selected" and generation.status == "completed":
+        status = "selected"
+    else:
+        status = (
+            "ready" if generation.status == "completed"
+            else "failed" if generation.status in {"failed", "nsfw", "canceled", "unknown"}
+            else current_status
+        )
     SequenceBridgeVersion.objects.filter(pk=version.pk).update(
         status=status,
         model_id=(generation.parameters or {}).get("model", ""),
@@ -1336,6 +1452,9 @@ __all__ = [
     "select_clip_version",
     "reject_clip_version",
     "sequence_snapshot",
+    "available_clip_model_overrides",
+    "set_clip_model_override",
+    "sync_sequence_generation",
     "prepare_anchor_chain_version",
     "regenerate_anchor_chain_clip",
     "preview_anchor_chain_version",

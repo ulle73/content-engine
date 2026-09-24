@@ -733,6 +733,8 @@ Evidence: see the dedicated F2 ledger for revision history, stale invalidation, 
 
 ## Task F3 — Clip controls
 
+Execution ledger: `docs/2026-09-24-sequence-workspace-f3-clip-controls-plan.md`
+
 - [ ] Generate one clip.
 - [ ] Regenerate one clip.
 - [ ] Compare versions.

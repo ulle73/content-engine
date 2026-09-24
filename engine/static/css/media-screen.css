@@ -179,3 +179,27 @@
 .generation-diagnostics pre { max-height: 320px; overflow: auto; white-space: pre-wrap; word-break: break-word; padding: 11px; border-radius: 8px; background: #f5f7f5; font-size: 8px; line-height: 1.45; }
 .generation-job-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 @media (max-width: 680px) { .generation-priority { grid-template-columns: 1fr; } }
+
+
+/* B4 verified model override */
+.generation-advanced {
+  border: 1px solid var(--gk-line);
+  border-radius: 10px;
+  background: var(--gk-surface-soft);
+}
+.generation-advanced > summary {
+  cursor: pointer;
+  padding: 10px 12px;
+  font-size: 9px;
+  font-weight: 750;
+  color: var(--gk-green-dark);
+}
+.generation-advanced-body {
+  display: grid;
+  gap: 7px;
+  padding: 0 12px 12px;
+}
+.generation-advanced-body .small {
+  margin: 0;
+  line-height: 1.4;
+}

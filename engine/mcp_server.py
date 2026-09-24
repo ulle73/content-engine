@@ -372,16 +372,19 @@ def preview_media(company_ref: str, run_id: str, idempotency_key: str, expected_
                   shape: Literal["portrait", "square", "landscape"] = "portrait",
                   priority: Literal["quality", "balanced", "economy"] = "balanced",
                   source_asset_id: str | None = None, end_asset_id: str | None = None,
-                  include_logo: bool = False) -> dict:
+                  include_logo: bool = False, model_override: str = "") -> dict:
     run = _run(company_ref, run_id)
     _safe_call(_check_revision, run, expected_revision)
     if not idempotency_key or len(idempotency_key) > 200:
         raise ToolError("Ange en idempotency_key med 1–200 tecken.")
+    if len(model_override or "") > 120:
+        raise ToolError("model_override får vara högst 120 tecken.")
     source = _asset(company_ref, source_asset_id) if source_asset_id else None
     end_source = _asset(company_ref, end_asset_id) if end_asset_id else None
     token = uuid.uuid5(uuid.NAMESPACE_URL, f"creative-preview:{run.workspace_id}:{run.pk}:{idempotency_key}")
     job = _safe_call(create_job, run, token=token, kind=kind, brief=brief, count=count, shape=shape,
-                     priority=priority, source=source, end_source=end_source, include_logo=include_logo)
+                     priority=priority, source=source, end_source=end_source, include_logo=include_logo,
+                     model_override=model_override)
     job = _safe_call(preview_job, job)
     return {**serialize_generation(job, diagnostics=True), "revision": expected_revision,
             "price_note": job.usage.get("price_note", ""), "requires_explicit_start": job.status == "queued"}
