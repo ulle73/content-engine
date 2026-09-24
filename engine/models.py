@@ -462,6 +462,150 @@ class SequenceClipVersion(models.Model):
         ]
 
 
+class SequenceBridge(models.Model):
+    """Non-destructive transition segment between two existing sequence clips."""
+
+    STATUS_CHOICES = [
+        ("draft", "Draft"),
+        ("review", "Review"),
+        ("selected", "Selected"),
+        ("approved", "Approved"),
+        ("archived", "Archived"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(SequenceProject, on_delete=models.CASCADE, related_name="bridges")
+    left_clip = models.ForeignKey(SequenceClip, on_delete=models.CASCADE, related_name="outgoing_bridges")
+    right_clip = models.ForeignKey(SequenceClip, on_delete=models.CASCADE, related_name="incoming_bridges")
+    start_anchor = models.ForeignKey(
+        SequenceAnchor, on_delete=models.CASCADE, related_name="starting_bridges"
+    )
+    end_anchor = models.ForeignKey(
+        SequenceAnchor, on_delete=models.CASCADE, related_name="ending_bridges"
+    )
+    recipe_id = models.CharField(max_length=80, default="scroll_transition_bridge")
+    recipe_version = models.CharField(max_length=40)
+    label = models.CharField(max_length=120, blank=True)
+    duration_seconds_target = models.PositiveSmallIntegerField(null=True, blank=True)
+    aspect_ratio = models.CharField(max_length=20, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
+    selected_version = models.ForeignKey(
+        "SequenceBridgeVersion", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        super().clean()
+        if self.recipe_id != "scroll_transition_bridge":
+            raise ValidationError("Sequence bridges must use the trusted scroll_transition_bridge recipe.")
+        if self.project_id and self.left_clip_id and self.left_clip.project_id != self.project_id:
+            raise ValidationError("Left clip must belong to the bridge project.")
+        if self.project_id and self.right_clip_id and self.right_clip.project_id != self.project_id:
+            raise ValidationError("Right clip must belong to the bridge project.")
+        if self.left_clip_id and self.right_clip_id:
+            if self.left_clip_id == self.right_clip_id:
+                raise ValidationError("Transition bridge requires two different clips.")
+            if self.left_clip.position >= self.right_clip.position:
+                raise ValidationError("Left clip must precede right clip.")
+        if self.project_id and self.start_anchor_id and self.start_anchor.project_id != self.project_id:
+            raise ValidationError("Bridge start anchor must belong to the bridge project.")
+        if self.project_id and self.end_anchor_id and self.end_anchor.project_id != self.project_id:
+            raise ValidationError("Bridge end anchor must belong to the bridge project.")
+        if self.left_clip_id and self.start_anchor_id and self.start_anchor_id != self.left_clip.end_anchor_id:
+            raise ValidationError("Bridge start anchor must be the left clip end anchor.")
+        if self.right_clip_id and self.end_anchor_id and self.end_anchor_id != self.right_clip.start_anchor_id:
+            raise ValidationError("Bridge end anchor must be the right clip start anchor.")
+        if self.start_anchor_id and self.end_anchor_id:
+            if self.start_anchor_id == self.end_anchor_id:
+                raise ValidationError("Transition bridge requires two distinct anchors.")
+            if self.start_anchor.position >= self.end_anchor.position:
+                raise ValidationError("Bridge start anchor must precede bridge end anchor.")
+        if self.selected_version_id and self.pk:
+            if self.selected_version.bridge_id != self.pk:
+                raise ValidationError("Selected bridge version must belong to this bridge.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["left_clip__position", "right_clip__position", "created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["project", "left_clip", "right_clip"], name="uniq_seq_bridge_pair"
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(left_clip=models.F("right_clip")),
+                name="seq_bridge_distinct_clips",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(start_anchor=models.F("end_anchor")),
+                name="seq_bridge_distinct_anchors",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["project", "status"], name="seq_bridge_project_idx"),
+        ]
+
+
+class SequenceBridgeVersion(models.Model):
+    """Generation candidate for a non-destructive transition bridge."""
+
+    STATUS_CHOICES = [
+        ("queued", "Queued"),
+        ("ready", "Ready"),
+        ("selected", "Selected"),
+        ("rejected", "Rejected"),
+        ("failed", "Failed"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    bridge = models.ForeignKey(SequenceBridge, on_delete=models.CASCADE, related_name="versions")
+    version_number = models.PositiveIntegerField()
+    generation = models.OneToOneField(
+        MediaGeneration, on_delete=models.PROTECT, related_name="sequence_bridge_version"
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="queued")
+    recipe_id = models.CharField(max_length=80)
+    recipe_version = models.CharField(max_length=40)
+    model_id = models.CharField(max_length=120, blank=True)
+    provider_model = models.CharField(max_length=180, blank=True)
+    prompt_snapshot = models.TextField(blank=True)
+    reference_snapshot = models.JSONField(default=list, blank=True)
+    usage_snapshot = models.JSONField(default=dict, blank=True)
+    cost_snapshot = models.JSONField(default=dict, blank=True)
+    review_notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+        super().clean()
+        if self.bridge_id and self.generation_id:
+            if self.generation.run.workspace_id != self.bridge.project.company_id:
+                raise ValidationError("Sequence bridge generation must belong to the project company.")
+            if self.generation.kind != "video":
+                raise ValidationError("Sequence bridge versions must reference video generations.")
+            if hasattr(self.generation, "sequence_clip_version"):
+                raise ValidationError("A clip generation cannot also be reused as a bridge generation.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["version_number", "created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["bridge", "version_number"], name="uniq_seq_bridge_ver_num"),
+            models.CheckConstraint(
+                condition=models.Q(version_number__gte=1), name="seq_bridge_ver_num_gte_1"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["bridge", "status", "version_number"], name="seq_bridge_ver_idx"),
+        ]
+
+
 class DailyRun(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     day = models.DateField(unique=True)
