@@ -128,20 +128,22 @@ def generate_images(job):
         raise UncertainGeneration("Bildtjänsten svarade men bilden kunde inte avkodas. Kontrollera kontot före nytt betalt försök.") from exc
 
 
-def _higgsfield_credential():
-    """Return the complete Higgsfield credential without exposing it.
+def higgsfield_configured() -> bool:
+    """True only when Golfkuponger's dedicated server credential is configured."""
+    return bool(os.environ.get("HIGGSFIELD_API_KEY_GK", "").strip())
 
-    Current Higgsfield UI/SDK can provide one complete API credential. Older
-    Content Engine deployments stored key id + secret separately, so keep that
-    format as a backwards-compatible fallback.
+
+def _higgsfield_credential():
+    """Return only Golfkuponger's dedicated Higgsfield server credential.
+
+    Never fall back to generic/personal Higgsfield environment variables. A
+    deployment missing the GK credential must fail closed before any provider
+    request can be made.
     """
-    # Golfkuponger's Content Engine uses its dedicated Higgsfield API credential.
-    # Keep the generic names as a backwards-compatible deployment fallback.
-    primary = os.environ.get("HIGGSFIELD_API_KEY_GK", "").strip()
-    key = primary or os.environ.get("HIGGSFIELD_API_KEY", "").strip()
-    secret = os.environ.get("HIGGSFIELD_API_SECRET_GK" if primary else "HIGGSFIELD_API_SECRET", "").strip()
+    key = os.environ.get("HIGGSFIELD_API_KEY_GK", "").strip()
+    secret = os.environ.get("HIGGSFIELD_API_SECRET_GK", "").strip()
     if not key:
-        raise MediaError("Videogenerering behöver Golfkupongers Higgsfield API-nyckel i serverns inställningar.")
+        raise MediaError("Videogenerering behöver Golfkupongers dedikerade Higgsfield API-nyckel HIGGSFIELD_API_KEY_GK i serverns inställningar.")
     if ":" in key or not secret:
         return key
     return f"{key}:{secret}"

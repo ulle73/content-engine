@@ -1,5 +1,4 @@
 import json
-import os
 import re
 import uuid
 
@@ -17,6 +16,7 @@ from django.views.decorators.http import require_POST
 from .media import ACTIVE, PENDING, advance_job, cancel_job, cleanup_expired, create_job, default_brief, remove_asset, select_asset, store_asset
 from .creative_core import ReferenceRole
 from .media_references import reference_asset, serialize_generation_references
+from .media_providers import higgsfield_configured
 from .media_storage import MediaError, download_url, local_path
 from .models import ContentRun, MediaAsset, MediaGeneration
 from .ownership import company_required
@@ -137,7 +137,7 @@ def picker(request, workspace_id, run_id):
         "source": source, "end_source": end_source,
         "brief": retry.brief if retry else source.brief if source and kind == "image" and source.brief else default_brief(run, kind),
         "token": uuid.uuid4(), "can_edit": run.delivery_status == "draft",
-        "higgs_ready": bool(os.environ.get("HIGGSFIELD_API_KEY_GK") or os.environ.get("HIGGSFIELD_API_KEY")),
+        "higgs_ready": higgsfield_configured(),
         "filter_value": filter_value, "now": timezone.now(), "active_statuses": ACTIVE,
     })
 

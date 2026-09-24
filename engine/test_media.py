@@ -20,7 +20,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, preview_job, recover_media_jobs, remove_asset, select_asset, start_reviewed_job, store_asset
-from .media_providers import ProviderUnavailableError, UncertainGeneration, estimate_video, generate_images, higgs, start_video, upload_input
+from .media_providers import ProviderUnavailableError, UncertainGeneration, estimate_video, generate_images, higgs, higgsfield_configured, start_video, upload_input
 from .media_storage import MediaError, local_path
 from .creative_core import EvidenceLevel, ReferenceRole
 from .media_references import add_generation_reference, reference_asset, serialize_generation_references
@@ -663,6 +663,41 @@ class MediaTests(TestCase):
         self.assertEqual(put.call_args.kwargs["headers"], higgs.return_value["upload_headers"])
         self.assertNotIn("Authorization", put.call_args.kwargs["headers"])
 
+
+    @patch.dict("os.environ", {
+        "HIGGSFIELD_API_KEY_GK": "",
+        "HIGGSFIELD_API_SECRET_GK": "",
+        "HIGGSFIELD_API_KEY": "personal-generic-key",
+        "HIGGSFIELD_API_SECRET": "personal-generic-secret",
+    }, clear=False)
+    @patch("engine.media_providers.httpx.request")
+    def test_generic_higgsfield_credential_is_ignored_and_cannot_authenticate(self, request):
+        self.assertFalse(higgsfield_configured())
+        with self.assertRaisesRegex(MediaError, "dedikerade Higgsfield API-nyckel"):
+            higgs("GET", "/requests/abc/status")
+        request.assert_not_called()
+        page = self.client.get(self.url("media"), {"kind": "video"})
+        self.assertContains(page, "Videoleverantören är inte ansluten ännu")
+
+    @patch.dict("os.environ", {
+        "HIGGSFIELD_API_KEY_GK": "gk-dedicated-key",
+        "HIGGSFIELD_API_SECRET_GK": "",
+        "HIGGSFIELD_API_KEY": "personal-generic-key",
+    }, clear=False)
+    @patch("engine.media_providers.httpx.request")
+    def test_dedicated_gk_higgsfield_credential_is_the_only_auth_source(self, request):
+        response = Mock(status_code=200, is_error=False, headers={})
+        response.json.return_value = {"status": "processing"}
+        request.return_value = response
+        self.assertTrue(higgsfield_configured())
+        self.assertEqual(higgs("GET", "/requests/abc/status"), {"status": "processing"})
+        self.assertEqual(
+            request.call_args.kwargs["headers"]["Authorization"],
+            "Key gk-dedicated-key",
+        )
+        self.assertNotIn("personal-generic-key", request.call_args.kwargs["headers"]["Authorization"])
+        page = self.client.get(self.url("media"), {"kind": "video"})
+        self.assertNotContains(page, "Videoleverantören är inte ansluten ännu")
 
     @patch.dict("os.environ", {"HIGGSFIELD_API_KEY_GK": "test-key"}, clear=False)
     @patch("engine.media_providers.time.sleep")
