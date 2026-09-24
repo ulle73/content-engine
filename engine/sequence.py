@@ -939,6 +939,11 @@ def sequence_snapshot(project: SequenceProject) -> dict:
     clips = list(
         project.clips.select_related("start_anchor", "end_anchor", "selected_version").order_by("position")
     )
+    bridges = list(
+        project.bridges.select_related(
+            "left_clip", "right_clip", "start_anchor", "end_anchor", "selected_version"
+        ).order_by("created_at")
+    )
     return {
         "project_id": str(project.pk),
         "anchors": [
@@ -961,6 +966,19 @@ def sequence_snapshot(project: SequenceProject) -> dict:
                 "selected_version_id": str(clip.selected_version_id) if clip.selected_version_id else None,
             }
             for clip in clips
+        ],
+        "bridges": [
+            {
+                "id": str(bridge.pk),
+                "left_clip_id": str(bridge.left_clip_id),
+                "right_clip_id": str(bridge.right_clip_id),
+                "start_anchor_id": str(bridge.start_anchor_id),
+                "end_anchor_id": str(bridge.end_anchor_id),
+                "recipe_id": bridge.recipe_id,
+                "recipe_version": bridge.recipe_version,
+                "selected_version_id": str(bridge.selected_version_id) if bridge.selected_version_id else None,
+            }
+            for bridge in bridges
         ],
     }
 
