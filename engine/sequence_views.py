@@ -258,6 +258,7 @@ def sequence_anchor_add_existing(request, workspace_id, project_id):
             role=(request.POST.get("role") or "").strip()[:40],
             source_type="existing",
             source_metadata={"mode": "media_library", "asset_id": str(asset.pk)},
+            created_by=request.user,
         )
         messages.success(request, f"K{anchor.position} är tillagd från Media.")
     except (SequenceError, MediaError) as exc:
@@ -280,6 +281,7 @@ def sequence_anchor_add_upload(request, workspace_id, project_id):
             role=(request.POST.get("role") or "").strip()[:40],
             source_type="uploaded",
             source_metadata={"mode": "upload", "asset_id": str(asset.pk)},
+            created_by=request.user,
         )
         messages.success(request, f"K{anchor.position} är uppladdad och tillagd.")
     except (SequenceError, MediaError) as exc:
@@ -393,6 +395,7 @@ def sequence_anchor_generate(request, workspace_id, project_id, anchor_id=None):
             count=int(request.POST.get("count", "2")),
             priority=request.POST.get("priority", "balanced"),
             token=request.POST.get("token") or uuid.uuid4(),
+            created_by=request.user,
         )
         messages.success(request, "AI-anchor är förberedd. Granska inställningarna innan betald start.")
         return redirect(
