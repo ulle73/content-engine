@@ -574,7 +574,7 @@ class MediaTests(TestCase):
             self.run,
             token=uuid.uuid4(),
             kind="video",
-            brief="Create the simplest smooth continuous camera transition between these anchors.",
+            brief="Create a 5 second simplest smooth continuous camera transition between these anchors.",
             source=start,
             end_source=end,
             priority="economy",
