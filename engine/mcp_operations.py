@@ -217,7 +217,7 @@ def serialize_generation(job: MediaGeneration, *, diagnostics=False) -> dict[str
     if diagnostics:
         safe_parameters = {
             key: value for key, value in (job.parameters or {}).items()
-            if key in {"model", "count", "size", "quality", "duration", "aspect_ratio"}
+            if key in {"model", "provider_model", "model_override", "count", "size", "quality", "duration", "aspect_ratio", "resolution", "generate_audio", "output_format"}
         }
         data["diagnostics"] = {
             "provider": job.provider,
