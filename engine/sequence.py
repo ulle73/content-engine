@@ -185,6 +185,7 @@ def add_anchor(
     source_clip_version: SequenceClipVersion | None = None,
     source_metadata: dict | None = None,
     notes: str = "",
+    created_by=None,
 ) -> SequenceAnchor:
     if position < 0:
         raise SequenceError("Anchor-positionen kan inte vara negativ.")
@@ -206,7 +207,7 @@ def add_anchor(
                 source_metadata=deepcopy(source_metadata or {}),
                 notes=notes,
             )
-            _record_anchor_revision(anchor, reason="created")
+            _record_anchor_revision(anchor, reason="created", created_by=created_by)
             return anchor
     except (IntegrityError, ValidationError, ValueError) as exc:
         raise SequenceError("Anchor-kunde inte sparas på den positionen.") from exc
@@ -364,6 +365,7 @@ def prepare_anchor_image_generation(
     count: int = 2,
     priority: str = "balanced",
     token=None,
+    created_by=None,
 ) -> SequenceAnchorGenerationTarget:
     brief = (brief or "").strip()
     if not brief or len(brief) > 6000:
@@ -410,7 +412,7 @@ def prepare_anchor_image_generation(
             target_anchor=target_anchor,
             target_label=(target_anchor.label if target_anchor else target_label)[:120],
             target_role=(target_anchor.role if target_anchor else target_role)[:40],
-            created_by=project.author,
+            created_by=created_by or project.author,
         )
         preview_job(job)
         return target
@@ -466,6 +468,7 @@ def apply_generated_anchor_asset(
                 role=current.target_role,
                 source_type="generated",
                 source_metadata=metadata,
+                created_by=created_by,
             )
         current.applied_anchor = anchor
         current.save(update_fields=["applied_anchor"])
