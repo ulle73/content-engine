@@ -288,6 +288,9 @@ def route_model(
             raise ValueError(
                 "The requested model override is not a verified compatible model for these references and settings."
             )
+        override_contract = model.request_contract(brief.mode)
+        if brief.duration_seconds and override_contract and not override_contract.supports_duration(brief.duration_seconds):
+            raise ValueError("The requested model override does not support the exact requested duration.")
         reason = [
             "manual_override",
             "verified_capabilities",
