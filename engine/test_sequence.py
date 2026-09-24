@@ -875,3 +875,12 @@ class SequenceEngineE1Tests(TestCase):
         self.assertFalse(SequenceBridge.objects.filter(pk=bridge.pk).exists())
         self.assertFalse(SequenceBridgeVersion.objects.filter(pk=version.pk).exists())
         self.assertTrue(MediaGeneration.objects.filter(pk=generation_id).exists())
+
+
+    def test_e4_bridge_generation_cannot_be_reused_as_clip_generation(self):
+        _, _, _, _, left, right = self.build_bridge_gap_chain()
+        bridge = create_transition_bridge(self.project, left, right)
+        generation = self.generation()
+        attach_generation_to_bridge(bridge, generation)
+        with self.assertRaisesRegex(SequenceError, "redan kopplad"):
+            attach_generation_to_clip(left, generation)
