@@ -18,8 +18,9 @@ from .creative_core import ReferenceRole
 from .media_references import reference_asset, serialize_generation_references
 from .media_providers import higgsfield_configured
 from .media_storage import MediaError, download_url, local_path
-from .models import ContentRun, MediaAsset, MediaGeneration
+from .models import ContentRun, MediaAsset, MediaGeneration, SequenceAnchorGenerationTarget
 from .ownership import company_required
+from .sequence import anchor_change_impact
 from .media import preview_job, refresh_terminal_provider_status, start_reviewed_job
 
 
@@ -196,6 +197,16 @@ def job_page(request, workspace_id, run_id, job_id):
     creative = job.parameters.get("creative", {}) if isinstance(job.parameters, dict) else {}
     safe_parameters = {key: value for key, value in (job.parameters or {}).items() if key in {"model", "provider_model", "count", "size", "quality", "duration", "aspect_ratio", "resolution", "generate_audio", "output_format"}}
     status_index = {"queued": 2, "starting": 2, "running": 3, "saving": 4, "completed": 5}.get(job.status, -1)
+    anchor_target = (
+        SequenceAnchorGenerationTarget.objects.select_related("project", "target_anchor", "applied_anchor")
+        .filter(generation=job, project__company=request.workspace)
+        .first()
+    )
+    anchor_impact = (
+        anchor_change_impact(anchor_target.target_anchor)
+        if anchor_target and anchor_target.target_anchor_id
+        else {"total_versions": 0, "selected_segments": 0}
+    )
     return render(request, "engine/media_job.html", {
         "workspace": request.workspace, "run": run, "job": job, "pending": job.status in PENDING, "now": timezone.now(),
         "creative": creative, "safe_parameters": safe_parameters, "status_index": status_index,
@@ -205,6 +216,8 @@ def job_page(request, workspace_id, run_id, job_id):
         "structured_brief_json": json.dumps(creative.get("brief", {}), ensure_ascii=False, indent=2),
         "parameters_json": json.dumps(safe_parameters, ensure_ascii=False, indent=2),
         "queued": job.status == "queued",
+        "sequence_anchor_target": anchor_target,
+        "sequence_anchor_impact": anchor_impact,
     })
 
 
