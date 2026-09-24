@@ -476,14 +476,14 @@ Goal: prove the new architecture with the smallest useful cinematic feature befo
 
 ## Task D1 — Implement `scroll_transition_bridge` recipe
 
-- [ ] Trusted recipe exists.
-- [ ] Requires START_IMAGE + END_IMAGE.
-- [ ] Enforces one continuous shot.
-- [ ] Includes continuity constraints.
-- [ ] Uses model-specific prompt profile rather than one universal prompt.
-- [ ] Prioritizes continuity over spectacle.
-- [ ] No hard cuts/morphing/new objects unless explicitly requested.
-- [ ] Appropriate audio default is explicit.
+- [x] Trusted recipe exists.
+- [x] Requires START_IMAGE + END_IMAGE.
+- [x] Enforces one continuous shot.
+- [x] Includes continuity constraints.
+- [x] Uses model-specific prompt profile rather than one universal prompt.
+- [x] Prioritizes continuity over spectacle.
+- [x] No hard cuts/morphing/new objects unless explicitly requested.
+- [x] Appropriate audio default is explicit.
 
 ### Acceptance criteria
 
@@ -499,10 +499,20 @@ Compiled prompt is materially different and model-appropriate compared with gene
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —  
-Evidence: —
+Status: DONE — trusted evidence-backed `scroll_transition_bridge` is implemented and isolated from generic video behavior.  
+Files changed: `engine/creative_recipes.py`, `engine/creative_director.py`, `engine/media.py`, `engine/test_creative_core.py`, `engine/test_media.py`.  
+What changed: Added recipe v1.0.0 with required START_IMAGE+END_IMAGE, continuity-first camera/motion policy, explicit no-cut/single-shot format mode, reverse-scrub coherence, continuity/geometry/lighting constraints, no morphing/object duplication/disappearance/new-object rules, draft→final metadata and official evidence URLs verified 2026-09-24. `create_job(..., recipe_id=...)` can now invoke a trusted recipe while generic jobs remain on `generic_video`.  
+Model behavior: Recipe routing still uses the existing single router. Current verified capabilities select Seedance first/last-frame I2V; the recipe does not hard-code a provider endpoint. Seedance compilation emits model-specific FORMAT MODE, FIRST FRAME, END FRAME, CAMERA, PHYSICS/CONTINUITY/FORBID and explicit AUDIO sections.  
+Generic isolation: Bridge policy is only added when the bridge recipe is selected. Generic Seedance video retains previous camera and `Avoid:` behavior and does not inherit FORMAT MODE or CONTINUITY sections.  
+Prompt Library boundary: Raw Prompt Library text remains untrusted inspiration and cannot select/replace trusted recipe policy or inject raw instructions.  
+Official/provider evidence: Rechecked 2026-09-24 against Higgsfield Seedance prompting guide, Seedance help center and Seedance 2.5 I2V API. Higgsfield explicitly recommends first/last-frame generation to bridge jerky cuts and prototyping at short 720p before final quality.  
+Tests: Latest full CI run `35975587712` passed both normal Django and PostgreSQL suites. The same head passed schema/migration checks, Django checks, static collection and MCP import. Focused tests cover required reference roles, official recipe evidence, Seedance selection, start/end provider field mapping, no-cut/continuity/negative constraints, explicit silent audio, provenance persistence, Prompt Library isolation and generic-video isolation.  
+Earlier CI note: initial D1 run failed only because a test expected lowercase `official` while the established enum serializes `OFFICIAL`; the test was corrected to use the canonical enum value.  
+Commit before checklist closeout: `b54a8c57785bda750d4efcd04ae2f8df48afdea4`.  
+PR: #43  
+Deploy: none yet  
+Known limitation: D1 is an explicit trusted recipe; automatic loose-prompt recipe selection remains A2. Production provider estimate remains D2.  
+Next exact task: D2 — deploy current code and run one non-billable production start→end estimate.
 
 ---
 
