@@ -369,7 +369,7 @@ Goal: evolve beyond one `source_asset` without breaking existing I2V.
 
 Recommended shape: additive relation rather than multiplying provider-specific columns.
 
-- [ ] Add canonical reference roles:
+- [x] Add canonical reference roles:
   - START_IMAGE
   - END_IMAGE
   - PRODUCT_REFERENCE
@@ -378,11 +378,11 @@ Recommended shape: additive relation rather than multiplying provider-specific c
   - STYLE_REFERENCE
   - VIDEO_REFERENCE
   - AUDIO_REFERENCE
-- [ ] Add ordered references where a model supports multiple refs.
-- [ ] Validate all assets belong to the same company.
-- [ ] Preserve `MediaGeneration.source_asset` compatibility for old jobs/current code.
-- [ ] Backfill or compatibility-map START_IMAGE from `source_asset` without destructive migration.
-- [ ] Provider-specific field names stay in provider adapter only.
+- [x] Add ordered references where a model supports multiple refs.
+- [x] Validate all assets belong to the same company.
+- [x] Preserve `MediaGeneration.source_asset` compatibility for old jobs/current code.
+- [x] Backfill or compatibility-map START_IMAGE from `source_asset` without destructive migration.
+- [x] Provider-specific field names stay in provider adapter only.
 
 ### Acceptance criteria
 
@@ -401,10 +401,18 @@ Recommended shape: additive relation rather than multiplying provider-specific c
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —  
-Evidence: —
+Status: DONE — canonical provider-neutral generation references implemented and verified against both the normal Django suite and PostgreSQL suite.  
+Files changed: `engine/models.py`, `engine/media_references.py`, `engine/media.py`, `engine/mcp_operations.py`, `engine/migrations/0014_media_generation_references.py`, `engine/test_media.py`, `engine/test_mcp_media.py`.  
+What changed: Added additive `MediaGenerationReference` rows keyed by generation + canonical role + ordered position. References retain safe `asset_snapshot` provenance even if a terminal unused preview later expires. Active reference assets are protected from cleanup. New legacy `source_asset` jobs are mirrored to canonical START_IMAGE, migration 0014 backfills historical source assets non-destructively, and runtime fallback still supports rows without a canonical reference. Provider field names remain confined to the existing provider/model contracts; C1 does not change provider payloads.  
+Tests: CI run `35971227154` passed full `python manage.py test` plus full `python manage.py test engine operator_bridge --settings=engine.postgres_test_settings`. The same run also passed `makemigrations --check --dry-run`, migration apply/check, Django checks, static collection and MCP import. Focused coverage includes source→START_IMAGE mirroring, multiple ordered references, immutable occupied slots, database uniqueness, cross-company rejection through service and direct model save, active-reference cleanup protection, terminal snapshot preservation, legacy source fallback and safe MCP serialization without storage keys.  
+Baseline note: Initial C1 CI exposed two pre-existing regressions from the prior multi-model merge. They were isolated and fixed separately in PR #41, whose full normal + PostgreSQL CI run `35970925974` passed before C1 was rerun.  
+Security/ownership: Same-company validation exists in both service-level creation and model validation; START/END require non-logo images; VIDEO_REFERENCE requires video; AUDIO_REFERENCE remains reserved until `MediaAsset` supports audio.  
+Live/provider verification: Not applicable to C1 provider behavior; no provider payload changed, no paid call made and no Render deployment is claimed. C2 will wire END_IMAGE into UI/MCP/planning/provider payloads.  
+Commit before checklist closeout: `1c0a67794e204890c155574a78cf1466c7f09f07`.  
+PR: #40  
+Deploy: none  
+Known limitation: Typed references are now persisted, but only START_IMAGE is automatically created by the current job flow. END_IMAGE and other roles become user/job inputs in C2.  
+Next exact task: C2 — End-frame support end-to-end.
 
 ---
 
