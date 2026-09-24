@@ -35,6 +35,25 @@ class MCPMediaOperationTests(TestCase):
         self.assertIn("registry_version", data["diagnostics"])
         self.assertNotIn("logo_sha256", data["diagnostics"]["parameters"])
 
+    def test_safe_generation_diagnostics_include_manual_override_provenance(self):
+        from .test_media import picture
+        start = store_asset(self.company, picture())
+        end = store_asset(self.company, picture())
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            brief="Bridge these frames in 5 seconds",
+            source=start,
+            end_source=end,
+            model_override="bytedance/seedance-2.0",
+        )
+        data = serialize_generation(job, diagnostics=True)
+        self.assertEqual(data["diagnostics"]["parameters"]["model_override"], "bytedance/seedance-2.0")
+        self.assertEqual(data["diagnostics"]["parameters"]["provider_model"], "bytedance/seedance-2.0/image-to-video")
+        self.assertTrue(data["diagnostics"]["model_selection"]["manual_override"])
+        self.assertIn("manual_override", data["diagnostics"]["model_selection"]["reason_codes"])
+
     def test_safe_generation_diagnostics_include_canonical_references(self):
         from .test_media import picture
         job = self.job()
