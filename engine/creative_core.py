@@ -167,6 +167,7 @@ class ModelSelection(BaseModel):
     evidence_level: EvidenceLevel
     profile_version: str = ""
     evidence_version: str = ""
+    manual_override: bool = False
     registry_version: str = REGISTRY_VERSION
 
 
