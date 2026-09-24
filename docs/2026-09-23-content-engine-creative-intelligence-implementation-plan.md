@@ -331,12 +331,12 @@ Next exact task: C1
 
 ## Task B4 — Expert model override
 
-- [ ] Add `Model: Auto` as default.
-- [ ] Add advanced override for verified eligible models.
-- [ ] Expose only controls supported by selected model.
-- [ ] Prevent invalid duration/resolution/reference combinations locally.
-- [ ] Add same override capability to MCP in a bounded safe form.
-- [ ] Persist manual override provenance.
+- [x] Add `Model: Auto` as default.
+- [x] Add advanced override for verified eligible models.
+- [x] Expose only controls supported by selected model.
+- [x] Prevent invalid duration/resolution/reference combinations locally.
+- [x] Add same override capability to MCP in a bounded safe form.
+- [x] Persist manual override provenance.
 
 ### Acceptance criteria
 
@@ -354,10 +354,11 @@ Next exact task: C1
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —  
-Evidence: —
+Status: DONE — B4 shipped with F3 using the existing single Creative Director/router. Auto remains default; manual override is allow-listed to verified request-compatible models and fails before provider calls for invalid reference/duration/resolution/aspect/audio combinations.  
+Tests: included in CI `36011305597` across Creative Director, Media/AI Studio, MCP and Sequence paths; normal + PostgreSQL suites green.  
+Commit: `c70775797ce57e348fb78ad1caf3a19122296307`  
+Deploy: `dep-daqj1d0u01pc738blq5g` — live  
+Evidence: `docs/2026-09-24-sequence-workspace-f3-clip-controls-plan.md`; current Higgsfield model contracts rechecked 2026-09-24.
 
 ---
 
@@ -735,17 +736,23 @@ Evidence: see the dedicated F2 ledger for revision history, stale invalidation, 
 
 Execution ledger: `docs/2026-09-24-sequence-workspace-f3-clip-controls-plan.md`
 
-- [ ] Generate one clip.
-- [ ] Regenerate one clip.
-- [ ] Compare versions.
-- [ ] Promote selected version.
-- [ ] Cancel current job safely.
-- [ ] Advanced model override per clip.
-- [ ] Show recipe/model/prompt/cost diagnostics.
+- [x] Generate one clip.
+- [x] Regenerate one clip.
+- [x] Compare versions.
+- [x] Promote selected version.
+- [x] Cancel current job safely.
+- [x] Advanced model override per clip.
+- [x] Show recipe/model/prompt/cost diagnostics.
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — non-destructive V1/V2/V3 clip controls are implemented and live on the existing reviewed MediaGeneration lifecycle.  
+Migration: none  
+CI: `36011305597` — full normal + PostgreSQL suites green, including B4/F3/MCP/media regressions.  
+PR: #62  
+Commit: `c70775797ce57e348fb78ad1caf3a19122296307`  
+Deploy: `dep-daqj1d0u01pc738blq5g` — new instance `rwbm5` healthy/live.  
+Evidence: see the dedicated F3 ledger for candidate lifecycle, comparison, selection, cancellation, diagnostics and B4 override proof.
 
 ---
 
@@ -1080,7 +1087,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task F3 — Add explicit clip generation, regeneration, comparison, selection, cancellation and diagnostics to the live Sequence workspace.**
+> **Task F4 — Verify and harden the live Sequence workspace for desktop, mobile, keyboard use, overflow and accessible status/destructive actions.**
 
-Build F3 as a thin UI over the verified E2/E4 generation services and existing reviewed media lifecycle; do not introduce a second provider or billing path.
+Verify the live F1–F3 workspace visually and interactively at desktop/mobile widths, fix only confirmed responsive/accessibility regressions, and preserve existing AI Studio behavior.
 
