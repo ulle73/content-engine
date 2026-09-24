@@ -11,10 +11,11 @@ import uuid
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import Max
+from django.utils import timezone
 
 from .creative_core import ReferenceRole
 from .creative_recipes import get_recipe
-from .media import create_job, preview_job
+from .media import create_job, extract_video_frame_png, preview_job, remove_asset, store_derived_image
 from .media_references import reference_asset, serialize_generation_references
 from .models import (
     Company,
@@ -81,6 +82,7 @@ def add_anchor(
     locked: bool = False,
     source_type: str = "existing",
     source_clip_version: SequenceClipVersion | None = None,
+    source_metadata: dict | None = None,
     notes: str = "",
 ) -> SequenceAnchor:
     if position < 0:
@@ -98,6 +100,7 @@ def add_anchor(
             locked=locked,
             source_type=source_type,
             source_clip_version=source_clip_version,
+            source_metadata=deepcopy(source_metadata or {}),
             notes=notes,
         )
     except (IntegrityError, ValidationError, ValueError) as exc:
@@ -118,6 +121,7 @@ def replace_anchor_asset(
     *,
     source_type: str = "existing",
     source_clip_version: SequenceClipVersion | None = None,
+    source_metadata: dict | None = None,
 ) -> SequenceAnchor:
     with transaction.atomic():
         current = SequenceAnchor.objects.select_for_update().select_related("project").get(pk=anchor.pk)
@@ -129,7 +133,8 @@ def replace_anchor_asset(
         current.asset = asset
         current.source_type = source_type
         current.source_clip_version = source_clip_version
-        current.save(update_fields=["asset", "source_type", "source_clip_version", "updated_at"])
+        current.source_metadata = deepcopy(source_metadata or {})
+        current.save(update_fields=["asset", "source_type", "source_clip_version", "source_metadata", "updated_at"])
     return SequenceAnchor.objects.select_related("asset").get(pk=anchor.pk)
 
 
@@ -378,6 +383,137 @@ def preview_anchor_chain_version(version: SequenceClipVersion) -> SequenceClipVe
     return version
 
 
+
+def promote_output_chain_final_frame(version: SequenceClipVersion) -> SequenceAnchor:
+    """Explicitly replace the clip's end/next-start anchor with the selected output's final frame.
+
+    This is local media derivation only: no provider call and no paid generation.
+    Locked anchors or already-selected downstream clips fail closed.
+    """
+    candidate = (
+        SequenceClipVersion.objects.select_related(
+            "clip__project__company",
+            "clip__end_anchor__asset",
+            "generation",
+        )
+        .get(pk=version.pk)
+    )
+    clip = candidate.clip
+    target = clip.end_anchor
+
+    existing_meta = target.source_metadata if isinstance(target.source_metadata, dict) else {}
+    if (
+        target.source_type == "output_chain"
+        and target.source_clip_version_id == candidate.pk
+        and existing_meta.get("frame_selector") == "final"
+    ):
+        return target
+
+    if clip.selected_version_id != candidate.pk:
+        raise SequenceError("Välj clip-versionen innan dess slutbild kan användas i Output Chain.")
+    if candidate.generation.status != "completed":
+        raise SequenceError("Endast en färdig videogeneration kan användas i Output Chain.")
+    if candidate.status not in {"ready", "selected"}:
+        raise SequenceError("Clip-versionen är inte redo för Output Chain.")
+    if target.locked:
+        raise SequenceError("Nästa anchor är låst. Lås upp den explicit innan Output Chain-promotion.")
+    if not target.starting_clips.filter(project_id=clip.project_id).exists():
+        raise SequenceError("Clipets slut-anchor används inte som start-anchor för något efterföljande clip.")
+    if target.starting_clips.filter(project_id=clip.project_id, selected_version__isnull=False).exists():
+        raise SequenceError("Ett efterföljande clip har redan en vald version. Byt inte dess canonical start-anchor i efterhand.")
+
+    _assert_generation_matches_current_anchors(candidate)
+
+    video_assets = list(
+        candidate.generation.assets.filter(kind="video", company_id=clip.project.company_id).order_by("created_at", "pk")[:2]
+    )
+    if len(video_assets) != 1:
+        raise SequenceError("Output Chain kräver exakt en sparad video för den valda clip-versionen.")
+    source_video = video_assets[0]
+    if source_video.expires_at and source_video.expires_at <= timezone.now():
+        raise SequenceError("Källvideon har gått ut och kan inte användas för Output Chain.")
+
+    frame_png, frame_meta = extract_video_frame_png(source_video, selector="final")
+    derived = store_derived_image(
+        clip.project.company,
+        frame_png,
+        generation=candidate.generation,
+        alt_text=f"Output Chain slutbild från {clip.label or 'clip'}",
+        brief=f"Final frame derived from sequence clip {clip.pk}, version {candidate.version_number}",
+    )
+    provenance = {
+        "mode": "output_chain",
+        "frame_selector": "final",
+        "source_project_id": str(clip.project_id),
+        "source_clip_id": str(clip.pk),
+        "source_clip_version_id": str(candidate.pk),
+        "source_generation_id": str(candidate.generation_id),
+        "source_video_asset_id": str(source_video.pk),
+        "source_video_sha256": source_video.sha256,
+        "previous_anchor_asset_id": str(target.asset_id),
+        "derived_asset_id": str(derived.pk),
+        "derived_asset_sha256": derived.sha256,
+        "frame": frame_meta,
+    }
+
+    try:
+        with transaction.atomic():
+            locked_clip = SequenceClip.objects.select_for_update().get(pk=clip.pk)
+            locked_target = SequenceAnchor.objects.select_for_update().get(pk=target.pk)
+            locked_version = SequenceClipVersion.objects.select_for_update().select_related("generation").get(pk=candidate.pk)
+
+            locked_meta = locked_target.source_metadata if isinstance(locked_target.source_metadata, dict) else {}
+            if (
+                locked_target.source_type == "output_chain"
+                and locked_target.source_clip_version_id == locked_version.pk
+                and locked_meta.get("frame_selector") == "final"
+            ):
+                remove_asset(derived)
+                return locked_target
+
+            if locked_clip.selected_version_id != locked_version.pk:
+                raise SequenceError("Den valda source-versionen ändrades under Output Chain-promotion.")
+            if locked_version.generation.status != "completed":
+                raise SequenceError("Source-generationen är inte längre färdig.")
+            if locked_target.locked:
+                raise SequenceError("Nästa anchor låstes under Output Chain-promotion.")
+            if locked_target.asset_id != target.asset_id:
+                raise SequenceError("Nästa anchor ändrades under Output Chain-promotion.")
+            if locked_target.pk != locked_clip.end_anchor_id:
+                raise SequenceError("Clipets slut-anchor ändrades under Output Chain-promotion.")
+            if not locked_target.starting_clips.filter(project_id=locked_clip.project_id).exists():
+                raise SequenceError("Nästa clip saknas för Output Chain.")
+            if locked_target.starting_clips.filter(
+                project_id=locked_clip.project_id, selected_version__isnull=False
+            ).exists():
+                raise SequenceError("Ett efterföljande clip fick en vald version under Output Chain-promotion.")
+
+            locked_target.asset = derived
+            locked_target.source_type = "output_chain"
+            locked_target.source_clip_version = locked_version
+            locked_target.source_metadata = provenance
+            locked_target.save(
+                update_fields=[
+                    "asset",
+                    "source_type",
+                    "source_clip_version",
+                    "source_metadata",
+                    "updated_at",
+                ]
+            )
+            locked_target.starting_clips.filter(
+                project_id=locked_clip.project_id,
+                selected_version__isnull=True,
+            ).update(status="review")
+        return SequenceAnchor.objects.select_related("asset", "source_clip_version").get(pk=target.pk)
+    except Exception:
+        try:
+            if MediaAsset.objects.filter(pk=derived.pk).exists():
+                remove_asset(derived)
+        except Exception:
+            pass
+        raise
+
 def _cost_snapshot(generation: MediaGeneration) -> dict:
     usage = generation.usage or {}
     estimate = usage.get("estimate") if isinstance(usage, dict) else None
@@ -508,4 +644,5 @@ __all__ = [
     "prepare_anchor_chain_version",
     "regenerate_anchor_chain_clip",
     "preview_anchor_chain_version",
+    "promote_output_chain_final_frame",
 ]

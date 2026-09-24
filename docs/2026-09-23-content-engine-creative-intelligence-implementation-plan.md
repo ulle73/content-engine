@@ -643,6 +643,8 @@ Evidence: see the dedicated E2 execution ledger for exact K1 identity, idempoten
 
 ## Task E3 — Output Chain mode
 
+Execution ledger: `docs/2026-09-24-sequence-engine-e3-output-chain-plan.md`
+
 - [ ] User can explicitly promote a generated final frame into the next start anchor.
 - [ ] System labels this as output-chain behavior.
 - [ ] It never silently replaces canonical anchors.

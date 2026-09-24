@@ -292,6 +292,7 @@ class SequenceAnchor(models.Model):
         ("uploaded", "Uploaded"),
         ("generated", "Generated"),
         ("clip_frame", "Clip frame"),
+        ("output_chain", "Output chain"),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -305,6 +306,7 @@ class SequenceAnchor(models.Model):
     source_clip_version = models.ForeignKey(
         "SequenceClipVersion", null=True, blank=True, on_delete=models.SET_NULL, related_name="promoted_anchors"
     )
+    source_metadata = models.JSONField(default=dict, blank=True)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -319,6 +321,12 @@ class SequenceAnchor(models.Model):
         if self.source_clip_version_id and self.project_id:
             if self.source_clip_version.clip.project_id != self.project_id:
                 raise ValidationError("Anchor source clip version must belong to the same project.")
+        if self.source_type in {"clip_frame", "output_chain"} and not self.source_clip_version_id:
+            raise ValidationError("Clip-derived anchors must retain their source clip version.")
+        if self.source_type == "output_chain":
+            metadata = self.source_metadata if isinstance(self.source_metadata, dict) else {}
+            if metadata.get("mode") != "output_chain" or metadata.get("frame_selector") != "final":
+                raise ValidationError("Output-chain anchors must retain final-frame provenance.")
 
     def save(self, *args, **kwargs):
         self.full_clean()

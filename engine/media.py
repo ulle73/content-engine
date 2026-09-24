@@ -17,7 +17,7 @@ import av
 from . import media_providers as providers
 from .creative_director import build_plan
 from .prompt_library import retrieve_inspiration
-from .media_storage import MediaError, check_storage, delete_file, put
+from .media_storage import MediaError, check_storage, delete_file, open_asset, put
 from .creative_core import ReferenceRole
 from .media_references import add_generation_reference, ensure_source_reference, generation_reference_signature
 from .models import Company, ContentEvent, ContentRun, MediaAsset, MediaGeneration
@@ -88,6 +88,76 @@ def store_asset(company, data, *, job=None, index=0, alt_text="", purpose="conte
         "expires_at": timezone.now() + timedelta(days=7) if job else None, **metadata,
     })
     return asset
+
+
+def extract_video_frame_png(asset, *, selector="final"):
+    """Decode one deterministic frame from a stored video without calling a provider."""
+    if asset.kind != "video":
+        raise MediaError("Frame-extraktion kräver en video.")
+    if selector != "final":
+        raise MediaError("Endast slutbild stöds i Output Chain just nu.")
+    if asset.expires_at and asset.expires_at <= timezone.now():
+        raise MediaError("Videons förhandsvisning har gått ut.")
+
+    try:
+        with open_asset(asset) as file:
+            with av.open(file) as container:
+                stream = next(iter(container.streams.video), None)
+                if not stream:
+                    raise MediaError("Videon saknar ett läsbart videospår.")
+                last_frame = None
+                frame_index = -1
+                for frame_index, frame in enumerate(container.decode(video=0)):
+                    last_frame = frame
+                if last_frame is None:
+                    raise MediaError("Videon saknar en läsbar slutbild.")
+                timestamp_seconds = None
+                if last_frame.pts is not None and last_frame.time_base is not None:
+                    timestamp_seconds = float(last_frame.pts * last_frame.time_base)
+                image = last_frame.to_image().convert("RGB")
+                out = io.BytesIO()
+                image.save(out, "PNG")
+                return out.getvalue(), {
+                    "frame_selector": "final",
+                    "frame_index": frame_index,
+                    "pts": int(last_frame.pts) if last_frame.pts is not None else None,
+                    "timestamp_seconds": timestamp_seconds,
+                    "width": image.width,
+                    "height": image.height,
+                }
+    except MediaError:
+        raise
+    except (av.error.FFmpegError, OSError, ValueError) as exc:
+        raise MediaError("Slutbilden kunde inte extraheras från videon.") from exc
+
+
+def store_derived_image(company, data, *, generation, alt_text="", brief=""):
+    """Persist a generated/derived image through the normal MediaAsset storage path."""
+    if generation.run.workspace_id != company.pk:
+        raise MediaError("Den härledda bilden måste tillhöra generationens företag.")
+    metadata = describe_file(data)
+    if metadata["kind"] != "image":
+        raise MediaError("Den härledda filen måste vara en bild.")
+    asset_id = uuid.uuid4()
+    key = f"{company.pk}/{asset_id}.{metadata.pop('extension')}"
+    backend = put(key, data, metadata["mime_type"])
+    return MediaAsset.objects.create(
+        pk=asset_id,
+        company=company,
+        storage_backend=backend,
+        storage_key=key,
+        byte_size=len(data),
+        origin="generated",
+        provider=generation.provider,
+        generation=generation,
+        brief=(brief or generation.brief)[:6000],
+        alt_text=alt_text[:500],
+        purpose="content",
+        sha256=hashlib.sha256(data).hexdigest(),
+        generation_base_key="",
+        expires_at=None,
+        **metadata,
+    )
 
 
 def default_brief(run, kind):
