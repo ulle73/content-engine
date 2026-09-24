@@ -127,7 +127,6 @@
                 </label>
                 <label>Duration
                   <select name="scene_{{ scene.position }}_duration">
-                    {% for value in "456789101112131415161718192021222324252627282930"|make_list %}{% endfor %}
                     <option value="{{ scene.duration_seconds }}" selected>{{ scene.duration_seconds }} s</option>
                     {% if scene.duration_seconds != 5 %}<option value="5">5 s</option>{% endif %}
                     {% if scene.duration_seconds != 8 %}<option value="8">8 s</option>{% endif %}
