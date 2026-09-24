@@ -446,6 +446,8 @@ class SequenceClipVersion(models.Model):
                 raise ValidationError("Sequence clip generation must belong to the project company.")
             if self.generation.kind != "video":
                 raise ValidationError("Sequence clip versions must reference video generations.")
+            if hasattr(self.generation, "sequence_bridge_version"):
+                raise ValidationError("A bridge generation cannot also be reused as a clip generation.")
 
     def save(self, *args, **kwargs):
         self.full_clean()
