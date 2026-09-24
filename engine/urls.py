@@ -2,7 +2,7 @@ from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
 
-from . import ads_views, intelligence_views, media_views, prompt_views, views
+from . import ads_views, intelligence_views, media_views, prompt_views, sequence_views, views
 from .onboarding import SignInView, setup
 from .company_settings import company_settings, costs
 from .performance_views import performance
@@ -21,6 +21,8 @@ engine_urls = [
     path("runs/<uuid:run_id>/outcome/", ads_views.outcome, name="outcome"),
     path("settings/", company_settings, name="settings"),
     path("costs/", costs, name="costs"),
+    path("sequences/", sequence_views.sequence_list, name="sequence_list"),
+    path("sequences/<uuid:project_id>/", sequence_views.sequence_workspace, name="sequence_workspace"),
     path("media/", media_views.library, name="media_library"),
     path("media/new/", media_views.new_studio, name="media_new"),
     path("media/upload/", media_views.library_upload, name="media_library_upload"),

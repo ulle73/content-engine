@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Sekvenser · {{ workspace.name }}{% endblock %}
+{% block content %}
+<main class="engine sequence-list-page">
+  <header class="page-header sequence-page-header">
+    <div class="page-heading">
+      <p class="eyebrow">Sequence Engine</p>
+      <h1>Sekvensprojekt</h1>
+      <p class="intro">Bygg sammanhängande stories, reels och filmer ovanpå samma verifierade anchors, clips och bridge-segment. I den här första workspace-versionen är översikten säker och icke-destruktiv.</p>
+    </div>
+    <div class="sequence-summary-chip" aria-label="Antal sekvensprojekt">
+      <span>Projekt</span>
+      <strong>{{ projects|length }}</strong>
+    </div>
+  </header>
+
+  {% include 'engine/library_tabs.html' %}
+
+  <details class="sequence-create-card" {% if not projects or request.method == 'POST' %}open{% endif %}>
+    <summary>
+      <span>
+        <span class="sequence-kicker">Nytt projekt</span>
+        <strong>Skapa en tom sekvens</strong>
+      </span>
+      <span class="sequence-disclosure" aria-hidden="true">+</span>
+    </summary>
+    <div class="sequence-create-body">
+      <p>Projektet skapar bara en säker container. Inga anchors, clips, provider-anrop eller betalda generationer startas här.</p>
+      <form method="post" class="sequence-create-form">
+        {% csrf_token %}
+        <div class="sequence-form-grid">
+          <div class="sequence-field sequence-field-wide">
+            <label for="sequence-title">Projektnamn</label>
+            <input id="sequence-title" name="title" maxlength="200" required value="{{ form_values.title }}" placeholder="Till exempel: Golfkuponger premium scroll story">
+          </div>
+          <div class="sequence-field">
+            <label for="sequence-format">Format</label>
+            <select id="sequence-format" name="format">
+              {% for value, label in format_choices.items %}<option value="{{ value }}" {% if form_values.format == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="sequence-field">
+            <label for="sequence-platform">Kanal</label>
+            <select id="sequence-platform" name="platform">
+              {% for value, label in platform_choices.items %}<option value="{{ value }}" {% if form_values.platform == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="sequence-field sequence-field-full">
+            <label for="sequence-brief">Projektbrief <span>Valfritt</span></label>
+            <textarea id="sequence-brief" name="brief" maxlength="6000" placeholder="Vad ska sekvensen åstadkomma?">{{ form_values.brief }}</textarea>
+          </div>
+        </div>
+        <div class="sequence-create-actions">
+          <button type="submit">Skapa sekvensprojekt</button>
+          <span>Ingen generation startas.</span>
+        </div>
+      </form>
+    </div>
+  </details>
+
+  <section class="sequence-projects-section" aria-labelledby="sequence-projects-title">
+    <div class="sequence-section-head">
+      <div>
+        <span class="sequence-kicker">Workspace</span>
+        <h2 id="sequence-projects-title">Dina sekvenser</h2>
+      </div>
+      {% if projects %}<span class="sequence-section-meta">Senast ändrade först</span>{% endif %}
+    </div>
+
+    {% if projects %}
+      <div class="sequence-project-list">
+        {% for project in projects %}
+          <a class="sequence-project-row" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=project.pk %}">
+            <span class="sequence-project-mark" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+            <span class="sequence-project-copy">
+              <strong>{{ project.title }}</strong>
+              <small>{{ project.get_status_display }} · {{ project.format_label }} · {{ project.platform_label }}</small>
+              {% if project.brief %}<span>{{ project.brief|truncatechars:100 }}</span>{% endif %}
+            </span>
+            <span class="sequence-project-counts" aria-label="Projektinnehåll">
+              <span><b>{{ project.anchor_count }}</b> anchors</span>
+              <span><b>{{ project.clip_count }}</b> clips</span>
+              <span><b>{{ project.bridge_count }}</b> bridges</span>
+            </span>
+            <span class="sequence-project-updated">{{ project.updated_at|date:"j M H:i" }}</span>
+            <span class="sequence-project-arrow" aria-hidden="true">›</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="sequence-empty-state">
+        <span class="sequence-empty-icon" aria-hidden="true">◇</span>
+        <h3>Inga sekvensprojekt ännu</h3>
+        <p>Skapa ett tomt projekt ovan. Anchors, clips och generationer läggs till i senare kontrollerade steg.</p>
+      </div>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

@@ -1,1 +1,5 @@
-<nav class="creative-tabs" aria-label="Bibliotek"><a href="{% url 'engine:media_library' workspace_id=workspace.pk %}" {% if request.resolver_match.url_name == 'media_library' %}aria-current="page"{% endif %}>Bilder och videor</a><a href="{% url 'engine:prompt_library' workspace_id=workspace.pk %}" {% if request.resolver_match.url_name == 'prompt_library' or request.resolver_match.url_name == 'prompt_detail' %}aria-current="page"{% endif %}>Promptbibliotek</a></nav>
+<nav class="creative-tabs" aria-label="Bibliotek">
+  <a href="{% url 'engine:media_library' workspace_id=workspace.pk %}" {% if request.resolver_match.url_name == 'media_library' %}aria-current="page"{% endif %}>Bilder och videor</a>
+  <a href="{% url 'engine:prompt_library' workspace_id=workspace.pk %}" {% if request.resolver_match.url_name == 'prompt_library' or request.resolver_match.url_name == 'prompt_detail' %}aria-current="page"{% endif %}>Promptbibliotek</a>
+  <a href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}" {% if request.resolver_match.url_name == 'sequence_list' or request.resolver_match.url_name == 'sequence_workspace' %}aria-current="page"{% endif %}>Sekvenser</a>
+</nav>
