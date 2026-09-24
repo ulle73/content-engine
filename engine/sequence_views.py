@@ -178,6 +178,7 @@ def sequence_workspace(request, workspace_id, project_id):
         anchor.latest_generation_targets = list(
             anchor.generation_targets.select_related("generation").order_by("-created_at")[:3]
         )
+        anchor.generation_token = uuid.uuid4()
     clips = list(
         project.clips.select_related(
             "start_anchor",
