@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}{{ project.title }} · Sekvenser{% endblock %}
+{% block content %}
+<main class="engine sequence-workspace-page">
+  <a class="back-link" href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}">← Alla sekvenser</a>
+
+  <header class="page-header sequence-workspace-header">
+    <div class="page-heading">
+      <p class="eyebrow">Sequence Engine</p>
+      <h1>{{ project.title }}</h1>
+      {% if project.brief %}<p class="intro">{{ project.brief }}</p>{% else %}<p class="intro">Sequence-projekt utan projektbrief ännu.</p>{% endif %}
+    </div>
+    <div class="sequence-project-state">
+      <span class="status-badge {% if project.status == 'approved' %}success{% elif project.status == 'archived' %}muted{% endif %}">{{ project.get_status_display }}</span>
+      <span>{{ format_label }}</span>
+      <span>{{ platform_label }}</span>
+    </div>
+  </header>
+
+  {% include 'engine/library_tabs.html' %}
+
+  <section class="sequence-safety-banner" aria-label="Workspace-status">
+    <div>
+      <span class="sequence-kicker">F1 · Säker projektvy</span>
+      <strong>Översikt utan dolda mutationer</strong>
+      <p>Det här workspacet visar den verifierade E1–E4-strukturen. F1 ändrar inte anchors, regenererar inte clips och startar ingen provider-generation.</p>
+    </div>
+    <span class="sequence-safe-pill">Read-safe</span>
+  </section>
+
+  <section class="sequence-metrics" aria-label="Projektöversikt">
+    <div><span>Anchors</span><strong>{{ anchors|length }}</strong><small>Kanoniska keyframes</small></div>
+    <div><span>Clips</span><strong>{{ clips|length }}</strong><small>Ordinarie segment</small></div>
+    <div><span>Bridges</span><strong>{{ bridges|length }}</strong><small>Separata övergångar</small></div>
+    <div><span>Kandidater</span><strong>{{ candidate_count }}</strong><small>Alla sparade versioner</small></div>
+  </section>
+
+  <section class="sequence-timeline-section" aria-labelledby="sequence-timeline-title">
+    <div class="sequence-section-head">
+      <div>
+        <span class="sequence-kicker">Timeline</span>
+        <h2 id="sequence-timeline-title">Anchor- och segmentordning</h2>
+        <p>Anchors är visuella sanningar. Clips och bridges visas mellan sina exakta canonical endpoints.</p>
+      </div>
+      <span class="sequence-section-meta">{{ anchors|length }} anchors · {{ clips|length|add:bridges|length }} segment</span>
+    </div>
+
+    {% if timeline %}
+      <div class="sequence-track-shell">
+        <div class="sequence-track" role="list" aria-label="Sekvensens ordning">
+          {% for item in timeline %}
+            {% if item.type == 'anchor' %}
+              {% with anchor=item.anchor %}
+              <article class="sequence-node sequence-anchor-node" role="listitem">
+                <div class="sequence-node-type">
+                  <span>K{{ anchor.position }}</span>
+                  <span class="sequence-lock-state {% if anchor.locked %}is-locked{% endif %}">
+                    {% if anchor.locked %}Låst{% else %}Upplåst{% endif %}
+                  </span>
+                </div>
+                <div class="sequence-anchor-media">
+                  <img loading="lazy" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=anchor.asset_id %}" alt="{{ anchor.label|default:'Sequence anchor' }}">
+                </div>
+                <div class="sequence-node-body">
+                  <strong>{{ anchor.label|default:"Anchor" }}</strong>
+                  <small>{{ anchor.get_source_type_display }} · {{ anchor.asset.width|default:"–" }} × {{ anchor.asset.height|default:"–" }}</small>
+                  {% if anchor.source_clip_version_id %}<span>Från clip-version {{ anchor.source_clip_version.version_number }}</span>{% endif %}
+                </div>
+              </article>
+              {% endwith %}
+            {% elif item.type == 'clip' %}
+              {% with clip=item.clip %}
+              <article class="sequence-node sequence-clip-node" role="listitem">
+                <div class="sequence-connector" aria-hidden="true"><span>→</span></div>
+                <div class="sequence-segment-card">
+                  <div class="sequence-segment-head">
+                    <span class="sequence-segment-kind">Clip {{ clip.position|add:"1" }}</span>
+                    <span class="status-badge {% if clip.status == 'selected' or clip.status == 'approved' %}success{% elif clip.status == 'draft' %}muted{% endif %}">{{ clip.get_status_display }}</span>
+                  </div>
+                  <strong>{{ clip.label|default:"Ordinarie clip" }}</strong>
+                  <span>{{ clip.recipe_id }} · v{{ clip.recipe_version }}</span>
+                  <dl>
+                    <div><dt>Kandidater</dt><dd>{{ clip.candidate_count }}</dd></div>
+                    <div><dt>Vald</dt><dd>{% if clip.selected_version %}V{{ clip.selected_version.version_number }}{% else %}–{% endif %}</dd></div>
+                    <div><dt>Modell</dt><dd>{% if clip.selected_version %}{{ clip.selected_version.model_id|default:"Auto" }}{% else %}Auto{% endif %}</dd></div>
+                  </dl>
+                </div>
+              </article>
+              {% endwith %}
+            {% elif item.type == 'bridge' %}
+              {% with bridge=item.bridge %}
+              <article class="sequence-node sequence-bridge-node" role="listitem">
+                <div class="sequence-connector sequence-bridge-connector" aria-hidden="true"><span>↝</span></div>
+                <div class="sequence-segment-card">
+                  <div class="sequence-segment-head">
+                    <span class="sequence-segment-kind">Bridge</span>
+                    <span class="status-badge {% if bridge.status == 'selected' or bridge.status == 'approved' %}success{% elif bridge.status == 'draft' %}muted{% endif %}">{{ bridge.get_status_display }}</span>
+                  </div>
+                  <strong>{{ bridge.label|default:"Transition Bridge" }}</strong>
+                  <span>Clip {{ bridge.left_clip.position|add:"1" }} → Clip {{ bridge.right_clip.position|add:"1" }}</span>
+                  <dl>
+                    <div><dt>Kandidater</dt><dd>{{ bridge.candidate_count }}</dd></div>
+                    <div><dt>Vald</dt><dd>{% if bridge.selected_version %}V{{ bridge.selected_version.version_number }}{% else %}–{% endif %}</dd></div>
+                    <div><dt>Recipe</dt><dd>{{ bridge.recipe_id }}</dd></div>
+                  </dl>
+                </div>
+              </article>
+              {% endwith %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="sequence-empty-state">
+        <span class="sequence-empty-icon" aria-hidden="true">◇</span>
+        <h3>Projektet är tomt</h3>
+        <p>F1 visar projektets struktur men skapar inga anchors eller clips. Anchor-kontroller kommer i F2.</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {% if clips or bridges %}
+  <section class="sequence-status-section" aria-labelledby="sequence-status-title">
+    <div class="sequence-section-head">
+      <div>
+        <span class="sequence-kicker">Status</span>
+        <h2 id="sequence-status-title">Segment och versioner</h2>
+      </div>
+    </div>
+    <div class="sequence-status-table" role="table" aria-label="Segmentstatus">
+      <div class="sequence-status-row sequence-status-head" role="row">
+        <span role="columnheader">Segment</span><span role="columnheader">Status</span><span role="columnheader">Kandidater</span><span role="columnheader">Vald version</span><span role="columnheader">Generation</span>
+      </div>
+      {% for clip in clips %}
+        <div class="sequence-status-row" role="row">
+          <span role="cell"><strong>Clip {{ clip.position|add:"1" }}</strong><small>{{ clip.start_anchor.label|default:"Start" }} → {{ clip.end_anchor.label|default:"Slut" }}</small></span>
+          <span role="cell">{{ clip.get_status_display }}</span>
+          <span role="cell">{{ clip.candidate_count }}</span>
+          <span role="cell">{% if clip.selected_version %}V{{ clip.selected_version.version_number }}{% else %}–{% endif %}</span>
+          <span role="cell">{% if clip.selected_version %}{{ clip.selected_version.generation.get_status_display }}{% else %}Ingen vald{% endif %}</span>
+        </div>
+      {% endfor %}
+      {% for bridge in bridges %}
+        <div class="sequence-status-row is-bridge" role="row">
+          <span role="cell"><strong>Bridge</strong><small>Clip {{ bridge.left_clip.position|add:"1" }} → Clip {{ bridge.right_clip.position|add:"1" }}</small></span>
+          <span role="cell">{{ bridge.get_status_display }}</span>
+          <span role="cell">{{ bridge.candidate_count }}</span>
+          <span role="cell">{% if bridge.selected_version %}V{{ bridge.selected_version.version_number }}{% else %}–{% endif %}</span>
+          <span role="cell">{% if bridge.selected_version %}{{ bridge.selected_version.generation.get_status_display }}{% else %}Ingen vald{% endif %}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</main>
+{% endblock %}
