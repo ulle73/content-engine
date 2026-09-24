@@ -758,16 +758,35 @@ Evidence: see the dedicated F3 ledger for candidate lifecycle, comparison, selec
 
 ## Task F4 — Responsive/accessibility verification
 
-- [ ] Desktop visual review.
-- [ ] Mobile visual review.
-- [ ] Keyboard interaction.
-- [ ] No horizontal overflow.
-- [ ] Status and destructive actions accessible.
-- [ ] Existing AI Studio remains usable.
+- [x] Desktop visual review.
+- [x] Mobile visual review.
+- [x] Keyboard interaction.
+- [x] No horizontal overflow.
+- [x] Status and destructive actions accessible.
+- [x] Existing AI Studio remains usable.
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — responsive/accessibility hardening is merged and live without changing provider/payment behavior. Zero paid generations were started.
+
+Files changed: `templates/engine/sequence_workspace.html`, `engine/static/css/sequence-screen.css`, `engine/test_sequence_ui.py`.
+
+What changed: Mobile status rows now reflow into labeled cards instead of requiring a 660 px horizontal table; anchor actions span the mobile card; Sequence links/buttons/disclosures have an explicit visible keyboard focus ring; mobile Sequence controls use a minimum 44 px target; clip candidate/version/action semantics have contextual accessible labels and list/status structure; cancel is explicitly presented as a destructive action. Existing F3 generation/review/start/cancel/idempotency behavior was not changed.
+
+Tests: Real Chromium audit run `36015265268` passed on branch head `22751ddc864c4fd87864e599b6dd420a7b2224e8` at 1440×1100 desktop and 390×844 mobile. It verified no document/body horizontal overflow, no mobile status-table horizontal scroll, anchor actions remaining inside the mobile card, visible keyboard focus with a 3 px outline, visible mobile Sequence controls at least 44 px high, and an AI Studio mobile smoke check. Screenshots were captured in artifact `10814551984` (`sequence-f4-screenshots`) and visually reviewed before merge. The temporary Playwright workflow/harness was removed before PR.
+
+Full regression: PR #64 / GitHub Actions run `36015760333` passed both required jobs on exact head `70773d1f2f3ecec1dfc595818a5d9dcb3d76156c`: standard `verify` ran 367 tests in 31.854s, `OK (skipped=2)`; PostgreSQL ran 367 tests in 19.831s, `OK`. Migration drift, migrations, Django checks, MCP checks, collectstatic and import/compile gates also passed.
+
+Official/accessibility evidence: W3C WCAG 2.2 Focus Visible and Target Size (Minimum) were rechecked for the F4 interaction baseline: https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html and https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html. F4 changes no provider contract, so no Higgsfield/provider revalidation was required.
+
+Live verification: PR #64 was squash-merged as `0c15ae6077fbb4422e1869ea5a40cc1816ee26c7`. `feature/chatgpt-content-engine-mcp` was fast-forwarded to the same code commit. Render deploy `dep-daqjil17lnhs73d84qhg` for `content-engine-mcp` completed `live` on that exact commit. Render reported build success, `No migrations to apply`, `StreamableHTTP session manager started`, `Application startup complete`, and the new instance `srv-daj9cfgae00c7392t5c0-n6r7p` returned repeated `GET /healthz ... 200 OK` responses. Post-deploy log review found no `error` or `critical` entries.
+
+Known limitations: F4 validates a deterministic seeded Sequence workspace plus AI Studio smoke behavior; it intentionally does not submit provider media or exercise a paid generation.
+
+Commit: `0c15ae6077fbb4422e1869ea5a40cc1816ee26c7`  
+PR: #64  
+Deploy: `dep-daqjil17lnhs73d84qhg`  
+Next exact task: G1 — Sequence planner.
 
 ---
 
@@ -1087,7 +1106,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task F4 — Verify and harden the live Sequence workspace for desktop, mobile, keyboard use, overflow and accessible status/destructive actions.**
+> **Task G1 — Sequence planner.**
 
-Verify the live F1–F3 workspace visually and interactively at desktop/mobile widths, fix only confirmed responsive/accessibility regressions, and preserve existing AI Studio behavior.
+Implement the editable, non-billable planning layer that turns a loose sequence brief into proposed scenes, narrative progression, per-scene/transition recipe intent, anchor descriptions, required references, model capability requirements and a draft/final plan. Keep company facts grounded in current verified context, reuse the existing Creative Director/Sequence architecture rather than adding a parallel router, and stop before any paid media generation.
 
