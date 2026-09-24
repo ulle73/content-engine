@@ -2,7 +2,7 @@
 {% block title %}Generering · {{ run.title }}{% endblock %}
 {% block content %}
 <main class="engine media-workspace media-job-page">
-  <a class="back-link" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Bilder och videor</a>
+  {% if sequence_anchor_target %}<a class="back-link" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=sequence_anchor_target.project_id %}">← Sequence workspace</a>{% else %}<a class="back-link" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}?kind={{ job.kind }}">← Bilder och videor</a>{% endif %}
   <header class="page-header">
     <div class="page-heading">
       <p class="eyebrow">AI-studio</p>
@@ -16,6 +16,19 @@
     </div>
   </header>
 {% include 'engine/creative_help.html' %}
+
+  {% if sequence_anchor_target %}
+    <section class="sequence-ai-target-banner">
+      <div>
+        <span class="sequence-kicker">F2 · AI-anchor</span>
+        <strong>{% if sequence_anchor_target.mode == 'replace' %}Ersätt K{{ sequence_anchor_target.target_anchor.position }}{% else %}Skapa ny anchor{% endif %}</strong>
+        <p>Jobbet är kopplat till {{ sequence_anchor_target.project.title }}. Bilden ändrar inte sequence-projektet förrän du väljer ett färdigt alternativ nedan.</p>
+        {% if sequence_anchor_target.target_anchor.locked %}<p class="notice">Mål-ankaret är låst. Lås upp det i Sequence workspace innan du applicerar en AI-bild.</p>{% endif %}
+        {% if sequence_anchor_impact.total_versions %}<p class="notice">Ett byte påverkar {{ sequence_anchor_impact.total_versions }} sparade clip/bridge-versioner. De bevaras men markeras stale efter uttrycklig bekräftelse.</p>{% endif %}
+      </div>
+      <a class="button button-secondary" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=sequence_anchor_target.project_id %}">Öppna sequence</a>
+    </section>
+  {% endif %}
 
   <section class="generation-steps" aria-label="Generationens steg">
     <div class="generation-step done">Brief förberedd</div>
