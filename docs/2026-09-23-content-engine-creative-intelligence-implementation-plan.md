@@ -619,6 +619,8 @@ Evidence: see the dedicated E1 execution ledger for schema, ownership, versionin
 
 ## Task E2 — Anchor Chain mode
 
+Execution ledger: `docs/2026-09-24-sequence-engine-e2-anchor-chain-plan.md`
+
 - [ ] Canonical anchor can be start of one clip and end of previous clip.
 - [ ] Same exact asset identity is preserved.
 - [ ] Regenerating a clip does not mutate anchors.
