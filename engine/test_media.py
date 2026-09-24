@@ -147,7 +147,7 @@ class MediaTests(TestCase):
         recipe = job.parameters["creative"]["recipe"]
         self.assertEqual(recipe["recipe_id"], "scroll_transition_bridge")
         self.assertEqual(recipe["version"], "1.0.0")
-        self.assertEqual(recipe["evidence_level"], "official")
+        self.assertEqual(recipe["evidence_level"], EvidenceLevel.official.value)
         self.assertEqual(job.parameters["provider_model"], "bytedance/seedance-2.5/image-to-video")
         self.assertIn("FORMAT MODE: Single continuous shot.", job.prompt)
         self.assertIn("END FRAME:", job.prompt)
