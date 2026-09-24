@@ -158,7 +158,7 @@ class MediaTests(TestCase):
         self.assertContains(detail, "Provider-prompt")
         self.assertContains(detail, "Prompt som skickas till Higgsfield")
         body = detail.content.decode()
-        self.assertLess(body.index("Prompt som skickas till Higgsfield"), body.index("Starta betald generation"))
+        self.assertLess(body.index("Prompt som skickas till Higgsfield"), body.index("<button type=\"submit\">Starta betald generation</button>"))
         self.assertContains(detail, "economy")
         self.assertContains(detail, "kling-video/v2.5-turbo/pro/text-to-video")
         self.assertNotContains(detail, '<script>alert("x")</script>')
