@@ -455,10 +455,10 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         if ReferenceRole.end_image in _brief_reference_roles(brief) and _uses_prompt_section(model, "END_FRAME"):
             sections.append("END FRAME: Use the supplied end image as the exact closing visual anchor and arrive there naturally.")
         if _uses_prompt_section(model, "CAMERA"):
-            camera_parts = list(brief.camera_movement)
+            camera_text = ", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene"
             if recipe and recipe.camera_strategy:
-                camera_parts.extend(recipe.camera_strategy[:2])
-            sections.append("CAMERA: " + (" ".join(camera_parts) if camera_parts else "controlled camera movement appropriate to the requested scene") + ".")
+                camera_text += " " + " ".join(recipe.camera_strategy[:2])
+            sections.append("CAMERA: " + camera_text + ".")
         if _uses_prompt_section(model, "PHYSICS"):
             physics = "Use physically plausible continuous motion."
             if brief.allow_change:
@@ -468,11 +468,12 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             if recipe and recipe.continuity_strategy:
                 physics += " CONTINUITY: " + " ".join(recipe.continuity_strategy[:2])
             forbidden = list(brief.forbid)
-            if recipe and recipe.negative_constraints:
-                forbidden.extend(recipe.negative_constraints)
+            recipe_forbidden = list(recipe.negative_constraints) if recipe and recipe.negative_constraints else []
+            forbidden.extend(recipe_forbidden)
             forbidden = _dedupe(forbidden)
             if forbidden:
-                physics += " FORBID: " + "; ".join(forbidden) + "."
+                label = "FORBID" if recipe_forbidden else "Avoid"
+                physics += " " + label + ": " + "; ".join(forbidden) + "."
             sections.append("PHYSICS: " + physics)
         if brief.lighting and _uses_prompt_section(model, "LIGHTING"):
             sections.append("LIGHTING: " + brief.lighting + ".")
