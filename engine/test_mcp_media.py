@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -48,13 +49,17 @@ class MCPMediaOperationTests(TestCase):
         from .test_media import picture
         start = store_asset(self.company, picture())
         end = store_asset(self.company, picture())
-        job = start_media_generation(
-            self.run,
-            kind="video",
-            brief="Skapa en 8 sekunders övergång",
-            source_asset_id=str(start.pk),
-            end_asset_id=str(end.pk),
-        )
+        with patch(
+            "engine.media.providers.start_video",
+            return_value=({"request_id": str(uuid.uuid4())}, {"estimate": {"usd": "0.80"}}),
+        ):
+            job = start_media_generation(
+                self.run,
+                kind="video",
+                brief="Skapa en 8 sekunders övergång",
+                source_asset_id=str(start.pk),
+                end_asset_id=str(end.pk),
+            )
         self.assertEqual(
             job.references.get(role=ReferenceRole.end_image.value).asset_id,
             end.pk,
