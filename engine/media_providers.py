@@ -2,6 +2,8 @@
 
 import base64
 import ipaddress
+import json
+import logging
 import os
 import socket
 import uuid
@@ -21,6 +23,7 @@ from .media_references import reference_asset
 from .media_storage import MediaError, open_asset
 
 HIGGS_ROOT = "https://api.higgsfield.ai"
+logger = logging.getLogger(__name__)
 
 
 class ProviderError(MediaError):
@@ -253,6 +256,58 @@ def upload_input(asset):
     return public_url(result["public_url"])
 
 
+
+_PRICE_HINTS = ("usd", "credit", "price", "cost", "currency")
+_SENSITIVE_ESTIMATE_KEYS = ("prompt", "url", "authorization", "secret", "token", "key", "image")
+
+
+def _safe_estimate_shape(value):
+    """Return only key names and price-like scalar metadata for diagnostics."""
+    if not isinstance(value, dict):
+        return {"response_type": type(value).__name__}
+
+    def clean_key(key):
+        return str(key).replace("\n", " ")[:80]
+
+    top_level_keys = sorted(
+        clean_key(key) for key in value.keys()
+        if not any(term in clean_key(key).lower() for term in _SENSITIVE_ESTIMATE_KEYS)
+    )[:50]
+    nested_keys = {}
+    price_like = {}
+    for key, item in value.items():
+        key_text = clean_key(key)
+        key_lower = key_text.lower()
+        if isinstance(item, dict):
+            nested_keys[key_text] = sorted(
+                clean_key(child) for child in item.keys()
+                if not any(term in clean_key(child).lower() for term in _SENSITIVE_ESTIMATE_KEYS)
+            )[:50]
+            for child, child_value in item.items():
+                child_text = clean_key(child)
+                dotted = f"{key_text}.{child_text}"[:160]
+                if (
+                    isinstance(child_value, (str, int, float))
+                    and not isinstance(child_value, bool)
+                    and not any(term in child_text.lower() for term in _SENSITIVE_ESTIMATE_KEYS)
+                    and any(hint in (key_lower + "." + child_text.lower()) for hint in _PRICE_HINTS)
+                ):
+                    scalar = str(child_value)[:80]
+                    price_like[dotted] = scalar
+        elif (
+            isinstance(item, (str, int, float))
+            and not isinstance(item, bool)
+            and not any(term in key_lower for term in _SENSITIVE_ESTIMATE_KEYS)
+            and any(hint in key_lower for hint in _PRICE_HINTS)
+        ):
+            price_like[key_text] = str(item)[:80]
+    return {
+        "top_level_keys": top_level_keys,
+        "nested_keys": nested_keys,
+        "price_like": price_like,
+    }
+
+
 def estimate_video(job):
     """Account-scoped, non-billable preflight. I2V uploads its input, never submits a generation."""
     if len(job.prompt or "") > HIGGSFIELD_SAFE_PROMPT_CHARS:
@@ -284,6 +339,10 @@ def estimate_video(job):
         if not ceiling.is_finite() or ceiling < 0 or not price.is_finite() or price < 0 or price > ceiling:
             raise MediaError("Videons pris överskrider serverns kostnadsgräns. Ingen generation startades.")
     except (KeyError, InvalidOperation, TypeError) as exc:
+        logger.warning(
+            "HIGGSFIELD_ESTIMATE_SHAPE %s",
+            json.dumps(_safe_estimate_shape(estimate), sort_keys=True, ensure_ascii=True),
+        )
         raise MediaError("Videotjänsten kunde inte bekräfta priset. Ingen generation startades.") from exc
     return model, body, {"estimate": {k: str(estimate[k]) for k in ("credits", "usd") if k in estimate}, "model": model}
 
