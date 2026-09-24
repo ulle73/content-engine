@@ -277,11 +277,11 @@
 
     <div class="sequence-clip-workspaces">
       {% for clip in clips %}
-        <article class="sequence-clip-workspace" id="clip-{{ clip.pk }}">
+        <article class="sequence-clip-workspace" id="clip-{{ clip.pk }}" aria-labelledby="clip-title-{{ clip.pk }}">
           <header class="sequence-clip-workspace-head">
             <div>
               <span class="sequence-segment-kind">Clip {{ clip.position|add:"1" }}</span>
-              <h3>{{ clip.label|default:"Ordinarie clip" }}</h3>
+              <h3 id="clip-title-{{ clip.pk }}">{{ clip.label|default:"Ordinarie clip" }}</h3>
               <p>K{{ clip.start_anchor.position }} → K{{ clip.end_anchor.position }} · {{ clip.recipe_id }} v{{ clip.recipe_version }}</p>
             </div>
             <div class="sequence-clip-workspace-state">
@@ -318,12 +318,12 @@
             <button type="submit">{% if clip.version_list %}Skapa ny kandidat{% else %}Förbered clip{% endif %} <span aria-hidden="true">→</span></button>
           </form>
 
-          <div class="sequence-version-grid" aria-label="Kandidater för clip {{ clip.position|add:'1' }}">
+          <div class="sequence-version-grid" role="list" aria-label="Kandidater för clip {{ clip.position|add:'1' }}">
             {% for version in clip.version_list %}
-              <article class="sequence-version-card {% if clip.selected_version_id == version.pk %}is-selected{% endif %} {% if version.status == 'stale' %}is-stale{% endif %}">
+              <article class="sequence-version-card {% if clip.selected_version_id == version.pk %}is-selected{% endif %} {% if version.status == 'stale' %}is-stale{% endif %}" role="listitem" aria-labelledby="clip-{{ clip.pk }}-version-{{ version.pk }}">
                 <div class="sequence-version-head">
                   <div>
-                    <span class="sequence-version-number">V{{ version.version_number }}</span>
+                    <span class="sequence-version-number" id="clip-{{ clip.pk }}-version-{{ version.pk }}">V{{ version.version_number }}</span>
                     <span class="status-badge {% if version.status == 'selected' or version.status == 'ready' %}success{% elif version.status == 'failed' or version.status == 'stale' %}warning{% else %}muted{% endif %}">{{ version.get_status_display }}</span>
                   </div>
                   <span>{{ version.generation.status|title }}</span>
@@ -332,7 +332,7 @@
                 {% if version.asset_list %}
                   <div class="sequence-version-media">
                     {% for asset in version.asset_list %}
-                      <video controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}#t=0.1"></video>
+                      <video controls preload="metadata" aria-label="Clip {{ clip.position|add:'1' }}, version {{ version.version_number }}" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}#t=0.1"></video>
                     {% endfor %}
                   </div>
                 {% else %}
@@ -349,29 +349,29 @@
                 </dl>
 
                 <div class="sequence-version-actions">
-                  <a class="button button-secondary" href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=version.generation.run_id job_id=version.generation_id %}">
+                  <a class="button button-secondary" aria-label="{% if version.generation.status == 'queued' %}Granska och starta{% else %}Öppna jobb för{% endif %} clip {{ clip.position|add:'1' }}, version {{ version.version_number }}" href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=version.generation.run_id job_id=version.generation_id %}">
                     {% if version.generation.status == 'queued' %}Granska & starta{% else %}Öppna jobb{% endif %}
                   </a>
                   {% if version.generation.status == 'queued' or version.generation.status == 'running' %}
                     <form method="post" action="{% url 'engine:sequence_clip_cancel' workspace_id=workspace.pk project_id=project.pk clip_id=clip.pk version_id=version.pk %}">
                       {% csrf_token %}
-                      <button type="submit" class="button-secondary">Avbryt</button>
+                      <button type="submit" class="button-secondary button-danger" aria-label="Avbryt clip {{ clip.position|add:'1' }}, version {{ version.version_number }}">Avbryt</button>
                     </form>
                   {% endif %}
                   {% if version.generation.status == 'completed' and version.status != 'stale' and version.status != 'rejected' and version.status != 'failed' %}
                     {% if clip.selected_version_id != version.pk %}
                       <form method="post" action="{% url 'engine:sequence_clip_select' workspace_id=workspace.pk project_id=project.pk clip_id=clip.pk version_id=version.pk %}">
                         {% csrf_token %}
-                        <button type="submit">Välj vinnare</button>
+                        <button type="submit" aria-label="Välj clip {{ clip.position|add:'1' }}, version {{ version.version_number }} som vinnare">Välj vinnare</button>
                       </form>
                     {% else %}
-                      <span class="sequence-selected-label">Vald vinnare</span>
+                      <span class="sequence-selected-label" role="status">Vald vinnare</span>
                     {% endif %}
                   {% endif %}
                 </div>
 
                 <details class="sequence-version-diagnostics">
-                  <summary>Diagnostik</summary>
+                  <summary aria-label="Visa diagnostik för clip {{ clip.position|add:'1' }}, version {{ version.version_number }}">Diagnostik</summary>
                   <dl>
                     <div><dt>Routing</dt><dd>{% for reason in version.generation.parameters.creative.selection.reason_codes %}{{ reason }}{% if not forloop.last %} · {% endif %}{% empty %}–{% endfor %}</dd></div>
                     <div><dt>Override</dt><dd>{% if version.generation.parameters.creative.selection.manual_override %}Manuell{% else %}Auto{% endif %}</dd></div>
@@ -416,20 +416,20 @@
       </div>
       {% for clip in clips %}
         <div class="sequence-status-row" role="row">
-          <span role="cell"><strong>Clip {{ clip.position|add:"1" }}</strong><small>{{ clip.start_anchor.label|default:"Start" }} → {{ clip.end_anchor.label|default:"Slut" }}</small></span>
-          <span role="cell">{{ clip.get_status_display }}</span>
-          <span role="cell">{{ clip.candidate_count }}</span>
-          <span role="cell">{% if clip.selected_version %}V{{ clip.selected_version.version_number }}{% else %}–{% endif %}</span>
-          <span role="cell">{% if clip.selected_version %}{{ clip.selected_version.generation.status|title }}{% else %}Ingen vald{% endif %}</span>
+          <span role="cell" data-label="Segment"><strong>Clip {{ clip.position|add:"1" }}</strong><small>{{ clip.start_anchor.label|default:"Start" }} → {{ clip.end_anchor.label|default:"Slut" }}</small></span>
+          <span role="cell" data-label="Status">{{ clip.get_status_display }}</span>
+          <span role="cell" data-label="Kandidater">{{ clip.candidate_count }}</span>
+          <span role="cell" data-label="Vald version">{% if clip.selected_version %}V{{ clip.selected_version.version_number }}{% else %}–{% endif %}</span>
+          <span role="cell" data-label="Generation">{% if clip.selected_version %}{{ clip.selected_version.generation.status|title }}{% else %}Ingen vald{% endif %}</span>
         </div>
       {% endfor %}
       {% for bridge in bridges %}
         <div class="sequence-status-row is-bridge" role="row">
-          <span role="cell"><strong>Bridge</strong><small>Clip {{ bridge.left_clip.position|add:"1" }} → Clip {{ bridge.right_clip.position|add:"1" }}</small></span>
-          <span role="cell">{{ bridge.get_status_display }}</span>
-          <span role="cell">{{ bridge.candidate_count }}</span>
-          <span role="cell">{% if bridge.selected_version %}V{{ bridge.selected_version.version_number }}{% else %}–{% endif %}</span>
-          <span role="cell">{% if bridge.selected_version %}{{ bridge.selected_version.generation.status|title }}{% else %}Ingen vald{% endif %}</span>
+          <span role="cell" data-label="Segment"><strong>Bridge</strong><small>Clip {{ bridge.left_clip.position|add:"1" }} → Clip {{ bridge.right_clip.position|add:"1" }}</small></span>
+          <span role="cell" data-label="Status">{{ bridge.get_status_display }}</span>
+          <span role="cell" data-label="Kandidater">{{ bridge.candidate_count }}</span>
+          <span role="cell" data-label="Vald version">{% if bridge.selected_version %}V{{ bridge.selected_version.version_number }}{% else %}–{% endif %}</span>
+          <span role="cell" data-label="Generation">{% if bridge.selected_version %}{{ bridge.selected_version.generation.status|title }}{% else %}Ingen vald{% endif %}</span>
         </div>
       {% endfor %}
     </div>

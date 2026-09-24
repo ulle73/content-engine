@@ -274,3 +274,36 @@ class SequenceWorkspaceF1Tests(TestCase):
         self.assertIn("overflow-x: auto", css)
         self.assertIn("@media (max-width: 720px)", css)
         self.assertIn(".sequence-track { width: 100%; display: grid", css)
+
+    def test_f4_workspace_exposes_contextual_actions_status_labels_and_candidate_list(self):
+        project, _, _, right, _ = self.build_workspace_project()
+        prepare_anchor_chain_version(right, token=uuid.uuid4())
+
+        response = self.client.get(
+            reverse("engine:sequence_workspace", kwargs={"workspace_id": self.company.pk, "project_id": project.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'role="list" aria-label="Kandidater för clip 3"')
+        self.assertContains(response, 'aria-labelledby="clip-title-')
+        self.assertContains(response, 'data-label="Status"')
+        self.assertContains(response, 'data-label="Kandidater"')
+        self.assertContains(response, 'data-label="Vald version"')
+        self.assertContains(response, 'data-label="Generation"')
+        self.assertContains(response, 'class="button-secondary button-danger"')
+        self.assertContains(response, 'aria-label="Avbryt clip 3, version 1"')
+        self.assertContains(response, 'aria-label="Granska och starta clip 3, version 1"')
+        self.assertContains(response, 'aria-label="Visa diagnostik för clip 3, version 1"')
+
+    def test_f4_styles_reflow_mobile_status_keep_anchor_actions_wide_and_show_keyboard_focus(self):
+        stylesheet = self.client.get("/static/css/sequence-screen.css")
+        self.assertEqual(stylesheet.status_code, 200)
+        css = b"".join(stylesheet.streaming_content).decode("utf-8")
+
+        self.assertIn(".sequence-workspace-page a:focus-visible", css)
+        self.assertIn(".sequence-workspace-page summary:focus-visible", css)
+        self.assertIn(".sequence-anchor-actions { grid-column: 1 / -1; }", css)
+        self.assertIn(".sequence-status-head { display: none; }", css)
+        self.assertIn("content: attr(data-label);", css)
+        self.assertIn("min-height: 44px;", css)
+        self.assertIn(".sequence-version-actions {", css)
+        self.assertNotIn(".sequence-status-row { min-width: 660px; }", css)
