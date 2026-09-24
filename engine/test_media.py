@@ -13,6 +13,8 @@ import av
 from PIL import Image
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -20,7 +22,9 @@ from django.utils import timezone
 from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, recover_media_jobs, remove_asset, select_asset, store_asset
 from .media_providers import ProviderUnavailableError, UncertainGeneration, estimate_video, generate_images, higgs, start_video, upload_input
 from .media_storage import MediaError, local_path
-from .models import Company, ContentRun, MediaAsset, MediaGeneration
+from .creative_core import ReferenceRole
+from .media_references import add_generation_reference, reference_asset, serialize_generation_references
+from .models import Company, ContentRun, MediaAsset, MediaGeneration, MediaGenerationReference
 
 
 def picture():
@@ -99,6 +103,94 @@ class MediaTests(TestCase):
         self.assertTrue(MediaAsset.objects.filter(pk=source.pk).exists())
         self.assertFalse(local_path(unused.storage_key).exists())
         self.assertEqual(self.client.get(self.url("asset_file", asset_id=source.pk)).status_code, 410)
+
+    def test_source_asset_is_mirrored_into_canonical_start_reference(self):
+        source = store_asset(self.company, picture())
+        job = self.job("video", source=source)
+        row = job.references.get(role=ReferenceRole.start_image.value, position=0)
+        self.assertEqual(job.source_asset_id, source.pk)
+        self.assertEqual(row.asset_id, source.pk)
+        self.assertEqual(row.asset_snapshot["asset_id"], str(source.pk))
+        self.assertEqual(reference_asset(job, ReferenceRole.start_image).pk, source.pk)
+
+    def test_multiple_typed_references_are_ordered_and_slots_are_immutable(self):
+        job = self.job("video")
+        start = store_asset(self.company, picture())
+        style_a = store_asset(self.company, picture())
+        style_b = store_asset(self.company, picture())
+        add_generation_reference(job, start, ReferenceRole.start_image)
+        add_generation_reference(job, style_a, ReferenceRole.style_reference, position=0)
+        add_generation_reference(job, style_b, ReferenceRole.style_reference, position=1)
+        rows = serialize_generation_references(job)
+        self.assertEqual(
+            [(row["role"], row["position"]) for row in rows],
+            [
+                (ReferenceRole.start_image.value, 0),
+                (ReferenceRole.style_reference.value, 0),
+                (ReferenceRole.style_reference.value, 1),
+            ],
+        )
+        with self.assertRaises(MediaError):
+            add_generation_reference(job, style_b, ReferenceRole.style_reference, position=0)
+
+    def test_generation_reference_rejects_cross_company_asset_even_on_direct_model_save(self):
+        outsider = get_user_model().objects.create_user(username="reference-outsider")
+        other = Company.objects.create(owner=outsider, name="Other")
+        foreign = store_asset(other, picture())
+        job = self.job("video")
+        with self.assertRaises(MediaError):
+            add_generation_reference(job, foreign, ReferenceRole.style_reference)
+        with self.assertRaises(ValidationError):
+            MediaGenerationReference(
+                generation=job,
+                asset=foreign,
+                role=ReferenceRole.style_reference.value,
+                position=0,
+            ).save()
+
+    def test_reference_slot_has_database_uniqueness(self):
+        job = self.job("video")
+        first = store_asset(self.company, picture())
+        second = store_asset(self.company, picture())
+        MediaGenerationReference.objects.create(
+            generation=job, asset=first, role=ReferenceRole.style_reference.value, position=0,
+            asset_snapshot={"asset_id": str(first.pk), "kind": first.kind, "sha256": first.sha256},
+        )
+        # bulk_create bypasses model validation and therefore proves the DB constraint itself.
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                MediaGenerationReference.objects.bulk_create([
+                    MediaGenerationReference(
+                        generation=job, asset=second, role=ReferenceRole.style_reference.value, position=0,
+                        asset_snapshot={"asset_id": str(second.pk), "kind": second.kind, "sha256": second.sha256},
+                    )
+                ])
+
+    def test_terminal_reference_asset_can_cleanup_but_snapshot_provenance_remains(self):
+        job = self.job("video")
+        reference = store_asset(self.company, picture())
+        row = add_generation_reference(job, reference, ReferenceRole.style_reference)
+        MediaAsset.objects.filter(pk=reference.pk).update(expires_at=timezone.now()-timedelta(days=1))
+        self.assertEqual(cleanup_expired(self.company), 0)
+        MediaGeneration.objects.filter(pk=job.pk).update(status="completed")
+        self.assertEqual(cleanup_expired(self.company), 1)
+        row.refresh_from_db()
+        self.assertIsNone(row.asset_id)
+        self.assertEqual(row.asset_snapshot["asset_id"], str(reference.pk))
+        payload = serialize_generation_references(job)
+        self.assertEqual(payload[0]["available"], False)
+        self.assertEqual(payload[0]["asset_id"], str(reference.pk))
+
+    def test_legacy_source_asset_without_reference_row_has_runtime_compatibility(self):
+        source = store_asset(self.company, picture())
+        legacy = MediaGeneration.objects.create(
+            run=self.run, kind="video", provider="higgsfield", brief="legacy", prompt="legacy",
+            source_asset=source, parameters={},
+        )
+        self.assertFalse(legacy.references.exists())
+        self.assertEqual(reference_asset(legacy, ReferenceRole.start_image).pk, source.pk)
+        payload = serialize_generation_references(legacy)
+        self.assertEqual(payload[0]["source"], "legacy_source_asset")
 
     @patch("engine.media.providers.generate_images")
     def test_generation_persists_options_and_double_submit_never_repeats_api(self, generate):

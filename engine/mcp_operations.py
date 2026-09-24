@@ -10,6 +10,7 @@ from django.utils import timezone
 from .daily import AlreadyRunning, run_daily
 from .models import ContentRun, MediaGeneration, OwnPost
 from .media import cancel_job
+from .media_references import serialize_generation_references
 from .operator import (
     OperatorError,
     _durable_error,
@@ -231,13 +232,14 @@ def serialize_generation(job: MediaGeneration, *, diagnostics=False) -> dict[str
             "inspiration_ids": creative.get("inspiration_ids", []),
             "compiler_version": creative.get("compiler_version"),
             "registry_version": creative.get("registry_version"),
+            "references": serialize_generation_references(job),
         }
     return data
 
 
 def list_recent_generations(company, *, limit=10) -> list[dict[str, Any]]:
     limit = max(1, min(int(limit), 50))
-    jobs = MediaGeneration.objects.filter(run__workspace=company).prefetch_related("assets").order_by("-created_at", "-id")[:limit]
+    jobs = MediaGeneration.objects.filter(run__workspace=company).select_related("source_asset").prefetch_related("assets", "references__asset").order_by("-created_at", "-id")[:limit]
     return [serialize_generation(job) for job in jobs]
 
 
