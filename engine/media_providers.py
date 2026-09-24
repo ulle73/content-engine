@@ -257,7 +257,7 @@ def upload_input(asset):
 
 
 
-_PRICE_HINTS = ("usd", "credit", "price", "cost", "currency")
+_PRICE_HINTS = ("usd", "credit", "price", "pricing", "cost", "currency")
 _SENSITIVE_ESTIMATE_KEYS = ("prompt", "url", "authorization", "secret", "token", "key", "image")
 
 
@@ -298,9 +298,9 @@ def _safe_estimate_shape(value):
             isinstance(item, (str, int, float))
             and not isinstance(item, bool)
             and not any(term in key_lower for term in _SENSITIVE_ESTIMATE_KEYS)
-            and any(hint in key_lower for hint in _PRICE_HINTS)
+            and (key_lower == "type" or any(hint in key_lower for hint in _PRICE_HINTS))
         ):
-            price_like[key_text] = str(item)[:80]
+            price_like[key_text] = str(item)[:160]
     return {
         "top_level_keys": top_level_keys,
         "nested_keys": nested_keys,
