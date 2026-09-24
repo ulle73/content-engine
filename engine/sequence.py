@@ -592,7 +592,14 @@ def available_clip_model_overrides(
 ) -> list:
     routing_brief = _clip_routing_brief(clip, brief=brief, priority=priority)
     recipe = get_recipe(clip.recipe_id)
-    return eligible_models(routing_brief, recipe=recipe)
+    models = eligible_models(routing_brief, recipe=recipe)
+    if routing_brief.duration_seconds:
+        models = [
+            model for model in models
+            if model.request_contract(routing_brief.mode)
+            and model.request_contract(routing_brief.mode).supports_duration(routing_brief.duration_seconds)
+        ]
+    return models
 
 
 def set_clip_model_override(
