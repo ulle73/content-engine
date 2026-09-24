@@ -648,7 +648,251 @@
 }
 .sequence-empty-candidates strong { color: var(--gk-text); }
 
+.sequence-planner-section {
+  display: grid;
+  gap: 14px;
+}
+.sequence-planner-shell {
+  display: grid;
+  gap: 14px;
+}
+.sequence-plan-generate-form,
+.sequence-plan-editor,
+.sequence-plan-empty {
+  border: 1px solid var(--gk-line);
+  border-radius: 14px;
+  background: #fff;
+}
+.sequence-plan-generate-form {
+  display: grid;
+  gap: 9px;
+  padding: 16px;
+}
+.sequence-plan-generate-copy {
+  display: grid;
+  gap: 3px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gk-line);
+}
+.sequence-plan-generate-copy strong {
+  font-size: 12px;
+}
+.sequence-plan-generate-copy span,
+.sequence-plan-generate-actions small,
+.sequence-plan-save-row span {
+  color: var(--gk-muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+.sequence-plan-generate-form textarea {
+  min-height: 96px;
+}
+.sequence-plan-generate-actions,
+.sequence-plan-save-row,
+.sequence-plan-editor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sequence-plan-generate-actions small,
+.sequence-plan-save-row span {
+  max-width: 560px;
+}
+.sequence-plan-state,
+.sequence-plan-recipe {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 8px;
+  border: 1px solid #d8e4dc;
+  border-radius: 999px;
+  background: #f4f8f5;
+  color: var(--gk-green-dark);
+  font-size: 8px;
+  font-weight: 760;
+  white-space: nowrap;
+}
+.sequence-plan-state.is-final {
+  background: #eaf6ee;
+  border-color: #bed7c6;
+}
+.sequence-plan-editor {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+.sequence-plan-editor-head {
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--gk-line);
+}
+.sequence-plan-editor-head > div {
+  display: grid;
+  gap: 3px;
+}
+.sequence-plan-status-control {
+  display: grid;
+  grid-template-columns: auto minmax(110px, 150px);
+  align-items: center;
+  gap: 8px;
+}
+.sequence-plan-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.sequence-plan-overview-grid > div {
+  display: grid;
+  gap: 5px;
+}
+.sequence-plan-overview-grid textarea {
+  min-height: 106px;
+}
+.sequence-plan-anchor-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+.sequence-plan-anchor-card {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--gk-line);
+  border-radius: 12px;
+  background: var(--gk-surface-soft);
+}
+.sequence-plan-anchor-card textarea {
+  min-height: 88px;
+}
+.sequence-plan-index {
+  color: var(--gk-green-dark);
+  font-size: 9px;
+  font-weight: 820;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.sequence-plan-scenes {
+  display: grid;
+  gap: 12px;
+}
+.sequence-plan-scene {
+  overflow: hidden;
+  border: 1px solid var(--gk-line);
+  border-radius: 13px;
+  background: #fff;
+}
+.sequence-plan-scene > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 13px;
+  background: linear-gradient(135deg, #f5f8f6, #edf3ef);
+  border-bottom: 1px solid var(--gk-line);
+}
+.sequence-plan-scene > header > div {
+  display: grid;
+  gap: 2px;
+}
+.sequence-plan-scene-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 13px;
+}
+.sequence-plan-wide {
+  grid-column: 1 / -1;
+}
+.sequence-plan-scene-grid textarea {
+  min-height: 96px;
+}
+.sequence-plan-requirements {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 14px;
+  padding: 10px 13px;
+  border-top: 1px solid var(--gk-line);
+  color: var(--gk-muted);
+  font-size: 8px;
+  overflow-wrap: anywhere;
+}
+.sequence-plan-requirements b {
+  color: var(--gk-text);
+}
+.sequence-plan-transition {
+  display: grid;
+  gap: 3px;
+  margin: 0 13px 13px;
+  padding: 10px 11px;
+  border: 1px dashed #cbd9d0;
+  border-radius: 9px;
+  background: #f8faf9;
+  font-size: 9px;
+}
+.sequence-plan-transition small {
+  color: var(--gk-muted);
+  overflow-wrap: anywhere;
+}
+.sequence-plan-evidence {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.sequence-plan-evidence > div {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--gk-line);
+  border-radius: 10px;
+  background: var(--gk-surface-soft);
+}
+.sequence-plan-evidence ul {
+  margin: 7px 0 0;
+  padding-left: 18px;
+  color: var(--gk-muted);
+  font-size: 9px;
+}
+.sequence-plan-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+.sequence-plan-empty div {
+  display: grid;
+  gap: 3px;
+}
+.sequence-plan-empty p {
+  margin: 0;
+  color: var(--gk-muted);
+  font-size: 9px;
+}
+
 @media (max-width: 720px) {
+  .sequence-plan-generate-actions,
+  .sequence-plan-save-row,
+  .sequence-plan-editor-head,
+  .sequence-plan-scene > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .sequence-plan-overview-grid,
+  .sequence-plan-scene-grid,
+  .sequence-plan-requirements,
+  .sequence-plan-evidence {
+    grid-template-columns: 1fr;
+  }
+  .sequence-plan-anchor-strip {
+    grid-template-columns: 1fr;
+  }
+  .sequence-plan-status-control {
+    grid-template-columns: 1fr;
+  }
+  .sequence-plan-status-control select,
+  .sequence-plan-generate-actions button,
+  .sequence-plan-save-row button {
+    width: 100%;
+  }
   .sequence-clip-workspace-head { flex-direction: column; }
   .sequence-clip-workspace-state { justify-items: start; }
   .sequence-clip-options { grid-template-columns: 1fr; }
