@@ -531,7 +531,7 @@ class SequenceBridge(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ["left_clip__position", "right_clip__position", "created_at"]
+        ordering = ["created_at"]
         constraints = [
             models.UniqueConstraint(
                 fields=["project", "left_clip", "right_clip"], name="uniq_seq_bridge_pair"
