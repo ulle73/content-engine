@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import Max
 
@@ -95,8 +96,8 @@ def add_anchor(
             source_clip_version=source_clip_version,
             notes=notes,
         )
-    except (IntegrityError, ValueError) as exc:
-        raise SequenceError("Det finns redan en anchor på den positionen.") from exc
+    except (IntegrityError, ValidationError, ValueError) as exc:
+        raise SequenceError("Anchor-kunde inte sparas på den positionen.") from exc
 
 
 def set_anchor_locked(anchor: SequenceAnchor, locked: bool) -> SequenceAnchor:
@@ -169,8 +170,8 @@ def create_clip(
             aspect_ratio=aspect_ratio,
             notes=notes,
         )
-    except (IntegrityError, ValueError) as exc:
-        raise SequenceError("Det finns redan ett clip på den positionen.") from exc
+    except (IntegrityError, ValidationError, ValueError) as exc:
+        raise SequenceError("Clip kunde inte sparas på den positionen.") from exc
 
 
 def _cost_snapshot(generation: MediaGeneration) -> dict:
