@@ -688,16 +688,22 @@ Evidence: see the dedicated E4 ledger for clip isolation, typed anchors, version
 
 Execution ledger: `docs/2026-09-24-sequence-workspace-f1-plan.md`
 
-- [ ] Dedicated sequence project page/workspace.
-- [ ] Visible anchor/clip order.
-- [ ] Clear locked/unlocked state.
-- [ ] Generation status per clip.
-- [ ] Candidate/version count.
-- [ ] No hidden destructive regeneration.
+- [x] Dedicated sequence project page/workspace.
+- [x] Visible anchor/clip order.
+- [x] Clear locked/unlocked state.
+- [x] Generation status per clip.
+- [x] Candidate/version count.
+- [x] No hidden destructive regeneration.
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — read-safe Sequence project workspace is implemented and live.  
+Migration: none  
+CI: `36000378816` — full normal + PostgreSQL suites green.  
+PR: #58  
+Commit: `6a309fc1f461068eaa9a0e8f3bd1029994dc59c3`  
+Deploy: `dep-daqhko3tqb8s73eh5rgg` — new instance healthy/live.  
+Evidence: see the dedicated F1 ledger for navigation, ownership, timeline, version/status and read-safe UI proof.
 
 ---
 
@@ -1064,7 +1070,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task F1 — Build the Sequence project workspace on top of the live E1–E4 backend.**
+> **Task F2 — Add explicit anchor controls to the live Sequence workspace without bypassing E1–E4 safety.**
 
 Build the workspace as a thin UI over the verified E1–E4 domain/services; do not duplicate sequence logic in templates/views.
 
