@@ -664,6 +664,8 @@ Evidence: see the dedicated E3 ledger for final-frame extraction, provenance, do
 
 ## Task E4 — Transition Bridge mode
 
+Execution ledger: `docs/2026-09-24-sequence-engine-e4-transition-bridge-plan.md`
+
 - [ ] User can select an existing clip end/opening anchor pair.
 - [ ] System creates a bridge segment using the continuity recipe.
 - [ ] Existing clips remain untouched.

@@ -23,6 +23,8 @@ from .models import (
     MediaAsset,
     MediaGeneration,
     SequenceAnchor,
+    SequenceBridge,
+    SequenceBridgeVersion,
     SequenceClip,
     SequenceClipVersion,
     SequenceProject,
@@ -530,6 +532,339 @@ def _cost_snapshot(generation: MediaGeneration) -> dict:
     return result
 
 
+
+def create_transition_bridge(
+    project: SequenceProject,
+    left_clip: SequenceClip,
+    right_clip: SequenceClip,
+    *,
+    label: str = "",
+    duration_seconds_target: int | None = None,
+    aspect_ratio: str = "",
+    notes: str = "",
+) -> SequenceBridge:
+    """Create one logical non-destructive bridge between two existing clips."""
+    if left_clip.project_id != project.pk or right_clip.project_id != project.pk:
+        raise SequenceError("Båda clips måste tillhöra samma sequence-projekt.")
+    if left_clip.pk == right_clip.pk or left_clip.position >= right_clip.position:
+        raise SequenceError("Vänster clip måste ligga före höger clip.")
+
+    left = SequenceClip.objects.select_related("end_anchor__asset").get(pk=left_clip.pk)
+    right = SequenceClip.objects.select_related("start_anchor__asset").get(pk=right_clip.pk)
+    start_anchor = left.end_anchor
+    end_anchor = right.start_anchor
+
+    if start_anchor.pk == end_anchor.pk:
+        raise SequenceError("Clips delar redan samma canonical anchor och behöver ingen Transition Bridge.")
+    if start_anchor.position >= end_anchor.position:
+        raise SequenceError("Bridge-starten måste ligga före bridge-slutet.")
+
+    _validate_anchor_asset(project, start_anchor.asset)
+    _validate_anchor_asset(project, end_anchor.asset)
+
+    recipe = get_recipe("scroll_transition_bridge")
+    if not recipe or "video" not in recipe.kinds:
+        raise SequenceError("Trusted scroll_transition_bridge recipe saknas.")
+
+    with transaction.atomic():
+        existing = (
+            SequenceBridge.objects.select_for_update()
+            .filter(project=project, left_clip=left, right_clip=right)
+            .first()
+        )
+        if existing:
+            if existing.start_anchor_id != start_anchor.pk or existing.end_anchor_id != end_anchor.pk:
+                raise SequenceError("Befintlig bridge matchar inte längre clipens canonical anchors.")
+            return existing
+        try:
+            return SequenceBridge.objects.create(
+                project=project,
+                left_clip=left,
+                right_clip=right,
+                start_anchor=start_anchor,
+                end_anchor=end_anchor,
+                recipe_id=recipe.recipe_id,
+                recipe_version=recipe.version,
+                label=label,
+                duration_seconds_target=duration_seconds_target,
+                aspect_ratio=aspect_ratio,
+                notes=notes,
+            )
+        except (IntegrityError, ValidationError, ValueError) as exc:
+            raise SequenceError("Transition Bridge kunde inte skapas.") from exc
+
+
+def _bridge_generation_brief(bridge: SequenceBridge, override: str = "") -> str:
+    text = (override or bridge.notes or bridge.label or bridge.project.brief or bridge.project.title).strip()
+    if not text:
+        text = "Connect the previous clip ending to the next clip opening with the simplest continuous transition."
+    suffix = [
+        "This generation exists only to bridge two established shots.",
+        "Prioritize continuity over spectacle.",
+        "Use the supplied START_IMAGE as the exact previous-shot ending and END_IMAGE as the exact next-shot opening.",
+    ]
+    if bridge.duration_seconds_target:
+        suffix.append(f"Duration: {bridge.duration_seconds_target} seconds.")
+    if bridge.aspect_ratio:
+        suffix.append(f"Aspect ratio: {bridge.aspect_ratio}.")
+    result = " ".join([text, *suffix]).strip()
+    if len(result) > 6000:
+        raise SequenceError("Bridge-briefen blir längre än 6000 tecken.")
+    return result
+
+
+def _bridge_run(bridge: SequenceBridge, *, brief: str) -> ContentRun:
+    project = bridge.project
+    return ContentRun.objects.create(
+        workspace=project.company,
+        author=project.author or project.company.owner,
+        context={
+            "profile": project.company.profile,
+            "voice": project.company.voice,
+            "current": project.company.current,
+            "sequence": {
+                "mode": "transition_bridge",
+                "project_id": str(project.pk),
+                "bridge_id": str(bridge.pk),
+                "left_clip_id": str(bridge.left_clip_id),
+                "right_clip_id": str(bridge.right_clip_id),
+                "start_anchor_id": str(bridge.start_anchor_id),
+                "end_anchor_id": str(bridge.end_anchor_id),
+            },
+        },
+        ideas=[{
+            "title": bridge.label or f"Bridge {bridge.left_clip.position}→{bridge.right_clip.position}",
+            "angle": brief,
+        }],
+        selected=0,
+        draft={"instagram": brief[:1800], "sequence": brief},
+        model="sequence-transition-bridge",
+    )
+
+
+def attach_generation_to_bridge(
+    bridge: SequenceBridge,
+    generation: MediaGeneration,
+    *,
+    review_notes: str = "",
+) -> SequenceBridgeVersion:
+    if generation.run.workspace_id != bridge.project.company_id:
+        raise SequenceError("Generationens företag matchar inte bridge-projektet.")
+    if generation.kind != "video":
+        raise SequenceError("Transition Bridge kan bara kopplas till videogenerationer.")
+    if hasattr(generation, "sequence_clip_version") or hasattr(generation, "sequence_bridge_version"):
+        raise SequenceError("Generationens provenance är redan kopplad till Sequence Engine.")
+
+    creative = (generation.parameters or {}).get("creative") or {}
+    recipe = creative.get("recipe") if isinstance(creative, dict) else {}
+    recipe = recipe if isinstance(recipe, dict) else {}
+    if (recipe.get("recipe_id") or bridge.recipe_id) != "scroll_transition_bridge":
+        raise SequenceError("Transition Bridge-generationen måste använda scroll_transition_bridge.")
+
+    with transaction.atomic():
+        locked = SequenceBridge.objects.select_for_update().select_related("project").get(pk=bridge.pk)
+        latest = locked.versions.aggregate(value=Max("version_number"))["value"] or 0
+        status = (
+            "ready" if generation.status == "completed"
+            else "failed" if generation.status in {"failed", "nsfw", "canceled", "unknown"}
+            else "queued"
+        )
+        return SequenceBridgeVersion.objects.create(
+            bridge=locked,
+            version_number=latest + 1,
+            generation=generation,
+            status=status,
+            recipe_id=recipe.get("recipe_id") or locked.recipe_id,
+            recipe_version=recipe.get("version") or locked.recipe_version,
+            model_id=(generation.parameters or {}).get("model", ""),
+            provider_model=(generation.parameters or {}).get("provider_model", ""),
+            prompt_snapshot=generation.prompt,
+            reference_snapshot=serialize_generation_references(generation),
+            usage_snapshot=deepcopy(generation.usage or {}),
+            cost_snapshot=_cost_snapshot(generation),
+            review_notes=review_notes,
+        )
+
+
+def _assert_bridge_generation_matches_current_anchors(version: SequenceBridgeVersion) -> None:
+    bridge = (
+        SequenceBridge.objects.select_related(
+            "left_clip", "right_clip", "start_anchor__asset", "end_anchor__asset"
+        )
+        .get(pk=version.bridge_id)
+    )
+    if bridge.start_anchor_id != bridge.left_clip.end_anchor_id:
+        raise SequenceError("Bridge-starten matchar inte längre vänster clips end anchor.")
+    if bridge.end_anchor_id != bridge.right_clip.start_anchor_id:
+        raise SequenceError("Bridge-slutet matchar inte längre höger clips start anchor.")
+
+    generation = MediaGeneration.objects.get(pk=version.generation_id)
+    start = reference_asset(generation, ReferenceRole.start_image)
+    end = reference_asset(generation, ReferenceRole.end_image)
+    if not start or not end:
+        raise SequenceError("Bridge-generationen saknar START_IMAGE eller END_IMAGE.")
+    if start.pk != bridge.start_anchor.asset_id or end.pk != bridge.end_anchor.asset_id:
+        raise SequenceError(
+            "Bridge-anchors har ändrats sedan versionen skapades. Förbered en ny bridge-version."
+        )
+
+
+def _sync_bridge_version_provenance(version: SequenceBridgeVersion) -> SequenceBridgeVersion:
+    generation = MediaGeneration.objects.get(pk=version.generation_id)
+    status = (
+        "ready" if generation.status == "completed"
+        else "failed" if generation.status in {"failed", "nsfw", "canceled", "unknown"}
+        else version.status
+    )
+    SequenceBridgeVersion.objects.filter(pk=version.pk).update(
+        status=status,
+        model_id=(generation.parameters or {}).get("model", ""),
+        provider_model=(generation.parameters or {}).get("provider_model", ""),
+        prompt_snapshot=generation.prompt,
+        reference_snapshot=serialize_generation_references(generation),
+        usage_snapshot=deepcopy(generation.usage or {}),
+        cost_snapshot=_cost_snapshot(generation),
+    )
+    return SequenceBridgeVersion.objects.select_related("generation", "bridge").get(pk=version.pk)
+
+
+def prepare_transition_bridge_version(
+    bridge: SequenceBridge,
+    *,
+    brief: str = "",
+    priority: str = "balanced",
+    token=None,
+) -> SequenceBridgeVersion:
+    """Prepare a bridge candidate without contacting the provider."""
+    job_token = _normalize_generation_token(token)
+    existing = (
+        SequenceBridgeVersion.objects.filter(generation_id=job_token)
+        .select_related("bridge")
+        .first()
+    )
+    if existing:
+        if existing.bridge_id != bridge.pk:
+            raise SequenceError("Idempotency-token används redan av en annan Transition Bridge.")
+        return existing
+    if MediaGeneration.objects.filter(pk=job_token).exists():
+        raise SequenceError("Idempotency-token används redan av en annan mediageneration.")
+
+    with transaction.atomic():
+        locked = (
+            SequenceBridge.objects.select_for_update()
+            .select_related(
+                "project__company",
+                "left_clip",
+                "right_clip",
+                "start_anchor__asset",
+                "end_anchor__asset",
+            )
+            .get(pk=bridge.pk)
+        )
+        if locked.recipe_id != "scroll_transition_bridge":
+            raise SequenceError("Transition Bridge måste använda scroll_transition_bridge.")
+        if locked.start_anchor_id != locked.left_clip.end_anchor_id:
+            raise SequenceError("Bridge-starten matchar inte vänster clips canonical end anchor.")
+        if locked.end_anchor_id != locked.right_clip.start_anchor_id:
+            raise SequenceError("Bridge-slutet matchar inte höger clips canonical start anchor.")
+        _validate_anchor_asset(locked.project, locked.start_anchor.asset)
+        _validate_anchor_asset(locked.project, locked.end_anchor.asset)
+
+        request = _bridge_generation_brief(locked, brief)
+        run = _bridge_run(locked, brief=request)
+        generation = create_job(
+            run,
+            token=job_token,
+            kind="video",
+            brief=request,
+            count=1,
+            shape="portrait",
+            source=locked.start_anchor.asset,
+            end_source=locked.end_anchor.asset,
+            include_logo=False,
+            priority=priority,
+            recipe_id="scroll_transition_bridge",
+        )
+
+        sequence_meta = {
+            "mode": "transition_bridge",
+            "project_id": str(locked.project_id),
+            "bridge_id": str(locked.pk),
+            "left_clip_id": str(locked.left_clip_id),
+            "right_clip_id": str(locked.right_clip_id),
+            "start_anchor_id": str(locked.start_anchor_id),
+            "end_anchor_id": str(locked.end_anchor_id),
+            "start_asset_id": str(locked.start_anchor.asset_id),
+            "end_asset_id": str(locked.end_anchor.asset_id),
+            "recipe_id": locked.recipe_id,
+            "recipe_version": locked.recipe_version,
+        }
+        params = deepcopy(generation.parameters or {})
+        params["sequence"] = sequence_meta
+        MediaGeneration.objects.filter(pk=generation.pk).update(parameters=params)
+        generation.parameters = params
+
+        version = attach_generation_to_bridge(locked, generation)
+        params["sequence"]["version_id"] = str(version.pk)
+        params["sequence"]["version_number"] = version.version_number
+        MediaGeneration.objects.filter(pk=generation.pk).update(parameters=params)
+
+        if not locked.selected_version_id and locked.status != "review":
+            SequenceBridge.objects.filter(pk=locked.pk).update(status="review")
+        return SequenceBridgeVersion.objects.select_related("generation", "bridge").get(pk=version.pk)
+
+
+def regenerate_transition_bridge(
+    bridge: SequenceBridge,
+    *,
+    brief: str = "",
+    priority: str = "balanced",
+    token=None,
+) -> SequenceBridgeVersion:
+    return prepare_transition_bridge_version(
+        bridge,
+        brief=brief,
+        priority=priority,
+        token=token,
+    )
+
+
+def preview_transition_bridge_version(version: SequenceBridgeVersion) -> SequenceBridgeVersion:
+    """Run the existing non-billable estimate path for an exact bridge candidate."""
+    _assert_bridge_generation_matches_current_anchors(version)
+    preview_job(MediaGeneration.objects.get(pk=version.generation_id))
+    version = _sync_bridge_version_provenance(version)
+    bridge = SequenceBridge.objects.get(pk=version.bridge_id)
+    if not bridge.selected_version_id and bridge.status != "review":
+        SequenceBridge.objects.filter(pk=bridge.pk).update(status="review")
+    return version
+
+
+def select_transition_bridge_version(
+    bridge: SequenceBridge,
+    version: SequenceBridgeVersion,
+) -> SequenceBridge:
+    with transaction.atomic():
+        locked = SequenceBridge.objects.select_for_update().get(pk=bridge.pk)
+        selected = (
+            SequenceBridgeVersion.objects.select_for_update()
+            .select_related("generation")
+            .get(pk=version.pk)
+        )
+        if selected.bridge_id != locked.pk:
+            raise SequenceError("Bridge-versionen tillhör en annan Transition Bridge.")
+        if selected.generation.status != "completed" or selected.status in {"failed", "rejected"}:
+            raise SequenceError("Endast en färdig bridge-kandidat kan väljas.")
+        previous_id = locked.selected_version_id
+        if previous_id and previous_id != selected.pk:
+            SequenceBridgeVersion.objects.filter(pk=previous_id, status="selected").update(status="ready")
+        SequenceBridgeVersion.objects.filter(pk=selected.pk).update(status="selected")
+        locked.selected_version = selected
+        locked.status = "selected"
+        locked.save(update_fields=["selected_version", "status", "updated_at"])
+    return SequenceBridge.objects.select_related("selected_version").get(pk=bridge.pk)
+
+
 def attach_generation_to_clip(
     clip: SequenceClip,
     generation: MediaGeneration,
@@ -540,8 +875,8 @@ def attach_generation_to_clip(
         raise SequenceError("Generationens företag matchar inte sequence-projektet.")
     if generation.kind != "video":
         raise SequenceError("Sequence clips kan bara kopplas till videogenerationer.")
-    if hasattr(generation, "sequence_clip_version"):
-        raise SequenceError("Generationens provenance är redan kopplad till en clip-version.")
+    if hasattr(generation, "sequence_clip_version") or hasattr(generation, "sequence_bridge_version"):
+        raise SequenceError("Generationens provenance är redan kopplad till Sequence Engine.")
 
     creative = (generation.parameters or {}).get("creative") or {}
     recipe = creative.get("recipe") if isinstance(creative, dict) else {}
@@ -604,6 +939,11 @@ def sequence_snapshot(project: SequenceProject) -> dict:
     clips = list(
         project.clips.select_related("start_anchor", "end_anchor", "selected_version").order_by("position")
     )
+    bridges = list(
+        project.bridges.select_related(
+            "left_clip", "right_clip", "start_anchor", "end_anchor", "selected_version"
+        ).order_by("created_at")
+    )
     return {
         "project_id": str(project.pk),
         "anchors": [
@@ -627,6 +967,19 @@ def sequence_snapshot(project: SequenceProject) -> dict:
             }
             for clip in clips
         ],
+        "bridges": [
+            {
+                "id": str(bridge.pk),
+                "left_clip_id": str(bridge.left_clip_id),
+                "right_clip_id": str(bridge.right_clip_id),
+                "start_anchor_id": str(bridge.start_anchor_id),
+                "end_anchor_id": str(bridge.end_anchor_id),
+                "recipe_id": bridge.recipe_id,
+                "recipe_version": bridge.recipe_version,
+                "selected_version_id": str(bridge.selected_version_id) if bridge.selected_version_id else None,
+            }
+            for bridge in bridges
+        ],
     }
 
 
@@ -645,4 +998,10 @@ __all__ = [
     "regenerate_anchor_chain_clip",
     "preview_anchor_chain_version",
     "promote_output_chain_final_frame",
+    "create_transition_bridge",
+    "attach_generation_to_bridge",
+    "prepare_transition_bridge_version",
+    "regenerate_transition_bridge",
+    "preview_transition_bridge_version",
+    "select_transition_bridge_version",
 ]

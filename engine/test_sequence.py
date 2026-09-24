@@ -20,21 +20,29 @@ from .models import (
     MediaAsset,
     MediaGeneration,
     SequenceAnchor,
+    SequenceBridge,
+    SequenceBridgeVersion,
     SequenceClip,
     SequenceClipVersion,
 )
 from .sequence import (
     SequenceError,
     add_anchor,
+    attach_generation_to_bridge,
     attach_generation_to_clip,
     create_clip,
+    create_transition_bridge,
     create_sequence_project,
     prepare_anchor_chain_version,
+    prepare_transition_bridge_version,
     preview_anchor_chain_version,
+    preview_transition_bridge_version,
     promote_output_chain_final_frame,
     regenerate_anchor_chain_clip,
+    regenerate_transition_bridge,
     replace_anchor_asset,
     select_clip_version,
+    select_transition_bridge_version,
     sequence_snapshot,
     set_anchor_locked,
 )
@@ -624,3 +632,255 @@ class SequenceEngineE1Tests(TestCase):
                 source_type="output_chain",
                 source_metadata={"mode": "output_chain", "frame_selector": "final"},
             ).save()
+
+
+    def build_bridge_gap_chain(self):
+        k0 = add_anchor(self.project, self.asset((10, 40, 25)), position=0, label="K0", locked=True)
+        k1 = add_anchor(self.project, self.asset((20, 70, 40)), position=1, label="K1", locked=True)
+        k2 = add_anchor(self.project, self.asset((40, 100, 60)), position=2, label="K2", locked=True)
+        k3 = add_anchor(self.project, self.asset((60, 130, 75)), position=3, label="K3", locked=True)
+        left = create_clip(
+            self.project, k0, k1, position=0, recipe_id="scroll_transition_bridge", label="Left clip"
+        )
+        right = create_clip(
+            self.project, k2, k3, position=2, recipe_id="scroll_transition_bridge", label="Right clip"
+        )
+        return k0, k1, k2, k3, left, right
+
+    def test_e4_creates_separate_bridge_from_existing_clip_end_to_next_clip_start(self):
+        _, k1, k2, _, left, right = self.build_bridge_gap_chain()
+        bridge = create_transition_bridge(
+            self.project,
+            left,
+            right,
+            label="Continuity bridge",
+            duration_seconds_target=5,
+        )
+        self.assertEqual(bridge.start_anchor_id, k1.pk)
+        self.assertEqual(bridge.end_anchor_id, k2.pk)
+        self.assertEqual(bridge.left_clip_id, left.pk)
+        self.assertEqual(bridge.right_clip_id, right.pk)
+        self.assertEqual(bridge.recipe_id, "scroll_transition_bridge")
+        self.assertEqual(bridge.recipe_version, "1.0.0")
+        self.assertEqual(self.project.clips.count(), 2)
+        self.assertEqual(self.project.bridges.count(), 1)
+
+        snapshot = sequence_snapshot(self.project)
+        self.assertEqual(len(snapshot["bridges"]), 1)
+        self.assertEqual(snapshot["bridges"][0]["start_anchor_id"], str(k1.pk))
+        self.assertEqual(snapshot["bridges"][0]["end_anchor_id"], str(k2.pk))
+
+    def test_e4_bridge_creation_is_idempotent_for_same_clip_pair(self):
+        _, _, _, _, left, right = self.build_bridge_gap_chain()
+        first = create_transition_bridge(self.project, left, right)
+        second = create_transition_bridge(self.project, left, right)
+        self.assertEqual(first.pk, second.pk)
+        self.assertEqual(self.project.bridges.count(), 1)
+
+    def test_e4_shared_anchor_pair_does_not_need_transition_bridge(self):
+        _, _, _, left, right = self.build_three_anchor_chain()
+        with self.assertRaisesRegex(SequenceError, "delar redan samma canonical anchor"):
+            create_transition_bridge(self.project, left, right)
+
+    def test_e4_rejects_cross_project_or_reverse_clip_pair(self):
+        _, _, _, _, left, right = self.build_bridge_gap_chain()
+        other = create_sequence_project(self.company, author=self.user, title="Other bridge project")
+        a0 = add_anchor(other, self.asset((70, 130, 90)), position=0)
+        a1 = add_anchor(other, self.asset((80, 150, 100)), position=1)
+        other_clip = create_clip(other, a0, a1, position=0, recipe_id="scroll_transition_bridge")
+        with self.assertRaisesRegex(SequenceError, "samma sequence-projekt"):
+            create_transition_bridge(self.project, left, other_clip)
+        with self.assertRaisesRegex(SequenceError, "Vänster clip"):
+            create_transition_bridge(self.project, right, left)
+
+    def test_e4_model_validation_rejects_wrong_anchor_binding(self):
+        k0, _, k2, _, left, right = self.build_bridge_gap_chain()
+        bridge = SequenceBridge(
+            project=self.project,
+            left_clip=left,
+            right_clip=right,
+            start_anchor=k0,
+            end_anchor=k2,
+            recipe_id="scroll_transition_bridge",
+            recipe_version="1.0.0",
+        )
+        with self.assertRaisesRegex(ValidationError, "left clip end anchor"):
+            bridge.save()
+
+    def test_e4_database_rejects_duplicate_bridge_pair(self):
+        _, k1, k2, _, left, right = self.build_bridge_gap_chain()
+        create_transition_bridge(self.project, left, right)
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                SequenceBridge.objects.bulk_create([
+                    SequenceBridge(
+                        project=self.project,
+                        left_clip=left,
+                        right_clip=right,
+                        start_anchor=k1,
+                        end_anchor=k2,
+                        recipe_id="scroll_transition_bridge",
+                        recipe_version="1.0.0",
+                    )
+                ])
+
+    def test_e4_prepare_uses_exact_bridge_anchors_and_does_not_touch_existing_clips(self):
+        _, k1, k2, _, left, right = self.build_bridge_gap_chain()
+        left_state = (left.status, left.selected_version_id, left.versions.count())
+        right_state = (right.status, right.selected_version_id, right.versions.count())
+        anchor_state = {k1.pk: (k1.asset_id, k1.locked), k2.pk: (k2.asset_id, k2.locked)}
+        bridge = create_transition_bridge(self.project, left, right, duration_seconds_target=5)
+
+        with patch("engine.media.providers.estimate_video") as estimate, patch("engine.media.providers.start_video") as start:
+            version = prepare_transition_bridge_version(
+                bridge,
+                brief="Create the simplest invisible bridge between these established shots with no audio",
+                token=uuid.uuid4(),
+            )
+        estimate.assert_not_called()
+        start.assert_not_called()
+
+        generation = version.generation
+        refs = {row.role: row.asset_id for row in generation.references.all()}
+        self.assertEqual(refs["START_IMAGE"], k1.asset_id)
+        self.assertEqual(refs["END_IMAGE"], k2.asset_id)
+        self.assertEqual(generation.parameters["sequence"]["mode"], "transition_bridge")
+        self.assertEqual(generation.parameters["sequence"]["bridge_id"], str(bridge.pk))
+        self.assertEqual(generation.parameters["sequence"]["left_clip_id"], str(left.pk))
+        self.assertEqual(generation.parameters["sequence"]["right_clip_id"], str(right.pk))
+        self.assertEqual(generation.parameters["creative"]["recipe"]["recipe_id"], "scroll_transition_bridge")
+        self.assertIn("FORMAT MODE: Single continuous shot.", generation.prompt)
+        self.assertIn("Prioritize continuity over spectacle.", generation.prompt)
+
+        left.refresh_from_db()
+        right.refresh_from_db()
+        k1.refresh_from_db()
+        k2.refresh_from_db()
+        self.assertEqual((left.status, left.selected_version_id, left.versions.count()), left_state)
+        self.assertEqual((right.status, right.selected_version_id, right.versions.count()), right_state)
+        self.assertEqual((k1.asset_id, k1.locked), anchor_state[k1.pk])
+        self.assertEqual((k2.asset_id, k2.locked), anchor_state[k2.pk])
+        bridge.refresh_from_db()
+        self.assertEqual(bridge.status, "review")
+        self.assertIsNone(bridge.selected_version_id)
+
+    def test_e4_regeneration_is_versioned_and_preserves_selected_bridge_candidate(self):
+        _, _, _, _, left, right = self.build_bridge_gap_chain()
+        bridge = create_transition_bridge(self.project, left, right)
+        v1 = prepare_transition_bridge_version(bridge, token=uuid.uuid4())
+        MediaGeneration.objects.filter(pk=v1.generation_id).update(status="completed")
+        SequenceBridgeVersion.objects.filter(pk=v1.pk).update(status="ready")
+        v1.refresh_from_db()
+        select_transition_bridge_version(bridge, v1)
+
+        v2 = regenerate_transition_bridge(
+            bridge,
+            brief="Try a slower alternative bridge",
+            token=uuid.uuid4(),
+        )
+
+        bridge.refresh_from_db()
+        v1.refresh_from_db()
+        self.assertEqual(bridge.versions.count(), 2)
+        self.assertEqual(v2.version_number, 2)
+        self.assertEqual(bridge.selected_version_id, v1.pk)
+        self.assertEqual(v1.status, "selected")
+        self.assertEqual(bridge.status, "selected")
+
+    def test_e4_prepare_is_idempotent_for_same_bridge_token(self):
+        _, _, _, _, left, right = self.build_bridge_gap_chain()
+        bridge = create_transition_bridge(self.project, left, right)
+        token = uuid.uuid4()
+        first = prepare_transition_bridge_version(bridge, token=token)
+        second = prepare_transition_bridge_version(bridge, token=token)
+        self.assertEqual(first.pk, second.pk)
+        self.assertEqual(first.generation_id, token)
+        self.assertEqual(bridge.versions.count(), 1)
+
+    def test_e4_preview_is_nonbillable_and_refreshes_bridge_provenance(self):
+        _, _, _, _, left, right = self.build_bridge_gap_chain()
+        bridge = create_transition_bridge(self.project, left, right)
+        version = prepare_transition_bridge_version(bridge, token=uuid.uuid4())
+
+        def fake_preview(job):
+            self.assertEqual(job.status, "queued")
+            self.assertFalse(job.provider_id)
+            job.usage = {"estimate": {"usd": "0.33", "credits": 3}}
+            job.save(update_fields=["usage"])
+            return job
+
+        with patch("engine.sequence.preview_job", side_effect=fake_preview) as preview:
+            refreshed = preview_transition_bridge_version(version)
+
+        preview.assert_called_once()
+        refreshed.generation.refresh_from_db()
+        self.assertEqual(refreshed.generation.status, "queued")
+        self.assertFalse(refreshed.generation.provider_id)
+        self.assertEqual(refreshed.cost_snapshot["estimate_usd"], "0.33")
+        self.assertEqual(
+            {item["role"] for item in refreshed.reference_snapshot},
+            {"START_IMAGE", "END_IMAGE"},
+        )
+
+    def test_e4_preview_fails_closed_if_bridge_anchor_asset_changed(self):
+        _, k1, _, _, left, right = self.build_bridge_gap_chain()
+        bridge = create_transition_bridge(self.project, left, right)
+        version = prepare_transition_bridge_version(bridge, token=uuid.uuid4())
+        set_anchor_locked(k1, False)
+        replace_anchor_asset(k1, self.asset((100, 170, 110)))
+
+        with patch("engine.sequence.preview_job") as preview:
+            with self.assertRaisesRegex(SequenceError, "Bridge-anchors har ändrats"):
+                preview_transition_bridge_version(version)
+        preview.assert_not_called()
+
+    def test_e4_bridge_version_cannot_select_candidate_from_another_bridge(self):
+        k0 = add_anchor(self.project, self.asset((5, 30, 20)), position=10)
+        k1 = add_anchor(self.project, self.asset((10, 50, 30)), position=11)
+        k2 = add_anchor(self.project, self.asset((20, 70, 40)), position=12)
+        k3 = add_anchor(self.project, self.asset((30, 90, 50)), position=13)
+        k4 = add_anchor(self.project, self.asset((40, 110, 60)), position=14)
+        k5 = add_anchor(self.project, self.asset((50, 130, 70)), position=15)
+        left1 = create_clip(self.project, k0, k1, position=10, recipe_id="scroll_transition_bridge")
+        right1 = create_clip(self.project, k2, k3, position=12, recipe_id="scroll_transition_bridge")
+        left2 = create_clip(self.project, k3, k4, position=13, recipe_id="scroll_transition_bridge")
+        right2 = create_clip(self.project, k5, add_anchor(self.project, self.asset((60, 150, 80)), position=16), position=15, recipe_id="scroll_transition_bridge")
+        b1 = create_transition_bridge(self.project, left1, right1)
+        b2 = create_transition_bridge(self.project, left2, right2)
+        version = prepare_transition_bridge_version(b2, token=uuid.uuid4())
+        MediaGeneration.objects.filter(pk=version.generation_id).update(status="completed")
+        SequenceBridgeVersion.objects.filter(pk=version.pk).update(status="ready")
+        version.refresh_from_db()
+        with self.assertRaisesRegex(SequenceError, "annan Transition Bridge"):
+            select_transition_bridge_version(b1, version)
+
+    def test_e4_clip_generation_cannot_be_reused_as_bridge_generation(self):
+        _, _, _, _, left, right = self.build_bridge_gap_chain()
+        bridge = create_transition_bridge(self.project, left, right)
+        generation = self.generation()
+        attach_generation_to_clip(left, generation)
+        with self.assertRaisesRegex(SequenceError, "redan kopplad"):
+            attach_generation_to_bridge(bridge, generation)
+
+    def test_e4_project_delete_removes_bridge_metadata_but_keeps_generation(self):
+        _, _, _, _, left, right = self.build_bridge_gap_chain()
+        bridge = create_transition_bridge(self.project, left, right)
+        version = prepare_transition_bridge_version(bridge, token=uuid.uuid4())
+        generation_id = version.generation_id
+        project_id = self.project.pk
+
+        self.project.delete()
+
+        self.assertFalse(type(self.project).objects.filter(pk=project_id).exists())
+        self.assertFalse(SequenceBridge.objects.filter(pk=bridge.pk).exists())
+        self.assertFalse(SequenceBridgeVersion.objects.filter(pk=version.pk).exists())
+        self.assertTrue(MediaGeneration.objects.filter(pk=generation_id).exists())
+
+
+    def test_e4_bridge_generation_cannot_be_reused_as_clip_generation(self):
+        _, _, _, _, left, right = self.build_bridge_gap_chain()
+        bridge = create_transition_bridge(self.project, left, right)
+        generation = self.generation()
+        attach_generation_to_bridge(bridge, generation)
+        with self.assertRaisesRegex(SequenceError, "redan kopplad"):
+            attach_generation_to_clip(left, generation)
