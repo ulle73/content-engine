@@ -291,7 +291,6 @@ def prepare_anchor_chain_version(
             SequenceClip.objects.select_for_update()
             .select_related(
                 "project__company",
-                "project__author",
                 "start_anchor__asset",
                 "end_anchor__asset",
             )
