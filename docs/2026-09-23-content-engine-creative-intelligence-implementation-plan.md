@@ -686,6 +686,8 @@ Evidence: see the dedicated E4 ledger for clip isolation, typed anchors, version
 
 ## Task F1 — Project workspace
 
+Execution ledger: `docs/2026-09-24-sequence-workspace-f1-plan.md`
+
 - [ ] Dedicated sequence project page/workspace.
 - [ ] Visible anchor/clip order.
 - [ ] Clear locked/unlocked state.
