@@ -23,6 +23,8 @@ from .models import (
     MediaAsset,
     MediaGeneration,
     SequenceAnchor,
+    SequenceAnchorGenerationTarget,
+    SequenceAnchorRevision,
     SequenceBridge,
     SequenceBridgeVersion,
     SequenceClip,
@@ -33,6 +35,103 @@ from .models import (
 
 class SequenceError(ValueError):
     pass
+
+
+def _preserve_anchor_asset(asset: MediaAsset) -> MediaAsset:
+    current = MediaAsset.objects.select_for_update().get(pk=asset.pk)
+    fields = []
+    if current.expires_at is not None:
+        current.expires_at = None
+        fields.append("expires_at")
+    if current.used_at is None:
+        current.used_at = timezone.now()
+        fields.append("used_at")
+    if fields:
+        current.save(update_fields=fields)
+    return current
+
+
+def _record_anchor_revision(anchor: SequenceAnchor, *, reason: str, created_by=None) -> SequenceAnchorRevision:
+    latest = anchor.revisions.aggregate(value=Max("revision_number"))["value"] or 0
+    return SequenceAnchorRevision.objects.create(
+        anchor=anchor,
+        revision_number=latest + 1,
+        asset=anchor.asset,
+        source_type=anchor.source_type,
+        source_clip_version=anchor.source_clip_version,
+        source_metadata=deepcopy(anchor.source_metadata or {}),
+        reason=(reason or "changed")[:40],
+        created_by=created_by,
+    )
+
+
+def _ensure_anchor_revision(anchor: SequenceAnchor) -> SequenceAnchorRevision:
+    existing = anchor.revisions.order_by("revision_number").first()
+    if existing:
+        return existing
+    return _record_anchor_revision(anchor, reason="baseline")
+
+
+def _anchor_dependent_versions(anchor: SequenceAnchor):
+    clip_ids = set(anchor.starting_clips.values_list("pk", flat=True)) | set(
+        anchor.ending_clips.values_list("pk", flat=True)
+    )
+    bridge_ids = set(anchor.starting_bridges.values_list("pk", flat=True)) | set(
+        anchor.ending_bridges.values_list("pk", flat=True)
+    )
+    clip_versions = SequenceClipVersion.objects.filter(clip_id__in=clip_ids).exclude(status="stale")
+    bridge_versions = SequenceBridgeVersion.objects.filter(bridge_id__in=bridge_ids).exclude(status="stale")
+    return clip_versions, bridge_versions
+
+
+def anchor_change_impact(anchor: SequenceAnchor) -> dict:
+    clip_versions, bridge_versions = _anchor_dependent_versions(anchor)
+    selected_clip_ids = set(
+        SequenceClip.objects.filter(
+            selected_version_id__in=clip_versions.values_list("pk", flat=True)
+        ).values_list("pk", flat=True)
+    )
+    selected_bridge_ids = set(
+        SequenceBridge.objects.filter(
+            selected_version_id__in=bridge_versions.values_list("pk", flat=True)
+        ).values_list("pk", flat=True)
+    )
+    return {
+        "clip_versions": clip_versions.count(),
+        "bridge_versions": bridge_versions.count(),
+        "total_versions": clip_versions.count() + bridge_versions.count(),
+        "selected_segments": len(selected_clip_ids) + len(selected_bridge_ids),
+    }
+
+
+def _mark_anchor_dependents_stale(anchor: SequenceAnchor) -> dict:
+    clip_versions, bridge_versions = _anchor_dependent_versions(anchor)
+    clip_version_ids = list(clip_versions.values_list("pk", flat=True))
+    bridge_version_ids = list(bridge_versions.values_list("pk", flat=True))
+
+    selected_clips = list(
+        SequenceClip.objects.select_for_update().filter(selected_version_id__in=clip_version_ids)
+    )
+    selected_bridges = list(
+        SequenceBridge.objects.select_for_update().filter(selected_version_id__in=bridge_version_ids)
+    )
+    if clip_version_ids:
+        SequenceClipVersion.objects.filter(pk__in=clip_version_ids).update(status="stale")
+    if bridge_version_ids:
+        SequenceBridgeVersion.objects.filter(pk__in=bridge_version_ids).update(status="stale")
+    if selected_clips:
+        SequenceClip.objects.filter(pk__in=[item.pk for item in selected_clips]).update(
+            selected_version=None, status="review", updated_at=timezone.now()
+        )
+    if selected_bridges:
+        SequenceBridge.objects.filter(pk__in=[item.pk for item in selected_bridges]).update(
+            selected_version=None, status="review", updated_at=timezone.now()
+        )
+    return {
+        "clip_versions": len(clip_version_ids),
+        "bridge_versions": len(bridge_version_ids),
+        "selected_segments": len(selected_clips) + len(selected_bridges),
+    }
 
 
 def _validate_anchor_asset(project: SequenceProject, asset: MediaAsset) -> None:
@@ -93,18 +192,22 @@ def add_anchor(
     if source_clip_version and source_clip_version.clip.project_id != project.pk:
         raise SequenceError("Anchor-källan måste tillhöra samma sequence-projekt.")
     try:
-        return SequenceAnchor.objects.create(
-            project=project,
-            position=position,
-            asset=asset,
-            label=label,
-            role=role,
-            locked=locked,
-            source_type=source_type,
-            source_clip_version=source_clip_version,
-            source_metadata=deepcopy(source_metadata or {}),
-            notes=notes,
-        )
+        with transaction.atomic():
+            persistent_asset = _preserve_anchor_asset(asset)
+            anchor = SequenceAnchor.objects.create(
+                project=project,
+                position=position,
+                asset=persistent_asset,
+                label=label,
+                role=role,
+                locked=locked,
+                source_type=source_type,
+                source_clip_version=source_clip_version,
+                source_metadata=deepcopy(source_metadata or {}),
+                notes=notes,
+            )
+            _record_anchor_revision(anchor, reason="created")
+            return anchor
     except (IntegrityError, ValidationError, ValueError) as exc:
         raise SequenceError("Anchor-kunde inte sparas på den positionen.") from exc
 
@@ -138,6 +241,235 @@ def replace_anchor_asset(
         current.source_metadata = deepcopy(source_metadata or {})
         current.save(update_fields=["asset", "source_type", "source_clip_version", "source_metadata", "updated_at"])
     return SequenceAnchor.objects.select_related("asset").get(pk=anchor.pk)
+
+
+
+def change_anchor_asset(
+    anchor: SequenceAnchor,
+    asset: MediaAsset,
+    *,
+    source_type: str = "existing",
+    source_clip_version: SequenceClipVersion | None = None,
+    source_metadata: dict | None = None,
+    reason: str = "replaced",
+    created_by=None,
+    confirm_stale: bool = False,
+) -> SequenceAnchor:
+    """F2-safe anchor replacement with revision history and explicit stale invalidation."""
+    with transaction.atomic():
+        current = (
+            SequenceAnchor.objects.select_for_update()
+            .select_related("project", "asset", "source_clip_version")
+            .get(pk=anchor.pk)
+        )
+        if current.locked:
+            raise SequenceError("Ankaret är låst. Lås upp det explicit innan du byter bild.")
+        _validate_anchor_asset(current.project, asset)
+        if source_clip_version and source_clip_version.clip.project_id != current.project_id:
+            raise SequenceError("Anchor-källan måste tillhöra samma sequence-projekt.")
+        if current.asset_id == asset.pk:
+            return current
+
+        impact = anchor_change_impact(current)
+        if impact["total_versions"] and not confirm_stale:
+            raise SequenceError(
+                f"Bytet gör {impact['total_versions']} befintliga clip/bridge-versioner inaktuella. "
+                "Bekräfta ändringen för att behålla dem som historik och markera dem stale."
+            )
+
+        _ensure_anchor_revision(current)
+        stale = _mark_anchor_dependents_stale(current) if impact["total_versions"] else {
+            "clip_versions": 0, "bridge_versions": 0, "selected_segments": 0
+        }
+        persistent_asset = _preserve_anchor_asset(asset)
+        metadata = deepcopy(source_metadata or {})
+        if stale["clip_versions"] or stale["bridge_versions"]:
+            metadata["staled_versions"] = {
+                "clip_versions": stale["clip_versions"],
+                "bridge_versions": stale["bridge_versions"],
+                "selected_segments": stale["selected_segments"],
+            }
+        current.asset = persistent_asset
+        current.source_type = source_type
+        current.source_clip_version = source_clip_version
+        current.source_metadata = metadata
+        current.save(
+            update_fields=[
+                "asset", "source_type", "source_clip_version", "source_metadata", "updated_at"
+            ]
+        )
+        _record_anchor_revision(current, reason=reason, created_by=created_by)
+    return SequenceAnchor.objects.select_related("asset").get(pk=anchor.pk)
+
+
+def restore_anchor_revision(
+    anchor: SequenceAnchor,
+    revision: SequenceAnchorRevision,
+    *,
+    created_by=None,
+    confirm_stale: bool = False,
+) -> SequenceAnchor:
+    if revision.anchor_id != anchor.pk:
+        raise SequenceError("Anchor-versionen tillhör ett annat anchor.")
+    metadata = deepcopy(revision.source_metadata or {})
+    metadata["restored_from_revision_id"] = str(revision.pk)
+    metadata["restored_from_revision_number"] = revision.revision_number
+    return change_anchor_asset(
+        anchor,
+        revision.asset,
+        source_type=revision.source_type,
+        source_clip_version=revision.source_clip_version,
+        source_metadata=metadata,
+        reason="restored",
+        created_by=created_by,
+        confirm_stale=confirm_stale,
+    )
+
+
+def next_anchor_position(project: SequenceProject) -> int:
+    value = project.anchors.aggregate(value=Max("position"))["value"]
+    return 0 if value is None else value + 1
+
+
+def _anchor_generation_run(project: SequenceProject, *, brief: str, mode: str, anchor=None) -> ContentRun:
+    return ContentRun.objects.create(
+        workspace=project.company,
+        author=project.author or project.company.owner,
+        context={
+            "profile": project.company.profile,
+            "voice": project.company.voice,
+            "current": project.company.current,
+            "sequence": {
+                "mode": "anchor_generation",
+                "project_id": str(project.pk),
+                "target_mode": mode,
+                "target_anchor_id": str(anchor.pk) if anchor else None,
+            },
+        },
+        ideas=[{"title": (anchor.label if anchor else project.title) or "Sequence anchor", "photo_brief": brief}],
+        selected=0,
+        draft={"instagram": brief[:1800], "photo_brief": brief},
+        model="sequence-anchor-generation",
+    )
+
+
+def prepare_anchor_image_generation(
+    project: SequenceProject,
+    *,
+    brief: str,
+    target_anchor: SequenceAnchor | None = None,
+    target_label: str = "",
+    target_role: str = "",
+    shape: str = "portrait",
+    count: int = 2,
+    priority: str = "balanced",
+    token=None,
+) -> SequenceAnchorGenerationTarget:
+    brief = (brief or "").strip()
+    if not brief or len(brief) > 6000:
+        raise SequenceError("Beskriv anchor-bilden med högst 6000 tecken.")
+    if target_anchor and target_anchor.project_id != project.pk:
+        raise SequenceError("Mål-ankaret måste tillhöra sequence-projektet.")
+    if shape not in {"portrait", "square", "landscape"}:
+        raise SequenceError("Välj ett giltigt bildformat.")
+    if count not in {1, 2, 3, 4}:
+        raise SequenceError("Välj mellan 1 och 4 bildalternativ.")
+    job_token = _normalize_generation_token(token)
+
+    existing = SequenceAnchorGenerationTarget.objects.filter(generation_id=job_token).first()
+    if existing:
+        if existing.project_id != project.pk:
+            raise SequenceError("Idempotency-token används redan i ett annat sequence-projekt.")
+        return existing
+    if MediaGeneration.objects.filter(pk=job_token).exists():
+        raise SequenceError("Idempotency-token används redan av en annan mediageneration.")
+
+    with transaction.atomic():
+        run = _anchor_generation_run(
+            project,
+            brief=brief,
+            mode="replace" if target_anchor else "create",
+            anchor=target_anchor,
+        )
+        job = create_job(
+            run,
+            token=job_token,
+            kind="image",
+            brief=brief,
+            count=count,
+            shape=shape,
+            source=None,
+            end_source=None,
+            include_logo=False,
+            priority=priority,
+        )
+        target = SequenceAnchorGenerationTarget.objects.create(
+            project=project,
+            generation=job,
+            mode="replace" if target_anchor else "create",
+            target_anchor=target_anchor,
+            target_label=(target_anchor.label if target_anchor else target_label)[:120],
+            target_role=(target_anchor.role if target_anchor else target_role)[:40],
+            created_by=project.author,
+        )
+        preview_job(job)
+        return target
+
+
+def apply_generated_anchor_asset(
+    target: SequenceAnchorGenerationTarget,
+    asset: MediaAsset,
+    *,
+    created_by=None,
+    confirm_stale: bool = False,
+) -> SequenceAnchor:
+    with transaction.atomic():
+        current = (
+            SequenceAnchorGenerationTarget.objects.select_for_update()
+            .select_related("project", "target_anchor", "applied_anchor", "generation")
+            .get(pk=target.pk)
+        )
+        if current.applied_anchor_id:
+            return current.applied_anchor
+        generation = MediaGeneration.objects.select_for_update().get(pk=current.generation_id)
+        if generation.status != "completed":
+            raise SequenceError("AI-jobbet måste vara klart innan en bild kan användas som anchor.")
+        chosen = MediaAsset.objects.select_for_update().get(pk=asset.pk, company=current.project.company)
+        if chosen.kind != "image" or chosen.purpose == "logo" or chosen.generation_id != generation.pk:
+            raise SequenceError("Bilden måste vara ett färdigt alternativ från just detta AI-jobb.")
+
+        metadata = {
+            "mode": "ai_anchor",
+            "generation_id": str(generation.pk),
+            "provider": generation.provider,
+            "asset_sha256": chosen.sha256,
+        }
+        if current.mode == "replace":
+            if not current.target_anchor_id:
+                raise SequenceError("AI-jobbets mål-anchor finns inte längre.")
+            anchor = change_anchor_asset(
+                current.target_anchor,
+                chosen,
+                source_type="generated",
+                source_metadata=metadata,
+                reason="ai_generated",
+                created_by=created_by,
+                confirm_stale=confirm_stale,
+            )
+        else:
+            project = SequenceProject.objects.select_for_update().get(pk=current.project_id)
+            anchor = add_anchor(
+                project,
+                chosen,
+                position=next_anchor_position(project),
+                label=current.target_label,
+                role=current.target_role,
+                source_type="generated",
+                source_metadata=metadata,
+            )
+        current.applied_anchor = anchor
+        current.save(update_fields=["applied_anchor"])
+        return anchor
 
 
 def create_clip(
@@ -503,6 +835,7 @@ def promote_output_chain_final_frame(version: SequenceClipVersion) -> SequenceAn
                     "updated_at",
                 ]
             )
+            _record_anchor_revision(locked_target, reason="output_chain")
             locked_target.starting_clips.filter(
                 project_id=locked_clip.project_id,
                 selected_version__isnull=True,
@@ -853,7 +1186,7 @@ def select_transition_bridge_version(
         )
         if selected.bridge_id != locked.pk:
             raise SequenceError("Bridge-versionen tillhör en annan Transition Bridge.")
-        if selected.generation.status != "completed" or selected.status in {"failed", "rejected"}:
+        if selected.generation.status != "completed" or selected.status in {"failed", "rejected", "stale"}:
             raise SequenceError("Endast en färdig bridge-kandidat kan väljas.")
         previous_id = locked.selected_version_id
         if previous_id and previous_id != selected.pk:
@@ -909,7 +1242,7 @@ def select_clip_version(clip: SequenceClip, version: SequenceClipVersion) -> Seq
         selected = SequenceClipVersion.objects.select_for_update().select_related("generation").get(pk=version.pk)
         if selected.clip_id != locked.pk:
             raise SequenceError("Clip-versionen tillhör ett annat clip.")
-        if selected.generation.status != "completed" or selected.status in {"failed", "rejected"}:
+        if selected.generation.status != "completed" or selected.status in {"failed", "rejected", "stale"}:
             raise SequenceError("Endast en färdig, godkänd kandidat kan väljas.")
         previous_id = locked.selected_version_id
         if previous_id and previous_id != selected.pk:
@@ -989,6 +1322,12 @@ __all__ = [
     "add_anchor",
     "set_anchor_locked",
     "replace_anchor_asset",
+    "change_anchor_asset",
+    "restore_anchor_revision",
+    "anchor_change_impact",
+    "next_anchor_position",
+    "prepare_anchor_image_generation",
+    "apply_generated_anchor_asset",
     "create_clip",
     "attach_generation_to_clip",
     "select_clip_version",
