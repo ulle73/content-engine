@@ -74,7 +74,7 @@
             <span class="sequence-project-mark" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
             <span class="sequence-project-copy">
               <strong>{{ project.title }}</strong>
-              <small>{{ project.get_status_display }}{% if project.format %} · {{ project.format|cut:"_"|title }}{% endif %}{% if project.platform %} · {{ project.platform|cut:"_"|title }}{% endif %}</small>
+              <small>{{ project.get_status_display }} · {{ project.format_label }} · {{ project.platform_label }}</small>
               {% if project.brief %}<span>{{ project.brief|truncatechars:100 }}</span>{% endif %}
             </span>
             <span class="sequence-project-counts" aria-label="Projektinnehåll">
