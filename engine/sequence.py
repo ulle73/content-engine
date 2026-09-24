@@ -18,6 +18,7 @@ from .media import create_job, preview_job
 from .media_references import reference_asset, serialize_generation_references
 from .models import (
     Company,
+    ContentRun,
     MediaAsset,
     MediaGeneration,
     SequenceAnchor,
