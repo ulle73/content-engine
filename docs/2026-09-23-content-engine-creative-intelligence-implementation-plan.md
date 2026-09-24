@@ -666,13 +666,19 @@ Evidence: see the dedicated E3 ledger for final-frame extraction, provenance, do
 
 Execution ledger: `docs/2026-09-24-sequence-engine-e4-transition-bridge-plan.md`
 
-- [ ] User can select an existing clip end/opening anchor pair.
-- [ ] System creates a bridge segment using the continuity recipe.
-- [ ] Existing clips remain untouched.
+- [x] User can select an existing clip end/opening anchor pair.
+- [x] System creates a bridge segment using the continuity recipe.
+- [x] Existing clips remain untouched.
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — separate Transition Bridge orchestration is implemented and live.  
+Migration: `0017_sequence_transition_bridge`  
+CI: `35998901727` — full normal + PostgreSQL suites green.  
+PR: #56  
+Commit: `820455e21f0a07c13c682e02b9588ed468fd4bb2`  
+Deploy: `dep-daqhe1e7bikc738hg58g` — migration applied, new instance healthy/live.  
+Evidence: see the dedicated E4 ledger for clip isolation, typed anchors, versioning, stale-anchor safety and provenance constraints.
 
 ---
 
@@ -1056,7 +1062,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task E4 — Implement explicit Transition Bridge orchestration without mutating existing clips.**
+> **Task F1 — Build the Sequence project workspace on top of the live E1–E4 backend.**
 
-Do not begin by building the timeline UI; prove non-destructive Transition Bridge orchestration first.
+Build the workspace as a thin UI over the verified E1–E4 domain/services; do not duplicate sequence logic in templates/views.
 
