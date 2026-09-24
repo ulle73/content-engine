@@ -521,6 +521,33 @@ class MediaTests(TestCase):
         self.assertEqual(seen[0]["posts"][0]["settings"]["post_type"], "post")
 
     @patch("engine.media_providers.higgs")
+    def test_unknown_estimate_shape_logs_only_safe_price_metadata(self, higgs):
+        job = self.job("video")
+        higgs.return_value = {
+            "data": {
+                "cost_usd": "0.42",
+                "credits_required": "7",
+                "public_url": "https://secret.example/input.png",
+            },
+            "prompt": "PRIVATE PROMPT CONTENT",
+            "request_token": "secret-token",
+        }
+        with self.assertLogs("engine.media_providers", level="WARNING") as captured:
+            with self.assertRaisesRegex(MediaError, "kunde inte bekräfta priset"):
+                estimate_video(job)
+        logged = "\n".join(captured.output)
+        self.assertIn("data.cost_usd", logged)
+        self.assertIn("data.credits_required", logged)
+        self.assertIn("0.42", logged)
+        self.assertIn('"7"', logged)
+        self.assertNotIn("PRIVATE PROMPT CONTENT", logged)
+        self.assertNotIn("secret.example", logged)
+        self.assertNotIn("secret-token", logged)
+        self.assertNotIn('"prompt"', logged)
+        self.assertNotIn("public_url", logged)
+        self.assertNotIn("request_token", logged)
+
+    @patch("engine.media_providers.higgs")
     def test_higgs_cost_limit_prevents_submission_and_retains_accepted_estimate(self, higgs):
         job = self.job("video")
         higgs.return_value = {"usd":"20.00", "credits":"320"}
