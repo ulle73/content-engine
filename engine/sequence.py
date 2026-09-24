@@ -6,15 +6,19 @@ It does not generate media, call providers, or duplicate media storage.
 from __future__ import annotations
 
 from copy import deepcopy
+import uuid
 
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import Max
 
+from .creative_core import ReferenceRole
 from .creative_recipes import get_recipe
-from .media_references import serialize_generation_references
+from .media import create_job, preview_job
+from .media_references import reference_asset, serialize_generation_references
 from .models import (
     Company,
+    ContentRun,
     MediaAsset,
     MediaGeneration,
     SequenceAnchor,
@@ -174,6 +178,206 @@ def create_clip(
         raise SequenceError("Clip kunde inte sparas på den positionen.") from exc
 
 
+
+def _sequence_generation_brief(clip: SequenceClip, override: str = "") -> str:
+    text = (override or clip.project.brief or clip.notes or clip.label or clip.project.title).strip()
+    if not text:
+        text = "Create a smooth continuous transition between the supplied start and end anchors."
+    suffix = []
+    if clip.duration_seconds_target:
+        suffix.append(f"Duration: {clip.duration_seconds_target} seconds.")
+    if clip.aspect_ratio:
+        suffix.append(f"Aspect ratio: {clip.aspect_ratio}.")
+    suffix.append("Use the supplied start and end anchors as fixed canonical visual anchors.")
+    result = " ".join([text, *suffix]).strip()
+    if len(result) > 6000:
+        raise SequenceError("Clip-briefen blir längre än 6000 tecken.")
+    return result
+
+
+def _sequence_run(clip: SequenceClip, *, brief: str) -> ContentRun:
+    project = clip.project
+    return ContentRun.objects.create(
+        workspace=project.company,
+        author=project.author or project.company.owner,
+        context={
+            "profile": project.company.profile,
+            "voice": project.company.voice,
+            "current": project.company.current,
+            "sequence": {
+                "mode": "anchor_chain",
+                "project_id": str(project.pk),
+                "clip_id": str(clip.pk),
+                "clip_position": clip.position,
+                "start_anchor_id": str(clip.start_anchor_id),
+                "end_anchor_id": str(clip.end_anchor_id),
+            },
+        },
+        ideas=[{
+            "title": clip.label or project.title,
+            "angle": brief,
+        }],
+        selected=0,
+        draft={"instagram": brief[:1800], "sequence": brief},
+        model="sequence-anchor-chain",
+    )
+
+
+def _normalize_generation_token(token) -> uuid.UUID:
+    if token is None:
+        return uuid.uuid4()
+    try:
+        return token if isinstance(token, uuid.UUID) else uuid.UUID(str(token))
+    except (ValueError, TypeError, AttributeError) as exc:
+        raise SequenceError("Ogiltig idempotency-token för sequence-generationen.") from exc
+
+
+def _assert_generation_matches_current_anchors(version: SequenceClipVersion) -> None:
+    clip = SequenceClip.objects.select_related(
+        "start_anchor__asset", "end_anchor__asset"
+    ).get(pk=version.clip_id)
+    generation = MediaGeneration.objects.get(pk=version.generation_id)
+    start = reference_asset(generation, ReferenceRole.start_image)
+    end = reference_asset(generation, ReferenceRole.end_image)
+    if not start or not end:
+        raise SequenceError("Clip-generationen saknar canonical START_IMAGE eller END_IMAGE.")
+    if start.pk != clip.start_anchor.asset_id or end.pk != clip.end_anchor.asset_id:
+        raise SequenceError(
+            "Sequence-anchors har ändrats sedan versionen skapades. Förbered en ny clip-version."
+        )
+
+
+def _sync_clip_version_provenance(version: SequenceClipVersion) -> SequenceClipVersion:
+    generation = MediaGeneration.objects.get(pk=version.generation_id)
+    status = (
+        "ready" if generation.status == "completed"
+        else "failed" if generation.status in {"failed", "nsfw", "canceled", "unknown"}
+        else version.status
+    )
+    SequenceClipVersion.objects.filter(pk=version.pk).update(
+        status=status,
+        model_id=(generation.parameters or {}).get("model", ""),
+        provider_model=(generation.parameters or {}).get("provider_model", ""),
+        prompt_snapshot=generation.prompt,
+        reference_snapshot=serialize_generation_references(generation),
+        usage_snapshot=deepcopy(generation.usage or {}),
+        cost_snapshot=_cost_snapshot(generation),
+    )
+    return SequenceClipVersion.objects.select_related("generation", "clip").get(pk=version.pk)
+
+
+def prepare_anchor_chain_version(
+    clip: SequenceClip,
+    *,
+    brief: str = "",
+    priority: str = "balanced",
+    token=None,
+) -> SequenceClipVersion:
+    """Create one reviewable clip candidate from the clip's canonical anchors.
+
+    This function never calls a media provider. It reuses the existing MediaGeneration
+    planning/reference pipeline and keeps all anchor mutation outside generation.
+    """
+    job_token = _normalize_generation_token(token)
+    existing = SequenceClipVersion.objects.filter(generation_id=job_token).select_related("clip").first()
+    if existing:
+        if existing.clip_id != clip.pk:
+            raise SequenceError("Idempotency-token används redan av ett annat sequence-clip.")
+        return existing
+    if MediaGeneration.objects.filter(pk=job_token).exists():
+        raise SequenceError("Idempotency-token används redan av en annan mediageneration.")
+
+    with transaction.atomic():
+        locked = (
+            SequenceClip.objects.select_for_update()
+            .select_related(
+                "project__company",
+                "start_anchor__asset",
+                "end_anchor__asset",
+            )
+            .get(pk=clip.pk)
+        )
+        if locked.model_override:
+            raise SequenceError(
+                "Model override är ännu inte aktiverat för Sequence Engine. Använd Auto tills B4 är implementerad."
+            )
+        _validate_anchor_asset(locked.project, locked.start_anchor.asset)
+        _validate_anchor_asset(locked.project, locked.end_anchor.asset)
+
+        request = _sequence_generation_brief(locked, brief)
+        run = _sequence_run(locked, brief=request)
+        try:
+            generation = create_job(
+                run,
+                token=job_token,
+                kind="video",
+                brief=request,
+                count=1,
+                shape="portrait",
+                source=locked.start_anchor.asset,
+                end_source=locked.end_anchor.asset,
+                include_logo=False,
+                priority=priority,
+                recipe_id=locked.recipe_id,
+            )
+        except Exception:
+            # The surrounding transaction rolls back the internal ContentRun as well.
+            raise
+
+        sequence_meta = {
+            "mode": "anchor_chain",
+            "project_id": str(locked.project_id),
+            "clip_id": str(locked.pk),
+            "clip_position": locked.position,
+            "start_anchor_id": str(locked.start_anchor_id),
+            "end_anchor_id": str(locked.end_anchor_id),
+            "start_asset_id": str(locked.start_anchor.asset_id),
+            "end_asset_id": str(locked.end_anchor.asset_id),
+            "recipe_id": locked.recipe_id,
+            "recipe_version": locked.recipe_version,
+        }
+        params = deepcopy(generation.parameters or {})
+        params["sequence"] = sequence_meta
+        MediaGeneration.objects.filter(pk=generation.pk).update(parameters=params)
+        generation.parameters = params
+
+        version = attach_generation_to_clip(locked, generation)
+        params["sequence"]["version_id"] = str(version.pk)
+        params["sequence"]["version_number"] = version.version_number
+        MediaGeneration.objects.filter(pk=generation.pk).update(parameters=params)
+
+        if not locked.selected_version_id and locked.status != "review":
+            SequenceClip.objects.filter(pk=locked.pk).update(status="review")
+        return SequenceClipVersion.objects.select_related("generation", "clip").get(pk=version.pk)
+
+
+def regenerate_anchor_chain_clip(
+    clip: SequenceClip,
+    *,
+    brief: str = "",
+    priority: str = "balanced",
+    token=None,
+) -> SequenceClipVersion:
+    """Create another non-destructive candidate from the clip's current canonical anchors."""
+    return prepare_anchor_chain_version(
+        clip,
+        brief=brief,
+        priority=priority,
+        token=token,
+    )
+
+
+def preview_anchor_chain_version(version: SequenceClipVersion) -> SequenceClipVersion:
+    """Run the existing non-billable provider estimate for an exact anchor-chain candidate."""
+    _assert_generation_matches_current_anchors(version)
+    generation = preview_job(MediaGeneration.objects.get(pk=version.generation_id))
+    version = _sync_clip_version_provenance(version)
+    clip = SequenceClip.objects.get(pk=version.clip_id)
+    if not clip.selected_version_id and clip.status != "review":
+        SequenceClip.objects.filter(pk=clip.pk).update(status="review")
+    return version
+
+
 def _cost_snapshot(generation: MediaGeneration) -> dict:
     usage = generation.usage or {}
     estimate = usage.get("estimate") if isinstance(usage, dict) else None
@@ -301,4 +505,7 @@ __all__ = [
     "select_clip_version",
     "reject_clip_version",
     "sequence_snapshot",
+    "prepare_anchor_chain_version",
+    "regenerate_anchor_chain_clip",
+    "preview_anchor_chain_version",
 ]
