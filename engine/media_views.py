@@ -207,7 +207,7 @@ def job_page(request, workspace_id, run_id, job_id):
     run = run_for(request, run_id)
     job = get_object_or_404(MediaGeneration, pk=job_id, run=run)
     creative = job.parameters.get("creative", {}) if isinstance(job.parameters, dict) else {}
-    safe_parameters = {key: value for key, value in (job.parameters or {}).items() if key in {"model", "provider_model", "count", "size", "quality", "duration", "aspect_ratio", "resolution", "generate_audio", "output_format"}}
+    safe_parameters = {key: value for key, value in (job.parameters or {}).items() if key in {"model", "provider_model", "model_override", "count", "size", "quality", "duration", "aspect_ratio", "resolution", "generate_audio", "output_format"}}
     status_index = {"queued": 2, "starting": 2, "running": 3, "saving": 4, "completed": 5}.get(job.status, -1)
     anchor_target = (
         SequenceAnchorGenerationTarget.objects.select_related("project", "target_anchor", "applied_anchor")
