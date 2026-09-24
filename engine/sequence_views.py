@@ -8,20 +8,26 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .media import MediaError, cleanup_expired, describe_file, store_asset
-from .models import MediaAsset, SequenceAnchorGenerationTarget, SequenceAnchorRevision, SequenceProject
+from .media import MediaError, cancel_job, cleanup_expired, describe_file, store_asset
+from .models import MediaAsset, SequenceAnchorGenerationTarget, SequenceAnchorRevision, SequenceClipVersion, SequenceProject
 from .ownership import company_required
 from .sequence import (
     SequenceError,
     add_anchor,
     anchor_change_impact,
     apply_generated_anchor_asset,
+    available_clip_model_overrides,
     change_anchor_asset,
     create_sequence_project,
     next_anchor_position,
+    prepare_anchor_chain_version,
     prepare_anchor_image_generation,
+    preview_anchor_chain_version,
     restore_anchor_revision,
+    select_clip_version,
     set_anchor_locked,
+    set_clip_model_override,
+    sync_sequence_generation,
 )
 
 
@@ -53,6 +59,18 @@ def _anchor_for_project(project, anchor_id):
     return get_object_or_404(
         project.anchors.select_related("asset", "source_clip_version"),
         pk=anchor_id,
+    )
+
+
+def _clip_for_project(project, clip_id):
+    return get_object_or_404(
+        project.clips.select_related(
+            "project__company",
+            "start_anchor__asset",
+            "end_anchor__asset",
+            "selected_version__generation",
+        ),
+        pk=clip_id,
     )
 
 
@@ -181,13 +199,27 @@ def sequence_workspace(request, workspace_id, project_id):
         anchor.generation_token = uuid.uuid4()
     clips = list(
         project.clips.select_related(
-            "start_anchor",
-            "end_anchor",
+            "start_anchor__asset",
+            "end_anchor__asset",
             "selected_version__generation",
         )
         .annotate(candidate_count=Count("versions", distinct=True))
         .order_by("position", "created_at")
     )
+    for clip in clips:
+        clip.version_list = list(
+            clip.versions.select_related("generation")
+            .prefetch_related("generation__assets")
+            .order_by("-version_number", "-created_at")
+        )
+        for version in clip.version_list:
+            version.asset_list = list(version.generation.assets.filter(kind="video").order_by("created_at", "pk"))
+        try:
+            clip.model_options = available_clip_model_overrides(clip)
+        except (SequenceError, ValueError):
+            clip.model_options = []
+        clip.generation_token = uuid.uuid4()
+        clip.default_brief = (clip.notes or project.brief or clip.label or project.title)[:6000]
     bridges = list(
         project.bridges.select_related(
             "left_clip",
@@ -437,3 +469,92 @@ def sequence_anchor_apply_generated(request, workspace_id, project_id, target_id
             run_id=target.generation.run_id,
             job_id=target.generation_id,
         )
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_clip_prepare(request, workspace_id, project_id, clip_id):
+    project = _project_for_request(request, project_id)
+    clip = _clip_for_project(project, clip_id)
+    brief = request.POST.get("brief", "")
+    priority = request.POST.get("priority", "balanced")
+    model_override = request.POST.get("model_override", "")
+    try:
+        clip = set_clip_model_override(
+            clip,
+            model_override,
+            brief=brief,
+            priority=priority,
+        )
+        version = prepare_anchor_chain_version(
+            clip,
+            brief=brief,
+            priority=priority,
+            token=request.POST.get("token") or uuid.uuid4(),
+        )
+    except (SequenceError, MediaError, ValueError) as exc:
+        messages.error(request, str(exc))
+        return _workspace_redirect(request, project)
+
+    try:
+        version = preview_anchor_chain_version(version)
+        messages.success(
+            request,
+            f"Clip {clip.position + 1} · V{version.version_number} är förberedd för review. Ingen betald generation har startats.",
+        )
+    except (SequenceError, MediaError) as exc:
+        messages.error(request, str(exc))
+
+    return redirect(
+        "engine:media_job",
+        workspace_id=request.workspace.pk,
+        run_id=version.generation.run_id,
+        job_id=version.generation_id,
+    )
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_clip_select(request, workspace_id, project_id, clip_id, version_id):
+    project = _project_for_request(request, project_id)
+    clip = _clip_for_project(project, clip_id)
+    version = get_object_or_404(
+        SequenceClipVersion.objects.select_related("generation"),
+        pk=version_id,
+        clip=clip,
+    )
+    try:
+        sync_sequence_generation(version.generation)
+        version.refresh_from_db()
+        select_clip_version(clip, version)
+        messages.success(request, f"Clip {clip.position + 1} · V{version.version_number} är vald som vinnare.")
+    except SequenceError as exc:
+        messages.error(request, str(exc))
+    return _workspace_redirect(request, project)
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_clip_cancel(request, workspace_id, project_id, clip_id, version_id):
+    project = _project_for_request(request, project_id)
+    clip = _clip_for_project(project, clip_id)
+    version = get_object_or_404(
+        SequenceClipVersion.objects.select_related("generation"),
+        pk=version_id,
+        clip=clip,
+    )
+    try:
+        job = cancel_job(version.generation)
+        sync_sequence_generation(job)
+        messages.success(
+            request,
+            f"Clip {clip.position + 1} · V{version.version_number} avbröts säkert."
+            if job.status == "canceled"
+            else "Jobbet var redan avslutat.",
+        )
+    except (SequenceError, MediaError) as exc:
+        messages.error(request, str(exc))
+    return _workspace_redirect(request, project)
