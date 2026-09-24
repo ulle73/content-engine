@@ -654,7 +654,7 @@
   .sequence-clip-options { grid-template-columns: 1fr; }
   .sequence-version-grid { grid-template-columns: 1fr; padding: 10px; }
   .sequence-version-meta > div { grid-template-columns: 76px minmax(0,1fr); }
-  .sequence-workspace-page button,
+  .engine.sequence-workspace-page button,
   .sequence-workspace-page .button,
   .sequence-control-card > summary,
   .sequence-anchor-actions > summary,
