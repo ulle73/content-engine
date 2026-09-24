@@ -418,15 +418,15 @@ Next exact task: C2 — End-frame support end-to-end.
 
 ## Task C2 — End-frame support end-to-end
 
-- [ ] AI Studio can select/display/remove an END_IMAGE.
-- [ ] MCP preview/generate can accept an end asset id.
-- [ ] End asset is company-scoped.
-- [ ] CreativeBrief/plan sees END_IMAGE capability requirement.
-- [ ] Router chooses only compatible models.
-- [ ] Estimate uploads/includes the actual end image.
-- [ ] Paid submit reuses the reviewed exact inputs.
-- [ ] Provenance includes start/end asset IDs and hashes where safe.
-- [ ] Job review page clearly shows both anchors.
+- [x] AI Studio can select/display/remove an END_IMAGE.
+- [x] MCP preview/generate can accept an end asset id.
+- [x] End asset is company-scoped.
+- [x] CreativeBrief/plan sees END_IMAGE capability requirement.
+- [x] Router chooses only compatible models.
+- [x] Estimate uploads/includes the actual end image.
+- [x] Paid submit reuses the reviewed exact inputs.
+- [x] Provenance includes start/end asset IDs and hashes where safe.
+- [x] Job review page clearly shows both anchors.
 
 ### Acceptance criteria
 
@@ -454,10 +454,19 @@ No paid job is started merely by previewing.
 
 ### Closeout
 
-Status: NOT STARTED  
-Commit: —  
-Deploy: —  
-Evidence: —
+Status: DONE — generic end-frame support is implemented end-to-end on top of C1 canonical references.  
+Files changed: `engine/creative_director.py`, `engine/creative_registry.py`, `engine/media_references.py`, `engine/media.py`, `engine/media_providers.py`, `engine/media_views.py`, `engine/operator_media.py`, `engine/mcp_server.py`, `templates/engine/media.html`, `templates/engine/media_asset.html`, `templates/engine/media_job.html`, `engine/test_media.py`, `engine/test_mcp_media.py`.  
+What changed: AI Studio and MCP/operator flows now accept a company-scoped END_IMAGE together with START_IMAGE. CreativeBrief stores the canonical END_IMAGE role, capability routing excludes models without verified first/last-frame support, Seedance provider contracts map START_IMAGE→`image_url` and END_IMAGE→`end_image_url`, and the review page displays the exact anchor pair. Seedance prompt compilation adds an explicit END FRAME section when a reviewed end frame exists.  
+Paid-start safety: preview stores a SHA-256 signature over the reviewed canonical reference set (role, position, asset id, content hash, availability). `start_reviewed_job` fails closed if the anchor set differs before paid start, so reviewed start/end frames cannot silently change between estimate and submission. Existing ten-minute review expiry, approved max USD and at-most-once paid submit protections remain intact.  
+Provenance: start/end asset IDs and hashes are available through safe canonical reference diagnostics without storage keys or provider upload URLs.  
+Tests: CI run `35973388785` passed the full normal Django suite and full PostgreSQL suite after the end-frame prompt fix. The run also passed `makemigrations --check --dry-run`, migration apply/check, Django checks, static collection and MCP import. Focused tests cover start+end routing, canonical persistence, same-company validation, provider `image_url`+`end_image_url` body, review-signature mutation blocking, AI Studio selection/submission/review and operator/MCP end-frame flow.  
+Provider behavior: no paid generation was performed. Provider mapping is verified by contract/unit tests; live non-billable provider preflight remains D2.  
+CI note: first C2 run `35972272306` had one focused failure: the end frame was routed correctly but the compiled Seedance prompt lacked the explicit `END FRAME:` section. That was corrected by declaring/compiling the END_FRAME prompt section and the complete rerun passed.  
+Commit before checklist closeout: `1ab21376316e0690d1bbf7a1a6d5b2d76a2e1a47`.  
+PR: #42  
+Deploy: none yet  
+Known limitation: C2 provides generic end-frame infrastructure only. It does not yet impose scroll-specific continuity/no-cut rules; those belong to D1.  
+Next exact task: D1 — implement the trusted `scroll_transition_bridge` recipe.
 
 ---
 
