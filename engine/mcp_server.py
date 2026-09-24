@@ -371,15 +371,17 @@ def preview_media(company_ref: str, run_id: str, idempotency_key: str, expected_
                   kind: Literal["image", "video"] = "image", brief: str = "", count: int = 1,
                   shape: Literal["portrait", "square", "landscape"] = "portrait",
                   priority: Literal["quality", "balanced", "economy"] = "balanced",
-                  source_asset_id: str | None = None, include_logo: bool = False) -> dict:
+                  source_asset_id: str | None = None, end_asset_id: str | None = None,
+                  include_logo: bool = False) -> dict:
     run = _run(company_ref, run_id)
     _safe_call(_check_revision, run, expected_revision)
     if not idempotency_key or len(idempotency_key) > 200:
         raise ToolError("Ange en idempotency_key med 1–200 tecken.")
     source = _asset(company_ref, source_asset_id) if source_asset_id else None
+    end_source = _asset(company_ref, end_asset_id) if end_asset_id else None
     token = uuid.uuid5(uuid.NAMESPACE_URL, f"creative-preview:{run.workspace_id}:{run.pk}:{idempotency_key}")
     job = _safe_call(create_job, run, token=token, kind=kind, brief=brief, count=count, shape=shape,
-                     priority=priority, source=source, include_logo=include_logo)
+                     priority=priority, source=source, end_source=end_source, include_logo=include_logo)
     job = _safe_call(preview_job, job)
     return {**serialize_generation(job, diagnostics=True), "revision": expected_revision,
             "price_note": job.usage.get("price_note", ""), "requires_explicit_start": job.status == "queued"}
@@ -461,6 +463,7 @@ def generate_media(
     shape: Literal["portrait", "square", "landscape"] = "portrait",
     include_logo: bool = False,
     source_asset_id: str | None = None,
+    end_asset_id: str | None = None,
     priority: Literal["quality", "balanced", "economy"] = "balanced",
 ) -> dict:
     run = _run(company_ref, run_id)
@@ -474,6 +477,7 @@ def generate_media(
         shape=shape,
         include_logo=include_logo,
         source_asset_id=source_asset_id,
+        end_asset_id=end_asset_id,
         expected_revision=expected_revision,
         idempotency_key=idempotency_key,
         priority=priority,
