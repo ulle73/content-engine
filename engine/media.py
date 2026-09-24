@@ -172,7 +172,7 @@ def default_brief(run, kind):
             "Skapa en enkel visuell sekvens i stående format. Undvik påhittade resultat och siffror.")
 
 
-def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced", recipe_id=None):
+def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced", recipe_id=None, model_override=""):
     check_storage()
     if kind not in {"image", "video"} or not brief.strip() or len(brief) > 6000:
         raise MediaError("Beskrivningen behövs och får vara högst 6000 tecken.")
@@ -214,12 +214,14 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         inspirations = retrieve_inspiration(company.owner, company.pk, brief, limit=3)
         try:
             plan = build_plan(locked, brief, kind=kind, source=source, end_source=end_source, shape=shape, count=count,
-                              priority=priority, inspirations=inspirations, recipe_id=recipe_id)
+                              priority=priority, inspirations=inspirations, recipe_id=recipe_id,
+                              model_override=model_override)
         except ValueError as exc:
             raise MediaError("Kreativ kontroll stoppade generationen: " + str(exc)) from exc
 
         params = dict(plan.parameters)
         params["aspect_ratio"] = plan.brief.aspect_ratio
+        params["model_override"] = plan.selection.model_id if plan.selection.manual_override else ""
         params["creative"] = {
             "brief": plan.brief.model_dump(mode="json"),
             "context": plan.context.model_dump(mode="json"),
