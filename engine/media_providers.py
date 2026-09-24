@@ -15,7 +15,9 @@ import httpx
 from django.conf import settings
 from openai import OpenAI
 
+from .creative_core import ReferenceRole
 from .creative_director import HIGGSFIELD_SAFE_PROMPT_CHARS
+from .media_references import reference_asset
 from .media_storage import MediaError, open_asset
 
 HIGGS_ROOT = "https://api.higgsfield.ai"
@@ -256,17 +258,23 @@ def estimate_video(job):
             "Videoprompten är för lång för den säkra Higgsfield-gränsen. "
             "Justera beskrivningen och skapa ett nytt jobb; ingen betald generation startades."
         )
-    mode = "image-to-video" if job.source_asset else "text-to-video"
+    start_asset = reference_asset(job, ReferenceRole.start_image)
+    end_asset = reference_asset(job, ReferenceRole.end_image)
+    if end_asset and not start_asset:
+        raise MediaError("Slutbild kräver en startbild.")
+    mode = "image-to-video" if start_asset else "text-to-video"
     model = job.parameters.get("provider_model") or (
         job.parameters.get("model", settings.HIGGSFIELD_VIDEO_MODEL) + "/" + mode
     )
     body = video_payload(job)
-    if job.source_asset:
-        reference_fields = job.parameters.get("reference_fields") or {}
-        start_field = reference_fields.get("START_IMAGE", "image_url")
-        if not isinstance(start_field, str) or not start_field:
-            raise MediaError("Videomodellen saknar verifierad mappning för startbilden.")
-        body[start_field] = upload_input(job.source_asset)
+    reference_fields = job.parameters.get("reference_fields") or {}
+    for role, asset in ((ReferenceRole.start_image, start_asset), (ReferenceRole.end_image, end_asset)):
+        if not asset:
+            continue
+        field = reference_fields.get(role.value)
+        if not isinstance(field, str) or not field:
+            raise MediaError(f"Videomodellen saknar verifierad mappning för {role.value}.")
+        body[field] = upload_input(asset)
     estimate = higgs("POST", "/estimate/" + model, json=body)
     try:
         price = Decimal(estimate["usd"])
