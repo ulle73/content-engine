@@ -434,6 +434,36 @@ def _uses_prompt_section(model: ModelIntelligence, section: str) -> bool:
     return section in model.prompt_sections
 
 
+def _recipe_format_direction(recipe) -> str:
+    if not recipe:
+        return ""
+    tags = set(recipe.format_tags)
+    if "scrub_friendly" in tags:
+        return "Single continuous shot. No cuts. No scene resets. Coherent intermediate frames for forward and backward scroll scrubbing."
+    if "ugc" in tags and "product_fidelity" in tags:
+        return "Authentic creator-style UGC product demo. Phone-camera feel, natural performance, referenced product stays visually exact."
+    if "ugc" in tags:
+        return "Authentic creator-style UGC. Phone-camera feel, natural performance, no polished studio behavior."
+    if "before_after" in tags:
+        return "Before/after proof. Keep viewpoint comparable and make the anchored state change unmistakable."
+    if "paid_ad" in tags:
+        return "Paid social ad. One message, fast comprehension, clear product/reveal payoff and clean CTA space when requested."
+    if "luxury_brand" in tags:
+        return "Luxury brand film. Restrained pacing, premium material and light treatment, minimal visual clutter."
+    if "product_fidelity" in tags:
+        return "Product-led commercial. Keep referenced product identity, packaging and visible details stable."
+    if "environment_hero" in tags:
+        return "Environment hero. Stable geography, smooth reveal, clean destination payoff."
+    return ""
+
+
+def _scene_with_recipe_method(brief: CreativeBrief, recipe) -> str:
+    scene = brief.user_intent
+    if recipe and recipe.narrative_strategy:
+        scene += " STORY METHOD: " + " ".join(recipe.narrative_strategy[:2])
+    return scene
+
+
 def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelIntelligence, inspirations: list[dict], recipe=None) -> str:
     inspiration = []
     for item in inspirations[:MAX_INSPIRATION]:
@@ -444,9 +474,10 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
     if model.prompt_strategy == "ordered_motion":
         sections = []
         if _uses_prompt_section(model, "SCENE"):
-            sections.append("SCENE: " + brief.user_intent)
-        if recipe and "scrub_friendly" in recipe.format_tags:
-            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene resets. Coherent intermediate frames for forward and backward scroll scrubbing.")
+            sections.append("SCENE: " + _scene_with_recipe_method(brief, recipe))
+        format_direction = _recipe_format_direction(recipe)
+        if format_direction:
+            sections.append("FORMAT MODE: " + format_direction)
         if _uses_prompt_section(model, "CAMERA"):
             camera_text = ", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"
             if recipe and recipe.camera_strategy:
@@ -494,9 +525,10 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             style = ", ".join(_dedupe([*brief.visual_style, brief.realism])) or "follow the requested visual style"
             sections.append("GLOBAL STYLE: " + style + ".")
         if _uses_prompt_section(model, "SCENE"):
-            sections.append("SCENE: " + brief.user_intent)
-        if recipe and "scrub_friendly" in recipe.format_tags:
-            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene resets. Coherent intermediate frames for forward and backward scroll scrubbing.")
+            sections.append("SCENE: " + _scene_with_recipe_method(brief, recipe))
+        format_direction = _recipe_format_direction(recipe)
+        if format_direction:
+            sections.append("FORMAT MODE: " + format_direction)
         if brief.environment and _uses_prompt_section(model, "LOCATION"):
             sections.append("LOCATION: " + brief.environment + ".")
         if brief.reference_media and _uses_prompt_section(model, "FIRST_FRAME_BLOCKING"):
@@ -530,7 +562,13 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         if brief.lighting and _uses_prompt_section(model, "LIGHTING"):
             sections.append("LIGHTING: " + brief.lighting + ".")
         if _uses_prompt_section(model, "AUDIO"):
-            sections.append("AUDIO: " + ("Generate natural audio consistent with the scene." if brief.audio_intent not in {"", "none"} else "No generated audio."))
+            if brief.audio_intent not in {"", "none"}:
+                audio_text = "Generate natural audio consistent with the scene."
+                if recipe and recipe.requires_native_audio:
+                    audio_text += " Use only approved dialogue, voiceover and claims supplied in the scene brief."
+            else:
+                audio_text = "No generated audio."
+            sections.append("AUDIO: " + audio_text)
         if context.company_name and _uses_prompt_section(model, "BRAND_CONTEXT"):
             sections.append("BRAND CONTEXT: " + context.company_name + ". Do not add brand text or logos unless explicitly requested.")
         prompt = "\n".join(sections)
