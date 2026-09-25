@@ -506,6 +506,10 @@ def prepare_planned_anchor_generation(
             add_generation_reference(target.generation, reference_asset, ReferenceRole.product_reference)
         if "company" in requirements and not project.company.official_logo_id:
             add_generation_reference(target.generation, reference_asset, ReferenceRole.style_reference)
+        # Typed provenance changes the canonical reference signature. Refresh the
+        # non-billable review after all planned references are persisted.
+        preview_job(target.generation)
+        target.generation.refresh_from_db()
     return target
 
 
