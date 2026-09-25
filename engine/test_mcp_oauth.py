@@ -38,7 +38,7 @@ class SelfHostedMCPOAuthTests(TestCase):
         self.assertTrue(payload["authorization_endpoint"].endswith("/oauth/authorize/"))
         self.assertTrue(payload["token_endpoint"].endswith("/oauth/token/"))
         self.assertTrue(payload["registration_endpoint"].endswith("/oauth/register/"))
-        self.assertNotIn("client_id_metadata_document_supported", payload)
+        self.assertIs(payload["client_id_metadata_document_supported"], False)
         self.assertIn("authorization_code", payload["grant_types_supported"])
         self.assertNotIn("implicit", payload["grant_types_supported"])
         self.assertIn("S256", payload["code_challenge_methods_supported"])
