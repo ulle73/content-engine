@@ -13,7 +13,7 @@
         <form method="post" action="{% url 'engine:sequence_anchor_apply_generated' workspace_id=workspace.pk project_id=sequence_anchor_target.project_id target_id=sequence_anchor_target.pk asset_id=asset.pk %}">
           {% csrf_token %}
           {% if sequence_anchor_impact.total_versions %}<label class="sequence-inline-confirm"><input type="checkbox" name="confirm_stale" value="1" required><span>Jag förstår att {{ sequence_anchor_impact.total_versions }} versioner blir stale.</span></label>{% endif %}
-          <button type="submit">{% if sequence_anchor_target.mode == 'replace' %}Använd som K{{ sequence_anchor_target.target_anchor.position }}{% else %}Använd som ny anchor{% endif %}</button>
+          <button type="submit">{% if sequence_anchor_target.target_position != None %}Använd som K{{ sequence_anchor_target.target_position }}{% elif sequence_anchor_target.mode == 'replace' %}Använd som K{{ sequence_anchor_target.target_anchor.position }}{% else %}Använd som ny anchor{% endif %}</button>
         </form>
       {% endif %}
       <a class="button button-secondary" href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" target="_blank" rel="noopener">Öppna</a>
