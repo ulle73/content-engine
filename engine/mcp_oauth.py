@@ -4,6 +4,8 @@ import json
 import os
 from urllib.parse import urlparse
 
+from oauth2_provider.cimd import SafeMetadataFetcher
+
 
 def allowed_chatgpt_hosts() -> set[str]:
     raw = os.environ.get(
@@ -11,6 +13,32 @@ def allowed_chatgpt_hosts() -> set[str]:
         "chatgpt.com,openai.com,connectors.api.openai.org",
     )
     return {item.strip().lower() for item in raw.split(",") if item.strip()}
+
+
+class ChatGPTCIMDMetadataFetcher(SafeMetadataFetcher):
+    """Adapt ChatGPT's transition CIMD metadata to this server's public PKCE support.
+
+    ChatGPT's stable CIMD document currently keeps private_key_jwt in the legacy
+    singular field as a preference while also advertising an unordered supported
+    methods list containing "none". django-oauth-toolkit 3.4.1 only wires public
+    clients into CIMD, so select "none" when ChatGPT explicitly advertises it.
+    The normal CIMD host allowlist and PKCE requirements remain in force.
+    """
+
+    def fetch(self, client_id):
+        metadata, max_age = super().fetch(client_id)
+        host = urlparse(client_id).hostname
+        supported_methods = metadata.get("token_endpoint_auth_methods_supported")
+        if (
+            host
+            and host.lower() in allowed_chatgpt_hosts()
+            and isinstance(supported_methods, list)
+            and "none" in supported_methods
+            and metadata.get("token_endpoint_auth_method") != "none"
+        ):
+            metadata = dict(metadata)
+            metadata["token_endpoint_auth_method"] = "none"
+        return metadata, max_age
 
 
 class ChatGPTDCRPermission:
