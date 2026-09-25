@@ -90,7 +90,7 @@ class CreativeCoreTests(TestCase):
 
     def test_recipe_registry_contains_only_trusted_versioned_domain_objects(self):
         entries = recipe_registry()
-        self.assertEqual({item.recipe_id for item in entries}, {"generic_image", "generic_video", "scroll_transition_bridge"})
+        self.assertEqual({item.recipe_id for item in entries}, {"generic_image", "generic_video", "scroll_orbit_hero", "scroll_dolly_reveal", "scroll_macro_flythrough", "scroll_exploded_reveal", "scroll_environment_transition", "scroll_transition_bridge", "scroll_product_showcase", "scroll_landscape_flythrough"})
         self.assertTrue(all(item.version and item.evidence_sources for item in entries))
         self.assertTrue(all(item.evidence_level in {EvidenceLevel.official, EvidenceLevel.verified} for item in entries))
 
