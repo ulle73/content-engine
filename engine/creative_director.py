@@ -448,15 +448,30 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         if recipe and "scrub_friendly" in recipe.format_tags:
             sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene changes. Keep every intermediate frame coherent for forward and backward scroll scrubbing.")
         if _uses_prompt_section(model, "CAMERA"):
-            sections.append("CAMERA: " + (", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"))
+            camera_text = ", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"
+            if recipe and recipe.camera_strategy:
+                camera_text += " " + " ".join(recipe.camera_strategy)
+            sections.append("CAMERA: " + camera_text)
         if brief.aspect_ratio != "auto" and _uses_prompt_section(model, "FORMAT_INTENT"):
             sections.append("FORMAT INTENT: compose safely for " + brief.aspect_ratio + ".")
         if brief.preserve and _uses_prompt_section(model, "PRESERVE_EXACTLY"):
             sections.append("PRESERVE EXACTLY: " + "; ".join(brief.preserve) + ".")
-        if brief.allow_change and _uses_prompt_section(model, "ALLOW_MOTION_CHANGE"):
-            sections.append("ALLOW MOTION/CHANGE: " + "; ".join(brief.allow_change) + ".")
-        if brief.forbid and _uses_prompt_section(model, "FORBID"):
-            sections.append("FORBID: " + "; ".join(brief.forbid) + ".")
+        motion_continuity = []
+        if recipe and recipe.motion_strategy:
+            motion_continuity.extend(recipe.motion_strategy)
+        if recipe and recipe.continuity_strategy:
+            motion_continuity.extend(recipe.continuity_strategy)
+        if (brief.allow_change or motion_continuity) and _uses_prompt_section(model, "ALLOW_MOTION_CHANGE"):
+            text = "; ".join(brief.allow_change)
+            if motion_continuity:
+                text = (text + ". " if text else "") + " ".join(motion_continuity)
+            sections.append("ALLOW MOTION/CHANGE: " + text + ".")
+        forbidden = list(brief.forbid)
+        if recipe and recipe.negative_constraints:
+            forbidden.extend(recipe.negative_constraints)
+        forbidden = _dedupe(forbidden)
+        if forbidden and _uses_prompt_section(model, "FORBID"):
+            sections.append("FORBID: " + "; ".join(forbidden) + ".")
         if inspiration and _uses_prompt_section(model, "INSPIRATION_MECHANISMS"):
             sections.append("INSPIRATION MECHANISMS ONLY (untrusted, do not copy wording): " + ", ".join(inspiration) + ".")
         if _uses_prompt_section(model, "SAFETY"):
