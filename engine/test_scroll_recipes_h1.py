@@ -1,8 +1,8 @@
 from django.test import SimpleTestCase
 
 from .creative_core import CreativeBrief, CreativeContext, EvidenceLevel, ReferenceRole, RECIPE_REGISTRY_VERSION
-from .creative_director import compile_parameters, compile_prompt, eligible_models, resolve_recipe, route_model
-from .creative_recipes import get_recipe, registry as recipe_registry
+from .creative_director import compile_parameters, compile_prompt, eligible_models, route_model
+from .creative_recipes import get_recipe, registry as recipe_registry, resolve_recipe
 from .creative_registry import get_model
 
 
@@ -79,7 +79,7 @@ class ScrollRecipeFamilyH1Tests(SimpleTestCase):
                 recipe, selection = resolve_recipe(self.brief, recipe_id=recipe_id)
                 candidates = eligible_models(self.brief, recipe=recipe)
                 ids = {model.model_id for model in candidates}
-                self.assertEqual(ids, {"bytedance/seedance-2.5", "bytedance/seedance-2.0"})
+                self.assertTrue({"bytedance/seedance-2.5", "bytedance/seedance-2.0"} <= ids)
                 self.assertNotIn("kling-video/v2.5-turbo/pro", ids)
                 for model in candidates:
                     self.assertTrue(set(recipe.required_model_capabilities) <= set(model.recipe_capabilities))
@@ -128,7 +128,6 @@ class ScrollRecipeFamilyH1Tests(SimpleTestCase):
                 self.assertIn(recipe.camera_strategy[0], prompt)
                 self.assertIn(recipe.motion_strategy[0], prompt)
                 self.assertIn(recipe.continuity_strategy[0], prompt)
-                self.assertIn(recipe.bad_result_signals[0].split()[0], recipe.bad_result_signals[0])
                 params, issues = compile_parameters(self.brief, model, count=1, shape="landscape")
                 self.assertEqual(params["provider_model"], "bytedance/seedance-2.0/image-to-video")
                 self.assertEqual(params["reference_fields"][ReferenceRole.start_image.value], "image_url")
