@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field
 REGISTRY_VERSION = "2026-09-23.2"
 COMPILER_VERSION = "2026-09-23.1"
 BRIEF_VERSION = "2026-09-22.1"
-RECIPE_REGISTRY_VERSION = "2026-09-23.1"
+RECIPE_REGISTRY_VERSION = "2026-09-25.1"
 
 
 class Complexity(str, Enum):
@@ -70,6 +70,9 @@ class CreativeRecipe(BaseModel):
     draft_policy: Literal["single_pass", "draft_then_final"] = "single_pass"
     evaluation_rules: tuple[str, ...] = ()
     supported_model_families: tuple[str, ...] = ()
+    required_model_capabilities: tuple[str, ...] = ()
+    good_result_criteria: tuple[str, ...] = ()
+    bad_result_signals: tuple[str, ...] = ()
     evidence_sources: tuple[str, ...] = ()
     verified_at: str
     evidence_level: EvidenceLevel
