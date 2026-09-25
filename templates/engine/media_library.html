@@ -73,6 +73,12 @@
               </figure>
             {% endfor %}
           </div>
+          {% if job.prompt %}
+            <details class="media-preview-prompt">
+              <summary>Visa prompt</summary>
+              <pre>{{ job.prompt }}</pre>
+            </details>
+          {% endif %}
         </dialog>
         {% endif %}
         {% endwith %}
@@ -115,6 +121,12 @@
           <div class="media-preview-dialog-single">
             {% if asset.kind == 'image' %}<img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Media' }}">{% else %}<video controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}"></video>{% endif %}
           </div>
+          {% if asset.generation and asset.generation.prompt %}
+            <details class="media-preview-prompt">
+              <summary>Visa prompt</summary>
+              <pre>{{ asset.generation.prompt }}</pre>
+            </details>
+          {% endif %}
           <div class="media-preview-dialog-foot">
             <div><span>Typ</span><strong>{{ asset.get_kind_display }}</strong></div>
             <div><span>Källa</span><strong>{{ asset.get_origin_display }}{% if asset.provider %} · {{ asset.provider }}{% endif %}</strong></div>

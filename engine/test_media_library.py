@@ -63,6 +63,43 @@ class MediaLibraryTests(TestCase):
         picker = self.client.get(self.url("media", run_id=run.pk))
         self.assertContains(picker, self.url("asset_file", asset_id=asset.pk))
 
+    def test_generated_video_asset_preview_shows_saved_prompt(self):
+        run = ContentRun.objects.create(
+            workspace=self.company,
+            author=self.user,
+            context={},
+            draft={},
+            model="test",
+        )
+        prompt = "LOCK_GK_AND_SWIRL_PROMPT"
+        job = MediaGeneration.objects.create(
+            run=run,
+            kind="video",
+            provider="higgsfield",
+            brief="Golfkuponger logo animation",
+            prompt=prompt,
+            parameters={"model": "bytedance/seedance-2.5"},
+            status="completed",
+        )
+        MediaAsset.objects.create(
+            company=self.company,
+            kind="video",
+            origin="generated",
+            provider="higgsfield",
+            storage_backend="local",
+            storage_key="test/generated.mp4",
+            mime_type="video/mp4",
+            byte_size=10,
+            width=960,
+            height=960,
+            duration_seconds=5,
+            generation=job,
+        )
+
+        response = self.client.get(self.url("media_library"))
+        self.assertContains(response, "Visa prompt")
+        self.assertContains(response, prompt)
+
     @patch("engine.company_settings.apify.account_summary", return_value={})
     def test_image_cost_event_opens_generated_asset_preview(self, _account):
         run = ContentRun.objects.create(
