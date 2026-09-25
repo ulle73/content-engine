@@ -1,0 +1,25 @@
+name: Opportunity OS Worker CI
+
+on:
+  push:
+    branches:
+      - opportunity-os-spec
+    paths:
+      - "opportunity-worker/**"
+      - ".github/workflows/opportunity-worker-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: opportunity-worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install --no-audit --no-fund
+      - run: npm test
+      - run: npm run build
