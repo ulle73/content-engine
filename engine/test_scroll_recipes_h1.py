@@ -148,7 +148,7 @@ class ScrollRecipeFamilyH1Tests(SimpleTestCase):
         self.assertIn("camera clipping through solid surfaces", prompts["scroll_macro_flythrough"])
         self.assertIn("component identity", prompts["scroll_exploded_reveal"])
         self.assertIn("persistent landmarks", prompts["scroll_environment_transition"])
-        self.assertIn("continuity over spectacle", " ".join(get_recipe("scroll_transition_bridge").motion_strategy))
+        self.assertIn("motion over spectacle", " ".join(get_recipe("scroll_transition_bridge").motion_strategy))
         self.assertIn("label hallucination", prompts["scroll_product_showcase"])
         self.assertIn("terrain morphing", prompts["scroll_landscape_flythrough"])
 
