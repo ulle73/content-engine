@@ -17,7 +17,7 @@ from .creative_core import ReferenceRole
 from .creative_director import analyze_complexity, eligible_models, parse_brief, route_model
 from .creative_recipes import get_recipe
 from .media import create_job, extract_video_frame_png, preview_job, remove_asset, store_derived_image
-from .media_references import reference_asset, serialize_generation_references
+from .media_references import add_generation_reference, reference_asset, serialize_generation_references
 from .models import (
     Company,
     ContentRun,
@@ -333,7 +333,191 @@ def next_anchor_position(project: SequenceProject) -> int:
     return 0 if value is None else value + 1
 
 
-def _anchor_generation_run(project: SequenceProject, *, brief: str, mode: str, anchor=None) -> ContentRun:
+def _planned_anchor_spec(project: SequenceProject, position: int) -> dict:
+    plan = project.plan if isinstance(project.plan, dict) else {}
+    if plan.get("planner_id") != "sequence_planner" or not isinstance(plan.get("anchors"), list):
+        raise SequenceError("Projektet har ingen Sequence Planner-plan att materialisera.")
+    try:
+        position = int(position)
+    except (TypeError, ValueError) as exc:
+        raise SequenceError("Planerad anchor-position är ogiltig.") from exc
+    spec = next(
+        (
+            item for item in plan["anchors"]
+            if isinstance(item, dict) and int(item.get("position", -1)) == position
+        ),
+        None,
+    )
+    if spec is None:
+        raise SequenceError(f"K{position} finns inte i den aktuella Sequence-planen.")
+    return deepcopy(spec)
+
+
+def sequence_plan_anchor_readiness(project: SequenceProject) -> dict:
+    plan = project.plan if isinstance(project.plan, dict) else {}
+    planned = []
+    if plan.get("planner_id") == "sequence_planner" and isinstance(plan.get("anchors"), list):
+        for item in plan["anchors"]:
+            if isinstance(item, dict):
+                try:
+                    planned.append(int(item["position"]))
+                except (KeyError, TypeError, ValueError):
+                    continue
+    planned = sorted(set(position for position in planned if position >= 0))
+    if not planned:
+        return {
+            "planned": False,
+            "ready": True,
+            "required_positions": [],
+            "materialized_positions": [],
+            "missing_positions": [],
+        }
+    materialized = sorted(
+        set(project.anchors.filter(position__in=planned).values_list("position", flat=True))
+    )
+    missing = [position for position in planned if position not in materialized]
+    return {
+        "planned": True,
+        "ready": not missing,
+        "required_positions": planned,
+        "materialized_positions": materialized,
+        "missing_positions": missing,
+    }
+
+
+def _plan_anchor_metadata(project: SequenceProject, spec: dict, *, mode: str, asset: MediaAsset | None = None) -> dict:
+    return {
+        "mode": mode,
+        "plan_revision": project.plan_revision,
+        "plan_anchor_position": int(spec["position"]),
+        "plan_anchor_label": str(spec.get("label") or "")[:120],
+        "plan_anchor_description": str(spec.get("description") or "")[:1200],
+        "reference_requirements": list(spec.get("reference_requirements") or []),
+        **({"asset_id": str(asset.pk)} if asset else {}),
+    }
+
+
+def materialize_planned_anchor_asset(
+    project: SequenceProject,
+    asset: MediaAsset,
+    *,
+    position: int,
+    source_type: str,
+    created_by=None,
+    confirm_stale: bool = False,
+) -> SequenceAnchor:
+    spec = _planned_anchor_spec(project, position)
+    _validate_anchor_asset(project, asset)
+    metadata = _plan_anchor_metadata(project, spec, mode=f"planned_{source_type}", asset=asset)
+    existing = project.anchors.filter(position=int(spec["position"])).first()
+    if existing:
+        if existing.asset_id == asset.pk:
+            return existing
+        return change_anchor_asset(
+            existing,
+            asset,
+            source_type=source_type,
+            source_metadata=metadata,
+            reason=f"plan_{source_type}"[:40],
+            created_by=created_by,
+            confirm_stale=confirm_stale,
+        )
+    return add_anchor(
+        project,
+        asset,
+        position=int(spec["position"]),
+        label=str(spec.get("label") or "")[:120],
+        role=str(spec.get("role") or "")[:40],
+        source_type=source_type,
+        source_metadata=metadata,
+        created_by=created_by,
+    )
+
+
+def _planned_anchor_generation_brief(project: SequenceProject, spec: dict) -> str:
+    requirements = set(spec.get("reference_requirements") or [])
+    sections = [
+        str(spec.get("description") or "").strip(),
+        f"Create canonical sequence anchor K{int(spec['position'])}.",
+        "Keep the composition strong enough to be reused as an exact visual anchor for connected video clips.",
+    ]
+    note = str(spec.get("reference_note") or "").strip()
+    if note:
+        sections.append("Reference intent: " + note)
+    if "product" in requirements:
+        sections.append(
+            "Preserve the exact product identity, geometry, proportions, colors, labels, logos and visible text from the supplied product reference. Do not invent or alter product or brand details."
+        )
+    if "company" in requirements:
+        sections.append(
+            "Preserve exact company branding and logo identity from the supplied company reference or official logo. Do not invent or alter company marks or visible brand text."
+        )
+    result = " ".join(section for section in sections if section).strip()
+    if not result or len(result) > 6000:
+        raise SequenceError("Den planerade anchor-briefen är tom eller längre än 6000 tecken.")
+    return result
+
+
+def prepare_planned_anchor_generation(
+    project: SequenceProject,
+    *,
+    position: int,
+    reference_asset: MediaAsset | None = None,
+    shape: str = "portrait",
+    count: int = 2,
+    priority: str = "balanced",
+    token=None,
+    created_by=None,
+) -> SequenceAnchorGenerationTarget:
+    project = SequenceProject.objects.select_related("company", "author", "company__official_logo").get(pk=project.pk)
+    spec = _planned_anchor_spec(project, position)
+    requirements = set(spec.get("reference_requirements") or [])
+    if reference_asset:
+        _validate_anchor_asset(project, reference_asset)
+    if "product" in requirements and not reference_asset:
+        raise SequenceError("Krävd produktreferens saknas. Välj en riktig produktbild från Media före AI-generation.")
+    if "company" in requirements and not project.company.official_logo_id and not reference_asset:
+        raise SequenceError("Krävd företagsreferens saknas. Ladda upp officiell logga eller välj en företagsbild från Media.")
+    if {"company", "product"} <= requirements and not project.company.official_logo_id:
+        raise SequenceError(
+            "Den här anchorn kräver både företags- och produktreferens. Lägg in officiell logga så produktbilden kan användas som exakt AI-referens."
+        )
+
+    target_anchor = project.anchors.filter(position=int(spec["position"])).first()
+    target = prepare_anchor_image_generation(
+        project,
+        brief=_planned_anchor_generation_brief(project, spec),
+        target_anchor=target_anchor,
+        target_label=str(spec.get("label") or "")[:120],
+        target_role=str(spec.get("role") or "")[:40],
+        target_position=int(spec["position"]),
+        plan_revision=project.plan_revision,
+        plan_anchor_snapshot=spec,
+        source=reference_asset,
+        include_logo="company" in requirements and bool(project.company.official_logo_id),
+        shape=shape,
+        count=count,
+        priority=priority,
+        token=token,
+        created_by=created_by,
+    )
+    if reference_asset:
+        if "product" in requirements:
+            add_generation_reference(target.generation, reference_asset, ReferenceRole.product_reference)
+        if "company" in requirements and not project.company.official_logo_id:
+            add_generation_reference(target.generation, reference_asset, ReferenceRole.style_reference)
+    return target
+
+
+def _anchor_generation_run(
+    project: SequenceProject,
+    *,
+    brief: str,
+    mode: str,
+    anchor=None,
+    target_position: int | None = None,
+    plan_revision: int | None = None,
+) -> ContentRun:
     return ContentRun.objects.create(
         workspace=project.company,
         author=project.author or project.company.owner,
@@ -346,6 +530,8 @@ def _anchor_generation_run(project: SequenceProject, *, brief: str, mode: str, a
                 "project_id": str(project.pk),
                 "target_mode": mode,
                 "target_anchor_id": str(anchor.pk) if anchor else None,
+                "target_position": target_position,
+                "plan_revision": plan_revision,
             },
         },
         ideas=[{"title": (anchor.label if anchor else project.title) or "Sequence anchor", "photo_brief": brief}],
@@ -362,6 +548,11 @@ def prepare_anchor_image_generation(
     target_anchor: SequenceAnchor | None = None,
     target_label: str = "",
     target_role: str = "",
+    target_position: int | None = None,
+    plan_revision: int | None = None,
+    plan_anchor_snapshot: dict | None = None,
+    source: MediaAsset | None = None,
+    include_logo: bool = False,
     shape: str = "portrait",
     count: int = 2,
     priority: str = "balanced",
@@ -373,6 +564,12 @@ def prepare_anchor_image_generation(
         raise SequenceError("Beskriv anchor-bilden med högst 6000 tecken.")
     if target_anchor and target_anchor.project_id != project.pk:
         raise SequenceError("Mål-ankaret måste tillhöra sequence-projektet.")
+    if target_position is not None and target_position < 0:
+        raise SequenceError("Målpositionen kan inte vara negativ.")
+    if target_anchor and target_position is not None and target_anchor.position != target_position:
+        raise SequenceError("Mål-ankaret ligger inte på den planerade positionen.")
+    if source:
+        _validate_anchor_asset(project, source)
     if shape not in {"portrait", "square", "landscape"}:
         raise SequenceError("Välj ett giltigt bildformat.")
     if count not in {1, 2, 3, 4}:
@@ -393,6 +590,8 @@ def prepare_anchor_image_generation(
             brief=brief,
             mode="replace" if target_anchor else "create",
             anchor=target_anchor,
+            target_position=target_position,
+            plan_revision=plan_revision,
         )
         job = create_job(
             run,
@@ -401,9 +600,9 @@ def prepare_anchor_image_generation(
             brief=brief,
             count=count,
             shape=shape,
-            source=None,
+            source=source,
             end_source=None,
-            include_logo=False,
+            include_logo=include_logo,
             priority=priority,
         )
         target = SequenceAnchorGenerationTarget.objects.create(
@@ -413,8 +612,22 @@ def prepare_anchor_image_generation(
             target_anchor=target_anchor,
             target_label=(target_anchor.label if target_anchor else target_label)[:120],
             target_role=(target_anchor.role if target_anchor else target_role)[:40],
+            target_position=target_position,
+            plan_revision=plan_revision,
+            plan_anchor_snapshot=deepcopy(plan_anchor_snapshot or {}),
             created_by=created_by or project.author,
         )
+        if target_position is not None:
+            params = deepcopy(job.parameters or {})
+            params["sequence"] = {
+                "mode": "planned_anchor",
+                "project_id": str(project.pk),
+                "target_position": target_position,
+                "plan_revision": plan_revision,
+                "reference_requirements": list((plan_anchor_snapshot or {}).get("reference_requirements") or []),
+            }
+            MediaGeneration.objects.filter(pk=job.pk).update(parameters=params)
+            job.parameters = params
         preview_job(job)
         return target
 
@@ -441,12 +654,28 @@ def apply_generated_anchor_asset(
         if chosen.kind != "image" or chosen.purpose == "logo" or chosen.generation_id != generation.pk:
             raise SequenceError("Bilden måste vara ett färdigt alternativ från just detta AI-jobb.")
 
+        if current.target_position is not None:
+            project = SequenceProject.objects.select_for_update().get(pk=current.project_id)
+            if project.plan_revision != current.plan_revision:
+                raise SequenceError(
+                    "Sequence-planen har ändrats sedan AI-anchorn förbereddes. Skapa ett nytt förslag från den aktuella planen."
+                )
+            spec = _planned_anchor_spec(project, current.target_position)
+            if spec != (current.plan_anchor_snapshot or {}):
+                raise SequenceError(
+                    "Den planerade anchorn har ändrats sedan AI-förslaget skapades. Skapa ett nytt förslag."
+                )
+
         metadata = {
             "mode": "ai_anchor",
             "generation_id": str(generation.pk),
             "provider": generation.provider,
             "asset_sha256": chosen.sha256,
         }
+        if current.target_position is not None:
+            metadata.update(
+                _plan_anchor_metadata(project, current.plan_anchor_snapshot, mode="planned_ai", asset=chosen)
+            )
         if current.mode == "replace":
             if not current.target_anchor_id:
                 raise SequenceError("AI-jobbets mål-anchor finns inte längre.")
@@ -461,10 +690,15 @@ def apply_generated_anchor_asset(
             )
         else:
             project = SequenceProject.objects.select_for_update().get(pk=current.project_id)
+            position = current.target_position if current.target_position is not None else next_anchor_position(project)
+            if current.target_position is not None and project.anchors.filter(position=position).exists():
+                raise SequenceError(
+                    f"K{position} finns redan. Använd ersättningsflödet i stället för att applicera ett äldre create-förslag."
+                )
             anchor = add_anchor(
                 project,
                 chosen,
-                position=next_anchor_position(project),
+                position=position,
                 label=current.target_label,
                 role=current.target_role,
                 source_type="generated",
@@ -565,6 +799,37 @@ def _sequence_run(clip: SequenceClip, *, brief: str) -> ContentRun:
         model="sequence-anchor-chain",
     )
 
+
+
+def assert_sequence_project_video_ready(project: SequenceProject) -> dict:
+    readiness = sequence_plan_anchor_readiness(project)
+    if readiness["planned"] and not readiness["ready"]:
+        missing = ", ".join(f"K{position}" for position in readiness["missing_positions"])
+        raise SequenceError(
+            "Alla anchors i den aktuella Sequence-planen måste finnas innan video kan förberedas eller startas. Saknas: "
+            + missing
+            + "."
+        )
+    return readiness
+
+
+def assert_sequence_generation_video_ready(generation: MediaGeneration) -> None:
+    if generation.kind != "video":
+        return
+    sequence_meta = (generation.parameters or {}).get("sequence")
+    if not isinstance(sequence_meta, dict) or not sequence_meta.get("project_id"):
+        return
+    try:
+        project = SequenceProject.objects.get(
+            pk=sequence_meta["project_id"],
+            company_id=generation.run.workspace_id,
+        )
+    except (SequenceProject.DoesNotExist, ValueError, TypeError) as exc:
+        raise SequenceError("Sequence-projektet för videogenerationen finns inte längre.") from exc
+    assert_sequence_project_video_ready(project)
+    version = SequenceClipVersion.objects.filter(generation_id=generation.pk).first()
+    if version:
+        _assert_generation_matches_current_anchors(version)
 
 
 def _clip_routing_brief(
@@ -753,6 +1018,7 @@ def prepare_anchor_chain_version(
         )
         _validate_anchor_asset(locked.project, locked.start_anchor.asset)
         _validate_anchor_asset(locked.project, locked.end_anchor.asset)
+        assert_sequence_project_video_ready(locked.project)
 
         request = _sequence_generation_brief(locked, brief)
         run = _sequence_run(locked, brief=request)
@@ -787,6 +1053,7 @@ def prepare_anchor_chain_version(
             "recipe_id": locked.recipe_id,
             "recipe_version": locked.recipe_version,
             "model_override": locked.model_override,
+            "plan_revision": locked.project.plan_revision if isinstance(locked.project.plan, dict) and locked.project.plan else None,
         }
         params = deepcopy(generation.parameters or {})
         params["sequence"] = sequence_meta
@@ -1446,6 +1713,11 @@ __all__ = [
     "anchor_change_impact",
     "next_anchor_position",
     "prepare_anchor_image_generation",
+    "prepare_planned_anchor_generation",
+    "materialize_planned_anchor_asset",
+    "sequence_plan_anchor_readiness",
+    "assert_sequence_project_video_ready",
+    "assert_sequence_generation_video_ready",
     "apply_generated_anchor_asset",
     "create_clip",
     "attach_generation_to_clip",
