@@ -238,6 +238,9 @@ def _hard_compatible(model: ModelIntelligence, brief: CreativeBrief, recipe=None
         families = set(recipe.supported_model_families)
         if model.provider not in families and model.model_id not in families:
             return False
+    if recipe and recipe.required_model_capabilities:
+        if not set(recipe.required_model_capabilities) <= set(model.recipe_capabilities):
+            return False
     return True
 
 
@@ -303,6 +306,8 @@ def route_model(
     contract = model.request_contract(brief.mode)
     if brief.reference_media:
         reason.append("reference_roles_supported")
+    if recipe and recipe.required_model_capabilities:
+        reason.append("recipe_capabilities_supported")
     if brief.audio_intent not in {"", "none"}:
         reason.append("native_audio_supported")
     if brief.resolution != "auto":
@@ -440,8 +445,8 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         sections = []
         if _uses_prompt_section(model, "SCENE"):
             sections.append("SCENE: " + brief.user_intent)
-        if recipe and recipe.recipe_id == "scroll_transition_bridge":
-            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene changes. Prioritize continuity over spectacle.")
+        if recipe and "scrub_friendly" in recipe.format_tags:
+            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene changes. Keep every intermediate frame coherent for forward and backward scroll scrubbing.")
         if _uses_prompt_section(model, "CAMERA"):
             sections.append("CAMERA: " + (", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"))
         if brief.aspect_ratio != "auto" and _uses_prompt_section(model, "FORMAT_INTENT"):
@@ -489,16 +494,16 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         if _uses_prompt_section(model, "CAMERA"):
             camera_text = ", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene"
             if recipe and recipe.camera_strategy:
-                camera_text += " " + " ".join(recipe.camera_strategy[:2])
+                camera_text += " " + " ".join(recipe.camera_strategy)
             sections.append("CAMERA: " + camera_text + ".")
         if _uses_prompt_section(model, "PHYSICS"):
             physics = "Use physically plausible continuous motion."
             if brief.allow_change:
                 physics += " Allowed motion/change: " + "; ".join(brief.allow_change) + "."
             if recipe and recipe.motion_strategy:
-                physics += " " + " ".join(recipe.motion_strategy[:2])
+                physics += " " + " ".join(recipe.motion_strategy)
             if recipe and recipe.continuity_strategy:
-                physics += " CONTINUITY: " + " ".join(recipe.continuity_strategy[:2])
+                physics += " CONTINUITY: " + " ".join(recipe.continuity_strategy)
             forbidden = list(brief.forbid)
             recipe_forbidden = list(recipe.negative_constraints) if recipe and recipe.negative_constraints else []
             forbidden.extend(recipe_forbidden)
