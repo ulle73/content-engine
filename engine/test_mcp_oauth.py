@@ -44,6 +44,27 @@ class SelfHostedMCPOAuthTests(TestCase):
         self.assertIn("S256", payload["code_challenge_methods_supported"])
         self.assertIn("content-engine.operate", payload["scopes_supported"])
 
+    def test_chatgpt_cimd_can_fall_back_to_public_pkce_auth(self):
+        from oauth2_provider.authorization_server.cimd import SafeMetadataFetcher
+
+        from .mcp_oauth import ChatGPTCIMDMetadataFetcher
+
+        client_id = "https://chatgpt.com/oauth/client.json"
+        metadata = {
+            "client_id": client_id,
+            "redirect_uris": ["https://chatgpt.com/connector_platform_oauth_redirect"],
+            "grant_types": ["authorization_code", "refresh_token"],
+            "token_endpoint_auth_method": "private_key_jwt",
+            "token_endpoint_auth_methods_supported": ["none", "private_key_jwt"],
+            "jwks_uri": "https://chatgpt.com/oauth/jwks.json",
+        }
+        with patch.object(SafeMetadataFetcher, "fetch", return_value=(metadata, 300)):
+            normalized, max_age = ChatGPTCIMDMetadataFetcher().fetch(client_id)
+
+        self.assertEqual(max_age, 300)
+        self.assertEqual(normalized["token_endpoint_auth_method"], "none")
+        self.assertEqual(metadata["token_endpoint_auth_method"], "private_key_jwt")
+
     def test_dcr_accepts_only_explicit_chatgpt_callback_hosts(self):
         allowed = {
             "client_name": "ChatGPT Content Engine",
