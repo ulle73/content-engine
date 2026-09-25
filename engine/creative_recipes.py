@@ -33,7 +33,7 @@ _SCROLL_BASE_NEGATIVE = (
     "hard cuts",
     "unexplained scene resets",
     "perspective teleporting",
-    "random object creation",
+    "unrequested new objects",
     "unrequested object disappearance",
     "subject geometry drift",
     "lighting resets",
