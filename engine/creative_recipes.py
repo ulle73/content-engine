@@ -76,7 +76,6 @@ def _scroll_recipe(
         default_format_intent="anchor_to_anchor",
         draft_policy="draft_then_final",
         evaluation_rules=evaluation_rules,
-        supported_model_families=("higgsfield",),
         required_model_capabilities=_SCROLL_REQUIRED_CAPABILITIES,
         good_result_criteria=good_result_criteria,
         bad_result_signals=bad_result_signals,
