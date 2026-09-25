@@ -125,6 +125,25 @@ class SequenceAIAnchorsG2Tests(TestCase):
         )
         self.assertFalse(target.generation.provider_id)
 
+    def test_planned_anchor_idempotency_token_cannot_cross_positions(self):
+        token = uuid.uuid4()
+        prepare_planned_anchor_generation(
+            self.project,
+            position=0,
+            token=token,
+            created_by=self.user,
+        )
+        product = self.asset((90, 120, 80))
+        with self.assertRaisesRegex(SequenceError, "annan planerad anchor"):
+            prepare_planned_anchor_generation(
+                self.project,
+                position=1,
+                reference_asset=product,
+                token=token,
+                created_by=self.user,
+            )
+        self.assertEqual(self.project.anchor_generation_targets.count(), 1)
+
     def test_company_reference_reuses_official_logo_without_media_provider_start(self):
         logo = self.asset((245, 245, 245), purpose="logo")
         self.company.official_logo = logo
