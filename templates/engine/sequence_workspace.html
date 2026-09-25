@@ -101,6 +101,20 @@
               <label>Roll
                 <input name="anchor_{{ anchor.position }}_role" maxlength="80" value="{{ anchor.role }}">
               </label>
+              <fieldset class="sequence-plan-reference-edit">
+                <legend>Exakta referenser för AI-anchor</legend>
+                <label class="sequence-plan-check">
+                  <input type="checkbox" name="anchor_{{ anchor.position }}_reference_company" value="1" {% if 'company' in anchor.reference_requirements %}checked{% endif %}>
+                  <span>Företagsidentitet / officiell logga måste bevaras</span>
+                </label>
+                <label class="sequence-plan-check">
+                  <input type="checkbox" name="anchor_{{ anchor.position }}_reference_product" value="1" {% if 'product' in anchor.reference_requirements %}checked{% endif %}>
+                  <span>Exakt produktidentitet måste bevaras från referensbild</span>
+                </label>
+                <label>Referensnotering
+                  <input name="anchor_{{ anchor.position }}_reference_note" maxlength="500" value="{{ anchor.reference_note }}" placeholder="Varför krävs referensen?">
+                </label>
+              </fieldset>
             </article>
           {% endfor %}
         </div>
@@ -190,6 +204,155 @@
       {% endif %}
     </div>
   </section>
+
+  {% if sequence_plan %}
+  <section class="sequence-materialization-section" aria-labelledby="sequence-materialization-title">
+    <div class="sequence-section-head">
+      <div>
+        <span class="sequence-kicker">G2 · AI anchor generation</span>
+        <h2 id="sequence-materialization-title">Materialisera blueprintens anchors</h2>
+        <p>Varje K-position kan få en riktig canonical bild från Media, upload eller samma AI-bildflöde som AI Studio. AI startar aldrig här; du skickas alltid till review före en betald bildgeneration.</p>
+      </div>
+      <span class="sequence-materialization-state {% if plan_anchor_readiness.ready %}is-ready{% endif %}">
+        {% if plan_anchor_readiness.ready %}Alla {{ plan_anchor_readiness.required_positions|length }} anchors klara{% else %}{{ plan_anchor_readiness.materialized_positions|length }}/{{ plan_anchor_readiness.required_positions|length }} klara{% endif %}
+      </span>
+    </div>
+
+    {% if not plan_anchor_readiness.ready %}
+      <div class="sequence-video-gate" role="status">
+        <strong>Video är låst tills blueprintens anchors finns.</strong>
+        <span>Saknas: {% for position in plan_anchor_readiness.missing_positions %}K{{ position }}{% if not forloop.last %}, {% endif %}{% endfor %}. Spärren kontrolleras igen vid faktisk betald videostart.</span>
+      </div>
+    {% endif %}
+
+    <div class="sequence-materialization-grid">
+      {% for row in planned_anchor_rows %}
+        <article class="sequence-materialization-card {% if row.anchor %}is-materialized{% endif %}" id="planned-anchor-k{{ row.position }}">
+          <header>
+            <div>
+              <span class="sequence-plan-index">K{{ row.position }}</span>
+              <strong>{{ row.spec.label }}</strong>
+            </div>
+            {% if row.anchor %}
+              <span class="status-badge success">Canonical</span>
+            {% elif row.target and row.target.plan_is_current %}
+              <span class="status-badge muted">{{ row.target.generation.status|title }}</span>
+            {% else %}
+              <span class="status-badge muted">Saknas</span>
+            {% endif %}
+          </header>
+
+          <p class="sequence-materialization-description">{{ row.spec.description }}</p>
+
+          <div class="sequence-materialization-references">
+            <b>Referenskrav</b>
+            {% if row.spec.reference_requirements %}
+              {% for requirement in row.spec.reference_requirements %}<span>{{ requirement|title }}</span>{% endfor %}
+            {% else %}
+              <span>Inga exakta externa referenser</span>
+            {% endif %}
+            {% if row.spec.reference_note %}<small>{{ row.spec.reference_note }}</small>{% endif %}
+          </div>
+
+          {% if row.anchor %}
+            <div class="sequence-materialized-preview">
+              <img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=row.anchor.asset_id %}" alt="{{ row.spec.label }}">
+              <div>
+                <strong>K{{ row.position }} är materialiserad</strong>
+                <span>{{ row.anchor.get_source_type_display }} · {% if row.anchor.locked %}Låst{% else %}Upplåst{% endif %}</span>
+                {% if row.anchor.source_metadata.plan_revision %}<small>Materialiserad från plan V{{ row.anchor.source_metadata.plan_revision }}</small>{% endif %}
+              </div>
+            </div>
+          {% elif row.target %}
+            <div class="sequence-materialization-target {% if not row.target.plan_is_current %}is-stale{% endif %}">
+              {% if row.target.plan_is_current %}
+                <strong>AI-förslag finns för K{{ row.position }}</strong>
+                <span>{{ row.target.generation.status|title }} · plan V{{ row.target.plan_revision }}</span>
+                <a href="{% url 'engine:media_job' workspace_id=workspace.pk run_id=row.target.generation.run_id job_id=row.target.generation_id %}">Öppna review/jobbet →</a>
+              {% else %}
+                <strong>Äldre AI-förslag är stale</strong>
+                <span>Förberett från plan V{{ row.target.plan_revision }}, aktuell plan är V{{ project.plan_revision }}. Det kan inte appliceras.</span>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="sequence-materialization-missing">Ingen canonical bild finns ännu på K{{ row.position }}.</div>
+          {% endif %}
+
+          <div class="sequence-materialization-actions">
+            <details>
+              <summary>{% if row.anchor %}Skapa AI-ersättare{% else %}Skapa med AI{% endif %}</summary>
+              <form method="post" action="{% url 'engine:sequence_plan_anchor_generate' workspace_id=workspace.pk project_id=project.pk position=row.position %}">
+                {% csrf_token %}
+                <input type="hidden" name="token" value="{{ row.token }}">
+                {% if row.spec.reference_requirements %}
+                  <label>Referensbild från Media
+                    <select name="reference_asset_id">
+                      <option value="">Välj referensbild</option>
+                      {% for image in available_images %}<option value="{{ image.pk }}">{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+                    </select>
+                  </label>
+                  {% if 'product' in row.spec.reference_requirements %}<small>Produktreferens kräver en riktig produktbild. Den används som image-to-image source och sparas som typed PRODUCT_REFERENCE-provenance.</small>{% endif %}
+                  {% if 'company' in row.spec.reference_requirements %}
+                    {% if company_has_official_logo %}<small>Golfkupongers officiella logga läggs på deterministiskt efter AI-bilden. Vald referensbild används dessutom om du anger en.</small>{% else %}<small>Ingen officiell logga finns. Välj en företagsreferensbild; om både company + product krävs måste officiell logga läggas in först.</small>{% endif %}
+                  {% endif %}
+                {% else %}
+                  <label>Extra referensbild <span>Valfritt</span>
+                    <select name="reference_asset_id">
+                      <option value="">Ingen referensbild</option>
+                      {% for image in available_images %}<option value="{{ image.pk }}">{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+                    </select>
+                  </label>
+                {% endif %}
+                <div class="sequence-control-inline">
+                  <select name="shape">
+                    <option value="portrait">Stående</option>
+                    <option value="landscape" {% if project.platform == 'web' %}selected{% endif %}>Liggande</option>
+                    <option value="square">Kvadrat</option>
+                  </select>
+                  <select name="count"><option value="1">1 förslag</option><option value="2" selected>2 förslag</option><option value="3">3 förslag</option><option value="4">4 förslag</option></select>
+                  <select name="priority"><option value="balanced">Balanserad</option><option value="quality">Bäst resultat</option><option value="economy">Spara kostnad</option></select>
+                </div>
+                <button type="submit">Förbered AI-anchor</button>
+                <small>Ingen betald bildgeneration startas av den här knappen.</small>
+              </form>
+            </details>
+
+            <details>
+              <summary>{% if row.anchor %}Ersätt från Media{% else %}Använd Media-bild{% endif %}</summary>
+              <form method="post" action="{% url 'engine:sequence_plan_anchor_use_existing' workspace_id=workspace.pk project_id=project.pk position=row.position %}">
+                {% csrf_token %}
+                <label>Bild
+                  <select name="asset_id" required>
+                    <option value="">Välj bild</option>
+                    {% for image in available_images %}<option value="{{ image.pk }}">{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+                  </select>
+                </label>
+                {% if row.anchor.change_impact.total_versions %}
+                  <label class="sequence-plan-check"><input type="checkbox" name="confirm_stale" value="1" required><span>Jag förstår att {{ row.anchor.change_impact.total_versions }} sparade versioner blir stale.</span></label>
+                {% endif %}
+                <button type="submit" {% if not available_images %}disabled{% endif %}>Använd på K{{ row.position }}</button>
+              </form>
+            </details>
+
+            <details>
+              <summary>{% if row.anchor %}Ersätt med upload{% else %}Ladda upp bild{% endif %}</summary>
+              <form method="post" enctype="multipart/form-data" action="{% url 'engine:sequence_plan_anchor_upload' workspace_id=workspace.pk project_id=project.pk position=row.position %}">
+                {% csrf_token %}
+                <label>Bildfil
+                  <input type="file" name="file" accept="image/jpeg,image/png,image/webp" required>
+                </label>
+                {% if row.anchor.change_impact.total_versions %}
+                  <label class="sequence-plan-check"><input type="checkbox" name="confirm_stale" value="1" required><span>Jag förstår att {{ row.anchor.change_impact.total_versions }} sparade versioner blir stale.</span></label>
+                {% endif %}
+                <button type="submit">Ladda upp på K{{ row.position }}</button>
+              </form>
+            </details>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 
   <section class="sequence-metrics" aria-label="Projektöversikt">
     <div><span>Anchors</span><strong>{{ anchors|length }}</strong><small>Kanoniska keyframes</small></div>
@@ -430,6 +593,9 @@
 
   {% if clips %}
   <section class="sequence-clip-control-section" aria-labelledby="sequence-clip-control-title">
+    {% if plan_anchor_readiness.planned and not plan_anchor_readiness.ready %}
+      <p class="notice" id="sequence-video-gate-note">Video är spärrad tills alla planerade anchors finns: {% for position in plan_anchor_readiness.missing_positions %}K{{ position }}{% if not forloop.last %}, {% endif %}{% endfor %}.</p>
+    {% endif %}
     <div class="sequence-section-head">
       <div>
         <span class="sequence-kicker">F3 · Clip controls</span>
@@ -478,7 +644,7 @@
               </div>
             </div>
             <p class="sequence-form-note">Auto väljer endast verifierade modeller som stöder både start- och slut-anchor. Manuell override valideras lokalt mot exakt samma kontrakt före provider-anrop.</p>
-            <button type="submit">{% if clip.version_list %}Skapa ny kandidat{% else %}Förbered clip{% endif %} <span aria-hidden="true">→</span></button>
+            <button type="submit" {% if plan_anchor_readiness.planned and not plan_anchor_readiness.ready %}disabled aria-describedby="sequence-video-gate-note"{% endif %}>{% if clip.version_list %}Skapa ny kandidat{% else %}Förbered clip{% endif %} <span aria-hidden="true">→</span></button>
           </form>
 
           <div class="sequence-version-grid" role="list" aria-label="Kandidater för clip {{ clip.position|add:'1' }}">
