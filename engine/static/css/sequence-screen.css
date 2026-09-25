@@ -867,6 +867,180 @@
   color: var(--gk-muted);
   font-size: 9px;
 }
+.sequence-plan-reference-edit {
+  display: grid;
+  gap: 7px;
+  margin: 2px 0 0;
+  padding: 9px;
+  border: 1px solid var(--gk-line);
+  border-radius: 9px;
+}
+.sequence-plan-reference-edit legend {
+  padding: 0 4px;
+  font-size: 8px;
+  font-weight: 760;
+}
+.sequence-plan-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 8px;
+}
+.sequence-plan-check input {
+  width: auto;
+  margin-top: 2px;
+}
+.sequence-materialization-section {
+  display: grid;
+  gap: 13px;
+}
+.sequence-materialization-state {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 9px;
+  border: 1px solid #d7ddd9;
+  border-radius: 999px;
+  background: #f5f7f6;
+  color: var(--gk-muted);
+  font-size: 8px;
+  font-weight: 760;
+  white-space: nowrap;
+}
+.sequence-materialization-state.is-ready {
+  border-color: #bdd7c5;
+  background: #edf8f0;
+  color: var(--gk-green-dark);
+}
+.sequence-video-gate {
+  display: grid;
+  gap: 3px;
+  padding: 11px 13px;
+  border: 1px solid #d7cfae;
+  border-radius: 10px;
+  background: #fffaf0;
+  font-size: 9px;
+}
+.sequence-video-gate span { color: var(--gk-muted); }
+.sequence-materialization-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.sequence-materialization-card {
+  display: grid;
+  align-content: start;
+  gap: 11px;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--gk-line);
+  border-radius: 13px;
+  background: #fff;
+}
+.sequence-materialization-card.is-materialized {
+  border-color: #bfd6c6;
+  box-shadow: inset 0 3px 0 #dceee2;
+}
+.sequence-materialization-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 9px;
+}
+.sequence-materialization-card > header > div {
+  display: grid;
+  gap: 2px;
+}
+.sequence-materialization-description {
+  margin: 0;
+  color: var(--gk-muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+.sequence-materialization-references {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 9px;
+  background: var(--gk-surface-soft);
+  font-size: 8px;
+}
+.sequence-materialization-references > span {
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--gk-line);
+}
+.sequence-materialization-references small {
+  flex-basis: 100%;
+  color: var(--gk-muted);
+}
+.sequence-materialized-preview {
+  display: grid;
+  grid-template-columns: 84px minmax(0,1fr);
+  gap: 10px;
+  align-items: center;
+}
+.sequence-materialized-preview img {
+  display: block;
+  width: 84px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.sequence-materialized-preview > div,
+.sequence-materialization-target {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  font-size: 8px;
+}
+.sequence-materialized-preview span,
+.sequence-materialized-preview small,
+.sequence-materialization-target span { color: var(--gk-muted); }
+.sequence-materialization-target,
+.sequence-materialization-missing {
+  padding: 9px;
+  border: 1px dashed #cbd7cf;
+  border-radius: 9px;
+  background: #f8faf9;
+  font-size: 8px;
+}
+.sequence-materialization-target.is-stale {
+  border-color: #dec9bf;
+  background: #fff8f5;
+}
+.sequence-materialization-actions {
+  display: grid;
+  gap: 7px;
+}
+.sequence-materialization-actions details {
+  border: 1px solid var(--gk-line);
+  border-radius: 9px;
+  overflow: hidden;
+}
+.sequence-materialization-actions summary {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 740;
+}
+.sequence-materialization-actions form {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--gk-line);
+}
+.sequence-materialization-actions small {
+  color: var(--gk-muted);
+  font-size: 8px;
+  line-height: 1.4;
+}
 
 @media (max-width: 720px) {
   .sequence-plan-generate-actions,
@@ -882,7 +1056,8 @@
   .sequence-plan-evidence {
     grid-template-columns: 1fr;
   }
-  .sequence-plan-anchor-strip {
+  .sequence-plan-anchor-strip,
+  .sequence-materialization-grid {
     grid-template-columns: 1fr;
   }
   .sequence-plan-status-control {
@@ -903,7 +1078,8 @@
   .sequence-control-card > summary,
   .sequence-anchor-actions > summary,
   .sequence-subcontrol > summary,
-  .sequence-version-diagnostics > summary {
+  .sequence-version-diagnostics > summary,
+  .sequence-materialization-actions summary {
     min-height: 44px;
   }
   .sequence-version-actions {

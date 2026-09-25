@@ -38,9 +38,10 @@
   {% elif sequence_anchor_target %}
     <section class="sequence-ai-target-banner">
       <div>
-        <span class="sequence-kicker">F2 · AI-anchor</span>
-        <strong>{% if sequence_anchor_target.mode == 'replace' %}Ersätt K{{ sequence_anchor_target.target_anchor.position }}{% else %}Skapa ny anchor{% endif %}</strong>
+        <span class="sequence-kicker">{% if sequence_anchor_target.target_position != None %}G2 · Planned AI-anchor{% else %}F2 · AI-anchor{% endif %}</span>
+        <strong>{% if sequence_anchor_target.target_position != None %}K{{ sequence_anchor_target.target_position }} · {{ sequence_anchor_target.target_label|default:"Planerad anchor" }}{% elif sequence_anchor_target.mode == 'replace' %}Ersätt K{{ sequence_anchor_target.target_anchor.position }}{% else %}Skapa ny anchor{% endif %}</strong>
         <p>Jobbet är kopplat till {{ sequence_anchor_target.project.title }}. Bilden ändrar inte sequence-projektet förrän du väljer ett färdigt alternativ nedan.</p>
+        {% if sequence_anchor_target.target_position != None and sequence_anchor_target.plan_revision != sequence_anchor_target.project.plan_revision %}<p class="notice">Blueprinten har ändrats från V{{ sequence_anchor_target.plan_revision }} till V{{ sequence_anchor_target.project.plan_revision }}. Det här AI-förslaget kan inte appliceras; skapa ett nytt från Sequence workspace.</p>{% endif %}
         {% if sequence_anchor_target.target_anchor.locked %}<p class="notice">Mål-ankaret är låst. Lås upp det i Sequence workspace innan du applicerar en AI-bild.</p>{% endif %}
         {% if sequence_anchor_impact.total_versions %}<p class="notice">Ett byte påverkar {{ sequence_anchor_impact.total_versions }} sparade clip/bridge-versioner. De bevaras men markeras stale efter uttrycklig bekräftelse.</p>{% endif %}
       </div>

@@ -23,7 +23,7 @@ from .openrouter import structured_generation
 
 
 PLANNER_ID = "sequence_planner"
-PLANNER_VERSION = "1.0.0"
+PLANNER_VERSION = "1.1.0"
 MAX_SCENES = 8
 
 
@@ -45,6 +45,8 @@ class PlannerAnchorProposal(BaseModel):
     label: str = Field(min_length=1, max_length=120)
     description: str = Field(min_length=1, max_length=1200)
     role: str = Field(default="", max_length=80)
+    reference_requirements: list[Literal["company", "product"]] = Field(default_factory=list, max_length=2)
+    reference_note: str = Field(default="", max_length=500)
 
 
 class PlannerSceneProposal(BaseModel):
@@ -255,12 +257,18 @@ def _compile_plan(project: SequenceProject, proposal: PlannerProposal, *, source
     compiled_scenes = [_compile_scene(project, scene, scene_count) for scene in scenes]
     compiled_anchors = []
     for anchor in anchors:
+        requirements = list(dict.fromkeys(
+            item for item in anchor.get("reference_requirements", [])
+            if item in {"company", "product"}
+        ))
         compiled_anchors.append(
             {
                 "position": int(anchor["position"]),
                 "label": str(anchor["label"]).strip()[:120],
                 "description": str(anchor["description"]).strip()[:1200],
                 "role": str(anchor.get("role") or "").strip()[:80],
+                "reference_requirements": requirements,
+                "reference_note": str(anchor.get("reference_note") or "").strip()[:500],
             }
         )
 
@@ -308,6 +316,8 @@ Välj INTE AI-modell, provider eller recipe. Trusted recipe/model-capability met
 Skapa exakt requested_scene_count scenes och exakt requested_scene_count + 1 anchors.
 Scene position N ska alltid gå från anchor N till anchor N+1. Positioner börjar på 0 och ska vara sammanhängande.
 Fokusera på narrativ progression, visuella anchors, syfte, rörelse och en konkret transition_intent.
+För varje anchor: sätt reference_requirements till "product" ENDAST om exakt produktidentitet/förpackning behöver bevaras från en riktig referensbild, och "company" ENDAST om exakt företagsbranding/logotyp måste synas. Annars ska listan vara tom.
+Om en referens krävs, förklara kort varför i reference_note. Kräv inte en referens bara för att scenen handlar om företaget eller golf.
 Skriv på svenska om inte briefen tydligt kräver annat språk. Ingen media genereras av detta steg."""
 
     proposal, usage = structured_generation(
@@ -401,9 +411,25 @@ def update_sequence_plan(project: SequenceProject, edits: dict) -> SequenceProje
 
     for anchor in anchors:
         patch = anchor_edits.get(int(anchor["position"]), {})
-        for field, maximum in (("label", 120), ("description", 1200), ("role", 80)):
+        for field, maximum in (
+            ("label", 120),
+            ("description", 1200),
+            ("role", 80),
+            ("reference_note", 500),
+        ):
             if field in patch:
                 anchor[field] = str(patch[field]).strip()[:maximum]
+        if "reference_requirements" in patch:
+            anchor["reference_requirements"] = list(dict.fromkeys(
+                item for item in patch["reference_requirements"]
+                if item in {"company", "product"}
+            ))
+        else:
+            anchor["reference_requirements"] = list(dict.fromkeys(
+                item for item in anchor.get("reference_requirements", [])
+                if item in {"company", "product"}
+            ))
+        anchor.setdefault("reference_note", "")
         if not anchor["label"] or not anchor["description"]:
             raise SequencePlanError("Varje anchor behöver etikett och beskrivning.")
 

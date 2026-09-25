@@ -414,6 +414,9 @@ class SequenceAnchorGenerationTarget(models.Model):
     )
     target_label = models.CharField(max_length=120, blank=True)
     target_role = models.CharField(max_length=40, blank=True)
+    target_position = models.PositiveIntegerField(null=True, blank=True)
+    plan_revision = models.PositiveIntegerField(null=True, blank=True)
+    plan_anchor_snapshot = models.JSONField(default=dict, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
@@ -433,8 +436,22 @@ class SequenceAnchorGenerationTarget(models.Model):
                 raise ValidationError("Target anchor must belong to the same project.")
         if self.mode == "create" and self.target_anchor_id:
             raise ValidationError("Create mode cannot point to an existing target anchor.")
+        if self.target_position is not None:
+            if self.plan_revision is None or self.plan_revision < 1:
+                raise ValidationError("Plan-bound anchor generation requires a positive plan revision.")
+            if not isinstance(self.plan_anchor_snapshot, dict) or int(
+                self.plan_anchor_snapshot.get("position", -1)
+            ) != self.target_position:
+                raise ValidationError("Plan-bound anchor generation requires a matching anchor snapshot.")
+            if self.target_anchor_id and self.target_anchor.position != self.target_position:
+                raise ValidationError("Target anchor position must match the planned position.")
+        elif self.plan_revision is not None or self.plan_anchor_snapshot:
+            raise ValidationError("Plan provenance requires a target position.")
         if self.applied_anchor_id and self.applied_anchor.project_id != self.project_id:
             raise ValidationError("Applied anchor must belong to the same project.")
+        if self.applied_anchor_id and self.target_position is not None:
+            if self.applied_anchor.position != self.target_position:
+                raise ValidationError("Applied anchor position must match the planned position.")
 
     def save(self, *args, **kwargs):
         self.full_clean()
