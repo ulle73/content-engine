@@ -46,7 +46,7 @@ class ScrollRecipeFamilyH1Tests(SimpleTestCase):
     def test_registry_contains_complete_h1_family_with_required_contracts(self):
         recipes = {item.recipe_id: item for item in recipe_registry()}
         self.assertEqual(set(SCROLL_RECIPE_IDS) - set(recipes), set())
-        self.assertEqual(RECIPE_REGISTRY_VERSION, "2026-09-25.1")
+        self.assertEqual(RECIPE_REGISTRY_VERSION, "2026-09-25.2")
 
         for recipe_id in SCROLL_RECIPE_IDS:
             recipe = recipes[recipe_id]
