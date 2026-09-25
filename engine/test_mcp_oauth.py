@@ -45,7 +45,7 @@ class SelfHostedMCPOAuthTests(TestCase):
         self.assertIn("content-engine.operate", payload["scopes_supported"])
 
     def test_chatgpt_cimd_can_fall_back_to_public_pkce_auth(self):
-        from oauth2_provider.authorization_server.cimd import SafeMetadataFetcher
+        from oauth2_provider.cimd import SafeMetadataFetcher
 
         from .mcp_oauth import ChatGPTCIMDMetadataFetcher
 
