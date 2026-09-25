@@ -48,8 +48,11 @@ OAUTH2_PROVIDER = {
     "DCR_REGISTRATION_PERMISSION_CLASSES": ("engine.mcp_oauth.ChatGPTDCRPermission",),
     "DCR_REGISTRATION_TOKEN_EXPIRE_SECONDS": 3600,
     "DCR_ROTATE_REGISTRATION_TOKEN_ON_UPDATE": True,
-    # New MCP clients prefer Client ID Metadata Documents; DCR remains as compatibility fallback.
-    "CIMD_ENABLED": True,
+    # ChatGPT currently prefers CIMD when it is advertised, and its stable client
+    # metadata prefers private_key_jwt. django-oauth-toolkit 3.4.1 only supports
+    # public CIMD clients, so advertise DCR only until upstream CIMD support covers
+    # ChatGPT's confidential client. DCR remains allowlisted and PKCE-protected.
+    "CIMD_ENABLED": False,
     "CIMD_REGISTRATION_PERMISSION_CLASSES": ("oauth2_provider.cimd.HostAllowlistCIMDPermission",),
     "CIMD_ALLOWED_HOSTS": MCP_OAUTH_ALLOWED_CLIENT_HOSTS,
     "OAUTH2_RESPONSE_TYPES_SUPPORTED": ["code"],
