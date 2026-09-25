@@ -840,14 +840,37 @@ Next exact task: G2 — AI anchor generation.
 
 ## Task G2 — AI anchor generation
 
-- [ ] Generate proposed anchors using existing image-generation pipeline.
-- [ ] Preserve company/product references when required.
-- [ ] Allow user replacement/upload.
-- [ ] Do not start video generation until required anchors exist.
+- [x] Generate proposed anchors using existing image-generation pipeline.
+- [x] Preserve company/product references when required.
+- [x] Allow user replacement/upload.
+- [x] Do not start video generation until required anchors exist.
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — G1 blueprint anchors can now be materialized safely at exact canonical K positions through the existing Media/image lifecycle, and Sequence video is fail-closed until all anchors required by the current plan exist.
+
+Files changed: `engine/models.py`, `engine/migrations/0020_sequence_ai_anchors_g2.py`, `engine/sequence_planner.py`, `engine/sequence.py`, `engine/sequence_views.py`, `engine/media.py`, `engine/urls.py`, `templates/engine/sequence_workspace.html`, `templates/engine/media_job.html`, `templates/engine/media_asset.html`, `engine/static/css/sequence-screen.css`, and new `engine/test_sequence_g2.py`.
+
+What changed: Planned anchors are materialized by exact `target_position` rather than the old next-free-position behavior. Planned AI targets persist the plan revision and a complete anchor snapshot, so a target created for one K position or an older blueprint cannot later be applied to a different/current anchor. Idempotency tokens are also bound to planned position, plan revision, snapshot and source reference. Manual Media selection and upload reuse the existing canonical anchor replacement/revision/stale-history behavior. The workspace shows per-K materialization status and exposes explicit AI review, Media and upload actions.
+
+Reference preservation: G1 anchor proposals can now declare bounded `company` and/or `product` exact-reference requirements plus an editable reference note. Product-preservation requires a real company-scoped image reference and reuses the existing image-to-image source path while storing typed `PRODUCT_REFERENCE` provenance. Company identity reuses the official deterministic logo path when available; otherwise a company reference image is required. A combined company+product exact requirement without an official logo fails closed because one untyped source image must not silently stand in for two distinct exact references. Typed reference changes refresh the non-billable review signature before any paid start.
+
+Video gate: `prepare_anchor_chain_version()` now refuses to prepare Sequence video while any current planned K position is missing. The same readiness check is also enforced centrally inside `start_reviewed_job()` immediately before a reviewed Sequence video could reach the provider, and the exact canonical clip references are rechecked there. UI disablement is therefore only an ergonomic layer, not the security/cost boundary.
+
+Tests: Final clean PR CI run `36105689204` passed on exact head `95d9c2dc60409d3539a231efc0662bc503d724f6`: standard `verify` ran 386 tests in 33.515s, `OK (skipped=2)`; PostgreSQL ran 386 tests in 20.764s, `OK`. Migration drift, `0020` migration execution, Django checks, MCP checks, collectstatic and compile/import gates also passed. G2 regression coverage includes exact out-of-order K materialization, required product reference + typed provenance, official-logo company preservation, stale-plan apply rejection, exact planned AI apply, position-scoped idempotency, cross-company project/asset rejection, pre-generation video blocking and a second central paid-start readiness check.
+
+UI verification: Real Chromium run `36105335619` passed with desktop 1440×1100 and mobile 390×844. The audit seeded K0/K1 plus a missing K2 and verified `2/3 klara`, the explicit video lock, disabled clip preparation, no horizontal overflow and one-column mobile materialization cards with ≥44 px disclosure targets. It then selected an existing Media image for K2 in the browser, reloaded, verified `Alla 3 anchors klara`, canonical K2 preview, removal of the video lock and enabled clip preparation. Screenshot artifact: `10850399992` (`sequence-g2-screenshots`), digest `sha256:7cc128d05084b144e79519958606562bde9894c23402dc5e5b1810e7f8d61d87`. The audit asserted zero `MediaGeneration` records and the temporary Playwright workflow/harness was removed before final clean CI.
+
+Official/provider evidence: G2 changes no OpenAI/Higgsfield request contract and enables no model. It deliberately reuses the existing reviewed image pipeline, existing image-to-image source behavior, deterministic official-logo composition and existing typed reference model. No paid provider call was needed or authorized for this task.
+
+Live verification: PR #66 was squash-merged as `3e5f308ae3b2e6a62ffa25e2574ca3e41a8ae5ff`. `feature/chatgpt-content-engine-mcp` was fast-forwarded to that exact code commit and Render deploy `dep-dar1q97avr4c73ff2dtg` completed `live`. Render explicitly checked out `3e5f308ae3b2e6a62ffa25e2574ca3e41a8ae5ff`; build succeeded; new instance `srv-daj9cfgae00c7392t5c0-xqjzg` applied `engine.0020_sequence_ai_anchors_g2... OK`, started StreamableHTTP/Uvicorn successfully and returned `GET /healthz ... 200 OK` before the prior instance shut down. Post-startup review found no `error` or `critical` entries.
+
+Known limitations: G2 prepares AI anchor image jobs for human review but no paid image generation was submitted during verification, so provider-side visual fidelity is intentionally untested here. Manual Media/upload materialization is an explicit human override and can satisfy a planned K position even when the planner suggested a reference requirement. G2 materializes anchors only; broader reusable scroll production methods are H1.
+
+Commit: `3e5f308ae3b2e6a62ffa25e2574ca3e41a8ae5ff`  
+PR: #66  
+Deploy: `dep-dar1q97avr4c73ff2dtg`  
+Next exact task: H1 — Scroll recipe family.
 
 ---
 
@@ -1127,7 +1150,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task G2 — AI anchor generation.**
+> **Task H1 — Scroll recipe family.**
 
-Materialize the G1 blueprint's proposed anchors through the existing image-generation review pipeline, preserving required company/product references when applicable. Let the user replace or upload anchors explicitly, keep canonical anchor/version history intact, and do not allow video generation until the required anchors for the planned sequence exist.
+Expand the existing trusted Creative Recipe registry with the evidence-backed scroll production family: `scroll_orbit_hero`, `scroll_dolly_reveal`, `scroll_macro_flythrough`, `scroll_exploded_reveal`, `scroll_environment_transition`, `scroll_transition_bridge`, `scroll_product_showcase` and `scroll_landscape_flythrough`. Each recipe must have a reproducible production method, clear good/bad outcome, compatible verified model capabilities, negative constraints, model-specific compilation tests and current official/internal evidence. Reuse the existing recipe registry/compiler/router and do not add recipes merely to increase count.
 
