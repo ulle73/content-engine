@@ -480,8 +480,8 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             sections.append("GLOBAL STYLE: " + style + ".")
         if _uses_prompt_section(model, "SCENE"):
             sections.append("SCENE: " + brief.user_intent)
-        if recipe and recipe.recipe_id == "scroll_transition_bridge":
-            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene changes. Prioritize continuity over spectacle.")
+        if recipe and "scrub_friendly" in recipe.format_tags:
+            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene changes. Keep every intermediate frame coherent for forward and backward scroll scrubbing.")
         if brief.environment and _uses_prompt_section(model, "LOCATION"):
             sections.append("LOCATION: " + brief.environment + ".")
         if brief.reference_media and _uses_prompt_section(model, "FIRST_FRAME_BLOCKING"):
