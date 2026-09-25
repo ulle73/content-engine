@@ -303,6 +303,12 @@ def start_reviewed_job(job, *, expected_revision=None):
             raise MediaError("Granska inställningar och pris på nytt före start. Granskningen gäller i tio minuter.")
         if locked.usage.get("reviewed_reference_signature") != generation_reference_signature(locked):
             raise MediaError("Start- eller slutbilden har ändrats sedan granskningen. Uppdatera priskontrollen före start.")
+        if locked.kind == "video" and isinstance((locked.parameters or {}).get("sequence"), dict):
+            from .sequence import SequenceError, assert_sequence_generation_video_ready
+            try:
+                assert_sequence_generation_video_ready(locked)
+            except SequenceError as exc:
+                raise MediaError(str(exc)) from exc
         if locked.provider == "higgsfield":
             locked.usage["approved_max_usd"] = locked.usage.get("estimate", {}).get("usd")
             if locked.usage["approved_max_usd"] is None:
