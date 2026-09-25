@@ -880,14 +880,14 @@ Goal: build reusable proven creative production methods, not one-off prompts.
 
 ## Task H1 — Scroll recipe family
 
-- [ ] `scroll_orbit_hero`
-- [ ] `scroll_dolly_reveal`
-- [ ] `scroll_macro_flythrough`
-- [ ] `scroll_exploded_reveal`
-- [ ] `scroll_environment_transition`
-- [ ] `scroll_transition_bridge`
-- [ ] `scroll_product_showcase`
-- [ ] `scroll_landscape_flythrough`
+- [x] `scroll_orbit_hero`
+- [x] `scroll_dolly_reveal`
+- [x] `scroll_macro_flythrough`
+- [x] `scroll_exploded_reveal`
+- [x] `scroll_environment_transition`
+- [x] `scroll_transition_bridge`
+- [x] `scroll_product_showcase`
+- [x] `scroll_landscape_flythrough`
 
 Each recipe must have:
 
@@ -899,7 +899,24 @@ Each recipe must have:
 
 ### Closeout
 
-Status: NOT STARTED
+Status: DONE — all eight trusted H1 scroll recipes are implemented, regression-tested, merged and live. The family is capability-gated rather than hard-coded to a model id: H1 requires canonical START_IMAGE + END_IMAGE plus verified `reference_animation`, `single_continuous_shot` and `first_last_frame` capabilities. No paid media generation was run.
+
+Files changed: `engine/creative_core.py`, `engine/creative_recipes.py`, `engine/creative_director.py`, `engine/creative_registry.py`, new `engine/test_scroll_recipes_h1.py`, focused expectation updates in `engine/test_creative_core.py` and `engine/test_media.py`, plus new evidence/production-method record `docs/2026-09-25-scroll-recipe-family-h1.md`. No database migration.
+
+What changed: Added distinct trusted production methods for orbit hero, dolly reveal, macro flythrough, exploded reveal, environment transition, transition bridge, product showcase and landscape flythrough. Every recipe has camera/motion/continuity policy, negative constraints, evaluation rules, explicit good-result criteria and bad-result signals. `CreativeRecipe` now carries provider-neutral `required_model_capabilities` and outcome criteria. The existing single `route_model()` remains authoritative and now rejects models missing a recipe's verified capabilities. Current Kling 2.5 Turbo Pro is therefore excluded from H1 first/last-frame work while current verified Seedance 2.5 and 2.0 qualify. Generic image/video defaults remain unchanged. The compiler applies the trusted scroll/scrub contract through both Seedance structured and ordered-motion strategies while respecting the existing 1,800-character provider safety ceiling. During H1, current Seedance 2.0 API evidence exposed that its verified I2V contract supports `end_image_url` but its prompt profile lacked `END_FRAME`; H1 corrected and versioned that profile. Creative model/compiler/recipe provenance is now version `2026-09-25.1`.
+
+Tests: Final clean CI run `36108113243` passed. Standard Django: 393 tests in 20.230s, `OK (skipped=2)`. PostgreSQL: 393 tests in 15.519s, `OK`. Migration drift, migrate/check, Django check, MCP settings/import, collectstatic and py_compile gates passed. New H1 coverage verifies all eight registry entries, required capability filtering, START/END role requirements, current Seedance 2.5 and 2.0 eligibility, current Kling exclusion, recipe-specific prompt differentiation, exact provider I2V endpoint/reference-field compilation, audio-off semantics and backwards-compatible generic video behavior. H1 changed no UI, so a Chromium visual audit was not applicable.
+
+Official/provider evidence: Current Higgsfield Seedance help-center guidance, Seedance 2.5 prompting guide and current Seedance 2.5/2.0 image-to-video API references were rechecked on 2026-09-25 and recorded in `docs/2026-09-25-scroll-recipe-family-h1.md`. Evidence supports the current camera vocabulary, first-and-last-frame continuity method, current duration/resolution ranges and optional `end_image_url`. A read-only Higgsfield plugin catalog check still returned workspace error 423; this is not account-availability evidence. Dedicated Content Engine account availability remains authenticated estimate/preflight truth.
+
+Live verification: Render explicitly deployed code commit `4a6afde2d65bab700387edf7b066758627ac0808` as deploy `dep-dar27q7f3r2c73asju9g`. Build was successful, startup reported no migrations to apply, instance `srv-daj9cfgae00c7392t5c0-9zwrh` started the StreamableHTTP session manager and Uvicorn successfully, and the new instance returned `GET /healthz 200 OK`. Render marked the service live. No post-startup error/critical logs were found.
+
+Known limitations: H1 defines and compiles the trusted recipe family but does not yet automatically choose among these recipes from arbitrary loose briefs; A2 remains the separate semantic recipe-selection task. G1's current scroll planner policy still deterministically uses `scroll_transition_bridge` for planned scroll segments rather than automatically selecting the richer H1 family. H1 makes no aesthetic/output-quality claim because no explicitly authorized paid generation was performed. Account-level Higgsfield model availability continues to be verified at non-billable estimate/preflight time.
+
+Commit: `4a6afde2d65bab700387edf7b066758627ac0808`  
+PR: #67 — squash merged  
+Deploy: `dep-dar27q7f3r2c73asju9g` — live  
+Next exact task: H2 — General ad/reel/product recipe family.
 
 ---
 
@@ -1150,7 +1167,7 @@ Only after D1/D2 prove the architecture should the project/timeline work in Phas
 
 # 16. Current next exact task
 
-> **Task H1 — Scroll recipe family.**
+> **Task H2 — General ad/reel/product recipe family.**
 
-Expand the existing trusted Creative Recipe registry with the evidence-backed scroll production family: `scroll_orbit_hero`, `scroll_dolly_reveal`, `scroll_macro_flythrough`, `scroll_exploded_reveal`, `scroll_environment_transition`, `scroll_transition_bridge`, `scroll_product_showcase` and `scroll_landscape_flythrough`. Each recipe must have a reproducible production method, clear good/bad outcome, compatible verified model capabilities, negative constraints, model-specific compilation tests and current official/internal evidence. Reuse the existing recipe registry/compiler/router and do not add recipes merely to increase count.
+Expand the trusted Creative Recipe registry with evidence-backed general commercial/social production methods: Premium Product Reveal, Product Showcase, Hyper Motion Product, Before/After, UGC Testimonial, UGC Product Demo, Problem/Solution Paid Ad, Curiosity Hook Paid Ad, Landscape/Environment Hero and Luxury Brand Film. Add a recipe only when it has a reproducible production method, clear good/bad result, compatible verified model capabilities, negative constraints and appropriate evidence. Reuse the existing recipe registry/compiler/router and preserve the Prompt Library safety boundary.
 
