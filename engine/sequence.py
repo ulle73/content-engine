@@ -580,10 +580,24 @@ def prepare_anchor_image_generation(
         raise SequenceError("Välj mellan 1 och 4 bildalternativ.")
     job_token = _normalize_generation_token(token)
 
-    existing = SequenceAnchorGenerationTarget.objects.filter(generation_id=job_token).first()
+    existing = (
+        SequenceAnchorGenerationTarget.objects.select_related("generation")
+        .filter(generation_id=job_token)
+        .first()
+    )
     if existing:
         if existing.project_id != project.pk:
             raise SequenceError("Idempotency-token används redan i ett annat sequence-projekt.")
+        if target_position is not None:
+            if (
+                existing.target_position != target_position
+                or existing.plan_revision != plan_revision
+                or (existing.plan_anchor_snapshot or {}) != (plan_anchor_snapshot or {})
+            ):
+                raise SequenceError("Idempotency-token tillhör en annan planerad anchor eller planrevision.")
+            expected_source_id = source.pk if source else None
+            if existing.generation.source_asset_id != expected_source_id:
+                raise SequenceError("Idempotency-token tillhör ett AI-anchorjobb med en annan referensbild.")
         return existing
     if MediaGeneration.objects.filter(pk=job_token).exists():
         raise SequenceError("Idempotency-token används redan av en annan mediageneration.")
