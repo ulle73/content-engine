@@ -178,10 +178,14 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         raise MediaError("Beskrivningen behövs och får vara högst 6000 tecken.")
     if priority not in {"quality", "balanced", "economy"}:
         raise MediaError("Välj Bäst resultat, Balanserad eller Spara kostnad.")
-    if source and (source.company_id != run.workspace_id or source.kind != "image" or source.purpose == "logo"):
+    if source and source.purpose == "logo" and source.pk != run.workspace.official_logo_id:
+        raise MediaError("Endast företagets officiella logga får användas som videoreferens.")
+    if source and (source.company_id != run.workspace_id or source.kind != "image"):
         raise MediaError("Startbilden ska tillhöra företaget.")
-    if end_source and (kind != "video" or end_source.company_id != run.workspace_id or end_source.kind != "image" or end_source.purpose == "logo"):
-        raise MediaError("Slutbilden ska vara en vanlig bild som tillhör företaget och används för video.")
+    if end_source and end_source.purpose == "logo" and end_source.pk != run.workspace.official_logo_id:
+        raise MediaError("Endast företagets officiella logga får användas som videoreferens.")
+    if end_source and (kind != "video" or end_source.company_id != run.workspace_id or end_source.kind != "image"):
+        raise MediaError("Slutbilden ska vara en bild som tillhör företaget och används för video.")
     if end_source and not source:
         raise MediaError("Välj en startbild innan du väljer en slutbild.")
     if not run.draft or run.delivery_status != "draft":
