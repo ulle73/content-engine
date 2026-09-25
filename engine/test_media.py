@@ -104,6 +104,38 @@ class MediaTests(TestCase):
         self.assertFalse(local_path(unused.storage_key).exists())
         self.assertEqual(self.client.get(self.url("asset_file", asset_id=source.pk)).status_code, 410)
 
+    def test_official_logo_can_be_exact_start_and_end_video_reference(self):
+        logo = store_asset(self.company, picture(), purpose="logo")
+        self.company.official_logo = logo
+        self.company.save(update_fields=["official_logo"])
+
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            source=logo,
+            end_source=logo,
+            brief="Create a 4-second locked logo light sweep outro with native audio",
+            model_override="bytedance/seedance-2.5",
+        )
+
+        refs = {(row.role, row.position): row.asset_id for row in job.references.all()}
+        self.assertEqual(refs[(ReferenceRole.start_image.value, 0)], logo.pk)
+        self.assertEqual(refs[(ReferenceRole.end_image.value, 0)], logo.pk)
+        self.assertEqual(job.source_asset_id, logo.pk)
+        self.assertEqual(job.parameters["provider_model"], "bytedance/seedance-2.5/image-to-video")
+
+    def test_non_official_logo_remains_blocked_as_video_reference(self):
+        logo = store_asset(self.company, picture(), purpose="logo")
+        with self.assertRaisesRegex(MediaError, "officiella logga"):
+            create_job(
+                self.run,
+                token=uuid.uuid4(),
+                kind="video",
+                source=logo,
+                brief="Animate this logo",
+            )
+
     def test_source_asset_is_mirrored_into_canonical_start_reference(self):
         source = store_asset(self.company, picture())
         job = self.job("video", source=source)
