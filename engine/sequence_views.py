@@ -23,6 +23,9 @@ from .sequence import (
     next_anchor_position,
     prepare_anchor_chain_version,
     prepare_anchor_image_generation,
+    prepare_planned_anchor_generation,
+    materialize_planned_anchor_asset,
+    sequence_plan_anchor_readiness,
     preview_anchor_chain_version,
     restore_anchor_revision,
     select_clip_version,
@@ -91,6 +94,36 @@ def _selected_image(request):
     if asset.expires_at and asset.expires_at <= timezone.now():
         raise SequenceError("Bilden har gått ut. Välj ett annat media.")
     return asset
+
+
+def _optional_selected_image(request, field="reference_asset_id"):
+    value = (request.POST.get(field) or "").strip()
+    if not value:
+        return None
+    asset = get_object_or_404(
+        MediaAsset,
+        pk=value,
+        company=request.workspace,
+        kind="image",
+        purpose="content",
+    )
+    if asset.expires_at and asset.expires_at <= timezone.now():
+        raise SequenceError("Referensbilden har gått ut. Välj en annan bild.")
+    return asset
+
+
+def _precheck_planned_upload(project, position, confirm_stale):
+    anchor = project.anchors.filter(position=position).first()
+    if not anchor:
+        return
+    if anchor.locked:
+        raise SequenceError(f"K{position} är låst. Lås upp den innan du laddar upp en ersättare.")
+    impact = anchor_change_impact(anchor)
+    if impact["total_versions"] and not confirm_stale:
+        raise SequenceError(
+            f"Bytet gör {impact['total_versions']} befintliga clip/bridge-versioner inaktuella. "
+            "Bekräfta ändringen innan filen laddas upp."
+        )
 
 
 def _uploaded_image(request):
@@ -252,6 +285,38 @@ def sequence_workspace(request, workspace_id, project_id):
     candidate_count = sum(clip.candidate_count for clip in clips) + sum(
         bridge.candidate_count for bridge in bridges
     )
+
+    sequence_plan = project.plan if isinstance(project.plan, dict) else {}
+    anchor_by_position = {anchor.position: anchor for anchor in anchors}
+    target_by_position = {}
+    for target in (
+        project.anchor_generation_targets.filter(target_position__isnull=False)
+        .select_related("generation", "applied_anchor", "target_anchor")
+        .order_by("-created_at")
+    ):
+        target_by_position.setdefault(target.target_position, target)
+    planned_anchor_rows = []
+    for spec in sequence_plan.get("anchors", []) if isinstance(sequence_plan.get("anchors"), list) else []:
+        if not isinstance(spec, dict):
+            continue
+        try:
+            position = int(spec["position"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        target = target_by_position.get(position)
+        if target:
+            target.plan_is_current = target.plan_revision == project.plan_revision
+        planned_anchor_rows.append(
+            {
+                "spec": spec,
+                "position": position,
+                "anchor": anchor_by_position.get(position),
+                "target": target,
+                "token": uuid.uuid4(),
+            }
+        )
+    plan_anchor_readiness = sequence_plan_anchor_readiness(project)
+
     return render(
         request,
         "engine/sequence_workspace.html",
@@ -273,7 +338,10 @@ def sequence_workspace(request, workspace_id, project_id):
                 mode="create", applied_anchor__isnull=True
             ).select_related("generation").order_by("-created_at")[:6],
             "anchor_generation_token": uuid.uuid4(),
-            "sequence_plan": project.plan if isinstance(project.plan, dict) else {},
+            "sequence_plan": sequence_plan,
+            "planned_anchor_rows": planned_anchor_rows,
+            "plan_anchor_readiness": plan_anchor_readiness,
+            "company_has_official_logo": bool(request.workspace.official_logo_id),
         },
     )
 
@@ -316,6 +384,14 @@ def sequence_plan_save(request, workspace_id, project_id):
                         f"anchor_{position}_description", anchor.get("description", "")
                     ),
                     "role": request.POST.get(f"anchor_{position}_role", anchor.get("role", "")),
+                    "reference_requirements": [
+                        value
+                        for value in ("company", "product")
+                        if request.POST.get(f"anchor_{position}_reference_{value}") == "1"
+                    ],
+                    "reference_note": request.POST.get(
+                        f"anchor_{position}_reference_note", anchor.get("reference_note", "")
+                    ),
                 }
             )
         scenes = []
@@ -352,6 +428,81 @@ def sequence_plan_save(request, workspace_id, project_id):
         )
         messages.success(request, f"Sequence-plan V{project.plan_revision} är sparad.")
     except (SequencePlanError, TypeError, ValueError) as exc:
+        messages.error(request, str(exc))
+    return _workspace_redirect(request, project)
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_plan_anchor_generate(request, workspace_id, project_id, position):
+    project = _project_for_request(request, project_id)
+    try:
+        reference = _optional_selected_image(request)
+        target = prepare_planned_anchor_generation(
+            project,
+            position=position,
+            reference_asset=reference,
+            shape=request.POST.get("shape", "portrait"),
+            count=int(request.POST.get("count", "2")),
+            priority=request.POST.get("priority", "balanced"),
+            token=request.POST.get("token") or uuid.uuid4(),
+            created_by=request.user,
+        )
+        messages.success(
+            request,
+            f"K{position} är förberedd via befintligt AI-bildflöde. Granska innan betald start.",
+        )
+        return redirect(
+            "engine:media_job",
+            workspace_id=request.workspace.pk,
+            run_id=target.generation.run_id,
+            job_id=target.generation_id,
+        )
+    except (SequenceError, MediaError, ValueError) as exc:
+        messages.error(request, str(exc) if not isinstance(exc, ValueError) else "AI-formuläret kunde inte läsas.")
+    return _workspace_redirect(request, project)
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_plan_anchor_use_existing(request, workspace_id, project_id, position):
+    project = _project_for_request(request, project_id)
+    try:
+        asset = _selected_image(request)
+        anchor = materialize_planned_anchor_asset(
+            project,
+            asset,
+            position=position,
+            source_type="existing",
+            created_by=request.user,
+            confirm_stale=_confirm_stale(request),
+        )
+        messages.success(request, f"K{anchor.position} använder nu vald Media-bild.")
+    except (SequenceError, MediaError) as exc:
+        messages.error(request, str(exc))
+    return _workspace_redirect(request, project)
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_plan_anchor_upload(request, workspace_id, project_id, position):
+    project = _project_for_request(request, project_id)
+    try:
+        _precheck_planned_upload(project, position, _confirm_stale(request))
+        asset = _uploaded_image(request)
+        anchor = materialize_planned_anchor_asset(
+            project,
+            asset,
+            position=position,
+            source_type="uploaded",
+            created_by=request.user,
+            confirm_stale=_confirm_stale(request),
+        )
+        messages.success(request, f"K{anchor.position} är uppladdad på exakt planposition.")
+    except (SequenceError, MediaError) as exc:
         messages.error(request, str(exc))
     return _workspace_redirect(request, project)
 
