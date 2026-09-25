@@ -104,7 +104,7 @@ class SequenceAIAnchorsG2Tests(TestCase):
             )
 
         product = self.asset((90, 120, 80))
-        with patch("engine.media.providers.start_image") as start:
+        with patch("engine.media.providers.generate_images") as start:
             target = prepare_planned_anchor_generation(
                 self.project,
                 position=1,
@@ -129,7 +129,7 @@ class SequenceAIAnchorsG2Tests(TestCase):
         logo = self.asset((245, 245, 245), purpose="logo")
         self.company.official_logo = logo
         self.company.save(update_fields=["official_logo"])
-        with patch("engine.media.providers.start_image") as start:
+        with patch("engine.media.providers.generate_images") as start:
             target = prepare_planned_anchor_generation(
                 self.project,
                 position=2,
