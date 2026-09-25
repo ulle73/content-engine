@@ -7,6 +7,7 @@ from unittest.mock import patch
 from PIL import Image
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
+from django.urls import reverse
 from django.utils import timezone
 
 from .creative_core import ReferenceRole
@@ -41,6 +42,7 @@ class SequenceAIAnchorsG2Tests(TestCase):
         media.enable()
         self.addCleanup(media.disable)
         self.user = get_user_model().objects.create_user(username="g2@example.test")
+        self.client.force_login(self.user)
         self.company = Company.objects.create(
             owner=self.user,
             name="Golfkuponger",
@@ -204,6 +206,58 @@ class SequenceAIAnchorsG2Tests(TestCase):
         with self.assertRaisesRegex(SequenceError, "Saknas: K2"):
             prepare_anchor_chain_version(clip, token=uuid.uuid4())
         self.assertEqual(clip.versions.count(), 0)
+
+    def test_planned_anchor_actions_are_company_scoped(self):
+        outsider = get_user_model().objects.create_user(username="g2-outsider@example.test")
+        other = Company.objects.create(owner=outsider, name="Other")
+        foreign = create_sequence_project(
+            other,
+            author=outsider,
+            title="Foreign G2",
+            brief="Foreign plan",
+            format="scroll_story",
+            platform="web",
+        )
+        SequenceProject.objects.filter(pk=foreign.pk).update(
+            plan={
+                "planner_id": "sequence_planner",
+                "planner_version": "1.1.0",
+                "anchors": [{"position": 0, "label": "Foreign", "description": "Foreign", "role": "", "reference_requirements": [], "reference_note": ""}],
+                "scenes": [],
+            },
+            plan_revision=1,
+        )
+        response = self.client.post(
+            reverse(
+                "engine:sequence_plan_anchor_generate",
+                kwargs={
+                    "workspace_id": self.company.pk,
+                    "project_id": foreign.pk,
+                    "position": 0,
+                },
+            ),
+            {"token": str(uuid.uuid4()), "shape": "portrait", "count": "1"},
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(foreign.anchor_generation_targets.exists())
+
+    def test_planned_media_action_rejects_foreign_company_asset(self):
+        outsider = get_user_model().objects.create_user(username="g2-asset-outsider@example.test")
+        other = Company.objects.create(owner=outsider, name="Other asset owner")
+        foreign_asset = store_asset(other, picture((180, 180, 180)))
+        response = self.client.post(
+            reverse(
+                "engine:sequence_plan_anchor_use_existing",
+                kwargs={
+                    "workspace_id": self.company.pk,
+                    "project_id": self.project.pk,
+                    "position": 0,
+                },
+            ),
+            {"asset_id": str(foreign_asset.pk)},
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(self.project.anchors.filter(position=0).exists())
 
     def test_paid_video_start_rechecks_plan_readiness_centrally(self):
         k0 = materialize_planned_anchor_asset(self.project, self.asset(), position=0, source_type="existing")
