@@ -220,8 +220,11 @@ class MediaGenerationReference(models.Model):
             if self.asset.company_id != generation_company_id:
                 raise ValidationError("Generation reference asset must belong to the generation company.")
         if self.asset_id and self.role in {ReferenceRole.start_image.value, ReferenceRole.end_image.value}:
-            if self.asset.kind != "image" or self.asset.purpose == "logo":
-                raise ValidationError("Start/end references must be non-logo images.")
+            official_logo_id = self.generation.run.workspace.official_logo_id
+            if self.asset.kind != "image" or (
+                self.asset.purpose == "logo" and self.asset_id != official_logo_id
+            ):
+                raise ValidationError("Start/end references must be images; only the company's official logo may use logo purpose.")
         if self.asset_id and self.role == ReferenceRole.video_reference.value and self.asset.kind != "video":
             raise ValidationError("VIDEO_REFERENCE must point to a video asset.")
         if self.role == ReferenceRole.audio_reference.value:
