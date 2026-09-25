@@ -235,9 +235,9 @@ def registry() -> tuple[ModelIntelligence, ...]:
             evidence_level=EvidenceLevel.official,
             verified_date="2026-09-25",
             source="https://open.higgsfield.ai/models/bytedance/seedance-2.5/image-to-video/api-reference",
-            profile_version="2026-09-25.1",
+            profile_version="2026-09-25.2",
             profile_status="verified",
-            evidence_version="seedance-2.5-api-2026-09-25",
+            evidence_version="seedance-2.5-commercial-profile-2026-09-25",
             sources=(
                 "https://open.higgsfield.ai/models/bytedance/seedance-2.5/text-to-video/api-reference",
                 "https://open.higgsfield.ai/models/bytedance/seedance-2.5/image-to-video/api-reference",
@@ -268,7 +268,7 @@ def registry() -> tuple[ModelIntelligence, ...]:
                 "Image-to-video requires image_url and optionally accepts end_image_url.",
                 "Provider defaults generate_audio=true; Content Engine must set it explicitly.",
             ),
-            recipe_capabilities=("general_video", "reference_animation", "single_continuous_shot", "first_last_frame"),
+            recipe_capabilities=("general_video", "reference_animation", "single_continuous_shot", "first_last_frame", "native_audio"),
             reference_contracts=(
                 ModeRequestContract(
                     mode="text-to-video",
@@ -309,9 +309,9 @@ def registry() -> tuple[ModelIntelligence, ...]:
             evidence_level=EvidenceLevel.official,
             verified_date="2026-09-25",
             source="https://open.higgsfield.ai/models/bytedance/seedance-2.0/image-to-video/api-reference",
-            profile_version="2026-09-25.1",
+            profile_version="2026-09-25.2",
             profile_status="verified",
-            evidence_version="seedance-2.0-api-2026-09-25",
+            evidence_version="seedance-2.0-commercial-profile-2026-09-25",
             sources=(
                 "https://open.higgsfield.ai/models/bytedance/seedance-2.0/text-to-video/api-reference",
                 "https://open.higgsfield.ai/models/bytedance/seedance-2.0/image-to-video/api-reference",
@@ -341,7 +341,7 @@ def registry() -> tuple[ModelIntelligence, ...]:
                 "Image-to-video requires image_url and optionally accepts end_image_url.",
                 "Provider defaults generate_audio=true; Content Engine must set it explicitly.",
             ),
-            recipe_capabilities=("general_video", "reference_animation", "single_continuous_shot", "first_last_frame", "high_resolution"),
+            recipe_capabilities=("general_video", "reference_animation", "single_continuous_shot", "first_last_frame", "high_resolution", "native_audio"),
             reference_contracts=(
                 ModeRequestContract(
                     mode="text-to-video",
