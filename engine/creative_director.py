@@ -446,11 +446,11 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         if _uses_prompt_section(model, "SCENE"):
             sections.append("SCENE: " + brief.user_intent)
         if recipe and "scrub_friendly" in recipe.format_tags:
-            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene changes. Keep every intermediate frame coherent for forward and backward scroll scrubbing.")
+            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene resets. Coherent intermediate frames for forward and backward scroll scrubbing.")
         if _uses_prompt_section(model, "CAMERA"):
             camera_text = ", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"
             if recipe and recipe.camera_strategy:
-                camera_text += " " + " ".join(recipe.camera_strategy)
+                camera_text += " " + " ".join(recipe.camera_strategy[:2])
             sections.append("CAMERA: " + camera_text)
         if brief.aspect_ratio != "auto" and _uses_prompt_section(model, "FORMAT_INTENT"):
             sections.append("FORMAT INTENT: compose safely for " + brief.aspect_ratio + ".")
@@ -458,9 +458,9 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             sections.append("PRESERVE EXACTLY: " + "; ".join(brief.preserve) + ".")
         motion_continuity = []
         if recipe and recipe.motion_strategy:
-            motion_continuity.extend(recipe.motion_strategy)
+            motion_continuity.extend(recipe.motion_strategy[:2])
         if recipe and recipe.continuity_strategy:
-            motion_continuity.extend(recipe.continuity_strategy)
+            motion_continuity.extend(recipe.continuity_strategy[:2])
         if (brief.allow_change or motion_continuity) and _uses_prompt_section(model, "ALLOW_MOTION_CHANGE"):
             text = "; ".join(brief.allow_change)
             if motion_continuity:
@@ -496,7 +496,7 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         if _uses_prompt_section(model, "SCENE"):
             sections.append("SCENE: " + brief.user_intent)
         if recipe and "scrub_friendly" in recipe.format_tags:
-            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene changes. Keep every intermediate frame coherent for forward and backward scroll scrubbing.")
+            sections.append("FORMAT MODE: Single continuous shot. No cuts. No scene resets. Coherent intermediate frames for forward and backward scroll scrubbing.")
         if brief.environment and _uses_prompt_section(model, "LOCATION"):
             sections.append("LOCATION: " + brief.environment + ".")
         if brief.reference_media and _uses_prompt_section(model, "FIRST_FRAME_BLOCKING"):
@@ -509,16 +509,16 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         if _uses_prompt_section(model, "CAMERA"):
             camera_text = ", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene"
             if recipe and recipe.camera_strategy:
-                camera_text += " " + " ".join(recipe.camera_strategy)
+                camera_text += " " + " ".join(recipe.camera_strategy[:2])
             sections.append("CAMERA: " + camera_text + ".")
         if _uses_prompt_section(model, "PHYSICS"):
             physics = "Use physically plausible continuous motion."
             if brief.allow_change:
                 physics += " Allowed motion/change: " + "; ".join(brief.allow_change) + "."
             if recipe and recipe.motion_strategy:
-                physics += " " + " ".join(recipe.motion_strategy)
+                physics += " " + " ".join(recipe.motion_strategy[:2])
             if recipe and recipe.continuity_strategy:
-                physics += " CONTINUITY: " + " ".join(recipe.continuity_strategy)
+                physics += " CONTINUITY: " + " ".join(recipe.continuity_strategy[:2])
             forbidden = list(brief.forbid)
             recipe_forbidden = list(recipe.negative_constraints) if recipe and recipe.negative_constraints else []
             forbidden.extend(recipe_forbidden)
