@@ -769,7 +769,7 @@ _RECIPES: tuple[CreativeRecipe, ...] = (
         optional_reference_roles=(ReferenceRole.start_image,),
         required_model_capabilities=("general_video",),
         narrative_strategy=(
-            "Open with a specific visual anomaly or incomplete answer in the first beat, delay the explanation briefly, then reveal the product/mechanism and payoff.",
+            "Open with a specific unanswered visual question in the first beat, delay the explanation briefly, then reveal the product/mechanism and payoff.",
             "The curiosity must be resolved inside the clip; do not use deceptive bait unrelated to the offer.",
         ),
         camera_strategy=(
