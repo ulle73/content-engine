@@ -123,7 +123,7 @@ class GeneralCommercialRecipesH2Tests(SimpleTestCase):
                 self.assertIn("recipe_capabilities_supported", routed.reason_codes)
 
     def test_product_reveal_compiles_on_kling_ordered_motion_without_fake_end_frame_support(self):
-        brief = self.i2v(intent="Premium product reveal with a slow push in.")
+        brief = self.i2v(intent="Premium product reveal with a slow push in.").model_copy(update={"resolution": "auto"})
         recipe, _ = resolve_recipe(brief, recipe_id="premium_product_reveal")
         kling = get_model("higgsfield", "kling-video/v2.5-turbo/pro")
         self.assertIn(kling, eligible_models(brief, recipe=recipe))
