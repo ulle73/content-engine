@@ -90,7 +90,16 @@ class CreativeCoreTests(TestCase):
 
     def test_recipe_registry_contains_only_trusted_versioned_domain_objects(self):
         entries = recipe_registry()
-        self.assertEqual({item.recipe_id for item in entries}, {"generic_image", "generic_video", "scroll_orbit_hero", "scroll_dolly_reveal", "scroll_macro_flythrough", "scroll_exploded_reveal", "scroll_environment_transition", "scroll_transition_bridge", "scroll_product_showcase", "scroll_landscape_flythrough"})
+        expected = {
+            "generic_image", "generic_video",
+            "scroll_orbit_hero", "scroll_dolly_reveal", "scroll_macro_flythrough",
+            "scroll_exploded_reveal", "scroll_environment_transition",
+            "scroll_transition_bridge", "scroll_product_showcase", "scroll_landscape_flythrough",
+            "premium_product_reveal", "product_showcase", "hyper_motion_product", "before_after",
+            "ugc_testimonial", "ugc_product_demo", "problem_solution_paid_ad",
+            "curiosity_hook_paid_ad", "landscape_environment_hero", "luxury_brand_film",
+        }
+        self.assertEqual({item.recipe_id for item in entries}, expected)
         self.assertTrue(all(item.version and item.evidence_sources for item in entries))
         self.assertTrue(all(item.evidence_level in {EvidenceLevel.official, EvidenceLevel.verified} for item in entries))
 
@@ -528,9 +537,9 @@ class CreativeCoreTests(TestCase):
         plan = build_plan(self.run, "Skapa en lugn premium reel 10 sekunder", kind="video")
         payload = plan.model_dump(mode="json")
         self.assertEqual(payload["brief"]["version"], "2026-09-22.1")
-        self.assertEqual(payload["registry_version"], "2026-09-25.1")
+        self.assertEqual(payload["registry_version"], "2026-09-25.2")
         self.assertTrue(payload["selection"]["profile_version"])
         self.assertTrue(payload["selection"]["evidence_version"])
-        self.assertEqual(payload["compiler_version"], "2026-09-25.1")
+        self.assertEqual(payload["compiler_version"], "2026-09-25.2")
         self.assertEqual(payload["recipe"]["recipe_id"], "generic_video")
         self.assertEqual(payload["recipe_registry_version"], RECIPE_REGISTRY_VERSION)

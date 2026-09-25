@@ -11,10 +11,10 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
-REGISTRY_VERSION = "2026-09-25.1"
-COMPILER_VERSION = "2026-09-25.1"
+REGISTRY_VERSION = "2026-09-25.2"
+COMPILER_VERSION = "2026-09-25.2"
 BRIEF_VERSION = "2026-09-22.1"
-RECIPE_REGISTRY_VERSION = "2026-09-25.1"
+RECIPE_REGISTRY_VERSION = "2026-09-25.2"
 
 
 class Complexity(str, Enum):
@@ -61,6 +61,7 @@ class CreativeRecipe(BaseModel):
     format_tags: tuple[str, ...] = ()
     required_reference_roles: tuple[ReferenceRole, ...] = ()
     optional_reference_roles: tuple[ReferenceRole, ...] = ()
+    narrative_strategy: tuple[str, ...] = ()
     camera_strategy: tuple[str, ...] = ()
     motion_strategy: tuple[str, ...] = ()
     continuity_strategy: tuple[str, ...] = ()
@@ -71,6 +72,7 @@ class CreativeRecipe(BaseModel):
     evaluation_rules: tuple[str, ...] = ()
     supported_model_families: tuple[str, ...] = ()
     required_model_capabilities: tuple[str, ...] = ()
+    requires_native_audio: bool = False
     good_result_criteria: tuple[str, ...] = ()
     bad_result_signals: tuple[str, ...] = ()
     evidence_sources: tuple[str, ...] = ()
