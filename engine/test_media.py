@@ -430,7 +430,7 @@ class MediaTests(TestCase):
         self.assertEqual(job.parameters["creative"]["selection"]["model_id"], job.parameters["model"])
         self.assertEqual(job.parameters["creative"]["recipe"]["recipe_id"], "generic_video")
         self.assertEqual(job.parameters["creative"]["recipe"]["version"], "1.0.0")
-        self.assertEqual(job.parameters["creative"]["recipe_registry_version"], "2026-09-25.1")
+        self.assertEqual(job.parameters["creative"]["recipe_registry_version"], "2026-09-25.2")
         self.assertIn("SCENE:", job.prompt)
         self.assertTrue(any(item["code"] == "duration_normalized" for item in job.parameters["creative"]["preflight"]))
 
