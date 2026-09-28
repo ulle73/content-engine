@@ -61,6 +61,18 @@ _SEQUENCE_TIMELINE_SEGMENT = re.compile(
     r"(?<!\d)\d+(?:[.,]\d+)?\s*[–—-]\s*\d+(?:[.,]\d+)?\s*(?:s|sek|seconds?)\b",
     re.IGNORECASE,
 )
+_SEQUENCE_ORDER_MARKER = re.compile(
+    r"\b(?:after(?:wards)?|then|next|finally|followed\s+by|subsequently|därefter|sedan|nästa|slutligen|till\s+sist|efter\s+att)\b",
+    re.IGNORECASE,
+)
+_SEQUENCE_SCENE_BOUNDARY = re.compile(
+    r"\b(?:cut\s+to|transition(?:s|ed|ing)?(?:\s+from|\s+to)?|scene\s+changes?|environment\s+changes?|"
+    r"new\s+scene|new\s+location|we\s+are\s+(?:now\s+)?(?:inside|outside|in)|moves?\s+into|turns?\s+into|becomes?|"
+    r"klipp\s+till|övergår|växlar|ny\s+scen|ny\s+miljö|ny\s+plats|blir\s+till|förvandlas)\b",
+    re.IGNORECASE,
+)
+
+
 _SEQUENCE_STAGE_PATTERNS = {
     "actor_action": re.compile(
         r"\b(?:golfer|woman|man|player|person|creator|golfare|kvinna|spelare)\b.{0,220}"
@@ -102,6 +114,11 @@ def _sequence_required(brief: CreativeBrief) -> bool:
         return False
     text = brief.user_intent or ""
     if len(_SEQUENCE_TIMELINE_SEGMENT.findall(text)) >= 3:
+        return True
+    order_markers = len(_SEQUENCE_ORDER_MARKER.findall(text))
+    if order_markers >= 4:
+        return True
+    if order_markers >= 2 and _SEQUENCE_SCENE_BOUNDARY.search(text):
         return True
     stages = {name for name, pattern in _SEQUENCE_STAGE_PATTERNS.items() if pattern.search(text)}
     if len(stages) < 3:
