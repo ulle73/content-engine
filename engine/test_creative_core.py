@@ -89,6 +89,15 @@ class CreativeCoreTests(TestCase):
                 priority="quality",
             )
 
+    def test_generic_multiscene_subject_handoff_and_environment_change_requires_sequence_engine(self):
+        request = (
+            "Start with a person opening a gift box in a studio. After the lid opens, follow the ribbon as it flies forward. "
+            "The environment transitions from the studio to a snowy street and then to a summer terrace. "
+            "The ribbon lands beside the product. Finish by fading to black."
+        )
+        with self.assertRaisesRegex(ValueError, "måste byggas som en sekvens"):
+            build_plan(self.run, request, kind="video", priority="quality")
+
     def test_single_continuous_golf_swing_remains_allowed(self):
         plan = build_plan(
             self.run,
