@@ -98,6 +98,15 @@ class CreativeCoreTests(TestCase):
         with self.assertRaisesRegex(ValueError, "måste byggas som en sekvens"):
             build_plan(self.run, request, kind="video", priority="quality")
 
+    def test_structural_multiscene_timeline_requires_sequence_without_domain_keywords(self):
+        request = (
+            "A red umbrella spins in an empty room. Then the camera dives through a puddle. "
+            "Next we are inside a train station. Then the reflection becomes a city skyline. "
+            "Finally fade to black."
+        )
+        with self.assertRaisesRegex(ValueError, "måste byggas som en sekvens"):
+            build_plan(self.run, request, kind="video", priority="quality")
+
     def test_single_continuous_golf_swing_remains_allowed(self):
         plan = build_plan(
             self.run,
