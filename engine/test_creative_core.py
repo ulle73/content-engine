@@ -72,6 +72,33 @@ class CreativeCoreTests(TestCase):
         brief = parse_brief("Behåll byggnad, text och logga exakt. Gör en cinematic push-in.", kind="video", has_reference=True)
         self.assertIn(analyze_complexity(brief), {Complexity.medium, Complexity.advanced})
 
+    def test_multiscene_subject_handoff_and_environment_change_requires_sequence_engine(self):
+        request = (
+            "10-second vertical 9:16 Golfkuponger commercial. Start exactly from the supplied female golfer at address. "
+            "She performs one authentic professional driver swing with realistic biomechanics and clean impact. "
+            "After impact, follow the same white golf ball forward as the environment changes seamlessly from golden autumn "
+            "outdoor golf to a dark premium indoor golf simulator and then into bright spring. The ball lands on a fresh "
+            "spring green, bounces naturally, rolls into the cup. Finish by fading through the dark cup to pure black."
+        )
+        with self.assertRaisesRegex(ValueError, "måste byggas som en sekvens"):
+            build_plan(
+                self.run,
+                request,
+                kind="video",
+                source=object(),
+                priority="quality",
+            )
+
+    def test_single_continuous_golf_swing_remains_allowed(self):
+        plan = build_plan(
+            self.run,
+            "Animate the same female golfer through one authentic driver swing from address to a balanced finish in one continuous shot.",
+            kind="video",
+            source=object(),
+            priority="quality",
+        )
+        self.assertFalse(any(item.code == "sequence_required" for item in plan.preflight))
+
     def test_registry_auto_selection_contains_only_verified_allowlisted_models(self):
         entries = registry()
         self.assertTrue(entries)
