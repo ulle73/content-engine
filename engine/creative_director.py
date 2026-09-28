@@ -58,34 +58,34 @@ def _dedupe(values):
 
 
 _SEQUENCE_TIMELINE_SEGMENT = re.compile(
-    r"(?<!\\d)\\d+(?:[.,]\\d+)?\\s*[–—-]\\s*\\d+(?:[.,]\\d+)?\\s*(?:s|sek|seconds?)\\b",
+    r"(?<!\d)\d+(?:[.,]\d+)?\s*[–—-]\s*\d+(?:[.,]\d+)?\s*(?:s|sek|seconds?)\b",
     re.IGNORECASE,
 )
 _SEQUENCE_STAGE_PATTERNS = {
     "actor_action": re.compile(
-        r"\\b(?:golfer|woman|man|player|person|creator|golfare|kvinna|spelare)\\b.{0,220}"
-        r"\\b(?:swing|swings|hit|hits|strike|strikes|drive|drives|sving|svingar|slår|träffar)\\b",
+        r"\b(?:golfer|woman|man|player|person|creator|golfare|kvinna|spelare)\b.{0,220}"
+        r"\b(?:swing|swings|hit|hits|strike|strikes|drive|drives|sving|svingar|slår|träffar)\b",
         re.IGNORECASE | re.DOTALL,
     ),
     "subject_handoff": re.compile(
-        r"\\b(?:after\\s+(?:impact|the\\s+impact)|efter\\s+(?:impact|träff)|follow|track|camera\\s+follows|följ|spåra)\\b"
-        r".{0,180}\\b(?:golf\\s+ball|ball|boll|object|objekt)\\b",
+        r"\b(?:after\s+(?:impact|the\s+impact)|efter\s+(?:impact|träff)|follow|track|camera\s+follows|följ|spåra)\b"
+        r".{0,180}\b(?:golf\s+ball|ball|boll|object|objekt)\b",
         re.IGNORECASE | re.DOTALL,
     ),
     "environment_transition": re.compile(
-        r"(?:\\b(?:environment|scene|setting|miljö|scen|bakgrund)\\b.{0,140}"
-        r"\\b(?:changes?|transitions?|shifts?|ändras|övergår|växlar)\\b)"
-        r"|(?:\\b(?:autumn|fall|höst)\\b.{0,280}\\b(?:winter|vinter|indoor|simulator)\\b"
-        r".{0,280}\\b(?:spring|vår)\\b)",
+        r"(?:\b(?:environment|scene|setting|miljö|scen|bakgrund)\b.{0,140}"
+        r"\b(?:changes?|transitions?|shifts?|ändras|övergår|växlar)\b)"
+        r"|(?:\b(?:autumn|fall|höst)\b.{0,280}\b(?:winter|vinter|indoor|simulator)\b"
+        r".{0,280}\b(?:spring|vår)\b)",
         re.IGNORECASE | re.DOTALL,
     ),
     "object_payoff": re.compile(
-        r"\\b(?:golf\\s+ball|ball|boll)\\b.{0,220}"
-        r"\\b(?:lands?|bounces?|rolls?|drops?|cup|hole|landar|studsar|rullar|faller|kopp|hål)\\b",
+        r"\b(?:golf\s+ball|ball|boll)\b.{0,220}"
+        r"\b(?:lands?|bounces?|rolls?|drops?|cup|hole|landar|studsar|rullar|faller|kopp|hål)\b",
         re.IGNORECASE | re.DOTALL,
     ),
     "brand_end": re.compile(
-        r"\\b(?:fade|fades|resolve|resolves|reveal|reveals|logo|end\\s+card|brand\\s+ending|tonar|slutlogga|logga|svart)\\b",
+        r"\b(?:fade|fades|resolve|resolves|reveal|reveals|logo|end\s+card|brand\s+ending|tonar|slutlogga|logga|svart)\b",
         re.IGNORECASE,
     ),
 }
