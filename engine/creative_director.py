@@ -64,12 +64,12 @@ _SEQUENCE_TIMELINE_SEGMENT = re.compile(
 _SEQUENCE_STAGE_PATTERNS = {
     "actor_action": re.compile(
         r"\b(?:golfer|woman|man|player|person|creator|golfare|kvinna|spelare)\b.{0,220}"
-        r"\b(?:swing|swings|hit|hits|strike|strikes|drive|drives|sving|svingar|slår|träffar)\b",
+        r"\b(?:swing|swings|hit|hits|strike|strikes|drive|drives|open|opens|opening|throw|throws|kick|kicks|launch|launches|run|runs|jump|jumps|sving|svingar|slår|träffar|öppnar|kastar|sparkar|skjuter|springer|hoppar)\b",
         re.IGNORECASE | re.DOTALL,
     ),
     "subject_handoff": re.compile(
         r"\b(?:after\s+(?:impact|the\s+impact)|efter\s+(?:impact|träff)|follow|track|camera\s+follows|följ|spåra)\b"
-        r".{0,180}\b(?:golf\s+ball|ball|boll|object|objekt)\b",
+        r".{0,180}\b(?:golf\s+ball|ball|boll|object|objekt|ribbon|band|package|paket|product|produkt)\b",
         re.IGNORECASE | re.DOTALL,
     ),
     "environment_transition": re.compile(
@@ -80,7 +80,7 @@ _SEQUENCE_STAGE_PATTERNS = {
         re.IGNORECASE | re.DOTALL,
     ),
     "object_payoff": re.compile(
-        r"\b(?:golf\s+ball|ball|boll)\b.{0,220}"
+        r"\b(?:golf\s+ball|ball|boll|object|objekt|ribbon|band|package|paket|product|produkt)\b.{0,220}"
         r"\b(?:lands?|bounces?|rolls?|drops?|cup|hole|landar|studsar|rullar|faller|kopp|hål)\b",
         re.IGNORECASE | re.DOTALL,
     ),
