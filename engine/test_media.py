@@ -667,7 +667,7 @@ class MediaTests(TestCase):
             self.run,
             token=uuid.uuid4(),
             kind="video",
-            brief="Create a 5 second simplest smooth continuous camera transition between these anchors.",
+            brief="Create a 5 second 480p simplest smooth continuous camera transition between these anchors.",
             source=start,
             end_source=end,
             priority="economy",
@@ -690,11 +690,11 @@ class MediaTests(TestCase):
         self.assertEqual(model, "bytedance/seedance-2.5/image-to-video")
         self.assertEqual(body["image_url"], "https://cdn.example.test/start.png")
         self.assertEqual(body["end_image_url"], "https://cdn.example.test/end.png")
-        self.assertEqual(usage["estimate"]["usd_min"], "0.7200")
-        self.assertEqual(usage["estimate"]["usd_max"], "1.6180")
-        self.assertEqual(usage["estimate"]["usd"], "1.6180")
-        self.assertEqual(usage["estimate"]["basis"], "official_published_range_upper_bound")
-        self.assertIn("Konservativ maxkostnad", usage["price_note"])
+        self.assertEqual(usage["estimate"]["usd"], "1.0280")
+        self.assertEqual(usage["estimate"]["usd_per_second"], "0.2056")
+        self.assertEqual(usage["estimate"]["resolution"], "480p")
+        self.assertEqual(usage["estimate"]["basis"], "account_estimate_description_resolution_rate")
+        self.assertIn("autentiserade Seedance 2.5-estimat", usage["price_note"])
         self.assertEqual(higgs.call_count, 1)
 
     @patch.dict("os.environ", {"HIGGSFIELD_MAX_USD": "2"}, clear=False)
@@ -727,13 +727,15 @@ class MediaTests(TestCase):
             self.run,
             token=uuid.uuid4(),
             kind="video",
-            brief="Premium cinematic reel 5 sekunder i 9:16",
+            brief="Premium cinematic reel 5 sekunder i 9:16 480p",
             priority="quality",
         )
         higgs.return_value = {
             "type": "description",
             "pricing_description": (
-                "TOKEN-METERED PRICING. Billable video tokens depend on output size. "
+                "For 16:9 video without video input, your request costs roughly $0.2056 per second "
+                "of generated video at 480p, $0.4622 at 720p, and $1.1372 at 1080p. "
+                "Each 1,000 video tokens costs $0.0214 at 480p or 720p. "
                 "At 480p and 720p, each 1,000 video tokens cost USD 0.0214. "
                 "Rates shown are before any applicable customer discount."
             ),
@@ -742,8 +744,8 @@ class MediaTests(TestCase):
         model, body, usage = estimate_video(job)
 
         self.assertEqual(model, "bytedance/seedance-2.5/text-to-video")
-        self.assertEqual(usage["estimate"]["usd"], "1.6180")
-        self.assertEqual(usage["estimate"]["pricing_source"], "higgsfield-official-2026-09-29")
+        self.assertEqual(usage["estimate"]["usd"], "1.0280")
+        self.assertEqual(usage["estimate"]["pricing_source"], "higgsfield-account-estimate-2026-09-29")
 
     @patch("engine.media_providers.higgs")
     def test_seedance_25_changed_descriptive_rate_fails_closed(self, higgs):
