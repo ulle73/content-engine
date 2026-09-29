@@ -308,11 +308,12 @@ def _safe_estimate_shape(value):
     }
 
 
-SEEDANCE_25_PRICE_SOURCE = "higgsfield-official-2026-09-29"
-SEEDANCE_25_USD_PER_SECOND_MIN = Decimal("0.144")
-SEEDANCE_25_USD_PER_SECOND_MAX = Decimal("0.3236")
+SEEDANCE_25_PRICE_SOURCE = "higgsfield-account-estimate-2026-09-29"
+SEEDANCE_25_USD_PER_SECOND = {
+    "480p": Decimal("0.2056"),
+    "720p": Decimal("0.4622"),
+}
 SEEDANCE_25_PRICING_MARKERS = (
-    "token-metered pricing",
     "video tokens",
     "0.0214",
     "480p",
@@ -338,10 +339,6 @@ def _seedance25_description_estimate(model, body, estimate):
         return None
     description = estimate.get("pricing_description")
     normalized_description = " ".join(description.split()).lower() if isinstance(description, str) else ""
-    logger.warning(
-        "SEEDANCE25_PRICING_DESCRIPTION %s",
-        json.dumps({"description": normalized_description[:1000]}, ensure_ascii=True),
-    )
     if not normalized_description or not all(
         marker in normalized_description for marker in SEEDANCE_25_PRICING_MARKERS
     ):
@@ -354,27 +351,31 @@ def _seedance25_description_estimate(model, body, estimate):
     except (KeyError, TypeError, ValueError, InvalidOperation) as exc:
         raise MediaError("Videons längd kunde inte prissättas säkert. Ingen generation startades.") from exc
 
-    lower = (duration * SEEDANCE_25_USD_PER_SECOND_MIN).quantize(Decimal("0.0001"))
-    upper = (duration * SEEDANCE_25_USD_PER_SECOND_MAX).quantize(Decimal("0.0001"))
-    if upper > _cost_ceiling():
+    resolution = str(body.get("resolution") or "720p")
+    per_second = SEEDANCE_25_USD_PER_SECOND.get(resolution)
+    if per_second is None:
+        raise MediaError(
+            "Seedance 2.5-upplösningen saknar verifierad prisregel. Ingen generation startades."
+        )
+    price = (duration * per_second).quantize(Decimal("0.0001"))
+    if price > _cost_ceiling():
         raise MediaError(
             "Videons konservativa maxkostnad överskrider serverns kostnadsgräns. "
             "Ingen generation startades."
         )
     return {
         "estimate": {
-            "usd": str(upper),
-            "usd_min": str(lower),
-            "usd_max": str(upper),
-            "basis": "official_published_range_upper_bound",
+            "usd": str(price),
+            "basis": "account_estimate_description_resolution_rate",
             "pricing_source": SEEDANCE_25_PRICE_SOURCE,
             "duration_seconds": str(int(duration)),
-            "resolution": str(body.get("resolution") or ""),
+            "resolution": resolution,
+            "usd_per_second": str(per_second),
         },
         "model": model,
         "price_note": (
-            "Konservativ maxkostnad från Higgsfields officiella Seedance 2.5-prisintervall. "
-            "Faktisk kostnad kan bli lägre; betalstart använder samma eller lägre godkända tak."
+            "Beräknad maxkostnad från Higgsfields autentiserade Seedance 2.5-estimat "
+            "för vald upplösning och längd."
         ),
     }
 
