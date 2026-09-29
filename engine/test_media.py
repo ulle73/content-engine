@@ -722,6 +722,30 @@ class MediaTests(TestCase):
         self.assertEqual(higgs.call_count, 1)
 
     @patch("engine.media_providers.higgs")
+    def test_seedance_25_verified_descriptive_pricing_accepts_wording_variation(self, higgs):
+        job = create_job(
+            self.run,
+            token=uuid.uuid4(),
+            kind="video",
+            brief="Premium cinematic reel 5 sekunder i 9:16",
+            priority="quality",
+        )
+        higgs.return_value = {
+            "type": "description",
+            "pricing_description": (
+                "TOKEN-METERED PRICING. Billable video tokens depend on output size. "
+                "At 480p and 720p, each 1,000 video tokens cost USD 0.0214. "
+                "Rates shown are before any applicable customer discount."
+            ),
+        }
+
+        model, body, usage = estimate_video(job)
+
+        self.assertEqual(model, "bytedance/seedance-2.5/text-to-video")
+        self.assertEqual(usage["estimate"]["usd"], "1.6180")
+        self.assertEqual(usage["estimate"]["pricing_source"], "higgsfield-official-2026-09-29")
+
+    @patch("engine.media_providers.higgs")
     def test_seedance_25_changed_descriptive_rate_fails_closed(self, higgs):
         job = create_job(
             self.run,
