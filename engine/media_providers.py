@@ -338,6 +338,10 @@ def _seedance25_description_estimate(model, body, estimate):
         return None
     description = estimate.get("pricing_description")
     normalized_description = " ".join(description.split()).lower() if isinstance(description, str) else ""
+    logger.warning(
+        "SEEDANCE25_PRICING_DESCRIPTION %s",
+        json.dumps({"description": normalized_description[:1000]}, ensure_ascii=True),
+    )
     if not normalized_description or not all(
         marker in normalized_description for marker in SEEDANCE_25_PRICING_MARKERS
     ):
