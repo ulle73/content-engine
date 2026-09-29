@@ -308,13 +308,15 @@ def _safe_estimate_shape(value):
     }
 
 
-SEEDANCE_25_PRICE_SOURCE = "higgsfield-official-2026-09-24"
+SEEDANCE_25_PRICE_SOURCE = "higgsfield-official-2026-09-29"
 SEEDANCE_25_USD_PER_SECOND_MIN = Decimal("0.144")
 SEEDANCE_25_USD_PER_SECOND_MAX = Decimal("0.3236")
 SEEDANCE_25_PRICING_MARKERS = (
-    "Token-metered pricing.",
-    "$0.0214",
-    "480p or 720p",
+    "token-metered pricing",
+    "video tokens",
+    "0.0214",
+    "480p",
+    "720p",
 )
 
 
@@ -335,7 +337,10 @@ def _seedance25_description_estimate(model, body, estimate):
     if estimate.get("type") != "description":
         return None
     description = estimate.get("pricing_description")
-    if not isinstance(description, str) or not all(marker in description for marker in SEEDANCE_25_PRICING_MARKERS):
+    normalized_description = " ".join(description.split()).lower() if isinstance(description, str) else ""
+    if not normalized_description or not all(
+        marker in normalized_description for marker in SEEDANCE_25_PRICING_MARKERS
+    ):
         raise MediaError(
             "Higgsfields Seedance 2.5-prissättning har ändrats. "
             "Prisregeln måste verifieras innan någon generation kan startas."
