@@ -1,0 +1,30 @@
+name: Motion Engine Verify
+on:
+  push:
+    branches: [feature/motion-engine-production]
+permissions:
+  contents: read
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Prepare isolated verification inputs
+        run: |
+          mkdir -p /tmp/motion-inputs/wheels
+          git archive --format=tar HEAD | gzip > /tmp/motion-inputs/source.tar.gz
+          python -m pip download --dest /tmp/motion-inputs/wheels -r requirements.txt
+          if [ -d vendor/social-media-skills ]; then
+            tar -czf /tmp/motion-inputs/social-media-skills.tar.gz vendor/social-media-skills
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: motion-verification-inputs
+          path: /tmp/motion-inputs
+          retention-days: 2
