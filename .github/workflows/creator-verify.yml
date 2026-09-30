@@ -19,9 +19,13 @@ jobs:
         with:
           python-version: '3.13'
           cache: pip
-      - run: pip install -r requirements.txt playwright
+      - run: pip install -r requirements.txt playwright ruff
+      - run: ruff check engine/creative_controls.py engine/test_creator.py scripts/creator_browser_smoke.py
+      - run: node --check engine/static/js/creator.js
+      - run: python manage.py check --settings=engine.test_settings
+      - run: python manage.py makemigrations --check --dry-run --settings=engine.test_settings
       - run: python -m playwright install --with-deps chromium
-      - run: python scripts/creator_browser_smoke.py --baseline
+      - run: python scripts/creator_browser_smoke.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
