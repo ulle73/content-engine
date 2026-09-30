@@ -1,0 +1,42 @@
+name: Product Flow Isolated Workspace
+
+on:
+  push:
+    branches: [codex/product-flow-integration]
+    paths: [.github/workflows/product-flow-local-kit.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  workspace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Package tracked source and public dependencies only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/product-flow-kit/wheels
+          git archive HEAD -o /tmp/product-flow-kit/source.tar
+          if test -d vendor/social-media-skills; then
+            tar --exclude=.git -cf /tmp/product-flow-kit/vendor.tar vendor/social-media-skills
+          fi
+          python -m pip download --only-binary=:all: -r requirements.txt -r requirements-dev.txt -d /tmp/product-flow-kit/wheels
+          git rev-parse HEAD > /tmp/product-flow-kit/source-commit.txt
+          cd /tmp/product-flow-kit
+          sha256sum source.tar wheels/* > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: product-flow-isolated-workspace
+          path: /tmp/product-flow-kit/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
