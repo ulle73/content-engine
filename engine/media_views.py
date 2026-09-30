@@ -90,11 +90,28 @@ def new_studio(request, workspace_id):
     except ValueError:
         return HttpResponse("Ogiltigt formulär. Öppna Media igen.", status=400)
     company = request.workspace
+    brief = ""
+    snapshot = {"media_only": True, "profile": company.profile, "voice": company.voice, "current": company.current}
+    channel = "organic"
+    market_signal_id = ""
+    if request.POST.get("market_id"):
+        from .market import classify as classify_market
+        from .models import MarketItem
+        from .learning import attach_generation_evidence
+        item = get_object_or_404(MarketItem, pk=request.POST["market_id"], company=company)
+        try:
+            result = classify_market(item, company)
+            channel = item.channel
+            market_signal_id = f"market:{item.pk}"
+            attach_generation_evidence(snapshot, company, channel, item.pk)
+        except ValueError as exc:
+            return HttpResponse(str(exc), status=400)
+        brief = result.get("adaptation", "")
     run, _ = ContentRun.objects.get_or_create(pk=token, defaults={
-        "workspace": company, "author": request.user, "model": "creative-studio",
-        "context": {"media_only": True, "profile": company.profile, "voice": company.voice, "current": company.current},
-        "ideas": [{"title": "Bild eller video", "photo_brief": ""}], "selected": 0,
-        "draft": {"photo_brief": "", "instagram": "", "facebook": ""},
+        "workspace": company, "author": request.user, "model": "creative-studio", "channel": channel,
+        "context": snapshot,
+        "ideas": [{"title": "Bild eller video", "photo_brief": brief, "angle": brief, "signal_id": market_signal_id}], "selected": 0,
+        "draft": {"photo_brief": brief, "instagram": "", "facebook": ""},
     })
     if run.workspace_id != company.pk:
         return HttpResponse(status=404)

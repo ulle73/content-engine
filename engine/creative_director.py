@@ -300,7 +300,13 @@ def build_plan(run, request: str, *, kind: str, source=None, shape="portrait", c
     errors = [item.message for item in issues if item.severity == "error"]
     if errors:
         raise ValueError(" ".join(errors))
-    inspirations = inspirations or []
+    inspirations = list(inspirations or [])
+    # Frozen company-scoped evidence from the idea/studio entry point. Never send
+    # source captions or external metrics to the media provider as creative claims.
+    signal = run.influencing_signal
+    if signal and signal.get("evidence_type") in {"external_viral_performance", "market_evidence"}:
+        mechanisms = signal.get("classification", {}).get("mechanisms", [])
+        inspirations.insert(0, {"id": signal["id"], "mechanisms": [str(m)[:100] for m in mechanisms[:3]]})
     prompt = compile_prompt(brief, context, model, inspirations)
     return CreativePlan(
         brief=brief,

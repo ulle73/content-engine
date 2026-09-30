@@ -66,6 +66,13 @@ def ideas(request, workspace_id):
         from .signals import RANKER_VERSION, classify, inspiration, rank_ideas
 
         signal_id = request.POST.get("signal_id")
+        market_id = request.POST.get("market_id")
+        if market_id:
+            from .market import classify as classify_market
+            from .models import MarketItem
+            item = get_object_or_404(MarketItem, pk=market_id, company=request.workspace, channel=channel)
+            classify_market(item, request.workspace)
+            signal_id = None
         if signal_id and channel == "paid":
             from .ads import classify as classify_ad
             from .models import CompetitorAd
@@ -77,7 +84,6 @@ def ideas(request, workspace_id):
             )
             classify(signal_post, request.workspace)
         captured_at = timezone.now()
-        from .learning import generation_learning_profile
         snapshot = {
             "company": request.workspace.name,
             "channel":channel,
@@ -87,7 +93,6 @@ def ideas(request, workspace_id):
             "source": context.source,
             "valid_until": context.valid_until.isoformat(),
             "captured_at": captured_at.isoformat(),
-            "learning_profile": generation_learning_profile(request.workspace, channel, cutoff=captured_at),
             "recent_posts": [
                 item.get("facebook", "")
                 for item in ContentRun.objects.filter(workspace=request.workspace, channel=channel)
@@ -101,8 +106,8 @@ def ideas(request, workspace_id):
             snapshot["competitor_signals"] = signals(request.workspace, signal_id)
         else:
             snapshot["competitor_signals"] = inspiration(request.workspace, signal_id)
-        from .learning import generation_guidance
-        snapshot["generation_learning"] = generation_guidance(request.workspace, channel)
+        from .learning import attach_generation_evidence
+        attach_generation_evidence(snapshot, request.workspace, channel, market_id)
         output = generate(snapshot)
         ranked = rank_ideas(output["ideas"], snapshot)
         new_run = ContentRun.objects.create(

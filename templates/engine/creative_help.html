@@ -11,9 +11,9 @@
       <li><strong>Granska resultatet och välj Använd.</strong> Färdiga filer finns på generationens sida och under Media för företaget. Använd kopplar filen till utkastet och behåller den. Oanvända AI-alternativ löper ut efter sju dagar. Granska text och media innan du skickar vidare till Postiz.</li>
     </ol>
     <details><summary>Tre exempel att börja med</summary>
-      <h3>Bild</h3><p class="creative-example">Skapa en premium annonsbild för Golfkuponger där en golfare står på en svensk golfbana i solnedgång. Modernt, exklusivt och realistiskt. Ingen text i bilden.</p>
-      <h3>Video</h3><p class="creative-example">Skapa en cinematic 10-sekunders video där kameran långsamt flyger över en svensk golfbana i morgonljus.</p>
-      <h3>Animera bild · image-to-video</h3><p class="creative-example">Behåll golfaren, kläderna och miljön exakt som i originalbilden. Lägg endast till en långsam kamerarörelse framåt och subtil rörelse i gräset.</p>
+      <h3>Bild</h3><p class="creative-example">Skapa en premium annonsbild för {{ workspace.name }} utifrån företagets profil och det egna bildmaterialet. Modernt, exklusivt och realistiskt. Ingen text i bilden.</p>
+      <h3>Video</h3><p class="creative-example">Skapa en cinematic 10-sekunders video med en långsam kamerarörelse genom miljön i min referensbild.</p>
+      <h3>Animera bild · image-to-video</h3><p class="creative-example">Behåll motivet, färgerna och miljön exakt som i originalbilden. Lägg endast till en långsam kamerarörelse framåt utan att förändra motivet.</p>
       <p class="small">Välj startbilden först. Bevarande är en instruktion till modellen, ingen garanti: granska alltid ansikten, text och detaljer. Använd ett tydligt motiv och en rörelse åt gången. Undvik motsägande instruktioner.</p>
     </details>
     <details><summary>Spara och återanvänd i Promptbibliotek</summary><p>En prompt är din textinstruktion. Under <b>Media → Promptbibliotek</b> kan du klistra in och spara bra exempel, redigera din version, markera favoriter och söka. Originalet bevaras. <b>Arkiverade</b> låter dig återställa borttagna promptar.</p><p>Öppna en prompt och välj <b>Kopiera prompt</b>, klistra sedan in den i AI-studion och anpassa motivet. Biblioteket används även automatiskt för liknande inspirationsmekanismer inom samma företag. Etiketter är enkla textbaserade förslag. Efter en generation väljer du <b>Spara prompt till bibliotek</b>; kopplingen till generationen följer med.</p></details>
@@ -27,6 +27,6 @@
       <dt>Avbruten · canceled</dt><dd>Jobbet har avbrutits. Leverantören kan neka avbokning om arbetet redan börjat.</dd>
       <dt>Behöver kontrolleras · unknown</dt><dd>Start eller sparande kunde inte bekräftas. Det kan redan ha debiterats. Kontrollera leverantörskontot och sparade filer; systemet skickar aldrig automatiskt en ny betald begäran.</dd>
     </dl><p><b>Avbryt</b> fungerar före start eller när leverantören accepterar det. <b>Kontrollera status</b> och automatisk återhämtning hämtar samma resultat, utan ny generation. Om tjänsten sover kan återhämtningen dröja tills den är aktiv igen.</p></details>
-    <details><summary>Använd via ChatGPT</summary><p>Anslut Content Engine i ChatGPT och logga in med ditt vanliga konto. Be exempelvis: ”Välj Golfkuponger och förhandsgranska en 5-sekunders golfvideo för mitt utkast. Visa modell, parametrar och pris. Starta inte förrän jag godkänt.”</p><p>ChatGPT använder samma företag, utkast och media via MCP. Be om förhandsgranskning före generering, kontrollera samma jobb och välj sedan filen. Publicering och schemaläggning kräver en separat instruktion.</p></details>
+    <details><summary>Använd via ChatGPT</summary><p>Anslut Content Engine i ChatGPT och logga in med ditt vanliga konto. Be exempelvis: ”Välj {{ workspace.name }} och förhandsgranska en 5-sekunders video för mitt utkast. Visa modell, parametrar och pris. Starta inte förrän jag godkänt.”</p><p>ChatGPT använder samma företag, utkast och media via MCP. Be om förhandsgranskning före generering, kontrollera samma jobb och välj sedan filen. Publicering och schemaläggning kräver en separat instruktion.</p></details>
   </div>
 </dialog>

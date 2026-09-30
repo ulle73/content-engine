@@ -1,4 +1,5 @@
 <nav class="insight-tabs" aria-label="Inspiration från konkurrenter">
-  <a href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"{% if channel != 'paid' and channel != 'own' %} aria-current="page"{% endif %}>Inlägg</a>
-  <a href="{% url 'engine:intelligence' workspace_id=workspace.pk %}?channel=paid"{% if channel == 'paid' %} aria-current="page"{% endif %}>Annonser</a>
+  <a href="{% url 'engine:intelligence' workspace_id=workspace.pk %}"{% if channel != 'paid' and channel != 'own' and request.resolver_match.url_name != 'market_intelligence' %} aria-current="page"{% endif %}>Inlägg</a>
+  <a href="{% url 'engine:intelligence' workspace_id=workspace.pk %}?channel=paid"{% if channel == 'paid' and request.resolver_match.url_name != 'market_intelligence' %} aria-current="page"{% endif %}>Annonser</a>
+  <a href="{% url 'engine:market_intelligence' workspace_id=workspace.pk %}"{% if request.resolver_match.url_name == 'market_intelligence' %} aria-current="page"{% endif %}>Marknaden</a>
 </nav>
