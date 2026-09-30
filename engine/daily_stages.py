@@ -224,3 +224,7 @@ def own_learning_units(company):
 STAGES = (*STAGES, Stage("ads_import", ads_units), Stage("ads_analysis", ads_analysis_units),
     Stage("own_discovery",own_discovery_units),Stage("own_snapshots",own_snapshot_units),
     Stage("own_outcomes",own_learning_units), Stage("learning", learning_units))
+
+from .market import daily_units as market_units
+
+STAGES = (*STAGES, Stage("market_intelligence", market_units))

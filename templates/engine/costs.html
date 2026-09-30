@@ -23,12 +23,13 @@
     </div>
     <div class="cost-breakdown" aria-label="Kostnad per leverantör">
       <div class="cost-breakdown-item"><span class="provider-mark apify">A</span><span><small>Apify</small><strong>${{ costs.apify_usd|floatformat:4 }}</strong></span></div>
+      <div class="cost-breakdown-item"><span class="provider-mark">V</span><span><small>Virlo</small><strong>${{ costs.virlo_usd|floatformat:4 }}</strong></span></div>
       <div class="cost-breakdown-item"><span class="provider-mark openai">OR</span><span><small>OpenRouter · text</small><strong>${{ costs.openrouter_text_usd|floatformat:4 }}</strong></span></div>
       <div class="cost-breakdown-item"><span class="provider-mark image">I</span><span><small>OpenAI · bilder</small><strong>${{ costs.openai_image_usd|floatformat:4 }}</strong></span></div>
       <div class="cost-breakdown-item"><span class="provider-mark video">H</span><span><small>Higgsfield · video</small><strong>${{ costs.higgsfield_usd|floatformat:4 }}</strong></span></div>
     </div>
     <div class="cost-overview-foot">
-      <p>Apify och OpenRouter använder leverantörsrapporterad kostnad. OpenAI-bilder beräknas från faktisk usage. Higgsfield bygger på accepterade prisestimat för startade videokörningar.</p>
+      <p>Apify, Virlo och OpenRouter använder leverantörsrapporterad kostnad. OpenAI-bilder beräknas från faktisk usage. Higgsfield bygger på accepterade prisestimat för startade videokörningar.</p>
       {% if costs.unknown_cost_count %}<span class="cost-warning-pill">{{ costs.unknown_cost_count }} kostnader behöver granskas</span>{% endif %}
     </div>
   </section>

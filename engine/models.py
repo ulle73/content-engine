@@ -26,6 +26,7 @@ class Company(models.Model):
     source = models.CharField(max_length=500, blank=True)
     valid_until = models.DateField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
+    market_intelligence_enabled = models.BooleanField(default=True)
     postiz_ciphertext = models.TextField(blank=True, default="")
     postiz_channels = models.JSONField(default=list)
     official_logo = models.ForeignKey("MediaAsset", null=True, blank=True, on_delete=models.PROTECT, related_name="official_for")
@@ -808,6 +809,40 @@ class AnalysisMemo(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["company", "key"], name="unique_paid_analysis")]
+
+
+class MarketItem(models.Model):
+    """Company-owned external evidence. Preference is never an outcome label."""
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="market_items")
+    canonical_key = models.CharField(max_length=200)
+    channel = models.CharField(max_length=10)
+    url = models.URLField(max_length=500)
+    creator = models.CharField(max_length=200, blank=True)
+    caption = models.TextField(blank=True)
+    published_at = models.DateTimeField(null=True)
+    metrics = models.JSONField(default=dict)
+    qualification = models.JSONField(default=dict)
+    classification = models.JSONField(default=dict)
+    classification_hash = models.CharField(max_length=64, blank=True)
+    preference = models.SmallIntegerField(default=0)
+    feedback_at = models.DateTimeField(null=True)
+    first_seen_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField()
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company", "canonical_key"], name="unique_company_market_item")]
+
+
+class MarketObservation(models.Model):
+    item = models.ForeignKey(MarketItem, on_delete=models.CASCADE, related_name="observations")
+    request = models.ForeignKey(ScrapeRequest, on_delete=models.PROTECT)
+    provider_id = models.CharField(max_length=200, blank=True)
+    metrics = models.JSONField(default=dict)
+    observed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["item", "request"], name="unique_market_observation")]
 
 
 class AdAccount(models.Model):

@@ -67,7 +67,7 @@
             <p class="small">{{ signal.post.classification.topic }} · {{ signal.post.classification.mechanisms|join:' + ' }}. Hypotes utifrån caption och metadata.</p>
           </div>
 
-          <div class="signal-flow-label" style="margin-top:12px"><span>3</span>Golfkupongers vinkel</div>
+          <div class="signal-flow-label" style="margin-top:12px"><span>3</span>{{ workspace.name }}s vinkel</div>
           <div class="signal-adaptation-card">
             <h3>Förslag för {{ workspace.name }}</h3>
             <p>{{ signal.post.classification.adaptation }}</p>
@@ -76,7 +76,7 @@
           <div class="signal-flow-label"><span>2</span>Analys</div>
           <div class="signal-analysis-card">
             <h3>Detaljerad analys</h3>
-            <p class="small">Analysera caption och metadata för att se mekanismen bakom signalen och få en egen Golfkuponger-vinkel.</p>
+            <p class="small">Analysera caption och metadata för att se mekanismen bakom signalen och få en egen vinkel för {{ workspace.name }}.</p>
             <form method="post" action="{% url 'engine:analyze_signal' workspace_id=workspace.pk post_id=signal.post.pk %}">{% csrf_token %}<button>Analysera inlägget</button></form>
           </div>
         {% endif %}

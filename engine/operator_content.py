@@ -43,6 +43,16 @@ def _build_snapshot(company: Company, channel: str, signal_id: str | None = None
     if channel not in {"organic", "paid"}:
         raise OperatorError("channel måste vara organic eller paid.")
 
+    market_id = None
+    if signal_id and str(signal_id).startswith("market:"):
+        from .market import classify as classify_market
+        from .models import MarketItem
+        market_id = str(signal_id).removeprefix("market:")
+        item = MarketItem.objects.filter(pk=market_id, company=company, channel=channel).first()
+        if not item:
+            raise OperatorError("Marknadssignalen finns inte för företaget.")
+        classify_market(item, company)
+        signal_id = None
     if signal_id and channel == "paid":
         from .ads import classify as classify_ad
 
@@ -87,7 +97,8 @@ def _build_snapshot(company: Company, channel: str, signal_id: str | None = None
         from .signals import inspiration
 
         snapshot["competitor_signals"] = inspiration(company, signal_id)
-    return snapshot
+    from .learning import attach_generation_evidence
+    return attach_generation_evidence(snapshot, company, channel, market_id)
 
 
 def create_run(company: Company, user, *, channel: str = "organic", signal_id: str | None = None) -> ContentRun:

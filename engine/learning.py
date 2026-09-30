@@ -6,7 +6,6 @@ Editorial choices/rejections and competitor observations are never performance l
 import math
 from statistics import median
 from datetime import timedelta
-from statistics import median
 
 from django.db import transaction
 from django.utils import timezone
@@ -84,7 +83,7 @@ def _outcome_relative(outcome, target_medians):
     }
 
 
-def generation_guidance(company, channel):
+def generation_guidance(company, channel, cutoff=None):
     """Compact closed-loop guidance for future generation.
 
     Verified own outcomes may guide performance patterns. Editorial choices,
@@ -92,10 +91,13 @@ def generation_guidance(company, channel):
     as performance labels. Historical copy is reference material only, never a
     source of current company facts.
     """
+    cutoff = cutoff or timezone.now()
     outcomes = list(
         OwnOutcome.objects.filter(
             prediction__run__workspace=company,
             prediction__channel=channel,
+            prediction__feature_version=FEATURE_VERSION,
+            recorded_at__lte=cutoff, observed_at__lte=cutoff, window_end__lte=cutoff,
         )
         .select_related("prediction__run", "snapshot")
         .order_by("-recorded_at")[:120]
@@ -149,6 +151,7 @@ def generation_guidance(company, channel):
             run__workspace=company,
             run__channel=channel,
             action__in=("selected", "rejected", "edited"),
+            created_at__lte=cutoff,
         )
         .select_related("run")
         .order_by("-created_at")[:80]
@@ -316,99 +319,52 @@ def dataset(company, channel, cutoff=None, target=None):
 
 
 def generation_learning_profile(company, channel, cutoff=None, limit=60):
-    """Compact, leakage-safe performance guidance for future generation.
+    """Compatibility view of the single generation_guidance implementation."""
+    return _legacy_profile(generation_guidance(company, channel, cutoff=cutoff))
 
-    Only measured own outcomes available before *cutoff* are eligible. Editorial
-    choices/rejections never become performance labels. Different metric targets
-    are normalized against their own historical medians before examples are
-    compared, so incompatible units are never mixed.
-    """
-    cutoff = cutoff or timezone.now()
-    rows = list(
-        OwnOutcome.objects.filter(
-            prediction__run__workspace=company,
-            prediction__channel=channel,
-            prediction__feature_version=FEATURE_VERSION,
-            recorded_at__lte=cutoff,
-            observed_at__lte=cutoff,
-            window_end__lte=cutoff,
-        )
-        .select_related("prediction__run", "snapshot__post")
-        .order_by("-window_end", "-pk")[:limit]
-    )
-    by_target = {}
-    for outcome in rows:
-        by_target.setdefault(outcome.target, []).append(outcome)
 
-    baselines = {
-        target: median(item.label for item in outcomes)
-        for target, outcomes in by_target.items()
-        if len(outcomes) >= 3
-    }
-    candidates = []
-    seen_runs = set()
-    for outcome in rows:
-        baseline = baselines.get(outcome.target)
-        if baseline is None or outcome.prediction.run_id in seen_runs:
-            continue
-        higher_is_better = spec(outcome.target)[3]
-        if higher_is_better:
-            if baseline <= 0:
-                continue
-            relative = outcome.label / baseline
-        else:
-            if baseline <= 0:
-                continue
-            relative = (baseline / outcome.label) if outcome.label > 0 else 3.0
-        relative = max(0.0, min(float(relative), 3.0))
-        run = outcome.prediction.run
-        if run.selected is None or run.selected >= len(run.ideas):
-            continue
-        idea = run.ideas[run.selected]
-        published_copy = ""
-        if outcome.snapshot_id and outcome.snapshot and outcome.snapshot.post:
-            published_copy = outcome.snapshot.post.caption or ""
-        if not published_copy:
-            published_copy = str((run.draft or {}).get("instagram") or (run.draft or {}).get("facebook") or "")
-        candidates.append(
-            {
-                "title": str(idea.get("title") or "")[:160],
-                "angle": str(idea.get("angle") or "")[:500],
-                "copy_excerpt": published_copy[:900],
-                "photo_brief": str(idea.get("photo_brief") or "")[:300],
-                "target": outcome.target,
-                "relative_to_own_median": round(relative, 2),
-                "sample_size_for_target": len(by_target[outcome.target]),
-            }
-        )
-        seen_runs.add(run.pk)
+def _legacy_profile(guidance):
+    performance = guidance["performance"]
+    def examples(rows):
+        return [{**row, "copy_excerpt": row["final_copy_excerpt"], "relative_to_own_median": row["relative_to_own_norm"]} for row in rows]
+    return {"version": guidance["version"],
+        "status": "active" if performance["sample_size"] >= 3 else "collecting",
+        "confidence": performance["confidence"], "outcomes": performance["sample_size"],
+        "usable_examples": performance["sample_size"],
+        "strong_examples": examples(performance["strong_examples"]), "weak_examples": examples(performance["weak_examples"])}
 
-    if len(candidates) < 3:
-        return {
-            "version": "generation-learning-v1",
-            "status": "collecting",
-            "outcomes": len(rows),
-            "usable_examples": len(candidates),
-            "minimum_usable_examples": 3,
-        }
 
-    ordered = sorted(candidates, key=lambda item: item["relative_to_own_median"], reverse=True)
-    confidence = "early" if len(candidates) < 10 else ("growing" if len(candidates) < 30 else "established")
-    return {
-        "version": "generation-learning-v1",
-        "status": "active",
-        "confidence": confidence,
-        "outcomes": len(rows),
-        "usable_examples": len(candidates),
-        "strong_examples": ordered[:3],
-        "weak_examples": list(reversed(ordered[-3:])),
-        "instructions": [
-            "Use only broad editorial patterns from these examples, never historical wording as new facts.",
-            "Do not copy prior copy or claims. Current company profile/current facts remain the only factual source.",
-            "Treat performance as correlation, not proof of causation.",
-            "Prefer patterns repeated across several own outcomes over one-off examples.",
-        ],
-    }
+def attach_generation_evidence(snapshot, company, channel, selected_market_id=None):
+    """One evidence boundary for web, MCP, ideas, copy and Creative Engine."""
+    from .market import canonical, signals
+    from django.utils.dateparse import parse_datetime
+    cutoff = parse_datetime(snapshot["captured_at"]) if snapshot.get("captured_at") else timezone.now()
+    guidance = generation_guidance(company, channel, cutoff=cutoff)
+    external = signals(company, channel, selected_market_id)
+    competitors = snapshot.get("competitor_signals", [])
+    # Keep Virlo provenance on shared content and do not present duplicate examples.
+    identities = {canonical(s["url"], channel)[0] for s in external}
+    unique = []
+    for signal in competitors:
+        try:
+            identity = canonical(signal.get("url", ""), channel)
+        except ValueError:
+            identity = None
+        if not identity or identity[0] not in identities:
+            unique.append({**signal, "evidence_type": "market_evidence"})
+    snapshot["competitor_signals"] = external if selected_market_id else unique + external
+    guidance["external_viral_performance"] = [s for s in external if s["evidence_type"] == "external_viral_performance"]
+    guidance["market_evidence"] = unique + [s for s in external if s["evidence_type"] == "market_evidence"]
+    guidance["editorial"]["market_relevance_feedback"] = list(company.market_items.filter(
+        channel=channel, feedback_at__lte=cutoff).exclude(preference=0).order_by("-feedback_at").values(
+            "canonical_key", "preference", "caption")[:12])
+    for row in guidance["editorial"]["market_relevance_feedback"]:
+        row["caption"] = _clip(row["caption"], 240)
+    guidance["evidence_priority"] = ["performance", "external_viral_performance", "market_evidence", "editorial"]
+    snapshot["generation_learning"] = guidance
+    snapshot["learning_profile"] = _legacy_profile(guidance)
+    return snapshot
+
 
 
 def train(company, channel, target=None):
