@@ -59,13 +59,14 @@
             <div class="editor-panel-body media-choice-body">
               {% if run.media_asset %}
                 <div class="media-preview-wrap premium-media-preview">{% if run.media_asset.kind == 'image' %}<img class="media-preview" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}" alt="{{ run.media_asset.alt_text|default:'Vald bild' }}">{% else %}<video class="media-preview" controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=run.media_asset.pk %}"></video>{% endif %}</div>
-                <div class="selected-media-meta"><span>{{ run.media_asset.get_origin_display }}</span><strong>{{ run.media_asset.get_kind_display }}</strong></div>
+                <div class="selected-media-meta"><span>{% if run.media_asset.provider == 'remotion' %}Motion{% else %}{{ run.media_asset.get_origin_display }}{% endif %}</span><strong>{{ run.media_asset.get_kind_display }}</strong></div>
                 <a class="button button-secondary full-width-button" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}">Byt media</a>
               {% else %}
                 <div class="empty-state media-empty-state"><span class="media-empty-icon" aria-hidden="true">+</span><h3>Ingen media vald</h3><p>Välj en befintlig fil, ladda upp eller generera nytt.</p></div>
                 <a class="button button-secondary full-width-button" href="{% url 'engine:media' workspace_id=workspace.pk run_id=run.pk %}">Välj media</a>
               {% endif %}
               <details class="media-brief-disclosure"><summary>Bildförslag</summary><p class="small">{{ run.draft.photo_brief }}</p></details>
+              <a class="text-link" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}?run_id={{ run.pk }}">Skapa motionvideo →</a>
             </div>
           </section>
 

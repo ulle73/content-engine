@@ -12,6 +12,7 @@
     <div class="media-run-chip"><span>Utkast</span><strong>{{ run.title|truncatechars:28 }}</strong></div>
   </header>
 {% include 'engine/creative_help.html' %}
+  {% if can_edit %}<div class="creative-actions"><a class="button button-secondary" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}?run_id={{ run.pk }}">Skapa motionvideo till utkastet</a><a class="text-link" href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}?run_id={{ run.pk }}">Bygg en sekvens från idén →</a></div>{% endif %}
 
   <section class="media-section media-library-section">
     <div class="product-section-head media-library-head"><div><span class="media-section-kicker">Bibliotek</span><h2>Dina bilder och videor</h2><p class="small">Vald media behålls permanent. Oanvända AI-förhandsvisningar rensas automatiskt.</p></div><span class="media-count-pill">{{ assets|length }} filer</span></div>

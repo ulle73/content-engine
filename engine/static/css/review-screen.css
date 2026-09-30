@@ -222,7 +222,8 @@
 
 @media (max-width: 760px) {
   .review-page { padding-top: 20px; }
-  .review-page .review-page-header { min-height: 0; align-items: flex-start; margin-bottom: 18px; }
+  .review-page .review-page-header { min-height: 0; flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+  .review-page .review-page-header .page-heading { width: 100%; min-width: 0; }
   .review-page .review-page-header h1 { font-size: 30px; }
   .review-page .review-page-header .intro { font-size: 12px; }
   .review-page .premium-review-progress { grid-template-columns: 1fr; }

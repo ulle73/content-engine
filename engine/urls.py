@@ -1,6 +1,7 @@
 from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
+from .motion import views as motion_views
 
 from . import ads_views, intelligence_views, market_views, media_views, prompt_views, sequence_views, views
 from .onboarding import SignInView, setup
@@ -8,6 +9,10 @@ from .company_settings import company_settings, costs
 from .performance_views import performance
 
 engine_urls = [
+    path("motion/", motion_views.project_list, name="motion_list"),
+    path("motion/<uuid:project_id>/", motion_views.workspace, name="motion_workspace"),
+    path("motion/<uuid:project_id>/action/", motion_views.project_action, name="motion_action"),
+    path("motion/<uuid:project_id>/status/", motion_views.status, name="motion_status"),
     path("intelligence/market/", market_views.intelligence, name="market_intelligence"),
     path("intelligence/market/run/", market_views.action, name="market_action"),
     path("intelligence/market/<int:item_id>/feedback/", market_views.feedback, name="market_feedback"),
@@ -38,6 +43,7 @@ engine_urls = [
     path("sequences/<uuid:project_id>/anchors/<uuid:anchor_id>/replace-existing/", sequence_views.sequence_anchor_replace_existing, name="sequence_anchor_replace_existing"),
     path("sequences/<uuid:project_id>/anchors/<uuid:anchor_id>/replace-upload/", sequence_views.sequence_anchor_replace_upload, name="sequence_anchor_replace_upload"),
     path("sequences/<uuid:project_id>/anchors/<uuid:anchor_id>/generate/", sequence_views.sequence_anchor_generate, name="sequence_anchor_generate"),
+    path("sequences/<uuid:project_id>/connect-images/", sequence_views.sequence_connect_images, name="sequence_connect_images"),
     path("sequences/<uuid:project_id>/clips/<uuid:clip_id>/prepare/", sequence_views.sequence_clip_prepare, name="sequence_clip_prepare"),
     path("sequences/<uuid:project_id>/clips/<uuid:clip_id>/versions/<uuid:version_id>/select/", sequence_views.sequence_clip_select, name="sequence_clip_select"),
     path("sequences/<uuid:project_id>/clips/<uuid:clip_id>/versions/<uuid:version_id>/cancel/", sequence_views.sequence_clip_cancel, name="sequence_clip_cancel"),

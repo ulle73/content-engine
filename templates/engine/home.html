@@ -73,7 +73,7 @@
         {% if run.draft %}
           <div class="run-row create-run-row">
             <span class="run-time">{{ run.created_at|date:"j M H:i" }}</span>
-            <span class="run-title"><strong>{{ run.title }}</strong><span>{% if run.delivery_status == 'sent' %}Skickat till Postiz{% elif run.delivery_status == 'draft' %}Utkast{% elif run.delivery_status == 'sending' %}Överföring pågår{% else %}Överföring behöver kontrolleras{% endif %}</span></span>
+            <span class="run-title"><strong>{{ run.title }}</strong><span>{% if run.delivery_status == 'sent' %}Skickat till Postiz{% elif run.delivery_status == 'draft' %}{% if run.media_asset.kind == 'video' %}Text och video{% elif run.media_asset.kind == 'image' %}Text och bild{% else %}Text · välj media när du är redo{% endif %}{% elif run.delivery_status == 'sending' %}Överföring pågår{% else %}Överföring behöver kontrolleras{% endif %}</span></span>
             <span class="create-run-status {% if run.delivery_status == 'sent' %}success{% elif run.delivery_status == 'draft' %}muted{% else %}warning{% endif %}">{% if run.delivery_status == 'sent' %}Skickat{% elif run.delivery_status == 'draft' %}Utkast{% else %}Kontrollera{% endif %}</span>
             <a class="button button-secondary" href="{% url 'engine:review' workspace_id=workspace.id run_id=run.id %}">{% if run.delivery_status == 'draft' %}Fortsätt{% else %}Öppna{% endif %}</a>
           </div>

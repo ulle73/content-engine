@@ -773,6 +773,30 @@ def create_clip(
         raise SequenceError("Clip kunde inte sparas på den positionen.") from exc
 
 
+@transaction.atomic
+def connect_sequence_images(project: SequenceProject) -> int:
+    """Explicitly connect manual images using the existing trusted clip service."""
+    project = SequenceProject.objects.select_for_update().get(pk=project.pk)
+    if project.plan or project.status == "archived":
+        raise SequenceError("Använd den sparade planen för detta projekt.")
+    anchors = list(project.anchors.select_for_update().order_by("position"))
+    if len(anchors) < 2:
+        raise SequenceError("Lägg till minst två bilder innan du kopplar dem till klipp.")
+    occupied = set(project.clips.values_list("position", flat=True))
+    created = 0
+    for start, end in zip(anchors, anchors[1:]):
+        if start.position in occupied:
+            continue
+        create_clip(
+            project, start, end, position=start.position,
+            recipe_id="scroll_transition_bridge",
+            label=f"K{start.position} → K{end.position}",
+            duration_seconds_target=5,
+            aspect_ratio="16:9" if project.platform == "web" else "9:16",
+        )
+        created += 1
+    return created
+
 
 def _sequence_generation_brief(clip: SequenceClip, override: str = "") -> str:
     text = (override or clip.project.brief or clip.notes or clip.label or clip.project.title).strip()
@@ -1738,6 +1762,7 @@ __all__ = [
     "assert_sequence_generation_video_ready",
     "apply_generated_anchor_asset",
     "create_clip",
+    "connect_sequence_images",
     "attach_generation_to_clip",
     "select_clip_version",
     "reject_clip_version",

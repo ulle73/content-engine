@@ -62,11 +62,11 @@ class ContentRun(models.Model):
 
     @property
     def title(self):
-        return (
-            self.ideas[self.selected]["title"]
-            if self.selected is not None and self.selected < len(self.ideas)
-            else "Sparat utkast"
-        )
+        if self.selected is not None and self.selected < len(self.ideas):
+            return self.ideas[self.selected]["title"]
+        if self.context.get("motion"):
+            return self.draft.get("photo_brief") or "Sparat utkast"
+        return "Sparat utkast"
 
     @property
     def influencing_signal(self):

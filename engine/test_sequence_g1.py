@@ -244,10 +244,10 @@ class SequencePlannerG1ViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         body = response.content.decode()
-        self.assertIn("G1 · Sequence planner", body)
+        self.assertIn("Berättelsen", body)
         self.assertIn("Skapa en första plan", body)
-        self.assertLess(body.index("G1 · Sequence planner"), body.index("Lägg till anchor"))
-        self.assertIn("Ingen MediaGeneration skapas i detta steg.", body)
+        self.assertLess(body.index("Berättelsen"), body.index("Lägg till bild i sekvensen"))
+        self.assertIn("Bild- och videogenerering startas först efter separat granskning och godkännande.", body)
 
     def test_generate_endpoint_is_company_scoped_and_provider_media_free(self):
         with patch(

@@ -60,7 +60,7 @@ class MediaTests(TestCase):
         self.company.postiz_key = "test-only"
         self.company.save()
         self.run = ContentRun.objects.create(workspace=self.company, author=self.user, context={
-            "profile":"Golf", "current":"Golf", "source":"Owner", "valid_until":self.company.valid_until.isoformat()},
+            "profile":"Golf", "voice":self.company.voice, "current":"Golf", "source":"Owner", "valid_until":self.company.valid_until.isoformat()},
             ideas=[{"title":"Golf", "photo_brief":"Egen illustration"}], selected=0, draft={"facebook":"FB", "instagram":"IG"}, model="test")
         self.client.force_login(self.user)
 
@@ -491,7 +491,7 @@ class MediaTests(TestCase):
         detail = self.client.get(self.url("media_job", job_id=job.pk))
         self.assertContains(detail, "Avancerad diagnostik")
         self.assertContains(detail, "Provider-prompt")
-        self.assertContains(detail, "Prompt som skickas till Higgsfield")
+        self.assertContains(detail, "Visa prompten som skickas till Higgsfield")
         body = detail.content.decode()
         self.assertLess(body.index("generation-prompt-review"), body.index("creative-actions"))
         self.assertContains(detail, "economy")

@@ -129,7 +129,7 @@
   .media-library-upload-form { grid-template-columns: 1fr; }
   .media-library-upload-form button { width: 100%; }
   .media-library-section-head { display: block; }
-  .media-library-filters.media-nav { justify-content: flex-start; margin-top: 12px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
+  .media-library-page .media-library-filters.media-nav { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; justify-content: flex-start; margin-top: 12px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
   .media-library-filters.media-nav a { flex: 0 0 auto; }
   .media-generation-strip { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .media-library-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }

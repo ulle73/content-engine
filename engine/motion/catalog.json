@@ -2508,11 +2508,8 @@
         "area"
       ],
       "optional_props": [
-        "asset_id",
-        "secondary_asset_id",
         "end_card_asset_id",
-        "cta",
-        "attribution"
+        "cta"
       ],
       "source": "content-engine/original-templates; HyperFrames-informed pacing",
       "license": "Repository LICENSE (original implementation)",

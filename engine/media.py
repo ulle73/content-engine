@@ -551,12 +551,23 @@ def recover_media_jobs(*, limit=25):
     return result
 
 
+def publishable_assets(assets):
+    """Motion previews belong to project review, never to publishing choices."""
+    return assets.exclude(motion_outputs__mode="preview").exclude(motion_storyboards__isnull=False).exclude(kind="audio")
+
+
+def validate_publishable_asset(asset):
+    if asset.kind == "audio":
+        raise MediaError("Ljud kan användas i Motion, inte som bild eller video i ett inlägg.")
+    if asset.motion_outputs.filter(mode="preview").exists() or asset.motion_storyboards.exists():
+        raise MediaError("Godkänn Motion-förhandsvisningen och skapa en färdig video först.")
+
+
 def select_asset(run, asset):
     with transaction.atomic():
         locked = ContentRun.objects.select_for_update().get(pk=run.pk)
         chosen = MediaAsset.objects.select_for_update().get(pk=asset.pk, company=run.workspace)
-        if chosen.kind == "audio":
-            raise MediaError("Ljud kan anv\u00e4ndas i Motion, inte som bild eller video i ett inl\u00e4gg.")
+        validate_publishable_asset(chosen)
         if locked.delivery_status != "draft":
             raise MediaError("Ändra media i Postiz efter överföringen.")
         if chosen.expires_at and chosen.expires_at <= timezone.now():

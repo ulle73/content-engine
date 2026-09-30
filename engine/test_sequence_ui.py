@@ -216,8 +216,8 @@ class SequenceWorkspaceF1Tests(TestCase):
         response = self.client.get(
             reverse("engine:sequence_workspace", kwargs={"workspace_id": self.company.pk, "project_id": project.pk})
         )
-        self.assertContains(response, "Alla anchor-ändringar är explicita och versionssparade")
-        self.assertContains(response, "Versioned")
+        self.assertContains(response, "Dina bilder och tidigare klipp bevaras")
+        self.assertContains(response, "Versionssparat")
         self.assertContains(response, "Hantera K0")
         self.assertNotContains(response, "Regenerera clip")
         self.assertNotContains(response, "Starta betald generation")
@@ -231,8 +231,33 @@ class SequenceWorkspaceF1Tests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Projektet är tomt")
-        self.assertContains(response, "Använd Anchor controls ovan")
+        self.assertContains(response, "Lägg till den första bilden ovan")
         self.assertContains(response, "<strong>0</strong>", count=4, html=True)
+
+    def test_manual_images_can_be_connected_without_generation_and_repeated_safely(self):
+        project = create_sequence_project(self.company, author=self.user, title="Manuell sekvens")
+        anchors = [add_anchor(project, self.asset(), position=i) for i in range(3)]
+        url = reverse("engine:sequence_connect_images", args=[self.company.pk, project.pk])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        clips = list(project.clips.order_by("position"))
+        self.assertEqual([(c.start_anchor_id, c.end_anchor_id) for c in clips], [(anchors[0].pk, anchors[1].pk), (anchors[1].pk, anchors[2].pk)])
+        self.assertFalse(MediaGeneration.objects.exists())
+        self.client.post(url)
+        self.assertEqual(project.clips.count(), 2)
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertNotContains(self.client.get(reverse("engine:sequence_workspace", args=[self.company.pk, project.pk])), "Koppla bilderna till klipp")
+
+    def test_connect_images_rejects_foreign_projects_and_preserves_saved_plans(self):
+        project = create_sequence_project(self.company, author=self.user, title="Planerad sekvens")
+        project.plan = {"planner_id": "sequence_planner"}
+        project.save()
+        url = reverse("engine:sequence_connect_images", args=[self.company.pk, project.pk])
+        self.client.post(url)
+        self.assertFalse(project.clips.exists())
+        other = Company.objects.create(owner=get_user_model().objects.create_user(username="foreign-sequence"), name="Other")
+        foreign = create_sequence_project(other, title="Other")
+        self.assertEqual(self.client.post(reverse("engine:sequence_connect_images", args=[self.company.pk, foreign.pk])).status_code, 404)
 
     def test_sequences_are_media_subnavigation_without_adding_seventh_primary_destination(self):
         project = create_sequence_project(self.company, author=self.user, title="Nav sequence")

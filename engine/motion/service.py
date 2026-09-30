@@ -8,6 +8,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from engine.models import Company, ContentRun, MediaAsset, MediaGeneration
+from engine.forms import snapshot_company_context
 from engine.operator_common import begin_action, finish_action
 from .models import MotionProject, MotionRevision, MotionAssetReference, MotionRender
 from .schema import asset_ids, spec_hash, validate_spec
@@ -88,20 +89,28 @@ def _revision(project, spec, number, brand=None):
 
 
 @transaction.atomic
-def create_project(company, user, *, title, spec, key):
+def create_project(company, user, *, title, spec, key, run=None):
     _owner(company, user)
     if not isinstance(title, str) or not title.strip() or len(title) > 160:
         raise ValueError("Ange ett projektnamn p\u00e5 1\u2013160 tecken.")
     spec = validate_spec(spec)
     Company.objects.select_for_update().get(pk=company.pk)
-    action, new = begin_action(company, user, action="motion_create", key=key, payload={"title": title, "spec": spec})
+    payload = {"title": title, "spec": spec}
+    if run is not None:
+        run = ContentRun.objects.select_for_update().get(pk=run.pk)
+        if run.workspace_id != company.pk or run.delivery_status != "draft":
+            raise ValueError("Välj ett lokalt utkast i detta företag.")
+        payload["run_id"] = str(run.pk)
+    action, new = begin_action(company, user, action="motion_create", key=key, payload=payload)
     if not new:
         return get_project(company, action.result["project_id"])
-    run = ContentRun.objects.create(
+    if run is not None and MotionProject.objects.filter(run=run).exists():
+        raise ValueError("Utkastet har redan ett Motion-projekt. Öppna projektet för att ändra det.")
+    run = run or ContentRun.objects.create(
         workspace=company,
         author=user,
         model="motion-engine-v1",
-        context={"motion": True},
+        context={**snapshot_company_context(company), "motion": True},
         ideas=[],
         draft={"instagram": "", "facebook": "", "photo_brief": title},
     )
@@ -216,6 +225,7 @@ def cancel_render(company, render_id):
         MediaGeneration.objects.filter(pk=job.generation_id).update(
             status="canceled", error="Renderingen avbr\u00f6ts.", updated_at=timezone.now()
         )
+        job.generation.refresh_from_db()
         job.lease_token = None
         job.lease_expires_at = None
         job.save(update_fields=["lease_token", "lease_expires_at", "updated_at"])

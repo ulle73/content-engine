@@ -4,9 +4,9 @@
 <main class="engine sequence-list-page">
   <header class="page-header sequence-page-header">
     <div class="page-heading">
-      <p class="eyebrow">Sequence Engine</p>
+      <p class="eyebrow">Media</p>
       <h1>Sekvensprojekt</h1>
-      <p class="intro">Bygg sammanhängande stories, reels och filmer ovanpå samma verifierade anchors, clips och bridge-segment. I den här första workspace-versionen är översikten säker och icke-destruktiv.</p>
+      <p class="intro">Planera en sammanhängande film. Välj bilder, skapa klipp mellan dem och granska varje övergång.</p>
     </div>
     <div class="sequence-summary-chip" aria-label="Antal sekvensprojekt">
       <span>Projekt</span>
@@ -25,7 +25,7 @@
       <span class="sequence-disclosure" aria-hidden="true">+</span>
     </summary>
     <div class="sequence-create-body">
-      <p>Projektet skapar bara en säker container. Inga anchors, clips, provider-anrop eller betalda generationer startas här.</p>
+      <p>Börja med en idé och välj format. Du väljer bilder och granskar kostnaden innan du genererar klipp.</p>
       <form method="post" class="sequence-create-form">
         {% csrf_token %}
         <div class="sequence-form-grid">
@@ -91,7 +91,7 @@
       <div class="sequence-empty-state">
         <span class="sequence-empty-icon" aria-hidden="true">◇</span>
         <h3>Inga sekvensprojekt ännu</h3>
-        <p>Skapa ett tomt projekt ovan. Anchors, clips och generationer läggs till i senare kontrollerade steg.</p>
+        <p>Börja med en idé ovan. Lägg sedan till bilder och skapa klipp mellan dem.</p>
       </div>
     {% endif %}
   </section>

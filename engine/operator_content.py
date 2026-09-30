@@ -8,7 +8,7 @@ from django.db import transaction
 from django.utils import timezone
 from openai import OpenAI
 from pydantic import BaseModel, Field
-from .forms import validate_context
+from .forms import snapshot_company_context, validate_context
 from .generation import generate
 from .models import Company, CompetitorAd, CompetitorPost, ContentEvent, ContentRun
 from .operator_common import OperatorError, _check_revision, _durable_error, _make_editable, _user_label, begin_action, finish_action, run_state
@@ -73,14 +73,8 @@ def _build_snapshot(company: Company, channel: str, signal_id: str | None = None
         classify(post, company)
 
     snapshot = {
-        "company": company.name,
+        **snapshot_company_context(company),
         "channel": channel,
-        "profile": company.profile,
-        "voice": company.voice,
-        "current": company.current,
-        "source": company.source,
-        "valid_until": company.valid_until.isoformat(),
-        "captured_at": timezone.now().isoformat(),
         "recent_posts": [
             item.get("facebook", "")
             for item in ContentRun.objects.filter(workspace=company, channel=channel)

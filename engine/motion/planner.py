@@ -46,6 +46,8 @@ def template_schema(template_id):
     fields = set(
         template["required_props"] + template["optional_props"] + ["headline", "body", "cta", "end_card_asset_id"]
     )
+    if template_id == "monthly-wrapped":
+        fields = set(template["required_props"] + ["cta", "end_card_asset_id"])
     return {
         "type": "object",
         "required": template["required_props"],

@@ -6,7 +6,8 @@ import uuid
 from typing import Any
 from django.db import transaction
 from django.utils import timezone
-from .media import advance_job, create_job, default_brief, store_asset
+from .media import advance_job, create_job, default_brief, publishable_assets, store_asset, validate_publishable_asset
+from django.db.models import Q
 from .media_storage import MediaError
 from .models import ContentEvent, ContentRun, MediaAsset, MediaGeneration
 from .operator_common import OperatorError, UnknownExternalState, _check_revision, _durable_error, _make_editable, begin_action, finish_action, run_state, serialize_asset
@@ -79,6 +80,10 @@ def select_run_asset(
         chosen = MediaAsset.objects.select_for_update().filter(pk=asset.pk, company=locked.workspace).first()
         if not chosen or chosen.purpose != "content":
             raise OperatorError("Vald media finns inte för företaget.")
+        try:
+            validate_publishable_asset(chosen)
+        except MediaError as exc:
+            raise OperatorError(str(exc)) from exc
         if chosen.expires_at and chosen.expires_at <= timezone.now():
             raise OperatorError("Förhandsvisningen har gått ut. Generera ett nytt alternativ.")
         previous = str(locked.media_asset_id) if locked.media_asset_id else None
@@ -155,7 +160,7 @@ def start_media_generation(
     return advance_job(job)
 
 def media_options(run: ContentRun) -> list[dict[str, Any]]:
-    assets = MediaAsset.objects.filter(company=run.workspace, generation__run=run).order_by("created_at", "pk")
+    assets = publishable_assets(MediaAsset.objects.filter(company=run.workspace, purpose="content").filter(Q(expires_at=None) | Q(expires_at__gt=timezone.now()))).order_by("-created_at", "pk")[:120]
     return [serialize_asset(asset, selected=run.media_asset_id == asset.pk) for asset in assets]
 
 def select_media_once(

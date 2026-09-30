@@ -4,12 +4,13 @@ from collections import defaultdict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .media import MediaError, cancel_job, cleanup_expired, describe_file, store_asset
-from .models import MediaAsset, SequenceAnchorGenerationTarget, SequenceAnchorRevision, SequenceClipVersion, SequenceProject
+from .media import MediaError, cancel_job, cleanup_expired, describe_file, publishable_assets, store_asset, validate_publishable_asset
+from .models import ContentRun, MediaAsset, SequenceAnchorGenerationTarget, SequenceAnchorRevision, SequenceClipVersion, SequenceProject
 from .ownership import company_required
 from .openrouter import OpenRouterError
 from .sequence import (
@@ -20,6 +21,7 @@ from .sequence import (
     available_clip_model_overrides,
     change_anchor_asset,
     create_sequence_project,
+    connect_sequence_images,
     next_anchor_position,
     prepare_anchor_chain_version,
     prepare_anchor_image_generation,
@@ -91,6 +93,10 @@ def _selected_image(request):
         kind="image",
         purpose="content",
     )
+    try:
+        validate_publishable_asset(asset)
+    except MediaError as exc:
+        raise SequenceError(str(exc)) from exc
     if asset.expires_at and asset.expires_at <= timezone.now():
         raise SequenceError("Bilden har gått ut. Välj ett annat media.")
     return asset
@@ -164,6 +170,12 @@ def _project_queryset(workspace):
 @login_required
 @company_required
 def sequence_list(request, workspace_id):
+    if request.GET.get("run_id"):
+        try:
+            uuid.UUID(request.GET["run_id"])
+        except ValueError:
+            raise Http404("Utkastet finns inte.") from None
+    source_run = get_object_or_404(ContentRun, pk=request.GET["run_id"], workspace=request.workspace) if request.GET.get("run_id") else None
     if request.method == "POST":
         title = request.POST.get("title", "").strip()
         brief = request.POST.get("brief", "").strip()
@@ -207,8 +219,8 @@ def sequence_list(request, workspace_id):
             "format_choices": FORMAT_CHOICES,
             "platform_choices": PLATFORM_CHOICES,
             "form_values": {
-                "title": request.POST.get("title", "") if request.method == "POST" else "",
-                "brief": request.POST.get("brief", "") if request.method == "POST" else "",
+                "title": request.POST.get("title", "") if request.method == "POST" else source_run.title if source_run else "",
+                "brief": request.POST.get("brief", "") if request.method == "POST" else source_run.draft.get("photo_brief", "") if source_run else "",
                 "format": request.POST.get("format", "scroll_story") if request.method == "POST" else "scroll_story",
                 "platform": request.POST.get("platform", "web") if request.method == "POST" else "web",
             },
@@ -324,6 +336,9 @@ def sequence_workspace(request, workspace_id, project_id):
             "workspace": request.workspace,
             "project": project,
             "anchors": anchors,
+            "can_connect_images": not sequence_plan and project.status != "archived" and any(
+                anchor.position not in {clip.position for clip in clips} for anchor in anchors[:-1]
+            ),
             "clips": clips,
             "bridges": bridges,
             "timeline": timeline,
@@ -331,9 +346,9 @@ def sequence_workspace(request, workspace_id, project_id):
             "segment_count": len(clips) + len(bridges),
             "format_label": FORMAT_CHOICES.get(project.format, project.format or "Ej angivet"),
             "platform_label": PLATFORM_CHOICES.get(project.platform, project.platform or "Ej angivet"),
-            "available_images": request.workspace.media_assets.filter(
+            "available_images": publishable_assets(request.workspace.media_assets.filter(
                 kind="image", purpose="content"
-            ).filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())).order_by("-created_at")[:24],
+            ).filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()))).order_by("-created_at")[:24],
             "pending_new_anchor_targets": project.anchor_generation_targets.filter(
                 mode="create", applied_anchor__isnull=True
             ).select_related("generation").order_by("-created_at")[:6],
@@ -701,6 +716,19 @@ def sequence_anchor_apply_generated(request, workspace_id, project_id, target_id
             run_id=target.generation.run_id,
             job_id=target.generation_id,
         )
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_connect_images(request, workspace_id, project_id):
+    project = _project_for_request(request, project_id)
+    try:
+        count = connect_sequence_images(project)
+        messages.success(request, f"{count} klipp har lagts till. Granska varje klipp innan du genererar video.")
+    except SequenceError as exc:
+        messages.error(request, str(exc))
+    return _workspace_redirect(request, project)
 
 
 @login_required

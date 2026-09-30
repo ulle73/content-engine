@@ -777,4 +777,7 @@ def build_app():
     )
 
 
+from .motion.mcp import register as register_motion_tools
+
+register_motion_tools(mcp, _company, _run, current_django_user, _safe_call)
 app = build_app()

@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .forms import BrandForm, CompanyForm, validate_context
+from .forms import BrandForm, CompanyForm, snapshot_company_context, validate_context
 from .generation import generate
 from .models import Company, CompetitorPost, ContentEvent, ContentRun
 from .ownership import company_required
@@ -38,6 +38,9 @@ def home(request, workspace_id):
     channel = "paid" if request.GET.get("channel") == "paid" else "organic"
     runs = list(
         ContentRun.objects.filter(workspace=workspace, channel=channel)
+        .exclude(model__in=["sequence-anchor-generation", "sequence-anchor-chain", "sequence-transition-bridge"])
+        .exclude(model__in=["creative-studio", "motion-engine-v1"], draft__facebook="", draft__instagram="")
+        .select_related("media_asset")
         .prefetch_related("events")
         .order_by("-created_at")[:10]
     )
@@ -85,13 +88,8 @@ def ideas(request, workspace_id):
             classify(signal_post, request.workspace)
         captured_at = timezone.now()
         snapshot = {
-            "company": request.workspace.name,
+            **snapshot_company_context(context),
             "channel":channel,
-            "profile": context.profile,
-            "voice": context.voice,
-            "current": context.current,
-            "source": context.source,
-            "valid_until": context.valid_until.isoformat(),
             "captured_at": captured_at.isoformat(),
             "recent_posts": [
                 item.get("facebook", "")
@@ -258,8 +256,8 @@ def review(request, workspace_id, run_id):
                 if run.channel == "paid":
                     raise ValueError("Annonsutkast publiceras inte som organiska inlägg. Använd sparad copy och media i Meta Ads Manager.")
                 validate_context(brand)
-                if run.context["valid_until"] < timezone.localdate().isoformat() or any(
-                    run.context[k] != getattr(brand, k) for k in ["current", "source", "profile"]
+                if (run.context.get("valid_until") or "") < timezone.localdate().isoformat() or any(
+                    run.context.get(k) != getattr(brand, k) for k in ["current", "source", "profile", "voice"]
                 ):
                     raise ValueError(
                         "Underlaget har ändrats eller gått ut. Skapa ett nytt inlägg från de aktuella uppgifterna."
@@ -272,6 +270,9 @@ def review(request, workspace_id, run_id):
                 asset = run.media_asset
                 if asset and asset.company_id != brand.pk:
                     raise ValueError("Vald media hör inte till företaget.")
+                if asset:
+                    from .media import validate_publishable_asset
+                    validate_publishable_asset(asset)
                 if asset and photo:
                     raise ValueError("Byt vald media innan en annan fil laddas upp.")
                 if photo and (photo.size > 8 * 1024 * 1024 or photo.content_type not in {"image/jpeg", "image/png"}):
@@ -324,7 +325,7 @@ def review(request, workspace_id, run_id):
             else:
                 messages.success(request, "Ändringarna är sparade.")
             return redirect("engine:review", workspace_id=workspace_id, run_id=run.id)
-        except (ValueError, PostizError) as exc:
+        except (ValueError, PostizError, MediaError) as exc:
             messages.error(request, str(exc))
         run.refresh_from_db()
     return render(request, "engine/review.html", {"run": run, "brand": brand, "workspace": request.workspace})

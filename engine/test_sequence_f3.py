@@ -263,7 +263,7 @@ class SequenceClipControlsF3Tests(TestCase):
             )
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "F3 · Clip controls")
+        self.assertContains(response, "Generera, jämför och välj clip")
         self.assertContains(response, "Generera, jämför och välj clip")
         self.assertContains(response, "V1")
         self.assertContains(response, "V2")

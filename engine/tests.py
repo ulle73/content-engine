@@ -262,6 +262,7 @@ class ContentFlowTests(TestCase):
                 "current": self.context.current,
                 "source": self.context.source,
                 "profile": self.context.profile,
+                "voice": self.context.voice,
                 "valid_until": self.context.valid_until.isoformat(),
             },
             draft=DRAFT,

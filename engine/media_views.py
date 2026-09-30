@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from .media import ACTIVE, PENDING, advance_job, cancel_job, cleanup_expired, create_job, default_brief, remove_asset, select_asset, store_asset
+from .media import ACTIVE, PENDING, advance_job, cancel_job, cleanup_expired, create_job, default_brief, publishable_assets, remove_asset, select_asset, store_asset
 from .creative_core import ReferenceRole
 from .creative_registry import verified_models
 from .media_references import reference_asset, serialize_generation_references
@@ -23,6 +23,7 @@ from .models import ContentRun, MediaAsset, MediaGeneration, SequenceAnchorGener
 from .ownership import company_required
 from .sequence import anchor_change_impact, sync_sequence_generation
 from .media import preview_job, refresh_terminal_provider_status, start_reviewed_job
+from .forms import snapshot_company_context
 
 
 def run_for(request, run_id):
@@ -35,7 +36,7 @@ def library(request, workspace_id):
     now = timezone.now()
     assets = request.workspace.media_assets.filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now)).select_related(
         "generation", "generation__run"
-    )
+    ).exclude(motion_outputs__mode="preview").exclude(motion_storyboards__isnull=False)
     filter_value = request.GET.get("filter", "all")
     if filter_value in {"image", "video", "audio"}:
         assets = assets.filter(kind=filter_value)
@@ -49,6 +50,7 @@ def library(request, workspace_id):
     assets = list(assets.order_by("-created_at")[:120])
     recent_jobs = list(
         MediaGeneration.objects.filter(run__workspace=request.workspace, status="completed")
+        .exclude(motion_render__mode="preview")
         .select_related("run")
         .prefetch_related("assets")
         .order_by("-created_at")[:8]
@@ -60,7 +62,7 @@ def library(request, workspace_id):
             "workspace": request.workspace,
             "assets": assets,
             "recent_jobs": recent_jobs,
-            "unfinished_jobs": MediaGeneration.objects.filter(run__workspace=request.workspace, status__in=ACTIVE).order_by("-created_at")[:12],
+            "unfinished_jobs": MediaGeneration.objects.filter(run__workspace=request.workspace, status__in=ACTIVE).exclude(provider="remotion").order_by("-created_at")[:12],
             "filter_value": filter_value,
             "now": now,
             "studio_token": uuid.uuid4(),
@@ -95,7 +97,7 @@ def new_studio(request, workspace_id):
         return HttpResponse("Ogiltigt formulär. Öppna Media igen.", status=400)
     company = request.workspace
     brief = ""
-    snapshot = {"media_only": True, "profile": company.profile, "voice": company.voice, "current": company.current}
+    snapshot = {**snapshot_company_context(company), "media_only": True}
     channel = "organic"
     market_signal_id = ""
     if request.POST.get("market_id"):
@@ -143,14 +145,14 @@ def picker(request, workspace_id, run_id):
         end_source = None
     if end_source and not source:
         end_source = None
-    assets = request.workspace.media_assets.filter(purpose="content").filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()))
+    assets = publishable_assets(request.workspace.media_assets.filter(purpose="content").filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())))
     filter_value = request.GET.get("filter", "all")
     if filter_value in {"image", "video", "audio"}:
         assets = assets.filter(kind=filter_value)
     elif filter_value in {"uploaded", "generated"}:
         assets = assets.filter(origin=filter_value)
     assets = assets.order_by(Case(When(origin="uploaded", then=Value(0)), default=Value(1), output_field=IntegerField()), "-created_at")[:60]
-    jobs = list(run.media_jobs.order_by("-created_at").prefetch_related("assets")[:10])
+    jobs = list(run.media_jobs.exclude(provider="remotion").order_by("-created_at").prefetch_related("assets")[:10])
     mode = ("image-to-video" if source else "text-to-video") if kind == "video" else ("image-to-image" if source else "text-to-image")
     override_models = verified_models(kind, mode)
     if kind == "video" and end_source:

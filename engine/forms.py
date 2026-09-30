@@ -39,6 +39,19 @@ def validate_context(context):
         raise ValueError("De aktuella uppgifterna har gått ut. Uppdatera dem först.")
 
 
+def snapshot_company_context(company):
+    """Capture company facts without fetching providers or inventing missing data."""
+    return {
+        "company": company.name,
+        "profile": company.profile,
+        "voice": company.voice,
+        "current": company.current,
+        "source": company.source,
+        "valid_until": company.valid_until.isoformat() if company.valid_until else "",
+        "captured_at": timezone.now().isoformat(),
+    }
+
+
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ project.title }} · Motion{% endblock %}
+{% block content %}
+<main class="engine motion-page">
+  <a class="back-link" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}">← Motionprojekt</a>
+  <header class="page-header"><div><p class="eyebrow">Motion · Version {{ project.current_revision }}</p><h1>{{ project.title }}</h1><p class="intro">1. Redigera innehållet · 2. Granska förhandsvisningen · 3. Skapa färdig video</p></div></header>
+  {% include 'engine/library_tabs.html' %}
+  <div class="motion-workspace">
+    <section class="motion-editor"><h2>Innehåll</h2>
+      {% if template_editable %}
+      <form method="post" action="{% url 'engine:motion_action' workspace_id=workspace.pk project_id=project.pk %}" class="motion-form" data-track-changes>{% csrf_token %}
+        <input type="hidden" name="revision" value="{{ project.current_revision }}"><input type="hidden" name="key" value="{{ key }}"><input type="hidden" name="title" value="{{ project.title }}">
+        {{ form.non_field_errors }}
+        {% for field in form.basic_fields %}{% if field.name != 'title' %}<div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}{% if field.help_text %}<p class="small">{{ field.help_text }}</p>{% endif %}</div>{% endif %}{% endfor %}
+        <details {% if form.errors %}open{% endif %}><summary>Media, ljud och avsändare</summary><div class="motion-advanced">{% for field in form.advanced_fields %}<div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}</div></details>
+        <button name="action" value="save">Spara ny version</button>
+      </form>
+      {% else %}<p>Projektet har anpassade scener eller ljudinställningar. Du kan granska och rendera här. Redigera specifikationen via MCP för att bevara anpassningarna.</p>{% endif %}
+      <details class="motion-scenes"><summary>Scener och ordning</summary>{% for scene in revision.spec.scenes %}<p><strong>{{ forloop.counter }}. {{ scene.props.headline|default:scene.component }}</strong>{% if scene.props.body %}<br>{{ scene.props.body }}{% endif %}</p>{% endfor %}</details>
+    </section>
+    {% include 'engine/motion_results.html' %}
+  </div>
+</main>
+{% endblock %}

@@ -35,7 +35,7 @@ def _parse_schedule(value: str | None) -> datetime | None:
 def _validate_context(run: ContentRun) -> None:
     brand = run.workspace
     validate_context(brand)
-    if run.context.get("valid_until", "") < timezone.localdate().isoformat():
+    if (run.context.get("valid_until") or "") < timezone.localdate().isoformat():
         raise OperatorError("Företagsunderlaget har gått ut. Skapa ett nytt ContentRun från aktuella fakta.")
     for key in ("current", "source", "profile", "voice"):
         if run.context.get(key) != getattr(brand, key):
@@ -138,6 +138,9 @@ def deliver_to_postiz(
     post_created = False
     try:
         # Validate the final Postiz payload before claiming the run or making any network write.
+        if asset:
+            from .media import validate_publishable_asset
+            validate_publishable_asset(asset)
         make_payload(
             chosen,
             run.draft["facebook"],

@@ -365,12 +365,12 @@ class SequenceAnchorControlsF2Tests(TestCase):
             )
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "F2 · Anchor controls")
-        self.assertContains(response, "Lägg till anchor")
+        self.assertContains(response, "Dina bilder och tidigare klipp bevaras")
+        self.assertContains(response, "Lägg till bild i sekvensen")
         self.assertContains(response, "Hantera K0")
         self.assertContains(response, "Versionshistorik · 1")
         self.assertContains(response, "Skapa ersättare med AI")
-        self.assertContains(response, "Versioned")
+        self.assertContains(response, "Versionssparat")
         self.assertContains(response, str(anchor.asset.provider))
 
     def test_ai_job_page_links_back_to_sequence_and_can_apply_completed_asset(self):

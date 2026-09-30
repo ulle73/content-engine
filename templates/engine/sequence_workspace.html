@@ -21,19 +21,19 @@
 
   <section class="sequence-safety-banner" aria-label="Workspace-status">
     <div>
-      <span class="sequence-kicker">F2 · Anchor controls</span>
-      <strong>Alla anchor-ändringar är explicita och versionssparade</strong>
-      <p>Lock/unlock, upload, Media-val och AI-förslag använder samma canonical anchor-modell. Om ett byte påverkar tidigare clip/bridge-kandidater krävs separat bekräftelse och de bevaras som stale historik.</p>
+      <span class="sequence-kicker">Versionshistorik</span>
+      <strong>Dina bilder och tidigare klipp bevaras</strong>
+      <p>Varje bild är en hållpunkt i filmen. Om du byter en bild som används i klipp behöver du bekräfta bytet. Tidigare versioner sparas så att du kan jämföra dem.</p>
     </div>
-    <span class="sequence-safe-pill">Versioned</span>
+    <span class="sequence-safe-pill">Versionssparat</span>
   </section>
 
   <section class="sequence-planner-section" aria-labelledby="sequence-planner-title">
     <div class="sequence-section-head">
       <div>
-        <span class="sequence-kicker">G1 · Sequence planner</span>
+        <span class="sequence-kicker">Berättelsen</span>
         <h2 id="sequence-planner-title">Planera hela berättelsen före media</h2>
-        <p>Beskriv målet på vanlig svenska. Planner föreslår scenes, anchors och verifierade produktionskrav utan att skapa bilder, video eller starta en betald mediegenerering.</p>
+        <p>Beskriv målet på vanlig svenska. Du får ett förslag på scener och bilder att granska innan du skapar media.</p>
       </div>
       {% if sequence_plan %}
         <span class="sequence-plan-state {% if sequence_plan.status == 'final' %}is-final{% endif %}">
@@ -47,15 +47,15 @@
         {% csrf_token %}
         <div class="sequence-plan-generate-copy">
           <strong>{% if sequence_plan %}Generera om planen{% else %}Skapa en första plan{% endif %}</strong>
-          <span>AI föreslår storyn. Trusted recipes, referenskrav och möjliga modeller läggs på lokalt från Content Engines verifierade register.</span>
+          <span>AI föreslår berättelsen. Planen visar vilka bilder och referenser som behövs för varje scen.</span>
         </div>
         <label for="sequence-plan-brief">Projektbrief</label>
         <textarea id="sequence-plan-brief" name="brief" maxlength="6000" required placeholder="Exempel: Skapa en premium 4-scene Golfkuponger scroll story som går från inspiration till enkel användning.">{{ project.brief }}</textarea>
         <label for="sequence-plan-goal">Mål <span>Valfritt</span></label>
         <input id="sequence-plan-goal" name="goal" maxlength="2000" value="{{ project.goal }}" placeholder="Exempel: Kännas premium, enkelt och tydligt">
         <div class="sequence-plan-generate-actions">
-          <button type="submit">{% if sequence_plan %}Generera ny Draft-plan{% else %}Skapa Draft-plan{% endif %}</button>
-          <small>Textplanering kan använda Content Engines textmodell. Ingen MediaGeneration skapas i detta steg.</small>
+          <button type="submit">{% if sequence_plan %}Skapa nytt planförslag{% else %}Skapa planförslag{% endif %}</button>
+          <small>Det här använder textmodellen. Bild- och videogenerering startas först efter separat granskning och godkännande.</small>
         </div>
       </form>
 
@@ -198,7 +198,7 @@
           <span class="sequence-empty-icon" aria-hidden="true">✦</span>
           <div>
             <strong>Ingen storyboard-plan ännu</strong>
-            <p>Planner skapar först en redigerbar blueprint. Anchors och videoklipp skapas fortfarande separat och explicit i stegen nedanför.</p>
+            <p>Börja med ett planförslag eller lägg till bilder direkt. Du granskar varje steg innan du skapar video.</p>
           </div>
         </div>
       {% endif %}
@@ -209,9 +209,9 @@
   <section class="sequence-materialization-section" aria-labelledby="sequence-materialization-title">
     <div class="sequence-section-head">
       <div>
-        <span class="sequence-kicker">G2 · AI anchor generation</span>
+        <span class="sequence-kicker">Bilder till planen</span>
         <h2 id="sequence-materialization-title">Materialisera blueprintens anchors</h2>
-        <p>Varje K-position kan få en riktig canonical bild från Media, upload eller samma AI-bildflöde som AI Studio. AI startar aldrig här; du skickas alltid till review före en betald bildgeneration.</p>
+        <p>Välj en bild från Media, ladda upp eller förbered ett AI-förslag för varje position. Du granskar kostnaden och godkänner innan betald generation startar.</p>
       </div>
       <span class="sequence-materialization-state {% if plan_anchor_readiness.ready %}is-ready{% endif %}">
         {% if plan_anchor_readiness.ready %}Alla {{ plan_anchor_readiness.required_positions|length }} anchors klara{% else %}{{ plan_anchor_readiness.materialized_positions|length }}/{{ plan_anchor_readiness.required_positions|length }} klara{% endif %}
@@ -365,8 +365,8 @@
     <div class="sequence-section-head">
       <div>
         <span class="sequence-kicker">Anchors</span>
-        <h2 id="sequence-anchor-control-title">Lägg till anchor</h2>
-        <p>Ny anchor läggs sist i ordningen. Du kan använda en befintlig bild, ladda upp en ny eller förbereda AI-bilder via samma review-gate som AI Studio.</p>
+        <h2 id="sequence-anchor-control-title">Lägg till bild i sekvensen</h2>
+        <p>Bilden blir en ny hållpunkt sist i filmen. Välj från Media, ladda upp eller förbered ett AI-förslag.</p>
       </div>
     </div>
     <div class="sequence-anchor-add-grid">
@@ -374,24 +374,24 @@
         <summary>Välj från Media</summary>
         <form method="post" action="{% url 'engine:sequence_anchor_add_existing' workspace_id=workspace.pk project_id=project.pk %}">
           {% csrf_token %}
-          <label>Etikett <span>Valfritt</span></label>
-          <input name="label" maxlength="120" placeholder="Till exempel: Produktbild">
-          <label>Bild</label>
-          <select name="asset_id" required>
+          <label for="sequence-existing-label">Etikett <span>Valfritt</span></label>
+          <input id="sequence-existing-label" name="label" maxlength="120" placeholder="Till exempel: Produktbild">
+          <label for="sequence-existing-image">Bild</label>
+          <select id="sequence-existing-image" name="asset_id" required>
             <option value="">Välj bild</option>
             {% for image in available_images %}<option value="{{ image.pk }}">{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
           </select>
-          <button type="submit" {% if not available_images %}disabled{% endif %}>Lägg till anchor</button>
+          <button type="submit" {% if not available_images %}disabled{% endif %}>Lägg till bild</button>
         </form>
       </details>
       <details class="sequence-control-card">
         <summary>Ladda upp bild</summary>
         <form method="post" enctype="multipart/form-data" action="{% url 'engine:sequence_anchor_add_upload' workspace_id=workspace.pk project_id=project.pk %}">
           {% csrf_token %}
-          <label>Etikett <span>Valfritt</span></label>
-          <input name="label" maxlength="120" placeholder="Till exempel: Slutbild">
-          <label>Bildfil</label>
-          <input type="file" name="file" accept="image/jpeg,image/png,image/webp" required>
+          <label for="sequence-upload-label">Etikett <span>Valfritt</span></label>
+          <input id="sequence-upload-label" name="label" maxlength="120" placeholder="Till exempel: Slutbild">
+          <label for="sequence-upload-image">Bildfil</label>
+          <input id="sequence-upload-image" type="file" name="file" accept="image/jpeg,image/png,image/webp" required>
           <button type="submit">Ladda upp och lägg till</button>
         </form>
       </details>
@@ -426,9 +426,9 @@
   <section class="sequence-timeline-section" aria-labelledby="sequence-timeline-title">
     <div class="sequence-section-head">
       <div>
-        <span class="sequence-kicker">Timeline</span>
-        <h2 id="sequence-timeline-title">Anchor- och segmentordning</h2>
-        <p>Anchors är visuella sanningar. Clips och bridges visas mellan sina exakta canonical endpoints.</p>
+        <span class="sequence-kicker">Tidslinje</span>
+        <h2 id="sequence-timeline-title">Bilder, klipp och övergångar</h2>
+        <p>Här ser du filmens ordning. Varje klipp börjar och slutar vid de bilder du valt.</p>
       </div>
       <span class="sequence-section-meta">{{ anchors|length }} anchors · {{ segment_count }} segment</span>
     </div>
@@ -586,10 +586,14 @@
       <div class="sequence-empty-state">
         <span class="sequence-empty-icon" aria-hidden="true">◇</span>
         <h3>Projektet är tomt</h3>
-        <p>Projektet har ännu inga anchors. Använd Anchor controls ovan för att välja Media, ladda upp eller förbereda ett AI-förslag.</p>
+        <p>Lägg till den första bilden ovan. Välj från Media, ladda upp eller förbered ett AI-förslag.</p>
       </div>
     {% endif %}
   </section>
+
+  {% if can_connect_images %}
+  <form method="post" action="{% url 'engine:sequence_connect_images' workspace_id=workspace.pk project_id=project.pk %}" class="creative-actions">{% csrf_token %}<button>Koppla bilderna till klipp</button><p class="small">Skapar klipp mellan bilderna i ordning. Befintliga klipp behålls och ingen generation startas.</p></form>
+  {% endif %}
 
   {% if clips %}
   <section class="sequence-clip-control-section" aria-labelledby="sequence-clip-control-title">
@@ -598,7 +602,7 @@
     {% endif %}
     <div class="sequence-section-head">
       <div>
-        <span class="sequence-kicker">F3 · Clip controls</span>
+        <span class="sequence-kicker">Klipp</span>
         <h2 id="sequence-clip-control-title">Generera, jämför och välj clip</h2>
         <p>Varje försök blir en separat kandidat. Första steget skapar endast en reviewbar plan och kostnadskontroll; betald start sker alltid på Media-jobbets reviewsida.</p>
       </div>

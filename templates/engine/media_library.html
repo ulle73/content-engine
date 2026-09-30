@@ -16,6 +16,7 @@
 {% include 'engine/creative_help.html' %}
   {% include 'engine/library_tabs.html' %}
   <form method="post" action="{% url 'engine:media_new' workspace_id=workspace.pk %}" class="creative-actions">{% csrf_token %}<input type="hidden" name="token" value="{{ studio_token }}"><button type="submit">Skapa bild eller video</button><span class="small">Öppnar AI-studion. Ingen betald generation startas.</span></form>
+  <div class="creative-actions"><a class="button button-secondary" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}">Skapa motionvideo</a><a class="text-link" href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}">Bygg en sekvens →</a></div>
 
   <section class="media-library-upload-card" id="upload">
     <div class="media-library-upload-copy">
@@ -105,7 +106,7 @@
         <button type="button" class="media-library-asset-card" onclick="document.getElementById('asset-{{ asset.pk }}').showModal()">
           <span class="media-library-thumb-wrap">
             {% if asset.kind == 'image' %}<img loading="lazy" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Media' }}">{% else %}<video muted preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}#t=0.1"></video><span class="media-library-play" aria-hidden="true">▶</span>{% endif %}
-            <span class="media-library-origin-badge">{% if asset.purpose == 'logo' %}Logga{% elif asset.origin == 'generated' %}AI{% else %}Uppladdad{% endif %}</span>
+            <span class="media-library-origin-badge">{% if asset.purpose == 'logo' %}Logga{% elif asset.provider == 'remotion' %}Motion{% elif asset.origin == 'generated' %}AI{% else %}Uppladdad{% endif %}</span>
           </span>
           <span class="media-library-card-body">
             <span class="media-library-card-title">{% if asset.alt_text %}{{ asset.alt_text|truncatechars:48 }}{% elif asset.brief %}{{ asset.brief|truncatechars:48 }}{% elif asset.kind == 'video' %}Video{% else %}Bild{% endif %}</span>

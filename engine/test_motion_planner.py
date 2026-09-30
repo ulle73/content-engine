@@ -29,6 +29,11 @@ class PlannerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             compile_template("monthly-wrapped", {"month": "September"})
 
+    def test_wrapped_rejects_fields_that_would_be_silently_discarded(self):
+        fields = {"month": "September", "count": 0, "total": 0, "area": "Stockholm", "headline": "Custom"}
+        with self.assertRaises(ValueError):
+            compile_template("monthly-wrapped", fields)
+
     def test_injection_not_accepted_as_extra_field(self):
         with self.assertRaises(ValueError):
             compile_template("custom-storyboard", {"headline": "X", "imports": ["os"]})
