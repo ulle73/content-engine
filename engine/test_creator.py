@@ -1,6 +1,6 @@
 """Intent-first creation, existing services, zero real provider calls."""
-from datetime import timedelta
 import uuid
+from datetime import timedelta
 from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -8,13 +8,13 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
+from . import test_media as media_test
 from .creative_controls import CreativeControls, apply_controls, creation_catalog
 from .creative_director import build_plan, parse_brief
 from .creative_registry import get_model
 from .forms import MediaCreationForm
 from .media import create_job, default_brief, store_asset
 from .models import ContentRun, MediaAsset, MediaGeneration
-from . import test_media as media_test
 
 picture = media_test.picture
 

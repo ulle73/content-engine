@@ -10,13 +10,13 @@ import argparse
 import io
 import json
 import os
-from pathlib import Path
-import subprocess
-import sqlite3
 import re
+import sqlite3
+import subprocess
 import sys
 import tempfile
 import time
+from pathlib import Path
 from urllib.request import urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,10 +36,12 @@ def serve():
     import django
     django.setup()
     from datetime import date
+
     from django.contrib.auth import get_user_model
     from django.core.management import call_command
     from django.urls import reverse
     from PIL import Image, ImageDraw
+
     from engine.forms import snapshot_company_context
     from engine.media import store_asset
     from engine.models import Company, ContentRun

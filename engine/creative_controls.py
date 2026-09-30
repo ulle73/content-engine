@@ -4,13 +4,15 @@ The trusted recipe/model registries remain the only capability source.
 """
 from __future__ import annotations
 
-from typing import Literal
 import re
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from .creative_core import CreativeBrief, ReferenceRole
-from .creative_registry import registry as model_registry, verified_models
 from .creative_recipes import registry as recipe_registry
+from .creative_registry import registry as model_registry
+from .creative_registry import verified_models
 
 CONTROL_VERSION = "2026-09-30.1"
 CAMERAS = {
