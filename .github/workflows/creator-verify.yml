@@ -1,0 +1,30 @@
+name: Creator acceptance
+on:
+  push:
+    branches: [codex/product-flow-integratio]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt playwright
+      - run: python -m playwright install --with-deps chromium
+      - run: python scripts/creator_browser_smoke.py --baseline
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creator-browser-evidence
+          path: data/creator-browser
+          retention-days: 7
