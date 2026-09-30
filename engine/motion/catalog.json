@@ -772,6 +772,41 @@
       "preview": null
     },
     {
+      "id": "footage",
+      "name": "Ditt material",
+      "description": "Hela bilden eller klippet, utan beskärning, filter eller klippljud.",
+      "kind": "scene",
+      "category": "scene",
+      "tags": [
+        "footage",
+        "scene",
+        "ditt material"
+      ],
+      "version": 1,
+      "aspect_ratios": [
+        "9:16",
+        "1:1",
+        "16:9"
+      ],
+      "required_props": [
+        "headline"
+      ],
+      "optional_props": [
+        "body",
+        "value",
+        "unit",
+        "items",
+        "asset_id",
+        "secondary_asset_id",
+        "cta",
+        "attribution"
+      ],
+      "source": "content-engine/original-motion",
+      "license": "Repository LICENSE (original implementation)",
+      "status": "candidate",
+      "preview": null
+    },
+    {
       "id": "hero",
       "name": "Titel",
       "description": "Stor rubrik med liten inledning och tydlig hierarki.",
@@ -2478,6 +2513,43 @@
       "license": "Repository LICENSE (original implementation)",
       "status": "candidate",
       "preview": null
+    },
+    {
+      "id": "sequence-film",
+      "name": "Färdig sekvens",
+      "description": "Sätt ihop egna bilder eller granskade klipp till en film.",
+      "kind": "template",
+      "category": "sequence",
+      "tags": [
+        "sequence-film",
+        "sequence",
+        "färdig sekvens",
+        "footage",
+        "end-card"
+      ],
+      "version": 1,
+      "aspect_ratios": [
+        "9:16",
+        "1:1",
+        "16:9"
+      ],
+      "required_props": [],
+      "optional_props": [
+        "asset_id",
+        "secondary_asset_id",
+        "end_card_asset_id",
+        "cta",
+        "attribution"
+      ],
+      "source": "content-engine/original-templates; HyperFrames-informed pacing",
+      "license": "Repository LICENSE (original implementation)",
+      "status": "candidate",
+      "preview": null,
+      "scene_components": [
+        "footage",
+        "end-card"
+      ],
+      "typical_seconds": 8
     },
     {
       "id": "monthly-wrapped",

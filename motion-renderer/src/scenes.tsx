@@ -179,6 +179,23 @@ export function SceneContents(c: SceneContext) {
     );
   } else
     switch (main) {
+      case "footage": {
+        if (!a) throw new Error("Footage asset missing");
+        const hasTitle = Boolean(p.headline);
+        const mediaTop = hasTitle ? h * 0.24 : 0;
+        content = (
+          <>
+            <Media
+              asset={a}
+              fit="contain"
+              style={abs(0, mediaTop, w, h - mediaTop)}
+            />
+            {hasTitle &&
+              title(p.headline, s.y, big * 0.65, h * 0.16, "line-reveal")}
+          </>
+        );
+        break;
+      }
       case "number-emphasis":
       case "counter":
       case "currency":

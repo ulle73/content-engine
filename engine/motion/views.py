@@ -41,7 +41,7 @@ def project_list(request, workspace_id):
     template_id = (
         request.POST.get("template_id") if request.method == "POST" else request.GET.get("template", suggested)
     )
-    templates = catalog(kind="template")
+    templates = [item for item in catalog(kind="template") if item["category"] != "sequence"]
     if template_id not in {item["id"] for item in templates}:
         template_id = "kinetic-text"
     form = MotionForm(company, template_id, request.POST if request.method == "POST" else None, initial=initial)
@@ -77,11 +77,24 @@ def workspace_context(project):
         .order_by("-created_at")
     )
     final = next((job for job in jobs if job.mode == "final" and job.generation.status == "completed"), None)
+    ready_preview = next((job for job in jobs if job.mode == "preview" and job.generation.status == "completed" and job.output_asset_id), None)
+    running = next((job for job in jobs if job.generation.status in service.ACTIVE), None)
+    primary = final or running or ready_preview or (jobs[0] if jobs else None)
+    source_error = ""
+    if project.source_sequence_id:
+        from engine.sequence_export import assert_film_current
+        try:
+            assert_film_current(project, revision)
+        except ValueError as exc:
+            source_error = str(exc)
     return {
         "project": project,
         "revision": revision,
-        "renders": jobs,
+        "renders": [primary] if primary else [],
+        "render_history": [job for job in jobs if job != primary],
         "final": final,
+        "ready_preview": ready_preview,
+        "source_error": source_error,
         "active": any(job.generation.status in service.ACTIVE for job in jobs),
         "worker_available": worker_available(),
         "template_editable": template_editable(project, revision.spec),
@@ -96,7 +109,7 @@ def workspace(request, workspace_id, project_id):
     )
     context = workspace_context(project)
     spec = context["revision"].spec
-    form = MotionForm(request.workspace, spec["template_id"], initial=revision_initial(project, spec))
+    form = None if project.source_sequence_id else MotionForm(request.workspace, spec["template_id"], initial=revision_initial(project, spec))
     context.update(workspace=request.workspace, form=form, key=str(uuid.uuid4()))
     return render(request, "engine/motion_workspace.html", context)
 

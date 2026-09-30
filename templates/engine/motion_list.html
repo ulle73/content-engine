@@ -5,6 +5,7 @@
   <header class="page-header"><div><p class="eyebrow">Media</p><h1>Motion</h1><p class="intro">Ge text, bilder och nyckeltal rörelse. Granska först, spara sedan färdig video i Media.</p></div></header>
   {% include 'engine/library_tabs.html' %}
   {% if run %}<p class="notice">Video till <a href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">{{ run.title }}</a>. Den färdiga videon väljs i utkastet.</p>{% endif %}
+  <p class="small">Har du egna bilder eller klipp? <a href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}{% if run %}?run_id={{ run.pk }}{% endif %}">Gör en film av ditt material →</a></p>
   <section class="motion-create" aria-labelledby="motion-create-title">
     <h2 id="motion-create-title">Skapa en motionvideo</h2>
     <form method="get" class="motion-template-picker">

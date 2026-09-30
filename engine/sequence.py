@@ -154,14 +154,18 @@ def create_sequence_project(
     blueprint_id: str = "",
     blueprint_version: str = "",
     notes: str = "",
+    source_run: ContentRun | None = None,
 ) -> SequenceProject:
     title = (title or "").strip()
     if not title or len(title) > 200:
         raise SequenceError("Sequence-projektet behöver en titel på högst 200 tecken.")
     if author is not None and getattr(author, "pk", None) is None:
         raise SequenceError("Författaren måste vara en sparad användare.")
+    if source_run and (source_run.workspace_id != company.pk or source_run.delivery_status != "draft"):
+        raise SequenceError("Välj ett lokalt utkast i detta företag.")
     return SequenceProject.objects.create(
         company=company,
+        source_run=source_run,
         author=author,
         title=title,
         brief=brief,

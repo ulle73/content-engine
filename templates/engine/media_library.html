@@ -16,7 +16,7 @@
 {% include 'engine/creative_help.html' %}
   {% include 'engine/library_tabs.html' %}
   <form method="post" action="{% url 'engine:media_new' workspace_id=workspace.pk %}" class="creative-actions">{% csrf_token %}<input type="hidden" name="token" value="{{ studio_token }}"><button type="submit">Skapa bild eller video</button><span class="small">Öppnar AI-studion. Ingen betald generation startas.</span></form>
-  <div class="creative-actions"><a class="button button-secondary" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}">Skapa motionvideo</a><a class="text-link" href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}">Bygg en sekvens →</a></div>
+  <div class="creative-actions"><a class="button button-secondary" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}">Skapa motionvideo</a><a class="text-link" href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}">Gör film av mina bilder eller klipp →</a></div>
 
   <section class="media-library-upload-card" id="upload">
     <div class="media-library-upload-copy">

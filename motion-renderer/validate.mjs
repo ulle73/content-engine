@@ -29,6 +29,40 @@ export function validateSpec(input) {
     if (ids.has(scene.id)) throw new Error("Duplicate scene ID");
     ids.add(scene.id);
     if (
+      scene.component === "footage" &&
+      (!scene.props.asset_id ||
+        scene.effects.length ||
+        scene.sfx.length ||
+        scene.transition !== "cut")
+    )
+      throw new Error(
+        "Footage requires media and clean cuts without effects or cues",
+      );
+    if (scene.component === "footage" && scene.props.headline) {
+      const words = scene.props.headline.trim().split(/\s+/).length;
+      if (
+        scene.props.headline.length > 80 ||
+        words > 12 ||
+        scene.duration_frames < Math.ceil((words / 2.5 + 1) * value.fps)
+      )
+        throw new Error(
+          "Footage text needs to be concise with enough reading time",
+        );
+    }
+    if (
+      value.template_id === "sequence-film" &&
+      scene.component === "end-card"
+    ) {
+      const text = (
+        scene.props.headline +
+        " " +
+        (scene.props.cta || scene.props.body)
+      ).trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      if (scene.duration_frames < Math.ceil((words / 2.5 + 1) * value.fps))
+        throw new Error("Film ending needs enough reading time");
+    }
+    if (
       index === 0 &&
       (scene.transition !== "cut" || scene.transition_frames !== 0)
     )

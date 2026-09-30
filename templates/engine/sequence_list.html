@@ -6,7 +6,7 @@
     <div class="page-heading">
       <p class="eyebrow">Media</p>
       <h1>Sekvensprojekt</h1>
-      <p class="intro">Planera en sammanhängande film. Välj bilder, skapa klipp mellan dem och granska varje övergång.</p>
+      <p class="intro">Gör en film av dina egna bilder eller granskade klipp. Skriv ett budskap, se förhandsvisningen och exportera till Media.</p>
     </div>
     <div class="sequence-summary-chip" aria-label="Antal sekvensprojekt">
       <span>Projekt</span>
@@ -20,13 +20,14 @@
     <summary>
       <span>
         <span class="sequence-kicker">Nytt projekt</span>
-        <strong>Skapa en tom sekvens</strong>
+        <strong>Börja med din video</strong>
       </span>
       <span class="sequence-disclosure" aria-hidden="true">+</span>
     </summary>
     <div class="sequence-create-body">
-      <p>Börja med en idé och välj format. Du väljer bilder och granskar kostnaden innan du genererar klipp.</p>
+      <p>Ge filmen ett namn. I nästa steg väljer du material och skriver ett kort budskap.</p>
       <form method="post" class="sequence-create-form">
+        {% if source_run %}<input type="hidden" name="run_id" value="{{ source_run.pk }}">{% endif %}
         {% csrf_token %}
         <div class="sequence-form-grid">
           <div class="sequence-field sequence-field-wide">
@@ -51,7 +52,7 @@
           </div>
         </div>
         <div class="sequence-create-actions">
-          <button type="submit">Skapa sekvensprojekt</button>
+          <button type="submit">Välj material →</button>
           <span>Ingen generation startas.</span>
         </div>
       </form>
@@ -91,7 +92,7 @@
       <div class="sequence-empty-state">
         <span class="sequence-empty-icon" aria-hidden="true">◇</span>
         <h3>Inga sekvensprojekt ännu</h3>
-        <p>Börja med en idé ovan. Lägg sedan till bilder och skapa klipp mellan dem.</p>
+        <p>Börja med ett namn ovan. Egna bilder kan bli en färdig bildfilm direkt.</p>
       </div>
     {% endif %}
   </section>

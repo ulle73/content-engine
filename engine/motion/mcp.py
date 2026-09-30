@@ -5,6 +5,7 @@ from mcp.types import ToolAnnotations
 
 from engine.mcp_db import database_tool
 from engine.operator_common import serialize_asset
+from engine.sequence_export import FilmSettings
 
 from . import service
 from .catalog import catalog
@@ -18,6 +19,7 @@ def serialize_project(project):
         "run_id": str(project.run_id),
         "title": project.title,
         "revision": project.current_revision,
+        "source_sequence_id": str(project.source_sequence_id) if project.source_sequence_id else None,
         "spec": revision.spec,
         "approved_preview_id": str(project.approved_preview_id) if project.approved_preview_id else None,
         "workspace_url": reverse(
@@ -48,7 +50,26 @@ def register(mcp, company_for, run_for, user_for, safe_call):
         company_for(company_ref)
         from .planner import template_schema
 
-        return [dict(item, fields=template_schema(item["id"])) for item in catalog(query=query, kind="template")]
+        return [dict(item, fields=template_schema(item["id"])) for item in catalog(query=query, kind="template") if item["category"] != "sequence"]
+
+    @mcp.tool(title="List video sequences", annotations=read)
+    @database_tool
+    def list_video_sequences(company_ref: str) -> list[dict]:
+        """Find company-owned sequences for the guided film flow."""
+        company = company_for(company_ref)
+        return [{"id": str(s.pk), "title": s.title, "image_count": s.anchors.count(),
+                 "selected_clip_count": s.clips.filter(selected_version__isnull=False).count(),
+                 "film_revision": s.film.current_revision if hasattr(s, "film") else 0}
+                for s in company.sequence_projects.exclude(status="archived").select_related("film")[:40]]
+
+    @mcp.tool(title="Prepare a film from a sequence", annotations=write)
+    @database_tool
+    def prepare_sequence_film(company_ref: str, sequence_id: str, settings: FilmSettings,
+                              expected_revision: int, idempotency_key: str) -> dict:
+        """Prepare, never render or pay for generation. Settings: mode images/clips, headline <=12 words/80 chars, optional cta, aspect_ratio 9:16/1:1/16:9, music none/bed. Start at revision 0. Then use the existing preview, approval and final-render tools. All source audio is muted."""
+        from engine.sequence_export import prepare_film
+        return serialize_project(safe_call(prepare_film, company_for(company_ref), user_for(), sequence_id,
+            settings=settings, expected_revision=expected_revision, key=idempotency_key))
 
     @mcp.tool(title="List motion projects", annotations=read)
     @database_tool

@@ -31,6 +31,7 @@ engine_urls = [
     path("costs/", costs, name="costs"),
     path("sequences/", sequence_views.sequence_list, name="sequence_list"),
     path("sequences/<uuid:project_id>/", sequence_views.sequence_workspace, name="sequence_workspace"),
+    path("sequences/<uuid:project_id>/film/", sequence_views.sequence_film_prepare, name="sequence_film_prepare"),
     path("sequences/<uuid:project_id>/plan/generate/", sequence_views.sequence_plan_generate, name="sequence_plan_generate"),
     path("sequences/<uuid:project_id>/plan/save/", sequence_views.sequence_plan_save, name="sequence_plan_save"),
     path("sequences/<uuid:project_id>/plan/anchors/<int:position>/generate/", sequence_views.sequence_plan_anchor_generate, name="sequence_plan_anchor_generate"),

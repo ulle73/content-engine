@@ -141,6 +141,9 @@ def compile_template(
 ):
     from jsonschema import Draft202012Validator
 
+    if template_id == "sequence-film":
+        raise ValueError("Skapa filmen från en sekvens för att bevara material och ordning.")
+
     template = get_item(template_id, kinds={"template"})
     schema = template_schema(template_id)
     errors = list(Draft202012Validator(schema).iter_errors(fields))

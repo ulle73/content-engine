@@ -30,6 +30,7 @@ groups = {
         ("sparkline", "Trendlinje", "En obruten linje visar en serie v\u00e4rden."),
     ],
     "scene": [
+        ("footage", "Ditt material", "Hela bilden eller klippet, utan beskärning, filter eller klippljud."),
         ("hero", "Titel", "Stor rubrik med liten inledning och tydlig hierarki."),
         ("quote", "Citat", "Ett citat med tydligt avs\u00e4ndarnamn."),
         ("product", "Produkt", "En verklig produktbild med kort f\u00f6rklaring."),
@@ -107,6 +108,7 @@ groups = {
     ],
 }
 templates = [
+    ("sequence-film", "Färdig sekvens", "Sätt ihop egna bilder eller granskade klipp till en film.", "sequence", [], ["footage", "end-card"]),
     (
         "monthly-wrapped",
         "Monthly Wrapped",
@@ -280,7 +282,7 @@ for id, name, desc, category, required, scenes in templates:
             version=1,
             aspect_ratios=["9:16", "1:1", "16:9"],
             required_props=required,
-            optional_props=["asset_id", "secondary_asset_id", "end_card_asset_id", "cta", "attribution"],
+            optional_props=["end_card_asset_id", "cta"] if id == "monthly-wrapped" else ["asset_id", "secondary_asset_id", "end_card_asset_id", "cta", "attribution"],
             source="content-engine/original-templates; HyperFrames-informed pacing",
             license="Repository LICENSE (original implementation)",
             status="candidate",
@@ -291,7 +293,7 @@ for id, name, desc, category, required, scenes in templates:
     )
 assert len(items) == len({x["id"] for x in items})
 path = ROOT / "engine/motion/catalog.json"
-path.write_text(json.dumps({"version": 1, "items": items}, ensure_ascii=False, indent=2) + "\n")
+path.write_text(json.dumps({"version": 1, "items": items}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print(
     "Catalogue definitions:",
     len(items),

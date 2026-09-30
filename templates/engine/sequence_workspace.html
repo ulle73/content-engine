@@ -18,16 +18,7 @@
   </header>
 
   {% include 'engine/library_tabs.html' %}
-
-  <section class="sequence-safety-banner" aria-label="Workspace-status">
-    <div>
-      <span class="sequence-kicker">Versionshistorik</span>
-      <strong>Dina bilder och tidigare klipp bevaras</strong>
-      <p>Varje bild är en hållpunkt i filmen. Om du byter en bild som används i klipp behöver du bekräfta bytet. Tidigare versioner sparas så att du kan jämföra dem.</p>
-    </div>
-    <span class="sequence-safe-pill">Versionssparat</span>
-  </section>
-
+  <details class="sequence-plan-details" {% if sequence_plan %}open{% endif %}><summary>Vill du utveckla berättelsen? Planera scener med AI</summary>
   <section class="sequence-planner-section" aria-labelledby="sequence-planner-title">
     <div class="sequence-section-head">
       <div>
@@ -60,6 +51,7 @@
       </form>
 
       {% if sequence_plan %}
+      <details class="sequence-plan-editor-details"><summary>Ändra scener och bildreferenser i planen</summary>
       <form class="sequence-plan-editor" method="post" action="{% url 'engine:sequence_plan_save' workspace_id=workspace.pk project_id=project.pk %}">
         {% csrf_token %}
         <div class="sequence-plan-editor-head">
@@ -193,6 +185,7 @@
           <span>Recipes, referenskrav och modellkrav är trusted metadata och skrivs om lokalt om du ändrar duration.</span>
         </div>
       </form>
+      </details>
       {% else %}
         <div class="sequence-plan-empty">
           <span class="sequence-empty-icon" aria-hidden="true">✦</span>
@@ -288,7 +281,7 @@
                   <label>Referensbild från Media
                     <select name="reference_asset_id">
                       <option value="">Välj referensbild</option>
-                      {% for image in available_images %}<option value="{{ image.pk }}">{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+                      {% for image in available_images %}<option value="{{ image.pk }}">{{ image.alt_text|default:image.brief|truncatechars:65 }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
                     </select>
                   </label>
                   {% if 'product' in row.spec.reference_requirements %}<small>Produktreferens kräver en riktig produktbild. Den används som image-to-image source och sparas som typed PRODUCT_REFERENCE-provenance.</small>{% endif %}
@@ -299,7 +292,7 @@
                   <label>Extra referensbild <span>Valfritt</span>
                     <select name="reference_asset_id">
                       <option value="">Ingen referensbild</option>
-                      {% for image in available_images %}<option value="{{ image.pk }}">{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+                      {% for image in available_images %}<option value="{{ image.pk }}">{{ image.alt_text|default:image.brief|truncatechars:65 }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
                     </select>
                   </label>
                 {% endif %}
@@ -324,7 +317,7 @@
                 <label>Bild
                   <select name="asset_id" required>
                     <option value="">Välj bild</option>
-                    {% for image in available_images %}<option value="{{ image.pk }}">{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+                    {% for image in available_images %}<option value="{{ image.pk }}">{{ image.alt_text|default:image.brief|truncatechars:65 }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
                   </select>
                 </label>
                 {% if row.anchor.change_impact.total_versions %}
@@ -354,17 +347,11 @@
   </section>
   {% endif %}
 
-  <section class="sequence-metrics" aria-label="Projektöversikt">
-    <div><span>Anchors</span><strong>{{ anchors|length }}</strong><small>Kanoniska keyframes</small></div>
-    <div><span>Clips</span><strong>{{ clips|length }}</strong><small>Ordinarie segment</small></div>
-    <div><span>Bridges</span><strong>{{ bridges|length }}</strong><small>Separata övergångar</small></div>
-    <div><span>Kandidater</span><strong>{{ candidate_count }}</strong><small>Alla sparade versioner</small></div>
-  </section>
-
-  <section class="sequence-anchor-control-section" aria-labelledby="sequence-anchor-control-title">
+  </details>
+  <section id="sequence-material" class="sequence-anchor-control-section" aria-labelledby="sequence-anchor-control-title">
     <div class="sequence-section-head">
       <div>
-        <span class="sequence-kicker">Anchors</span>
+        <span class="sequence-kicker">Bilder</span>
         <h2 id="sequence-anchor-control-title">Lägg till bild i sekvensen</h2>
         <p>Bilden blir en ny hållpunkt sist i filmen. Välj från Media, ladda upp eller förbered ett AI-förslag.</p>
       </div>
@@ -379,12 +366,12 @@
           <label for="sequence-existing-image">Bild</label>
           <select id="sequence-existing-image" name="asset_id" required>
             <option value="">Välj bild</option>
-            {% for image in available_images %}<option value="{{ image.pk }}">{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+            {% for image in available_images %}<option value="{{ image.pk }}">{{ image.alt_text|default:image.brief|truncatechars:65 }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
           </select>
           <button type="submit" {% if not available_images %}disabled{% endif %}>Lägg till bild</button>
         </form>
       </details>
-      <details class="sequence-control-card">
+      <details class="sequence-control-card" {% if not anchors %}open{% endif %}>
         <summary>Ladda upp bild</summary>
         <form method="post" enctype="multipart/form-data" action="{% url 'engine:sequence_anchor_add_upload' workspace_id=workspace.pk project_id=project.pk %}">
           {% csrf_token %}
@@ -421,6 +408,24 @@
         {% endfor %}
       </div>
     {% endif %}
+  </section>
+
+  {% include 'engine/sequence_film_form.html' %}
+
+  <section class="sequence-safety-banner" aria-label="Workspace-status">
+    <div>
+      <span class="sequence-kicker">Versionshistorik</span>
+      <strong>Dina bilder och tidigare klipp bevaras</strong>
+      <p>Varje bild är en hållpunkt i filmen. Om du byter en bild som används i klipp behöver du bekräfta bytet. Tidigare versioner sparas så att du kan jämföra dem.</p>
+    </div>
+    <span class="sequence-safe-pill">Versionssparat</span>
+  </section>
+
+  <section class="sequence-metrics" aria-label="Projektöversikt">
+    <div><span>Anchors</span><strong>{{ anchors|length }}</strong><small>Kanoniska keyframes</small></div>
+    <div><span>Clips</span><strong>{{ clips|length }}</strong><small>Ordinarie segment</small></div>
+    <div><span>Bridges</span><strong>{{ bridges|length }}</strong><small>Separata övergångar</small></div>
+    <div><span>Kandidater</span><strong>{{ candidate_count }}</strong><small>Alla sparade versioner</small></div>
   </section>
 
   <section class="sequence-timeline-section" aria-labelledby="sequence-timeline-title">
@@ -477,7 +482,7 @@
                           {% csrf_token %}
                           <select name="asset_id" required>
                             <option value="">Välj bild</option>
-                            {% for image in available_images %}<option value="{{ image.pk }}" {% if image.pk == anchor.asset_id %}disabled{% endif %}>{{ image.get_origin_display }} · {{ image.created_at|date:"j M H:i" }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
+                            {% for image in available_images %}<option value="{{ image.pk }}" {% if image.pk == anchor.asset_id %}disabled{% endif %}>{{ image.alt_text|default:image.brief|truncatechars:65 }} · {{ image.width }}×{{ image.height }}</option>{% endfor %}
                           </select>
                           {% if anchor.change_impact.total_versions %}<label class="sequence-inline-confirm"><input type="checkbox" name="confirm_stale" value="1" required><span>Jag bekräftar att {{ anchor.change_impact.total_versions }} versioner blir stale.</span></label>{% endif %}
                           <button type="submit">Byt bild</button>

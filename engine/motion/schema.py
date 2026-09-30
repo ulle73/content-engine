@@ -3,6 +3,7 @@
 from __future__ import annotations
 import hashlib
 import json
+import math
 from typing import Annotated, Literal
 from uuid import UUID
 
@@ -80,6 +81,11 @@ class Scene(Closed):
             raise ValueError("This visualization requires non-negative values")
         if self.component == "percentage" and self.props.value > 100:
             raise ValueError("Percentage must be within 0..100")
+        if self.component == "footage":
+            if not self.props.asset_id:
+                raise ValueError("Footage requires a media asset")
+            if self.effects or self.sfx or self.transition != "cut":
+                raise ValueError("Footage uses clean cuts without effects or sound cues")
         return self
 
 
@@ -121,6 +127,14 @@ class MotionSpec(Closed):
         if sum(s.duration_frames - s.transition_frames for s in self.scenes) > 120 * self.fps:
             raise ValueError("Video cannot exceed 120 seconds")
         for index, scene in enumerate(self.scenes):
+            if scene.component == "footage" and scene.props.headline:
+                words = len(scene.props.headline.split())
+                if len(scene.props.headline) > 80 or words > 12 or scene.duration_frames < math.ceil((words / 2.5 + 1) * self.fps):
+                    raise ValueError("Footage text must be concise with enough reading time")
+            if self.template_id == "sequence-film" and scene.component == "end-card":
+                words = len((scene.props.headline + " " + (scene.props.cta or scene.props.body)).split())
+                if scene.duration_frames < math.ceil((words / 2.5 + 1) * self.fps):
+                    raise ValueError("Film ending needs enough reading time")
             if index and scene.transition_frames >= self.scenes[index - 1].duration_frames // 2:
                 raise ValueError("Transition consumes previous scene")
             ticks = sorted(c.frame for c in scene.sfx if c.kind == "tick")

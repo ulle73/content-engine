@@ -15,6 +15,7 @@
 .motion-project-row strong, .motion-project-row small { display: block; overflow-wrap: anywhere; }
 .motion-project-row small { color: var(--muted, #65736c); margin-top: 5px; }
 .motion-workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
+.film-workspace { grid-template-columns: minmax(0, 1fr); max-width: 720px; gap: 0; }
 .motion-results { min-width: 0; }
 .motion-render { padding: 20px 0; border-bottom: 1px solid var(--border, #e5e7eb); }
 .motion-render video { display: block; width: 100%; max-height: 480px; background: #082f27; margin-bottom: 16px; }
@@ -24,4 +25,18 @@
 .motion-scenes p, .motion-page h1 { overflow-wrap: anywhere; }
 .motion-render progress { width: 100%; }
 .motion-results form { margin: 16px 0; }
+.sequence-film { padding: 24px 0 36px; }
+.sequence-film h2 { margin-bottom: 16px; }
+.film-steps { display: flex; gap: 28px; padding: 0; margin: 20px 0 28px; list-style-position: inside; }
+.film-steps li { flex: 1; min-width: 0; }
+.film-steps span { display: block; margin-top: 6px; color: var(--muted); font-size: .9rem; }
+.sequence-plan-details { margin: 24px 0; }
+.sequence-plan-details > summary { cursor: pointer; padding: 14px 0; }
+.film-review { margin: 20px 0; padding: 0; border: 0; }
+.film-review legend { font-weight: 600; }
+.film-review label { display: flex; align-items: flex-start; gap: 12px; margin: 12px 0; line-height: 1.5; min-height: 44px; }
+.film-review input { flex: none; margin-top: 5px; }
+.motion-form .errorlist { font-size: .875rem; line-height: 1.5; }
+.sequence-film .notice .errorlist { color: inherit; font-size: 1rem; list-style: none; padding: 0; margin: 0; }
+@media (max-width: 760px) { .film-steps { flex-direction: column; gap: 16px; } }
 @media (max-width: 760px) { .motion-workspace { grid-template-columns: minmax(0, 1fr); gap: 0; } .motion-template-picker select { flex-basis: 100%; } .motion-actions .button { white-space: normal; } }

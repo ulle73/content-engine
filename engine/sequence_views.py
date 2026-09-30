@@ -36,6 +36,8 @@ from .sequence import (
     sync_sequence_generation,
 )
 from .sequence_planner import SequencePlanError, generate_sequence_plan, update_sequence_plan
+from .sequence_export import FilmForm, prepare_film
+from .motion.models import MotionProject
 
 
 FORMAT_CHOICES = {
@@ -170,12 +172,13 @@ def _project_queryset(workspace):
 @login_required
 @company_required
 def sequence_list(request, workspace_id):
-    if request.GET.get("run_id"):
+    run_id = request.POST.get("run_id") if request.method == "POST" else request.GET.get("run_id")
+    if run_id:
         try:
-            uuid.UUID(request.GET["run_id"])
+            uuid.UUID(run_id)
         except ValueError:
             raise Http404("Utkastet finns inte.") from None
-    source_run = get_object_or_404(ContentRun, pk=request.GET["run_id"], workspace=request.workspace) if request.GET.get("run_id") else None
+    source_run = get_object_or_404(ContentRun, pk=run_id, workspace=request.workspace, delivery_status="draft") if run_id else None
     if request.method == "POST":
         title = request.POST.get("title", "").strip()
         brief = request.POST.get("brief", "").strip()
@@ -196,6 +199,7 @@ def sequence_list(request, workspace_id):
                 brief=brief,
                 format=format_value,
                 platform=platform,
+                source_run=source_run,
             )
             messages.success(request, "Sequence-projektet är skapat.")
             return redirect(
@@ -216,13 +220,14 @@ def sequence_list(request, workspace_id):
         {
             "workspace": request.workspace,
             "projects": projects,
+            "source_run": source_run,
             "format_choices": FORMAT_CHOICES,
             "platform_choices": PLATFORM_CHOICES,
             "form_values": {
                 "title": request.POST.get("title", "") if request.method == "POST" else source_run.title if source_run else "",
                 "brief": request.POST.get("brief", "") if request.method == "POST" else source_run.draft.get("photo_brief", "") if source_run else "",
-                "format": request.POST.get("format", "scroll_story") if request.method == "POST" else "scroll_story",
-                "platform": request.POST.get("platform", "web") if request.method == "POST" else "web",
+                "format": request.POST.get("format", "reel") if request.method == "POST" else "reel",
+                "platform": request.POST.get("platform", "instagram") if request.method == "POST" else "instagram",
             },
         },
     )
@@ -328,12 +333,20 @@ def sequence_workspace(request, workspace_id, project_id):
             }
         )
     plan_anchor_readiness = sequence_plan_anchor_readiness(project)
+    film = MotionProject.objects.filter(source_sequence=project).first()
+    film_form = FilmForm(initial=film.sequence_settings if film else {
+        "headline": project.title[:80], "aspect_ratio": "9:16", "music": "none",
+        "mode": "clips" if clips and all(clip.selected_version_id for clip in clips) else "images",
+    })
 
     return render(
         request,
         "engine/sequence_workspace.html",
         {
             "workspace": request.workspace,
+            "film": film,
+            "film_form": film_form,
+            "film_key": uuid.uuid4(),
             "project": project,
             "anchors": anchors,
             "can_connect_images": not sequence_plan and project.status != "archived" and any(
@@ -359,6 +372,29 @@ def sequence_workspace(request, workspace_id, project_id):
             "company_has_official_logo": bool(request.workspace.official_logo_id),
         },
     )
+
+
+@login_required
+@company_required
+@require_POST
+def sequence_film_prepare(request, workspace_id, project_id):
+    project = _project_for_request(request, project_id)
+    form = FilmForm(request.POST)
+    if form.is_valid():
+        try:
+            if not request.POST.get("revision", "").isdigit():
+                raise ValueError("Öppna sekvensen igen för att hämta filmens senaste version.")
+            film = prepare_film(request.workspace, request.user, project.pk,
+                settings=form.cleaned_data, expected_revision=int(request.POST.get("revision", "-1")),
+                key=request.POST.get("key", ""))
+            return redirect("engine:motion_workspace", workspace_id=workspace_id, project_id=film.pk)
+        except (ValueError, MediaError) as exc:
+            form.add_error(None, str(exc))
+    film = MotionProject.objects.filter(source_sequence=project).first()
+    return render(request, "engine/sequence_film.html", {
+        "workspace": request.workspace, "project": project, "film": film,
+        "film_form": form, "film_key": request.POST.get("key", ""),
+    }, status=400)
 
 
 @login_required

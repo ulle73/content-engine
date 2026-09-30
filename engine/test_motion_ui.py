@@ -45,7 +45,9 @@ class MotionProductTests(TestCase):
 
     def test_motion_is_discoverable_from_media_and_draft(self):
         self.assertContains(self.client.get(self.url("media_library")), "Skapa motionvideo")
-        self.assertContains(self.client.get(self.url("review", run_id=self.run.pk)), "Skapa motionvideo")
+        response = self.client.get(self.url("review", run_id=self.run.pk))
+        self.assertContains(response, "Skapa motionvideo")
+        self.assertContains(response, self.url("sequence_list") + "?run_id=" + str(self.run.pk))
 
     def test_create_from_draft_is_local_and_preserves_copy(self):
         response = self.client.post(
@@ -153,6 +155,24 @@ class MotionProductTests(TestCase):
             kind="video",
             **kwargs,
         )
+
+    def test_failed_retry_keeps_completed_preview_available_for_review(self):
+        project = self.project()
+        preview = service.queue_render(
+            self.company, self.user, project.pk, mode="preview", expected_revision=1, key="first-preview"
+        )
+        preview.output_asset = self.asset()
+        preview.save()
+        preview.generation.status = "completed"
+        preview.generation.save()
+        generation = MediaGeneration.objects.create(
+            run=project.run, kind="video", provider="remotion", status="failed", error="Render timeout"
+        )
+        preview.revision.renders.create(generation=generation, mode="preview")
+        response = self.client.get(self.url("motion_workspace", project_id=project.pk))
+        self.assertEqual(response.context["renders"][0].pk, preview.pk)
+        self.assertContains(response, "Godkänn förhandsvisningen")
+        self.assertContains(response, "Render timeout")
 
     def test_preview_excluded_from_library_picker_mcp_and_direct_selection(self):
         project = self.project()

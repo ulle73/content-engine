@@ -225,6 +225,7 @@
             "device",
             "donut",
             "end-card",
+            "footage",
             "hero",
             "kinetic-words",
             "letter-cascade",
@@ -373,6 +374,7 @@
         "product-launch",
         "product-offer",
         "quote-testimonial",
+        "sequence-film",
         "social-promo",
         "top-three"
       ]

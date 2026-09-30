@@ -2,12 +2,14 @@
 {% block title %}{{ project.title }} · Motion{% endblock %}
 {% block content %}
 <main class="engine motion-page">
-  <a class="back-link" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}">← Motionprojekt</a>
-  <header class="page-header"><div><p class="eyebrow">Motion · Version {{ project.current_revision }}</p><h1>{{ project.title }}</h1><p class="intro">1. Redigera innehållet · 2. Granska förhandsvisningen · 3. Skapa färdig video</p></div></header>
+  {% if project.source_sequence_id %}<a class="back-link" href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=project.source_sequence_id %}#film">← Material och filmval</a>{% else %}<a class="back-link" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}">← Motionprojekt</a>{% endif %}
+  <header class="page-header"><div><p class="eyebrow">{% if project.source_sequence_id %}Din film{% else %}Motion{% endif %} · Version {{ project.current_revision }}</p><h1>{{ project.title }}</h1><p class="intro">1. Redigera innehållet · 2. Granska förhandsvisningen · 3. Skapa färdig video</p></div></header>
   {% include 'engine/library_tabs.html' %}
-  <div class="motion-workspace">
+  <div class="motion-workspace {% if project.source_sequence_id %}film-workspace{% endif %}">
+    {% if project.source_sequence_id %}{% include 'engine/motion_results.html' %}{% endif %}
     <section class="motion-editor"><h2>Innehåll</h2>
-      {% if template_editable %}
+      {% if project.source_sequence_id %}<p>Materialet och filmvalen är sparade. Förhandsvisa hela filmen, kontrollera bild, text och ljud och skapa sedan färdig video.</p><a href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=project.source_sequence_id %}#film">Ändra material eller filmval →</a><p class="small">Hela bilden visas utan beskärning eller filter. Klippljud är avstängt. {% if revision.spec.audio.enabled %}Lugn bakgrundsmusik med mjuk start och slut.{% else %}Filmen är avsiktligt utan ljud.{% endif %}</p>
+      {% elif template_editable %}
       <form method="post" action="{% url 'engine:motion_action' workspace_id=workspace.pk project_id=project.pk %}" class="motion-form" data-track-changes>{% csrf_token %}
         <input type="hidden" name="revision" value="{{ project.current_revision }}"><input type="hidden" name="key" value="{{ key }}"><input type="hidden" name="title" value="{{ project.title }}">
         {{ form.non_field_errors }}
@@ -18,7 +20,7 @@
       {% else %}<p>Projektet har anpassade scener eller ljudinställningar. Du kan granska och rendera här. Redigera specifikationen via MCP för att bevara anpassningarna.</p>{% endif %}
       <details class="motion-scenes"><summary>Scener och ordning</summary>{% for scene in revision.spec.scenes %}<p><strong>{{ forloop.counter }}. {{ scene.props.headline|default:scene.component }}</strong>{% if scene.props.body %}<br>{{ scene.props.body }}{% endif %}</p>{% endfor %}</details>
     </section>
-    {% include 'engine/motion_results.html' %}
+    {% if not project.source_sequence_id %}{% include 'engine/motion_results.html' %}{% endif %}
   </div>
 </main>
 {% endblock %}

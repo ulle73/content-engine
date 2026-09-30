@@ -3,6 +3,8 @@
 from __future__ import annotations
 import hashlib
 import io
+import math
+from array import array
 import uuid
 import av
 from django.db import transaction
@@ -34,6 +36,8 @@ def keyframe_positions(spec):
 
 def manifest(job):
     """Only the immutable revision's media IDs, never arbitrary URLs or R2 credentials."""
+    from engine.sequence_export import assert_film_current
+    assert_film_current(job.revision.project, job.revision)
     assets = []
     for ref in job.revision.asset_references.select_related("asset").all():
         asset = ref.asset
@@ -63,7 +67,10 @@ def manifest(job):
 
 
 def validate_output(data, spec, mode):
-    """Bounded header/first-frame checks. The worker separately decodes every frame."""
+    """Verify headers and decode every video frame and the full sound track.
+
+    Input size, timeline length and frame count bound the work and memory.
+    """
     if not data or len(data) > 80 * 1024 * 1024:
         raise ValueError("Videon m\u00e5ste vara mellan 1 byte och 80 MB.")
     width, height = expected_size(spec, mode)
@@ -94,8 +101,13 @@ def validate_output(data, spec, mode):
                 raise ValueError("Videon inneh\u00e5ller fel antal bildrutor.")
             if stream.codec_context.format.name != "yuv420p":
                 raise ValueError("Videon m\u00e5ste ha kompatibelt yuv420p-pixelformat.")
-            if next(container.decode(video=0), None) is None:
-                raise ValueError("Videon saknar l\u00e4sbar bild.")
+            decoded = 0
+            for frame in container.decode(video=0):
+                decoded += 1
+                if decoded > expected_frames or (frame.width, frame.height) != (width, height):
+                    raise ValueError("Videon innehåller extra eller skadade bildrutor.")
+            if decoded != expected_frames:
+                raise ValueError("Videon saknar läsbara bildrutor. Rendera om den.")
             return {
                 "width": width,
                 "height": height,
@@ -104,9 +116,49 @@ def validate_output(data, spec, mode):
                 "duration_seconds": seconds,
                 "video_codec": "h264",
                 "audio_codec": "aac",
+                **validate_audio(data, spec, expected_seconds),
             }
     except av.error.FFmpegError as exc:
         raise ValueError("Videofilen kunde inte avkodas.") from exc
+
+
+def validate_audio(data, spec, expected_seconds):
+    """Decode the full sound track; reject clipped, missing or unintended sound.
+
+    Intentional silence is a valid creative choice, never a missing-audio error.
+    This measures signal quality, not the musical or semantic quality of audio.
+    """
+    expected = spec["audio"]["enabled"] and spec["audio"]["gain"] > 0 and (
+        spec["audio"]["music"] != "none" or spec["audio"].get("music_asset_id")
+        or spec.get("end_card_asset_id") or any(s["sfx"] for s in spec["scenes"])
+    )
+    peak, energy, count = 0.0, 0.0, 0
+    with av.open(io.BytesIO(data)) as container:
+        if len(container.streams.audio) != 1:
+            raise ValueError("Videon ska ha ett sammanhängande ljudspår.")
+        resampler = av.AudioResampler(format="flt", layout="stereo", rate=48000)
+        for frame in container.decode(audio=0):
+            for block in resampler.resample(frame):
+                samples = array("f", bytes(block.planes[0])[:block.samples * 2 * 4])
+                peak = max(peak, max((abs(v) for v in samples), default=0))
+                energy += math.fsum(v * v for v in samples)
+                count += len(samples)
+                if count > (expected_seconds + 1) * 48000 * 2:
+                    raise ValueError("Ljudspåret är längre än filmen.")
+    seconds = count / (48000 * 2)
+    rms = math.sqrt(energy / count) if count else 0
+    if not math.isfinite(rms) or not math.isfinite(peak):
+        raise ValueError("Ljudspåret innehåller ogiltiga nivåer. Rendera om filmen.")
+    if abs(seconds - expected_seconds) > 0.15:
+        raise ValueError("Ljudspåret saknas eller slutar före filmen.")
+    if peak >= 0.98:
+        raise ValueError("Ljudet saknar marginal och riskerar att dista. Sänk volymen och rendera igen.")
+    if expected and rms < 0.0001:
+        raise ValueError("Musiken eller ljudet saknas. Välj ljud igen eller välj en film utan ljud.")
+    if not expected and peak > 0.0001:
+        raise ValueError("Videon innehåller ljud trots att filmen ska vara tyst.")
+    return {"audio_peak": round(peak, 6), "audio_rms": round(rms, 6),
+            "audio_seconds": round(seconds, 4), "audio_intent": "music_or_cues" if expected else "silent"}
 
 
 @transaction.atomic
@@ -159,6 +211,8 @@ def save_output(job_id, token, data):
             raise ValueError("Renderresultatet har redan sparats med annat inneh\u00e5ll.")
         return job.output_asset
     job = leased_job(job_id, token, lock=True)
+    from engine.sequence_export import assert_film_current
+    assert_film_current(job.revision.project, job.revision)
     if job.mode == "preview" and job.storyboard.count() != len(job.revision.spec["scenes"]):
         raise ValueError("Alla storyboard-bilder m\u00e5ste sparas innan preview-videon.")
     quality = validate_output(data, job.revision.spec, job.mode)

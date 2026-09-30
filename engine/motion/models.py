@@ -8,6 +8,10 @@ class MotionProject(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company = models.ForeignKey("engine.Company", on_delete=models.PROTECT, related_name="motion_projects")
     run = models.OneToOneField("engine.ContentRun", on_delete=models.PROTECT, related_name="motion_project")
+    source_sequence = models.OneToOneField(
+        "engine.SequenceProject", null=True, blank=True, on_delete=models.PROTECT, related_name="film"
+    )
+    sequence_settings = models.JSONField(default=dict, blank=True)
     title = models.CharField(max_length=160)
     current_revision = models.PositiveIntegerField(default=1)
     approved_preview = models.ForeignKey(

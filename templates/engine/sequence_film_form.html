@@ -1,0 +1,13 @@
+<section class="sequence-film" id="film" aria-labelledby="film-title">
+  <p class="eyebrow">Från material till färdig film</p>
+  <h2 id="film-title">Din video i tre steg</h2>
+  <ol class="film-steps"><li><strong>Välj material</strong><span>Egna bilder eller klipp du har granskat.</span></li><li><strong>Skriv ett budskap</strong><span>Vi ordnar bildtider, format och slutbild.</span></li><li><strong>Granska och exportera</strong><span>Se hela filmen och lyssna före godkännande.</span></li></ol>
+  {% if not anchors and not film_form.is_bound %}<p>Starta med dina egna bilder. <a href="#sequence-material">Välj dina bilder →</a></p>{% endif %}
+  <form method="post" action="{% url 'engine:sequence_film_prepare' workspace_id=workspace.pk project_id=project.pk %}" class="motion-form" data-track-changes>
+    {% csrf_token %}<input type="hidden" name="key" value="{{ film_key }}"><input type="hidden" name="revision" value="{{ film.current_revision|default:0 }}">
+    {% if film_form.non_field_errors %}<div class="notice warning" role="alert">{{ film_form.non_field_errors }}<p>Kontrollera materialet i sekvensen och försök igen.</p></div>{% endif %}
+    {% for field in film_form %}<div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}{% if field.help_text %}<p class="small">{{ field.help_text }}</p>{% endif %}</div>{% endfor %}
+    <div class="motion-actions"><button type="submit">{% if film %}Spara filmval och fortsätt{% else %}Förbered min film{% endif %} →</button>{% if film %}<a href="{% url 'engine:motion_workspace' workspace_id=workspace.pk project_id=film.pk %}">Öppna sparad film</a>{% endif %}</div>
+    <p class="small">Bildfilm: minst 4 sekunder per bild och slutbild. Mer text får längre lästid. Dina original bevaras, hela bilden syns och klippljud stängs av. Förberedelsen startar ingen AI-generering.</p>
+  </form>
+</section>

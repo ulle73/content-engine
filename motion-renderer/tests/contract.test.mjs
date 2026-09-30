@@ -34,6 +34,19 @@ const base = () => ({
 });
 test("canonical valid data", () =>
   assert.equal(validateSpec(base()).scenes[0].id, "first"));
+test("film footage has media and no destructive effects or clip sound cues", () => {
+  const s = base();
+  s.template_id = "sequence-film";
+  s.scenes[0].component = "footage";
+  assert.throws(() => validateSpec(s));
+  s.scenes[0].props.asset_id = "00000000-0000-4000-8000-000000000001";
+  assert.equal(validateSpec(s).scenes[0].component, "footage");
+  s.scenes[0].effects = ["duotone"];
+  assert.throws(() => validateSpec(s));
+  s.scenes[0].effects = [];
+  s.scenes[0].sfx = [{ kind: "tick", frame: 15, gain: 0.2 }];
+  assert.throws(() => validateSpec(s));
+});
 test("no arbitrary imports or props", () => {
   for (const [k, v] of [
     ["imports", ["fs"]],

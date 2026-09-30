@@ -66,6 +66,9 @@ def _revision(project, spec, number, brand=None):
             aid = scene["props"].get(key)
             if aid and by_id[aid].kind not in {"image", "video"}:
                 raise ValueError("Scenmedia m\u00e5ste vara bild eller video.")
+        if scene["component"] == "footage":
+            from engine.sequence_export import validate_film_asset
+            validate_film_asset(by_id[scene["props"]["asset_id"]], spec["aspect_ratio"], scene["duration_frames"], spec["fps"])
     audio_id = spec["audio"].get("music_asset_id")
     if audio_id and by_id[audio_id].kind not in {"audio", "video"}:
         raise ValueError("Musik m\u00e5ste vara ljud eller en video med ljudsp\u00e5r.")
@@ -135,6 +138,8 @@ def update_project(company, user, project_id, *, spec, expected_revision, key):
     if not new:
         return get_project(company, action.result["project_id"])
     project = get_project(company, project_id, lock=True)
+    if project.source_sequence_id:
+        raise ValueError("Ändra material och filmval i sekvensen och förbered en ny filmversion där.")
     if type(expected_revision) is not int or project.current_revision != expected_revision:
         raise ValueError("Projektet har \u00e4ndrats. H\u00e4mta senaste version innan du sparar.")
     _revision(project, spec, expected_revision + 1)
@@ -164,7 +169,11 @@ def queue_render(company, user, project_id, *, mode, expected_revision, key):
     if type(expected_revision) is not int or project.current_revision != expected_revision:
         raise ValueError("Projektet har \u00e4ndrats. H\u00e4mta senaste version.")
     revision = project.revisions.get(number=expected_revision)
+    from engine.sequence_export import assert_film_current
+    assert_film_current(project, revision)
     if mode == "final":
+        if project.run.delivery_status != "draft":
+            raise ValueError("Utkastet är redan överfört. Skapa ett nytt lokalt utkast för en ny film.")
         approved = project.approved_preview
         if not approved or approved.revision_id != revision.id or approved.generation.status != "completed":
             raise ValueError("Granska och godk\u00e4nn en f\u00f6rhandsvisning av denna version f\u00f6rst.")
@@ -203,6 +212,8 @@ def approve_preview(company, user, project_id, *, render_id, expected_revision):
     _owner(company, user)
     project = get_project(company, project_id, lock=True)
     job = get_render(company, render_id)
+    from engine.sequence_export import assert_film_current
+    assert_film_current(project, job.revision)
     if (
         project.current_revision != expected_revision
         or job.revision.project_id != project.id
