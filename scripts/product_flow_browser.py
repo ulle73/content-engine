@@ -33,7 +33,7 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
     def setUp(self):
         self.storage = tempfile.TemporaryDirectory()
         self.addCleanup(self.storage.cleanup)
-        self.settings_override = override_settings(MEDIA_STORAGE='local', MEDIA_ROOT=self.storage.name)
+        self.settings_override = override_settings(MEDIA_STORAGE='local', MEDIA_ROOT=Path(self.storage.name))
         self.settings_override.enable()
         self.addCleanup(self.settings_override.disable)
         self.user = get_user_model().objects.create_user(
