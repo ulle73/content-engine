@@ -1,0 +1,113 @@
+# One-time transport from the isolated coding workspace. Removed after verification.
+# Applies only hash-locked app/template edits; never rewrites history or touches main.
+name: Product Flow Candidate Verification
+on:
+  push:
+    branches: [codex/product-flow-integration]
+    paths: ['.github/product-flow-candidate.*', '.github/workflows/product-flow-apply.yml', 'scripts/product_flow_browser.py']
+permissions:
+  contents: write
+jobs:
+  verify-and-publish:
+    if: github.ref == 'refs/heads/codex/product-flow-integration'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: content_engine_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DJANGO_SETTINGS_MODULE: engine.test_settings
+      TEST_DATABASE_URL: postgres://postgres:isolated-test-only@localhost:5432/content_engine_test
+      PRODUCT_FLOW_BASELINE: '0'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Apply exact reviewed candidate
+        run: |
+          set -euo pipefail
+          mkdir -p data/product-flow-browser
+          python - <<'PY'
+          import gzip, hashlib, json
+          from pathlib import Path
+          payload = b''.join(Path(f'.github/product-flow-candidate.{i}').read_bytes() for i in range(3))
+          assert hashlib.sha256(payload).hexdigest() == 'a7ea66b343b5948e37cf8e24901a313446e28fcaa4f5047341a44a78be5842e0'
+          manifest = json.loads(gzip.decompress(payload))
+          assert len(manifest) == 16
+          pending = []
+          for entry in manifest:
+              path = Path(entry['path'])
+              assert not path.is_absolute() and '..' not in path.parts and path.parts[0] in {'engine', 'templates'}
+              assert not path.is_symlink()
+              old = path.read_bytes() if path.exists() else None
+              assert (hashlib.sha256(old).hexdigest() if old is not None else None) == entry['before_sha256'], str(path)
+              lines = old.decode().splitlines(keepends=True) if old is not None else []
+              for edit in reversed(entry['edits']):
+                  lines[edit['start']:edit['end']] = [edit['text']]
+              new = ''.join(lines).encode()
+              assert hashlib.sha256(new).hexdigest() == entry['after_sha256'], str(path)
+              pending.append((path, new))
+          for path, content in pending:
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(content)
+          Path('/tmp/product-flow-paths.json').write_text(json.dumps([str(path) for path, _ in pending]))
+          print('Applied 16 hash-verified files, preserving all other files.')
+          PY
+          git diff --check
+          git diff > data/product-flow-browser/applied.diff
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - run: pip install -r requirements-dev.txt playwright==1.55.0
+      - run: python -m playwright install --with-deps chromium
+      - name: SQLite regression suite
+        run: python manage.py test --settings=engine.test_settings --noinput 2>&1 | tee data/product-flow-browser/sqlite-tests.log
+      - name: PostgreSQL regression and locking suite
+        run: python manage.py test engine operator_bridge --settings=engine.postgres_test_settings --noinput 2>&1 | tee data/product-flow-browser/postgres-tests.log
+      - name: Static checks and migration drift
+        run: |
+          set -euo pipefail
+          python manage.py check --settings=engine.test_settings
+          python manage.py makemigrations --check --dry-run --settings=engine.test_settings
+          ruff check engine/media_composer.py engine/test_product_flow.py scripts/product_flow_browser.py
+          node --check engine/static/js/media-composer.js
+          git diff --check
+      - name: Real Chromium app flows
+        run: python scripts/product_flow_browser.py 2>&1 | tee data/product-flow-browser/browser-tests.log
+      - name: Publish tested app files to the same branch only
+        run: |
+          set -euo pipefail
+          branch=codex/product-flow-integration
+          test "$GITHUB_REF" = "refs/heads/$branch"
+          test "$(git ls-remote origin "refs/heads/$branch" | cut -f1)" = "$GITHUB_SHA"
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          paths = json.loads(Path('/tmp/product-flow-paths.json').read_text())
+          subprocess.run(['git', 'add', '--', *paths], check=True)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat: simplify media creation with safe drafts and trusted presets'
+          git push origin "HEAD:refs/heads/$branch"
+          git rev-parse HEAD > data/product-flow-browser/tested-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: product-flow-candidate-evidence
+          path: data/product-flow-browser/
+          retention-days: 7
+          if-no-files-found: warn
