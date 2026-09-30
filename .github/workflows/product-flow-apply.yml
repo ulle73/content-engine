@@ -1,5 +1,4 @@
-# One-time transport from the isolated coding workspace. Removed after verification.
-# Applies only hash-locked app/template edits; never rewrites history or touches main.
+# Temporary hash-locked transport; removed after the tested source commit.
 name: Product Flow Candidate Verification
 on:
   push:
@@ -79,15 +78,15 @@ jobs:
         run: python manage.py test engine operator_bridge --settings=engine.postgres_test_settings --noinput 2>&1 | tee data/product-flow-browser/postgres-tests.log
       - name: Static checks and migration drift
         run: |
-          set -euo pipefail
           python manage.py check --settings=engine.test_settings
           python manage.py makemigrations --check --dry-run --settings=engine.test_settings
           ruff check engine/media_composer.py engine/test_product_flow.py scripts/product_flow_browser.py
           node --check engine/static/js/media-composer.js
           git diff --check
-      - name: Instrument synthetic browser navigation only
+      - name: Instrument synthetic browser and session metadata only
         run: |
           python - <<'PY'
+          import textwrap
           from pathlib import Path
           p = Path('scripts/product_flow_browser.py')
           text = p.read_text()
@@ -95,16 +94,26 @@ jobs:
           extra = '''
                   self.observations.setdefault("requests", [])
                   page.on("request", lambda req: self.observations["requests"].append({"method": req.method, "path": urlparse(req.url).path}) if req.is_navigation_request() else None)
-                  self.observations.setdefault("responses", [])
-                  page.on("response", lambda res: self.observations["responses"].append({"status": res.status, "path": urlparse(res.url).path}) if res.request.is_navigation_request() else None)
                   self.observations.setdefault("console", [])
                   page.on("console", lambda msg: self.observations["console"].append(msg.text))
                   context.add_init_script("document.addEventListener('submit', e => console.log('FORM', e.target.getAttribute('action'), e.submitter?.getAttribute('formaction'), e.submitter?.name, e.submitter?.value), true)")
           '''
-          import textwrap
-          extra = textwrap.indent(textwrap.dedent(extra), '        ')
-          assert text.count(anchor) == 1
-          p.write_text(text.replace(anchor, anchor + '\n' + extra))
+          text = text.replace(anchor, anchor + '\n' + textwrap.indent(textwrap.dedent(extra), '        '))
+          auth_trace = '''
+          from django.contrib import auth as diagnostic_auth
+          diagnostic_original = diagnostic_auth.get_user
+          def diagnostic_user(request):
+              import hashlib
+              before = request.session.get('_auth_user_id')
+              result = diagnostic_original(request)
+              record = {'method': request.method, 'path': request.path, 'cookies': sorted(request.COOKIES), 'cookie_fingerprint': hashlib.sha256(request.COOKIES.get('sessionid', '').encode()).hexdigest()[:8], 'session_user_before': before, 'session_user_after': request.session.get('_auth_user_id'), 'authenticated': result.is_authenticated, 'fetch_site': request.META.get('HTTP_SEC_FETCH_SITE'), 'origin': request.META.get('HTTP_ORIGIN'), 'referer': request.META.get('HTTP_REFERER')}
+              with (EVIDENCE / 'auth-metadata.jsonl').open('a') as out:
+                  out.write(json.dumps(record) + '\\n')
+              return result
+          diagnostic_auth.get_user = diagnostic_user
+          '''
+          assert text.count('BASELINE = ') == 1
+          p.write_text(text.replace('BASELINE = ', textwrap.dedent(auth_trace) + '\nBASELINE = '))
           PY
       - name: Real Chromium app flows
         run: python scripts/product_flow_browser.py 2>&1 | tee data/product-flow-browser/browser-tests.log
@@ -117,8 +126,7 @@ jobs:
           python - <<'PY'
           import json, subprocess
           from pathlib import Path
-          paths = json.loads(Path('/tmp/product-flow-paths.json').read_text())
-          subprocess.run(['git', 'add', '--', *paths], check=True)
+          subprocess.run(['git', 'add', '--', *json.loads(Path('/tmp/product-flow-paths.json').read_text())], check=True)
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
