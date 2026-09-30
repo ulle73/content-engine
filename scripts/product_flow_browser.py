@@ -25,6 +25,7 @@ import django
 django.setup()
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.db import connections
 from django.test import override_settings
 from django.test.runner import DiscoverRunner
 from django.urls import reverse
@@ -84,8 +85,10 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
     def login(self, context):
         context.route("**/*", lambda route: route.continue_() if urlparse(route.request.url).netloc == urlparse(self.live_server_url).netloc else route.abort())
         page = context.new_page()
-        page.set_default_timeout(10000)
+        self.active_page = page
+        page.set_default_timeout(30000)
         page.on("pageerror", lambda error: self.browser_errors.append(str(error)))
+        page.on("response", lambda response: self.observations.setdefault("server_errors", []).append({"status": response.status, "path": urlparse(response.url).path}) if response.status >= 500 else None)
         page.goto(self.live_server_url + reverse("login"))
         page.locator("[name=username]").fill("product-flow@example.invalid")
         page.locator("[name=password]").fill("isolated-demo-only")
@@ -209,6 +212,8 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
                 expect(native.locator('[data-frame-preview="end_asset"]')).to_be_visible()
                 native.locator("#media-preset").select_option("before_after")
                 native.locator("#media-end-asset").select_option("")
+                self.screenshot(native, "native-form-before-submit")
+                native.locator(".generation-submit").scroll_into_view_if_needed()
                 native.locator(".generation-submit").click()
                 expect(native.locator(".composer-errors")).to_be_visible()
                 native_context.close()
@@ -220,7 +225,9 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
                 blocked_context.close()
                 self.observations["checks"].append("native_form_and_storage_disabled_fallbacks")
                 self.assertEqual(self.browser_errors, [])
+                self.assertEqual(self.observations.get("server_errors", []), [])
             except Exception:
+                page = self.active_page if not self.active_page.is_closed() else page
                 self.screenshot(page, "failure")
                 (EVIDENCE / "failure.txt").write_text(traceback.format_exc() + "\nURL: " + page.url + "\n" + page.locator("body").inner_text(), encoding="utf-8")
                 raise
@@ -232,4 +239,11 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
 
 
 if __name__ == "__main__":
-    raise SystemExit(bool(DiscoverRunner(verbosity=1, interactive=False).run_tests(["__main__.ProductFlowBrowserTests"])))
+    # In-memory SQLite shares one connection between the live server and test
+    # threads, causing random authentication/asset failures under browser load.
+    # A temporary file gives each thread its own connection without touching data.
+    with tempfile.TemporaryDirectory(prefix="product-flow-db-") as database_dir:
+        database = connections["default"]
+        database.settings_dict["TEST"]["NAME"] = str(Path(database_dir) / "browser.sqlite3")
+        failures = DiscoverRunner(verbosity=1, interactive=False).run_tests(["__main__.ProductFlowBrowserTests"])
+    raise SystemExit(bool(failures))

@@ -83,38 +83,6 @@ jobs:
           ruff check engine/media_composer.py engine/test_product_flow.py scripts/product_flow_browser.py
           node --check engine/static/js/media-composer.js
           git diff --check
-      - name: Instrument synthetic browser and session metadata only
-        run: |
-          python - <<'PY'
-          import textwrap
-          from pathlib import Path
-          p = Path('scripts/product_flow_browser.py')
-          text = p.read_text()
-          anchor = '        page.set_default_timeout(10000)'
-          extra = '''
-                  self.observations.setdefault("requests", [])
-                  page.on("request", lambda req: self.observations["requests"].append({"method": req.method, "path": urlparse(req.url).path}) if req.is_navigation_request() else None)
-                  self.observations.setdefault("console", [])
-                  page.on("console", lambda msg: self.observations["console"].append(msg.text))
-                  context.add_init_script("document.addEventListener('submit', e => console.log('FORM', e.target.getAttribute('action'), e.submitter?.getAttribute('formaction'), e.submitter?.name, e.submitter?.value), true)")
-          '''
-          text = text.replace(anchor, anchor + '\n' + textwrap.indent(textwrap.dedent(extra), '        '))
-          auth_trace = '''
-          from django.contrib import auth as diagnostic_auth
-          diagnostic_original = diagnostic_auth.get_user
-          def diagnostic_user(request):
-              import hashlib
-              before = request.session.get('_auth_user_id')
-              result = diagnostic_original(request)
-              record = {'method': request.method, 'path': request.path, 'cookies': sorted(request.COOKIES), 'cookie_fingerprint': hashlib.sha256(request.COOKIES.get('sessionid', '').encode()).hexdigest()[:8], 'session_user_before': before, 'session_user_after': request.session.get('_auth_user_id'), 'authenticated': result.is_authenticated, 'fetch_site': request.META.get('HTTP_SEC_FETCH_SITE'), 'origin': request.META.get('HTTP_ORIGIN'), 'referer': request.META.get('HTTP_REFERER')}
-              with (EVIDENCE / 'auth-metadata.jsonl').open('a') as out:
-                  out.write(json.dumps(record) + '\\n')
-              return result
-          diagnostic_auth.get_user = diagnostic_user
-          '''
-          assert text.count('BASELINE = ') == 1
-          p.write_text(text.replace('BASELINE = ', textwrap.dedent(auth_trace) + '\nBASELINE = '))
-          PY
       - name: Real Chromium app flows
         run: python scripts/product_flow_browser.py 2>&1 | tee data/product-flow-browser/browser-tests.log
       - name: Publish tested app files to the same branch only
