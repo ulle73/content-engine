@@ -1,0 +1,40 @@
+name: Product Flow Verify
+on:
+  push:
+    branches: [codex/product-flow-integration]
+    paths: ['engine/**', 'templates/**', 'scripts/product_flow_browser.py', '.github/workflows/product-flow-verify.yml']
+  pull_request:
+    branches: [main]
+    paths: ['engine/**', 'templates/**', 'scripts/product_flow_browser.py', '.github/workflows/product-flow-verify.yml']
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DJANGO_SETTINGS_MODULE: engine.test_settings
+      PRODUCT_FLOW_BASELINE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - run: pip install -r requirements-dev.txt playwright==1.55.0
+      - run: python -m playwright install --with-deps chromium
+      - run: python manage.py test --settings=engine.test_settings --noinput
+      - run: python manage.py check --settings=engine.test_settings
+      - run: python manage.py makemigrations --check --dry-run --settings=engine.test_settings
+      - run: python scripts/product_flow_browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: product-flow-browser-evidence
+          path: data/product-flow-browser/
+          if-no-files-found: warn
+          retention-days: 7
