@@ -27,37 +27,63 @@ ACTIVE = PENDING + ("unknown",)
 TERMINAL = ("completed", "failed", "nsfw", "canceled", "unknown")
 
 
+def _audio_metadata(container, stream, extension):
+    allowed = {"aac", "mp3", "mp3float", "pcm_s16le", "pcm_s24le", "pcm_s32le", "pcm_f32le", "pcm_f64le"}
+    if not stream or stream.codec_context.name not in allowed:
+        raise MediaError("Ljud ska vara WAV, MP3 eller M4A/AAC.")
+    duration = float(stream.duration * stream.time_base) if stream.duration is not None else (
+        container.duration / av.time_base if container.duration else None)
+    if not duration or not 0 < duration <= 1200 or not 8000 <= stream.codec_context.sample_rate <= 192000:
+        raise MediaError("Ljudet ska ha giltig samplingsfrekvens och vara h\u00f6gst 20 minuter.")
+    frame = next(container.decode(audio=0), None)
+    if not frame:
+        raise MediaError("Ljudfilen saknar l\u00e4sbart ljud.")
+    return {"kind": "audio", "mime_type": {"wav": "audio/wav", "mp3": "audio/mpeg", "m4a": "audio/mp4"}[extension],
+            "extension": extension, "duration_seconds": duration}
+
+
 def describe_file(data):
     if len(data) > 80 * 1024 * 1024 or not data:
-        raise MediaError("Välj en fil mellan 1 byte och 80 MB.")
-    if len(data) >= 12 and data[4:8] == b"ftyp":
+        raise MediaError("V\u00e4lj en fil mellan 1 byte och 80 MB.")
+    is_mp4 = len(data) >= 12 and data[4:8] == b"ftyp"
+    is_wav = data[:4] == b"RIFF" and data[8:12] == b"WAVE"
+    is_mp3 = data[:3] == b"ID3" or (len(data) > 2 and data[0] == 255 and data[1] & 224 == 224)
+    if is_mp4 or is_wav or is_mp3:
         try:
             with av.open(io.BytesIO(data)) as container:
                 stream = next(iter(container.streams.video), None)
-                if not stream or stream.codec_context.name != "h264" or data[8:12] == b"qt  ":
+                if stream is None:
+                    return _audio_metadata(container, next(iter(container.streams.audio), None),
+                        "m4a" if is_mp4 else "wav" if is_wav else "mp3")
+                if not is_mp4 or stream.codec_context.name != "h264" or data[8:12] == b"qt  ":
                     raise MediaError("Video ska vara MP4 med H.264-kodning.")
+                if stream.width * stream.height > 16_777_216 or stream.width < 1 or stream.height < 1:
+                    raise MediaError("Video f\u00e5r vara h\u00f6gst 16 megapixel.")
+                duration = float(stream.duration * stream.time_base) if stream.duration is not None else (
+                    container.duration / av.time_base if container.duration else None)
+                if not duration or not 0 < duration <= 1200:
+                    raise MediaError("Video f\u00e5r vara h\u00f6gst 20 minuter.")
                 frame = next(container.decode(video=0), None)
-                duration = float(stream.duration * stream.time_base) if stream.duration is not None else (container.duration / av.time_base if container.duration else None)
-                if not frame or not duration or duration <= 0:
-                    raise MediaError("Videon saknar läsbar bild eller längd.")
+                if not frame:
+                    raise MediaError("Videon saknar l\u00e4sbar bild.")
                 return {"kind": "video", "mime_type": "video/mp4", "extension": "mp4", "width": frame.width,
                         "height": frame.height, "duration_seconds": duration}
-        except (av.error.FFmpegError, ValueError) as exc:
-            raise MediaError("Videofilen kunde inte läsas. Välj MP4 med H.264-kodning.") from exc
+        except (av.error.FFmpegError, ValueError, OverflowError) as exc:
+            raise MediaError("Filen kunde inte l\u00e4sas. V\u00e4lj H.264 MP4, WAV, MP3 eller M4A/AAC.") from exc
     if len(data) > 8 * 1024 * 1024:
-        raise MediaError("Bilder får vara högst 8 MB. Video ska vara MP4 och högst 80 MB.")
+        raise MediaError("Bilder f\u00e5r vara h\u00f6gst 8 MB. Video och ljud f\u00e5r vara h\u00f6gst 80 MB.")
     try:
         with warnings.catch_warnings():
             warnings.simplefilter("error", Image.DecompressionBombWarning)
             with Image.open(io.BytesIO(data)) as img:
                 if img.format not in {"PNG", "JPEG", "WEBP"} or img.width * img.height > 40_000_000:
-                    raise MediaError("Välj JPEG, PNG eller WebP, högst 40 megapixel.")
+                    raise MediaError("V\u00e4lj JPEG, PNG eller WebP, h\u00f6gst 40 megapixel.")
                 kind, width, height = img.format, img.width, img.height
                 img.verify()
         return {"kind": "image", "mime_type": Image.MIME[kind], "extension": {"JPEG": "jpg", "PNG": "png", "WEBP": "webp"}[kind],
                 "width": width, "height": height}
     except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombWarning, Image.DecompressionBombError) as exc:
-        raise MediaError("Filen kunde inte läsas som JPEG, PNG, WebP eller MP4.") from exc
+        raise MediaError("Filen kunde inte l\u00e4sas som bild, video eller ljud.") from exc
 
 
 def store_asset(company, data, *, job=None, index=0, alt_text="", purpose="content"):
@@ -131,14 +157,19 @@ def extract_video_frame_png(asset, *, selector="final"):
         raise MediaError("Slutbilden kunde inte extraheras från videon.") from exc
 
 
-def store_derived_image(company, data, *, generation, alt_text="", brief=""):
+def store_derived_image(company, data, *, generation, alt_text="", brief="", asset_id=None):
     """Persist a generated/derived image through the normal MediaAsset storage path."""
     if generation.run.workspace_id != company.pk:
         raise MediaError("Den härledda bilden måste tillhöra generationens företag.")
     metadata = describe_file(data)
     if metadata["kind"] != "image":
         raise MediaError("Den härledda filen måste vara en bild.")
-    asset_id = uuid.uuid4()
+    asset_id = asset_id or uuid.uuid4()
+    existing = MediaAsset.objects.filter(pk=asset_id).first()
+    if existing:
+        if existing.company_id != company.pk or existing.sha256 != hashlib.sha256(data).hexdigest():
+            raise MediaError("Den h\u00e4rledda filen har redan sparats med annat inneh\u00e5ll.")
+        return existing
     key = f"{company.pk}/{asset_id}.{metadata.pop('extension')}"
     backend = put(key, data, metadata["mime_type"])
     return MediaAsset.objects.create(
@@ -417,6 +448,11 @@ def reconcile_video_job(job):
 
 
 def advance_job(job):
+    if job.provider == "remotion":
+        from .motion.jobs import wake_worker
+        wake_worker()
+        job.refresh_from_db()
+        return job
     if job.status == "queued":
         claimed = MediaGeneration.objects.filter(pk=job.pk, status="queued").update(status="starting", updated_at=timezone.now())
         if not claimed:
@@ -469,6 +505,11 @@ def advance_job(job):
 
 def cancel_job(job):
     """Cancel without ever creating or retrying a generation request."""
+    if job.provider == "remotion":
+        from .motion.service import cancel_render
+        cancel_render(job.run.workspace, job.motion_render.id)
+        job.refresh_from_db()
+        return job
     job.refresh_from_db()
     if job.status == "queued":
         MediaGeneration.objects.filter(pk=job.pk, status="queued").update(
@@ -494,7 +535,7 @@ def recover_media_jobs(*, limit=25):
     jobs = list(
         MediaGeneration.objects.filter(
             Q(status="running") | Q(status="saving", updated_at__lt=cutoff) | Q(status="starting", updated_at__lt=timezone.now() - timedelta(minutes=10))
-        ).select_related("run__workspace", "source_asset", "logo_asset").order_by("updated_at", "pk")[:limit]
+        ).exclude(provider="remotion").select_related("run__workspace", "source_asset", "logo_asset").order_by("updated_at", "pk")[:limit]
     )
     result = {"checked": 0, "completed": 0, "failed": 0, "nsfw": 0, "canceled": 0, "unknown": 0, "pending": 0, "errors": 0}
     for job in jobs:
@@ -514,6 +555,8 @@ def select_asset(run, asset):
     with transaction.atomic():
         locked = ContentRun.objects.select_for_update().get(pk=run.pk)
         chosen = MediaAsset.objects.select_for_update().get(pk=asset.pk, company=run.workspace)
+        if chosen.kind == "audio":
+            raise MediaError("Ljud kan anv\u00e4ndas i Motion, inte som bild eller video i ett inl\u00e4gg.")
         if locked.delivery_status != "draft":
             raise MediaError("Ändra media i Postiz efter överföringen.")
         if chosen.expires_at and chosen.expires_at <= timezone.now():
@@ -534,6 +577,8 @@ def remove_asset(asset):
         locked = MediaAsset.objects.select_for_update().get(pk=asset.pk)
         if locked.purpose == "logo" or locked.used_at or locked.content_runs.exists() or locked.logo_generations.exists() or locked.official_for.exists() or locked.variations.filter(status__in=ACTIVE).exists() or locked.generation_references.filter(generation__status__in=ACTIVE).exists() or locked.sequence_anchors.exists() or locked.sequence_anchor_revisions.exists():
             raise MediaError("Media som används av ett sparat inlägg, en sequence-anchor/version eller en pågående generation kan inte tas bort.")
+        if locked.motion_references.exists() or locked.motion_outputs.exists() or locked.motion_storyboards.exists():
+            raise MediaError("Media som anv\u00e4nds i ett Motion-projekt kan inte tas bort.")
         delete_file(locked)
         locked.delete()
 

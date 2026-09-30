@@ -67,6 +67,7 @@ engine_urls = [
     path("runs/<uuid:run_id>/draft/<int:idea_index>/", views.draft, name="draft"),
 ]
 urlpatterns = [
+    path("internal/motion/", include("engine.motion.worker_api")),
     path("", views.index, name="dashboard"),
     path("setup/", setup, name="setup"),
     path("accounts/login/", SignInView.as_view(), name="login"),

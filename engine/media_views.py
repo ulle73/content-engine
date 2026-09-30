@@ -37,7 +37,7 @@ def library(request, workspace_id):
         "generation", "generation__run"
     )
     filter_value = request.GET.get("filter", "all")
-    if filter_value in {"image", "video"}:
+    if filter_value in {"image", "video", "audio"}:
         assets = assets.filter(kind=filter_value)
     elif filter_value in {"uploaded", "generated"}:
         assets = assets.filter(origin=filter_value)
@@ -128,7 +128,7 @@ def picker(request, workspace_id, run_id):
         end_source = None
     assets = request.workspace.media_assets.filter(purpose="content").filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()))
     filter_value = request.GET.get("filter", "all")
-    if filter_value in {"image", "video"}:
+    if filter_value in {"image", "video", "audio"}:
         assets = assets.filter(kind=filter_value)
     elif filter_value in {"uploaded", "generated"}:
         assets = assets.filter(origin=filter_value)

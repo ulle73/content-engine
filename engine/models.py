@@ -175,7 +175,7 @@ class MediaGeneration(models.Model):
 class MediaAsset(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="media_assets")
-    kind = models.CharField(max_length=10, choices=[("image", "Bild"), ("video", "Video")])
+    kind = models.CharField(max_length=10, choices=[("image", "Bild"), ("video", "Video"), ("audio", "Ljud")])
     origin = models.CharField(max_length=10, choices=[("uploaded", "Uppladdad"), ("generated", "AI-genererad")])
     provider = models.CharField(max_length=20)
     storage_backend = models.CharField(max_length=10)
@@ -938,3 +938,6 @@ class OwnSnapshot(models.Model):
 
 # Kept in a separate module for readability, registered with the same Django app/database.
 from .creative_models import PromptEntry, PromptTerm  # noqa: E402,F401
+
+# Registered here so the existing Django app owns Motion migrations and relations.
+from .motion.models import MotionAssetReference, MotionKeyframe, MotionProject, MotionRender, MotionRevision  # noqa: F401,E402
