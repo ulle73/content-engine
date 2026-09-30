@@ -585,6 +585,6 @@ class CreativeCoreTests(TestCase):
         self.assertEqual(payload["registry_version"], "2026-09-25.2")
         self.assertTrue(payload["selection"]["profile_version"])
         self.assertTrue(payload["selection"]["evidence_version"])
-        self.assertEqual(payload["compiler_version"], "2026-09-25.2")
+        self.assertEqual(payload["compiler_version"], "2026-09-30.1")
         self.assertEqual(payload["recipe"]["recipe_id"], "generic_video")
         self.assertEqual(payload["recipe_registry_version"], RECIPE_REGISTRY_VERSION)

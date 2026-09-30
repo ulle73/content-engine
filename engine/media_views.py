@@ -24,6 +24,7 @@ from .ownership import company_required
 from .sequence import anchor_change_impact, sync_sequence_generation
 from .media import preview_job, refresh_terminal_provider_status, start_reviewed_job
 from .forms import snapshot_company_context
+from .media_composer import MediaComposerForm, preset_choices
 
 
 def run_for(request, run_id):
@@ -127,13 +128,16 @@ def new_studio(request, workspace_id):
 @login_required
 @company_required
 def picker(request, workspace_id, run_id):
-    run = run_for(request, run_id)
+    return _picker_response(request, run_for(request, run_id))
+
+
+def _picker_response(request, run, *, composer=None, status=200):
+    """Render GET, retry and invalid POST through the same bound form."""
     kind = request.GET.get("kind", "image")
     if kind not in {"image", "video"}:
         kind = "image"
-    source = None
-    end_source = None
     retry = get_object_or_404(MediaGeneration, pk=request.GET["retry"], run=run) if request.GET.get("retry") else None
+    source = end_source = None
     if retry:
         kind, source = retry.kind, retry.source_asset
         end_source = reference_asset(retry, ReferenceRole.end_image)
@@ -141,10 +145,27 @@ def picker(request, workspace_id, run_id):
         source = get_object_or_404(MediaAsset, pk=request.GET["source"], company=request.workspace, kind="image")
     if request.GET.get("end_source"):
         end_source = get_object_or_404(MediaAsset, pk=request.GET["end_source"], company=request.workspace, kind="image")
-    if kind != "video":
+    if kind != "video" or not source:
         end_source = None
-    if end_source and not source:
-        end_source = None
+    if composer is None:
+        params = retry.parameters or {} if retry else {}
+        creative = params.get("creative", {})
+        saved_brief = creative.get("brief", {})
+        recipe_id = creative.get("recipe", {}).get("recipe_id", "")
+        composer = MediaComposerForm(company=request.workspace, initial={
+            "token": uuid.uuid4(), "kind": kind,
+            "brief": retry.brief if retry else default_brief(run, kind) or (source.brief if source else ""),
+            "source_asset": source.pk if source else "", "end_asset": end_source.pk if end_source else "",
+            "shape": {"1:1": "square", "16:9": "landscape"}.get(saved_brief.get("aspect_ratio", params.get("aspect_ratio")), "portrait"),
+            "priority": saved_brief.get("quality_preference", "balanced"),
+            "count": params.get("count", 1), "model_override": params.get("model_override", ""),
+            "preset": recipe_id if recipe_id in dict(preset_choices(kind)) else "",
+            "include_logo": bool(retry.logo_asset_id) if retry else bool(request.workspace.official_logo_id) and kind == "image",
+        })
+    kind = composer.kind if composer.kind in {"image", "video"} else "image"
+    selected = {str(image.pk): image for image in composer.images}
+    source = selected.get(str(composer["source_asset"].value()))
+    end_source = selected.get(str(composer["end_asset"].value()))
     assets = publishable_assets(request.workspace.media_assets.filter(purpose="content").filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())))
     filter_value = request.GET.get("filter", "all")
     if filter_value in {"image", "video", "audio"}:
@@ -155,22 +176,18 @@ def picker(request, workspace_id, run_id):
     jobs = list(run.media_jobs.exclude(provider="remotion").order_by("-created_at").prefetch_related("assets")[:10])
     mode = ("image-to-video" if source else "text-to-video") if kind == "video" else ("image-to-image" if source else "text-to-image")
     override_models = verified_models(kind, mode)
-    if kind == "video" and end_source:
-        override_models = [
-            model for model in override_models
-            if model.request_contract(mode)
-            and ReferenceRole.end_image in model.request_contract(mode).supported_reference_roles
-        ]
+    if end_source:
+        override_models = [model for model in override_models if model.request_contract(mode) and ReferenceRole.end_image in model.request_contract(mode).supported_reference_roles]
     return render(request, "engine/media.html", {
         "workspace": request.workspace, "run": run, "kind": kind, "assets": assets, "jobs": jobs,
-        "source": source, "end_source": end_source,
-        "brief": retry.brief if retry else source.brief if source and kind == "image" and source.brief else default_brief(run, kind),
-        "token": uuid.uuid4(), "can_edit": run.delivery_status == "draft",
-        "higgs_ready": higgsfield_configured(),
-        "filter_value": filter_value, "now": timezone.now(), "active_statuses": ACTIVE,
-        "override_models": override_models,
-        "model_override": (retry.parameters or {}).get("model_override", "") if retry else "",
-    })
+        "source": source, "end_source": end_source, "brief": composer["brief"].value(),
+        "token": composer["token"].value(), "can_edit": run.delivery_status == "draft",
+        "higgs_ready": higgsfield_configured(), "filter_value": filter_value,
+        "now": timezone.now(), "active_statuses": ACTIVE, "override_models": override_models,
+        "model_override": composer["model_override"].value(), "composer": composer,
+        "composer_authoritative": composer.is_bound or bool(retry),
+        "composer_images": {str(image.pk): reverse("engine:asset_file", kwargs={"workspace_id": request.workspace.pk, "asset_id": image.pk}) for image in composer.images},
+    }, status=status)
 
 
 @login_required
@@ -200,24 +217,44 @@ def upload(request, workspace_id, run_id):
 @require_POST
 def generate_media(request, workspace_id, run_id):
     run = run_for(request, run_id)
-    try:
-        cleanup_expired(request.workspace)
-        source = get_object_or_404(MediaAsset, pk=request.POST["source_asset"], company=request.workspace, kind="image") if request.POST.get("source_asset") else None
-        end_source = get_object_or_404(MediaAsset, pk=request.POST["end_asset"], company=request.workspace, kind="image") if request.POST.get("end_asset") else None
-        job = create_job(run, token=uuid.UUID(request.POST.get("token", "")), kind=request.POST.get("kind"),
-                         brief=request.POST.get("brief", ""), count=int(request.POST.get("count", "2")),
-                         shape=request.POST.get("shape", "portrait"), source=source, end_source=end_source,
-                         include_logo=bool(request.POST.get("include_logo")),
-                         priority=request.POST.get("priority", "balanced"),
-                         model_override=request.POST.get("model_override", ""))
+    data = request.POST.copy()
+    for key, value in {"priority": "balanced", "shape": "portrait", "count": "1"}.items():
+        data.setdefault(key, value)
+    composer = MediaComposerForm(data, company=request.workspace)
+    if composer.is_valid():
+        values = composer.cleaned_data
         try:
-            preview_job(job)
-        except MediaError as exc:
-            messages.error(request, str(exc))
-        return redirect("engine:media_job", workspace_id=workspace_id, run_id=run.pk, job_id=job.pk)
-    except (MediaError, ValueError) as exc:
-        messages.error(request, str(exc) if isinstance(exc, MediaError) else "Formuläret kunde inte läsas. Försök igen.")
-    return redirect("engine:media", workspace_id=workspace_id, run_id=run.pk)
+            job = create_job(run, token=values["token"], kind=values["kind"], brief=values["brief"],
+                             count=values["count"], shape=values["shape"], source=values["source_asset"],
+                             end_source=values["end_asset"], include_logo=values["include_logo"],
+                             priority=values["priority"], recipe_id=values["preset"] or None,
+                             model_override=values["model_override"])
+            try:
+                preview_job(job)
+            except MediaError as exc:
+                messages.error(request, str(exc))
+            return redirect("engine:media_job", workspace_id=workspace_id, run_id=run.pk, job_id=job.pk)
+        except (MediaError, ValueError) as exc:
+            composer.add_error(None, str(exc) if isinstance(exc, MediaError) else "Formuläret kunde inte läsas. Försök igen.")
+    return _picker_response(request, run, composer=composer, status=400)
+
+
+@login_required
+@company_required
+@require_POST
+def composer_handoff(request, workspace_id, run_id):
+    """Explicitly carry the edited intent into an existing engine, never generate."""
+    target = request.POST.get("target")
+    brief = request.POST.get("brief", "").strip()
+    if target not in {"motion", "sequence"} or not brief or len(brief) > 6000:
+        return HttpResponse("Välj Motion eller Sequence och beskriv vad du vill skapa (högst 6000 tecken).", status=400)
+    with transaction.atomic():
+        run = get_object_or_404(ContentRun.objects.select_for_update(), pk=run_id, workspace=request.workspace)
+        if run.delivery_status != "draft":
+            return HttpResponse("Utkastet har redan överförts. Skapa ett nytt utkast först.", status=400)
+        run.draft = {**run.draft, "photo_brief": brief}
+        run.save(update_fields=["draft"])
+    return redirect(reverse("engine:" + target + "_list", kwargs={"workspace_id": workspace_id}) + "?run_id=" + str(run.pk))
 
 
 @login_required

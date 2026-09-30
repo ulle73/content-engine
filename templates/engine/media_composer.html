@@ -1,0 +1,39 @@
+<details class="media-card premium-generation-card" id="generate" open>
+  <summary><span class="media-card-icon" aria-hidden="true">✦</span><span><span class="media-section-kicker">Creative Engine</span><strong>Skapa med AI</strong><small>Din idé in. Rätt modell och prompt ut.</small></span><span class="generation-chevron" aria-hidden="true">⌄</span></summary>
+  <div class="generation-body">
+    <div class="section-head generation-section-head">
+      <div><h3>{% if kind == 'video' %}Skapa en video{% else %}Skapa en bild{% endif %}</h3><p class="small">Beskriv resultatet. Du behöver inte kunna modeller eller promptteknik.</p></div>
+      <nav class="segmented generation-kind-switch" aria-label="Typ av generation"><a href="?kind=image#generate" {% if kind == 'image' %}aria-current="page"{% endif %}>Bild</a><a href="?kind=video#generate" {% if kind == 'video' %}aria-current="page"{% endif %}>Video</a></nav>
+    </div>
+    <form class="media-form premium-generation-form composer-form" method="post" action="{% url 'engine:media_generate' workspace_id=workspace.pk run_id=run.pk %}" data-composer data-key="ce-composer:{{ request.user.pk }}:{{ workspace.pk }}:{{ run.pk }}" data-baseline="{{ run.draft.photo_brief }}" data-authoritative="{{ composer_authoritative|yesno:'1,0' }}">
+      {% csrf_token %}{{ composer.token }}{{ composer.kind }}
+      {% if composer.errors %}<div class="notice error composer-errors" role="alert" tabindex="-1"><strong>Kontrollera dina val. Din beskrivning finns kvar.</strong>{{ composer.non_field_errors }}{% for field in composer %}{% if field.errors %}<p><a href="#{{ field.id_for_label }}">{{ field.label }}</a>: {{ field.errors|striptags }}</p>{% endif %}{% endfor %}</div>{% endif %}
+      {% if kind == 'video' %}
+        <div class="composer-field"><label for="{{ composer.preset.id_for_label }}">{{ composer.preset.label }}</label>{{ composer.preset }}<p id="composer-preset-help" class="small" aria-live="polite">Välj ett upplägg eller beskriv din egen idé. Din text ersätts inte.</p></div>
+      {% else %}{{ composer.preset.as_hidden }}{% endif %}
+      <div class="composer-field"><label for="media-brief">{{ composer.brief.label }}</label>{{ composer.brief }}<p class="small">Ett motiv och en tydlig idé räcker. Har du flera scener? Fortsätt i Sequence nedan.</p></div>
+      <fieldset class="composer-frames"><legend>{% if kind == 'video' %}Dina bilder{% else %}Utgå från en bild{% endif %} <span class="small">Valfritt för Egen idé</span></legend>
+        <div class="composer-field"><label for="{{ composer.source_asset.id_for_label }}">{% if kind == 'video' %}Startbild{% else %}Referensbild{% endif %}</label>{{ composer.source_asset }}<img class="composer-frame-preview" data-frame-preview="source_asset" alt="Vald startbild" {% if source %}src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=source.pk %}"{% else %}hidden{% endif %}><p class="small" data-frame-label="source_asset" aria-live="polite">{% if source %}Startbild vald{% endif %}</p></div>
+        {% if kind == 'video' %}<div class="composer-field"><label for="{{ composer.end_asset.id_for_label }}">Slutbild</label>{{ composer.end_asset }}<img class="composer-frame-preview" data-frame-preview="end_asset" alt="Vald slutbild" {% if end_source %}src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=end_source.pk %}"{% else %}hidden{% endif %}><p class="small" data-frame-label="end_asset" aria-live="polite">{% if end_source %}Slutbild vald{% endif %}</p><p class="small">Auto väljer mellan verifierade videomodeller med stöd för dina bilder.</p></div>{% else %}{{ composer.end_asset.as_hidden }}{% endif %}
+        <a class="text-link" href="#upload">Ladda upp en ny bild →</a>
+      </fieldset>
+      <div class="composer-field"><label for="{{ composer.shape.id_for_label }}">{{ composer.shape.label }}</label>{{ composer.shape }}</div>
+      {% if kind == 'image' and workspace.official_logo %}<label class="channel-option generation-logo-option">{{ composer.include_logo }}<span>{{ composer.include_logo.label }}<small>Loggan läggs på efter genereringen, inte ritad av AI.</small></span></label>{% endif %}
+      <details class="generation-advanced"><summary>Fler val · prioritet{% if kind == 'video' %}, modell{% else %}, antal{% endif %}</summary><div class="generation-advanced-body">
+        <div class="composer-field"><label for="{{ composer.priority.id_for_label }}">{{ composer.priority.label }}</label>{{ composer.priority }}</div>
+        {% if kind == 'image' %}<div class="composer-field"><label for="{{ composer.count.id_for_label }}">{{ composer.count.label }}</label>{{ composer.count }}</div>{% endif %}
+        {% if kind == 'video' %}<div class="composer-field"><label for="{{ composer.model_override.id_for_label }}">{{ composer.model_override.label }}</label>{{ composer.model_override }}<p class="small">Auto rekommenderas. Ett manuellt val stoppas om det inte stöder din kombination av bilder och inställningar.</p></div>{% endif %}
+      </div></details>
+      <p class="small">Balanserad prioritet som standard. {% if kind == 'video' %}Längd, upplösning och modell anpassas till upplägget; en längd du anger i beskrivningen prioriteras.{% else %}En bild som standard för att undvika onödiga alternativ.{% endif %} Granska de faktiska inställningarna och kostnadsinformationen i nästa steg.</p>
+      {% if kind == 'video' and not higgs_ready %}<p class="notice warning">Videoleverantören är inte ansluten ännu. Du kan förbereda en idé, men inte starta betald video förrän anslutning och pris har verifierats.</p>{% endif %}
+      <button class="generation-submit" type="submit">Granska före start <span aria-hidden="true">→</span></button>
+      <p class="small">Inget genereras eller publiceras när du granskar.</p>
+      <div class="composer-handoff"><p class="small">Behöver din idé ett annat upplägg? Texten följer med och utkastets copy behålls.</p><button class="button-secondary" type="submit" name="target" formnovalidate value="sequence" formaction="{% url 'engine:media_handoff' workspace_id=workspace.pk run_id=run.pk %}">Fortsätt i Sequence</button><button class="button-secondary" type="submit" name="target" formnovalidate value="motion" formaction="{% url 'engine:media_handoff' workspace_id=workspace.pk run_id=run.pk %}">Fortsätt i Motion</button><p class="small">Sequence: bilder och flera scener. Motion: text, siffror och grafiska mallar.</p></div>
+      <p class="small" data-composer-status aria-live="polite"></p>
+    </form>
+  </div>
+</details>
+{{ composer.preset_help|json_script:"composer-presets" }}
+{{ composer_images|json_script:"composer-images" }}
+
+{{ composer.model_options|json_script:"composer-models" }}

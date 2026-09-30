@@ -57,6 +57,7 @@ engine_urls = [
     path("runs/<uuid:run_id>/media/", media_views.picker, name="media"),
     path("runs/<uuid:run_id>/media/upload/", media_views.upload, name="media_upload"),
     path("runs/<uuid:run_id>/media/generate/", media_views.generate_media, name="media_generate"),
+    path("runs/<uuid:run_id>/media/continue/", media_views.composer_handoff, name="media_handoff"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/", media_views.job_page, name="media_job"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/status/", media_views.job_status, name="media_job_status"),
     path("runs/<uuid:run_id>/media/jobs/<uuid:job_id>/refresh-provider/", media_views.refresh_provider_status, name="media_job_refresh_provider"),

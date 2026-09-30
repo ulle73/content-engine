@@ -213,8 +213,11 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
                 native.locator("#media-preset").select_option("before_after")
                 native.locator("#media-end-asset").select_option("")
                 self.screenshot(native, "native-form-before-submit")
-                native.locator(".generation-submit").scroll_into_view_if_needed()
-                native.locator(".generation-submit").click()
+                # Exercise the native keyboard submit path with page scripts disabled.
+                # This path does not rely on pointer stability polling with disabled page scripts.
+                native.bring_to_front()
+                expect(native.locator(".generation-submit")).to_be_enabled()
+                native.locator(".generation-submit").press("Enter")
                 expect(native.locator(".composer-errors")).to_be_visible()
                 native_context.close()
                 blocked_context = browser.new_context()

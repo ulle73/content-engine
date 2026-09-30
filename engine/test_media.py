@@ -268,7 +268,8 @@ class MediaTests(TestCase):
         })
         self.assertContains(picker, "Startbild vald")
         self.assertContains(picker, "Slutbild vald")
-        self.assertContains(picker, f'name="end_asset" value="{end.pk}"', html=False)
+        self.assertEqual(str(picker.context["composer"]["end_asset"].value()), str(end.pk))
+        self.assertContains(picker, f'value="{end.pk}" selected', html=False)
 
         with patch(
             "engine.media.providers.estimate_video",
@@ -351,7 +352,8 @@ class MediaTests(TestCase):
                 "end_asset": str(end.pk),
                 "model_override": "kling-video/v2.5-turbo/pro",
             })
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.context["composer"]["brief"].value(), "Bridge these frames in 5 seconds")
         estimate.assert_not_called()
         start_video.assert_not_called()
         self.assertFalse(self.run.media_jobs.exists())

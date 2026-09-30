@@ -146,8 +146,6 @@ def parse_brief(request: str, *, kind: str, has_reference=False, reference_media
         duration = max(1, min(max(map(int, timeline)), 120))
     elif match:
         duration = max(1, min(int(match.group(1)), 120))
-    elif kind == "video":
-        duration = 10
 
     ratio = "9:16" if shape == "portrait" else "1:1" if shape == "square" else "16:9" if shape == "landscape" else "auto"
     explicit = re.search(r"(?<!\d)(9\s*:\s*16|16\s*:\s*9|1\s*:\s*1|4\s*:\s*5|4\s*:\s*3|3\s*:\s*4|21\s*:\s*9)(?!\d)", text)
@@ -206,7 +204,6 @@ def parse_brief(request: str, *, kind: str, has_reference=False, reference_media
                            (('dimma', 'mist'), 'mist'), (('vatten', 'water'), 'water'), (('ljus', 'light'), 'subtle light')):
         if any(n in folded for n in needles):
             allow.append(value)
-    allow.extend(camera)
 
     forbid = []
     if has_reference:
@@ -562,8 +559,10 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             sections.append("FORMAT MODE: " + format_direction)
         if _uses_prompt_section(model, "CAMERA"):
             camera_text = ", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"
-            if recipe and recipe.camera_strategy:
-                camera_text += " " + " ".join(recipe.camera_strategy[:2])
+            if recipe and recipe.camera_strategy and (not brief.camera_movement or set(brief.camera_movement) == {"controlled motion"}):
+                camera_text = " ".join(recipe.camera_strategy[:2])
+            elif recipe and recipe.recipe_id == "scroll_transition_bridge" and "static" not in brief.camera_movement:
+                camera_text += ". " + " ".join(recipe.camera_strategy[:2])
             sections.append("CAMERA: " + camera_text)
         if brief.aspect_ratio != "auto" and _uses_prompt_section(model, "FORMAT_INTENT"):
             sections.append("FORMAT INTENT: compose safely for " + brief.aspect_ratio + ".")
@@ -622,8 +621,10 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             sections.append("END FRAME: Use the supplied end image as the exact closing visual anchor and arrive there naturally.")
         if _uses_prompt_section(model, "CAMERA"):
             camera_text = ", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene"
-            if recipe and recipe.camera_strategy:
-                camera_text += " " + " ".join(recipe.camera_strategy[:2])
+            if recipe and recipe.camera_strategy and (not brief.camera_movement or set(brief.camera_movement) == {"controlled motion"}):
+                camera_text = " ".join(recipe.camera_strategy[:2])
+            elif recipe and recipe.recipe_id == "scroll_transition_bridge" and "static" not in brief.camera_movement:
+                camera_text += ". " + " ".join(recipe.camera_strategy[:2])
             sections.append("CAMERA: " + camera_text + ".")
         if _uses_prompt_section(model, "PHYSICS"):
             physics = "Use physically plausible continuous motion."
@@ -697,6 +698,8 @@ def build_plan(run, request: str, *, kind: str, source=None, end_source=None, sh
         references.append(ReferenceRole.end_image.value)
     brief = parse_brief(request, kind=kind, has_reference=bool(source), reference_media=references, shape=shape, priority=priority)
     recipe, recipe_selection = resolve_recipe(brief, recipe_id=recipe_id)
+    if kind == "video" and brief.duration_seconds is None:
+        brief = brief.model_copy(update={"duration_seconds": recipe.default_duration_intent or 10})
     complexity = analyze_complexity(brief)
     model, selection = route_model(brief, complexity, recipe=recipe, model_override=model_override)
     params, normalization = compile_parameters(brief, model, count=count, shape=shape)

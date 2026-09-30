@@ -203,11 +203,11 @@ class AppShellTests(TestCase):
         self.assertContains(response, 'name="checked_postiz"')
         self.assertContains(response, 'value="reset"')
 
-    def test_media_generation_is_optional_but_variant_and_retry_links_open_it(self):
+    def test_media_composer_is_visible_and_video_links_keep_it_open(self):
         run = ContentRun.objects.create(workspace=self.workspace, author=self.user, context={}, model="test", draft={})
         url = reverse("engine:media", kwargs={"workspace_id": self.workspace.pk, "run_id": run.pk})
         response = self.client.get(url)
-        self.assertNotIn("open", UIElements(response).by_id("generate"))
+        self.assertIn("open", UIElements(response).by_id("generate"))
         for name in ("token", "kind", "brief", "shape", "count"):
             self.assertContains(response, f'name="{name}"')
         response = self.client.get(url, {"kind": "video"})

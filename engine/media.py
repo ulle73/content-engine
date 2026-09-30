@@ -192,15 +192,9 @@ def store_derived_image(company, data, *, generation, alt_text="", brief="", ass
 
 
 def default_brief(run, kind):
-    idea = run.ideas[run.selected] if run.selected is not None and run.selected < len(run.ideas) else {}
-    if kind == "image":
-        return idea.get("photo_brief") or run.draft.get("photo_brief", "")
-    title = idea.get("title", run.title)
-    angle = idea.get("angle", "Förklara en konkret lärdom från inlägget.")
-    return (f"0–2 sek · Hook: {title}\n2–5 sek · Budskap: {angle}\n"
-            "5–8 sek · Lärdom: Visa ett konkret nästa steg som stöds av texten.\n"
-            "8–10 sek · CTA: Bjud in tittaren att reflektera eller prova nästa steg.\n"
-            "Skapa en enkel visuell sekvens i stående format. Undvik påhittade resultat och siffror.")
+    """Start from the user's latest visual intent, not an invented video script."""
+    idea = run.ideas[run.selected] if run.selected is not None and 0 <= run.selected < len(run.ideas) else {}
+    return run.draft.get("photo_brief") or idea.get("photo_brief") or idea.get("angle") or ""
 
 
 def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced", recipe_id=None, model_override=""):
