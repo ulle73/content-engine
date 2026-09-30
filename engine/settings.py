@@ -9,7 +9,8 @@ from django.core.exceptions import ImproperlyConfigured
 
 ENGINE_ROOT = Path(__file__).resolve().parent.parent
 env = environ.Env()
-environ.Env.read_env(ENGINE_ROOT / ".env", overwrite=False)
+if os.environ.get("DJANGO_SETTINGS_MODULE") not in {"engine.test_settings", "engine.postgres_test_settings"}:
+    environ.Env.read_env(ENGINE_ROOT / ".env", overwrite=False)
 SECRET_KEY = env("SECRET_KEY")
 APP_URL = os.environ.get("RENDER_EXTERNAL_URL") or env("APP_URL", default="http://127.0.0.1:8765")
 LOCAL_HTTP = urlparse(APP_URL).hostname in {"127.0.0.1", "localhost"} and APP_URL.startswith("http://")

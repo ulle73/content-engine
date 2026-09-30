@@ -1,7 +1,8 @@
 import { bundle } from "@remotion/bundler";
 import { buildAudio } from "./audio-assets.mjs";
 import path from "node:path";
-const root = new URL(".", import.meta.url).pathname;
+import { fileURLToPath } from "node:url";
+const root = fileURLToPath(new URL(".", import.meta.url));
 buildAudio(path.join(root, "public/audio"));
 await bundle({
   entryPoint: path.join(root, "src/Root.tsx"),

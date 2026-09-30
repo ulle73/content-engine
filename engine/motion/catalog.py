@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent
 
 @lru_cache(maxsize=1)
 def _registry():
-    items = json.loads((ROOT / "catalog.json").read_text())["items"]
+    items = json.loads((ROOT / "catalog.json").read_text(encoding="utf-8"))["items"]
     if len(items) != len({item["id"] for item in items}):
         raise RuntimeError("Duplicate motion catalogue IDs")
     return {item["id"]: item for item in items}

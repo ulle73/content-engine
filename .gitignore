@@ -13,6 +13,7 @@ __pycache__/
 *.log
 
 node_modules/
+.remotion/
 motion-renderer/build/
 motion-renderer/public/audio/
 

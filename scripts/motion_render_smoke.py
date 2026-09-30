@@ -12,8 +12,12 @@ import psutil
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "engine.test_settings")
+import django
+django.setup()
 from engine.motion.planner import compile_template
 from engine.motion.brand import PRESETS
+from engine.motion.outputs import validate_output
 
 DEST = Path(os.environ.get("MOTION_EVIDENCE_DIR", str(ROOT / "motion-evidence")))
 DEST.mkdir(parents=True, exist_ok=True)
@@ -51,6 +55,8 @@ for mode, ratio in [("preview", "9:16"), ("final", "9:16"), ("final", "1:1"), ("
             print((folder / "render.log").read_text())
             raise SystemExit(process.returncode)
     video = folder / (mode + ".mp4")
+    # Use the server's real ingestion contract as well as independent full decoding.
+    quality = validate_output(video.read_bytes(), spec, mode)
     subprocess.run(["ffmpeg", "-v", "error", "-i", str(video), "-f", "null", "-"], check=True)
     info = json.loads(
         subprocess.check_output(["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", str(video)])
@@ -69,6 +75,7 @@ for mode, ratio in [("preview", "9:16"), ("final", "9:16"), ("final", "1:1"), ("
         "peak_rss_mb": round(maximum[0] / 1024**2, 1),
         "audio_peak": peak,
         "audio_rms": rms,
+        "ingestion_quality": quality,
         "probe": info,
     }
     results.append(result)

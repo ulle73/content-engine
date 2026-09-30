@@ -16,9 +16,10 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { validateSpec, validateBrand } from "./validate.mjs";
 
-const ROOT = new URL(".", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL(".", import.meta.url));
 function positions(scenes) {
   let end = 0;
   return scenes.map((s) => {
@@ -183,6 +184,7 @@ export async function renderMotion({
         audioCodec: "aac",
         enforceAudioTrack: true,
         pixelFormat: "yuv420p",
+        colorSpace: "bt709",
         crf: mode === "preview" ? 26 : 20,
         concurrency: 1,
         disallowParallelEncoding: true,
@@ -216,7 +218,7 @@ export async function renderMotion({
     await new Promise((resolve) => server.close(resolve));
   }
 }
-if (process.argv[1] === new URL(import.meta.url).pathname) {
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const filename = process.argv[2];
   if (!filename) {
     console.error("Usage: node render.mjs trusted-job.json");

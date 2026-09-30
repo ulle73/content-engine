@@ -368,10 +368,6 @@ def attach_generation_evidence(snapshot, company, channel, selected_market_id=No
 
 
 def train(company, channel, target=None):
-    import numpy as np
-    from sklearn.linear_model import Ridge
-    from sklearn.preprocessing import StandardScaler
-
     cutoff = timezone.now()
     target = target or TARGETS[channel]
     if spec(target)[4] != channel:
@@ -379,6 +375,9 @@ def train(company, channel, target=None):
     rows = dataset(company, channel, cutoff, target)
     if len(rows) < 80:
         return {"status":"insufficient", "labels":len(rows), "required":80, "channel":channel}
+    import numpy as np
+    from sklearn.linear_model import Ridge
+    from sklearn.preprocessing import StandardScaler
     candidate = LearningModel.objects.filter(company=company, channel=channel, target=target, mode="shadow").order_by("-trained_at").first()
     if candidate:
         shadow = shadow_evaluation(candidate)
