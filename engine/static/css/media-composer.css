@@ -17,9 +17,11 @@
 .composer-form .composer-errors p { margin: 6px 0 0; }
 .composer-form .composer-errors ul { margin: 8px 0; padding-left: 18px; }
 .composer-form [data-composer-status]:empty { display: none; }
-@media (max-width: 600px) {
+@media (max-width: 960px) {
   .media-workspace .premium-media-two-column.media-two-column { display: flex; flex-direction: column; }
   .media-workspace .premium-generation-card { order: -1; }
+}
+@media (max-width: 600px) {
   .composer-form .composer-handoff button { width: 100%; }
   .generation-section-head { align-items: flex-start; gap: 8px; }
 }
