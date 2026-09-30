@@ -85,6 +85,27 @@ jobs:
           ruff check engine/media_composer.py engine/test_product_flow.py scripts/product_flow_browser.py
           node --check engine/static/js/media-composer.js
           git diff --check
+      - name: Instrument synthetic browser navigation only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/product_flow_browser.py')
+          text = p.read_text()
+          anchor = '        page.set_default_timeout(10000)'
+          extra = '''
+                  self.observations.setdefault("requests", [])
+                  page.on("request", lambda req: self.observations["requests"].append({"method": req.method, "path": urlparse(req.url).path}) if req.is_navigation_request() else None)
+                  self.observations.setdefault("responses", [])
+                  page.on("response", lambda res: self.observations["responses"].append({"status": res.status, "path": urlparse(res.url).path}) if res.request.is_navigation_request() else None)
+                  self.observations.setdefault("console", [])
+                  page.on("console", lambda msg: self.observations["console"].append(msg.text))
+                  context.add_init_script("document.addEventListener('submit', e => console.log('FORM', e.target.getAttribute('action'), e.submitter?.getAttribute('formaction'), e.submitter?.name, e.submitter?.value), true)")
+          '''
+          import textwrap
+          extra = textwrap.indent(textwrap.dedent(extra), '        ')
+          assert text.count(anchor) == 1
+          p.write_text(text.replace(anchor, anchor + '\n' + extra))
+          PY
       - name: Real Chromium app flows
         run: python scripts/product_flow_browser.py 2>&1 | tee data/product-flow-browser/browser-tests.log
       - name: Publish tested app files to the same branch only
