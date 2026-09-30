@@ -3,6 +3,7 @@ from collections import defaultdict
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -179,6 +180,18 @@ def sequence_list(request, workspace_id):
         except ValueError:
             raise Http404("Utkastet finns inte.") from None
     source_run = get_object_or_404(ContentRun, pk=run_id, workspace=request.workspace, delivery_status="draft") if run_id else None
+    values = request.POST if request.method == "POST" else request.GET
+    raw_images = values.getlist("image_ids")
+    if len(raw_images) > 2:
+        raise Http404("V\u00e4lj h\u00f6gst tv\u00e5 startbilder f\u00f6r detta steg.")
+    seed_images = []
+    for raw_id in dict.fromkeys(raw_images):
+        try:
+            image_id = uuid.UUID(raw_id)
+        except ValueError:
+            raise Http404("Bilden finns inte.") from None
+        image = get_object_or_404(publishable_assets(request.workspace.media_assets.filter(kind="image", purpose="content").filter(Q(expires_at=None) | Q(expires_at__gt=timezone.now()))), pk=image_id)
+        seed_images.append(image)
     if request.method == "POST":
         title = request.POST.get("title", "").strip()
         brief = request.POST.get("brief", "").strip()
@@ -192,15 +205,18 @@ def sequence_list(request, workspace_id):
                 raise SequenceError("Välj en giltig kanal.")
             if len(brief) > 6000:
                 raise SequenceError("Projektbriefen får vara högst 6000 tecken.")
-            project = create_sequence_project(
-                request.workspace,
-                author=request.user,
-                title=title,
-                brief=brief,
-                format=format_value,
-                platform=platform,
-                source_run=source_run,
-            )
+            with transaction.atomic():
+                project = create_sequence_project(
+                    request.workspace,
+                    author=request.user,
+                    title=title,
+                    brief=brief,
+                    format=format_value,
+                    platform=platform,
+                    source_run=source_run,
+                )
+                for position, image in enumerate(seed_images):
+                    add_anchor(project, image, position=position, label=image.alt_text[:120], created_by=request.user)
             messages.success(request, "Sequence-projektet är skapat.")
             return redirect(
                 "engine:sequence_workspace",
@@ -221,6 +237,7 @@ def sequence_list(request, workspace_id):
             "workspace": request.workspace,
             "projects": projects,
             "source_run": source_run,
+            "seed_images": seed_images,
             "format_choices": FORMAT_CHOICES,
             "platform_choices": PLATFORM_CHOICES,
             "form_values": {

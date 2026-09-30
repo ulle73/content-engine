@@ -19,6 +19,7 @@ from .creative_core import (
 )
 from .creative_registry import ModelIntelligence, verified_models
 from .creative_recipes import resolve_recipe
+from .creative_controls import apply_controls
 
 
 MAX_CONTEXT_FIELD = 1400
@@ -182,8 +183,15 @@ def parse_brief(request: str, *, kind: str, has_reference=False, reference_media
         camera.append("low aerial flight")
     if _contains(text, "handheld", "handhållen"):
         camera.append("handheld")
-    if _contains(text, "static camera", "statisk kamera", "locked camera"):
+    if _contains(text, "static camera", "statisk kamera", "locked camera", "kameran st\u00e5r still", "kameran ska st\u00e5 still", "kameran \u00e4r stilla"):
         camera.append("static")
+
+    if re.search(r"kameran\s+(?:(?:ska|l\u00e5ngsamt|lugnt|sakta)\s+)*(?:\u00e5ker|flyger|r\u00f6r sig|n\u00e4rmar sig).{0,50}(?:mot|fram)", folded):
+        camera.append("slow push-in")
+    if re.search(r"kameran\s+(?:(?:ska|l\u00e5ngsamt|lugnt|sakta)\s+)*n\u00e4rmar sig", folded):
+        camera.append("slow push-in")
+    if re.search(r"(?:kameran|camera).{0,35}(?:cirklar|kretsar|orbit)", folded):
+        camera.append("smooth orbit around the subject")
 
     styles = []
     for needle, value in (("cinematic", "cinematic"), ("filmisk", "cinematic"), ("premium", "premium"), ("exklusiv", "premium"), ("minimal", "minimal")):
@@ -374,7 +382,8 @@ def route_model(
             f"priority:{brief.quality_preference}",
         ]
     else:
-        model = max(candidates, key=lambda item: (score(item), item.model_id))
+        exact = [item for item in candidates if item.request_contract(brief.mode).supports_duration(brief.duration_seconds)] if brief.kind == "video" and brief.duration_seconds else []
+        model = max(exact or candidates, key=lambda item: (score(item), item.model_id))
         reason = ["auto_route", "verified_capabilities", f"complexity:{complexity.value}", f"priority:{brief.quality_preference}"]
     contract = model.request_contract(brief.mode)
     if brief.reference_media:
@@ -385,7 +394,7 @@ def route_model(
         reason.append("native_audio_supported")
     if brief.resolution != "auto":
         reason.append(f"resolution:{brief.resolution}")
-    if (brief.duration_seconds or 10) > 10 and contract and contract.supports_duration(brief.duration_seconds or 10):
+    if brief.kind == "video" and contract and contract.supports_duration(brief.duration_seconds or 10):
         reason.append("requested_duration_supported")
     return model, ModelSelection(
         provider=model.provider,
@@ -541,6 +550,8 @@ def _recipe_format_direction(recipe) -> str:
 
 def _scene_with_recipe_method(brief: CreativeBrief, recipe) -> str:
     scene = brief.user_intent
+    if brief.temporal_sequence:
+        scene += " ENDING: " + "; ".join(brief.temporal_sequence) + "."
     if recipe and recipe.narrative_strategy:
         scene += " STORY METHOD: " + " ".join(recipe.narrative_strategy[:2])
     return scene
@@ -562,7 +573,7 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             sections.append("FORMAT MODE: " + format_direction)
         if _uses_prompt_section(model, "CAMERA"):
             camera_text = ", ".join(brief.camera_movement) or "follow the requested composition; avoid unrequested camera motion"
-            if recipe and recipe.camera_strategy:
+            if recipe and recipe.camera_strategy and (not brief.camera_movement or "scroll" in recipe.format_tags):
                 camera_text += " " + " ".join(recipe.camera_strategy[:2])
             sections.append("CAMERA: " + camera_text)
         if brief.aspect_ratio != "auto" and _uses_prompt_section(model, "FORMAT_INTENT"):
@@ -570,7 +581,7 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         if brief.preserve and _uses_prompt_section(model, "PRESERVE_EXACTLY"):
             sections.append("PRESERVE EXACTLY: " + "; ".join(brief.preserve) + ".")
         motion_continuity = []
-        if recipe and recipe.motion_strategy:
+        if recipe and recipe.motion_strategy and not brief.subject_motion:
             motion_continuity.extend(recipe.motion_strategy[:2])
         if recipe and recipe.continuity_strategy:
             motion_continuity.extend(recipe.continuity_strategy[:2])
@@ -622,14 +633,14 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             sections.append("END FRAME: Use the supplied end image as the exact closing visual anchor and arrive there naturally.")
         if _uses_prompt_section(model, "CAMERA"):
             camera_text = ", ".join(brief.camera_movement) or "controlled camera movement appropriate to the requested scene"
-            if recipe and recipe.camera_strategy:
+            if recipe and recipe.camera_strategy and (not brief.camera_movement or "scroll" in recipe.format_tags):
                 camera_text += " " + " ".join(recipe.camera_strategy[:2])
             sections.append("CAMERA: " + camera_text + ".")
         if _uses_prompt_section(model, "PHYSICS"):
             physics = "Use physically plausible continuous motion."
             if brief.allow_change:
                 physics += " Allowed motion/change: " + "; ".join(brief.allow_change) + "."
-            if recipe and recipe.motion_strategy:
+            if recipe and recipe.motion_strategy and not brief.subject_motion:
                 physics += " " + " ".join(recipe.motion_strategy[:2])
             if recipe and recipe.continuity_strategy:
                 physics += " CONTINUITY: " + " ".join(recipe.continuity_strategy[:2])
@@ -688,7 +699,7 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
     return "\n".join(sections)
 
 
-def build_plan(run, request: str, *, kind: str, source=None, end_source=None, shape="portrait", count=2, priority="balanced", inspirations=None, recipe_id=None, model_override="") -> CreativePlan:
+def build_plan(run, request: str, *, kind: str, source=None, end_source=None, shape="portrait", count=2, priority="balanced", inspirations=None, recipe_id=None, model_override="", controls=None) -> CreativePlan:
     context = build_content_context(run)
     references = []
     if source:
@@ -696,6 +707,7 @@ def build_plan(run, request: str, *, kind: str, source=None, end_source=None, sh
     if end_source:
         references.append(ReferenceRole.end_image.value)
     brief = parse_brief(request, kind=kind, has_reference=bool(source), reference_media=references, shape=shape, priority=priority)
+    brief = apply_controls(brief, controls)
     recipe, recipe_selection = resolve_recipe(brief, recipe_id=recipe_id)
     complexity = analyze_complexity(brief)
     model, selection = route_model(brief, complexity, recipe=recipe, model_override=model_override)

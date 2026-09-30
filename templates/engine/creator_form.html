@@ -1,0 +1,56 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/creator-screen.css' %}">
+<script defer src="{% static 'js/creator.js' %}"></script>
+{{ creator_catalog|json_script:'creator-catalog' }}
+<details id="generate" class="creator-disclosure" {% if creating %}open{% endif %}>
+  <summary>Skapa med AI <span class="small">Utgå från din idé</span></summary>
+  <form id="creator-form" class="intent-creator" method="post" action="{% url 'engine:media_generate' workspace_id=workspace.pk run_id=run.pk %}"
+        data-plan-url="{% url 'engine:creation_preview' workspace_id=workspace.pk run_id=run.pk %}"
+        data-references-url="{% url 'engine:creation_references' workspace_id=workspace.pk run_id=run.pk %}"
+        data-upload-url="{% url 'engine:media_upload' workspace_id=workspace.pk run_id=run.pk %}"
+        data-asset-url="{{ asset_url_pattern }}" data-state-key="{{ user.pk }}:{{ workspace.pk }}:{{ run.pk }}"
+        data-restore="{{ restore_creator|yesno:'true,false' }}" data-kind="{{ kind }}">
+    {% csrf_token %}{{ creator_form.token }}{{ creator_form.kind }}
+    <div class="creator-heading"><h2>{% if kind == 'video' %}Skapa video{% else %}Skapa bild{% endif %}</h2>
+      <nav class="segmented" aria-label="Typ av generation"><a href="?kind=image#generate" {% if kind == 'image' %}aria-current="page"{% endif %}>Bild</a><a href="?kind=video#generate" {% if kind == 'video' %}aria-current="page"{% endif %}>Video</a></nav>
+    </div>
+    {% if creator_form.errors %}<div class="notice error creator-errors" role="alert" tabindex="-1"><strong>Kontrollera dina val. Din idé finns kvar.</strong>{{ creator_form.non_field_errors }}{% for field in creator_form %}{% if field.errors %}<p><a href="#{{ field.id_for_label }}">{{ field.label }}</a>: {{ field.errors|striptags }}</p>{% endif %}{% endfor %}</div>{% endif %}
+    <div class="creator-frames">
+      <section class="creator-frame" data-frame="source_asset">
+        <div class="creator-frame-preview"><img {% if source %}src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=source.pk %}"{% else %}hidden{% endif %} alt="Vald startbild"><span class="creator-frame-empty" {% if source %}hidden{% endif %} aria-hidden="true">+</span></div>
+        <div class="creator-frame-copy"><strong>{% if kind == 'video' %}Startbild{% else %}Referensbild{% endif %}</strong><span class="small">{% if kind == 'video' %}Så börjar filmen{% else %}Utgå från en bild{% endif %} · valfritt</span>
+          <button type="button" class="button-secondary" data-open-frame="source_asset">{% if source %}Byt startbild{% else %}Välj startbild{% endif %}</button>
+          <button type="button" class="quiet" data-remove-frame="source_asset" {% if not source %}hidden{% endif %}>Ta bort startbild</button>
+        </div><div class="creator-native-reference">{{ creator_form.source_asset.label_tag }}{{ creator_form.source_asset }}</div>
+      </section>
+      {% if kind == 'video' %}<section class="creator-frame" data-frame="end_asset">
+        <div class="creator-frame-preview"><img {% if end_source %}src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=end_source.pk %}"{% else %}hidden{% endif %} alt="Vald slutbild"><span class="creator-frame-empty" {% if end_source %}hidden{% endif %} aria-hidden="true">+</span></div>
+        <div class="creator-frame-copy"><strong>Slutbild</strong><span class="small">Så slutar filmen · valfritt</span>
+          <button type="button" class="button-secondary" data-open-frame="end_asset">{% if end_source %}Byt slutbild{% else %}Välj slutbild{% endif %}</button>
+          <button type="button" class="quiet" data-remove-frame="end_asset" {% if not end_source %}hidden{% endif %}>Ta bort slutbild</button>
+        </div><div class="creator-native-reference">{{ creator_form.end_asset.label_tag }}{{ creator_form.end_asset }}</div>
+      </section>{% endif %}
+    </div>
+    {% if kind == 'video' %}<button type="button" class="quiet creator-swap" id="creator-swap" hidden>Byt plats på bilderna ⇄</button>{% endif %}
+    <section id="creator-reference-picker" class="creator-reference-picker" aria-labelledby="creator-picker-title" hidden>
+      <div class="creator-heading"><h3 id="creator-picker-title">Välj bild</h3><button type="button" class="quiet" id="creator-picker-close">Stäng</button></div>
+      <div class="creator-picker-tools"><div><label for="creator-search">Sök i dina bilder</label><input id="creator-search" type="search" placeholder="Sök på motiv eller beskrivning" maxlength="200"></div><div><label for="creator-upload">Eller ladda upp en ny bild</label><input id="creator-upload" type="file" accept="image/jpeg,image/png,image/webp"><span class="small">JPEG, PNG, WebP · högst 8 MB</span></div></div>
+      <p id="creator-picker-status" class="small" role="status"></p>
+      <div id="creator-reference-grid" class="creator-reference-grid"></div>
+      <button type="button" id="creator-more" class="button-secondary" hidden>Visa fler bilder</button>
+    </section>
+    <div class="creator-intent">{{ creator_form.brief.label_tag }}{{ creator_form.brief }}<p class="small">Skriv med egna ord. Vi anpassar instruktionen till modellen utan att byta ut din idé.</p></div>
+    {% if kind == 'video' %}<div class="creator-template">{{ creator_form.recipe_id.label_tag }}{{ creator_form.recipe_id }}<p class="small" id="creator-recipe-description">En mall hjälper med upplägget. Dina bilder och din idé styr innehållet.</p></div>{% endif %}
+    <div class="creator-settings-row"><div>{{ creator_form.shape.label_tag }}{{ creator_form.shape }}</div><div>{% if kind == 'video' %}{{ creator_form.duration_seconds.label_tag }}{{ creator_form.duration_seconds }}{% else %}{{ creator_form.count.label_tag }}{{ creator_form.count }}{% endif %}</div></div>
+    {% if kind == 'video' %}<details class="creator-options"><summary>Välj rörelse och avslut <span class="small">Valfritt</span></summary><div class="creator-options-grid"><div>{{ creator_form.camera.label_tag }}{{ creator_form.camera }}</div><div>{{ creator_form.subject_motion.label_tag }}{{ creator_form.subject_motion }}</div><div>{{ creator_form.ending.label_tag }}{{ creator_form.ending }}</div></div></details>{% endif %}
+    <details class="creator-options"><summary>Avancerat <span class="small">Modell och prioritet</span></summary><div class="creator-options-grid">
+      <div>{{ creator_form.model_override.label_tag }}{{ creator_form.model_override }}</div><div>{{ creator_form.priority.label_tag }}{{ creator_form.priority }}</div>
+      {% if kind == 'video' %}<div>{{ creator_form.resolution.label_tag }}{{ creator_form.resolution }}</div><div>{{ creator_form.audio.label_tag }}{{ creator_form.audio }}</div>{% endif %}
+      {% if kind == 'image' and workspace.official_logo %}<label class="channel-option">{{ creator_form.include_logo }}<span>{{ creator_form.include_logo.label }}</span></label>{% endif %}
+    </div><p class="small">Auto använder verifierat modellstöd, dina bilder, längd och prioritet. Aktuellt pris och kontotillgång kontrolleras innan du godkänner en betald start.</p></details>
+    <div class="creator-plan"><p id="creator-plan-status" role="status">Ingen betald generation startas här.</p><details id="creator-prompt-details" hidden><summary>Visa AI-instruktion</summary><pre id="creator-compiled-prompt"></pre></details></div>
+    {% if kind == 'video' and not higgs_ready %}<p class="notice">Videoleverantören är inte ansluten ännu. Du kan förbereda idén och bilderna, men en betald generation kräver företagets anslutning.</p>{% endif %}
+    <div class="creator-submit-row"><button type="submit" id="creator-submit">Granska före start <span aria-hidden="true">→</span></button><span class="small">Du godkänner kostnaden i nästa steg.</span></div>
+    <div class="creator-handoffs"><span class="small">Ett annat slags resultat?</span><button type="submit" name="workflow" value="motion" formaction="{% url 'engine:creation_handoff' workspace_id=workspace.pk run_id=run.pk %}" formnovalidate class="quiet">Text och siffror</button><button type="submit" name="workflow" value="sequence" formaction="{% url 'engine:creation_handoff' workspace_id=workspace.pk run_id=run.pk %}" formnovalidate class="quiet">Film av flera delar</button><span class="small">Din idé följer med.</span></div>
+  </form>
+</details>

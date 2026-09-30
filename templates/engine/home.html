@@ -7,6 +7,7 @@
     <div class="page-heading"><p class="eyebrow">Content Engine</p><h1>Skapa innehåll</h1><p class="intro">Utgå från aktuella fakta, få tre genomarbetade idéer och bygg vidare på den bästa.</p></div>
     <a class="text-link create-drafts-link" href="#recent-work">Mina utkast <span aria-hidden="true">↓</span></a>
   </header>
+  <form method="post" action="{% url 'engine:media_new' workspace_id=workspace.pk %}" class="creative-actions" aria-label="Skapa bild eller video">{% csrf_token %}<input type="hidden" name="token" value="{{ studio_token }}"><button type="submit" name="kind" value="video">Skapa video</button><button type="submit" name="kind" value="image" class="button-secondary">Skapa bild</button><span class="small">Beskriv din idé. Vi tar hand om modell och AI-instruktion.</span></form>
   <div class="overview-command">
     <section class="create-workspace create-hero-card" id="create-content">
       <div class="create-hero-top">
