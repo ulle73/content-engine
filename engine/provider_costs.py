@@ -177,14 +177,19 @@ def cost_summary(company):
     unknown = 0
 
     scrape = ScrapeRequest.objects.filter(state__company=company).select_related("state")
-    apify_total = scrape.aggregate(value=Sum("cost_usd"))["value"] or Decimal("0")
-    apify_month = scrape.filter(created_at__gte=month_start).aggregate(value=Sum("cost_usd"))["value"] or Decimal("0")
+    virlo = scrape.filter(state__source="virlo")
+    virlo_total = virlo.aggregate(value=Sum("cost_usd"))["value"] or Decimal("0")
+    virlo_month = virlo.filter(created_at__gte=month_start).aggregate(value=Sum("cost_usd"))["value"] or Decimal("0")
+    unknown += virlo.filter(cost_usd=None).count()
+    apify = scrape.exclude(state__source="virlo")
+    apify_total = apify.aggregate(value=Sum("cost_usd"))["value"] or Decimal("0")
+    apify_month = apify.filter(created_at__gte=month_start).aggregate(value=Sum("cost_usd"))["value"] or Decimal("0")
     for item in scrape.exclude(cost_usd=None).order_by("-created_at")[:50]:
         rows.append(
             _event_row(
                 item.created_at,
-                "Apify",
-                "Scraping",
+                "Virlo" if item.state.source == "virlo" else "Apify",
+                "Market research" if item.state.source == "virlo" else "Scraping",
                 f"{item.state.source} · {item.mode}",
                 item.cost_usd,
                 "Leverantör rapporterad",
@@ -330,8 +335,8 @@ def cost_summary(company):
             elif job.status == "unknown" and cost >= 0:
                 higgs_unknown += 1
 
-    known_total = apify_total + openai_text_total + openrouter_text_total + image_total + higgs_total
-    known_month = apify_month + openai_text_month + openrouter_text_month + image_month + higgs_month
+    known_total = virlo_total + apify_total + openai_text_total + openrouter_text_total + image_total + higgs_total
+    known_month = virlo_month + apify_month + openai_text_month + openrouter_text_month + image_month + higgs_month
     rows.sort(
         key=lambda row: row["at"] or datetime.min.replace(tzinfo=timezone.get_current_timezone()),
         reverse=True,
@@ -340,6 +345,8 @@ def cost_summary(company):
     return {
         "total_usd": known_total,
         "month_usd": known_month,
+        "virlo_usd": virlo_total,
+        "virlo_month_usd": virlo_month,
         "apify_usd": apify_total,
         "apify_month_usd": apify_month,
         "openai_text_usd": openai_text_total,

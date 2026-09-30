@@ -35,10 +35,12 @@ def add_generation_reference(
         raise MediaError("Referenspositionen är ogiltig.")
     if asset.company_id != generation.run.workspace_id:
         raise MediaError("Referensen ska tillhöra samma företag som generationen.")
-    if role_value in {ReferenceRole.start_image.value, ReferenceRole.end_image.value} and (
-        asset.kind != "image" or asset.purpose == "logo"
-    ):
-        raise MediaError("Start- och slutreferenser måste vara vanliga bilder.")
+    if role_value in {ReferenceRole.start_image.value, ReferenceRole.end_image.value}:
+        official_logo_id = generation.run.workspace.official_logo_id
+        if asset.kind != "image" or (
+            asset.purpose == "logo" and asset.pk != official_logo_id
+        ):
+            raise MediaError("Start- och slutreferenser måste vara bilder; endast företagets officiella logga får använda loggändamål.")
     if role_value == ReferenceRole.video_reference.value and asset.kind != "video":
         raise MediaError("Videoreferensen måste vara en video.")
     if role_value == ReferenceRole.audio_reference.value:

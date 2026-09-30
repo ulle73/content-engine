@@ -1,0 +1,59 @@
+name: Motion dependency evidence
+on:
+  push:
+    branches: [feature/motion-engine-production]
+    paths: [.github/workflows/motion-dependencies.yml]
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pin production renderer packages
+        run: |
+          mkdir -p /tmp/motion-node/renderer /tmp/motion-node/evidence
+          cd /tmp/motion-node/renderer
+          npm init -y
+          VERSION=$(npm view remotion version)
+          npm install --save-exact remotion@$VERSION @remotion/renderer@$VERSION @remotion/bundler@$VERSION @remotion/transitions@$VERSION @remotion/shapes@$VERSION @remotion/paths@$VERSION @remotion/noise@$VERSION @remotion/lottie@$VERSION react@19 react-dom@19 zod@4 lottie-web@5
+          npm install --save-dev --save-exact typescript @types/react@19 @types/react-dom@19 @types/node@22
+          npm ls --json > ../evidence/npm-tree.json
+          npm audit --json > ../evidence/npm-audit.json || true
+          tar -czf /tmp/motion-node/dependencies.tar.gz package.json package-lock.json node_modules
+      - name: Collect public source and license metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: python
+        run: |
+          import base64, json, os, pathlib, urllib.request, urllib.error
+          root=pathlib.Path('/tmp/motion-node/evidence/sources'); root.mkdir()
+          repos=['remotion-dev/remotion','remotion-dev/skills','remotion-dev/template-prompt-to-motion-graphics-saas','lifeprompt-team/remotion-scenes','av/remotion-bits','degueba/onda','ali-abassi/remotion-templates','reactvideoeditor/remotion-templates','RenderComp/free-remotion-templates','Fats403/remotion-gsap','Fats403/remotion-gsap-examples','LottieFiles/lottie-player','heygen-com/hyperframes','nutllwhy/hyperframes-motion-library']
+          def get(url):
+              req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','User-Agent':'content-engine-motion-license-review'})
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r: return json.load(r)
+              except urllib.error.HTTPError as e: return {'error_status':e.code}
+          for repo in repos:
+              out=root/repo.replace('/','__'); out.mkdir()
+              for name,endpoint in [('repository',''),('license','/license'),('head','/commits?per_page=1'),('package','/contents/package.json'),('readme','/readme')]:
+                  result=get('https://api.github.com/repos/'+repo+endpoint)
+                  (out/(name+'.json')).write_text(json.dumps(result,ensure_ascii=False,indent=2))
+                  if isinstance(result,dict) and result.get('encoding')=='base64':
+                      (out/(name+'.txt')).write_bytes(base64.b64decode(result['content']))
+              if repo=='heygen-com/hyperframes':
+                  for skill in ['hyperframes-creative','hyperframes-animation','hyperframes-keyframes','hyperframes-audio','hyperframes-registry','motion-graphics','media-use','hyperframes-core']:
+                      r=get('https://api.github.com/repos/'+repo+'/contents/skills/'+skill+'/SKILL.md')
+                      if r.get('encoding')=='base64': (out/(skill+'.md')).write_bytes(base64.b64decode(r['content']))
+          print('Public metadata collected; no source code incorporated without review.')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: motion-node-inputs
+          path: |
+            /tmp/motion-node/dependencies.tar.gz
+            /tmp/motion-node/evidence
+          retention-days: 2

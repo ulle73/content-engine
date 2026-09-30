@@ -26,6 +26,7 @@ class Company(models.Model):
     source = models.CharField(max_length=500, blank=True)
     valid_until = models.DateField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
+    market_intelligence_enabled = models.BooleanField(default=True)
     postiz_ciphertext = models.TextField(blank=True, default="")
     postiz_channels = models.JSONField(default=list)
     official_logo = models.ForeignKey("MediaAsset", null=True, blank=True, on_delete=models.PROTECT, related_name="official_for")
@@ -175,7 +176,7 @@ class MediaGeneration(models.Model):
 class MediaAsset(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="media_assets")
-    kind = models.CharField(max_length=10, choices=[("image", "Bild"), ("video", "Video")])
+    kind = models.CharField(max_length=10, choices=[("image", "Bild"), ("video", "Video"), ("audio", "Ljud")])
     origin = models.CharField(max_length=10, choices=[("uploaded", "Uppladdad"), ("generated", "AI-genererad")])
     provider = models.CharField(max_length=20)
     storage_backend = models.CharField(max_length=10)
@@ -220,8 +221,11 @@ class MediaGenerationReference(models.Model):
             if self.asset.company_id != generation_company_id:
                 raise ValidationError("Generation reference asset must belong to the generation company.")
         if self.asset_id and self.role in {ReferenceRole.start_image.value, ReferenceRole.end_image.value}:
-            if self.asset.kind != "image" or self.asset.purpose == "logo":
-                raise ValidationError("Start/end references must be non-logo images.")
+            official_logo_id = self.generation.run.workspace.official_logo_id
+            if self.asset.kind != "image" or (
+                self.asset.purpose == "logo" and self.asset_id != official_logo_id
+            ):
+                raise ValidationError("Start/end references must be images; only the company's official logo may use logo purpose.")
         if self.asset_id and self.role == ReferenceRole.video_reference.value and self.asset.kind != "video":
             raise ValidationError("VIDEO_REFERENCE must point to a video asset.")
         if self.role == ReferenceRole.audio_reference.value:
@@ -807,6 +811,40 @@ class AnalysisMemo(models.Model):
         constraints = [models.UniqueConstraint(fields=["company", "key"], name="unique_paid_analysis")]
 
 
+class MarketItem(models.Model):
+    """Company-owned external evidence. Preference is never an outcome label."""
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="market_items")
+    canonical_key = models.CharField(max_length=200)
+    channel = models.CharField(max_length=10)
+    url = models.URLField(max_length=500)
+    creator = models.CharField(max_length=200, blank=True)
+    caption = models.TextField(blank=True)
+    published_at = models.DateTimeField(null=True)
+    metrics = models.JSONField(default=dict)
+    qualification = models.JSONField(default=dict)
+    classification = models.JSONField(default=dict)
+    classification_hash = models.CharField(max_length=64, blank=True)
+    preference = models.SmallIntegerField(default=0)
+    feedback_at = models.DateTimeField(null=True)
+    first_seen_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField()
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company", "canonical_key"], name="unique_company_market_item")]
+
+
+class MarketObservation(models.Model):
+    item = models.ForeignKey(MarketItem, on_delete=models.CASCADE, related_name="observations")
+    request = models.ForeignKey(ScrapeRequest, on_delete=models.PROTECT)
+    provider_id = models.CharField(max_length=200, blank=True)
+    metrics = models.JSONField(default=dict)
+    observed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["item", "request"], name="unique_market_observation")]
+
+
 class AdAccount(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="ad_accounts")
     name = models.CharField(max_length=200)
@@ -935,3 +973,6 @@ class OwnSnapshot(models.Model):
 
 # Kept in a separate module for readability, registered with the same Django app/database.
 from .creative_models import PromptEntry, PromptTerm  # noqa: E402,F401
+
+# Registered here so the existing Django app owns Motion migrations and relations.
+from .motion.models import MotionAssetReference, MotionKeyframe, MotionProject, MotionRender, MotionRevision  # noqa: F401,E402

@@ -1,0 +1,440 @@
+{
+  "$defs": {
+    "Audio": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "gain": {
+          "default": 0.7,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Gain",
+          "type": "number"
+        },
+        "music": {
+          "default": "bed",
+          "enum": ["none", "bed", "pulse"],
+          "title": "Music",
+          "type": "string"
+        },
+        "music_asset_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Music Asset Id"
+        },
+        "fade_frames": {
+          "default": 15,
+          "maximum": 120,
+          "minimum": 0,
+          "title": "Fade Frames",
+          "type": "integer"
+        },
+        "ducking": {
+          "default": 0.3,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Ducking",
+          "type": "number"
+        }
+      },
+      "title": "Audio",
+      "type": "object"
+    },
+    "Cue": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "pattern": "^[a-z][a-z0-9-]{0,63}$",
+          "title": "Kind",
+          "type": "string",
+          "enum": [
+            "bed",
+            "chime",
+            "impact",
+            "pluck",
+            "pulse",
+            "rise",
+            "sting",
+            "tick",
+            "whoosh"
+          ]
+        },
+        "frame": {
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "Frame",
+          "type": "integer"
+        },
+        "gain": {
+          "default": 0.4,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Gain",
+          "type": "number"
+        }
+      },
+      "required": ["kind", "frame"],
+      "title": "Cue",
+      "type": "object"
+    },
+    "Item": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "maxLength": 100,
+          "title": "Label",
+          "type": "string"
+        },
+        "value": {
+          "default": 0,
+          "maximum": 1000000000000.0,
+          "minimum": -1000000000000.0,
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": ["label"],
+      "title": "Item",
+      "type": "object"
+    },
+    "Props": {
+      "additionalProperties": false,
+      "properties": {
+        "headline": {
+          "default": "",
+          "maxLength": 240,
+          "title": "Headline",
+          "type": "string"
+        },
+        "eyebrow": {
+          "default": "",
+          "maxLength": 80,
+          "title": "Eyebrow",
+          "type": "string"
+        },
+        "body": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Body",
+          "type": "string"
+        },
+        "value": {
+          "default": 0,
+          "maximum": 1000000000000.0,
+          "minimum": -1000000000000.0,
+          "title": "Value",
+          "type": "number"
+        },
+        "unit": {
+          "default": "",
+          "maxLength": 16,
+          "title": "Unit",
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/Item"
+          },
+          "maxItems": 12,
+          "title": "Items",
+          "type": "array"
+        },
+        "asset_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Asset Id"
+        },
+        "secondary_asset_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Secondary Asset Id"
+        },
+        "cta": {
+          "default": "",
+          "maxLength": 100,
+          "title": "Cta",
+          "type": "string"
+        },
+        "attribution": {
+          "default": "",
+          "maxLength": 160,
+          "title": "Attribution",
+          "type": "string"
+        },
+        "alignment": {
+          "default": "left",
+          "enum": ["left", "center"],
+          "title": "Alignment",
+          "type": "string"
+        }
+      },
+      "title": "Props",
+      "type": "object"
+    },
+    "Scene": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "component": {
+          "pattern": "^[a-z][a-z0-9-]{0,63}$",
+          "title": "Component",
+          "type": "string",
+          "enum": [
+            "announcement",
+            "bars",
+            "before-after",
+            "blur-reveal",
+            "brush-write",
+            "comparison",
+            "countdown",
+            "counter",
+            "cta",
+            "currency",
+            "device",
+            "donut",
+            "end-card",
+            "hero",
+            "kinetic-words",
+            "letter-cascade",
+            "line-reveal",
+            "list",
+            "logo-sting",
+            "lottie-mark",
+            "mask-rise",
+            "mosaic",
+            "number-emphasis",
+            "offer",
+            "outline-fill",
+            "percentage",
+            "perspective-stack",
+            "product",
+            "quote",
+            "ranking",
+            "recap",
+            "sparkline",
+            "split-flap",
+            "split-media",
+            "spotlight",
+            "stat-wall",
+            "steps",
+            "testimonial",
+            "timeline",
+            "tracking",
+            "typewriter",
+            "word-highlight"
+          ]
+        },
+        "duration_frames": {
+          "maximum": 1800,
+          "minimum": 12,
+          "title": "Duration Frames",
+          "type": "integer"
+        },
+        "props": {
+          "$ref": "#/$defs/Props"
+        },
+        "background": {
+          "default": "solid",
+          "pattern": "^[a-z][a-z0-9-]{0,63}$",
+          "title": "Background",
+          "type": "string",
+          "enum": [
+            "checker",
+            "grid",
+            "mesh",
+            "orbits",
+            "particles",
+            "radial",
+            "rays",
+            "solid",
+            "topography",
+            "waves"
+          ]
+        },
+        "transition": {
+          "default": "cut",
+          "pattern": "^[a-z][a-z0-9-]{0,63}$",
+          "title": "Transition",
+          "type": "string",
+          "enum": [
+            "blinds",
+            "blur",
+            "brush",
+            "cut",
+            "diagonal",
+            "fade",
+            "flash",
+            "iris",
+            "push",
+            "split",
+            "whip",
+            "wipe",
+            "zoom"
+          ]
+        },
+        "transition_frames": {
+          "default": 0,
+          "maximum": 60,
+          "minimum": 0,
+          "title": "Transition Frames",
+          "type": "integer"
+        },
+        "effects": {
+          "items": {
+            "pattern": "^[a-z][a-z0-9-]{0,63}$",
+            "type": "string",
+            "enum": [
+              "duotone",
+              "frame",
+              "glitch",
+              "glow",
+              "grain",
+              "parallax",
+              "scanline",
+              "shadow",
+              "svg-path",
+              "vignette"
+            ]
+          },
+          "maxItems": 3,
+          "title": "Effects",
+          "type": "array"
+        },
+        "sfx": {
+          "items": {
+            "$ref": "#/$defs/Cue"
+          },
+          "maxItems": 40,
+          "title": "Sfx",
+          "type": "array"
+        }
+      },
+      "required": ["id", "component", "duration_frames"],
+      "title": "Scene",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 1,
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "template_id": {
+      "pattern": "^[a-z][a-z0-9-]{0,63}$",
+      "title": "Template Id",
+      "type": "string",
+      "enum": [
+        "before-after-story",
+        "custom-storyboard",
+        "facility-spotlight",
+        "feature-announcement",
+        "friskvard-explainer",
+        "gift-card-promo",
+        "kinetic-text",
+        "kpi-recap",
+        "logo-end-card",
+        "monthly-wrapped",
+        "new-partner",
+        "product-launch",
+        "product-offer",
+        "quote-testimonial",
+        "social-promo",
+        "top-three"
+      ]
+    },
+    "template_version": {
+      "default": 1,
+      "title": "Template Version",
+      "type": "integer"
+    },
+    "aspect_ratio": {
+      "default": "9:16",
+      "enum": ["9:16", "1:1", "16:9"],
+      "title": "Aspect Ratio",
+      "type": "string"
+    },
+    "fps": {
+      "default": 30,
+      "enum": [24, 25, 30, 60],
+      "title": "Fps",
+      "type": "integer"
+    },
+    "seed": {
+      "default": 42,
+      "maximum": 2147483647,
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "brand_id": {
+      "default": "golfkuponger",
+      "pattern": "^[a-z][a-z0-9-]{0,63}$",
+      "title": "Brand Id",
+      "type": "string",
+      "enum": ["golfkuponger", "workspace"]
+    },
+    "scenes": {
+      "items": {
+        "$ref": "#/$defs/Scene"
+      },
+      "maxItems": 24,
+      "minItems": 1,
+      "title": "Scenes",
+      "type": "array"
+    },
+    "audio": {
+      "$ref": "#/$defs/Audio"
+    },
+    "end_card_asset_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "End Card Asset Id"
+    }
+  },
+  "required": ["template_id", "scenes"],
+  "title": "MotionSpec",
+  "type": "object"
+}

@@ -1,0 +1,12 @@
+import { bundle } from "@remotion/bundler";
+import { buildAudio } from "./audio-assets.mjs";
+import path from "node:path";
+const root = new URL(".", import.meta.url).pathname;
+buildAudio(path.join(root, "public/audio"));
+await bundle({
+  entryPoint: path.join(root, "src/Root.tsx"),
+  outDir: path.join(root, "build"),
+  publicDir: path.join(root, "public"),
+  onProgress: () => {},
+});
+console.log("Remotion production bundle built.");

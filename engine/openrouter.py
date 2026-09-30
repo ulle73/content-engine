@@ -169,7 +169,7 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
-                "X-Title": "Golfkuponger Content Engine",
+                "X-Title": "Content Engine",
             },
             json=request_body,
             timeout=httpx.Timeout(timeout_seconds, connect=5.0, read=timeout_seconds, write=10.0, pool=5.0),

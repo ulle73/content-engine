@@ -2,12 +2,15 @@ from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
 
-from . import ads_views, intelligence_views, media_views, prompt_views, sequence_views, views
+from . import ads_views, intelligence_views, market_views, media_views, prompt_views, sequence_views, views
 from .onboarding import SignInView, setup
 from .company_settings import company_settings, costs
 from .performance_views import performance
 
 engine_urls = [
+    path("intelligence/market/", market_views.intelligence, name="market_intelligence"),
+    path("intelligence/market/run/", market_views.action, name="market_action"),
+    path("intelligence/market/<int:item_id>/feedback/", market_views.feedback, name="market_feedback"),
     path("prompts/", prompt_views.prompt_library, name="prompt_library"),
     path("prompts/<uuid:prompt_id>/", prompt_views.prompt_detail, name="prompt_detail"),
     path("prompts/<uuid:prompt_id>/favorite/", prompt_views.prompt_favorite, name="prompt_favorite"),
@@ -67,6 +70,7 @@ engine_urls = [
     path("runs/<uuid:run_id>/draft/<int:idea_index>/", views.draft, name="draft"),
 ]
 urlpatterns = [
+    path("internal/motion/", include("engine.motion.worker_api")),
     path("", views.index, name="dashboard"),
     path("setup/", setup, name="setup"),
     path("accounts/login/", SignInView.as_view(), name="login"),

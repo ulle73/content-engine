@@ -57,6 +57,79 @@ def _dedupe(values):
     return list(dict.fromkeys(v for v in values if v))
 
 
+_SEQUENCE_TIMELINE_SEGMENT = re.compile(
+    r"(?<!\d)\d+(?:[.,]\d+)?\s*[–—-]\s*\d+(?:[.,]\d+)?\s*(?:s|sek|seconds?)\b",
+    re.IGNORECASE,
+)
+_SEQUENCE_ORDER_MARKER = re.compile(
+    r"\b(?:after(?:wards)?|then|next|finally|followed\s+by|subsequently|därefter|sedan|nästa|slutligen|till\s+sist|efter\s+att)\b",
+    re.IGNORECASE,
+)
+_SEQUENCE_SCENE_BOUNDARY = re.compile(
+    r"\b(?:cut\s+to|transition(?:s|ed|ing)?(?:\s+from|\s+to)?|scene\s+changes?|environment\s+changes?|"
+    r"new\s+scene|new\s+location|we\s+are\s+(?:now\s+)?(?:inside|outside|in)|moves?\s+into|turns?\s+into|becomes?|"
+    r"klipp\s+till|övergår|växlar|ny\s+scen|ny\s+miljö|ny\s+plats|blir\s+till|förvandlas)\b",
+    re.IGNORECASE,
+)
+
+
+_SEQUENCE_STAGE_PATTERNS = {
+    "actor_action": re.compile(
+        r"\b(?:golfer|woman|man|player|person|creator|golfare|kvinna|spelare)\b.{0,220}"
+        r"\b(?:swing|swings|hit|hits|strike|strikes|drive|drives|open|opens|opening|throw|throws|kick|kicks|launch|launches|run|runs|jump|jumps|sving|svingar|slår|träffar|öppnar|kastar|sparkar|skjuter|springer|hoppar)\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    "subject_handoff": re.compile(
+        r"\b(?:after\s+(?:impact|the\s+impact)|efter\s+(?:impact|träff)|follow|track|camera\s+follows|följ|spåra)\b"
+        r".{0,180}\b(?:golf\s+ball|ball|boll|object|objekt|ribbon|band|package|paket|product|produkt)\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    "environment_transition": re.compile(
+        r"(?:\b(?:environment|scene|setting|miljö|scen|bakgrund)\b.{0,140}"
+        r"\b(?:changes?|transitions?|shifts?|ändras|övergår|växlar)\b)"
+        r"|(?:\b(?:autumn|fall|höst)\b.{0,280}\b(?:winter|vinter|indoor|simulator)\b"
+        r".{0,280}\b(?:spring|vår)\b)",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    "object_payoff": re.compile(
+        r"\b(?:golf\s+ball|ball|boll|object|objekt|ribbon|band|package|paket|product|produkt)\b.{0,220}"
+        r"\b(?:lands?|bounces?|rolls?|drops?|cup|hole|landar|studsar|rullar|faller|kopp|hål)\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    "brand_end": re.compile(
+        r"\b(?:fade|fades|resolve|resolves|reveal|reveals|logo|end\s+card|brand\s+ending|tonar|slutlogga|logga|svart)\b",
+        re.IGNORECASE,
+    ),
+}
+
+
+def _sequence_required(brief: CreativeBrief) -> bool:
+    """Fail closed on prompts that ask one provider shot to carry a whole film.
+
+    This is intentionally conservative around subject hand-offs and environment
+    changes. Sequence Engine exists so those phases can be built from canonical
+    anchors instead of letting one generation accumulate drift.
+    """
+    if brief.kind != "video":
+        return False
+    text = brief.user_intent or ""
+    if len(_SEQUENCE_TIMELINE_SEGMENT.findall(text)) >= 3:
+        return True
+    order_markers = len(_SEQUENCE_ORDER_MARKER.findall(text))
+    if order_markers >= 4:
+        return True
+    if order_markers >= 2 and _SEQUENCE_SCENE_BOUNDARY.search(text):
+        return True
+    stages = {name for name, pattern in _SEQUENCE_STAGE_PATTERNS.items() if pattern.search(text)}
+    if len(stages) < 3:
+        return False
+    return (
+        "subject_handoff" in stages
+        or "environment_transition" in stages
+        or len(stages) >= 4
+    )
+
+
 def parse_brief(request: str, *, kind: str, has_reference=False, reference_media=None, shape="portrait", priority="balanced") -> CreativeBrief:
     if not isinstance(request, str) or not request.strip() or len(request) > 6000:
         raise ValueError("Creative request must contain 1-6000 characters.")
@@ -376,6 +449,15 @@ def compile_parameters(brief: CreativeBrief, model: ModelIntelligence, *, count=
 
 def preflight(brief: CreativeBrief, model: ModelIntelligence) -> list[PreflightIssue]:
     issues = []
+    if _sequence_required(brief):
+        issues.append(PreflightIssue(
+            code="sequence_required",
+            severity="error",
+            message=(
+                "Den här videobriefen innehåller flera separata scener eller rörelsefaser och måste byggas som en sekvens "
+                "med låsta canonical anchors (START_IMAGE/END_IMAGE per klipp) i Sequence Engine."
+            ),
+        ))
     camera = {item.casefold() for item in brief.camera_movement}
     if "static" in camera and len(camera) > 1:
         issues.append(PreflightIssue(code="camera_contradiction", severity="error", message="Static and moving camera directions conflict."))
@@ -622,7 +704,13 @@ def build_plan(run, request: str, *, kind: str, source=None, end_source=None, sh
     errors = [item.message for item in issues if item.severity == "error"]
     if errors:
         raise ValueError(" ".join(errors))
-    inspirations = inspirations or []
+    inspirations = list(inspirations or [])
+    # Frozen company-scoped evidence from the idea/studio entry point. Never send
+    # source captions or external metrics to the media provider as creative claims.
+    signal = run.influencing_signal
+    if signal and signal.get("evidence_type") in {"external_viral_performance", "market_evidence"}:
+        mechanisms = signal.get("classification", {}).get("mechanisms", [])
+        inspirations.insert(0, {"id": signal["id"], "mechanisms": [str(m)[:100] for m in mechanisms[:3]]})
     prompt = compile_prompt(brief, context, model, inspirations, recipe=recipe)
     return CreativePlan(
         brief=brief,

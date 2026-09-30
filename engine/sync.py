@@ -26,9 +26,9 @@ def state_for(company, source, key):
     return ScraperState.objects.get_or_create(company=company, source=source, external_key=str(key))[0]
 
 
-def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None):
+def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None, provider="apify", period=None):
     now = timezone.now()
-    key = fingerprint([state.pk, actor, mode, timezone.localdate().isoformat()])
+    key = fingerprint([state.pk, actor, mode, period or timezone.localdate().isoformat()])
     with transaction.atomic():
         Company.objects.select_for_update().get(pk=state.company_id)
         state = ScraperState.objects.select_for_update().get(pk=state.pk)
@@ -63,7 +63,7 @@ def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None):
                 params={"timeout": 300, "maxTotalChargeUsd": float(cap)},
             )["data"]
         )
-        if not remote.get("id") or not remote.get("defaultDatasetId"):
+        if not remote.get("id") or (provider == "apify" and not remote.get("defaultDatasetId")):
             raise apify.ApifyError("Startsvaret saknar körnings-id.", uncertain=True)
     except Exception as exc:
         if isinstance(exc, apify.ApifyError):
@@ -73,7 +73,8 @@ def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None):
             error_type = exc.error_type
         else:
             uncertain = True
-            safe_error = "Providerstarten kunde inte bekräftas. Kontrollera Apify före nytt försök."
+            provider_label = "Virlo" if provider == "virlo" else "Apify"
+            safe_error = f"Providerstarten kunde inte bekräftas. Kontrollera {provider_label} före nytt försök."
             status_code = getattr(exc, "status_code", None)
             error_type = None
         request.status = "unknown" if uncertain else "failed"
@@ -91,8 +92,12 @@ def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None):
             status_code=status_code,
             error_type=error_type,
         ) from exc
-    request.actor_run_id, request.dataset_id, request.status = remote["id"], remote["defaultDatasetId"], "running"
-    request.save(update_fields=["actor_run_id", "dataset_id", "status"])
+    request.actor_run_id = remote["id"] if provider == "apify" else f"{provider}:{remote['id']}"
+    request.dataset_id, request.status = remote.get("defaultDatasetId", ""), "running"
+    if provider != "apify":
+        request.cost_usd = remote.get("cost_usd")
+        request.result = {"provider": provider, "remote_id": remote["id"]}
+    request.save(update_fields=["actor_run_id", "dataset_id", "status", "cost_usd", "result"])
     return request
 
 
@@ -105,7 +110,7 @@ def finish(request, *, status, cost, result, observed_at):
     )
 
 
-def analysis(company, key, model, work, *, scrape_request_id=None):
+def analysis(company, key, model, work, *, scrape_request_id=None, retry_uncertain=True):
     """Cross-entrypoint deduplication; uncertain paid analysis requires explicit review.
 
     Max 12 new classifications/company/day, including manual clicks. Cache hits are free.
@@ -123,6 +128,8 @@ def analysis(company, key, model, work, *, scrape_request_id=None):
                 return cached
             last_attempt = memo.last_attempt_at or memo.created_at
             openrouter_stale = (
+                retry_uncertain
+                and
                 str(model).startswith("openrouter:")
                 and memo.status in {"started", "unknown"}
                 and last_attempt <= timezone.now() - timedelta(seconds=30)
@@ -159,7 +166,7 @@ def analysis(company, key, model, work, *, scrape_request_id=None):
     try:
         raw_result = work()
     except Exception as exc:
-        if getattr(exc, "retryable", False):
+        if retry_uncertain and getattr(exc, "retryable", False):
             # Text classification has no external side effect. A provider/routing
             # failure must not lock the same analysis for 23 hours.
             AnalysisMemo.objects.filter(pk=memo.pk).delete()
