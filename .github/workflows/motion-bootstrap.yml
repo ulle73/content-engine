@@ -11,7 +11,7 @@ concurrency:
 jobs:
   checkpoint:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
       SECRET_KEY: isolated-motion-ci-secret
       POSTIZ_ENCRYPTION_SECRET: isolated-motion-ci-encryption
@@ -28,11 +28,13 @@ jobs:
           submodules: recursive
       - name: Fetch the checksum-verified public-source patch
         run: |
-          curl --fail --location --proto '=https' --max-time 45 'https://sdmntprnortheu.oaiusercontent.com/files/00000000-7688-81f4-95f3-7f3907c9efcc/raw?se=2026-09-30T11%3A50%3A00Z&sp=r&sv=2026-02-06&sr=b&scid=b736f99e-1138-5588-b022-9855de11f287&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-30T03%3A15%3A58Z&ske=2026-10-01T03%3A15%3A58Z&sks=b&skv=2026-02-06&sig=SBTTAKOPA1Vn67yHUcyKvMlCs%2BM3t0IPJ0blPUFymkk%3D' -o /tmp/motion.patch.gz
+          curl --fail --location --proto '=https' --max-time 45 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-b0f4-8210-a9e5-bc09b91bca63/raw?se=2026-09-30T11%3A56%3A36Z&sp=r&sv=2026-02-06&sr=b&scid=6bc34b63-c237-557e-826e-4a18aec4a578&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-30T05%3A35%3A08Z&ske=2026-10-01T05%3A35%3A08Z&sks=b&skv=2026-02-06&sig=MDwFIvPBH0NOVr7nr/JHhiz9Sy04wONuUfWxXjkidYY%3D' -o /tmp/motion.patch.gz
           echo '5a77dc8399f05c36b40d7a5e88c9cf641af9e78a8c3d1c4728889308c5acf0a4  /tmp/motion.patch.gz' | sha256sum -c -
           gzip -dc /tmp/motion.patch.gz > /tmp/motion.patch
           echo 'ca5febc2fcda8065ba844f1748a66c2efff944a7c09a89aad368bb0eb34e570d  /tmp/motion.patch' | sha256sum -c -
           git apply --index /tmp/motion.patch
+      - name: Provision media verification runtime
+        run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -75,9 +77,10 @@ jobs:
           node --input-type=module -e "import {ensureBrowser} from '@remotion/renderer'; await ensureBrowser({logLevel:'info'});"
           cd ..
           python scripts/motion_render_smoke.py
-      - name: Collect isolated local verification dependencies
+      - name: Collect isolated verification source and dependencies
         if: always()
         run: |
+          git diff HEAD --binary > /tmp/motion-ci-working.patch
           cd motion-renderer
           tar -czf /tmp/motion-dependencies-v2.tar.gz package.json package-lock.json node_modules
           cd ..
@@ -89,6 +92,7 @@ jobs:
           name: motion-source-checkpoint
           path: |
             /tmp/motion-source-checkpoint.tar.gz
+            /tmp/motion-ci-working.patch
             motion-evidence
           retention-days: 3
       - uses: actions/upload-artifact@v4
