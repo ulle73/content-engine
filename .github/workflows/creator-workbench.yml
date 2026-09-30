@@ -1,0 +1,33 @@
+name: Isolated creator workbench
+on:
+  push:
+    branches: [astra/intent-first-creation-20260930]
+    paths: [.github/workflows/creator-workbench.yml]
+permissions:
+  contents: read
+jobs:
+  workbench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Package tracked source for isolated offline review
+        run: |
+          mkdir -p "$RUNNER_TEMP/creator-workbench"
+          git archive --format=tar HEAD | gzip > "$RUNNER_TEMP/creator-workbench/source.tar.gz"
+          tar --exclude=.git -czf "$RUNNER_TEMP/creator-workbench/vendor.tar.gz" vendor
+          git rev-parse HEAD > "$RUNNER_TEMP/creator-workbench/commit.txt"
+      - name: Download dependencies without credentials or application access
+        run: python -m pip download -r requirements.txt -d "$RUNNER_TEMP/creator-workbench/wheels"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creator-offline-workbench
+          path: ${{ runner.temp }}/creator-workbench
+          retention-days: 1
