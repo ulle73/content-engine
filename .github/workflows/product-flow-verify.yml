@@ -1,20 +1,40 @@
 name: Product Flow Verify
+
 on:
   push:
     branches: [codex/product-flow-integration]
-    paths: ['engine/**', 'templates/**', 'scripts/product_flow_browser.py', '.github/workflows/product-flow-verify.yml']
+    paths: ['engine/**', 'operator_bridge/**', 'templates/**', 'requirements*.txt', 'manage.py', 'scripts/product_flow_browser.py', '.github/workflows/product-flow-verify.yml']
   pull_request:
     branches: [main]
-    paths: ['engine/**', 'templates/**', 'scripts/product_flow_browser.py', '.github/workflows/product-flow-verify.yml']
+    paths: ['engine/**', 'operator_bridge/**', 'templates/**', 'requirements*.txt', 'manage.py', 'scripts/product_flow_browser.py', '.github/workflows/product-flow-verify.yml']
+
 permissions:
   contents: read
+
+concurrency:
+  group: product-flow-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  browser:
+  verify:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: content_engine_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
     env:
       DJANGO_SETTINGS_MODULE: engine.test_settings
-      PRODUCT_FLOW_BASELINE: '1'
+      TEST_DATABASE_URL: postgres://postgres:isolated-test-only@localhost:5432/content_engine_test
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,13 +44,26 @@ jobs:
         with:
           python-version: '3.13'
           cache: pip
-      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
       - run: pip install -r requirements-dev.txt playwright==1.55.0
       - run: python -m playwright install --with-deps chromium
-      - run: python manage.py test --settings=engine.test_settings --noinput
-      - run: python manage.py check --settings=engine.test_settings
-      - run: python manage.py makemigrations --check --dry-run --settings=engine.test_settings
-      - run: python scripts/product_flow_browser.py
+      - name: Record verified source
+        run: |
+          mkdir -p data/product-flow-browser
+          git rev-parse HEAD > data/product-flow-browser/tested-commit.txt
+      - name: SQLite regression suite
+        run: python manage.py test --settings=engine.test_settings --noinput 2>&1 | tee data/product-flow-browser/sqlite-tests.log
+      - name: PostgreSQL regression and locking suite
+        run: python manage.py test engine operator_bridge --settings=engine.postgres_test_settings --noinput 2>&1 | tee data/product-flow-browser/postgres-tests.log
+      - name: Static checks and migration drift
+        run: |
+          python manage.py check --settings=engine.test_settings
+          python manage.py makemigrations --check --dry-run --settings=engine.test_settings
+          ruff check engine/media_composer.py engine/test_product_flow.py scripts/product_flow_browser.py
+          node --check engine/static/js/media-composer.js
+          git diff --check
+      - name: Real Chromium app flows
+        run: python scripts/product_flow_browser.py 2>&1 | tee data/product-flow-browser/browser-tests.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
