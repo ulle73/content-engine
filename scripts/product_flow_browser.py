@@ -110,6 +110,10 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
                 page.locator("#media-brief").fill(original)
                 page.locator(".media-quick-actions a").filter(has_text="Animera").first.click()
                 expect(page.locator("#media-brief")).to_be_visible()
+                # The response becomes visible before deferred draft restoration finishes.
+                page.wait_for_load_state("domcontentloaded")
+                if not BASELINE:
+                    expect(page.locator("#media-brief")).to_have_value(original)
                 preserved = page.locator("#media-brief").input_value() == original
                 self.observations["brief_preserved_on_animate"] = preserved
                 self.observations["video_brief"] = page.locator("#media-brief").input_value()
