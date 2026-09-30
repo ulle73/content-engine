@@ -1,0 +1,101 @@
+name: Motion source checkpoint and render evaluation
+on:
+  push:
+    branches: [feature/motion-engine-production]
+    paths: [.github/workflows/motion-bootstrap.yml]
+permissions:
+  contents: write
+concurrency:
+  group: motion-source-sync
+  cancel-in-progress: false
+jobs:
+  checkpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      SECRET_KEY: isolated-motion-ci-secret
+      POSTIZ_ENCRYPTION_SECRET: isolated-motion-ci-encryption
+      APP_URL: http://127.0.0.1:8765
+      MEDIA_STORAGE: local
+      MCP_ALLOW_INSECURE_LOCAL: 'true'
+      MCP_DEV_BEARER_TOKEN: isolated-motion-ci-mcp-token
+      MCP_DEV_USER_EMAIL: operator@example.com
+      DJANGO_SETTINGS_MODULE: engine.test_settings
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/motion-engine-production
+          submodules: recursive
+      - name: Fetch the checksum-verified public-source patch
+        run: |
+          curl --fail --location --proto '=https' --max-time 45 'https://sdmntprnortheu.oaiusercontent.com/files/00000000-7688-81f4-95f3-7f3907c9efcc/raw?se=2026-09-30T11%3A50%3A00Z&sp=r&sv=2026-02-06&sr=b&scid=b736f99e-1138-5588-b022-9855de11f287&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-30T03%3A15%3A58Z&ske=2026-10-01T03%3A15%3A58Z&sks=b&skv=2026-02-06&sig=SBTTAKOPA1Vn67yHUcyKvMlCs%2BM3t0IPJ0blPUFymkk%3D' -o /tmp/motion.patch.gz
+          echo '5a77dc8399f05c36b40d7a5e88c9cf641af9e78a8c3d1c4728889308c5acf0a4  /tmp/motion.patch.gz' | sha256sum -c -
+          gzip -dc /tmp/motion.patch.gz > /tmp/motion.patch
+          echo 'ca5febc2fcda8065ba844f1748a66c2efff944a7c09a89aad368bb0eb34e570d  /tmp/motion.patch' | sha256sum -c -
+          git apply --index /tmp/motion.patch
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install and materialize generated contracts
+        run: |
+          python -m pip install -r requirements.txt psutil ruff
+          python scripts/generate_motion_catalog.py
+          PYTHONPATH=. python scripts/export-motion-schema.py
+          cd motion-renderer
+          npm install --save-exact @fontsource/inter
+          npm install --save-dev --save-exact prettier
+          npx prettier --write src '*.mjs' 'tests/*.mjs' '*.json'
+          cd ..
+          ruff format engine/motion engine/test_motion*.py scripts/export-motion-schema.py scripts/generate_motion_catalog.py scripts/motion_render_smoke.py engine/migrations/0021_motion_engine.py engine/migrations/0022_alter_mediaasset_kind.py
+      - name: Verify existing and new contracts
+        run: |
+          mkdir -p motion-evidence
+          python manage.py test engine operator_bridge --settings=engine.test_settings --verbosity=1 > motion-evidence/python-tests.log 2>&1
+          python manage.py makemigrations --check --dry-run --settings=engine.test_settings
+          cd motion-renderer
+          npm test > ../motion-evidence/node-tests.log 2>&1
+          npm run typecheck
+          npm run build
+          npm audit --json > ../motion-evidence/npm-audit.json || true
+      - name: Commit the verified source checkpoint on the isolated feature branch
+        run: |
+          rm .github/workflows/motion-bootstrap.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .gitignore requirements.txt engine motion-renderer scripts docs .github/workflows/motion-bootstrap.yml
+          git commit -m 'feat(motion): add closed spec, durable fenced jobs, shared media ingestion and deterministic renderer'
+          git push origin HEAD:feature/motion-engine-production
+          git archive --format=tar HEAD | gzip > /tmp/motion-source-checkpoint.tar.gz
+      - name: Evaluate real Remotion MP4s, codecs, audio and memory
+        run: |
+          cd motion-renderer
+          node --input-type=module -e "import {ensureBrowser} from '@remotion/renderer'; await ensureBrowser({logLevel:'info'});"
+          cd ..
+          python scripts/motion_render_smoke.py
+      - name: Collect isolated local verification dependencies
+        if: always()
+        run: |
+          cd motion-renderer
+          tar -czf /tmp/motion-dependencies-v2.tar.gz package.json package-lock.json node_modules
+          cd ..
+          mkdir -p /tmp/motion-python-tools
+          python -m pip download --dest /tmp/motion-python-tools ruff jsonschema
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: motion-source-checkpoint
+          path: |
+            /tmp/motion-source-checkpoint.tar.gz
+            motion-evidence
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: motion-dependencies-v2
+          path: |
+            /tmp/motion-dependencies-v2.tar.gz
+            /tmp/motion-python-tools
+          retention-days: 2
