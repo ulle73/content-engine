@@ -1,0 +1,88 @@
+name: Transfer verified creator implementation
+on:
+  push:
+    branches: [codex/product-flow-integratio]
+    paths: [.github/workflows/creator-apply.yml]
+permissions:
+  contents: write
+jobs:
+  apply-and-verify:
+    if: github.repository == 'ulle73/content-engine' && github.ref == 'refs/heads/codex/product-flow-integratio'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Apply exact locally verified source without replacing concurrent work
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(git rev-parse HEAD^)" = d087a44950a7d0da1dedece4de08d9f1475b1909
+          python - <<'PY'
+          import base64, hashlib, json, lzma, os, pathlib, urllib.request
+          blobs = ['ba8d062ab9a292475108c8ad2dd31c6126a8957b','692cc9da0fe1c680520968a49be181aa35ba1478','d01926f05fdea0b2618c845667d2ff159f2ca6bf','2ed52be109c7b7ffbf83e99350045f0e76e68326','97aea77292f1f3a80682e3dc96cc3b7067289196','7a4e6093100871dfb92866f9bf20a188604a8b64','43c453db5b48bef5ce692e071a9af0abb65627fa']
+          encoded = b''
+          for sha in blobs:
+              request = urllib.request.Request('https://api.github.com/repos/ulle73/content-engine/git/blobs/' + sha, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  chunk = base64.b64decode(json.load(response)['content'])
+              assert hashlib.sha1(('blob ' + str(len(chunk)) + '\0').encode() + chunk).hexdigest() == sha
+              encoded += chunk
+          payload = lzma.decompress(base64.b64decode(encoded, validate=True))
+          assert hashlib.sha256(payload).hexdigest() == '4c1274fff4013b8d9e2c201e93530fa79e2dedf379859183885a3a5533fb1273'
+          root = pathlib.Path.cwd()
+          planned = []
+          for entry in json.loads(payload):
+              path = root / entry['path']
+              assert path.resolve().is_relative_to(root)
+              old = path.read_bytes() if path.exists() else b''
+              assert hashlib.sha256(old).hexdigest() == entry['base'], 'Baseline changed: ' + entry['path']
+              lines = old.decode('utf-8').splitlines(keepends=True)
+              for start, end, text in reversed(entry['ops']):
+                  lines[start:end] = text.splitlines(keepends=True)
+              new = ''.join(lines).encode('utf-8')
+              assert hashlib.sha256(new).hexdigest() == entry['sha256'], 'Source mismatch: ' + entry['path']
+              # Workflow changes use the connected owner's explicit Contents API,
+              # not an Actions token's workflow-editing permissions.
+              if entry['path'].startswith('.github/'):
+                  continue
+              assert entry['path'].split('/')[0] in {'engine', 'templates', 'scripts'}
+              planned.append((path, new))
+          for path, new in planned:
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(new)
+              print('Verified:', path.relative_to(root))
+          PY
+          git diff --check
+          git add -- engine templates scripts
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat: intent-first creator with model-aware controls and integrated media handoffs'
+          git push origin HEAD:refs/heads/codex/product-flow-integratio
+          git rev-parse HEAD
+      - name: Dependencies for isolated acceptance
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+          pip install -r requirements.txt playwright ruff
+          python -m playwright install --with-deps chromium
+      - name: Verify shared services and browser flows
+        run: |
+          mkdir -p data/creator-browser
+          ruff check engine/creative_controls.py engine/test_creator.py scripts/creator_browser_smoke.py
+          node --check engine/static/js/creator.js
+          python manage.py check --settings=engine.test_settings
+          python manage.py makemigrations --check --dry-run --settings=engine.test_settings
+          python manage.py test --settings=engine.test_settings --noinput 2>&1 | tee data/creator-browser/django-tests.log
+          python scripts/creator_browser_smoke.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: creator-browser-evidence
+          path: data/creator-browser
+          retention-days: 7
