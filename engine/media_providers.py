@@ -312,12 +312,21 @@ SEEDANCE_25_PRICE_SOURCE = "higgsfield-account-estimate-2026-09-29"
 SEEDANCE_25_USD_PER_SECOND = {
     "480p": Decimal("0.2056"),
     "720p": Decimal("0.4622"),
+    # Conservative authenticated-account ceiling retained from the verified
+    # Seedance 2.5 pricing description; actual token-metered cost may be lower.
+    "1080p": Decimal("1.1372"),
 }
 SEEDANCE_25_PRICING_MARKERS = (
     "video tokens",
     "0.0214",
-    "480p",
-    "720p",
+)
+SEEDANCE_25_TOKEN_PRICING_MARKERS = (
+    "token-metered pricing",
+    "billable video tokens",
+    "output width",
+    "output height",
+    "24 fps",
+    "/ 1024",
 )
 
 
@@ -339,9 +348,13 @@ def _seedance25_description_estimate(model, body, estimate):
         return None
     description = estimate.get("pricing_description")
     normalized_description = " ".join(description.split()).lower() if isinstance(description, str) else ""
-    if not normalized_description or not all(
+    legacy_verified = bool(normalized_description) and all(
         marker in normalized_description for marker in SEEDANCE_25_PRICING_MARKERS
-    ):
+    )
+    token_formula_verified = bool(normalized_description) and all(
+        marker in normalized_description for marker in SEEDANCE_25_TOKEN_PRICING_MARKERS
+    )
+    if not (legacy_verified or token_formula_verified):
         raise MediaError(
             "Higgsfields Seedance 2.5-prissättning har ändrats. "
             "Prisregeln måste verifieras innan någon generation kan startas."
