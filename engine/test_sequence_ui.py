@@ -122,9 +122,9 @@ class SequenceWorkspaceF1Tests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Premium scroll story")
         self.assertNotContains(response, "Secret sequence")
-        self.assertContains(response, "<b>4</b> anchors", html=True)
-        self.assertContains(response, "<b>2</b> clips", html=True)
-        self.assertContains(response, "<b>1</b> bridges", html=True)
+        self.assertContains(response, "<b>4</b> bilder", html=True)
+        self.assertContains(response, "<b>2</b> klipp", html=True)
+        self.assertContains(response, "<b>1</b> övergångar", html=True)
         self.assertContains(response, "Scroll story")
         self.assertContains(response, "Webb")
         self.assertContains(

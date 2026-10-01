@@ -1,17 +1,19 @@
 import json
 import re
 import uuid
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Case, IntegerField, Q, Value, When
-from django.http import FileResponse, HttpResponse, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from .media import ACTIVE, PENDING, advance_job, cancel_job, cleanup_expired, create_job, default_brief, publishable_assets, remove_asset, select_asset, store_asset
 from .creative_core import ReferenceRole
@@ -24,7 +26,6 @@ from .ownership import company_required
 from .sequence import anchor_change_impact, sync_sequence_generation
 from .media import preview_job, refresh_terminal_provider_status, start_reviewed_job
 from .forms import snapshot_company_context
-from .media_composer import MediaComposerForm, preset_choices
 
 
 def run_for(request, run_id):
@@ -97,6 +98,16 @@ def new_studio(request, workspace_id):
     except ValueError:
         return HttpResponse("Ogiltigt formulär. Öppna Media igen.", status=400)
     company = request.workspace
+    source_query = ""
+    if request.POST.get("source_asset"):
+        from .forms import MediaCreationForm
+        try:
+            source_id = uuid.UUID(request.POST["source_asset"])
+        except ValueError:
+            raise Http404("Bilden finns inte.") from None
+        available = MediaCreationForm(company=company).fields["source_asset"].queryset
+        asset = get_object_or_404(available, pk=source_id)
+        source_query = "&source=" + str(asset.pk)
     brief = ""
     snapshot = {**snapshot_company_context(company), "media_only": True}
     channel = "organic"
@@ -122,72 +133,196 @@ def new_studio(request, workspace_id):
     })
     if run.workspace_id != company.pk:
         return HttpResponse(status=404)
-    return redirect(reverse("engine:media", kwargs={"workspace_id": company.pk, "run_id": run.pk}) + "?kind=image#generate")
+    kind = request.POST.get("kind", "image")
+    kind = kind if kind in {"image", "video"} else "image"
+    return redirect(reverse("engine:media", kwargs={"workspace_id": company.pk, "run_id": run.pk}) + "?kind=" + kind + source_query + "#generate")
 
 
 @login_required
 @company_required
 def picker(request, workspace_id, run_id):
-    return _picker_response(request, run_for(request, run_id))
+    return _render_picker(request, run_for(request, run_id))
 
 
-def _picker_response(request, run, *, composer=None, status=200):
-    """Render GET, retry and invalid POST through the same bound form."""
+def _render_picker(request, run, form=None, *, status=200):
+    """Keep bound input on errors; changing references never requires a new run."""
+    from .forms import MediaCreationForm
     kind = request.GET.get("kind", "image")
     if kind not in {"image", "video"}:
         kind = "image"
-    retry = get_object_or_404(MediaGeneration, pk=request.GET["retry"], run=run) if request.GET.get("retry") else None
     source = end_source = None
+    retry = None
+    if request.GET.get("retry"):
+        try:
+            retry_id = uuid.UUID(request.GET["retry"])
+        except ValueError:
+            raise Http404("Genereringen finns inte.") from None
+        retry = get_object_or_404(MediaGeneration, pk=retry_id, run=run)
+    initial = {"token": uuid.uuid4(), "kind": kind, "shape": "portrait", "priority": "balanced", "count": 1,
+               "include_logo": bool(request.workspace.official_logo_id) and kind == "image"}
     if retry:
         kind, source = retry.kind, retry.source_asset
         end_source = reference_asset(retry, ReferenceRole.end_image)
-    if request.GET.get("source"):
-        source = get_object_or_404(MediaAsset, pk=request.GET["source"], company=request.workspace, kind="image")
-    if request.GET.get("end_source"):
-        end_source = get_object_or_404(MediaAsset, pk=request.GET["end_source"], company=request.workspace, kind="image")
-    if kind != "video" or not source:
+        parameters = retry.parameters or {}
+        creative = parameters.get("creative", {})
+        saved = parameters.get("creator", {})
+        initial.update(saved.get("controls", {}))
+        initial.update(kind=kind, brief=retry.brief, count=parameters.get("count", 1),
+                       shape=saved.get("shape") or {"1:1": "square", "16:9": "landscape", "1024x1024": "square", "1536x1024": "landscape"}.get(
+                           creative.get("brief", {}).get("aspect_ratio") or parameters.get("aspect_ratio") or parameters.get("size"), "portrait"),
+                       priority=creative.get("brief", {}).get("quality_preference", "balanced"),
+                       recipe_id=saved.get("recipe_id") or creative.get("recipe", {}).get("recipe_id", ""), model_override=parameters.get("model_override", ""),
+                       include_logo=bool(retry.logo_asset_id))
+    for query, role in (("source", "start"), ("end_source", "end")):
+        if request.GET.get(query):
+            try:
+                asset_id = uuid.UUID(request.GET[query])
+            except ValueError:
+                raise Http404("Bilden finns inte.") from None
+            asset = get_object_or_404(MediaAsset, pk=asset_id, company=request.workspace, kind="image")
+            if role == "start":
+                source = asset
+            else:
+                end_source = asset
+    if kind != "video":
         end_source = None
-    if composer is None:
-        params = retry.parameters or {} if retry else {}
-        creative = params.get("creative", {})
-        saved_brief = creative.get("brief", {})
-        recipe_id = creative.get("recipe", {}).get("recipe_id", "")
-        composer = MediaComposerForm(company=request.workspace, initial={
-            "token": uuid.uuid4(), "kind": kind,
-            "brief": retry.brief if retry else default_brief(run, kind) or (source.brief if source else ""),
-            "source_asset": source.pk if source else "", "end_asset": end_source.pk if end_source else "",
-            "shape": {"1:1": "square", "16:9": "landscape"}.get(saved_brief.get("aspect_ratio", params.get("aspect_ratio")), "portrait"),
-            "priority": saved_brief.get("quality_preference", "balanced"),
-            "count": params.get("count", 1), "model_override": params.get("model_override", ""),
-            "preset": recipe_id if recipe_id in dict(preset_choices(kind)) else "",
-            "include_logo": bool(retry.logo_asset_id) if retry else bool(request.workspace.official_logo_id) and kind == "image",
-        })
-    kind = composer.kind if composer.kind in {"image", "video"} else "image"
-    selected = {str(image.pk): image for image in composer.images}
-    source = selected.get(str(composer["source_asset"].value()))
-    end_source = selected.get(str(composer["end_asset"].value()))
-    assets = publishable_assets(request.workspace.media_assets.filter(purpose="content").filter(Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())))
+    initial.update(source_asset=source, end_asset=end_source)
+    initial.setdefault("brief", default_brief(run, kind) or (source.brief if source else ""))
+    if form is None:
+        form = MediaCreationForm(company=request.workspace, initial=initial)
+    else:
+        kind = form.data.get("kind", "image")
+        kind = kind if kind in {"image", "video"} else "image"
+        source = form.cleaned_data.get("source_asset")
+        end_source = form.cleaned_data.get("end_asset")
+    assets = publishable_assets(request.workspace.media_assets.filter(purpose="content").filter(
+        Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now())))
     filter_value = request.GET.get("filter", "all")
     if filter_value in {"image", "video", "audio"}:
         assets = assets.filter(kind=filter_value)
     elif filter_value in {"uploaded", "generated"}:
         assets = assets.filter(origin=filter_value)
     assets = assets.order_by(Case(When(origin="uploaded", then=Value(0)), default=Value(1), output_field=IntegerField()), "-created_at")[:60]
-    jobs = list(run.media_jobs.exclude(provider="remotion").order_by("-created_at").prefetch_related("assets")[:10])
     mode = ("image-to-video" if source else "text-to-video") if kind == "video" else ("image-to-image" if source else "text-to-image")
-    override_models = verified_models(kind, mode)
+    models = verified_models(kind, mode)
     if end_source:
-        override_models = [model for model in override_models if model.request_contract(mode) and ReferenceRole.end_image in model.request_contract(mode).supported_reference_roles]
+        models = [m for m in models if m.supports_reference_role(mode, ReferenceRole.end_image)]
     return render(request, "engine/media.html", {
-        "workspace": request.workspace, "run": run, "kind": kind, "assets": assets, "jobs": jobs,
-        "source": source, "end_source": end_source, "brief": composer["brief"].value(),
-        "token": composer["token"].value(), "can_edit": run.delivery_status == "draft",
-        "higgs_ready": higgsfield_configured(), "filter_value": filter_value,
-        "now": timezone.now(), "active_statuses": ACTIVE, "override_models": override_models,
-        "model_override": composer["model_override"].value(), "composer": composer,
-        "composer_authoritative": composer.is_bound or bool(retry),
-        "composer_images": {str(image.pk): reverse("engine:asset_file", kwargs={"workspace_id": request.workspace.pk, "asset_id": image.pk}) for image in composer.images},
+        "workspace": request.workspace, "run": run, "kind": kind, "assets": assets,
+        "jobs": list(run.media_jobs.exclude(provider="remotion").order_by("-created_at").prefetch_related("assets")[:10]),
+        "source": source, "end_source": end_source, "can_edit": run.delivery_status == "draft",
+        "asset_url_pattern": reverse("engine:asset_file", kwargs={"workspace_id": request.workspace.pk, "asset_id": uuid.UUID(int=0)}),
+        "creator_form": form, "creator_catalog": form.catalog, "creating": run.delivery_status == "draft",
+        "restore_creator": not form.is_bound and not retry, "higgs_ready": higgsfield_configured(),
+        "filter_value": filter_value, "now": timezone.now(), "active_statuses": ACTIVE,
+        "override_models": models, "model_override": initial.get("model_override", ""),
     }, status=status)
+
+
+def _creation_error(exc):
+    text = str(exc)
+    if "model override" in text.casefold():
+        return "Den valda modellen st\u00f6der inte alla val. V\u00e4lj Auto eller justera l\u00e4ngd, bilder, ljud och uppl\u00f6sning."
+    if "No verified model" in text:
+        return "Ingen verifierad modell st\u00f6der kombinationen. Prova Auto f\u00f6r modell och uppl\u00f6sning, eller f\u00e4rre krav."
+    if "Creative recipe" in text:
+        return "Mallen passar inte dina valda bilder. V\u00e4lj en annan mall eller l\u00e4gg till de bilder som beh\u00f6vs."
+    if "Compiled video prompt" in text:
+        return "Id\u00e9n och valen blir f\u00f6r omfattande f\u00f6r ett klipp. Beskriv en huvudhandling eller v\u00e4lj Film av flera delar."
+    return text
+
+
+@login_required
+@company_required
+@require_POST
+def creation_preview(request, workspace_id, run_id):
+    """Pure local planning: no generation row, uploads, pricing or provider call."""
+    from .forms import MediaCreationForm
+    from .creative_director import build_plan
+    from .creative_controls import MODEL_LABELS
+    from .creative_registry import get_model
+    from .prompt_library import retrieve_inspiration
+    run = run_for(request, run_id)
+    if run.delivery_status != "draft":
+        return JsonResponse({"error": "Utkastet \u00e4r inte l\u00e4ngre redigerbart."}, status=409)
+    form = MediaCreationForm(request.POST, company=request.workspace)
+    if not form.is_valid():
+        return JsonResponse({"errors": form.errors.get_json_data()}, status=422)
+    options = form.job_options()
+    options.pop("include_logo")
+    brief = options.pop("brief")
+    try:
+        inspirations = retrieve_inspiration(request.workspace.owner, request.workspace.pk, brief, limit=3)
+        plan = build_plan(run, brief, inspirations=inspirations, **options)
+    except (ValueError, MediaError) as exc:
+        return JsonResponse({"error": _creation_error(exc)}, status=422)
+    model = get_model(plan.selection.provider, plan.selection.model_id)
+    contract = model.request_contract(plan.brief.mode)
+    return JsonResponse({"model": MODEL_LABELS.get(model.model_id, model.model_id), "model_id": model.model_id,
+                         "mode": plan.brief.mode, "duration": plan.parameters.get("duration"),
+                         "aspect_ratio": plan.brief.aspect_ratio, "aspect_behavior": contract.aspect_ratio_behavior,
+                         "prompt": plan.prompt, "recipe": plan.recipe.recipe_id,
+                         "warnings": [issue.message for issue in plan.preflight],
+                         "paid_generation_started": False})
+
+
+@login_required
+@company_required
+@require_GET
+def creation_references(request, workspace_id, run_id):
+    from .forms import MediaCreationForm
+    run_for(request, run_id)
+    try:
+        page = max(0, min(int(request.GET.get("page", "0")), 1000))
+    except ValueError:
+        return JsonResponse({"error": "Ogiltig sida."}, status=400)
+    images = MediaCreationForm(company=request.workspace).fields["source_asset"].queryset
+    query = request.GET.get("q", "").strip()[:200]
+    if query:
+        images = images.filter(Q(alt_text__icontains=query) | Q(brief__icontains=query))
+    images = list(images.order_by("-created_at", "-pk")[page*60:page*60+61])
+    return JsonResponse({"assets": [{"id": str(a.pk), "label": a.alt_text or "Bild " + str(a.pk)[:8],
+                                    "url": reverse("engine:asset_file", kwargs={"workspace_id": workspace_id, "asset_id": a.pk})} for a in images[:60]],
+                         "next_page": page+1 if len(images) > 60 else None})
+
+
+@login_required
+@company_required
+@require_POST
+def creation_handoff(request, workspace_id, run_id):
+    from .operator_common import run_state
+    run = run_for(request, run_id)
+    target = request.POST.get("workflow") or request.POST.get("target")
+    if target not in {"motion", "sequence"}:
+        return HttpResponse("V\u00e4lj Text och siffror eller Film av flera delar.", status=400)
+    brief = request.POST.get("brief", "").strip()
+    if not brief or len(brief) > 6000:
+        return HttpResponse("Beskriv vad du vill skapa (h\u00f6gst 6000 tecken).", status=400)
+    from .forms import MediaCreationForm
+    fields = MediaCreationForm(company=request.workspace).fields
+    images = []
+    try:
+        for name in ("source_asset", "end_asset"):
+            asset = fields[name].clean(request.POST.get(name, ""))
+            if asset and asset not in images:
+                images.append(asset)
+    except ValidationError:
+        return HttpResponse("En vald bild finns inte l\u00e4ngre i f\u00f6retagets bibliotek.", status=400)
+    if target == "sequence" and any(asset.purpose != "content" for asset in images):
+        return HttpResponse("V\u00e4lj en vanlig bild f\u00f6r en film av flera delar. En frist\u00e5ende logga kan anv\u00e4ndas i Text och siffror.", status=400)
+    with transaction.atomic():
+        locked = ContentRun.objects.select_for_update().get(pk=run.pk)
+        if locked.delivery_status != "draft":
+            return HttpResponse("Utkastet \u00e4r inte redigerbart.", status=409)
+        if brief and brief != locked.draft.get("photo_brief"):
+            locked.draft = {**locked.draft, "photo_brief": brief}
+            locked.save(update_fields=["draft"])
+            state = run_state(locked, lock=True)
+            state.revision += 1
+            state.save(update_fields=["revision", "updated_at"])
+    params = [("run_id", str(run.pk)), ("aspect_ratio", {"portrait": "9:16", "square": "1:1", "landscape": "16:9"}.get(request.POST.get("shape"), "9:16"))]
+    params.extend(("image_ids", str(asset.pk)) for asset in images)
+    return redirect(reverse("engine:" + ("motion_list" if target == "motion" else "sequence_list"), kwargs={"workspace_id": workspace_id}) + "?" + urlencode(params))
 
 
 @login_required
@@ -195,6 +330,7 @@ def _picker_response(request, run, *, composer=None, status=200):
 @require_POST
 def upload(request, workspace_id, run_id):
     run = run_for(request, run_id)
+    json_upload = request.headers.get("X-Creator-Upload") == "1"
     try:
         if run.delivery_status != "draft":
             raise MediaError("Utkastet har redan överförts. Ändra media i Postiz.")
@@ -202,12 +338,22 @@ def upload(request, workspace_id, run_id):
         if not file or file.size > 80 * 1024 * 1024:
             raise MediaError("Välj en bild (högst 8 MB) eller MP4-video (högst 80 MB).")
         cleanup_expired(request.workspace)
-        asset = store_asset(request.workspace, file.read(), alt_text=request.POST.get("alt_text", ""))
+        data = file.read()
+        if json_upload:
+            from .media import describe_file
+            if len(data) > 8 * 1024 * 1024 or describe_file(data)["kind"] != "image":
+                raise MediaError("V\u00e4lj JPEG, PNG eller WebP, h\u00f6gst 8 MB.")
+        asset = store_asset(request.workspace, data, alt_text=request.POST.get("alt_text", ""))
+        if json_upload:
+            return JsonResponse({"id": str(asset.pk), "label": asset.alt_text or "Ny bild",
+                                 "url": reverse("engine:asset_file", kwargs={"workspace_id": workspace_id, "asset_id": asset.pk})}, status=201)
         if request.POST.get("use"):
             select_asset(run, asset)
             return redirect("engine:review", workspace_id=workspace_id, run_id=run.pk)
         messages.success(request, "Filen finns nu bland företagets uppladdade media.")
     except MediaError as exc:
+        if json_upload:
+            return JsonResponse({"error": str(exc)}, status=400)
         messages.error(request, str(exc))
     return redirect("engine:media", workspace_id=workspace_id, run_id=run.pk)
 
@@ -216,45 +362,24 @@ def upload(request, workspace_id, run_id):
 @company_required
 @require_POST
 def generate_media(request, workspace_id, run_id):
+    from .forms import MediaCreationForm
     run = run_for(request, run_id)
-    data = request.POST.copy()
-    for key, value in {"priority": "balanced", "shape": "portrait", "count": "1"}.items():
-        data.setdefault(key, value)
-    composer = MediaComposerForm(data, company=request.workspace)
-    if composer.is_valid():
-        values = composer.cleaned_data
+    form = MediaCreationForm(request.POST, company=request.workspace)
+    if form.is_valid():
         try:
-            job = create_job(run, token=values["token"], kind=values["kind"], brief=values["brief"],
-                             count=values["count"], shape=values["shape"], source=values["source_asset"],
-                             end_source=values["end_asset"], include_logo=values["include_logo"],
-                             priority=values["priority"], recipe_id=values["preset"] or None,
-                             model_override=values["model_override"])
+            cleanup_expired(request.workspace)
+            job = create_job(run, token=form.cleaned_data["token"], **form.job_options())
+            if job.pk != form.cleaned_data["token"]:
+                form.add_error(None, "Du har redan ett p\u00e5g\u00e5ende eller v\u00e4ntande jobb. Avbryt det innan du skapar en ny variant. Din id\u00e9 finns kvar h\u00e4r.")
+                return _render_picker(request, run, form, status=409)
             try:
                 preview_job(job)
             except MediaError as exc:
                 messages.error(request, str(exc))
             return redirect("engine:media_job", workspace_id=workspace_id, run_id=run.pk, job_id=job.pk)
         except (MediaError, ValueError) as exc:
-            composer.add_error(None, str(exc) if isinstance(exc, MediaError) else "Formuläret kunde inte läsas. Försök igen.")
-    return _picker_response(request, run, composer=composer, status=400)
-
-
-@login_required
-@company_required
-@require_POST
-def composer_handoff(request, workspace_id, run_id):
-    """Explicitly carry the edited intent into an existing engine, never generate."""
-    target = request.POST.get("target")
-    brief = request.POST.get("brief", "").strip()
-    if target not in {"motion", "sequence"} or not brief or len(brief) > 6000:
-        return HttpResponse("Välj Motion eller Sequence och beskriv vad du vill skapa (högst 6000 tecken).", status=400)
-    with transaction.atomic():
-        run = get_object_or_404(ContentRun.objects.select_for_update(), pk=run_id, workspace=request.workspace)
-        if run.delivery_status != "draft":
-            return HttpResponse("Utkastet har redan överförts. Skapa ett nytt utkast först.", status=400)
-        run.draft = {**run.draft, "photo_brief": brief}
-        run.save(update_fields=["draft"])
-    return redirect(reverse("engine:" + target + "_list", kwargs={"workspace_id": workspace_id}) + "?run_id=" + str(run.pk))
+            form.add_error(None, _creation_error(exc))
+    return _render_picker(request, run, form, status=422)
 
 
 @login_required

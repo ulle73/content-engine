@@ -1,6 +1,4 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'css/media-composer.css' %}">{% endblock %}
 {% block title %}Media · {{ run.title }}{% endblock %}
 {% block content %}
 <main class="engine media-workspace">
@@ -8,34 +6,32 @@
   <header class="page-header media-page-header">
     <div class="page-heading">
       <p class="eyebrow">Media</p>
-      <h1>Välj bild eller video</h1>
+      <h1>{% if creating %}Från idé till färdigt material{% else %}Välj bild eller video{% endif %}</h1>
       <p class="intro">Välj från biblioteket, ladda upp eget material eller skapa nya alternativ med AI.</p>
     </div>
-    <a class="text-link" href="#library">Välj från biblioteket ↓</a>
     <div class="media-run-chip"><span>Utkast</span><strong>{{ run.title|truncatechars:28 }}</strong></div>
   </header>
 {% include 'engine/creative_help.html' %}
-  {% if can_edit %}<div class="creative-actions"><a class="button button-secondary" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}?run_id={{ run.pk }}">Skapa motionvideo till utkastet</a><a class="text-link" href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}?run_id={{ run.pk }}">Gör film av mina bilder eller klipp →</a></div>{% endif %}
-
 
   {% if can_edit %}
-    <section class="media-section media-add-section">
-      <div class="product-section-head"><div><span class="media-section-kicker">Lägg till</span><h2>Nytt material</h2><p class="small">Ladda upp en egen fil eller skapa något nytt utifrån briefen.</p></div></div>
-      <div class="media-two-column premium-media-two-column">
-        <section class="media-card premium-upload-card" id="upload">
-          <div class="media-card-heading"><span class="media-card-icon" aria-hidden="true">↑</span><div><span class="media-section-kicker">Egen fil</span><h3>Ladda upp</h3><p>JPEG, PNG, WebP eller MP4.</p></div></div>
-          <form class="media-form premium-upload-form" method="post" enctype="multipart/form-data" action="{% url 'engine:media_upload' workspace_id=workspace.pk run_id=run.pk %}">{% csrf_token %}<label for="media-file">Bild eller video</label><input id="media-file" type="file" name="file" accept="image/jpeg,image/png,image/webp,video/mp4" required><p class="small">Bilder högst 8 MB · MP4 högst 80 MB.</p><label for="alt-text">Bildbeskrivning <span>Valfritt</span></label><input id="alt-text" name="alt_text" maxlength="500" placeholder="Beskriv motivet kort"><div class="upload-actions"><button name="use" value="1">Ladda upp och använd</button><button class="button-secondary">Lägg i biblioteket</button></div></form>
-        </section>
-
-        {% include 'engine/media_composer.html' %}
-      </div>
-    </section>
+  {% include 'engine/creator_form.html' %}
   {% endif %}
-  <section class="media-section media-library-section" id="library">
+  <details class="media-section media-library-section creator-library" {% if not creating %}open{% endif %}><summary>Välj färdig media till utkastet <span class="small">{{ assets|length }} filer</span></summary>
     <div class="product-section-head media-library-head"><div><span class="media-section-kicker">Bibliotek</span><h2>Dina bilder och videor</h2><p class="small">Vald media behålls permanent. Oanvända AI-förhandsvisningar rensas automatiskt.</p></div><span class="media-count-pill">{{ assets|length }} filer</span></div>
     <nav class="media-nav premium-media-nav" aria-label="Filtrera media"><a href="?filter=all&kind={{ kind }}" {% if filter_value == 'all' %}aria-current="page"{% endif %}>Alla</a><a href="?filter=image&kind={{ kind }}" {% if filter_value == 'image' %}aria-current="page"{% endif %}>Bilder</a><a href="?filter=video&kind={{ kind }}" {% if filter_value == 'video' %}aria-current="page"{% endif %}>Video</a><a href="?filter=uploaded&kind={{ kind }}" {% if filter_value == 'uploaded' %}aria-current="page"{% endif %}>Uppladdat</a><a href="?filter=generated&kind={{ kind }}" {% if filter_value == 'generated' %}aria-current="page"{% endif %}>Genererat</a></nav>
     <div class="media-grid premium-media-grid">{% for asset in assets %}{% include 'engine/media_asset.html' %}{% empty %}<div class="empty-state media-library-empty"><span class="media-library-empty-icon" aria-hidden="true">+</span><h3>Inga filer här ännu</h3><p>Ladda upp eget material eller skapa nya förslag med AI.</p><a class="button button-secondary" href="#upload">Ladda upp media</a></div>{% endfor %}</div>
-  </section>
+  </details>
+
+  {% if can_edit %}
+  <details class="media-section creator-library" id="upload"><summary>Ladda upp färdig bild eller video</summary>
+    <form class="media-form" method="post" enctype="multipart/form-data" action="{% url 'engine:media_upload' workspace_id=workspace.pk run_id=run.pk %}">{% csrf_token %}
+      <label for="media-file">Bild eller video</label><input id="media-file" type="file" name="file" accept="image/jpeg,image/png,image/webp,video/mp4" required>
+      <p class="small">JPEG, PNG, WebP högst 8 MB · MP4 högst 80 MB.</p>
+      <label for="alt-text">Beskrivning (valfritt)</label><input id="alt-text" name="alt_text" maxlength="500">
+      <div class="creative-actions"><button name="use" value="1">Ladda upp och använd</button><button class="button-secondary">Lägg i biblioteket</button></div>
+    </form>
+  </details>
+  {% endif %}
 
   {% if jobs %}
     <section class="media-section media-history-section">
@@ -44,7 +40,6 @@
     </section>
   {% endif %}
 
-  <script defer src="{% static 'js/media-composer.js' %}"></script>
   <script>document.querySelectorAll('form').forEach(form=>form.addEventListener('submit',event=>{if(form.dataset.busy){event.preventDefault();return;}form.dataset.busy='1';form.setAttribute('aria-busy','true');setTimeout(()=>form.querySelectorAll('button').forEach(b=>b.disabled=true),0);}));</script>
 </main>
 {% endblock %}

@@ -2,25 +2,29 @@
 {% block title %}Motion · {{ workspace.name }}{% endblock %}
 {% block content %}
 <main class="engine motion-page">
-  <header class="page-header"><div><p class="eyebrow">Media</p><h1>Motion</h1><p class="intro">Ge text, bilder och nyckeltal rörelse. Granska först, spara sedan färdig video i Media.</p></div></header>
+  <header class="page-header"><div><p class="eyebrow">Media</p><h1>Text, bilder och siffror</h1><p class="intro">Ge text, bilder och nyckeltal rörelse. Granska först, spara sedan färdig video i Media.</p></div></header>
   {% include 'engine/library_tabs.html' %}
   {% if run %}<p class="notice">Video till <a href="{% url 'engine:review' workspace_id=workspace.pk run_id=run.pk %}">{{ run.title }}</a>. Den färdiga videon väljs i utkastet.</p>{% endif %}
   <p class="small">Har du egna bilder eller klipp? <a href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}{% if run %}?run_id={{ run.pk }}{% endif %}">Gör en film av ditt material →</a></p>
   <section class="motion-create" aria-labelledby="motion-create-title">
-    <h2 id="motion-create-title">Skapa en motionvideo</h2>
+    <h2 id="motion-create-title">Skapa en video med rörelse</h2>
+    {% if seed_images and not references_supported %}<p class="notice">Den här mallen använder text och siffror, inte de valda bilderna. Välj en annan mall för att använda dem.</p>{% endif %}
     <form method="get" class="motion-template-picker">
+      {% for image in seed_images %}<input type="hidden" name="image_ids" value="{{ image.pk }}">{% endfor %}
+      <input type="hidden" name="aspect_ratio" value="{{ form.aspect_ratio.value }}">
       {% if run %}<input type="hidden" name="run_id" value="{{ run.pk }}">{% endif %}
       <label for="motion-template">Mall</label><select id="motion-template" name="template">{% for item in templates %}<option value="{{ item.id }}" {% if template_id == item.id %}selected{% endif %}>{{ item.name }}</option>{% endfor %}</select><button type="submit" class="button-secondary">Välj mall</button>
     </form>
     <form method="post" class="motion-form" data-busy-label="Sparar projekt…">{% csrf_token %}
       <input type="hidden" name="key" value="{{ key }}"><input type="hidden" name="template_id" value="{{ template_id }}">{% if run %}<input type="hidden" name="run_id" value="{{ run.pk }}">{% endif %}
+      {% for image in seed_images %}<input type="hidden" name="image_ids" value="{{ image.pk }}">{% endfor %}
       {{ form.non_field_errors }}
       {% for field in form.basic_fields %}<div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}{% if field.help_text %}<p class="small">{{ field.help_text }}</p>{% endif %}</div>{% endfor %}
       <details {% if form.errors %}open{% endif %}><summary>Media, ljud och avsändare</summary><div class="motion-advanced">{% for field in form.advanced_fields %}<div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}</div></details>
       <div class="motion-actions"><button type="submit">Skapa projekt</button><span class="small">Du granskar innehållet innan rendering.</span></div>
     </form>
   </section>
-  <section class="motion-projects"><h2>Dina motionprojekt</h2>
+  <section class="motion-projects"><h2>Dina projekt</h2>
     {% for project in projects %}<a class="motion-project-row" href="{% url 'engine:motion_workspace' workspace_id=workspace.pk project_id=project.pk %}"><span><strong>{{ project.title }}</strong><small>Version {{ project.current_revision }} · {{ project.updated_at|date:'j M H:i' }}</small></span><span aria-hidden="true">→</span></a>{% empty %}<p class="small">Dina projekt visas här när du skapar din första video.</p>{% endfor %}
   </section>
 </main>

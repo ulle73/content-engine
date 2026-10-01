@@ -1,4 +1,5 @@
 from datetime import date
+import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -55,7 +56,7 @@ def home(request, workspace_id):
             for index, idea in enumerate(run.ideas)
             if index not in rejected
         ]
-    return render(request, "engine/home.html", {"form": form, "runs": runs, "workspace": workspace, "channel":channel})
+    return render(request, "engine/home.html", {"form": form, "runs": runs, "workspace": workspace, "channel":channel, "studio_token": uuid.uuid4()})
 
 
 @login_required

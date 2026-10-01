@@ -1,0 +1,74 @@
+/* Intent-first editor. Reuses the global Golfkuponger tokens and controls. */
+/* Native focus and hash navigation must not race clicks during live compilation. */
+html:has(.intent-creator) { scroll-behavior: auto; }
+.creator-disclosure { scroll-margin-top: 84px; margin: 20px 0 28px; padding: 22px 28px; max-width: 1000px; background: var(--gk-surface); border: 1px solid var(--gk-line); border-radius: var(--gk-radius-md); }
+.creator-disclosure > summary, .creator-library > summary { min-height: 44px; cursor: pointer; font-weight: 700; font-size: 16px; }
+.creator-disclosure > summary .small { font-weight: 400; margin-left: 10px; }
+.intent-creator { display: flex; flex-direction: column; gap: 20px; padding-top: 16px; min-width: 0; }
+.intent-creator button.quiet { min-height: 44px; padding: 6px 4px; font-size: 13px; line-height: 1.5; text-align: left; }
+.intent-creator [hidden] { display: none !important; }
+.intent-creator label { display: block; margin-bottom: 7px; font-size: 14px; font-weight: 650; }
+.intent-creator input, .intent-creator select, .intent-creator textarea { min-width: 0; max-width: 100%; width: 100%; font-size: 16px; }
+.intent-creator .small { font-size: 13px; line-height: 1.55; color: var(--gk-muted); }
+.intent-creator p { margin: 7px 0 0; }
+.intent-creator h2, .intent-creator h3 { margin: 0; }
+.creator-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.creator-heading h2 { font-size: 24px; }
+.creator-heading .segmented { width: auto; }
+.creator-frames { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.creator-frames:has(> :only-child) { grid-template-columns: minmax(0, 1fr); }
+.creator-frame { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 14px; align-items: center; padding: 14px; border: 1px dashed var(--gk-line-strong); border-radius: var(--gk-radius-sm); min-width: 0; }
+.creator-frame-preview { height: 128px; min-width: 0; display: grid; place-items: center; background: var(--gk-surface-soft); overflow: hidden; border-radius: 6px; }
+.creator-frame-preview img { width: 100%; height: 128px; object-fit: contain; }
+.creator-frame-empty { color: var(--gk-soft); font-size: 28px; }
+.creator-frame-copy { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.creator-frame-copy > strong { font-size: 15px; }
+.creator-frame-copy button { min-height: 44px; padding: 8px 10px; font-size: 13px; }
+.creator-frame-copy .quiet { padding: 4px 0; font-size: 12px; text-align: left; }
+.creator-native-reference { grid-column: 1 / -1; }
+.creator-enhanced .creator-native-reference { display: none; }
+.intent-creator:not(.creator-enhanced) [data-open-frame], .intent-creator:not(.creator-enhanced) [data-remove-frame] { display: none; }
+.creator-swap { align-self: flex-start; margin-top: -10px; min-height: 44px; }
+.creator-settings-row, .creator-options-grid, .creator-picker-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.creator-options { border-top: 1px solid var(--gk-line); padding-top: 12px; }
+.intent-creator .creator-options > summary { min-height: 44px; cursor: pointer; font-size: 14px; font-weight: 650; }
+.creator-options summary .small { margin-left: 6px; font-weight: 400; }
+.creator-options-grid { margin: 12px 0; }
+.creator-options-grid .channel-option { grid-column: 1 / -1; display: flex; }
+.creator-options-grid input[type=checkbox] { width: auto; flex-shrink: 0; }
+.creator-reference-picker { border-top: 1px solid var(--gk-line); border-bottom: 1px solid var(--gk-line); padding: 16px 0; }
+.creator-reference-picker .creator-heading { margin-bottom: 16px; }
+.creator-reference-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(106px, 1fr)); gap: 10px; margin: 14px 0; max-height: 440px; overflow: auto; padding: 3px; }
+.creator-reference-grid button { display: flex; flex-direction: column; padding: 6px; gap: 6px; background: transparent; color: var(--gk-text); border: 1px solid var(--gk-line); min-width: 0; }
+.creator-reference-grid img { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--gk-surface-soft); }
+.creator-reference-grid span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.intent-creator :focus-visible { outline: 3px solid var(--gk-green); outline-offset: 3px; }
+.creator-plan { min-height: 112px; border-top: 1px solid var(--gk-line); padding-top: 14px; font-size: 13px; white-space: pre-line; }
+.creator-plan details { margin-top: 10px; }
+.intent-creator .creator-plan summary { cursor: pointer; min-height: 44px; font-size: 14px; }
+.creator-plan > p { min-height: 3em; }
+.creator-plan pre { max-width: 100%; max-height: 320px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+.creator-plan.is-error { color: var(--gk-red); }
+.creator-submit-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.creator-submit-row > button { min-height: 48px; min-width: 220px; }
+.creator-handoffs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; border-top: 1px solid var(--gk-line); padding-top: 14px; }
+.creator-handoffs button { min-height: 44px; padding: 4px 0; font-size: 13px; text-align: left; }
+.creator-errors { overflow-wrap: anywhere; }
+.creator-library { padding: 18px 0; border-top: 1px solid var(--gk-line); }
+.creator-library > summary { margin-bottom: 12px; }
+.creator-library .media-form { max-width: 640px; }
+@media (max-width: 760px) {
+  .creator-disclosure { padding: 16px; margin: 16px 0 24px; }
+  .creator-disclosure > summary .small { display: block; margin: 4px 0 0; }
+  .creator-frame { grid-template-columns: minmax(0, 1fr); padding: 10px; gap: 10px; }
+  .creator-frame-preview, .creator-frame-preview img { height: 110px; }
+  .creator-frame-copy > .small { min-height: 40px; }
+  .creator-frame-copy button { width: 100%; }
+  .creator-frames { gap: 10px; }
+  .creator-settings-row { gap: 12px; }
+  .creator-options-grid, .creator-picker-tools { grid-template-columns: minmax(0, 1fr); }
+  .creator-heading h2 { font-size: 21px; }
+  .creator-submit-row > button { width: 100%; min-width: 0; }
+  .creator-submit-row > .small { width: 100%; }
+  .creator-handoffs > .small:first-child { width: 100%; }
+}

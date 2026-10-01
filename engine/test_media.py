@@ -266,10 +266,10 @@ class MediaTests(TestCase):
         picker = self.client.get(self.url("media"), {
             "kind": "video", "source": str(start.pk), "end_source": str(end.pk),
         })
-        self.assertContains(picker, "Startbild vald")
-        self.assertContains(picker, "Slutbild vald")
-        self.assertEqual(str(picker.context["composer"]["end_asset"].value()), str(end.pk))
-        self.assertContains(picker, f'value="{end.pk}" selected', html=False)
+        self.assertContains(picker, 'data-frame="source_asset"')
+        self.assertContains(picker, 'data-frame="end_asset"')
+        self.assertEqual(str(picker.context["creator_form"]["source_asset"].value()), str(start.pk))
+        self.assertEqual(str(picker.context["creator_form"]["end_asset"].value()), str(end.pk))
 
         with patch(
             "engine.media.providers.estimate_video",
@@ -352,8 +352,8 @@ class MediaTests(TestCase):
                 "end_asset": str(end.pk),
                 "model_override": "kling-video/v2.5-turbo/pro",
             })
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.context["composer"]["brief"].value(), "Bridge these frames in 5 seconds")
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.context["creator_form"]["model_override"].value(), "kling-video/v2.5-turbo/pro")
         estimate.assert_not_called()
         start_video.assert_not_called()
         self.assertFalse(self.run.media_jobs.exists())
@@ -458,7 +458,7 @@ class MediaTests(TestCase):
         job = create_job(self.run, token=uuid.uuid4(), kind="video", brief=brief)
         self.assertEqual(job.brief, brief)
         self.assertEqual(job.provider, "higgsfield")
-        self.assertEqual(job.parameters["duration"], 10)
+        self.assertEqual(job.parameters["duration"], 8)
         self.assertEqual(job.parameters["aspect_ratio"], "9:16")
         self.assertEqual(job.parameters["creative"]["brief"]["user_intent"], brief)
         self.assertEqual(job.parameters["creative"]["selection"]["model_id"], job.parameters["model"])
@@ -466,7 +466,7 @@ class MediaTests(TestCase):
         self.assertEqual(job.parameters["creative"]["recipe"]["version"], "1.0.0")
         self.assertEqual(job.parameters["creative"]["recipe_registry_version"], "2026-09-25.2")
         self.assertIn("SCENE:", job.prompt)
-        self.assertTrue(any(item["code"] == "duration_normalized" for item in job.parameters["creative"]["preflight"]))
+        self.assertFalse(any(item["code"] == "duration_normalized" for item in job.parameters["creative"]["preflight"]))
 
     def test_reference_video_preservation_is_compiled_without_old_logo_ban(self):
         source = store_asset(self.company, picture())
@@ -479,12 +479,12 @@ class MediaTests(TestCase):
 
     def test_ai_studio_exposes_priority_format_and_safe_diagnostics(self):
         page = self.client.get(self.url("media"), {"kind": "video"})
-        self.assertContains(page, "Bäst resultat")
+        self.assertContains(page, "Prioritera kvalitet")
         self.assertContains(page, "Balanserad")
         self.assertContains(page, "Spara kostnad")
         self.assertContains(page, "Stående / Reel")
-        self.assertContains(page, "Auto väljer mellan verifierade videomodeller")
-        self.assertContains(page, "Längd, upplösning och modell anpassas")
+        self.assertContains(page, "Auto använder verifierat modellstöd")
+        self.assertContains(page, 'id="creator-plan-status"')
         self.assertNotContains(page, "Prioritet ändrar ännu inte videomodell")
         self.assertNotContains(page, "Bildförslag eller 10 sekunders video")
 
@@ -497,7 +497,7 @@ class MediaTests(TestCase):
         body = detail.content.decode()
         self.assertLess(body.index("generation-prompt-review"), body.index("creative-actions"))
         self.assertContains(detail, "economy")
-        self.assertContains(detail, "kling-video/v2.5-turbo/pro/text-to-video")
+        self.assertContains(detail, job.parameters["provider_model"])
         self.assertNotContains(detail, '<script>alert("x")</script>')
         self.assertContains(detail, '&lt;script&gt;')
         self.assertEqual(job.parameters["creative"]["brief"]["quality_preference"], "economy")

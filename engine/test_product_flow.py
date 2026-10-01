@@ -13,9 +13,8 @@ from django.utils import timezone
 from PIL import Image
 
 from .creative_director import build_plan, parse_brief
-from .forms import snapshot_company_context
+from .forms import MediaCreationForm, snapshot_company_context
 from .media import create_job, default_brief, store_asset
-from .media_composer import MediaComposerForm
 from .media_storage import MediaError
 from .models import Company, ContentRun, MediaAsset, MediaGeneration
 
@@ -68,6 +67,41 @@ class ProductFlowTests(TestCase):
         explicit = build_plan(self.run, "A calm premium product reveal, 5 seconds.", kind="video", source=source, recipe_id="premium_product_reveal")
         self.assertEqual(explicit.brief.duration_seconds, 5)
 
+    def test_recipe_defaults_and_controls_match_free_preview_and_review(self):
+        source = self.asset()
+        payload = self.payload(kind="video", source_asset=str(source.pk), recipe_id="premium_product_reveal",
+                               brief="Static camera on a premium product.", camera="static")
+        with patch("httpx.Client.send", side_effect=AssertionError("No external planning call")):
+            preview = self.client.post(self.url("creation_preview"), payload)
+        self.assertEqual(preview.status_code, 200)
+        self.assertEqual(preview.json()["duration"], 8)
+        self.assertFalse(MediaGeneration.objects.exists())
+        with patch("engine.media.providers.estimate_video", side_effect=MediaError("Synthetic unavailable")), \
+             patch("engine.media.providers.start_video") as paid:
+            response = self.client.post(self.url("media_generate"), payload)
+        self.assertEqual(response.status_code, 302)
+        job = MediaGeneration.objects.get()
+        self.assertEqual(job.prompt, preview.json()["prompt"])
+        self.assertEqual(job.parameters["duration"], 8)
+        camera = next(line for line in job.prompt.splitlines() if line.startswith("CAMERA:"))
+        self.assertIn("static", camera)
+        self.assertNotIn("push", camera.lower())
+        paid.assert_not_called()
+
+    def test_retry_restores_legacy_recipe_and_shape_without_creator_metadata(self):
+        source, end = self.asset(), self.asset()
+        job = create_job(self.run, token=uuid.uuid4(), kind="video", brief="A product", source=source,
+                         end_source=end, recipe_id="before_after", shape="landscape", priority="quality")
+        job.parameters.pop("creator")
+        job.save(update_fields=["parameters"])
+        response = self.client.get(self.url("media"), {"retry": str(job.pk)})
+        form = response.context["creator_form"]
+        self.assertEqual(form["recipe_id"].value(), "before_after")
+        self.assertEqual(form["shape"].value(), "landscape")
+        self.assertEqual(str(form["source_asset"].value()), str(source.pk))
+        self.assertEqual(str(form["end_asset"].value()), str(end.pk))
+        self.assertFalse(response.context["restore_creator"])
+
     def test_explicit_camera_is_not_duplicated_as_subject_motion(self):
         brief = parse_brief("Static camera. Let the flag move.", kind="video")
         self.assertEqual(brief.camera_movement, ["static"])
@@ -83,21 +117,21 @@ class ProductFlowTests(TestCase):
 
     def test_ui_starts_with_one_image_and_auto_balanced(self):
         response = self.client.get(self.url("media"))
-        form = response.context["composer"]
+        form = response.context["creator_form"]
         self.assertEqual(form["count"].value(), 1)
         self.assertEqual(form["priority"].value(), "balanced")
         self.assertEqual(form["model_override"].value(), "")
         self.assertEqual(form["brief"].value(), self.run.draft["photo_brief"])
-        self.assertContains(response, 'data-composer')
+        self.assertContains(response, 'id="creator-form"')
 
     def test_invalid_post_keeps_brief_frames_and_settings_without_job(self):
         source = self.asset()
-        payload = self.payload(kind="video", source_asset=str(source.pk), preset="before_after", priority="quality", shape="landscape")
+        payload = self.payload(kind="video", source_asset=str(source.pk), recipe_id="before_after", priority="quality", shape="landscape")
         with patch("engine.media.providers.estimate_video") as estimate, patch("engine.media.providers.start_video") as paid:
             response = self.client.post(self.url("media_generate"), payload)
-        self.assertEqual(response.status_code, 400)
-        form = response.context["composer"]
-        for name in ("brief", "source_asset", "preset", "priority", "shape"):
+        self.assertEqual(response.status_code, 422)
+        form = response.context["creator_form"]
+        for name in ("brief", "source_asset", "recipe_id", "priority", "shape"):
             self.assertEqual(form[name].value(), payload[name])
         self.assertIn("end_asset", form.errors)
         self.assertFalse(MediaGeneration.objects.exists())
@@ -105,18 +139,18 @@ class ProductFlowTests(TestCase):
         paid.assert_not_called()
 
     def test_unknown_recipe_kind_model_and_token_fail_before_generation(self):
-        for invalid in ({"preset": "untrusted"}, {"kind": "audio"}, {"model_override": "unknown-model"}, {"token": "not-uuid"}):
+        for invalid in ({"recipe_id": "untrusted"}, {"kind": "audio"}, {"model_override": "unknown-model"}, {"token": "not-uuid"}):
             with self.subTest(invalid=invalid):
                 response = self.client.post(self.url("media_generate"), self.payload(**invalid))
-                self.assertEqual(response.status_code, 400)
-                self.assertEqual(response.context["composer"]["brief"].value(), "My own product idea")
+                self.assertEqual(response.status_code, 422)
+                self.assertEqual(response.context["creator_form"]["brief"].value(), "My own product idea")
                 self.assertFalse(MediaGeneration.objects.exists())
 
     def test_start_end_pair_is_validated_on_server_without_javascript(self):
         end = self.asset()
         response = self.client.post(self.url("media_generate"), self.payload(kind="video", end_asset=str(end.pk)))
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("end_asset", response.context["composer"].errors)
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("end_asset", response.context["creator_form"].errors)
         self.assertFalse(MediaGeneration.objects.exists())
 
     def test_reference_choices_are_company_scoped_and_unexpired(self):
@@ -126,11 +160,11 @@ class ProductFlowTests(TestCase):
         MediaAsset.objects.filter(pk=expired.pk).update(expires_at=timezone.now()-timedelta(seconds=1))
         for source in (foreign, expired):
             response = self.client.post(self.url("media_generate"), self.payload(source_asset=str(source.pk)))
-            self.assertEqual(response.status_code, 400)
-            self.assertIn("source_asset", response.context["composer"].errors)
-        form = self.client.get(self.url("media")).context["composer"]
-        self.assertNotIn(str(foreign.pk), dict(form.fields["source_asset"].choices))
-        self.assertNotIn(str(expired.pk), dict(form.fields["source_asset"].choices))
+            self.assertEqual(response.status_code, 422)
+            self.assertIn("source_asset", response.context["creator_form"].errors)
+        form = self.client.get(self.url("media")).context["creator_form"]
+        self.assertFalse(form.fields["source_asset"].queryset.filter(pk=foreign.pk).exists())
+        self.assertFalse(form.fields["source_asset"].queryset.filter(pk=expired.pk).exists())
         self.assertFalse(MediaGeneration.objects.exists())
 
     def test_older_selected_frame_survives_bounded_picker(self):
@@ -141,14 +175,14 @@ class ProductFlowTests(TestCase):
         MediaAsset.objects.filter(pk=source.pk).update(created_at=now-timedelta(days=10))
         response = self.client.get(self.url("media"), {"source": str(source.pk)})
         self.assertEqual(response.context["source"].pk, source.pk)
-        self.assertIn(str(source.pk), dict(response.context["composer"].fields["source_asset"].choices))
+        self.assertTrue(response.context["creator_form"].fields["source_asset"].queryset.filter(pk=source.pk).exists())
 
     def test_all_video_presets_compile_with_existing_trusted_recipes(self):
         source, end = self.asset(), self.asset()
         for recipe in ("premium_product_reveal", "landscape_environment_hero", "before_after", "scroll_orbit_hero"):
             with self.subTest(recipe=recipe):
                 frame_end = end if recipe in {"before_after", "scroll_orbit_hero"} else None
-                form = MediaComposerForm(self.payload(kind="video", preset=recipe, source_asset=str(source.pk), end_asset=str(frame_end.pk) if frame_end else ""), company=self.company)
+                form = MediaCreationForm(self.payload(kind="video", recipe_id=recipe, source_asset=str(source.pk), end_asset=str(frame_end.pk) if frame_end else ""), company=self.company)
                 self.assertTrue(form.is_valid(), form.errors)
                 plan = build_plan(self.run, form.cleaned_data["brief"], kind="video", source=source, end_source=frame_end, recipe_id=recipe)
                 self.assertFalse([issue for issue in plan.preflight if issue.severity == "error"])
@@ -156,7 +190,7 @@ class ProductFlowTests(TestCase):
 
     def test_web_review_uses_recipe_without_paid_call_and_is_idempotent(self):
         source, end = self.asset(), self.asset()
-        payload = self.payload(kind="video", source_asset=str(source.pk), end_asset=str(end.pk), preset="before_after")
+        payload = self.payload(kind="video", source_asset=str(source.pk), end_asset=str(end.pk), recipe_id="before_after")
         def estimate(job):
             model = job.parameters["provider_model"]
             return model, {"prompt": job.prompt}, {"estimate": {"usd": "0.80"}, "model": model}
@@ -184,7 +218,7 @@ class ProductFlowTests(TestCase):
 
     def test_retry_restores_image_count_priority_and_format(self):
         job = create_job(self.run, token=uuid.uuid4(), kind="image", brief="A product", count=3, shape="landscape", priority="economy")
-        form = self.client.get(self.url("media"), {"retry": str(job.pk)}).context["composer"]
+        form = self.client.get(self.url("media"), {"retry": str(job.pk)}).context["creator_form"]
         self.assertEqual(form["count"].value(), 3)
         self.assertEqual(form["shape"].value(), "landscape")
         self.assertEqual(form["priority"].value(), "economy")
@@ -194,11 +228,11 @@ class ProductFlowTests(TestCase):
         source, end = self.asset(), self.asset()
         job = create_job(self.run, token=uuid.uuid4(), kind="video", brief="A product", source=source, end_source=end, recipe_id="before_after", priority="quality")
         response = self.client.get(self.url("media"), {"retry": str(job.pk)})
-        form = response.context["composer"]
-        self.assertEqual(form["preset"].value(), "before_after")
+        form = response.context["creator_form"]
+        self.assertEqual(form["recipe_id"].value(), "before_after")
         self.assertEqual(str(form["source_asset"].value()), str(source.pk))
         self.assertEqual(str(form["end_asset"].value()), str(end.pk))
-        self.assertTrue(response.context["composer_authoritative"])
+        self.assertTrue(not response.context["restore_creator"])
 
     def test_handoff_preserves_copy_facts_and_existing_run(self):
         original_context, original_ideas = self.run.context.copy(), self.run.ideas.copy()
@@ -229,12 +263,12 @@ class ProductFlowTests(TestCase):
         self.client.force_login(self.user)
         self.run.delivery_status = "delivered"
         self.run.save(update_fields=["delivery_status"])
-        self.assertEqual(self.client.post(url, {"target": "motion", "brief": "Idea"}).status_code, 400)
+        self.assertEqual(self.client.post(url, {"target": "motion", "brief": "Idea"}).status_code, 409)
         self.run.refresh_from_db()
         self.assertEqual(self.run.draft["photo_brief"], "A white product on a table in morning light.")
 
     def test_prompt_and_template_text_are_escaped_in_form(self):
         hostile = '<script>alert("x")</script> & my product'
-        response = self.client.post(self.url("media_generate"), self.payload(brief=hostile, preset="untrusted"))
-        self.assertNotContains(response, '<script>alert("x")</script>', status_code=400)
-        self.assertEqual(response.context["composer"]["brief"].value(), hostile)
+        response = self.client.post(self.url("media_generate"), self.payload(brief=hostile, recipe_id="untrusted"))
+        self.assertNotContains(response, '<script>alert("x")</script>', status_code=422)
+        self.assertEqual(response.context["creator_form"]["brief"].value(), hostile)

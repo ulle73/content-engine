@@ -192,12 +192,16 @@ def store_derived_image(company, data, *, generation, alt_text="", brief="", ass
 
 
 def default_brief(run, kind):
-    """Start from the user's latest visual intent, not an invented video script."""
+    """Use the latest visual intent; never invent a multi-scene video script."""
+    if run.model == "creative-studio" or run.context.get("media_only"):
+        # An empty studio is not a four-scene marketing script. Keep imported
+        # inspiration intact and let new users describe their own idea.
+        return run.draft.get("photo_brief", "")
     idea = run.ideas[run.selected] if run.selected is not None and 0 <= run.selected < len(run.ideas) else {}
     return run.draft.get("photo_brief") or idea.get("photo_brief") or idea.get("angle") or ""
 
 
-def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced", recipe_id=None, model_override=""):
+def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced", recipe_id=None, model_override="", controls=None):
     check_storage()
     if kind not in {"image", "video"} or not brief.strip() or len(brief) > 6000:
         raise MediaError("Beskrivningen behövs och får vara högst 6000 tecken.")
@@ -244,11 +248,14 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         try:
             plan = build_plan(locked, brief, kind=kind, source=source, end_source=end_source, shape=shape, count=count,
                               priority=priority, inspirations=inspirations, recipe_id=recipe_id,
-                              model_override=model_override)
+                              model_override=model_override, controls=controls)
         except ValueError as exc:
             raise MediaError("Kreativ kontroll stoppade generationen: " + str(exc)) from exc
 
+        from .creative_controls import CreativeControls, CONTROL_VERSION
         params = dict(plan.parameters)
+        params["creator"] = {"version": CONTROL_VERSION, "controls": CreativeControls.model_validate(controls or {}).model_dump(mode="json"),
+                             "shape": shape, "recipe_id": recipe_id or ""}
         params["aspect_ratio"] = plan.brief.aspect_ratio
         params["model_override"] = plan.selection.model_id if plan.selection.manual_override else ""
         params["creative"] = {

@@ -1,5 +1,15 @@
 /* Presentation only: reveal linked sections and give native form submissions feedback. */
 (() => {
+  document.querySelectorAll('form[action$="/accounts/logout/"]').forEach(form => {
+    form.addEventListener('submit', () => {
+      window.dispatchEvent(new Event('ce:drafts-clear'));
+      try {
+        Object.keys(sessionStorage).filter(key => key.startsWith('ce:creator:') || key.startsWith('ce-composer:'))
+          .forEach(key => sessionStorage.removeItem(key));
+      } catch (_) { /* Blocked storage must not prevent logout. */ }
+    });
+  });
+
   function revealTarget() {
     const target = document.getElementById(location.hash.slice(1));
     if (!target) return;

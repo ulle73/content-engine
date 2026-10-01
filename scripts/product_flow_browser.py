@@ -2,7 +2,7 @@
 
 Run: python scripts/product_flow_browser.py
 Install test-only browser: pip install playwright==1.55.0 && python -m playwright install chromium
-PRODUCT_FLOW_BASELINE=1 records the pre-composer behavior for comparison.
+Covers preserved planner behavior, draft recovery and native fallbacks.
 """
 import json
 import os
@@ -37,8 +37,7 @@ from engine.forms import snapshot_company_context
 from engine.media import store_asset
 from engine.models import Company, ContentRun, MediaGeneration
 
-BASELINE = os.environ.get("PRODUCT_FLOW_BASELINE") == "1"
-EVIDENCE = ROOT / "data" / "product-flow-browser" / ("before" if BASELINE else "after")
+EVIDENCE = ROOT / "data" / "product-flow-browser" / "combined"
 EVIDENCE.mkdir(parents=True, exist_ok=True)
 
 
@@ -66,9 +65,9 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
             Image.new("RGB", (960, 640), (210 + index * 10, 230, 220)).save(content, "PNG")
             self.assets.append(store_asset(self.company, content.getvalue(), alt_text=f"Synthetic product {index+1}"))
         self.executor = ThreadPoolExecutor(max_workers=1)
-        self.addCleanup(self.executor.shutdown)
+        self.addCleanup(self.close_executor)
         self.browser_errors = []
-        self.observations = {"baseline": BASELINE, "checks": []}
+        self.observations = {"checks": []}
         # Server-side paid entry points must fail even if accidentally reached.
         for entry in ("engine.media.providers.start_video", "engine.media.providers.generate_images", "engine.media.providers.upload_input"):
             self.stack.enter_context(patch(entry, side_effect=AssertionError("Paid/external provider call forbidden")))
@@ -78,6 +77,12 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
     def estimate(job):
         model = job.parameters["provider_model"]
         return model, {"prompt": job.prompt}, {"estimate": {"usd": "0.80"}, "model": model}
+
+    def close_executor(self):
+        # ORM connections belong to the worker thread; close them there before
+        # Django deletes the temporary SQLite file on Windows.
+        self.executor.submit(connections.close_all).result()
+        self.executor.shutdown()
 
     def url(self, name, **kwargs):
         return self.live_server_url + reverse("engine:" + name, kwargs={"workspace_id": self.company.pk, **kwargs})
@@ -99,6 +104,11 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
     def screenshot(self, page, name):
         page.screenshot(path=str(EVIDENCE / (name + ".png")), full_page=True)
 
+    def select_frame(self, page, role, asset_id):
+        page.locator(f'[data-open-frame="{role}"]').click()
+        page.locator(f'#creator-reference-grid [data-asset-id="{asset_id}"]').click()
+        expect(page.locator("#creator-reference-picker")).to_be_hidden()
+
     def test_creation_flow(self):
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch()
@@ -106,137 +116,146 @@ class ProductFlowBrowserTests(StaticLiveServerTestCase):
             page = self.login(context)
             try:
                 media = self.url("media", run_id=self.run.pk)
-                page.goto(media + "?kind=image#generate")
-                expect(page.locator("#media-brief")).to_be_visible()
+                page.goto(media)
+                form = page.locator("#creator-form")
+                expect(form.locator('[name="brief"]')).to_be_visible()
+                expect(form.locator('[name="brief"]')).to_have_value(self.run.draft["photo_brief"])
                 self.screenshot(page, "desktop-image")
-                original = "A white product in morning light. Keep the camera static and let the flag move."
-                page.locator("#media-brief").fill(original)
+                original = "Static camera on a white product in morning light. Let the flag move."
+                form.locator('[name="brief"]').fill(original)
+                page.locator('.media-library-section > summary').click()
                 page.locator(".media-quick-actions a").filter(has_text="Animera").first.click()
-                expect(page.locator("#media-brief")).to_be_visible()
-                # The response becomes visible before deferred draft restoration finishes.
-                page.wait_for_load_state("domcontentloaded")
-                if not BASELINE:
-                    expect(page.locator("#media-brief")).to_have_value(original)
-                preserved = page.locator("#media-brief").input_value() == original
-                self.observations["brief_preserved_on_animate"] = preserved
-                self.observations["video_brief"] = page.locator("#media-brief").input_value()
-                self.screenshot(page, "desktop-video")
-                if BASELINE:
-                    self.assertFalse(preserved)
-                    page.locator(".generation-submit").click()
-                    self.observations["review_url"] = page.url
-                    self.observations["notices"] = page.locator(".app-notices").inner_text() if page.locator(".app-notices").count() else ""
-                    self.assertEqual(self.executor.submit(MediaGeneration.objects.count).result(), 0)
-                    page.goto(media + "?kind=video#generate")
-                    page.set_viewport_size({"width": 390, "height": 844})
-                    self.screenshot(page, "mobile-video")
-                    self.observations["checks"].append("baseline_loses_text_and_rejects_own_default")
-                    return
-                self.assertTrue(preserved)
-                source = page.locator("#media-source-asset").input_value()
+                expect(form.locator('[name="brief"]')).to_have_value(original)
+                source = form.locator('[name="source_asset"]').input_value()
                 self.assertTrue(source)
                 end = next(str(asset.pk) for asset in self.assets if str(asset.pk) != source)
-                # Native frame selection, preset and automatic compatible model filtering.
-                page.locator("#media-end-asset").select_option(end)
-                page.locator("#media-preset").select_option("before_after")
-                expect(page.locator("#media-brief")).to_have_value(original)
-                expect(page.locator('[data-frame-preview="end_asset"]')).to_be_visible()
-                model_ids = page.locator("#media-model-override option").evaluate_all("items => items.map(item => item.value)")
-                self.assertFalse(any("kling" in model for model in model_ids))
-                self.assertIn("bytedance/seedance-2.5", model_ids)
-                page.locator("#media-shape").select_option("landscape")
-                page.locator(".generation-kind-switch").get_by_role("link", name="Bild", exact=True).click()
-                expect(page.locator("#media-brief")).to_have_value(original)
-                page.locator(".generation-kind-switch").get_by_role("link", name="Video", exact=True).click()
-                expect(page.locator("#media-end-asset")).to_have_value(end)
-                expect(page.locator("#media-preset")).to_have_value("before_after")
-                expect(page.locator("#media-shape")).to_have_value("landscape")
+                self.select_frame(page, "end_asset", end)
+                form.locator('[name="recipe_id"]').select_option("before_after")
+                form.locator('[name="duration_seconds"]').select_option("8")
+                form.locator('[name="shape"]').select_option("landscape")
+                form.locator('details.creator-options').first.locator('summary').click()
+                form.locator('[name="camera"]').select_option("static")
+                expect(page.locator('#creator-plan-status')).to_contain_text('8 sekunder')
+                prompt = page.locator('#creator-compiled-prompt').text_content()
+                camera_line = next(line for line in prompt.splitlines() if line.startswith('CAMERA:'))
+                self.assertIn('static', camera_line)
+                self.assertNotIn('push', camera_line.lower())
+                self.assertNotIn('orbit', camera_line.lower())
+                form.locator('nav a[href="?kind=image#generate"]').click()
+                expect(form.locator('[name="brief"]')).to_have_value(original)
+                # Video-specific controls must not leak into image planning.
+                expect(page.locator('#creator-plan-status')).to_contain_text('Auto rekommenderar')
+                form.locator('nav a[href="?kind=video#generate"]').click()
+                expect(form.locator('[name="end_asset"]')).to_have_value(end)
+                expect(form.locator('[name="recipe_id"]')).to_have_value("before_after")
+                expect(form.locator('[name="duration_seconds"]')).to_have_value("8")
+                expect(form.locator('[name="camera"]')).to_have_value("static")
+                expect(form.locator('[name="shape"]')).to_have_value("landscape")
+                page.locator('.media-library-section > summary').click()
                 page.locator(".media-nav").get_by_role("link", name="Uppladdat", exact=True).click()
-                expect(page.locator("#media-brief")).to_have_value(original)
-                expect(page.locator("#media-end-asset")).to_have_value(end)
+                expect(form.locator('[name="brief"]')).to_have_value(original)
+                expect(form.locator('[name="end_asset"]')).to_have_value(end)
                 self.observations["checks"].append("draft_survives_animate_kind_and_filter_navigation")
-                # Invalid preset pairing: server re-renders the typed idea; repair in place.
-                page.locator("#media-end-asset").select_option("")
-                page.locator(".generation-submit").click()
-                expect(page.locator(".composer-errors")).to_be_visible()
-                expect(page.locator("#media-brief")).to_have_value(original)
-                expect(page.locator("#media-source-asset")).to_have_value(source)
-                page.locator("#media-end-asset").select_option(end)
-                self.observations["checks"].append("invalid_submit_preserves_idea_and_can_be_repaired")
-                # Real app review with explicitly synthetic read-only estimate.
-                page.locator(".generation-submit").click()
+                # Remove and repair a required frame through the actual picker UI.
+                page.locator('[data-remove-frame="end_asset"]').click()
+                page.locator('#creator-submit').click()
+                expect(page.locator('.creator-errors')).to_be_visible()
+                expect(form.locator('[name="brief"]')).to_have_value(original)
+                expect(form.locator('[name="source_asset"]')).to_have_value(source)
+                self.select_frame(page, "end_asset", end)
+                page.locator('#creator-submit').click()
                 page.wait_for_url("**/media/jobs/**/")
-                self.assertEqual(self.executor.submit(MediaGeneration.objects.count).result(), 1)
                 job = self.executor.submit(MediaGeneration.objects.get).result()
-                self.assertEqual(job.status, "queued")
-                self.assertEqual(job.parameters["creative"]["recipe"]["recipe_id"], "before_after")
+                self.assertEqual(job.status, 'queued')
                 self.assertEqual(job.brief, original)
+                self.assertEqual(job.parameters['creative']['recipe']['recipe_id'], 'before_after')
+                self.assertTrue(job.usage.get('reviewed_at'))
                 self.screenshot(page, "review")
-                self.observations["checks"].append("price_review_without_paid_start")
-                # Retry restores the reviewed choice rather than a stale tab draft.
-                page.goto(media + "?retry=" + str(job.pk) + "#generate")
-                expect(page.locator("#media-preset")).to_have_value("before_after")
-                expect(page.locator("#media-end-asset")).to_have_value(end)
-                # Actual handoff through the existing engines, preserving company/run facts.
-                sequence_idea = "Scene 1: show the product. Scene 2: show the place. Scene 3: calm ending."
-                page.locator("#media-brief").fill(sequence_idea)
-                page.get_by_role("button", name="Forts\u00e4tt i Sequence", exact=True).click()
-                page.wait_for_url("**/sequences/?run_id=*")
+                page.goto(media + '?retry=' + str(job.pk) + '#generate')
+                expect(form.locator('[name="recipe_id"]')).to_have_value('before_after')
+                expect(form.locator('[name="end_asset"]')).to_have_value(end)
+                self.observations["checks"].append("invalid_repair_and_synthetic_price_review_retry_without_paid_start")
+                # Draft lifetime, identity scoping, and no tokens in stored fields.
+                state = page.evaluate("""() => {
+                    const form = document.getElementById('creator-form');
+                    const key = 'ce:creator:v2:' + form.dataset.stateKey;
+                    return {key, value: JSON.parse(sessionStorage.getItem(key))};
+                }""")
+                self.assertIn(str(self.user.pk) + ':' + str(self.company.pk) + ':' + str(self.run.pk), state['key'])
+                stored = state['value']['shared'] | state['value']['kinds']['video']
+                self.assertFalse({'token', 'csrfmiddlewaretoken', 'provider_id'} & set(stored))
+                context.add_init_script("""if (sessionStorage.getItem('test-expire-draft') === '1') {
+                    Object.keys(sessionStorage).filter(key => key.startsWith('ce:creator:v2:')).forEach(key => {
+                        const state = JSON.parse(sessionStorage.getItem(key));
+                        state.savedAt = Date.now() - 3 * 60 * 60 * 1000;
+                        sessionStorage.setItem(key, JSON.stringify(state));
+                    });
+                    sessionStorage.removeItem('test-expire-draft');
+                }""")
+                page.evaluate("sessionStorage.setItem('test-expire-draft', '1')")
+                page.goto(media + '?kind=video#generate')
+                expect(form.locator('[name="brief"]')).to_have_value(self.run.draft['photo_brief'])
+                expect(form.locator('[name="end_asset"]')).to_have_value('')
+                self.observations['checks'].append('two_hour_expiry_scoped_storage_without_tokens')
+                sequence_idea = 'Scene 1: show the product. Scene 2: show the place. Scene 3: calm ending.'
+                form.locator('[name="brief"]').fill(sequence_idea)
+                self.select_frame(page, 'source_asset', source)
+                self.select_frame(page, 'end_asset', end)
+                form.locator('button[name="workflow"][value="sequence"]').click()
                 expect(page.locator('textarea[name="brief"]')).to_have_value(sequence_idea)
-                self.screenshot(page, "sequence-handoff")
-                page.goto(media + "?kind=video#generate")
-                motion_idea = "A short typographic summary with a calm ending."
-                page.locator("#media-brief").fill(motion_idea)
-                page.get_by_role("button", name="Forts\u00e4tt i Motion", exact=True).click()
-                page.wait_for_url("**/motion/?run_id=*")
+                expect(page.locator('input[name="image_ids"]')).to_have_count(2)
+                self.screenshot(page, 'sequence-handoff')
+                page.goto(media + '?kind=video#generate')
+                # A saved server change invalidates an older browser baseline.
+                expect(form.locator('[name="brief"]')).to_have_value(sequence_idea)
+                motion_idea = 'A short typographic summary with a calm ending.'
+                form.locator('[name="brief"]').fill(motion_idea)
+                form.locator('button[name="workflow"][value="motion"]').click()
                 expect(page.locator('[name="body"]')).to_have_value(motion_idea)
-                self.screenshot(page, "motion-handoff")
                 self.executor.submit(self.run.refresh_from_db).result()
-                self.assertEqual(self.run.draft["instagram"], "Keep copy.")
-                self.assertEqual(self.run.context["current"], "Synthetic facts only")
-                self.observations["checks"].append("sequence_and_motion_reuse_same_run_and_preserve_copy_facts")
-                # Responsive layout, real DOM width checks and screenshots.
-                page.goto(media + "?kind=video#generate")
+                self.assertEqual(self.run.draft['instagram'], 'Keep copy.')
+                self.assertEqual(self.run.context['current'], 'Synthetic facts only')
+                self.observations['checks'].append('ordered_frames_and_intent_handoff_preserves_copy_and_facts')
+                page.goto(media + '?kind=video#generate')
                 for width in (320, 390, 768, 1440):
-                    page.set_viewport_size({"width": width, "height": 900})
-                    self.screenshot(page, "video-" + str(width))
-                    overflow = page.evaluate("document.documentElement.scrollWidth > innerWidth")
-                    self.observations["overflow_" + str(width)] = overflow
-                    self.assertFalse(overflow, f"Horizontal overflow at {width}px")
-                self.observations["checks"].append("responsive_320_390_768_1440")
-                # Progressive enhancement: native form still works without JavaScript.
+                    page.set_viewport_size({'width': width, 'height': 900})
+                    self.screenshot(page, 'video-' + str(width))
+                    self.assertFalse(page.evaluate('document.documentElement.scrollWidth > innerWidth'), f'Overflow at {width}')
+                self.observations['checks'].append('responsive_320_390_768_1440')
                 native_context = browser.new_context(java_script_enabled=False)
                 native = self.login(native_context)
-                native.goto(media + "?kind=video&source=" + source + "&end_source=" + end + "#generate")
-                expect(native.locator("#media-source-asset")).to_have_value(source)
-                expect(native.locator('[data-frame-preview="end_asset"]')).to_be_visible()
-                native.locator("#media-preset").select_option("before_after")
-                native.locator("#media-end-asset").select_option("")
-                self.screenshot(native, "native-form-before-submit")
-                # Exercise the native keyboard submit path with page scripts disabled.
-                # This path does not rely on pointer stability polling with disabled page scripts.
-                native.bring_to_front()
-                expect(native.locator(".generation-submit")).to_be_enabled()
-                native.locator(".generation-submit").press("Enter")
-                expect(native.locator(".composer-errors")).to_be_visible()
+                native.goto(media + '?kind=video&source=' + source + '&end_source=' + end + '#generate')
+                expect(native.locator('[name="source_asset"]')).to_have_value(source)
+                native.locator('[name="recipe_id"]').select_option('before_after')
+                native.locator('[name="end_asset"]').select_option('')
+                native.locator('#creator-submit').press('Enter')
+                expect(native.locator('.creator-errors')).to_be_visible()
                 native_context.close()
                 blocked_context = browser.new_context()
                 blocked_context.add_init_script("Object.defineProperty(window, 'sessionStorage', {get(){throw new DOMException('Blocked','SecurityError');}})")
                 blocked = self.login(blocked_context)
-                blocked.goto(media + "?kind=video#generate")
-                expect(blocked.locator('[data-composer-status]')).to_contain_text("Webbl\u00e4saren till\u00e5ter inte")
+                blocked.goto(media + '?kind=video#generate')
+                expect(blocked.locator('#creator-storage-status')).to_contain_text('Webbläsaren tillåter inte')
                 blocked_context.close()
-                self.observations["checks"].append("native_form_and_storage_disabled_fallbacks")
+                self.observations['checks'].append('native_form_and_blocked_storage_fallback')
+                page.set_viewport_size({'width': 1440, 'height': 1000})
+                # Logout must remove all creator drafts and avoid saving again on pagehide.
+                page.goto(self.url('sequence_list'))
+                page.locator('form[action$="/accounts/logout/"] button').locator("visible=true").first.click()
+                page.wait_for_url(lambda url: '/accounts/login/' in str(url))
+                remaining = page.evaluate("Object.keys(sessionStorage).filter(key => key.startsWith('ce:creator:'))")
+                self.assertEqual(remaining, [])
+                self.observations['checks'].append('logout_clears_drafts')
                 self.assertEqual(self.browser_errors, [])
-                self.assertEqual(self.observations.get("server_errors", []), [])
+                self.assertEqual(self.observations.get('server_errors', []), [])
             except Exception:
                 page = self.active_page if not self.active_page.is_closed() else page
-                self.screenshot(page, "failure")
-                (EVIDENCE / "failure.txt").write_text(traceback.format_exc() + "\nURL: " + page.url + "\n" + page.locator("body").inner_text(), encoding="utf-8")
+                self.screenshot(page, 'failure')
+                (EVIDENCE / 'failure.txt').write_text(traceback.format_exc() + '\nURL: ' + page.url + '\n' + page.locator('body').inner_text(), encoding='utf-8')
                 raise
             finally:
-                self.observations["javascript_errors"] = self.browser_errors
-                (EVIDENCE / "observations.json").write_text(json.dumps(self.observations, ensure_ascii=False, indent=2), encoding="utf-8")
+                self.observations['javascript_errors'] = self.browser_errors
+                (EVIDENCE / 'observations.json').write_text(json.dumps(self.observations, ensure_ascii=False, indent=2), encoding='utf-8')
                 print(json.dumps(self.observations, ensure_ascii=True))
                 browser.close()
 

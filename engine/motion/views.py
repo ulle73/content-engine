@@ -3,6 +3,7 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -34,16 +35,35 @@ def project_list(request, workspace_id):
     run = get_object_or_404(ContentRun, pk=run_id, workspace=company, delivery_status="draft") if run_id else None
     if run and MotionProject.objects.filter(run=run).exists():
         return redirect("engine:motion_workspace", workspace_id=workspace_id, project_id=run.motion_project.pk)
+    from engine.forms import MediaCreationForm
+    reference_field = MediaCreationForm(company=company).fields["source_asset"]
+    raw_images = (request.POST if request.method == "POST" else request.GET).getlist("image_ids")
+    if len(raw_images) > 2:
+        raise Http404("Välj högst två bilder för den här starten.")
+    seed_images = []
+    try:
+        for image_id in raw_images:
+            image = reference_field.clean(image_id)
+            if image and image not in seed_images:
+                seed_images.append(image)
+    except ValidationError:
+        raise Http404("En vald bild finns inte i företagets bibliotek.") from None
     initial = {}
     if run:
         initial = {"title": run.title, "headline": run.title, "body": run.draft.get("photo_brief", "")[:500]}
-    suggested = recommend(initial.get("body", ""))["template_id"] if run else "kinetic-text"
+    recommendation = recommend(run.draft.get("photo_brief", "")) if run else {"template_id": "kinetic-text", "fields": {}}
+    initial.update({key: value for key, value in recommendation["fields"].items() if value != ""})
+    suggested = recommendation["template_id"]
+    if request.GET.get("aspect_ratio") in {"9:16", "1:1", "16:9"}:
+        initial["aspect_ratio"] = request.GET["aspect_ratio"]
+
     template_id = (
         request.POST.get("template_id") if request.method == "POST" else request.GET.get("template", suggested)
     )
     templates = [item for item in catalog(kind="template") if item["category"] != "sequence"]
     if template_id not in {item["id"] for item in templates}:
         template_id = "kinetic-text"
+    initial.update(dict(zip(("asset_id", "secondary_asset_id"), seed_images)))
     form = MotionForm(company, template_id, request.POST if request.method == "POST" else None, initial=initial)
     key = request.POST.get("key", "") if request.method == "POST" else str(uuid.uuid4())
     if request.method == "POST" and form.is_valid():
@@ -65,6 +85,8 @@ def project_list(request, workspace_id):
             "template_id": template_id,
             "run": run,
             "key": key,
+            "seed_images": seed_images,
+            "references_supported": "asset_id" in form.fields,
         },
     )
 
