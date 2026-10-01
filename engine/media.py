@@ -412,7 +412,11 @@ def reconcile_video_job(job):
     job.refresh_from_db()
     if job.status in {"completed", "failed", "nsfw", "canceled", "unknown"} or not job.provider_id:
         return job
-    if job.status == "saving" and job.updated_at >= timezone.now() - timedelta(minutes=10):
+    if (
+        job.status == "saving"
+        and job.updated_at >= timezone.now() - timedelta(minutes=10)
+        and job.error != "Video ska vara MP4 med H.264-kodning."
+    ):
         return job
 
     remote = providers.video_status(job)
