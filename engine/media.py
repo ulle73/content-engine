@@ -274,8 +274,11 @@ def preview_job(job):
             _, _, estimate = providers.estimate_video(job)
         except MediaError as exc:
             usage["provider_error"] = {"code": providers.provider_error_code(exc), "message": str(exc)[:300]}
+            # Price/preflight failures are non-billable and terminal for this reviewed job.
+            # Leaving them queued makes create_job reuse a stale failed preview and blocks
+            # a corrected request with a new idempotency key.
             MediaGeneration.objects.filter(pk=job.pk, status="queued").update(
-                usage=usage, error=str(exc)[:500], updated_at=timezone.now()
+                status="failed", usage=usage, error=str(exc)[:500], updated_at=timezone.now()
             )
             raise
         usage.update(estimate)
