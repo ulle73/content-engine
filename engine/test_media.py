@@ -19,7 +19,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, preview_job, recover_media_jobs, remove_asset, select_asset, start_reviewed_job, store_asset
+from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, normalize_generated_video, preview_job, recover_media_jobs, remove_asset, select_asset, start_reviewed_job, store_asset
 from .media_providers import ProviderUnavailableError, UncertainGeneration, estimate_video, generate_images, higgs, higgsfield_configured, start_video, upload_input
 from .media_storage import MediaError, local_path
 from .creative_core import EvidenceLevel, ReferenceRole
@@ -33,10 +33,10 @@ def picture():
     return out.getvalue()
 
 
-def movie():
+def movie(codec="libx264"):
     out = io.BytesIO()
     with av.open(out, mode="w", format="mp4") as container:
-        stream = container.add_stream("libx264", rate=10)
+        stream = container.add_stream(codec, rate=10)
         stream.width, stream.height, stream.pix_fmt = 64, 96, "yuv420p"
         for _ in range(10):
             for packet in stream.encode(av.VideoFrame.from_image(Image.new("RGB", (64, 96), "green"))):
@@ -71,6 +71,17 @@ class MediaTests(TestCase):
 
     def job(self, kind="image", **kwargs):
         return create_job(self.run, token=uuid.uuid4(), kind=kind, brief="Egen illustration", **kwargs)
+
+    def test_generated_non_h264_video_is_normalized_before_storage(self):
+        raw = movie(codec="mpeg4")
+        with self.assertRaisesRegex(MediaError, "H.264"):
+            describe_file(raw)
+        normalized = normalize_generated_video(raw)
+        metadata = describe_file(normalized)
+        self.assertEqual(metadata["kind"], "video")
+        with av.open(io.BytesIO(normalized)) as container:
+            stream = next(iter(container.streams.video))
+            self.assertEqual(stream.codec_context.name, "h264")
 
     def test_upload_preview_select_and_used_history_survive_replacement(self):
         result = self.client.post(self.url("media_upload"), {"file":SimpleUploadedFile("golf.png", picture()), "use":"1"})
