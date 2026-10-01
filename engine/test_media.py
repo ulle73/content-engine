@@ -236,6 +236,19 @@ class MediaTests(TestCase):
         self.assertEqual(upload.call_args_list[1].args[0].pk, end.pk)
 
     @patch("engine.media.providers.estimate_video")
+    def test_failed_preview_is_terminal_and_does_not_block_corrected_job(self, estimate):
+        failed = self.job("video")
+        estimate.side_effect = MediaError("cost ceiling")
+        with self.assertRaisesRegex(MediaError, "cost ceiling"):
+            preview_job(failed)
+        failed.refresh_from_db()
+        self.assertEqual(failed.status, "failed")
+
+        corrected = self.job("video")
+        self.assertNotEqual(corrected.pk, failed.pk)
+        self.assertEqual(corrected.status, "queued")
+
+    @patch("engine.media.providers.estimate_video")
     def test_review_signature_blocks_changed_reference_before_paid_start(self, estimate):
         start = store_asset(self.company, picture())
         end = store_asset(self.company, picture())
