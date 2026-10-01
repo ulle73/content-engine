@@ -80,7 +80,7 @@ def normalize_generated_video(data):
             with av.open(output, mode="w", format="mp4") as target:
                 encoded = target.add_stream("libx264", rate=rate)
                 encoded.width, encoded.height, encoded.pix_fmt = width, height, "yuv420p"
-                encoded.options = {"crf": "16", "preset": "medium", "profile": "high"}
+                encoded.options = {"crf": "17", "preset": "veryfast", "profile": "high"}
                 for frame in container.decode(video=0):
                     frame = frame.reformat(width=width, height=height, format="yuv420p")
                     for packet in encoded.encode(frame):
@@ -414,7 +414,7 @@ def reconcile_video_job(job):
         return job
     if (
         job.status == "saving"
-        and job.updated_at >= timezone.now() - timedelta(minutes=10)
+        and job.updated_at >= timezone.now() - timedelta(seconds=60)
         and job.error != "Video ska vara MP4 med H.264-kodning."
     ):
         return job
