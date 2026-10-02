@@ -1,16 +1,20 @@
 """Private worker protocol, authenticated independently of browser sessions/CSRF."""
 
 from __future__ import annotations
+
 import json
 import os
 from functools import wraps
+
 from django.core.exceptions import RequestDataTooBig, ValidationError
 from django.http import JsonResponse, StreamingHttpResponse
 from django.urls import path
 from django.utils.crypto import constant_time_compare
 from django.views.decorators.csrf import csrf_exempt
+
 from engine.media_storage import MediaError, open_asset
 from engine.operator_common import serialize_asset
+
 from . import jobs, outputs
 
 
@@ -54,6 +58,7 @@ def uploaded(request, maximum):
 
 @worker_endpoint()
 def claim(request):
+    jobs.touch_worker(body(request).get("worker_id"))
     job = jobs.claim_job()
     if job is None:
         return JsonResponse({"job": None})
@@ -69,7 +74,16 @@ def claim(request):
 def heartbeat(request):
     data = body(request)
     job = jobs.heartbeat(data.get("render_id"), data.get("lease"), data.get("progress", 0))
+    jobs.touch_worker(data.get("worker_id"))
     return JsonResponse({"accepted": True, "progress": job.progress})
+
+
+@worker_endpoint()
+def disconnect(request):
+    import uuid
+    worker_id = uuid.UUID(str(body(request).get("worker_id")))
+    jobs.MotionWorkerSession.objects.filter(pk=worker_id).delete()
+    return JsonResponse({"accepted": True})
 
 
 @worker_endpoint()
@@ -125,6 +139,7 @@ def output(request, render_id):
 
 
 urlpatterns = [
+    path("disconnect/", disconnect),
     path("claim/", claim),
     path("heartbeat/", heartbeat),
     path("failed/", failed),

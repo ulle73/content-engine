@@ -1,4 +1,3 @@
-import os
 import uuid
 
 from django.contrib import messages
@@ -14,12 +13,9 @@ from engine.ownership import company_required
 from . import service
 from .catalog import catalog
 from .forms import MotionForm, revision_initial, template_editable
+from .jobs import worker_available
 from .models import MotionProject
 from .planner import recommend
-
-
-def worker_available():
-    return bool(os.environ.get("MOTION_WORKER_URL") and len(os.environ.get("MOTION_WORKER_TOKEN", "")) >= 32)
 
 
 @login_required
@@ -166,7 +162,7 @@ def project_action(request, workspace_id, project_id):
             messages.success(request, "En ny version är sparad. Förhandsvisa den innan du skapar färdig video.")
         elif action in {"preview", "final"}:
             if not worker_available():
-                raise ValueError("Renderarbetaren är inte ansluten. Kontakta driftansvarig.")
+                raise ValueError("Starta Motion-rendering på den anslutna datorn och ladda om sidan.")
             service.queue_render(
                 request.workspace,
                 request.user,

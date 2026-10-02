@@ -1,7 +1,15 @@
 """Motion-only metadata; media, ownership, auth and action ledger stay shared."""
 
 import uuid
+
 from django.db import models
+
+
+class MotionWorkerSession(models.Model):
+    """Short-lived presence for an outbound-only renderer on an operator's computer."""
+
+    id = models.UUIDField(primary_key=True, editable=False)
+    expires_at = models.DateTimeField()
 
 
 class MotionProject(models.Model):

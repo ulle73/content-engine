@@ -978,4 +978,4 @@ class OwnSnapshot(models.Model):
 from .creative_models import PromptEntry, PromptTerm  # noqa: E402,F401
 
 # Registered here so the existing Django app owns Motion migrations and relations.
-from .motion.models import MotionAssetReference, MotionKeyframe, MotionProject, MotionRender, MotionRevision  # noqa: F401,E402
+from .motion.models import MotionAssetReference, MotionKeyframe, MotionProject, MotionRender, MotionRevision, MotionWorkerSession  # noqa: F401,E402

@@ -1,5 +1,6 @@
 /** One independently deployed worker. Django requests only enqueue/inspect jobs. */
 import { createServer } from "node:http";
+import { randomUUID } from "node:crypto";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -14,6 +15,8 @@ import { renderMotion } from "./render.mjs";
 
 const config = configuration();
 const api = protocol(config);
+const workerId = randomUUID();
+let lastJobAt = Date.now();
 let active = false,
   stopping = false,
   controller = null,
@@ -37,6 +40,7 @@ async function runJob(raw) {
     heartbeating = true;
     try {
       await api.json("heartbeat/", {
+        worker_id: workerId,
         render_id: job.render_id,
         lease: job.lease,
         progress,
@@ -129,12 +133,18 @@ async function runJob(raw) {
 
 async function drain() {
   if (active || stopping) return;
+  if (config.pullOnly && Date.now() - lastJobAt >= config.idleSeconds * 1000) {
+    console.log(JSON.stringify({ event: "motion_idle_shutdown" }));
+    void stop();
+    return;
+  }
   active = true;
   try {
     while (!stopping) {
-      const response = await api.json("claim/");
+      const response = await api.json("claim/", { worker_id: workerId });
       if (!response.job) break;
       await runJob(response.job);
+      lastJobAt = Date.now();
     }
   } catch (error) {
     console.error(
@@ -187,13 +197,21 @@ const server = createServer((req, res) => {
 });
 server.requestTimeout = 15000;
 server.headersTimeout = 10000;
-server.listen(config.port, "0.0.0.0", () => {
+server.listen(config.port, config.pullOnly ? "127.0.0.1" : "0.0.0.0", () => {
   console.log(
-    JSON.stringify({ event: "motion_worker_ready", port: config.port }),
+    JSON.stringify({
+      event: "motion_worker_ready",
+      port: config.port,
+      pull_only: config.pullOnly,
+      idle_seconds: config.pullOnly ? config.idleSeconds : null,
+    }),
   );
   void drain();
 });
-const polling = setInterval(() => void drain(), 30000);
+const polling = setInterval(
+  () => void drain(),
+  config.pullOnly ? 15000 : 30000,
+);
 async function stop() {
   if (stopping) return;
   stopping = true;
@@ -203,7 +221,13 @@ async function stop() {
   const end = Date.now() + 10000;
   while (active && Date.now() < end)
     await new Promise((resolve) => setTimeout(resolve, 100));
-  process.exit(0);
+  try {
+    await api.json("disconnect/", { worker_id: workerId });
+  } catch {
+    // The short-lived presence also expires after an unclean shutdown.
+  }
+  if (active) process.exit(0);
+  else process.exitCode = 0;
 }
 process.on("SIGTERM", () => void stop());
 process.on("SIGINT", () => void stop());

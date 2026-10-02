@@ -27,6 +27,14 @@ test("configuration rejects credential-bearing URLs and implicit insecure HTTP",
   }
   assert.throws(() => configuration({ ...env, MOTION_WORKER_TOKEN: "short" }));
   assert.throws(() => configuration({ ...env, MOTION_LICENSE_MODE: "" }));
+  const pull = configuration({
+    ...env,
+    MOTION_WORKER_MODE: "pull",
+    MOTION_IDLE_SECONDS: "900",
+  });
+  assert.equal(pull.pullOnly, true);
+  assert.equal(pull.idleSeconds, 900);
+  assert.throws(() => configuration({ ...env, MOTION_IDLE_SECONDS: "0" }));
   assert.equal(
     configuration({
       ...env,

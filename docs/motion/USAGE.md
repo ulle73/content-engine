@@ -34,6 +34,14 @@ Skapa projekt först, köa preview, läs projektstatus, visa resultatet för anv
 
 ## Separat renderworker
 
+### Tillfällig rendering på Windows utan extra molnserver
+
+En konfigurerad dator kan köra `scripts/start-motion-local.ps1`. Processen hämtar jobb via utgående HTTPS, lyssnar endast på localhost och avslutas efter 15 minuters inaktivitet. Ingen Windows-tjänst, schemalagd uppgift eller automatisk start vid inloggning installeras. En ny körning startas manuellt när den behövs.
+
+Servern använder `MOTION_WORKER_MODE=pull` och en gemensam slumpad `MOTION_WORKER_TOKEN`. `MOTION_WORKER_URL` lämnas tom. Datorns token ligger krypterad med Windows DPAPI i ignorerade `data/motion-local/token.dpapi`; licensläget i `data/motion-local/license-mode.txt` ska motsvara den faktiskt bekräftade licensen. Ingen hemlighet skrivs i skript eller Git.
+
+Webbappen aktiverar renderknappen först när en autentiserad dator har hört av sig. Statusen upphör vid normal avslutning, eller senast 90 sekunder efter tappad kontakt. Ladda om projektsidan efter start eller stopp. Redan köade jobb ligger kvar och kan hämtas nästa gång renderingen startas. Förhandsvisning måste fortfarande granskas och godkännas innan slutrendering.
+
 Django-webbrequesten renderar aldrig video. `motion-renderer/worker.mjs` hämtar hållbara jobb, använder lease/heartbeat och laddar tillbaka verifierade outputfiler. Avbrytna och utgångna leases kan inte spara resultat i efterhand.
 
 På Django-servern:

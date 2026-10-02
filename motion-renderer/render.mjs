@@ -7,6 +7,8 @@ import {
   makeCancelSignal,
 } from "@remotion/renderer";
 import { createServer } from "node:http";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import {
   createReadStream,
   existsSync,
@@ -14,6 +16,7 @@ import {
   readFileSync,
   statSync,
   writeFileSync,
+  rmSync,
 } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -176,13 +179,20 @@ export async function renderMotion({
       }
     }
     const video = path.join(outputDir, mode + ".mp4");
-    if (!onlyStills)
+    const binariesDirectory = process.env.REMOTION_BINARIES_DIRECTORY || null;
+    // Portable FFmpeg builds have native AAC but not Remotion's libfdk_aac.
+    // Keep lossless audio in an intermediate file, then mux native AAC into MP4.
+    const intermediate = binariesDirectory
+      ? path.join(outputDir, mode + "-intermediate.mkv")
+      : video;
+    if (!onlyStills) {
       await renderMedia({
         ...shared,
-        outputLocation: video,
-        codec: "h264",
-        audioCodec: "aac",
+        outputLocation: intermediate,
+        codec: binariesDirectory ? "h264-mkv" : "h264",
+        audioCodec: binariesDirectory ? "pcm-16" : "aac",
         enforceAudioTrack: true,
+        binariesDirectory,
         pixelFormat: "yuv420p",
         colorSpace: "bt709",
         crf: mode === "preview" ? 26 : 20,
@@ -199,6 +209,44 @@ export async function renderMotion({
           creation_time: "1970-01-01T00:00:00Z",
         },
       });
+      if (binariesDirectory) {
+        try {
+          await promisify(execFile)(
+            path.join(
+              binariesDirectory,
+              process.platform === "win32" ? "ffmpeg.exe" : "ffmpeg",
+            ),
+            [
+              "-v",
+              "error",
+              "-y",
+              "-i",
+              intermediate,
+              "-map",
+              "0:v:0",
+              "-map",
+              "0:a:0",
+              "-c:v",
+              "copy",
+              "-c:a",
+              "aac",
+              "-b:a",
+              "192k",
+              "-map_metadata",
+              "-1",
+              "-metadata",
+              "comment=Content Engine MotionSpec v1",
+              "-movflags",
+              "+faststart",
+              video,
+            ],
+            { signal, timeout: 120000, maxBuffer: 1024 * 1024 },
+          );
+        } finally {
+          rmSync(intermediate, { force: true });
+        }
+      }
+    }
     const result = {
       video: onlyStills ? null : video,
       keyframes,
@@ -218,7 +266,10 @@ export async function renderMotion({
     await new Promise((resolve) => server.close(resolve));
   }
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   const filename = process.argv[2];
   if (!filename) {
     console.error("Usage: node render.mjs trusted-job.json");

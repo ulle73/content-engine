@@ -2,7 +2,7 @@
 <section id="motion-results" class="motion-results" aria-label="Förhandsvisning och resultat" {% if active %}hx-get="{% url 'engine:motion_status' workspace_id=workspace.pk project_id=project.pk %}" hx-trigger="every 3s" hx-swap="outerHTML"{% endif %}>
   <h2>Förhandsvisning och resultat</h2>
   {% if source_error %}<p class="notice warning" role="alert">{{ source_error }} <a href="{% url 'engine:sequence_workspace' workspace_id=workspace.pk project_id=project.source_sequence_id %}#film">Uppdatera filmen →</a></p>{% endif %}
-  {% if not worker_available %}<p class="notice warning">Rendering är inte ansluten ännu. Driftansvarig behöver ansluta renderarbetaren. Ditt projekt är sparat.</p>{% endif %}
+  {% if not worker_available %}<p class="notice warning">Rendering är avstängd. Starta Motion-rendering på den anslutna datorn och ladda om sidan. Ditt projekt är sparat.</p>{% endif %}
   {% if not ready_preview and not final %}<form method="post" action="{% url 'engine:motion_action' workspace_id=workspace.pk project_id=project.pk %}" class="motion-actions">{% csrf_token %}<input type="hidden" name="revision" value="{{ project.current_revision }}"><input type="hidden" name="key" value="{{ key }}"><button name="action" value="preview" {% if not worker_available or active or source_error %}disabled{% endif %}>Förhandsvisa sparad version</button></form>{% endif %}
   {% for job in renders %}
     <article class="motion-render">

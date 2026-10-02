@@ -1,27 +1,50 @@
 """Durable, leased jobs. No Remotion work executes inside a web request."""
 
 from __future__ import annotations
+
 import logging
 import os
 import threading
 import uuid
 from datetime import timedelta
+
 from django.db import connection, transaction
 from django.db.models import Q
 from django.utils import timezone
+
 from engine.models import MediaGeneration
-from .models import MotionRender
+
+from .models import MotionRender, MotionWorkerSession
 
 log = logging.getLogger(__name__)
 LEASE_SECONDS = 180
 MAX_ATTEMPTS = 3
 
 
+def worker_available():
+    if len(os.environ.get("MOTION_WORKER_TOKEN", "")) < 32:
+        return False
+    if os.environ.get("MOTION_WORKER_MODE") == "pull":
+        return MotionWorkerSession.objects.filter(expires_at__gt=timezone.now()).exists()
+    return bool(os.environ.get("MOTION_WORKER_URL"))
+
+
+def touch_worker(worker_id):
+    if not worker_id:
+        return
+    worker_id = uuid.UUID(str(worker_id))
+    now = timezone.now()
+    MotionWorkerSession.objects.filter(expires_at__lte=now).delete()
+    MotionWorkerSession.objects.update_or_create(
+        id=worker_id, defaults={"expires_at": now + timedelta(seconds=90)}
+    )
+
+
 def wake_worker():
     """Best-effort bounded wake signal; durable queue remains the source of truth."""
     url = os.environ.get("MOTION_WORKER_URL", "").rstrip("/")
     token = os.environ.get("MOTION_WORKER_TOKEN", "")
-    if not url or not token:
+    if os.environ.get("MOTION_WORKER_MODE") == "pull" or not url or not token:
         return
 
     def wake():

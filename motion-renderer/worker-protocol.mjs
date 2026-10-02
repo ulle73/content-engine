@@ -42,11 +42,21 @@ export function configuration(env = process.env) {
   const port = Number(env.PORT || 8787);
   if (!Number.isSafeInteger(port) || port < 1 || port > 65535)
     throw new Error("Invalid worker port");
+  const pullOnly = env.MOTION_WORKER_MODE === "pull";
+  const idleSeconds = Number(env.MOTION_IDLE_SECONDS || 900);
+  if (
+    !Number.isSafeInteger(idleSeconds) ||
+    idleSeconds < 1 ||
+    idleSeconds > 86400
+  )
+    throw new Error("Invalid idle timeout");
   return {
     origin: url.origin,
     token: env.MOTION_WORKER_TOKEN,
     port,
     licenseMode: env.MOTION_LICENSE_MODE,
+    pullOnly,
+    idleSeconds,
   };
 }
 
