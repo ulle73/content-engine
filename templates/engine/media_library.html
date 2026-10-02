@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Media · {{ workspace.name }}{% endblock %}
 {% block content %}
 <main class="engine media-library-page">
@@ -13,6 +14,21 @@
       <strong>{{ assets|length }} filer</strong>
     </div>
   </header>
+  <section class="media-storage-overview" aria-labelledby="media-storage-title" data-storage-url="{% url 'engine:media_library_storage' workspace_id=workspace.pk %}">
+    <div class="media-storage-heading">
+      <div><h2 id="media-storage-title">Medielagring</h2><p>{{ workspace.name }} · <span data-storage-field="backend_label">{{ storage_usage.backend_label }}</span></p></div>
+      <button type="button" class="button-secondary" id="media-storage-refresh">Uppdatera lagring</button>
+    </div>
+    <dl class="media-storage-stats">
+      <div><dt data-storage-field="used_caption">{{ storage_usage.used_caption }}</dt><dd data-storage-field="used_label">{{ storage_usage.used_label }}</dd></div>
+      <div><dt>Total kapacitet</dt><dd data-storage-field="capacity_label">{{ storage_usage.capacity_label }}</dd></div>
+      <div><dt>Ledigt utrymme</dt><dd data-storage-field="free_label">{{ storage_usage.free_label }}</dd></div>
+      <div><dt>Filer i databasen</dt><dd data-storage-field="registered_files">{{ storage_usage.registered_files }}</dd></div>
+    </dl>
+    <p class="media-storage-status" role="status"><span data-storage-field="detail">{{ storage_usage.detail }}</span> <span data-storage-field="updated_label"></span></p>
+    <details><summary>Var sparas mina filer?</summary><p>Översikten gäller all media för {{ workspace.name }}, även filer som inte syns med ditt valda filter. Bilder, videor och ljud sparas i fillagringen. Databasen sparar information om filerna, deras användning och genereringar.</p>{% if storage_usage.cloud %}<p>R2 växer vid behov och har ingen fast disk att fylla. Det betyder inte att all lagring är gratis. <a href="https://developers.cloudflare.com/r2/platform/limits/" target="_blank" rel="noopener">Läs om R2:s kapacitet</a>.</p>{% endif %}</details>
+  </section>
+  <script defer src="{% static 'js/media-storage.js' %}"></script>
 {% include 'engine/creative_help.html' %}
   {% include 'engine/library_tabs.html' %}
   <form method="post" action="{% url 'engine:media_new' workspace_id=workspace.pk %}" class="creative-actions">{% csrf_token %}<input type="hidden" name="token" value="{{ studio_token }}"><button type="submit" name="kind" value="video">Skapa video</button><button type="submit" name="kind" value="image" class="button-secondary">Skapa bild</button><span class="small">Öppnar AI-studion. Ingen betald generation startas.</span></form>

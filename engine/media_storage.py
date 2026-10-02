@@ -26,7 +26,7 @@ def local_path(key):
     return path
 
 
-def r2():
+def r2(*, metrics=False):
     names = ("R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME")
     endpoint = os.environ.get("R2_ENDPOINT_URL") or (f"https://{os.environ['R2_ACCOUNT_ID']}.r2.cloudflarestorage.com" if os.environ.get("R2_ACCOUNT_ID") else "")
     parsed = urlparse(endpoint)
@@ -37,8 +37,9 @@ def r2():
     return boto3.client(
         "s3", endpoint_url=endpoint.rstrip("/"),
         aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"], aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
-        region_name=os.environ.get("R2_REGION", "auto"), config=Config(signature_version="s3v4", connect_timeout=10, read_timeout=90,
-                                        retries={"max_attempts": 2}, request_checksum_calculation="when_required"),
+        region_name=os.environ.get("R2_REGION", "auto"), config=Config(signature_version="s3v4", connect_timeout=3 if metrics else 10,
+                                        read_timeout=5 if metrics else 90, retries={"max_attempts": 0 if metrics else 2},
+                                        request_checksum_calculation="when_required"),
     )
 
 

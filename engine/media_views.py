@@ -38,6 +38,7 @@ from .media import (
 from .media_providers import higgsfield_configured
 from .media_references import reference_asset, serialize_generation_references
 from .media_storage import MediaError, download_url, local_path
+from .media_usage import registered_usage, storage_usage
 from .models import (
     ContentRun,
     MediaAsset,
@@ -90,8 +91,18 @@ def library(request, workspace_id):
             "filter_value": filter_value,
             "now": now,
             "studio_token": uuid.uuid4(),
+            "storage_usage": registered_usage(request.workspace),
         },
     )
+
+
+@login_required
+@company_required
+@require_GET
+def library_storage(request, workspace_id):
+    response = JsonResponse(storage_usage(request.workspace, refresh=request.GET.get("refresh") == "1"))
+    response["Cache-Control"] = "private, no-store"
+    return response
 
 
 @login_required
