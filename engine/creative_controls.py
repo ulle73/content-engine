@@ -130,6 +130,7 @@ def apply_controls(brief: CreativeBrief, values: dict | CreativeControls | None)
 
 
 def creation_catalog(kind: str) -> dict:
+    from .creative_budget import known_video_cost
     models = []
     for model in model_registry():
         for mode in model.modes:
@@ -140,13 +141,16 @@ def creation_catalog(kind: str) -> dict:
             if contract.duration_range:
                 durations = list(range(contract.duration_range[0], contract.duration_range[1] + 1))
             models.append({
-                "id": model.model_id, "label": MODEL_LABELS.get(model.model_id, model.model_id),
+                "id": model.model_id, "label": model.label or MODEL_LABELS.get(model.model_id, model.model_id),
                 "mode": mode, "roles": [r.value for r in contract.supported_reference_roles],
                 "required": [r.value for r in contract.required_reference_roles],
                 "durations": durations, "resolutions": list(contract.resolutions),
                 "ratios": list(contract.aspect_ratios), "aspect_behavior": contract.aspect_ratio_behavior,
                 "audio": bool(model.audio_support and contract.audio_parameter),
                 "capabilities": list(model.recipe_capabilities),
+                "summary": model.summary, "preview": model.preview, "verified_date": model.verified_date,
+                "rates": {resolution: str(rate) for resolution in (contract.resolutions or ("",))
+                          if (rate := known_video_cost(model.model_id, 1, resolution)) is not None} if kind == "video" else {},
             })
     recipes = []
     for recipe in recipe_registry():

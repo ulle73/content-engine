@@ -1,0 +1,1221 @@
+{
+  "version": "2026-10-03.1",
+  "models": [
+    {
+      "id": "kling-video/v3.0/std",
+      "label": "Kling 3.0 Standard",
+      "summary": "Start/slutbilder och valbart ljud.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "kling-video/v3.0/std/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            3,
+            15
+          ],
+          "resolutions": [],
+          "aspect_ratios": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ],
+          "audio_parameter": "sound",
+          "audio_default": "on",
+          "audio_type": "string",
+          "request_fields": [
+            "sound",
+            "prompt",
+            "duration",
+            "elements",
+            "cfg_scale",
+            "multi_shots",
+            "aspect_ratio",
+            "multi_prompt"
+          ],
+          "defaults": {
+            "multi_shots": false
+          },
+          "required": []
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "kling-video/v3.0/std/image-to-video",
+          "start_field": "image_url",
+          "end_field": "last_image_url",
+          "durations": [],
+          "duration_range": [
+            3,
+            15
+          ],
+          "resolutions": [],
+          "aspect_ratios": [],
+          "audio_parameter": "sound",
+          "audio_default": "on",
+          "audio_type": "string",
+          "request_fields": [
+            "sound",
+            "prompt",
+            "duration",
+            "elements",
+            "cfg_scale",
+            "image_url",
+            "multi_shots",
+            "multi_prompt",
+            "last_image_url"
+          ],
+          "defaults": {
+            "multi_shots": false
+          },
+          "required": [
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/kling-video/v3.0/std/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/kling-video/v3.0/std/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.0840",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.0840",
+          "description": null
+        }
+      }
+    },
+    {
+      "id": "kling-video/v3.0/pro",
+      "label": "Kling 3.0 Pro",
+      "summary": "Start/slutbilder och valbart ljud.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "kling-video/v3.0/pro/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            3,
+            15
+          ],
+          "resolutions": [],
+          "aspect_ratios": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ],
+          "audio_parameter": "sound",
+          "audio_default": "on",
+          "audio_type": "string",
+          "request_fields": [
+            "sound",
+            "prompt",
+            "duration",
+            "elements",
+            "cfg_scale",
+            "multi_shots",
+            "aspect_ratio",
+            "multi_prompt"
+          ],
+          "defaults": {
+            "multi_shots": false
+          },
+          "required": []
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "kling-video/v3.0/pro/image-to-video",
+          "start_field": "image_url",
+          "end_field": "last_image_url",
+          "durations": [],
+          "duration_range": [
+            3,
+            15
+          ],
+          "resolutions": [],
+          "aspect_ratios": [],
+          "audio_parameter": "sound",
+          "audio_default": "on",
+          "audio_type": "string",
+          "request_fields": [
+            "sound",
+            "prompt",
+            "duration",
+            "elements",
+            "cfg_scale",
+            "image_url",
+            "multi_shots",
+            "multi_prompt",
+            "last_image_url"
+          ],
+          "defaults": {
+            "multi_shots": false
+          },
+          "required": [
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/kling-video/v3.0/pro/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/kling-video/v3.0/pro/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.1120",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.1120",
+          "description": null
+        }
+      }
+    },
+    {
+      "id": "kling-video/v3.0/4k",
+      "label": "Kling 3.0 4K",
+      "summary": "Fast 4K-format, start/slutbilder och valbart ljud.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "kling-video/v3.0/4k/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            3,
+            15
+          ],
+          "resolutions": [
+            "4k"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ],
+          "audio_parameter": "sound",
+          "audio_default": "on",
+          "audio_type": "string",
+          "request_fields": [
+            "sound",
+            "prompt",
+            "duration",
+            "elements",
+            "cfg_scale",
+            "multi_shots",
+            "aspect_ratio",
+            "multi_prompt"
+          ],
+          "defaults": {
+            "multi_shots": false
+          },
+          "required": []
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "kling-video/v3.0/4k/image-to-video",
+          "start_field": "image_url",
+          "end_field": "last_image_url",
+          "durations": [],
+          "duration_range": [
+            3,
+            15
+          ],
+          "resolutions": [
+            "4k"
+          ],
+          "aspect_ratios": [],
+          "audio_parameter": "sound",
+          "audio_default": "on",
+          "audio_type": "string",
+          "request_fields": [
+            "sound",
+            "prompt",
+            "duration",
+            "elements",
+            "cfg_scale",
+            "image_url",
+            "multi_shots",
+            "multi_prompt",
+            "last_image_url"
+          ],
+          "defaults": {
+            "multi_shots": false
+          },
+          "required": [
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/kling-video/v3.0/4k/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/kling-video/v3.0/4k/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.4200",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.4200",
+          "description": null
+        }
+      }
+    },
+    {
+      "id": "kling-video/v2.6/pro",
+      "label": "Kling 2.6 Pro",
+      "summary": "Text eller startbild, valbart ljud.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "kling-video/v2.6/pro/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [
+            5,
+            10
+          ],
+          "duration_range": null,
+          "resolutions": [],
+          "aspect_ratios": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ],
+          "audio_parameter": "sound",
+          "audio_default": "on",
+          "audio_type": "string",
+          "request_fields": [
+            "sound",
+            "prompt",
+            "duration",
+            "cfg_scale",
+            "aspect_ratio"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt"
+          ]
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "kling-video/v2.6/pro/image-to-video",
+          "start_field": "image_url",
+          "end_field": "",
+          "durations": [
+            5,
+            10
+          ],
+          "duration_range": null,
+          "resolutions": [],
+          "aspect_ratios": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ],
+          "audio_parameter": "sound",
+          "audio_default": "on",
+          "audio_type": "string",
+          "request_fields": [
+            "sound",
+            "prompt",
+            "duration",
+            "cfg_scale",
+            "image_url",
+            "aspect_ratio"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt",
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/kling-video/v2.6/pro/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/kling-video/v2.6/pro/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.0700",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.0700",
+          "description": null
+        }
+      }
+    },
+    {
+      "id": "alibaba/wan-3.0",
+      "label": "Wan 3.0",
+      "summary": "Start/slutbilder, valbart ljud och upp till 30 sekunder.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "alibaba/wan-3.0/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            2,
+            30
+          ],
+          "resolutions": [
+            "480p",
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16",
+            "adaptive"
+          ],
+          "audio_parameter": "generate_audio",
+          "audio_default": true,
+          "audio_type": "boolean",
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "resolution",
+            "aspect_ratio",
+            "generate_audio",
+            "enable_thinking"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt"
+          ]
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "alibaba/wan-3.0/image-to-video",
+          "start_field": "image_url",
+          "end_field": "end_image_url",
+          "durations": [],
+          "duration_range": [
+            2,
+            30
+          ],
+          "resolutions": [
+            "480p",
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16",
+            "adaptive"
+          ],
+          "audio_parameter": "generate_audio",
+          "audio_default": true,
+          "audio_type": "boolean",
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "image_url",
+            "resolution",
+            "aspect_ratio",
+            "end_image_url",
+            "generate_audio",
+            "enable_thinking"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt",
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/alibaba/wan-3.0/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/alibaba/wan-3.0/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.0500",
+          "description": "Priced per generated second by resolution: 480p $0.05, 720p $0.10, or 1080p $0.20. Rates shown are before any applicable customer discount."
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.0500",
+          "description": "Priced per generated second by resolution: 480p $0.05, 720p $0.10, or 1080p $0.20. Rates shown are before any applicable customer discount."
+        }
+      },
+      "resolution_rates": {
+        "480p": "0.05",
+        "720p": "0.10",
+        "1080p": "0.20"
+      }
+    },
+    {
+      "id": "alibaba/wan-3.0-prime",
+      "label": "Wan 3.0 Prime",
+      "summary": "Start/slutbilder, valbart ljud och upp till 30 sekunder.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "alibaba/wan-3.0-prime/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            2,
+            30
+          ],
+          "resolutions": [
+            "480p",
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16",
+            "adaptive"
+          ],
+          "audio_parameter": "generate_audio",
+          "audio_default": true,
+          "audio_type": "boolean",
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "resolution",
+            "aspect_ratio",
+            "generate_audio",
+            "enable_thinking"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt"
+          ]
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "alibaba/wan-3.0-prime/image-to-video",
+          "start_field": "image_url",
+          "end_field": "end_image_url",
+          "durations": [],
+          "duration_range": [
+            2,
+            30
+          ],
+          "resolutions": [
+            "480p",
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16",
+            "adaptive"
+          ],
+          "audio_parameter": "generate_audio",
+          "audio_default": true,
+          "audio_type": "boolean",
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "image_url",
+            "resolution",
+            "aspect_ratio",
+            "end_image_url",
+            "generate_audio",
+            "enable_thinking"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt",
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/alibaba/wan-3.0-prime/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/alibaba/wan-3.0-prime/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.28",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.28",
+          "description": null
+        }
+      }
+    },
+    {
+      "id": "wan/v2.7",
+      "label": "Wan 2.7",
+      "summary": "Start/slutbilder, upp till 15 sekunder.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "wan/v2.7/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            2,
+            15
+          ],
+          "resolutions": [
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "audio_parameter": "",
+          "audio_default": null,
+          "audio_type": null,
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "audio_url",
+            "resolution",
+            "aspect_ratio",
+            "prompt_extend",
+            "negative_prompt"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt"
+          ]
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "wan/v2.7/image-to-video",
+          "start_field": "image_url",
+          "end_field": "end_image_url",
+          "durations": [],
+          "duration_range": [
+            2,
+            15
+          ],
+          "resolutions": [
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [],
+          "audio_parameter": "",
+          "audio_default": null,
+          "audio_type": null,
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "audio_url",
+            "image_url",
+            "resolution",
+            "end_image_url",
+            "prompt_extend",
+            "negative_prompt"
+          ],
+          "defaults": {},
+          "required": [
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/wan/v2.7/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/wan/v2.7/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.1000",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.1000",
+          "description": null
+        }
+      },
+      "resolution_rates": {
+        "720p": "0.10",
+        "1080p": "0.15"
+      }
+    },
+    {
+      "id": "lightricks/ltx-2.5/fast",
+      "label": "LTX 2.5 Fast",
+      "summary": "Start/slutbilder, 6/8/10 sekunder och valbart ljud.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 3,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "lightricks/ltx-2.5/text-to-video/fast",
+          "start_field": "",
+          "end_field": "",
+          "durations": [
+            6,
+            8,
+            10
+          ],
+          "duration_range": null,
+          "resolutions": [
+            "720p",
+            "1080p",
+            "2k",
+            "4k"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "9:16"
+          ],
+          "audio_parameter": "generate_audio",
+          "audio_default": true,
+          "audio_type": "boolean",
+          "request_fields": [
+            "fps",
+            "prompt",
+            "duration",
+            "resolution",
+            "aspect_ratio",
+            "generate_audio",
+            "camera_movement"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt",
+            "duration"
+          ]
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "lightricks/ltx-2.5/image-to-video/fast",
+          "start_field": "image_url",
+          "end_field": "end_image_url",
+          "durations": [
+            6,
+            8,
+            10
+          ],
+          "duration_range": null,
+          "resolutions": [
+            "720p",
+            "1080p",
+            "2k",
+            "4k"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "9:16"
+          ],
+          "audio_parameter": "generate_audio",
+          "audio_default": true,
+          "audio_type": "boolean",
+          "request_fields": [
+            "fps",
+            "prompt",
+            "duration",
+            "image_url",
+            "resolution",
+            "aspect_ratio",
+            "end_image_url",
+            "generate_audio",
+            "camera_movement"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt",
+            "duration",
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/lightricks/ltx-2.5/text-to-video/fast/api-reference",
+        "https://open.higgsfield.ai/models/lightricks/ltx-2.5/image-to-video/fast/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.0900",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.0900",
+          "description": null
+        }
+      },
+      "resolution_rates": {
+        "720p": "0.0900"
+      }
+    },
+    {
+      "id": "lightricks/ltx-2.5/pro",
+      "label": "LTX 2.5 Pro",
+      "summary": "Start/slutbilder, 6/8/10 sekunder och valbart ljud.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "lightricks/ltx-2.5/text-to-video/pro",
+          "start_field": "",
+          "end_field": "",
+          "durations": [
+            6,
+            8,
+            10
+          ],
+          "duration_range": null,
+          "resolutions": [
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "9:16"
+          ],
+          "audio_parameter": "generate_audio",
+          "audio_default": true,
+          "audio_type": "boolean",
+          "request_fields": [
+            "fps",
+            "prompt",
+            "duration",
+            "resolution",
+            "aspect_ratio",
+            "generate_audio",
+            "camera_movement"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt",
+            "duration"
+          ]
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "lightricks/ltx-2.5/image-to-video/pro",
+          "start_field": "image_url",
+          "end_field": "end_image_url",
+          "durations": [
+            6,
+            8,
+            10
+          ],
+          "duration_range": null,
+          "resolutions": [
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "9:16"
+          ],
+          "audio_parameter": "generate_audio",
+          "audio_default": true,
+          "audio_type": "boolean",
+          "request_fields": [
+            "fps",
+            "prompt",
+            "duration",
+            "image_url",
+            "resolution",
+            "aspect_ratio",
+            "end_image_url",
+            "generate_audio",
+            "camera_movement"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt",
+            "duration",
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/lightricks/ltx-2.5/text-to-video/pro/api-reference",
+        "https://open.higgsfield.ai/models/lightricks/ltx-2.5/image-to-video/pro/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.1200",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.1200",
+          "description": null
+        }
+      },
+      "resolution_rates": {
+        "720p": "0.1200"
+      }
+    },
+    {
+      "id": "minimax/h3",
+      "label": "MiniMax H3",
+      "summary": "Fast 2K-format och start/slutbilder. API:t är märkt preview.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": true,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "minimax/h3/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            5,
+            15
+          ],
+          "resolutions": [
+            "2K"
+          ],
+          "aspect_ratios": [
+            "auto",
+            "adaptive",
+            "21:9",
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16"
+          ],
+          "audio_parameter": "",
+          "audio_default": null,
+          "audio_type": null,
+          "request_fields": [
+            "prompt",
+            "duration",
+            "resolution",
+            "aspect_ratio",
+            "aigc_watermark"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt"
+          ]
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "minimax/h3/image-to-video",
+          "start_field": "image_url",
+          "end_field": "end_image_url",
+          "durations": [],
+          "duration_range": [
+            5,
+            15
+          ],
+          "resolutions": [
+            "2K"
+          ],
+          "aspect_ratios": [
+            "auto",
+            "adaptive",
+            "21:9",
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16"
+          ],
+          "audio_parameter": "",
+          "audio_default": null,
+          "audio_type": null,
+          "request_fields": [
+            "prompt",
+            "duration",
+            "image_url",
+            "resolution",
+            "aspect_ratio",
+            "end_image_url",
+            "aigc_watermark"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt",
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/minimax/h3/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/minimax/h3/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.1300",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.1300",
+          "description": null
+        }
+      }
+    },
+    {
+      "id": "alibaba/happy-horse/v1.1",
+      "label": "Happy Horse 1.1",
+      "summary": "Text eller startbild, 720p/1080p.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "alibaba/happy-horse/v1.1/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            3,
+            15
+          ],
+          "resolutions": [
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "audio_parameter": "",
+          "audio_default": null,
+          "audio_type": null,
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "resolution",
+            "aspect_ratio"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt"
+          ]
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "alibaba/happy-horse/v1.1/image-to-video",
+          "start_field": "image_url",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            2,
+            15
+          ],
+          "resolutions": [
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [],
+          "audio_parameter": "",
+          "audio_default": null,
+          "audio_type": null,
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "image_url",
+            "resolution"
+          ],
+          "defaults": {},
+          "required": [
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/alibaba/happy-horse/v1.1/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/alibaba/happy-horse/v1.1/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.1400",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.1400",
+          "description": null
+        }
+      }
+    },
+    {
+      "id": "alibaba/happy-horse",
+      "label": "Happy Horse 1.0",
+      "summary": "Text eller startbild, 720p/1080p.",
+      "verified_date": "2026-10-03",
+      "profile_version": "2026-10-03.1",
+      "preview": false,
+      "quality_tier": 3,
+      "speed_tier": 2,
+      "cost_tier": 3,
+      "contracts": [
+        {
+          "mode": "text-to-video",
+          "endpoint": "alibaba/happy-horse/text-to-video",
+          "start_field": "",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            3,
+            15
+          ],
+          "resolutions": [
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ],
+          "audio_parameter": "",
+          "audio_default": null,
+          "audio_type": null,
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "resolution",
+            "aspect_ratio"
+          ],
+          "defaults": {},
+          "required": [
+            "prompt"
+          ]
+        },
+        {
+          "mode": "image-to-video",
+          "endpoint": "alibaba/happy-horse/image-to-video",
+          "start_field": "image_url",
+          "end_field": "",
+          "durations": [],
+          "duration_range": [
+            2,
+            15
+          ],
+          "resolutions": [
+            "720p",
+            "1080p"
+          ],
+          "aspect_ratios": [],
+          "audio_parameter": "",
+          "audio_default": null,
+          "audio_type": null,
+          "request_fields": [
+            "seed",
+            "prompt",
+            "duration",
+            "image_url",
+            "resolution"
+          ],
+          "defaults": {},
+          "required": [
+            "image_url"
+          ]
+        }
+      ],
+      "sources": [
+        "https://open.higgsfield.ai/models/alibaba/happy-horse/text-to-video/api-reference",
+        "https://open.higgsfield.ai/models/alibaba/happy-horse/image-to-video/api-reference"
+      ],
+      "planning_prices": {
+        "text-to-video": {
+          "max_usd_per_second": "0.1400",
+          "description": null
+        },
+        "image-to-video": {
+          "max_usd_per_second": "0.1400",
+          "description": null
+        }
+      }
+    }
+  ]
+}

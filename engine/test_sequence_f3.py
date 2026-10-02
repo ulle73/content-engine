@@ -4,11 +4,11 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from PIL import Image
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
+from PIL import Image
 
 from .media import store_asset
 from .models import Company, MediaGeneration, SequenceClipVersion
@@ -104,7 +104,7 @@ class SequenceClipControlsF3Tests(TestCase):
         self.clip.duration_seconds_target = 20
         self.clip.save(update_fields=["duration_seconds_target", "updated_at"])
         ids = {model.model_id for model in available_clip_model_overrides(self.clip)}
-        self.assertEqual(ids, {"bytedance/seedance-2.5"})
+        self.assertEqual(ids, {"bytedance/seedance-2.5", "alibaba/wan-3.0", "alibaba/wan-3.0-prime"})
 
     def test_verified_manual_override_persists_on_exact_clip_candidate(self):
         version = self.prepare(model_override="bytedance/seedance-2.0")

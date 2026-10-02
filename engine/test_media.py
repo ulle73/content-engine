@@ -1,29 +1,50 @@
-import io
 import base64
+import io
 import json
 import uuid
 from datetime import timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch, Mock
-
-import httpx
+from unittest.mock import Mock, patch
 
 import av
-from PIL import Image
+import httpx
 from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError, transaction
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
+from PIL import Image
 
-from .media import advance_job, cancel_job, cleanup_expired, create_job, describe_file, normalize_generated_video, preview_job, recover_media_jobs, remove_asset, select_asset, start_reviewed_job, store_asset
-from .media_providers import ProviderUnavailableError, UncertainGeneration, estimate_video, generate_images, higgs, higgsfield_configured, start_video, upload_input
-from .media_storage import MediaError, local_path
 from .creative_core import EvidenceLevel, ReferenceRole
+from .media import (
+    advance_job,
+    cancel_job,
+    cleanup_expired,
+    create_job,
+    describe_file,
+    normalize_generated_video,
+    preview_job,
+    recover_media_jobs,
+    remove_asset,
+    select_asset,
+    start_reviewed_job,
+    store_asset,
+)
+from .media_providers import (
+    ProviderUnavailableError,
+    UncertainGeneration,
+    estimate_video,
+    generate_images,
+    higgs,
+    higgsfield_configured,
+    start_video,
+    upload_input,
+)
 from .media_references import add_generation_reference, reference_asset, serialize_generation_references
+from .media_storage import MediaError, local_path
 from .models import Company, ContentRun, MediaAsset, MediaGeneration, MediaGenerationReference
 
 
@@ -167,8 +188,10 @@ class MediaTests(TestCase):
             end_source=end,
             brief="Skapa en premium övergång på 8 sekunder från startbild till slutbild",
         )
-        self.assertIn(job.parameters["model"], {"bytedance/seedance-2.5", "bytedance/seedance-2.0"})
-        self.assertEqual(job.parameters["provider_model"], "bytedance/seedance-2.5/image-to-video")
+        from .creative_registry import get_model
+        chosen = get_model(job.provider, job.parameters["model"])
+        self.assertTrue(chosen.supports_reference_role("image-to-video", ReferenceRole.end_image))
+        self.assertEqual(job.parameters["provider_model"], chosen.request_contract("image-to-video").endpoint)
         refs = {row.role: row.asset_id for row in job.references.all()}
         self.assertEqual(refs[ReferenceRole.start_image.value], start.pk)
         self.assertEqual(refs[ReferenceRole.end_image.value], end.pk)
@@ -233,6 +256,7 @@ class MediaTests(TestCase):
             self.run,
             token=uuid.uuid4(),
             kind="video",
+            model_override="bytedance/seedance-2.5",
             source=start,
             end_source=end,
             brief="Skapa en premium övergång på 8 sekunder",
@@ -496,7 +520,7 @@ class MediaTests(TestCase):
         source = store_asset(self.company, picture())
         job = create_job(self.run, token=uuid.uuid4(), kind="video", source=source,
             brief="Animera bilden. Behåll klubbhuset, skylten och all text exakt. Låt flaggan röra sig.")
-        self.assertIn("PRESERVE EXACTLY", job.prompt)
+        self.assertIn("preserve exactly", job.prompt.casefold())
         self.assertIn("architecture", job.prompt)
         self.assertNotIn("Never draw, recreate or preserve logos", job.prompt)
         self.assertEqual(job.parameters["creative"]["brief"]["mode"], "image-to-video")
@@ -644,7 +668,7 @@ class MediaTests(TestCase):
         job = self.job("video")
         higgs.return_value = {
             "type": "fixed",
-            "pricing_description": "$0.42 / generation",
+            "pricing_description": "$0.42-$1.05 / generation",
             "data": {
                 "cost_usd": "0.42",
                 "credits_required": "7",
@@ -659,7 +683,7 @@ class MediaTests(TestCase):
         logged = "\n".join(captured.output)
         self.assertIn("data.cost_usd", logged)
         self.assertIn('"type": "fixed"', logged)
-        self.assertIn('"pricing_description": "$0.42 / generation"', logged)
+        self.assertIn('"pricing_description": "$0.42-$1.05 / generation"', logged)
         self.assertIn("data.credits_required", logged)
         self.assertIn("0.42", logged)
         self.assertIn('"7"', logged)
@@ -682,7 +706,8 @@ class MediaTests(TestCase):
         start_video(job)
         job.refresh_from_db()
         self.assertEqual(job.usage["estimate"]["usd"], "0.70")
-        self.assertEqual(higgs.call_args_list[1].kwargs["json"], {"prompt":job.prompt, "duration":10})
+        from .media_providers import video_payload
+        self.assertEqual(higgs.call_args_list[1].kwargs["json"], video_payload(job))
 
     @patch("engine.media_providers.higgs")
     @patch("engine.media_providers.upload_input")
@@ -693,6 +718,7 @@ class MediaTests(TestCase):
             self.run,
             token=uuid.uuid4(),
             kind="video",
+            model_override="bytedance/seedance-2.5",
             brief="Create a 5 second 480p simplest smooth continuous camera transition between these anchors.",
             source=start,
             end_source=end,
@@ -846,6 +872,7 @@ class MediaTests(TestCase):
             self.run,
             token=uuid.uuid4(),
             kind="video",
+            model_override="bytedance/seedance-2.5",
             brief="Skapa en 10 sekunders reel med ljud och ambient sound",
         )
         self.assertEqual(job.parameters["model"], "bytedance/seedance-2.5")
@@ -859,6 +886,7 @@ class MediaTests(TestCase):
             self.run,
             token=uuid.uuid4(),
             kind="video",
+            model_override="bytedance/seedance-2.0",
             brief="Skapa en 10 sekunders premiumvideo i 4K",
         )
         self.assertEqual(job.parameters["model"], "bytedance/seedance-2.0")

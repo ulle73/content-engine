@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from . import test_media as media_test
 from .creative_controls import CreativeControls, apply_controls, creation_catalog
+from .creative_core import ReferenceRole
 from .creative_director import build_plan, parse_brief
 from .creative_registry import get_model
 from .forms import MediaCreationForm
@@ -66,7 +67,8 @@ class CreatorTests(TestCase):
         self.assertEqual(result.status_code, 200, result.content)
         payload = result.json()
         self.assertEqual(payload['duration'], 8)
-        self.assertEqual(payload['model_id'], 'bytedance/seedance-2.5')
+        from .creative_registry import get_model
+        self.assertTrue(get_model('higgsfield', payload['model_id']).supports_reference_role('image-to-video', ReferenceRole.end_image))
         self.assertIn('END FRAME:', payload['prompt'])
         self.assertIn('hold the closing composition', payload['prompt'])
         self.assertFalse(payload['paid_generation_started'])

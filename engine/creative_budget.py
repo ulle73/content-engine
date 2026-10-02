@@ -22,8 +22,10 @@ def cost_ceiling():
 
 def known_video_cost(model_id, duration, resolution):
     if model_id != "bytedance/seedance-2.5":
-        return None
-    rate = SEEDANCE_25_USD_PER_SECOND.get(resolution)
+        from .model_catalog import planning_rate
+        rate = planning_rate(model_id, resolution)
+    else:
+        rate = SEEDANCE_25_USD_PER_SECOND.get(resolution)
     return (Decimal(duration) * rate).quantize(Decimal("0.0001")) if rate is not None else None
 
 

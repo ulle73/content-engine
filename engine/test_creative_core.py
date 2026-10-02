@@ -7,20 +7,27 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
-from .creative_core import Complexity, CreativeBrief, EvidenceLevel, ReferenceRole, RECIPE_REGISTRY_VERSION
+from .creative_core import RECIPE_REGISTRY_VERSION, Complexity, CreativeBrief, EvidenceLevel, ReferenceRole
 from .creative_director import (
+    HIGGSFIELD_SAFE_PROMPT_CHARS,
     analyze_complexity,
     build_content_context,
     build_plan,
-    HIGGSFIELD_SAFE_PROMPT_CHARS,
     compile_parameters,
     compile_prompt,
     parse_brief,
     preflight,
     route_model,
 )
-from .creative_registry import ModeReferenceContract, ModeRequestContract, ModelIntelligence, get_model, registry, verified_models
-from .creative_recipes import get_recipe, registry as recipe_registry, resolve_recipe
+from .creative_recipes import get_recipe, resolve_recipe
+from .creative_recipes import registry as recipe_registry
+from .creative_registry import (
+    ModelIntelligence,
+    ModeReferenceContract,
+    get_model,
+    registry,
+    verified_models,
+)
 from .models import Company, ContentRun
 
 
@@ -408,9 +415,9 @@ class CreativeCoreTests(TestCase):
 
     def test_balanced_eight_second_video_uses_a_model_that_honors_duration(self):
         plan = build_plan(self.run, "Premium reel cirka 8 sekunder i 9:16", kind="video")
-        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.5")
+        self.assertTrue(get_model(plan.selection.provider, plan.selection.model_id).request_contract(plan.brief.mode).supports_duration(8))
         self.assertEqual(plan.parameters["duration"], 8)
-        self.assertEqual(plan.parameters["provider_model"], "bytedance/seedance-2.5/text-to-video")
+        self.assertEqual(plan.parameters["provider_model"], get_model(plan.selection.provider, plan.selection.model_id).request_contract(plan.brief.mode).endpoint)
         self.assertIn("requested_duration_supported", plan.selection.reason_codes)
         self.assertFalse(plan.parameters["generate_audio"])
         self.assertFalse(any(i.code == "duration_normalized" for i in plan.preflight))
@@ -440,19 +447,19 @@ class CreativeCoreTests(TestCase):
         self.assertIn("requested_duration_supported", plan.selection.reason_codes)
         self.assertFalse(any(item.code == "duration_normalized" for item in plan.preflight))
 
-    def test_native_audio_request_routes_away_from_kling(self):
+    def test_native_audio_request_routes_to_verified_audio_contract(self):
         plan = build_plan(self.run, "Skapa en 10 sekunders reel med ljud och ambient sound", kind="video")
-        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.5")
+        self.assertTrue(get_model(plan.selection.provider, plan.selection.model_id).audio_support)
         self.assertEqual(plan.brief.audio_intent, "native")
         self.assertTrue(plan.parameters["generate_audio"])
         self.assertIn("native_audio_supported", plan.selection.reason_codes)
 
-    def test_explicit_4k_routes_to_seedance_20(self):
+    def test_explicit_4k_routes_to_a_verified_4k_contract(self):
         plan = build_plan(self.run, "Skapa en 10 sekunders premiumvideo i 4K", kind="video")
-        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.0")
+        self.assertIn("4k", get_model(plan.selection.provider, plan.selection.model_id).request_contract(plan.brief.mode).resolutions)
         self.assertEqual(plan.brief.resolution, "4k")
         self.assertEqual(plan.parameters["resolution"], "4k")
-        self.assertEqual(plan.parameters["provider_model"], "bytedance/seedance-2.0/text-to-video")
+        self.assertEqual(plan.parameters["provider_model"], get_model(plan.selection.provider, plan.selection.model_id).request_contract(plan.brief.mode).endpoint)
 
     def test_seedance_i2v_contract_records_future_end_frame_without_sending_one_yet(self):
         model = get_model("higgsfield", "bytedance/seedance-2.5")
@@ -500,13 +507,13 @@ class CreativeCoreTests(TestCase):
             aspect_ratio="9:16",
         )
         model, selection = route_model(brief, Complexity.medium)
-        self.assertEqual(model.model_id, "bytedance/seedance-2.5")
+        self.assertIn(model, verified_models("video", "image-to-video"))
         self.assertTrue(model.supports_reference_role("image-to-video", ReferenceRole.end_image))
         self.assertEqual(selection.model_id, model.model_id)
 
-    def test_economy_video_keeps_lower_cost_kling_default(self):
+    def test_economy_video_uses_a_compatible_economical_model(self):
         plan = build_plan(self.run, "Skapa en 10 sekunders reel", kind="video", priority="economy")
-        self.assertEqual(plan.selection.model_id, "kling-video/v2.5-turbo/pro")
+        self.assertLessEqual(get_model(plan.selection.provider, plan.selection.model_id).cost_tier, 3)
 
     def test_router_falls_back_when_quality_candidate_is_disabled(self):
         models = tuple(
@@ -520,7 +527,8 @@ class CreativeCoreTests(TestCase):
                 kind="video",
                 priority="quality",
             )
-        self.assertEqual(plan.selection.model_id, "bytedance/seedance-2.0")
+        self.assertNotEqual(plan.selection.model_id, "bytedance/seedance-2.5")
+        self.assertTrue(get_model(plan.selection.provider, plan.selection.model_id).request_contract(plan.brief.mode).supports_duration(8))
         self.assertEqual(plan.parameters["duration"], 8)
 
     def test_unsupported_resolution_and_ratio_fails_before_provider_use(self):
@@ -588,9 +596,9 @@ class CreativeCoreTests(TestCase):
         plan = build_plan(self.run, "Skapa en lugn premium reel 10 sekunder", kind="video")
         payload = plan.model_dump(mode="json")
         self.assertEqual(payload["brief"]["version"], "2026-09-22.1")
-        self.assertEqual(payload["registry_version"], "2026-09-25.2")
+        self.assertEqual(payload["registry_version"], "2026-10-03.1")
         self.assertTrue(payload["selection"]["profile_version"])
         self.assertTrue(payload["selection"]["evidence_version"])
-        self.assertEqual(payload["compiler_version"], "2026-09-30.1")
+        self.assertEqual(payload["compiler_version"], "2026-10-03.1")
         self.assertEqual(payload["recipe"]["recipe_id"], "generic_video")
         self.assertEqual(payload["recipe_registry_version"], RECIPE_REGISTRY_VERSION)

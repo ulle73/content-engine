@@ -5,7 +5,7 @@ if (app) {
   const catalog = JSON.parse(byId('assistant-catalog').textContent);
   let state = JSON.parse(byId('assistant-state').textContent);
   let conversation = app.dataset.conversation, attachments = [], sending = false, uploadBusy = false, actionBusy = false;
-  let draftKey = crypto.randomUUID(), pendingPayload = null, searchTimer, pollTimer, nextPage = null, libraryRequest = 0;
+  let draftKey = crypto.randomUUID(), pendingPayload = null, searchTimer, pollTimer, nextPage = null, libraryRequest = 0, modelSearch = '';
   const base = app.dataset.baseUrl;
   const storageKey = () => 'content-engine-studio:'+app.dataset.user+':'+base+':'+(conversation||'new');
   function saveDraft() {
@@ -27,7 +27,7 @@ if (app) {
     const data=await response.json(); if(!response.ok) throw Error(data.error||'Åtgärden kunde inte slutföras.'); return data;
   }
   function updateModels() {
-    const selected=byId('assistant-model').value, workflow=byId('assistant-workflow').value;
+    const selected=byId('assistant-model').value, chosen=byId('assistant-workflow').value, workflow=chosen==='auto'?(catalog.templates.find(item=>item.id===byId('assistant-template').value)?.kind||chosen):chosen;
     const models=workflow==='image'?catalog.models.image:['video','sequence'].includes(workflow)?catalog.models.video:workflow==='auto'?[...catalog.models.image,...catalog.models.video]:[];
     const unique=new Map(models.map(item=>[item.id,item]));
     const select=byId('assistant-model'); select.replaceChildren(node('option','Auto · rekommenderad')); select.options[0].value='';
@@ -51,6 +51,11 @@ if (app) {
     for(const [name,select] of [['model',model],['template',template]]) {
       const menu=byId('assistant-'+name+'-menu');menu.replaceChildren();
       let lastGroup='';
+      if(name==='model') {
+        const search=node('input');search.type='search';search.placeholder='Sök modell…';search.setAttribute('aria-label','Sök bild- eller videomodell');search.value=modelSearch;search.className='assistant-model-search';
+        search.addEventListener('input',()=>{modelSearch=search.value;filterModels(menu);});menu.append(search);
+        menu.append(node('p','Prisindikationer gäller 10 s, före rabatter. Exakt pris och kompatibilitet kontrolleras med din plan.','assistant-model-note'));
+      }
       for(const option of select.options) {
         const item=catalog.templates.find(item=>item.id===option.value);
         const profiles=[...catalog.models.image,...catalog.models.video].filter(item=>item.id===option.value);
@@ -59,10 +64,37 @@ if (app) {
         const choice=button('',()=>{select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));select.dispatchEvent(new Event('input',{bubbles:true}));byId('assistant-'+name+'-picker').open=false;pickerMenus();},'');
         choice.append(node('span',option.value?option.textContent: name==='model'?'Auto · föreslå bästa modell':'Egen idé'));
         const supportsEnd=profiles.some(item=>item.roles.includes('END_IMAGE'));
-        choice.append(node('small',name==='template'?(item?.instructions.replace(/\{\{[^}]+\}\}/g,'din idé').slice(0,160)||'Beskriv fritt vad du vill skapa.'):(option.value?(group==='Bild'?'Skapa en bild eller bearbeta en referensbild.':supportsEnd?'Start- och slutbild · sammanhängande övergångar.':'Text eller startbild · saknar stöd för slutbild.'):'Vi rekommenderar en kompatibel modell och visar varför.')));
-        choice.setAttribute('aria-pressed',String(select.value===option.value));choice.disabled=sending||uploadBusy||(name==='model'&&byId('assistant-workflow').value==='sequence'&&option.value&&!supportsEnd);menu.append(choice);
+        const chosen=byId('assistant-workflow').value, workflow=chosen==='auto'?(catalog.templates.find(item=>item.id===template.value)?.kind||chosen):chosen;
+        const needsEnd=workflow==='sequence'||attachments.some(asset=>asset.role==='end');
+        const mode=attachments.some(asset=>asset.role==='start')||needsEnd?'image-to-video':'text-to-video';
+        const profile=profiles.find(item=>item.mode===mode)||profiles[0];
+        let reason='';
+        if(name==='model'&&option.value) {
+          if(group==='Bild'&&(['video','sequence'].includes(workflow)||needsEnd))reason='Passar inte: bildmodellen kan inte skapa video.';
+          else if(group==='Video'&&needsEnd&&!supportsEnd)reason='Passar inte: saknar stöd för slutbild.';
+          else if(group==='Video'&&profile?.aspect_behavior==='explicit'&&!profile.ratios.includes({portrait:'9:16',square:'1:1',landscape:'16:9'}[byId('assistant-shape').value]))reason='Passar inte i valt bildformat.';
+        }
+        const description=name==='template'?(item?.instructions.replace(/\{\{[^}]+\}\}/g,'din idé').slice(0,160)||'Beskriv fritt vad du vill skapa.'):(option.value?(reason||profile?.summary||(group==='Bild'?'Skapa en bild eller bearbeta en referensbild.':supportsEnd?'Start- och slutbild · sammanhängande övergångar.':'Text eller startbild · saknar stöd för slutbild.')):'Vi rekommenderar en kompatibel modell inom din budget och visar varför.');
+        choice.append(node('small',description));
+        if(name==='model'&&option.value&&group==='Video') {
+          const rates=profile?.rates||{},resolution=profile?.resolutions.includes('720p')?'720p':profile?.resolutions[0]||'',rate=Number(rates[resolution]);
+          const hint=Number.isFinite(rate)?'10 s'+(resolution?' · '+resolution:'')+' ≈ $'+(10*rate).toFixed(2):'Pris kontrolleras före start';
+          const cost=node('small',hint+(Number.isFinite(rate)&&10*rate>Number(byId('assistant-max-cost').value)?' · över din budget för 10 s':''),'assistant-model-cost');choice.append(cost);
+        }
+        choice.dataset.modelSearch=(option.textContent+' '+description).toLocaleLowerCase('sv');
+        choice.setAttribute('aria-pressed',String(select.value===option.value));choice.disabled=sending||uploadBusy||Boolean(reason);menu.append(choice);
       }
+      if(name==='model'){menu.append(node('p','API-utbudet skiljer sig från Higgsfield-appen. Preview-modeller väljs aldrig automatiskt.','assistant-model-note'));const empty=node('p','Ingen modell matchar sökningen.','assistant-model-empty');empty.setAttribute('role','status');menu.append(empty);filterModels(menu);}
       if(name==='template')menu.append(button('＋ Skapa eller ändra mall',()=>{byId('assistant-template-picker').open=false;updateTemplates();byId('assistant-template-dialog').showModal();},'assistant-subtle'));
+    }
+  }
+  function filterModels(menu) {
+    const query=modelSearch.trim().toLocaleLowerCase('sv');
+    for(const choice of menu.querySelectorAll('button'))choice.hidden=Boolean(query&&!choice.dataset.modelSearch.includes(query));
+    const empty=menu.querySelector('.assistant-model-empty');if(empty)empty.hidden=Array.from(menu.querySelectorAll('button')).some(choice=>!choice.hidden);
+    for(const heading of menu.querySelectorAll('.assistant-menu-group')) {
+      let next=heading.nextElementSibling,visible=false;
+      while(next&&!next.classList.contains('assistant-menu-group')){if(next.tagName==='BUTTON'&&!next.hidden)visible=true;next=next.nextElementSibling;}heading.hidden=!visible;
     }
   }
   function templateDescription() { const item=catalog.templates.find(item=>item.id===byId('assistant-template').value); byId('assistant-template-description').textContent=item?item.instructions:''; pickerMenus(); }
@@ -74,6 +106,7 @@ if (app) {
     byId('assistant-image-policy').value=turn.request.image_policy||'contain';byId('assistant-max-cost').value=turn.request.max_cost_usd||'5.00';
   }
   function renderAttachments() {
+    pickerMenus();
     const target=byId('assistant-attachments'); target.replaceChildren();
     for(const [index,asset] of attachments.entries()) {
       const row=node('div','','assistant-attachment');
@@ -81,7 +114,7 @@ if (app) {
       const info=node('div'); info.append(node('span',asset.label,'file-name'));
       const select=node('select'); select.setAttribute('aria-label','Roll för '+asset.label);
       for(const [value,label] of roles) { const opt=node('option',label); opt.value=value; opt.disabled=['start','end','logo'].includes(value)&&asset.kind!=='image'||value==='audio'&&!['audio','video'].includes(asset.kind); select.append(opt); }
-      select.value=asset.role; select.disabled=sending; select.addEventListener('change',()=>{asset.role=select.value; pendingPayload=null; draftKey=crypto.randomUUID();saveDraft();}); info.append(select); row.append(info);
+      select.value=asset.role; select.disabled=sending; select.addEventListener('change',()=>{asset.role=select.value;pickerMenus(); pendingPayload=null; draftKey=crypto.randomUUID();saveDraft();}); info.append(select); row.append(info);
       const remove=button('×',()=>{attachments.splice(index,1); pendingPayload=null; draftKey=crypto.randomUUID(); renderAttachments();saveDraft();}); remove.setAttribute('aria-label','Ta bort '+asset.label); remove.disabled=sending; row.append(remove); target.append(row);
       if(asset.width)info.append(node('small',asset.width+' × '+asset.height));
       const order=node('div','','assistant-order');order.append(node('small','Bild '+(index+1)));
@@ -215,6 +248,7 @@ if (app) {
   byId('assistant-upload').multiple=true;byId('assistant-upload').addEventListener('change',async event=>{for(const file of Array.from(event.target.files))await upload(file);});
   const composer=byId('assistant-composer'); for(const name of ['dragenter','dragover']) composer.addEventListener(name,event=>{event.preventDefault();composer.classList.add('drag-over');});
   composer.addEventListener('dragleave',()=>composer.classList.remove('drag-over'));composer.addEventListener('drop',async event=>{event.preventDefault();composer.classList.remove('drag-over');if(sending)return;for(const file of event.dataTransfer.files)await upload(file,'reference');});
+  for(const name of ['shape','max-cost'])byId('assistant-'+name).addEventListener('input',pickerMenus);
   byId('assistant-workflow').addEventListener('change',updateModels);byId('assistant-model').addEventListener('change',pickerMenus);byId('assistant-template').addEventListener('change',()=>{const template=catalog.templates.find(item=>item.id===byId('assistant-template').value);if(template&&template.kind!=='auto')byId('assistant-workflow').value=template.kind;updateModels();templateDescription();});
   for(const el of document.querySelectorAll('[data-example]'))el.addEventListener('click',()=>{byId('assistant-message').value=el.dataset.example;byId('assistant-workflow').value=el.dataset.workflow;if(el.dataset.template)byId('assistant-template').value=el.dataset.template;updateModels();templateDescription();saveDraft();byId('assistant-message').focus();});
   for(const el of document.querySelectorAll('[data-close-dialog]'))el.addEventListener('click',()=>el.closest('dialog').close());

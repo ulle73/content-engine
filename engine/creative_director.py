@@ -8,20 +8,20 @@ from __future__ import annotations
 
 import json
 import re
+
+from .creative_budget import video_resolution
+from .creative_controls import apply_controls
 from .creative_core import (
+    Complexity,
     CreativeBrief,
     CreativeContext,
     CreativePlan,
-    Complexity,
     ModelSelection,
     PreflightIssue,
     ReferenceRole,
 )
-from .creative_registry import ModelIntelligence, verified_models
 from .creative_recipes import resolve_recipe
-from .creative_controls import apply_controls
-from .creative_budget import video_resolution
-
+from .creative_registry import ModelIntelligence, verified_models
 
 MAX_CONTEXT_FIELD = 1400
 MAX_CAPTION = 1800
@@ -339,6 +339,8 @@ def route_model(
     model_override: str = "",
 ) -> tuple[ModelIntelligence, ModelSelection]:
     candidates = eligible_models(brief, recipe)
+    if not model_override:
+        candidates = [model for model in candidates if not model.preview]
     if not candidates:
         raise ValueError("No verified model supports the requested media capabilities.")
 
@@ -452,6 +454,9 @@ def compile_parameters(brief: CreativeBrief, model: ModelIntelligence, *, count=
         "duration": duration,
         "reference_fields": {role.value: field for role, field in contract.reference_fields},
     }
+    if contract.request_fields:
+        params["provider_fields"] = list(contract.request_fields)
+        params["provider_defaults"] = dict(contract.defaults)
     if contract.resolutions:
         resolution = video_resolution(model.model_id, duration, brief.resolution, contract.resolutions)
         if resolution not in contract.resolutions:
@@ -469,7 +474,8 @@ def compile_parameters(brief: CreativeBrief, model: ModelIntelligence, *, count=
             raise ValueError("The verified video mode does not support the requested aspect ratio.")
         params["provider_aspect_ratio"] = brief.aspect_ratio
     if contract.audio_parameter:
-        params[contract.audio_parameter] = brief.audio_intent not in {"", "none"}
+        audio = brief.audio_intent not in {"", "none"}
+        params[contract.audio_parameter] = ("on" if audio else "off") if contract.audio_type == "string" else audio
     if contract.output_formats:
         params["output_format"] = "mp4" if "mp4" in contract.output_formats else contract.output_formats[0]
     return params, issues
@@ -633,7 +639,7 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
             )
         return prompt
 
-    if model.prompt_strategy == "seedance_structured":
+    if model.prompt_strategy in {"seedance_structured", "cinematic_scene"}:
         sections = []
         if _uses_prompt_section(model, "GLOBAL_STYLE"):
             style = ", ".join(_dedupe([*brief.visual_style, brief.realism])) or "follow the requested visual style"

@@ -5,10 +5,10 @@ import uuid
 
 from django.urls import reverse
 
-from engine.creative_controls import MODEL_LABELS
 from engine.creative_director import build_plan
 from engine.forms import snapshot_company_context
 from engine.media import create_job
+from engine.model_catalog import model_label
 from engine.models import ContentRun
 
 from .registry import WorkflowDefinition, register
@@ -32,6 +32,8 @@ def recommendation(run, brief, *, kind, source, end_source, shape, budget, recip
     candidates = []
     mode = ("image-to-" if source else "text-to-") + kind
     for model in verified_models(kind, mode):
+        if model.preview:
+            continue
         try:
             plan = build_plan(run, brief, kind=kind, source=source, end_source=end_source, shape=shape, count=1,
                               priority="quality", recipe_id=recipe_id, model_override=model.model_id)
@@ -46,7 +48,7 @@ def recommendation(run, brief, *, kind, source, end_source, shape, budget, recip
     model, price, best = max(pool, key=lambda row: (row[0].quality_tier, row[0].speed_tier, -row[0].cost_tier, row[0].model_id))
     reason = "Bästa kompatibla modell enligt det verifierade registrets kvalitets- och kapabilitetsprofil. "
     reason += "Prisförslaget ryms inom din budget; aktuellt kontopris kontrolleras före start." if affordable else "Priset behöver verifieras mot din budget före start." if price is None else "Prisförslaget överstiger din budget. Kortare klipp eller högre budget behövs."
-    return {"model_id": best.selection.model_id, "model_label": MODEL_LABELS.get(best.selection.model_id, best.selection.model_id), "reason": reason}
+    return {"model_id": best.selection.model_id, "model_label": model_label(best.selection.model_id), "reason": reason}
 
 
 def _run(company, user, spec, *, save=False):
@@ -80,7 +82,7 @@ def media_compile(company, user, spec, assets):
     plan = build_plan(_run(company, user, spec), generation_brief, kind=kind, source=source, end_source=end,
                       shape=options["shape"], count=1, priority=options["priority"], model_override=options["model"] or recommended["model_id"],
                       inspirations=retrieve_inspiration(user, company.pk, generation_brief, limit=3))
-    return {"prompt": plan.prompt, "model_id": plan.selection.model_id, "model_label": MODEL_LABELS.get(plan.selection.model_id, plan.selection.model_id),
+    return {"prompt": plan.prompt, "model_id": plan.selection.model_id, "model_label": model_label(plan.selection.model_id),
             "recommendation": recommended,
             "parameters": plan.parameters, "warnings": [issue.message for issue in plan.preflight],
             "compiler_version": plan.compiler_version, "registry_version": plan.registry_version,
@@ -161,7 +163,7 @@ def sequence_compile(company, user, spec, assets):
                               recipe_id="scroll_transition_bridge", model_override=spec["options"]["model"] or recommended["model_id"])
         clips.append({"position": index, "from": str(source.pk), "to": str(end.pk), "brief": brief,
                       "prompt": compiled.prompt, "parameters": compiled.parameters, "model_id": compiled.selection.model_id,
-                      "model_label": MODEL_LABELS.get(compiled.selection.model_id, compiled.selection.model_id),
+                      "model_label": model_label(compiled.selection.model_id),
                       "warnings": [issue.message for issue in compiled.preflight]})
     return {"model_label": clips[0]["model_label"], "clips": clips, "parameters": clips[0]["parameters"],
             "recommendation": recommended, "finishing": True,

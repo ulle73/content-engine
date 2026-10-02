@@ -303,10 +303,10 @@ def _creation_error(exc):
 @require_POST
 def creation_preview(request, workspace_id, run_id):
     """Pure local planning: no generation row, uploads, pricing or provider call."""
-    from .creative_controls import MODEL_LABELS
     from .creative_director import build_plan
     from .creative_registry import get_model
     from .forms import MediaCreationForm
+    from .model_catalog import model_label
     from .prompt_library import retrieve_inspiration
     run = run_for(request, run_id)
     if run.delivery_status != "draft":
@@ -324,7 +324,7 @@ def creation_preview(request, workspace_id, run_id):
         return JsonResponse({"error": _creation_error(exc)}, status=422)
     model = get_model(plan.selection.provider, plan.selection.model_id)
     contract = model.request_contract(plan.brief.mode)
-    return JsonResponse({"model": MODEL_LABELS.get(model.model_id, model.model_id), "model_id": model.model_id,
+    return JsonResponse({"model": model_label(model.model_id), "model_id": model.model_id,
                          "mode": plan.brief.mode, "duration": plan.parameters.get("duration"),
                          "aspect_ratio": plan.brief.aspect_ratio, "aspect_behavior": contract.aspect_ratio_behavior,
                          "prompt": plan.prompt, "recipe": plan.recipe.recipe_id,

@@ -16,6 +16,7 @@ RATIOS = {"portrait": (9, 16), "square": (1, 1), "landscape": (16, 9)}
 
 
 def review(spec, assets, candidate):
+    from engine.model_catalog import price_source, profiles
     shape = spec["options"]["shape"]
     x, y = RATIOS[shape]
     target_ratio = x / y
@@ -44,6 +45,8 @@ def review(spec, assets, candidate):
     if scene_ratios and max(scene_ratios) / min(scene_ratios) > 1.05:
         warnings.append("Bilderna har olika proportioner. Samma utsnitt kan inte behållas automatiskt i alla övergångar. Förbered enhetliga start-/slutbilder i samma format innan AI-generation.")
     clips = candidate.get("clips", [candidate])
+    if any(profiles().get(clip.get("model_id"), {}).get("preview") for clip in clips):
+        warnings.append("Den valda modellen är märkt preview av leverantören. Funktion och tillgänglighet kan ändras. Den rekommenderas inte automatiskt.")
     prices = []
     for clip in clips:
         parameters = clip.get("parameters", {})
@@ -55,11 +58,12 @@ def review(spec, assets, candidate):
     local = spec["workflow"] in {"motion", "text"}
     total = Decimal("0") if local else sum((Decimal(row["usd"]) for row in prices), Decimal("0")) if all(row["usd"] is not None for row in prices) else None
     limit = Decimal(str(spec["options"].get("max_cost_usd", "5")))
+    sources = list(dict.fromkeys(price_source(clip.get("model_id")) or SEEDANCE_25_PRICE_SOURCE for clip in clips))
     return {"model_label": candidate.get("model_label", ""), "parameters": candidate.get("parameters", {}),
             "image_policy": spec["options"].get("image_policy", "contain"), "assets": checks, "warnings": list(dict.fromkeys(warnings)),
             "clips": prices, "count": len(clips), "total_usd": str(total) if total is not None else None,
-            "price_source": "Ingen ny AI-mediegeneration" if local else SEEDANCE_25_PRICE_SOURCE if total is not None else "Pris saknas för valda parametrar",
-            "price_note": "Förslag utifrån tidigare kontopris. Aktuellt leverantörspris kontrolleras efter bekräftelsen, före betald start." if not local else "AI-samtalet debiteras separat. Motion renderas på din anslutna dator.",
+            "price_source": "Ingen ny AI-mediegeneration" if local else ", ".join(sources) if total is not None else "Pris saknas för valda parametrar",
+            "price_note": "Prisindikation från daterad prisprofil, utan tillfälliga rabatter. Aktuellt kontopris kontrolleras efter bekräftelsen, före betald start." if not local else "AI-samtalet debiteras separat. Motion renderas på din anslutna dator.",
             "max_cost_usd": str(limit), "over_budget": total is not None and total > limit,
             "recommendation": candidate.get("recommendation", {"model_label": candidate.get("model_label", ""), "reason": "Använder befintligt material och kräver ingen ny AI-mediegeneration."}),
             "max_per_clip_usd": str(cost_ceiling()) if not local else None}

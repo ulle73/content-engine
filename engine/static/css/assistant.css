@@ -122,6 +122,11 @@
 .assistant-picker-menu button[aria-pressed=true] { background:#eaf2ed; }
 .assistant-picker-menu small { font-weight:400; color:#68716b; font-size:12px; }
 .assistant-picker-menu .assistant-menu-group { margin:12px 12px 2px; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#68716b; }
+.assistant-picker-menu .assistant-model-search { position:sticky; top:0; z-index:1; width:100%; min-height:44px; background:#fff; border:1px solid #dce3de; border-radius:10px; padding:10px 12px; font:inherit; }
+.assistant-picker-menu .assistant-model-note { font-size:11px; color:#68716b; line-height:1.5; margin:10px 12px; }
+.assistant-picker-menu button:disabled { opacity:.65; cursor:not-allowed; }
+.assistant-picker-menu button[hidden],.assistant-picker-menu .assistant-menu-group[hidden] { display:none; }
+.assistant-picker-menu .assistant-model-cost { color:#385f4c; }
 .assistant-picker.drop-up .assistant-picker-menu { top:auto; bottom:calc(100% + 10px); }
 .assistant-settings { font-size:12px; border:0; padding-top:2px; margin-top:4px; }
 .assistant-settings summary { color:#68716b; min-height:24px; padding-left:8px; }

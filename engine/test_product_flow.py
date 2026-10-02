@@ -72,10 +72,10 @@ class ProductFlowTests(TestCase):
         self.assertEqual(explicit.brief.duration_seconds, 5)
 
     @patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "2"})
-    def test_auto_recipe_default_fits_real_local_pricing_rule_without_provider_io(self):
+    def test_explicit_seedance_recipe_default_fits_real_local_pricing_rule_without_provider_io(self):
         with patch("httpx.Client.send", side_effect=AssertionError("no network")):
             plan = build_plan(self.run, "A calm premium product reveal.", kind="video",
-                              source=self.asset(), recipe_id="premium_product_reveal")
+                              source=self.asset(), recipe_id="premium_product_reveal", model_override="bytedance/seedance-2.5")
             self.assertEqual(plan.parameters["duration"], 8)
             self.assertEqual(plan.parameters["resolution"], "480p")
             estimate = _seedance25_description_estimate(
@@ -90,8 +90,8 @@ class ProductFlowTests(TestCase):
     def test_auto_skips_known_over_budget_model_preserving_exact_duration(self):
         plan = build_plan(self.run, "A product for 10 seconds", kind="video")
         self.assertEqual(plan.parameters["duration"], 10)
-        self.assertEqual(plan.selection.model_id, "kling-video/v2.5-turbo/pro")
-        self.assertIsNone(known_video_cost(plan.selection.model_id, 10, "720p"))
+        self.assertNotEqual(plan.selection.model_id, "bytedance/seedance-2.5")
+        self.assertLessEqual(known_video_cost(plan.selection.model_id, 10, plan.parameters.get("resolution", "")), 2)
 
     @patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "2"})
     def test_explicit_over_budget_seedance_settings_rejected_before_job_or_provider(self):

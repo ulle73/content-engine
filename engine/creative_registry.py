@@ -11,8 +11,7 @@ from typing import Literal
 
 from django.conf import settings
 
-from .creative_core import EvidenceLevel, ReferenceRole, REGISTRY_VERSION
-
+from .creative_core import REGISTRY_VERSION, EvidenceLevel, ReferenceRole
 
 AspectBehavior = Literal["explicit", "prompt_only", "derived", "none"]
 
@@ -35,6 +34,9 @@ class ModeRequestContract:
     audio_default: bool | None = None
     output_formats: tuple[str, ...] = ()
     prompt_required: bool = True
+    audio_type: str = "boolean"
+    request_fields: tuple[str, ...] = ()
+    defaults: tuple[tuple[str, object], ...] = ()
 
     @property
     def supported_reference_roles(self) -> tuple[ReferenceRole, ...]:
@@ -92,6 +94,9 @@ class ModelIntelligence:
     negative_prompt_support: bool = False
     known_constraints: tuple[str, ...] = ()
     recipe_capabilities: tuple[str, ...] = ()
+    label: str = ""
+    summary: str = ""
+    preview: bool = False
 
     def request_contract(self, mode: str) -> ModeRequestContract | None:
         return next((item for item in self.reference_contracts if item.mode == mode), None)
@@ -113,7 +118,7 @@ def registry() -> tuple[ModelIntelligence, ...]:
     Public-doc availability is deliberately separate from the authenticated
     Content Engine account check done through Higgsfield estimate/preflight.
     """
-    return (
+    entries = (
         ModelIntelligence(
             provider="openai",
             model_id=settings.OPENAI_IMAGE_MODEL,
@@ -372,6 +377,8 @@ def registry() -> tuple[ModelIntelligence, ...]:
             ),
         ),
     )
+    from .model_catalog import additional_video_models
+    return (*entries, *additional_video_models())
 
 
 def _verified_profile(item: ModelIntelligence) -> bool:
@@ -403,7 +410,7 @@ def _verified_profile(item: ModelIntelligence) -> bool:
         and bool(item.source)
         and bool(item.sources)
         and bool(item.evidence_version)
-        and item.prompt_strategy in {"natural_scene", "ordered_motion", "seedance_structured"}
+        and item.prompt_strategy in {"natural_scene", "ordered_motion", "seedance_structured", "cinematic_scene"}
         and bool(item.prompt_sections)
         and len(modes) == len(set(modes))
         and set(modes) == set(item.modes)

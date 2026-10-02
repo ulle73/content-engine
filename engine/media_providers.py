@@ -6,11 +6,12 @@ import json
 import logging
 import os
 import random
+import re
 import socket
 import time
 import uuid
 from contextlib import contextmanager
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_CEILING, Decimal, InvalidOperation
 from urllib.parse import urlencode, urlparse
 
 import httpx
@@ -234,11 +235,17 @@ def higgs(method, path, *, billable=False, **kwargs):
 def video_payload(job):
     """Compile only allow-listed provider parameters persisted by Creative Director."""
     payload = {"prompt": job.prompt, "duration": int(job.parameters.get("duration", 10))}
-    for key in ("resolution", "generate_audio", "output_format"):
+    fields = job.parameters.get("provider_fields")
+    for key in ("resolution", "generate_audio", "sound", "output_format"):
         if key in job.parameters:
+            if fields and key not in fields:
+                continue
             payload[key] = job.parameters[key]
     if job.parameters.get("provider_aspect_ratio"):
         payload["aspect_ratio"] = job.parameters["provider_aspect_ratio"]
+    for key, value in job.parameters.get("provider_defaults", {}).items():
+        if fields and key in fields:
+            payload[key] = value
     return payload
 
 
@@ -383,6 +390,42 @@ def _seedance25_description_estimate(model, body, estimate):
     }
 
 
+def _account_description_estimate(model, body, estimate):
+    """Only unambiguous account-scoped USD totals/rates, or an exact reviewed tariff.
+
+    A public planning hint alone never authorizes billing. Unknown prose, ranges,
+    currencies or a changed tariff still fail closed.
+    """
+    description = estimate.get("pricing_description")
+    if not isinstance(description, str):
+        return None
+    text = " ".join(description.split())
+    match = re.fullmatch(r"\$([0-9]{1,7}(?:\.[0-9]{1,8})?)\s*/\s*(generation|second)", text)
+    price = None
+    if match and estimate.get("type") in {"fixed", "per_second", "description"}:
+        price = Decimal(match.group(1))
+        if match.group(2) == "second":
+            price *= Decimal(str(body["duration"]))
+    elif estimate.get("type") == "description":
+        from .creative_budget import known_video_cost
+        from .model_catalog import profiles
+        for profile in profiles().values():
+            contract = next((item for item in profile["contracts"] if item["endpoint"] == model), None)
+            if not contract:
+                continue
+            verified = profile["planning_prices"][contract["mode"]].get("description")
+            if verified and text == " ".join(verified.split()):
+                price = known_video_cost(profile["id"], body["duration"], body.get("resolution", ""))
+            break
+    if price is None:
+        return None
+    price = price.quantize(Decimal("0.0001"), rounding=ROUND_CEILING)
+    if not price.is_finite() or price < 0 or price > _cost_ceiling():
+        raise MediaError("Videons pris överskrider serverns kostnadsgräns. Ingen generation startades.")
+    return {"estimate": {"usd": str(price), "basis": "authenticated_account_tariff"}, "model": model,
+            "price_note": "Maxpris från leverantörens autentiserade prisregel för dessa inställningar."}
+
+
 def estimate_video(job):
     """Account-scoped, non-billable preflight. I2V uploads its input, never submits a generation."""
     if len(job.prompt or "") > HIGGSFIELD_SAFE_PROMPT_CHARS:
@@ -410,6 +453,9 @@ def estimate_video(job):
     estimate = higgs("POST", "/estimate/" + model, json=body)
     if "usd" not in estimate:
         descriptive = _seedance25_description_estimate(model, body, estimate)
+        if descriptive is not None:
+            return model, body, descriptive
+        descriptive = _account_description_estimate(model, body, estimate)
         if descriptive is not None:
             return model, body, descriptive
         logger.warning(
