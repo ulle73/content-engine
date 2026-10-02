@@ -13,19 +13,41 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
-from .media import ACTIVE, PENDING, advance_job, cancel_job, cleanup_expired, create_job, default_brief, publishable_assets, remove_asset, select_asset, store_asset
 from .creative_core import ReferenceRole
 from .creative_registry import verified_models
-from .media_references import reference_asset, serialize_generation_references
+from .forms import snapshot_company_context
+from .media import (
+    ACTIVE,
+    PENDING,
+    advance_job,
+    asset_removal_blocker,
+    cancel_job,
+    cleanup_expired,
+    create_job,
+    default_brief,
+    preview_job,
+    publishable_assets,
+    refresh_terminal_provider_status,
+    remove_asset,
+    select_asset,
+    start_reviewed_job,
+    store_asset,
+)
 from .media_providers import higgsfield_configured
+from .media_references import reference_asset, serialize_generation_references
 from .media_storage import MediaError, download_url, local_path
-from .models import ContentRun, MediaAsset, MediaGeneration, SequenceAnchorGenerationTarget, SequenceBridgeVersion, SequenceClipVersion
+from .models import (
+    ContentRun,
+    MediaAsset,
+    MediaGeneration,
+    SequenceAnchorGenerationTarget,
+    SequenceBridgeVersion,
+    SequenceClipVersion,
+)
 from .ownership import company_required
 from .sequence import anchor_change_impact, sync_sequence_generation
-from .media import preview_job, refresh_terminal_provider_status, start_reviewed_job
-from .forms import snapshot_company_context
 
 
 def run_for(request, run_id):
@@ -90,6 +112,39 @@ def library_upload(request, workspace_id):
 
 @login_required
 @company_required
+@require_http_methods(["GET", "POST"])
+def library_delete(request, workspace_id, asset_id):
+    asset = get_object_or_404(MediaAsset, pk=asset_id, company=request.workspace)
+    filter_value = request.POST.get("filter", request.GET.get("filter", "all"))
+    if filter_value not in {"all", "image", "video", "audio", "uploaded", "generated", "logo"}:
+        filter_value = "all"
+    library_url = reverse("engine:media_library", kwargs={"workspace_id": workspace_id})
+    if filter_value != "all":
+        library_url += "?" + urlencode({"filter": filter_value})
+    error = ""
+    status = 200
+    if request.method == "POST":
+        if request.POST.get("confirm_delete") != "1":
+            error = "Bekräfta att du vill radera filen permanent."
+            status = 400
+        else:
+            try:
+                remove_asset(asset)
+            except MediaError as exc:
+                error = str(exc)
+                status = 409
+            else:
+                messages.success(request, "Media har raderats från databasen och fillagringen.")
+                return redirect(library_url)
+    return render(request, "engine/media_delete.html", {
+        "workspace": request.workspace, "asset": asset,
+        "blocker": asset_removal_blocker(asset), "error": error,
+        "filter_value": filter_value, "library_url": library_url,
+    }, status=status)
+
+
+@login_required
+@company_required
 @require_POST
 def new_studio(request, workspace_id):
     """Open the existing studio with a local empty draft; no text or media API call."""
@@ -113,9 +168,9 @@ def new_studio(request, workspace_id):
     channel = "organic"
     market_signal_id = ""
     if request.POST.get("market_id"):
+        from .learning import attach_generation_evidence
         from .market import classify as classify_market
         from .models import MarketItem
-        from .learning import attach_generation_evidence
         item = get_object_or_404(MarketItem, pk=request.POST["market_id"], company=company)
         try:
             result = classify_market(item, company)
@@ -237,10 +292,10 @@ def _creation_error(exc):
 @require_POST
 def creation_preview(request, workspace_id, run_id):
     """Pure local planning: no generation row, uploads, pricing or provider call."""
-    from .forms import MediaCreationForm
-    from .creative_director import build_plan
     from .creative_controls import MODEL_LABELS
+    from .creative_director import build_plan
     from .creative_registry import get_model
+    from .forms import MediaCreationForm
     from .prompt_library import retrieve_inspiration
     run = run_for(request, run_id)
     if run.delivery_status != "draft":

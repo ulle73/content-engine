@@ -633,13 +633,31 @@ def select_asset(run, asset):
                                        data={"before": previous, "asset_id": str(chosen.pk), "origin": chosen.origin, "provider": chosen.provider, "generation_id": str(chosen.generation_id) if chosen.generation_id else None})
 
 
+def asset_removal_blocker(asset):
+    """The confirmation screen and deletion share the same dependency policy."""
+    if asset.purpose == "logo" or asset.official_for.exists() or asset.logo_generations.exists():
+        return "Loggor sparas som varumärkesmaterial och kan inte raderas här."
+    if asset.sequence_anchors.exists() or asset.sequence_anchor_revisions.exists():
+        return "Filen används i en sekvens eller en sparad sekvensversion och kan inte raderas."
+    if asset.generation_id and MediaGeneration.objects.filter(pk=asset.generation_id).filter(
+        Q(sequence_clip_version__isnull=False) | Q(sequence_bridge_version__isnull=False)
+    ).exists():
+        return "Filen är ett klipp i en sparad sekvensversion och kan inte raderas."
+    if asset.motion_references.exists() or asset.motion_outputs.exists() or asset.motion_storyboards.exists():
+        return "Filen används i ett Motion-projekt eller ett sparat renderresultat och kan inte raderas."
+    if asset.used_at or asset.content_runs.exists():
+        return "Filen används eller har använts i ett sparat inlägg och kan inte raderas."
+    if asset.variations.filter(status__in=ACTIVE).exists() or asset.generation_references.filter(generation__status__in=ACTIVE).exists():
+        return "Filen används i en pågående generation. Avsluta eller avbryt generationen först."
+    return ""
+
+
 def remove_asset(asset):
     with transaction.atomic():
         locked = MediaAsset.objects.select_for_update().get(pk=asset.pk)
-        if locked.purpose == "logo" or locked.used_at or locked.content_runs.exists() or locked.logo_generations.exists() or locked.official_for.exists() or locked.variations.filter(status__in=ACTIVE).exists() or locked.generation_references.filter(generation__status__in=ACTIVE).exists() or locked.sequence_anchors.exists() or locked.sequence_anchor_revisions.exists():
-            raise MediaError("Media som används av ett sparat inlägg, en sequence-anchor/version eller en pågående generation kan inte tas bort.")
-        if locked.motion_references.exists() or locked.motion_outputs.exists() or locked.motion_storyboards.exists():
-            raise MediaError("Media som anv\u00e4nds i ett Motion-projekt kan inte tas bort.")
+        blocker = asset_removal_blocker(locked)
+        if blocker:
+            raise MediaError(blocker)
         delete_file(locked)
         locked.delete()
 

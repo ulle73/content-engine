@@ -135,6 +135,7 @@
             <div><span>Användning</span><strong>{% if asset.used_at %}Använd i sparat innehåll{% else %}Tillgänglig i nya utkast{% endif %}</strong></div>
             <a class="button button-secondary" href="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" target="_blank" rel="noopener">Öppna original</a>
           </div>
+          <div class="media-library-delete-action"><a class="button media-delete-button" href="{% url 'engine:media_library_delete' workspace_id=workspace.pk asset_id=asset.pk %}?filter={{ filter_value }}">Radera media</a></div>
         </dialog>
       {% empty %}
         <div class="media-library-empty-state">

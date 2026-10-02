@@ -64,6 +64,7 @@ engine_urls = [
     path("media/", media_views.library, name="media_library"),
     path("media/new/", media_views.new_studio, name="media_new"),
     path("media/upload/", media_views.library_upload, name="media_library_upload"),
+    path("media/<uuid:asset_id>/delete/", media_views.library_delete, name="media_library_delete"),
     path("media/<uuid:asset_id>/file/", media_views.asset_file, name="asset_file"),
     path("runs/<uuid:run_id>/media/", media_views.picker, name="media"),
     path("runs/<uuid:run_id>/media/upload/", media_views.upload, name="media_upload"),

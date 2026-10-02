@@ -292,8 +292,24 @@ class SequenceEngineE1Tests(TestCase):
     def test_anchor_asset_is_protected_from_media_cleanup(self):
         asset = self.asset()
         add_anchor(self.project, asset, position=0)
-        with self.assertRaisesRegex(MediaError, "sequence-anchor"):
+        with self.assertRaisesRegex(MediaError, "sekvens"):
             remove_asset(asset)
+
+    def test_unselected_sequence_clip_output_is_protected_from_library_deletion(self):
+        _, _, _, clip, _ = self.build_three_anchor_chain()
+        generation = self.generation()
+        attach_generation_to_clip(clip, generation)
+        asset = store_asset(self.company, sequence_movie(), job=generation)
+        self.client.force_login(self.user)
+        from django.urls import reverse
+
+        response = self.client.post(reverse("engine:media_library_delete", kwargs={
+            "workspace_id": self.company.pk, "asset_id": asset.pk,
+        }), {"confirm_delete": "1"})
+        self.assertContains(response, "sparad sekvensversion", status_code=409)
+        self.assertTrue(MediaAsset.objects.filter(pk=asset.pk).exists())
+        with open_asset(asset) as file:
+            self.assertEqual(file.read(), sequence_movie())
 
     def test_project_delete_keeps_existing_media_and_generation_but_removes_sequence_rows(self):
         k0, k1, _, clip1, _ = self.build_three_anchor_chain()

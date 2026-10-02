@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Radera media · {{ workspace.name }}{% endblock %}
+{% block content %}
+<main class="engine media-delete-page">
+  <a class="text-link" href="{{ library_url }}">← Till mediebiblioteket</a>
+  <header class="page-header">
+    <p class="eyebrow">Media</p>
+    <h1>Radera media</h1>
+    <p class="intro">{{ asset.alt_text|default:asset.brief|default:asset.get_kind_display }}</p>
+  </header>
+  <div class="media-delete-preview">
+    {% if asset.kind == 'image' %}
+      <img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}" alt="{{ asset.alt_text|default:'Filen som ska raderas' }}">
+    {% elif asset.kind == 'audio' %}
+      <audio controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}"></audio>
+    {% else %}
+      <video controls preload="metadata" src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=asset.pk %}"></video>
+    {% endif %}
+    <p>{{ asset.get_kind_display }} · {{ asset.get_origin_display }} · {{ asset.created_at|date:'j M Y H:i' }}{% if asset.width %} · {{ asset.width }} × {{ asset.height }}{% endif %}</p>
+  </div>
+  {% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}
+  {% if blocker %}
+    <p class="notice warning" role="status">{{ blocker }}</p>
+    <a class="button button-secondary" href="{{ library_url }}">Tillbaka till biblioteket</a>
+  {% else %}
+    <p>Filen tas bort permanent från databasen och fillagringen. Den försvinner även från filvalet i studion. Åtgärden kan inte ångras. Genereringshistorik och kostnader sparas.</p>
+    <form method="post" class="media-delete-confirm">
+      {% csrf_token %}
+      <input type="hidden" name="filter" value="{{ filter_value }}">
+      <label><input type="checkbox" name="confirm_delete" value="1" required> Jag vill radera den här filen permanent.</label>
+      <div class="creative-actions">
+        <a class="button button-secondary" href="{{ library_url }}">Avbryt</a>
+        <button type="submit" class="media-delete-button">Radera permanent</button>
+      </div>
+    </form>
+  {% endif %}
+</main>
+{% endblock %}
