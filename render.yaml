@@ -1,7 +1,7 @@
 services:
   - type: web
     name: content-engine-mcp
-    branch: feature/chatgpt-content-engine-mcp
+    branch: main
     runtime: python
     # Current plan. Upgrade to starter for always-on operation after approving its cost.
     plan: free

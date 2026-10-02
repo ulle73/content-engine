@@ -86,6 +86,42 @@ def describe_file(data):
         raise MediaError("Filen kunde inte l\u00e4sas som bild, video eller ljud.") from exc
 
 
+def normalize_generated_video(data):
+    """Normalize provider video output to browser-safe MP4/H.264 before storage."""
+    if len(data) < 12 or data[4:8] != b"ftyp":
+        return data
+    try:
+        source = io.BytesIO(data)
+        with av.open(source) as container:
+            stream = next(iter(container.streams.video), None)
+            if not stream:
+                return data
+            if stream.codec_context.name == "h264" and data[8:12] != b"qt  ":
+                return data
+            if next(iter(container.streams.audio), None):
+                raise MediaError("Videoleverantören returnerade en video som behöver omkodning med ljud.")
+            rate = stream.average_rate or 30
+            width, height = stream.codec_context.width, stream.codec_context.height
+            output = io.BytesIO()
+            with av.open(output, mode="w", format="mp4") as target:
+                encoded = target.add_stream("libx264", rate=rate)
+                encoded.width, encoded.height, encoded.pix_fmt = width, height, "yuv420p"
+                encoded.options = {"crf": "17", "preset": "veryfast", "profile": "high"}
+                for frame in container.decode(video=0):
+                    frame = frame.reformat(width=width, height=height, format="yuv420p")
+                    for packet in encoded.encode(frame):
+                        target.mux(packet)
+                for packet in encoded.encode():
+                    target.mux(packet)
+            normalized = output.getvalue()
+        describe_file(normalized)
+        return normalized
+    except MediaError:
+        raise
+    except (av.error.FFmpegError, OSError, ValueError) as exc:
+        raise MediaError("Videon kunde inte omkodas till MP4 med H.264.") from exc
+
+
 def store_asset(company, data, *, job=None, index=0, alt_text="", purpose="content"):
     metadata = describe_file(data)
     if job and metadata["kind"] != job.kind:
@@ -306,8 +342,11 @@ def preview_job(job):
             _, _, estimate = providers.estimate_video(job)
         except MediaError as exc:
             usage["provider_error"] = {"code": providers.provider_error_code(exc), "message": str(exc)[:300]}
+            # Price/preflight failures are non-billable and terminal for this reviewed job.
+            # Leaving them queued makes create_job reuse a stale failed preview and blocks
+            # a corrected request with a new idempotency key.
             MediaGeneration.objects.filter(pk=job.pk, status="queued").update(
-                usage=usage, error=str(exc)[:500], updated_at=timezone.now()
+                status="failed", usage=usage, error=str(exc)[:500], updated_at=timezone.now()
             )
             raise
         usage.update(estimate)
@@ -405,7 +444,11 @@ def reconcile_video_job(job):
     job.refresh_from_db()
     if job.status in {"completed", "failed", "nsfw", "canceled", "unknown"} or not job.provider_id:
         return job
-    if job.status == "saving" and job.updated_at >= timezone.now() - timedelta(minutes=10):
+    if (
+        job.status == "saving"
+        and job.updated_at >= timezone.now() - timedelta(seconds=60)
+        and job.error != "Video ska vara MP4 med H.264-kodning."
+    ):
         return job
 
     remote = providers.video_status(job)
@@ -432,6 +475,7 @@ def reconcile_video_job(job):
             if not url:
                 raise MediaError("Videoleverantören markerade jobbet klart men saknade resultatlänk.")
             data = providers.download_output(url)
+            data = normalize_generated_video(data)
             store_asset(job.run.workspace, data, job=job)
             MediaGeneration.objects.filter(pk=job.pk, status="saving").update(status="completed", error="", updated_at=timezone.now())
         except MediaError as exc:

@@ -2,6 +2,8 @@
 set -euo pipefail
 export DJANGO_SETTINGS_MODULE=engine.mcp_settings
 python scripts/migrate_locked.py
+# Recover already-submitted provider jobs before serving traffic. This never starts queued/paid work.
+python manage.py recover_media_jobs --limit 25
 if [[ -n "${D2_HIGGSFIELD_PREFLIGHT_TOKEN:-}" && "${D2_HIGGSFIELD_PREFLIGHT_TOKEN}" != "0" ]]; then
   python manage.py d2_higgsfield_preflight --token "${D2_HIGGSFIELD_PREFLIGHT_TOKEN}"
 fi

@@ -6,6 +6,7 @@ SEEDANCE_25_PRICE_SOURCE = "higgsfield-account-estimate-2026-09-29"
 SEEDANCE_25_USD_PER_SECOND = {
     "480p": Decimal("0.2056"),
     "720p": Decimal("0.4622"),
+    "1080p": Decimal("1.1372"),
 }
 
 

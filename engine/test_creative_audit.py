@@ -299,8 +299,10 @@ class CreativeAuditTests(TestCase):
         job.refresh_from_db()
         self.assertNotIn("reviewed_at", job.usage)
         self.assertIn("No estimate", job.error)
-        with self.assertRaises(providers.MediaError):
-            start_reviewed_job(job)
+        with patch("engine.media.providers.start_video") as paid:
+            result = start_reviewed_job(job)
+        self.assertEqual(result.status, "failed")
+        paid.assert_not_called()
 
     @patch("engine.media.providers.video_status", return_value={"status": []})
     def test_malformed_remote_status_is_recoverable(self, status):

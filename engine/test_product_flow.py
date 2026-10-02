@@ -277,7 +277,7 @@ class ProductFlowTests(TestCase):
             response = self.client.post(self.url("media_generate"), self.payload(kind="video"))
         self.assertEqual(response.status_code, 302)
         job = MediaGeneration.objects.get()
-        self.assertEqual(job.status, "queued")
+        self.assertEqual(job.status, "failed")
         self.assertFalse(job.usage.get("reviewed_at"))
         paid.assert_not_called()
 
