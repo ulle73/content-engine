@@ -20,6 +20,7 @@ from .creative_core import (
 from .creative_registry import ModelIntelligence, verified_models
 from .creative_recipes import resolve_recipe
 from .creative_controls import apply_controls
+from .creative_budget import video_resolution
 
 
 MAX_CONTEXT_FIELD = 1400
@@ -380,7 +381,21 @@ def route_model(
         ]
     else:
         exact = [item for item in candidates if item.request_contract(brief.mode).supports_duration(brief.duration_seconds)] if brief.kind == "video" and brief.duration_seconds else []
-        model = max(exact or candidates, key=lambda item: (score(item), item.model_id))
+        affordable = []
+        budget_error = None
+        for item in exact or candidates:
+            if brief.kind == "video":
+                item_contract = item.request_contract(brief.mode)
+                try:
+                    video_resolution(item.model_id, item_contract.normalize_duration(brief.duration_seconds or 10),
+                                     brief.resolution, item_contract.resolutions)
+                except ValueError as exc:
+                    budget_error = exc
+                    continue
+            affordable.append(item)
+        if not affordable:
+            raise budget_error or ValueError("No verified model supports the requested media capabilities.")
+        model = max(affordable, key=lambda item: (score(item), item.model_id))
         reason = ["auto_route", "verified_capabilities", f"complexity:{complexity.value}", f"priority:{brief.quality_preference}"]
     contract = model.request_contract(brief.mode)
     if brief.reference_media:
@@ -438,10 +453,17 @@ def compile_parameters(brief: CreativeBrief, model: ModelIntelligence, *, count=
         "reference_fields": {role.value: field for role, field in contract.reference_fields},
     }
     if contract.resolutions:
-        resolution = brief.resolution if brief.resolution != "auto" else ("720p" if "720p" in contract.resolutions else contract.resolutions[0])
+        resolution = video_resolution(model.model_id, duration, brief.resolution, contract.resolutions)
         if resolution not in contract.resolutions:
             raise ValueError("The verified video mode does not support the requested resolution.")
         params["resolution"] = resolution
+        default_resolution = "720p" if "720p" in contract.resolutions else contract.resolutions[0]
+        if brief.resolution == "auto" and resolution != default_resolution:
+            issues.append(PreflightIssue(
+                code="resolution_budget_adjusted", severity="warning", auto_fixed=True,
+                message=f"Auto väljer {resolution} för att hålla videon inom serverns kostnadsgräns. "
+                        "Den faktiska kostnaden kontrolleras före start.",
+            ))
     if contract.aspect_ratio_behavior == "explicit" and brief.aspect_ratio != "auto":
         if brief.aspect_ratio not in contract.aspect_ratios:
             raise ValueError("The verified video mode does not support the requested aspect ratio.")

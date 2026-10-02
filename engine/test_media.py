@@ -702,13 +702,15 @@ class MediaTests(TestCase):
     @patch.dict("os.environ", {"HIGGSFIELD_MAX_USD": "2"}, clear=False)
     @patch("engine.media_providers.higgs")
     def test_seedance_25_descriptive_pricing_respects_server_cost_ceiling(self, higgs):
-        job = create_job(
-            self.run,
-            token=uuid.uuid4(),
-            kind="video",
-            brief="Premium cinematic reel 10 sekunder i 9:16",
-            priority="quality",
-        )
+        # A previously planned job must still be blocked if the server budget is lowered.
+        with patch.dict("os.environ", {"HIGGSFIELD_MAX_USD": "10"}):
+            job = create_job(
+                self.run,
+                token=uuid.uuid4(),
+                kind="video",
+                brief="Premium cinematic reel 10 sekunder i 9:16",
+                priority="quality",
+            )
         self.assertEqual(job.parameters["model"], "bytedance/seedance-2.5")
         self.assertEqual(job.parameters["duration"], 10)
         higgs.return_value = {
@@ -770,6 +772,7 @@ class MediaTests(TestCase):
         self.assertEqual(higgs.call_count, 1)
 
     @patch("engine.media_providers.higgs")
+    @patch.dict("os.environ", {"HIGGSFIELD_MAX_USD": "10"})
     def test_seedance_25_t2v_estimate_uses_exact_compiled_path_and_silent_payload(self, higgs):
         job = create_job(
             self.run,
@@ -789,6 +792,7 @@ class MediaTests(TestCase):
         self.assertFalse(body["generate_audio"])
         self.assertEqual(body["output_format"], "mp4")
 
+    @patch.dict("os.environ", {"HIGGSFIELD_MAX_USD": "10"})
     def test_seedance_25_i2v_uses_start_image_field_but_not_aspect_ratio(self):
         source = store_asset(self.company, picture())
         job = create_job(
@@ -812,6 +816,7 @@ class MediaTests(TestCase):
         self.assertEqual(provider.call_args.args[1], "/estimate/bytedance/seedance-2.5/image-to-video")
 
     @patch("engine.media_providers.higgs")
+    @patch.dict("os.environ", {"HIGGSFIELD_MAX_USD": "10"})
     def test_seedance_audio_intent_is_explicitly_forwarded(self, higgs):
         job = create_job(
             self.run,

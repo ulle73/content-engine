@@ -1,5 +1,6 @@
 """Regression coverage for the novice-friendly composer and shared planner."""
 import io
+import os
 import uuid
 from datetime import timedelta
 from pathlib import Path
@@ -12,9 +13,12 @@ from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
 
+from .creative_budget import known_video_cost
 from .creative_director import build_plan, parse_brief
+from .creative_registry import registry
 from .forms import MediaCreationForm, snapshot_company_context
 from .media import create_job, default_brief, store_asset
+from .media_providers import _seedance25_description_estimate
 from .media_storage import MediaError
 from .models import Company, ContentRun, MediaAsset, MediaGeneration
 
@@ -66,6 +70,67 @@ class ProductFlowTests(TestCase):
         self.assertEqual(plan.brief.duration_seconds, 8)
         explicit = build_plan(self.run, "A calm premium product reveal, 5 seconds.", kind="video", source=source, recipe_id="premium_product_reveal")
         self.assertEqual(explicit.brief.duration_seconds, 5)
+
+    @patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "2"})
+    def test_auto_recipe_default_fits_real_local_pricing_rule_without_provider_io(self):
+        with patch("httpx.Client.send", side_effect=AssertionError("no network")):
+            plan = build_plan(self.run, "A calm premium product reveal.", kind="video",
+                              source=self.asset(), recipe_id="premium_product_reveal")
+            self.assertEqual(plan.parameters["duration"], 8)
+            self.assertEqual(plan.parameters["resolution"], "480p")
+            estimate = _seedance25_description_estimate(
+                plan.parameters["provider_model"], plan.parameters,
+                {"type": "description", "pricing_description": "video tokens 0.0214 480p 720p"},
+            )
+        self.assertEqual(estimate["estimate"]["usd"], "1.6448")
+        self.assertTrue(any(issue.code == "resolution_budget_adjusted" for issue in plan.preflight))
+        self.assertFalse(MediaGeneration.objects.exists())
+
+    @patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "2"})
+    def test_auto_skips_known_over_budget_model_preserving_exact_duration(self):
+        plan = build_plan(self.run, "A product for 10 seconds", kind="video")
+        self.assertEqual(plan.parameters["duration"], 10)
+        self.assertEqual(plan.selection.model_id, "kling-video/v2.5-turbo/pro")
+        self.assertIsNone(known_video_cost(plan.selection.model_id, 10, "720p"))
+
+    @patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "2"})
+    def test_explicit_over_budget_seedance_settings_rejected_before_job_or_provider(self):
+        with patch("engine.media.providers.estimate_video") as estimate, \
+             patch("engine.media.providers.start_video") as paid:
+            response = self.client.post(self.url("media_generate"), self.payload(
+                kind="video", brief="A product for 8 seconds", resolution="720p",
+                model_override="bytedance/seedance-2.5"))
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.context["creator_form"]["resolution"].value(), "720p")
+        self.assertFalse(MediaGeneration.objects.exists())
+        estimate.assert_not_called()
+        paid.assert_not_called()
+
+    @patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "4"})
+    def test_auto_retains_720p_when_configured_budget_allows_it(self):
+        plan = build_plan(self.run, "A product for 8 seconds", kind="video")
+        self.assertEqual(plan.parameters["resolution"], "720p")
+        self.assertFalse(any(issue.code == "resolution_budget_adjusted" for issue in plan.preflight))
+
+    @patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "2"})
+    def test_long_request_is_not_shortened_to_evade_budget(self):
+        only_known = tuple(item for item in registry() if item.model_id == "bytedance/seedance-2.5")
+        with patch("engine.creative_registry.registry", return_value=only_known), \
+             self.assertRaisesRegex(ValueError, "kostnadsgräns"):
+            build_plan(self.run, "A product for 20 seconds", kind="video")
+
+    def test_motion_conflict_keeps_user_choices_and_starts_nothing(self):
+        with patch("httpx.Client.send", side_effect=AssertionError("no network")):
+            response = self.client.post(self.url("creation_preview"), self.payload(
+                kind="video", brief="Bollen lyfter.", subject_motion="still"))
+            self.assertEqual(response.status_code, 422)
+            self.assertIn("rörelseval", response.json()["error"])
+            response = self.client.post(self.url("media_generate"), self.payload(
+                kind="video", brief="Bollen lyfter.", subject_motion="still"))
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.context["creator_form"]["subject_motion"].value(), "still")
+        self.assertEqual(response.context["creator_form"]["brief"].value(), "Bollen lyfter.")
+        self.assertFalse(MediaGeneration.objects.exists())
 
     def test_recipe_defaults_and_controls_match_free_preview_and_review(self):
         source = self.asset()

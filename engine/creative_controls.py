@@ -61,6 +61,28 @@ class CreativeControls(BaseModel):
     resolution: Literal["auto", "480p", "720p", "1080p", "4k"] = "auto"
 
 
+def _explicit_subject_motion(text):
+    # Match directions tied to the subject, not camera or environmental movement.
+    subject = r"(?:motivet|produkten|golfbollen|bollen|objektet|föremålet|flaskan|bilen|personen|subject|product|golf ball|ball|object|bottle|car|person)"
+    modifiers = r"(?:(?:ska|skall|bör|kan|långsamt|sakta|lugnt|mjukt|will|should|must|slowly|gently|smoothly)\s+){0,4}"
+    stationary = (
+        rf"\b{subject}\s+{modifiers}(?:stå(?:r)?\s+still(?:a)?|(?:är|vara)\s+stilla|förbli(?:r)?\s+stilla|"
+        r"rör\s+sig\s+inte|lyfter\s+inte|roterar\s+inte|inte\s+(?:röra\s+sig|lyfta|rotera)|"
+        r"(?:does\s+not|not)\s+(?:move|rise|rotate)|"
+        r"(?:stays?|remains?|is)\s+(?:still|stationary))\b"
+    )
+    moving = (
+        rf"\b{subject}\s+{modifiers}(?:lyft(?:er|a)?|sväv(?:ar|a)|rotera(?:r)?|snurra(?:r)?|rulla(?:r)?|flyg(?:er|a)|"
+        r"rör(?:a)?\s+sig|förflytta(?:r)?\s+sig|lifts?|rises?|rotates?|spins?|rolls?|flies|moves?)\b"
+        r"(?!\s+(?:inte|not)\b)"
+    )
+    still = bool(re.search(stationary, text)) or bool(re.search(
+        rf"\b(?:håll|keep)\s+(?:the\s+)?{subject}\s+(?:stilla|still|stationary)\b", text))
+    motion = bool(re.search(moving, text)) or bool(re.search(
+        rf"(?<!not )\b(?:lyft|rotera|snurra|flytta|lift|rotate|spin|move)\s+(?:the\s+)?{subject}\b", text))
+    return still, motion
+
+
 def apply_controls(brief: CreativeBrief, values: dict | CreativeControls | None) -> CreativeBrief:
     options = values if isinstance(values, CreativeControls) else CreativeControls.model_validate(values or {})
     if brief.kind == "image":
@@ -89,6 +111,13 @@ def apply_controls(brief: CreativeBrief, values: dict | CreativeControls | None)
             raise ValueError("Kameravalet och texten s\u00e4ger emot varandra: v\u00e4lj stilla eller r\u00f6rlig kamera.")
         changes["camera_movement"] = list(dict.fromkeys([*brief.camera_movement, camera]))
     motion = MOTIONS[options.subject_motion][1]
+    if options.subject_motion != "auto":
+        still, moving = _explicit_subject_motion(text)
+        if (options.subject_motion == "still" and moving) or (options.subject_motion != "still" and still):
+            raise ValueError(
+                "Texten och motivets rörelseval säger emot varandra. "
+                "Välj Följ min idé eller justera beskrivningen."
+            )
     ending = ENDINGS[options.ending][1]
     if options.ending == "match_end" and ReferenceRole.end_image.value not in brief.reference_media:
         raise ValueError("V\u00e4lj en slutbild f\u00f6r att matcha slutbilden.")

@@ -59,7 +59,7 @@ jobs:
         run: |
           python manage.py check --settings=engine.test_settings
           python manage.py makemigrations --check --dry-run --settings=engine.test_settings
-          ruff check engine/forms.py engine/creative_controls.py engine/test_creator.py engine/test_product_flow.py scripts/product_flow_browser.py scripts/creator_browser_smoke.py
+          ruff check engine/forms.py engine/creative_budget.py engine/creative_controls.py engine/test_creator.py engine/test_product_flow.py scripts/product_flow_browser.py scripts/creator_browser_smoke.py
           node --check engine/static/js/creator.js
           node --check engine/static/js/interface.js
           git diff --check

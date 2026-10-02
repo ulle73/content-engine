@@ -18,6 +18,7 @@ from django.conf import settings
 from openai import OpenAI
 
 from .creative_core import ReferenceRole
+from .creative_budget import SEEDANCE_25_PRICE_SOURCE, SEEDANCE_25_USD_PER_SECOND, cost_ceiling
 from .creative_director import HIGGSFIELD_SAFE_PROMPT_CHARS
 from .media_references import reference_asset
 from .media_storage import MediaError, open_asset
@@ -308,11 +309,6 @@ def _safe_estimate_shape(value):
     }
 
 
-SEEDANCE_25_PRICE_SOURCE = "higgsfield-account-estimate-2026-09-29"
-SEEDANCE_25_USD_PER_SECOND = {
-    "480p": Decimal("0.2056"),
-    "720p": Decimal("0.4622"),
-}
 SEEDANCE_25_PRICING_MARKERS = (
     "video tokens",
     "0.0214",
@@ -323,12 +319,9 @@ SEEDANCE_25_PRICING_MARKERS = (
 
 def _cost_ceiling():
     try:
-        ceiling = Decimal(os.environ.get("HIGGSFIELD_MAX_USD", "2"))
-    except (InvalidOperation, TypeError) as exc:
-        raise MediaError("Serverns videokostnadsgräns är ogiltig. Ingen generation startades.") from exc
-    if not ceiling.is_finite() or ceiling < 0:
-        raise MediaError("Serverns videokostnadsgräns är ogiltig. Ingen generation startades.")
-    return ceiling
+        return cost_ceiling()
+    except ValueError as exc:
+        raise MediaError(str(exc)) from exc
 
 
 def _seedance25_description_estimate(model, body, estimate):

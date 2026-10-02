@@ -1,3 +1,4 @@
+import os
 from dataclasses import replace
 from datetime import timedelta
 from unittest.mock import patch
@@ -23,6 +24,9 @@ from .creative_recipes import get_recipe, registry as recipe_registry, resolve_r
 from .models import Company, ContentRun
 
 
+# Capability/recipe contracts are tested with enough budget for their explicit settings.
+# Default 2 USD routing and fail-closed behavior are covered in ProductFlowTests.
+@patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "100"})
 class CreativeCoreTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username="creative-owner")

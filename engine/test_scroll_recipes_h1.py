@@ -1,3 +1,6 @@
+import os
+from unittest.mock import patch
+
 from django.test import SimpleTestCase
 
 from .creative_core import CreativeBrief, CreativeContext, EvidenceLevel, ReferenceRole, RECIPE_REGISTRY_VERSION
@@ -18,6 +21,7 @@ SCROLL_RECIPE_IDS = (
 )
 
 
+@patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "100"})
 class ScrollRecipeFamilyH1Tests(SimpleTestCase):
     def setUp(self):
         self.context = CreativeContext(

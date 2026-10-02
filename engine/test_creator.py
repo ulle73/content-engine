@@ -195,7 +195,7 @@ class CreatorTests(TestCase):
         intent = 'Visa golfbollen.'
         for model in ['kling-video/v2.5-turbo/pro', 'bytedance/seedance-2.5']:
             plan = build_plan(self.run, intent, kind='video', source=self.start, model_override=model,
-                controls={'camera': 'orbit', 'subject_motion': 'lift', 'ending': 'close_up'})
+                controls={'camera': 'orbit', 'subject_motion': 'lift', 'ending': 'close_up', 'duration_seconds': 5})
             self.assertEqual(plan.brief.user_intent, intent)
             self.assertIn('smooth orbit around the subject', plan.prompt)
             self.assertIn('subject lifts smoothly', plan.prompt)
@@ -260,6 +260,30 @@ class CreatorTests(TestCase):
         ]:
             with self.subTest(intent=intent), self.assertRaises(ValueError):
                 build_plan(self.run, intent, kind='video', controls=controls)
+
+    def test_still_and_moving_subject_choices_reject_explicit_opposite_intent(self):
+        for intent, choice in [
+            ('Bollen lyfter.', 'still'), ('Produkten ska långsamt rotera.', 'still'),
+            ('The product rises.', 'still'), ('Rotate the subject.', 'still'),
+            ('Bollen står stilla.', 'lift'), ('The subject remains stationary.', 'rotate'),
+            ('Keep the product still.', 'forward'), ('Bollen rör sig inte.', 'lift'),
+            ('Motivet ska inte röra sig.', 'lift'), ('The subject must not move.', 'rotate'),
+        ]:
+            with self.subTest(intent=intent), self.assertRaisesRegex(ValueError, 'rörelseval'):
+                apply_controls(parse_brief(intent, kind='video'), {'subject_motion': choice})
+
+    def test_subject_motion_validation_preserves_camera_environment_and_auto(self):
+        for intent, choice in [
+            ('Kameran rör sig runt motivet. Flaggan rör sig.', 'still'),
+            ('Static camera. The subject rises.', 'lift'),
+            ('Bollen lyfter inte.', 'still'),
+            ('Do not rotate the subject.', 'still'),
+            ('Bollen står stilla.', 'still'),
+            ('Bollen lyfter.', 'auto'),
+        ]:
+            with self.subTest(intent=intent):
+                brief = apply_controls(parse_brief(intent, kind='video'), {'subject_motion': choice})
+                self.assertEqual(brief.user_intent, intent)
 
     def test_motion_handoff_carries_validated_images_to_existing_template_fields(self):
         response = self.client.post(self.url('creation_handoff'), self.data(workflow='motion'))

@@ -1,3 +1,6 @@
+import os
+from unittest.mock import patch
+
 from django.test import SimpleTestCase
 
 from .creative_core import (
@@ -33,6 +36,7 @@ H2_RECIPE_IDS = (
 )
 
 
+@patch.dict(os.environ, {"HIGGSFIELD_MAX_USD": "100"})
 class GeneralCommercialRecipesH2Tests(SimpleTestCase):
     def setUp(self):
         self.context = CreativeContext(
