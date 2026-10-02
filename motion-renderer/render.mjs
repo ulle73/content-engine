@@ -138,12 +138,14 @@ export async function renderMotion({
     });
     const inputProps = { spec, brand, assets };
     const serveUrl = path.join(ROOT, "build");
+    const binariesDirectory = process.env.REMOTION_BINARIES_DIRECTORY || null;
     const composition = await selectComposition({
       serveUrl,
       id: "Motion",
       inputProps,
       puppeteerInstance: browser,
       logLevel: "error",
+      binariesDirectory,
     });
     const scale = mode === "preview" ? 1 / 3 : 1;
     const shared = {
@@ -153,6 +155,7 @@ export async function renderMotion({
       puppeteerInstance: browser,
       logLevel: "error",
       scale,
+      binariesDirectory,
       timeoutInMilliseconds: 45000,
     };
     const keyframes = [];
@@ -179,7 +182,6 @@ export async function renderMotion({
       }
     }
     const video = path.join(outputDir, mode + ".mp4");
-    const binariesDirectory = process.env.REMOTION_BINARIES_DIRECTORY || null;
     // Portable FFmpeg builds have native AAC but not Remotion's libfdk_aac.
     // Keep lossless audio in an intermediate file, then mux native AAC into MP4.
     const intermediate = binariesDirectory

@@ -5,7 +5,8 @@ $credentialPath = Join-Path $taskRoot 'data/motion-local/token.dpapi'
 if (-not (Test-Path -LiteralPath $credentialPath)) {
     throw 'Motion-rendering är inte konfigurerad på den här datorn.'
 }
-$secureToken = Get-Content -LiteralPath $credentialPath -Raw | ConvertTo-SecureString
+$encryptedToken = (Get-Content -LiteralPath $credentialPath -Raw).Trim()
+$secureToken = $encryptedToken | ConvertTo-SecureString
 $pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureToken)
 try {
     $env:MOTION_WORKER_TOKEN = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer)

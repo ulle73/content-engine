@@ -42,6 +42,8 @@ Servern använder `MOTION_WORKER_MODE=pull` och en gemensam slumpad `MOTION_WORK
 
 Webbappen aktiverar renderknappen först när en autentiserad dator har hört av sig. Statusen upphör vid normal avslutning, eller senast 90 sekunder efter tappad kontakt. Ladda om projektsidan efter start eller stopp. Redan köade jobb ligger kvar och kan hämtas nästa gång renderingen startas. Förhandsvisning måste fortfarande granskas och godkännas innan slutrendering.
 
+På den konfigurerade Windows-datorn används lokala verktyg i `data/motion-local/binaries`: FFmpeg 7.1, FFprobe och Remotions compositor. `REMOTION_BINARIES_DIRECTORY` förs till både kompositionsläsning, storyboardbilder och videorendering. Portabla FFmpeg-byggen saknar `libfdk_aac`; därför renderas lossless PCM-ljud till en tillfällig MKV, varefter videobildrutorna kopieras och ljudet kodas till AAC i den slutliga MP4-filen. Samma kvalitetskontroll gäller fortfarande. Inga Windows-skydd eller installerade beroenden ändras.
+
 Django-webbrequesten renderar aldrig video. `motion-renderer/worker.mjs` hämtar hållbara jobb, använder lease/heartbeat och laddar tillbaka verifierade outputfiler. Avbrytna och utgångna leases kan inte spara resultat i efterhand.
 
 På Django-servern:
