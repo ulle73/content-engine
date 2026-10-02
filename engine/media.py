@@ -1,26 +1,25 @@
 """Media attached to existing content runs. No queue, worker service, or new publishing path."""
 
-import io
 import hashlib
+import io
 import uuid
 import warnings
 from datetime import timedelta
 
-from django.conf import settings
+import av
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 from openai import APIConnectionError, APIError
 from PIL import Image, UnidentifiedImageError
-import av
 
 from . import media_providers as providers
-from .creative_director import build_plan
-from .prompt_library import retrieve_inspiration
-from .media_storage import MediaError, check_storage, delete_file, open_asset, put
 from .creative_core import ReferenceRole
+from .creative_director import build_plan
 from .media_references import add_generation_reference, ensure_source_reference, generation_reference_signature
+from .media_storage import MediaError, check_storage, delete_file, open_asset, put
 from .models import Company, ContentEvent, ContentRun, MediaAsset, MediaGeneration
+from .prompt_library import retrieve_inspiration
 
 PENDING = ("queued", "starting", "running", "saving")
 ACTIVE = PENDING + ("unknown",)
@@ -237,7 +236,7 @@ def default_brief(run, kind):
     return run.draft.get("photo_brief") or idea.get("photo_brief") or idea.get("angle") or ""
 
 
-def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced", recipe_id=None, model_override="", controls=None):
+def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=None, end_source=None, include_logo=False, priority="balanced", recipe_id=None, model_override="", controls=None, logo_override=None):
     check_storage()
     if kind not in {"image", "video"} or not brief.strip() or len(brief) > 6000:
         raise MediaError("Beskrivningen behövs och får vara högst 6000 tecken.")
@@ -263,12 +262,14 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         if existing:
             return existing
         company = Company.objects.select_for_update().get(pk=run.workspace_id)
-        logo = company.official_logo if include_logo and kind == "image" else None
+        logo = (logo_override or company.official_logo) if include_logo and kind == "image" else None
         if include_logo and (kind != "image" or not logo):
             raise MediaError("Ladda upp företagets officiella logga i Inställningar först. Logga stöds för bilder.")
         if logo:
-            if logo.company_id != company.pk or logo.purpose != "logo":
+            if logo.company_id != company.pk or logo.kind != "image" or (not logo_override and logo.purpose != "logo"):
                 raise MediaError("Den officiella loggan är inte korrekt kopplad till företaget.")
+            if logo.expires_at and logo.expires_at <= timezone.now():
+                raise MediaError("Den valda loggan har gått ut.")
         if source:
             source = MediaAsset.objects.select_for_update().get(pk=source.pk)
             if source.expires_at and source.expires_at <= timezone.now():
@@ -288,7 +289,7 @@ def create_job(run, *, token, kind, brief, count=2, shape="portrait", source=Non
         except ValueError as exc:
             raise MediaError("Kreativ kontroll stoppade generationen: " + str(exc)) from exc
 
-        from .creative_controls import CreativeControls, CONTROL_VERSION
+        from .creative_controls import CONTROL_VERSION, CreativeControls
         params = dict(plan.parameters)
         params["creator"] = {"version": CONTROL_VERSION, "controls": CreativeControls.model_validate(controls or {}).model_dump(mode="json"),
                              "shape": shape, "recipe_id": recipe_id or ""}
@@ -360,7 +361,7 @@ def preview_job(job):
     return job
 
 
-def start_reviewed_job(job, *, expected_revision=None):
+def start_reviewed_job(job, *, expected_revision=None, defer=False):
     with transaction.atomic():
         run = ContentRun.objects.select_for_update().get(pk=job.run_id)
         if expected_revision is not None:
@@ -369,6 +370,8 @@ def start_reviewed_job(job, *, expected_revision=None):
         if run.delivery_status != "draft":
             raise MediaError("Utkastet har redan överförts. Öppna ett redigerbart utkast före start.")
         locked = MediaGeneration.objects.select_for_update().get(pk=job.pk)
+        if locked.parameters.get("assistant_plan_id") and locked.parameters.get("assistant_approved_max_usd") is None:
+            raise MediaError("Godkänn generationen i det sparade studiosamtalet först. Där kontrolleras hela beställningens maxkostnad.")
         if locked.status != "queued":
             return locked
         reviewed = locked.usage.get("reviewed_at")
@@ -389,7 +392,7 @@ def start_reviewed_job(job, *, expected_revision=None):
             if locked.usage["approved_max_usd"] is None:
                 raise MediaError("Granska videons pris före start.")
             locked.save(update_fields=["usage"])
-    return advance_job(locked)
+    return locked if defer else advance_job(locked)
 
 
 def _mark_provider_error(job, exc, *, status=None):
@@ -493,6 +496,8 @@ def reconcile_video_job(job):
 
 
 def advance_job(job):
+    if job.status == "queued" and job.parameters.get("assistant_plan_id") and job.parameters.get("assistant_approved_max_usd") is None:
+        raise MediaError("Godkänn generationen i det sparade studiosamtalet först. Ingen betald generation startades.")
     if job.provider == "remotion":
         from .motion.jobs import wake_worker
         wake_worker()

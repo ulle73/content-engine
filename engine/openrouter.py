@@ -113,7 +113,7 @@ def _usage_meta(body, requested_model, operation):
     }
 
 
-def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0, timeout_seconds=35, strict_schema=False, reasoning_effort=None):
+def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0, timeout_seconds=35, strict_schema=False, reasoning_effort=None, images=None):
     api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not api_key:
         raise OpenRouterError(
@@ -163,6 +163,12 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
         {"role": "system", "content": system_message},
         {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
     ]
+    if images:
+        # Only the assistant adapter supplies bounded, decoded local image data.
+        request_body["messages"][1]["content"] = [
+            {"type": "text", "text": json.dumps(payload, ensure_ascii=False)},
+            *[{"type": "image_url", "image_url": {"url": value}} for value in images],
+        ]
     try:
         response = httpx.post(
             API_URL,
@@ -225,6 +231,13 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
         )
         raise OpenRouterError("Modellen returnerade inte ett giltigt strukturerat svar.", status_code=502) from exc
     return parsed, _usage_meta(body, model, operation)
+
+
+def structured_assistant(*, system, payload, schema: type[T], images=None):
+    """One bounded vision/text planning request, no automatic paid fallback or media tools."""
+    model = os.environ.get("OPENROUTER_ASSISTANT_MODEL", "google/gemini-2.5-flash").strip() or "google/gemini-2.5-flash"
+    return _call(model, system=system, payload=payload, schema=schema, operation="assistant_plan",
+                 max_tokens=2400, temperature=0.1, timeout_seconds=40, strict_schema=True, images=images)
 
 
 def structured_generation(*, system, payload, schema: type[T], operation="generation", max_tokens=2000, temperature=0.1):

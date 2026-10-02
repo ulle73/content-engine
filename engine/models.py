@@ -45,6 +45,66 @@ class Company(models.Model):
         self.postiz_ciphertext = self.cipher().encrypt(value.encode()).decode() if value else ""
 
 
+class AssistantConversation(models.Model):
+    """Company-owned workspace. Plans and turns are separate immutable records."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="conversations")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    title = models.CharField(max_length=160, default="Nytt samtal")
+    revision = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+
+
+class AssistantTurn(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    conversation = models.ForeignKey(AssistantConversation, on_delete=models.CASCADE, related_name="turns")
+    revision = models.PositiveIntegerField()
+    request = models.JSONField()
+    response = models.JSONField(default=dict)
+    usage = models.JSONField(default=dict)
+    status = models.CharField(max_length=12, default="planning", choices=[("planning", "Planerar"), ("completed", "Klar"), ("failed", "Misslyckades")])
+    error = models.CharField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    finished_at = models.DateTimeField(null=True)
+
+    class Meta:
+        ordering = ["revision"]
+        constraints = [models.UniqueConstraint(fields=["conversation", "revision"], name="assistant_turn_revision")]
+
+
+class AssistantPlan(models.Model):
+    """An exact compiled plan, never an instruction for the model to execute."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    turn = models.OneToOneField(AssistantTurn, on_delete=models.CASCADE, related_name="plan")
+    spec = models.JSONField()
+    fingerprint = models.CharField(max_length=64)
+    # Human-triggered preparation attaches an existing engine object; it does not start generation.
+    prepared = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class AssistantTemplate(models.Model):
+    """Each edit creates a new version; existing plans keep their template snapshot."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="assistant_templates")
+    key = models.SlugField(max_length=80)
+    version = models.PositiveIntegerField(default=1)
+    title = models.CharField(max_length=160)
+    instructions = models.TextField()
+    kind = models.CharField(max_length=12, default="auto")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company", "key", "version"], name="assistant_template_version")]
+
+
 class ContentRun(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workspace = models.ForeignKey(Company, on_delete=models.CASCADE)
@@ -978,4 +1038,11 @@ class OwnSnapshot(models.Model):
 from .creative_models import PromptEntry, PromptTerm  # noqa: E402,F401
 
 # Registered here so the existing Django app owns Motion migrations and relations.
-from .motion.models import MotionAssetReference, MotionKeyframe, MotionProject, MotionRender, MotionRevision, MotionWorkerSession  # noqa: F401,E402
+from .motion.models import (  # noqa: F401,E402
+    MotionAssetReference,
+    MotionKeyframe,
+    MotionProject,
+    MotionRender,
+    MotionRevision,
+    MotionWorkerSession,
+)

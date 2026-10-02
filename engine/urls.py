@@ -1,14 +1,25 @@
 from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
-from .motion import views as motion_views
 
 from . import ads_views, intelligence_views, market_views, media_views, prompt_views, sequence_views, views
-from .onboarding import SignInView, setup
+from .assistant import views as assistant_views
 from .company_settings import company_settings, costs
+from .motion import views as motion_views
+from .onboarding import SignInView, setup
 from .performance_views import performance
 
 engine_urls = [
+    path("studio/", assistant_views.workspace, name="assistant"),
+    path("studio/new/", assistant_views.create, name="assistant_create"),
+    path("studio/assets/", assistant_views.assets, name="assistant_assets"),
+    path("studio/upload/", assistant_views.upload, name="assistant_upload"),
+    path("studio/templates/", assistant_views.save_template, name="assistant_template"),
+    path("studio/<uuid:conversation_id>/", assistant_views.workspace, name="assistant_conversation"),
+    path("studio/<uuid:conversation_id>/state/", assistant_views.state, name="assistant_state"),
+    path("studio/<uuid:conversation_id>/send/", assistant_views.send, name="assistant_send"),
+    path("studio/<uuid:conversation_id>/action/", assistant_views.action, name="assistant_action"),
+    path("studio/<uuid:conversation_id>/refresh/", assistant_views.refresh_job, name="assistant_refresh"),
     path("motion/", motion_views.project_list, name="motion_list"),
     path("motion/<uuid:project_id>/", motion_views.workspace, name="motion_workspace"),
     path("motion/<uuid:project_id>/action/", motion_views.project_action, name="motion_action"),

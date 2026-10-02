@@ -1,18 +1,21 @@
 """Same goal-oriented operations for browser and MCP, using the existing action ledger."""
 
 from __future__ import annotations
+
 import hashlib
 import json
-import uuid
+
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
-from django.core.exceptions import ValidationError
-from engine.models import Company, ContentRun, MediaAsset, MediaGeneration
+
 from engine.forms import snapshot_company_context
+from engine.models import Company, ContentRun, MediaAsset, MediaGeneration
 from engine.operator_common import begin_action, finish_action
-from .models import MotionProject, MotionRevision, MotionAssetReference, MotionRender
-from .schema import asset_ids, spec_hash, validate_spec
+
 from .brand import snapshot
+from .models import MotionAssetReference, MotionProject, MotionRender, MotionRevision
+from .schema import asset_ids, spec_hash, validate_spec
 
 ACTIVE = ("queued", "running", "saving")
 
@@ -92,13 +95,20 @@ def _revision(project, spec, number, brand=None):
 
 
 @transaction.atomic
-def create_project(company, user, *, title, spec, key, run=None):
+def create_project(company, user, *, title, spec, key, run=None, logo_asset=None):
     _owner(company, user)
     if not isinstance(title, str) or not title.strip() or len(title) > 160:
         raise ValueError("Ange ett projektnamn p\u00e5 1\u2013160 tecken.")
     spec = validate_spec(spec)
     Company.objects.select_for_update().get(pk=company.pk)
     payload = {"title": title, "spec": spec}
+    brand = None
+    if logo_asset is not None:
+        if logo_asset.company_id != company.pk or logo_asset.kind != "image":
+            raise ValueError("Loggan måste vara en bild i detta företag.")
+        brand = snapshot(company, spec["brand_id"])
+        brand.update(logo_asset_id=str(logo_asset.pk), logo_sha256=logo_asset.sha256)
+        payload["logo_asset_id"] = str(logo_asset.pk)
     if run is not None:
         run = ContentRun.objects.select_for_update().get(pk=run.pk)
         if run.workspace_id != company.pk or run.delivery_status != "draft":
@@ -118,7 +128,7 @@ def create_project(company, user, *, title, spec, key, run=None):
         draft={"instagram": "", "facebook": "", "photo_brief": title},
     )
     project = MotionProject.objects.create(company=company, run=run, title=title.strip())
-    _revision(project, spec, 1)
+    _revision(project, spec, 1, brand=brand)
     finish_action(action, result={"project_id": str(project.id)})
     return project
 

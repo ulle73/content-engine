@@ -5,10 +5,10 @@ import ipaddress
 import json
 import logging
 import os
-import socket
-import uuid
 import random
+import socket
 import time
+import uuid
 from contextlib import contextmanager
 from decimal import Decimal, InvalidOperation
 from urllib.parse import urlencode, urlparse
@@ -17,8 +17,8 @@ import httpx
 from django.conf import settings
 from openai import OpenAI
 
-from .creative_core import ReferenceRole
 from .creative_budget import SEEDANCE_25_PRICE_SOURCE, SEEDANCE_25_USD_PER_SECOND, cost_ceiling
+from .creative_core import ReferenceRole
 from .creative_director import HIGGSFIELD_SAFE_PROMPT_CHARS
 from .media_references import reference_asset
 from .media_storage import MediaError, open_asset
@@ -434,7 +434,9 @@ def estimate_video(job):
 
 def start_video(job):
     model, body, usage = estimate_video(job)
-    approved = (job.usage or {}).get("approved_max_usd")
+    approved = (job.parameters or {}).get("assistant_approved_max_usd", (job.usage or {}).get("approved_max_usd"))
+    if job.parameters.get("assistant_plan_id") and approved is None:
+        raise MediaError("Godkänn hela beställningens kostnad i studiosamtalet före betald start.")
     if approved is not None:
         try:
             approved = Decimal(approved)
