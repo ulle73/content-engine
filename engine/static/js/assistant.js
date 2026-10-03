@@ -1,15 +1,17 @@
 /* The browser presents plans. Only explicit action buttons can approve a job. */
 const app = document.getElementById('assistant-app');
 if (app) {
+  const {motionStudio}=await import(app.dataset.motionModule);
   const byId = id => document.getElementById(id);
   const catalog = JSON.parse(byId('assistant-catalog').textContent);
   let state = JSON.parse(byId('assistant-state').textContent);
+  let motionSourceRender=null;
   let conversation = app.dataset.conversation, attachments = [], sending = false, uploadBusy = false, actionBusy = false;
   let draftKey = crypto.randomUUID(), pendingPayload = null, searchTimer, pollTimer, nextPage = null, libraryRequest = 0, modelSearch = '';
   const base = app.dataset.baseUrl;
   const storageKey = () => 'content-engine-studio:'+app.dataset.user+':'+base+':'+(conversation||'new');
   function saveDraft() {
-    try { sessionStorage.setItem(storageKey(),JSON.stringify({message:byId('assistant-message').value, attachments,
+    try { sessionStorage.setItem(storageKey(),JSON.stringify({message:byId('assistant-message').value, attachments,motionSourceRender,
       choices:Object.fromEntries(['workflow','model','shape','priority','template','image-policy','max-cost'].map(name=>[name,byId('assistant-'+name).value]))})); } catch { /* Privacy mode or quota: server-saved turns remain available. */ }
   }
   const csrf = byId('assistant-composer').querySelector('[name=csrfmiddlewaretoken]').value;
@@ -28,12 +30,13 @@ if (app) {
   }
   function updateModels() {
     const selected=byId('assistant-model').value, chosen=byId('assistant-workflow').value, workflow=chosen==='auto'?(catalog.templates.find(item=>item.id===byId('assistant-template').value)?.kind||chosen):chosen;
-    const models=workflow==='image'?catalog.models.image:['video','sequence'].includes(workflow)?catalog.models.video:workflow==='auto'?[...catalog.models.image,...catalog.models.video]:[];
+    const models=workflow==='image'?catalog.models.image:['video','sequence'].includes(workflow)?catalog.models.video:['auto','motion'].includes(workflow)?[...catalog.models.image,...catalog.models.video]:[];
     const unique=new Map(models.map(item=>[item.id,item]));
     const select=byId('assistant-model'); select.replaceChildren(node('option','Auto · rekommenderad')); select.options[0].value='';
     for(const item of unique.values()) { const opt=node('option',item.label); opt.value=item.id; select.append(opt); }
-    if(selected&&!unique.has(selected)) { const opt=node('option',selected+' · kontrollera stöd'); opt.value=selected; select.append(opt); }
-    select.value=selected; select.disabled=sending||uploadBusy;
+    const remotion=node('option','Remotion');remotion.value='remotion';select.append(remotion);
+    if(selected&&selected!=='remotion'&&!unique.has(selected)) { const opt=node('option',selected+' · kontrollera stöd'); opt.value=selected; select.append(opt); }
+    select.value=workflow==='motion'?'remotion':selected; select.disabled=sending||uploadBusy;
     pickerMenus();
   }
   function updateTemplates() {
@@ -59,7 +62,7 @@ if (app) {
       for(const option of select.options) {
         const item=catalog.templates.find(item=>item.id===option.value);
         const profiles=[...catalog.models.image,...catalog.models.video].filter(item=>item.id===option.value);
-        const group=option.value&&name==='model'?(catalog.models.image.some(item=>item.id===option.value)?'Bild':'Video'):'';
+        const group=option.value&&name==='model'?(option.value==='remotion'?'Motion':catalog.models.image.some(item=>item.id===option.value)?'Bild':'Video'):'';
         if(group&&group!==lastGroup){menu.append(node('p',group,'assistant-menu-group'));lastGroup=group;}
         const choice=button('',()=>{select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));select.dispatchEvent(new Event('input',{bubbles:true}));byId('assistant-'+name+'-picker').open=false;pickerMenus();},'');
         choice.append(node('span',option.value?option.textContent: name==='model'?'Auto · föreslå bästa modell':'Egen idé'));
@@ -74,7 +77,7 @@ if (app) {
           else if(group==='Video'&&needsEnd&&!supportsEnd)reason='Passar inte: saknar stöd för slutbild.';
           else if(group==='Video'&&profile?.aspect_behavior==='explicit'&&!profile.ratios.includes({portrait:'9:16',square:'1:1',landscape:'16:9'}[byId('assistant-shape').value]))reason='Passar inte i valt bildformat.';
         }
-        const description=name==='template'?(item?.instructions.replace(/\{\{[^}]+\}\}/g,'din idé').slice(0,160)||'Beskriv fritt vad du vill skapa.'):(option.value?(reason||profile?.summary||(group==='Bild'?'Skapa en bild eller bearbeta en referensbild.':supportsEnd?'Start- och slutbild · sammanhängande övergångar.':'Text eller startbild · saknar stöd för slutbild.')):'Vi rekommenderar en kompatibel modell inom din budget och visar varför.');
+        const description=name==='template'?(item?.instructions.replace(/\{\{[^}]+\}\}/g,'din idé').slice(0,160)||'Beskriv fritt vad du vill skapa.'):(option.value==='remotion'?'Animera text, logga och ditt material. Förhandsvisa och redigera till höger. Renderas på din anslutna dator.':option.value?(reason||profile?.summary||(group==='Bild'?'Skapa en bild eller bearbeta en referensbild.':supportsEnd?'Start- och slutbild · sammanhängande övergångar.':'Text eller startbild · saknar stöd för slutbild.')):'Vi rekommenderar en kompatibel modell inom din budget och visar varför.');
         choice.append(node('small',description));
         if(name==='model'&&option.value&&group==='Video') {
           const rates=profile?.rates||{},resolution=profile?.resolutions.includes('720p')?'720p':profile?.resolutions[0]||'',rate=Number(rates[resolution]);
@@ -100,6 +103,7 @@ if (app) {
   function templateDescription() { const item=catalog.templates.find(item=>item.id===byId('assistant-template').value); byId('assistant-template-description').textContent=item?item.instructions:''; pickerMenus(); }
   function restoreChoices(turn) {
     if(!turn) return;
+    motionSourceRender=turn.request.motion_source_render||null;
     for(const name of ['workflow','shape','priority','template']) byId('assistant-'+name).value=turn.request[name]||({workflow:'auto',shape:'portrait',priority:'balanced'}[name]||'');
     updateModels(); const model=turn.request.model||''; if(model&&!Array.from(byId('assistant-model').options).some(opt=>opt.value===model)) { const opt=node('option',model); opt.value=model; byId('assistant-model').append(opt); } byId('assistant-model').value=model;
     attachments=turn.attachments.filter(item=>item.url); renderAttachments(); templateDescription();
@@ -156,6 +160,7 @@ if (app) {
     const meta=node('div','','assistant-plan-meta'); meta.append(node('strong',compiled.model_label||review.model_label||catalog.workflows.find(item=>item.id===spec.workflow)?.label||spec.workflow),node('span',({'portrait':'9:16','square':'1:1','landscape':'16:9'})[spec.options.shape])); block.append(meta);
     const params=compiled.parameters||{};if(params.duration)meta.append(node('span',params.duration+' sekunder'));if(params.resolution)meta.append(node('span',params.resolution));if(params.generate_audio!==undefined)meta.append(node('span',params.generate_audio?'Med genererat ljud':'Utan genererat ljud'));
     block.append(node('p',spec.brief,'assistant-plan-brief'));
+    if(review.scene_changes?.length){const changes=node('div','','assistant-review-assets');changes.append(node('strong','Föreslagna scenändringar'));for(const change of review.scene_changes)changes.append(node('p',`Scen ${change.scene} · ${change.field}: ${change.before||'(tomt)'} → ${change.after||'(tomt)'}`));block.append(changes);}
     if(review.recommendation){const recommended=node('div','','assistant-review-cost');recommended.append(node('strong','Rekommenderad: '+review.recommendation.model_label),node('p',review.recommendation.reason));block.append(recommended);if(plan.current&&!prepared.kind&&review.recommendation.model_id&&review.recommendation.model_id!==spec.options.model)recommended.append(button('Använd rekommenderad modell',()=>{byId('assistant-model').value=review.recommendation.model_id;pickerMenus();byId('assistant-message').value='Använd den rekommenderade modellen. Behåll övriga instruktioner och material.';saveDraft();byId('assistant-message').focus();}));}
     if(review.assets?.length){const checks=node('div','','assistant-review-assets');checks.append(node('strong','Ditt material · i denna ordning'));for(const asset of review.assets){const check=node('div','','assistant-review-asset');check.append(node('strong',asset.position+'. '+asset.label),node('div',(roles.find(item=>item[0]===asset.role)?.[1]||asset.role)+(asset.width?' · '+asset.width+' × '+asset.height:'')));for(const warning of asset.warnings)check.append(node('p','⚠ '+warning));checks.append(check);}block.append(checks);}
     if(review.price_note){const costBlock=node('div','','assistant-review-cost');costBlock.append(node('strong',review.total_usd===null?'Priset behöver kontrolleras':'Kostnadsförslag: $'+Number(review.total_usd).toFixed(4)),node('p','Din maxkostnad: $'+Number(review.max_cost_usd).toFixed(2)+' · '+review.count+(spec.workflow==='sequence'?' övergångar':' generation(er)')));if(spec.workflow==='sequence')for(const [index,clip]of review.clips.entries())costBlock.append(node('p','Klipp '+(index+1)+' · '+(clip.duration||'?')+' sek · '+(clip.resolution||'')+' · '+(clip.usd===null?'pris saknas':'$'+Number(clip.usd).toFixed(4))));costBlock.append(node('small',review.price_note));if(review.over_budget)costBlock.append(node('p','Över din maxkostnad. Ändra budgeten eller upplägget och skicka igen.'));block.append(costBlock);}
@@ -187,31 +192,33 @@ if (app) {
     }
     if(plan.motion) {
       if(prepared.finish_url)block.append(link('Öppna filmsteget →',prepared.finish_url));
-      const motion=plan.motion; block.append(node('strong',statusLabels[motion.status]||motion.status));
+      const motion=plan.motion; block.append(node('strong',motion.status==='queued'?'Väntar på renderaren':statusLabels[motion.status]||motion.status));
       if(!motion.available) block.append(node('p','Starta Motion-renderaren på din dator för att rendera. Projektet är sparat.','assistant-plan-notice'));
       if(motion.error) block.append(node('p',motion.error,'assistant-plan-notice'));
-      if(motion.output) block.append(media(motion.output));
-      if(plan.current&&['saved','failed','canceled'].includes(motion.status)) block.append(button('Skapa förhandsvisning',()=>runAction(plan,'preview'),''));
-      if(plan.current&&motion.status==='completed'&&motion.mode==='preview') block.append(button(motion.approved?'Skapa färdig video':'Godkänn förhandsvisningen',()=>runAction(plan,motion.approved?'final':'approve_preview'),''));
-      if(plan.current&&['queued','running','saving'].includes(motion.status)) block.append(button('Avbryt renderingen',()=>runAction(plan,'cancel')));
     }
     for(const el of block.querySelectorAll('button')) el.disabled=actionBusy||sending;
     if(plan.current&&Number(byId('assistant-max-cost').value)!==Number(spec.options.max_cost_usd??5)){block.append(node('p','Din budget har ändrats. Skicka ett nytt meddelande för att granska planen med den nya maxkostnaden.','assistant-plan-notice'));for(const el of block.querySelectorAll('button'))if(!el.textContent.startsWith('Avbryt'))el.disabled=true;}
     if(plan.budget&&(!plan.budget.verified||plan.budget.over_budget))for(const el of block.querySelectorAll('button'))if(el.textContent.startsWith('Godkänn och starta'))el.disabled=true;
     target.append(block);
   }
-  function render() { renderMessages(); renderPlan(); schedulePoll(); }
+  const workbench=motionStudio({app,node,button,media,link,onAction:(plan,action,extra={})=>runAction(plan,action,null,extra),onComment:(turn,text,renderId)=>{
+    restoreChoices(turn);byId('assistant-workflow').value='motion';byId('assistant-model').value='remotion';updateModels();
+    motionSourceRender=renderId;
+    byId('assistant-message').value=text;pendingPayload=null;draftKey=crypto.randomUUID();saveDraft();byId('assistant-composer').requestSubmit();
+  }});
+  function render() { renderMessages(); renderPlan(); workbench.render(state); schedulePoll(); }
   function schedulePoll() {
     clearTimeout(pollTimer);
     const active=state.turns.some(turn=>turn.status==='planning'||turn.plan?.clips?.some(clip=>['starting','running','saving'].includes(clip.status))||['starting','running','saving'].includes(turn.plan?.job?.status)||['queued','running','saving'].includes(turn.plan?.motion?.status));
     if(active&&conversation) pollTimer=setTimeout(async()=>{try {state=await api(conversation+'/refresh/',{}); render();} catch(error) {feedback(error.message,true); pollTimer=setTimeout(schedulePoll,10000);}},6000);
   }
-  function lock(value) { sending=value; byId('assistant-send').disabled=value||uploadBusy; byId('assistant-add').disabled=value||uploadBusy; byId('assistant-message').readOnly=value; for(const id of ['workflow','model','shape','priority','template','image-policy','max-cost']) byId('assistant-'+id).disabled=value||uploadBusy; renderAttachments();pickerMenus(); }
-  async function runAction(plan, action, job_id=null) {
-    if(actionBusy||sending) return; actionBusy=true; renderPlan(); feedback(action==='start'?'Startar den godkända generationen…':'Arbetar med din plan…');
-    try { state=await api(conversation+'/action/',{plan_id:plan.id,expected_revision:state.revision,action,job_id}); render(); feedback('Planen är uppdaterad.'); }
+  function lock(value) { sending=value;workbench.busy(value||actionBusy); byId('assistant-send').disabled=value||uploadBusy; byId('assistant-add').disabled=value||uploadBusy; byId('assistant-message').readOnly=value; for(const id of ['workflow','model','shape','priority','template','image-policy','max-cost']) byId('assistant-'+id).disabled=value||uploadBusy; renderAttachments();pickerMenus(); }
+  async function runAction(plan, action, job_id=null, extra={}) {
+    if(actionBusy||sending) return; actionBusy=true;workbench.busy(true); renderPlan(); feedback(action==='start'?'Startar den godkända generationen…':'Arbetar med din plan…');
+    if(['preview','final'].includes(action))extra={render_key:crypto.randomUUID(),...extra};
+    try { state=await api(conversation+'/action/',{plan_id:plan.id,expected_revision:state.revision,action,job_id,...extra}); render(); feedback(action==='edit_motion'?'En ny videoversion är sparad. Skapa och granska en ny förhandsvisning.':'Planen är uppdaterad.'); }
     catch(error) { feedback(error.message,true); try {state=await api(conversation+'/state/'); render();} catch {} }
-    finally { actionBusy=false; renderPlan(); }
+    finally { actionBusy=false; renderPlan();workbench.busy(false); }
   }
   byId('assistant-composer').addEventListener('submit',async event=>{
     event.preventDefault(); if(sending||uploadBusy||actionBusy) return;
@@ -219,9 +226,9 @@ if (app) {
     lock(true); feedback('Förbereder svar och plan…');
     try {
       if(!conversation) {const oldKey=storageKey();const data=await api('new/',{key:draftKey}); conversation=data.id; history.replaceState(null,'',base+conversation+'/');try{sessionStorage.removeItem(oldKey);}catch{}saveDraft();}
-      const payload=pendingPayload||{key:draftKey,expected_revision:state.revision,message,workflow:byId('assistant-workflow').value,model:byId('assistant-model').value,shape:byId('assistant-shape').value,priority:byId('assistant-priority').value,template:byId('assistant-template').value,image_policy:byId('assistant-image-policy').value,max_cost_usd:byId('assistant-max-cost').value,attachments:attachments.map(({asset_id,role})=>({asset_id,role}))};
+      const payload=pendingPayload||{key:draftKey,expected_revision:state.revision,message,workflow:byId('assistant-workflow').value,model:byId('assistant-model').value,shape:byId('assistant-shape').value,priority:byId('assistant-priority').value,template:byId('assistant-template').value,image_policy:byId('assistant-image-policy').value,max_cost_usd:byId('assistant-max-cost').value,attachments:attachments.map(({asset_id,role})=>({asset_id,role})),motion_source_render:byId('assistant-workflow').value==='motion'?motionSourceRender:null};
       pendingPayload=payload; state=await api(conversation+'/send/',payload); pendingPayload=null; draftKey=crypto.randomUUID();
-      if(state.turns.at(-1)?.status!=='failed') byId('assistant-message').value='';
+      if(state.turns.at(-1)?.status!=='failed') {byId('assistant-message').value='';motionSourceRender=null;}
       saveDraft();
       render(); feedback(state.turns.at(-1)?.status==='failed'?state.turns.at(-1).error:'Planen är sparad. Du kan fortsätta med en ändring.',state.turns.at(-1)?.status==='failed');
     } catch(error) { feedback(error.message+' Din text finns kvar.',true); if(conversation) {try {state=await api(conversation+'/state/'); render(); if(state.turns.some(item=>item.id===draftKey&&item.status!=='planning')) {pendingPayload=null;draftKey=crypto.randomUUID();}} catch {}} }
@@ -249,7 +256,11 @@ if (app) {
   const composer=byId('assistant-composer'); for(const name of ['dragenter','dragover']) composer.addEventListener(name,event=>{event.preventDefault();composer.classList.add('drag-over');});
   composer.addEventListener('dragleave',()=>composer.classList.remove('drag-over'));composer.addEventListener('drop',async event=>{event.preventDefault();composer.classList.remove('drag-over');if(sending)return;for(const file of event.dataTransfer.files)await upload(file,'reference');});
   for(const name of ['shape','max-cost'])byId('assistant-'+name).addEventListener('input',pickerMenus);
-  byId('assistant-workflow').addEventListener('change',updateModels);byId('assistant-model').addEventListener('change',pickerMenus);byId('assistant-template').addEventListener('change',()=>{const template=catalog.templates.find(item=>item.id===byId('assistant-template').value);if(template&&template.kind!=='auto')byId('assistant-workflow').value=template.kind;updateModels();templateDescription();});
+  byId('assistant-workflow').addEventListener('change',()=>{if(byId('assistant-workflow').value!=='motion'&&byId('assistant-model').value==='remotion')byId('assistant-model').value='';updateModels();});byId('assistant-model').addEventListener('change',()=>{
+    if(byId('assistant-model').value==='remotion'){byId('assistant-workflow').value='motion';const template=catalog.templates.find(item=>item.id===byId('assistant-template').value);if(template&&!['motion','auto'].includes(template.kind))byId('assistant-template').value='';}
+    else if(byId('assistant-workflow').value==='motion'){byId('assistant-workflow').value='auto';byId('assistant-template').value='';}
+    updateModels();templateDescription();saveDraft();
+  });byId('assistant-template').addEventListener('change',()=>{const template=catalog.templates.find(item=>item.id===byId('assistant-template').value);if(template&&template.kind!=='auto'){byId('assistant-workflow').value=template.kind;if(template.kind!=='motion'&&byId('assistant-model').value==='remotion')byId('assistant-model').value='';}updateModels();templateDescription();});
   for(const el of document.querySelectorAll('[data-example]'))el.addEventListener('click',()=>{byId('assistant-message').value=el.dataset.example;byId('assistant-workflow').value=el.dataset.workflow;if(el.dataset.template)byId('assistant-template').value=el.dataset.template;updateModels();templateDescription();saveDraft();byId('assistant-message').focus();});
   for(const el of document.querySelectorAll('[data-close-dialog]'))el.addEventListener('click',()=>el.closest('dialog').close());
   byId('assistant-manage-templates').addEventListener('click',()=>{updateTemplates();byId('assistant-template-dialog').showModal();});
@@ -263,7 +274,7 @@ if (app) {
   for(const picker of document.querySelectorAll('.assistant-picker')){picker.addEventListener('toggle',()=>{if(!picker.open)return;for(const other of document.querySelectorAll('.assistant-picker'))if(other!==picker)other.open=false;const menu=picker.querySelector('.assistant-picker-menu');picker.classList.toggle('drop-up',menu.getBoundingClientRect().bottom>innerHeight-12);});picker.addEventListener('keydown',event=>{if(event.key==='Escape'){picker.open=false;picker.querySelector('summary').focus();}});}
   for(const el of document.querySelectorAll('.assistant-mobile-views button'))el.addEventListener('click',()=>{app.dataset.view=el.dataset.view;for(const item of document.querySelectorAll('.assistant-mobile-views button'))item.setAttribute('aria-pressed',String(item===el));if(el.dataset.view==='plan')byId('assistant-results-pane').querySelector('h2').focus();});
   updateModels();restoreChoices(state.turns.at(-1));
-  try {const draft=JSON.parse(sessionStorage.getItem(storageKey())||'null');if(draft){byId('assistant-message').value=draft.message||'';for(const [name,value] of Object.entries(draft.choices||{}))if(byId('assistant-'+name))byId('assistant-'+name).value=value;updateModels();attachments=draft.attachments||attachments;renderAttachments();templateDescription();}}catch{}
+  try {const draft=JSON.parse(sessionStorage.getItem(storageKey())||'null');if(draft){motionSourceRender=draft.motionSourceRender||null;byId('assistant-message').value=draft.message||'';for(const [name,value] of Object.entries(draft.choices||{}))if(byId('assistant-'+name))byId('assistant-'+name).value=value;updateModels();attachments=draft.attachments||attachments;renderAttachments();templateDescription();}}catch{}
   render();
   if(matchMedia('(max-width:760px)').matches) document.querySelector('.assistant-projects details').open=false;
   // Never submit on Enter: multiline creative briefs and keyboard users need predictable editing.

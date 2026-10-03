@@ -108,6 +108,12 @@ def media_prepare(company, user, plan, assets):
 def motion_compile(company, user, spec, assets):
     from engine.motion.planner import compile_template
     proposal = spec["proposal"]
+    if spec.get("motion_base"):
+        from .motion_editing import apply_scene_edits
+        compiled = apply_scene_edits(spec["motion_base"], proposal.get("motion_edits", []))
+        compiled["aspect_ratio"] = RATIOS[spec["options"]["shape"]]
+        return {"model_label": "Motion · Remotion", "prompt": "", "motion_spec": compiled,
+                "warnings": ["Ändringsförslaget behåller övriga scener och material. Granska ändringarna och godkänn en ny förhandsvisning före slutrendering."]}
     fields = {"headline": proposal["headline"] or proposal["title"], "body": proposal["body"], "cta": proposal["cta"], "attribution": company.name}
     primary = assets.get("start") or assets.get("reference")
     extra = [asset for key, asset in assets.items() if key.startswith("reference:")]

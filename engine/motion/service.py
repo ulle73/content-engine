@@ -152,7 +152,8 @@ def update_project(company, user, project_id, *, spec, expected_revision, key):
         raise ValueError("Ändra material och filmval i sekvensen och förbered en ny filmversion där.")
     if type(expected_revision) is not int or project.current_revision != expected_revision:
         raise ValueError("Projektet har \u00e4ndrats. H\u00e4mta senaste version innan du sparar.")
-    _revision(project, spec, expected_revision + 1)
+    current = project.revisions.get(number=expected_revision)
+    _revision(project, spec, expected_revision + 1, brand=current.brand if current.spec["brand_id"] == spec["brand_id"] else None)
     project.current_revision += 1
     project.approved_preview = None
     project.save(update_fields=["current_revision", "approved_preview", "updated_at"])

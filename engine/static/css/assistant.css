@@ -171,3 +171,22 @@
   .assistant-attachment { width:100%; }
   .assistant-settings-grid { grid-template-columns:1fr; }
 }
+/* A prepared Remotion project becomes a workbench beside the conversation. */
+.assistant-motion-studio { min-width:0; background:#fff; border:1px solid #e2e6e3; border-radius:20px; padding:20px; display:grid; gap:14px; }
+.assistant-motion-studio p { margin:0; font-size:13px; }
+.assistant-motion-studio .assistant-model-note { color:#68716b; font-size:12px; }
+.assistant-motion-studio input,.assistant-motion-studio select,.assistant-motion-studio textarea { width:100%; min-height:44px; padding:10px; font:inherit; border:1px solid #d6e3dd; border-radius:9px; background:#fff; color:#202421; }
+.assistant-motion-studio textarea { resize:vertical; }
+.assistant-motion-editor,.assistant-motion-comment { display:grid; gap:12px; }
+.assistant-motion-editor fieldset { min-width:0; margin:12px 0; padding:12px; border:1px solid #e2e6e3; border-radius:12px; }
+.assistant-motion-editor label { margin-top:10px; }
+.assistant-motion-editor legend { max-width:100%; overflow-wrap:anywhere; font-size:13px; font-weight:650; }
+.assistant-motion-studio summary { min-height:44px; font-size:14px; }
+.assistant-motion-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.assistant-motion-studio .assistant-result-media { max-height:460px; }
+@media (min-width:1100px) {
+ .assistant-page[data-motion=true] { max-width:1500px; }
+ .assistant-page[data-motion=true] .assistant-layout { max-width:none; display:grid; grid-template-columns:minmax(0,1fr) minmax(340px,440px); gap:28px; align-items:start; }
+ .assistant-motion-studio { position:sticky; top:80px; max-height:calc(100dvh - 104px); overflow:auto; }
+}
+@media (max-width:1099px) { .assistant-motion-studio { margin-top:24px; } }

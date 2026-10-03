@@ -2,6 +2,7 @@
 import io
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -24,7 +25,7 @@ from django.core.management import call_command
 from PIL import Image, ImageDraw
 
 from engine.assistant import service
-from engine.assistant.contracts import Proposal
+from engine.assistant.contracts import MotionSceneEdit, Proposal
 from engine.media import store_asset
 from engine import media_providers
 from engine.media_storage import MediaError
@@ -35,13 +36,21 @@ def mock_plan(*, payload, **kwargs):
     request = payload["request"]
     workflow = request["workflow"] if request["workflow"] != "auto" else "motion"
     headline = "Mer golf. Mer glädje." if "kortare" not in request["message"].casefold() else "Mer golf."
+    scenes = payload.get("previous_motion_scenes", [])
+    timestamp = re.search(r"vid (\d+):(\d+(?:\.\d+)?)", request["message"])
+    moment = int(timestamp[1]) * 60 + float(timestamp[2]) if timestamp else 0
+    scene = next((item for item in scenes if item["start_seconds"] <= moment < item["end_seconds"]), scenes[-1] if scenes else None)
+    edits = [MotionSceneEdit(scene_id=scene["scene_id"], headline=headline)] if scene else []
     return Proposal(answer="Jag har samlat din idé till en plan. Granska materialet och fortsätt med en ändring eller förbered projektet.",
                     title="Golfkuponger · kreativt test", workflow=workflow, brief=payload["previous_brief"] or request["message"],
                     headline=headline, body="Ta med en vän och gör plats för mer golf.", cta="Upptäck Golfkuponger.se",
-                    caption="Mer golf. Mer glädje. Ta med en vän till nästa runda.", audio="none"), {"model": "isolated-fixture", "cost_usd": 0}
+                    caption="Mer golf. Mer glädje. Ta med en vän till nästa runda.", audio="none", motion_edits=edits), {"model": "isolated-fixture", "cost_usd": 0}
 
 
 service.structured_assistant = mock_plan
+if os.environ.get("STUDIO_MOTION_RENDER_TEST") == "1":
+    from engine.motion import jobs
+    jobs.worker_available = lambda: True  # Isolated CLI render acceptance, no worker API.
 media_providers.estimate_video = lambda job: (job.parameters["model"], {}, {"estimate": {"usd": "1.0280"}, "fixture": True})
 def no_paid_media(*args, **kwargs):
     raise MediaError("Isolerad UI-fixture: betald generation är avstängd.")

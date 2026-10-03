@@ -92,6 +92,9 @@ Använd text för inläggstext, image för bilder, video för ett AI-klipp, moti
 sequence för en film med flera scener. Fler scener kan behövas för flera miljöer eller motivbyten.
 Om en bilds roll är oklar, fråga; tilldela inte fil-ID eller ändra roller själv. Bilder skickas i bilagornas ordning.
 För Motion: föreslå rubrik, body och cta. Kort och läsbart. Använd bara fakta användaren eller underlaget ger.
+Om previous_motion_scenes finns: motion_edits ändrar bara uttryckligen berörda scener med deras befintliga scene_id.
+En kommentar med tidpunkt avser scenen vid den tiden. Bevara alla andra scener, media, ljud och grafiska inställningar.
+Du kan ändra headline, body, cta och duration_seconds. Om ändringen kräver andra egenskaper, ställ en fråga och förklara begränsningen.
 För video med logga eller eftermonterat ljud: clip_brief beskriver bara AI-klippet, utan logga eller textgrafik.
 clip_duration_seconds anger uttrycklig längd per klipp eller övergång. Fråga om det är oklart om längden avser hela filmen.
 brief beskriver hela resultatet. Exakt logga och grafisk text monteras efteråt med originalmaterial.
@@ -130,9 +133,25 @@ def send_turn(company, user, conversation_id, data):
         if company.valid_until and company.valid_until < timezone.localdate():
             company_context["current"] = ""
         history = list(conversation.turns.exclude(pk=turn.pk).filter(status="completed").order_by("-revision")[:8])
+        motion_base = None
+        previous_plan = getattr(previous, "plan", None) if previous else None
+        if previous_plan and previous_plan.spec["workflow"] == "motion":
+            motion_base = previous_plan.prepared.get("compiled", {}).get("motion_spec")
+        if request.motion_source_render:
+            from engine.motion.models import MotionRender
+            source_render = MotionRender.objects.filter(pk=request.motion_source_render, revision__project__company=company,
+                                                       generation__status="completed", output_asset__isnull=False).select_related("revision").first()
+            source_plan = AssistantPlan.objects.filter(turn__conversation=conversation).filter(
+                Q(prepared__project_id=str(source_render.revision.project_id)) | Q(prepared__finish_project_id=str(source_render.revision.project_id))
+            ).first() if source_render else None
+            if not source_plan or source_plan.spec["attachments"] != values["attachments"]:
+                raise ValueError("Videoversionen eller dess material finns inte i detta samtal. Välj en tillgänglig version.")
+            motion_base, previous_plan = source_render.revision.spec, source_plan
+        from .motion_editing import scene_context
         payload = {
             "company": {key: str(value)[:1800] for key, value in company_context.items()},
             "previous_brief": previous.response.get("brief", "") if previous else "",
+            "previous_motion_scenes": scene_context(motion_base) if motion_base else [],
             "history": [{"user": item.request.get("message", "")[:1400], "assistant": item.response.get("answer", "")[:700]} for item in reversed(history)],
             "request": values,
             "template": templates.render(template, {"brief": request.message, "company_name": company.name, **company_context}),
@@ -141,13 +160,19 @@ def send_turn(company, user, conversation_id, data):
         }
         proposal, usage = structured_assistant(system=SYSTEM, payload=payload, schema=Proposal, images=image_inputs(assets))
         proposal = Proposal.model_validate(proposal)
-        workflow = request.workflow if request.workflow != "auto" else (template["kind"] if template and template["kind"] != "auto" else proposal.workflow)
-        if request.model and workflow not in {"image", "video", "sequence"}:
+        workflow = "motion" if request.model == "remotion" else request.workflow if request.workflow != "auto" else (template["kind"] if template and template["kind"] != "auto" else proposal.workflow)
+        if request.model and request.model != "remotion" and workflow not in {"image", "video", "sequence"}:
             raise ValueError("Den valda bild-/videomodellen kan inte användas för detta arbetsflöde. Välj Auto eller Bild/AI-video.")
         spec = {"version": CONTRACT_VERSION, "workflow": workflow, "brief": proposal.brief,
                 "proposal": proposal.model_dump(mode="json"), "options": {key: values[key] for key in ("model", "shape", "priority", "image_policy", "max_cost_usd")},
                 "attachments": values["attachments"], "asset_hashes": {str(asset.pk): asset.sha256 for asset in assets.values()},
                 "template": template, "company_context": company_context}
+        if request.model == "remotion":
+            spec["options"]["model"] = ""
+        if workflow == "motion" and motion_base and previous_plan.spec["attachments"] == values["attachments"]:
+            spec["motion_base"] = motion_base
+            if request.motion_source_render and not proposal.motion_edits and not proposal.questions:
+                spec["blocked"] = "Inga scenändringar kunde föreslås. Beskriv vilken text eller scenlängd du vill ändra."
         if not proposal.questions:
             try:
                 from .review import review
@@ -243,10 +268,27 @@ def act(company, user, conversation_id, data):
             from engine.motion import service as motion
             from engine.motion.jobs import worker_available
             project_id, revision = plan.prepared.get("finish_project_id") or plan.prepared["project_id"], plan.prepared["motion_revision"]
-            if request.action in {"preview", "final"}:
+            if request.action == "edit_motion":
+                from .motion_editing import apply_scene_edits
+                if not request.edit_key or not request.motion_edits or request.motion_revision is None:
+                    raise ValueError("Välj en ändring och projektversion innan du sparar.")
+                edit = {"key": str(request.edit_key), "hash": digest(request.model_dump(mode="json"))}
+                if plan.prepared.get("last_motion_edit") == edit:
+                    return conversation
+                if request.motion_revision != revision:
+                    raise ValueError("Videon har ändrats. Läs in senaste versionen innan du sparar.")
+                project = motion.get_project(company, project_id, lock=True)
+                current = project.revisions.get(number=revision)
+                updated = apply_scene_edits(current.spec, request.motion_edits)
+                project = motion.update_project(company, user, project_id, spec=updated, expected_revision=revision, key=str(request.edit_key))
+                plan.prepared.update(motion_revision=project.current_revision, last_motion_edit=edit)
+                plan.prepared.pop("render_id", None)
+                plan.prepared["compiled"]["motion_spec"] = updated
+                plan.save(update_fields=["prepared"])
+            elif request.action in {"preview", "final"}:
                 if not worker_available():
                     raise ValueError("Starta Motion-renderaren på din dator och försök igen. Projektet är sparat.")
-                render = motion.queue_render(company, user, project_id, mode=request.action, expected_revision=revision, key=str(plan.pk) + ":" + request.action)
+                render = motion.queue_render(company, user, project_id, mode=request.action, expected_revision=revision, key=str(request.render_key) if request.render_key else str(plan.pk) + ":" + str(revision) + ":" + request.action)
                 plan.prepared["render_id"] = str(render.pk)
                 plan.save(update_fields=["prepared"])
             elif request.action == "approve_preview":
@@ -309,6 +351,11 @@ def state(company, user, conversation_id):
                 from engine.motion.models import MotionProject, MotionRender
                 project = MotionProject.objects.filter(company=company, pk=plan.prepared.get("finish_project_id") or plan.prepared["project_id"]).first()
                 render = MotionRender.objects.filter(pk=plan.prepared.get("render_id"), revision__project=project).select_related("generation", "output_asset").first() if project else None
-                item["plan"]["motion"] = {"available": worker_available(), "approved": bool(project and project.approved_preview_id), "status": render.generation.status if render else "saved", "error": render.generation.error if render else "", "mode": render.mode if render else "", "output": file_info(company, render.output_asset) if render and render.output_asset else None}
+                revision = project.revisions.filter(number=plan.prepared["motion_revision"]).first() if project else None
+                outputs = MotionRender.objects.filter(revision__project=project, generation__status="completed", output_asset__isnull=False).select_related("revision", "output_asset").order_by("-created_at")[:12] if project else []
+                item["plan"]["motion"] = {"available": worker_available(), "approved": bool(project and render and revision and project.approved_preview_id == render.pk and render.revision_id == revision.pk), "status": render.generation.status if render else "saved", "error": render.generation.error if render else "", "mode": render.mode if render else "", "output": file_info(company, render.output_asset) if render and render.output_asset else None,
+                    "revision": plan.prepared["motion_revision"], "spec": revision.spec if revision else None,
+                    "editable": bool(project and not project.source_sequence_id and project.current_revision == plan.prepared["motion_revision"]),
+                    "versions": [{"id": str(output.pk), "revision": output.revision.number, "mode": output.mode, "output": file_info(company, output.output_asset)} for output in outputs]}
         result.append(item)
     return {"id": str(conversation.pk), "title": conversation.title, "revision": conversation.revision, "turns": result}

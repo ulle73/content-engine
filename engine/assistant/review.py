@@ -17,6 +17,8 @@ RATIOS = {"portrait": (9, 16), "square": (1, 1), "landscape": (16, 9)}
 
 def review(spec, assets, candidate):
     from engine.model_catalog import price_source, profiles
+
+    from .motion_editing import scene_changes
     shape = spec["options"]["shape"]
     x, y = RATIOS[shape]
     target_ratio = x / y
@@ -60,6 +62,7 @@ def review(spec, assets, candidate):
     limit = Decimal(str(spec["options"].get("max_cost_usd", "5")))
     sources = list(dict.fromkeys(price_source(clip.get("model_id")) or SEEDANCE_25_PRICE_SOURCE for clip in clips))
     return {"model_label": candidate.get("model_label", ""), "parameters": candidate.get("parameters", {}),
+            **({"scene_changes": scene_changes(spec["motion_base"], candidate["motion_spec"])} if spec.get("motion_base") and candidate.get("motion_spec") else {}),
             "image_policy": spec["options"].get("image_policy", "contain"), "assets": checks, "warnings": list(dict.fromkeys(warnings)),
             "clips": prices, "count": len(clips), "total_usd": str(total) if total is not None else None,
             "price_source": "Ingen ny AI-mediegeneration" if local else ", ".join(sources) if total is not None else "Pris saknas för valda parametrar",

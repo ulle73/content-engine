@@ -31,11 +31,20 @@ class TurnRequest(Contract):
     max_cost_usd: Decimal = Field(default=Decimal("5.00"), ge=Decimal("0"), le=Decimal("1000"), max_digits=7, decimal_places=2)
     template: str = Field(default="", max_length=80)
     attachments: list[Attachment] = Field(default_factory=list, max_length=8)
+    motion_source_render: UUID | None = None
 
 
 class Question(Contract):
     text: str = Field(min_length=1, max_length=240)
     options: list[str] = Field(default_factory=list, max_length=3)
+
+
+class MotionSceneEdit(Contract):
+    scene_id: str = Field(min_length=1, max_length=64)
+    headline: str | None = Field(default=None, max_length=240)
+    body: str | None = Field(default=None, max_length=500)
+    cta: str | None = Field(default=None, max_length=100)
+    duration_seconds: Decimal | None = Field(default=None, ge=Decimal("0.5"), le=Decimal("60"), decimal_places=2)
 
 
 class Proposal(Contract):
@@ -52,13 +61,18 @@ class Proposal(Contract):
     caption: str = Field(default="", max_length=1800)
     audio: Literal["none", "music", "native"] = "none"
     questions: list[Question] = Field(default_factory=list, max_length=3)
+    motion_edits: list[MotionSceneEdit] = Field(default_factory=list, max_length=24)
 
 
 class ActionRequest(Contract):
     plan_id: UUID
     expected_revision: int = Field(ge=1)
-    action: Literal["prepare", "start", "compose", "preview", "approve_preview", "final", "cancel"]
+    action: Literal["prepare", "start", "compose", "preview", "approve_preview", "final", "cancel", "edit_motion"]
     job_id: UUID | None = None
+    edit_key: UUID | None = None
+    render_key: UUID | None = None
+    motion_revision: int | None = Field(default=None, ge=1)
+    motion_edits: list[MotionSceneEdit] = Field(default_factory=list, max_length=24)
 
 
 class TemplateRequest(Contract):
