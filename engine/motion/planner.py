@@ -38,6 +38,23 @@ FIELDS = {
     "asset_id": {"type": "string", "format": "uuid", "title": "Bild eller video fr\u00e5n Media"},
     "secondary_asset_id": {"type": "string", "format": "uuid", "title": "Andra bilden"},
     "end_card_asset_id": {"type": "string", "format": "uuid", "title": "Slutvideo p\u00e5 svart bakgrund"},
+    "hook_text": {"type": "string", "title": "1 · Hooktext", "maxLength": 120},
+    "portal_text": {"type": "string", "title": "2 · Portaltext", "maxLength": 120},
+    "purchase_text": {"type": "string", "title": "3 · Köptext", "maxLength": 120},
+    "app_text": {"type": "string", "title": "4 · Apptext", "maxLength": 120},
+    "proof_text": {"type": "string", "title": "5 · Bevis / 300+ klubbar", "maxLength": 120},
+    "website_text": {"type": "string", "title": "2 · Webbtext", "maxLength": 120},
+    "receipt_text": {"type": "string", "title": "3 · Kvittotext", "maxLength": 120},
+    "montage_text": {"type": "string", "title": "4 · Banmontage", "maxLength": 120},
+    "end_text": {"type": "string", "title": "Slutbudskap", "maxLength": 120},
+    "hook_asset_id": {"type": "string", "format": "uuid", "title": "1 · Banbild / hook"},
+    "portal_asset_id": {"type": "string", "format": "uuid", "title": "2 · Förmånsportal"},
+    "purchase_asset_id": {"type": "string", "format": "uuid", "title": "3 · Belopp / köp"},
+    "app_asset_id": {"type": "string", "format": "uuid", "title": "4 · Golfkuponger-appen"},
+    "proof_asset_id": {"type": "string", "format": "uuid", "title": "5 · Banbild / 300+ klubbar"},
+    "website_asset_id": {"type": "string", "format": "uuid", "title": "2 · Golfkuponger.se"},
+    "receipt_asset_id": {"type": "string", "format": "uuid", "title": "3 · Kvitto / mejl"},
+    "montage_asset_id": {"type": "string", "format": "uuid", "title": "4 · Banmontage"},
 }
 
 
@@ -48,6 +65,8 @@ def template_schema(template_id):
     )
     if template_id == "monthly-wrapped":
         fields = set(template["required_props"] + ["cta", "end_card_asset_id"])
+    elif template_id in {"friskvard-portal-ad", "friskvard-direct-ad"}:
+        fields = set(template["required_props"] + template["optional_props"])
     return {
         "type": "object",
         "required": template["required_props"],
@@ -70,6 +89,8 @@ def recommend(brief):
     routes = [
         ("monthly-wrapped", ["wrapped", "inl\u00f6sen", "m\u00e5nadens siffror"]),
         ("facility-spotlight", ["golfklubb", "anl\u00e4ggning"]),
+        ("friskvard-direct-ad", ["ingen förmånsportal", "direktköp", "kvitto från golfkuponger"]),
+        ("friskvard-portal-ad", ["förmånsportal", "benify", "benifex", "epassi", "söderberg & partners"]),
         ("friskvard-explainer", ["friskv\u00e5rd"]),
         ("gift-card-promo", ["presentkort", "ge bort"]),
         ("new-partner", ["ny partner"]),
@@ -117,7 +138,7 @@ def recommend(brief):
         )
         if area:
             fields["area"] = area[1].strip()
-    else:
+    elif template not in {"friskvard-portal-ad", "friskvard-direct-ad"}:
         fields["headline"] = brief.strip().split("\n")[0][:240]
     required = get_item(template, kinds={"template"})["required_props"]
     return {
@@ -127,6 +148,123 @@ def recommend(brief):
         "reason": "En registrerad mall matchar inneh\u00e5llet. Endast uttryckligen angivna fakta fylls i.",
         "source_rules": [SOURCE + "/references/house-style.md", SOURCE + "/references/video-composition.md"],
     }
+
+
+SCREEN_AD_TEMPLATES = {"friskvard-portal-ad", "friskvard-direct-ad"}
+
+
+def _screen_scene(scene_id, component, asset_id, headline, duration_frames):
+    return {
+        "id": scene_id,
+        "component": component,
+        "props": {"asset_id": asset_id, "headline": headline},
+        "duration_frames": duration_frames,
+        "background": "solid",
+        "transition": "cut",
+        "transition_frames": 0,
+        "effects": [],
+        "sfx": [],
+    }
+
+
+def _compile_screen_ad(template_id, fields, fps):
+    if template_id == "friskvard-portal-ad":
+        return [
+            _screen_scene(
+                "hook",
+                "footage",
+                fields["hook_asset_id"],
+                fields.get("hook_text", "DITT FRISKVÅRDSBIDRAG\nBRINNER INNE 31/12"),
+                2 * fps,
+            ),
+            _screen_scene(
+                "portal",
+                "device",
+                fields["portal_asset_id"],
+                fields.get("portal_text", "SÖK GOLFKUPONGER\nI DIN PORTAL"),
+                3 * fps,
+            ),
+            _screen_scene(
+                "purchase",
+                "device",
+                fields["purchase_asset_id"],
+                fields.get("purchase_text", "VÄLJ BELOPP"),
+                3 * fps,
+            ),
+            _screen_scene(
+                "app",
+                "device",
+                fields["app_asset_id"],
+                fields.get("app_text", "KODEN LÄGGS IN\nI APPEN"),
+                3 * fps,
+            ),
+            _screen_scene(
+                "proof",
+                "footage",
+                fields["proof_asset_id"],
+                fields.get("proof_text", "GOLF PÅ 300+ KLUBBAR\nHELA NÄSTA SÄSONG"),
+                2 * fps,
+            ),
+            {
+                "id": "end",
+                "component": "end-card",
+                "props": {
+                    "headline": fields.get("end_text", "MER GOLF. NÄR DET PASSAR DIG."),
+                    "cta": fields.get("cta", "Golfkuponger.se"),
+                },
+                "duration_frames": 2 * fps,
+                "background": "solid",
+                "transition": "cut",
+                "transition_frames": 0,
+                "effects": [],
+                "sfx": [],
+            },
+        ]
+
+    return [
+        _screen_scene(
+            "hook",
+            "footage",
+            fields["hook_asset_id"],
+            fields.get("hook_text", "INGEN FÖRMÅNSPORTAL?"),
+            2 * fps,
+        ),
+        _screen_scene(
+            "website",
+            "device",
+            fields["website_asset_id"],
+            fields.get("website_text", "VÄLJ BELOPP PÅ\nGOLFKUPONGER.SE"),
+            3 * fps,
+        ),
+        _screen_scene(
+            "receipt",
+            "device",
+            fields["receipt_asset_id"],
+            fields.get("receipt_text", "KVITTOT KOMMER\nDIREKT PÅ MEJL"),
+            3 * fps,
+        ),
+        _screen_scene(
+            "montage",
+            "footage",
+            fields["montage_asset_id"],
+            fields.get("montage_text", "300+ KLUBBAR"),
+            3 * fps,
+        ),
+        {
+            "id": "end",
+            "component": "end-card",
+            "props": {
+                "headline": fields.get("end_text", "GOLF PÅ DINA VILLKOR."),
+                "cta": fields.get("cta", "Golfkuponger.se"),
+            },
+            "duration_frames": 3 * fps,
+            "background": "solid",
+            "transition": "cut",
+            "transition_frames": 0,
+            "effects": [],
+            "sfx": [],
+        },
+    ]
 
 
 def compile_template(
@@ -152,6 +290,28 @@ def compile_template(
     if tempo not in {"calm", "balanced", "energetic"}:
         raise ValueError("Ogiltigt tempo.")
     fps = 30
+    if template_id in SCREEN_AD_TEMPLATES:
+        return validate_spec(
+            {
+                "version": 1,
+                "template_id": template_id,
+                "template_version": template["version"],
+                "aspect_ratio": aspect_ratio,
+                "fps": fps,
+                "seed": 42,
+                "brand_id": brand_id,
+                "scenes": _compile_screen_ad(template_id, fields, fps),
+                "audio": {
+                    "enabled": audio,
+                    "gain": 0.7,
+                    "music": "bed",
+                    "music_asset_id": None,
+                    "fade_frames": 18,
+                    "ducking": 0.3,
+                },
+                "end_card_asset_id": fields.get("end_card_asset_id"),
+            }
+        )
     scenes = []
     transitions = ["cut", "fade", "wipe", "push", "fade"]
     backgrounds = ["orbits", "solid", "topography", "radial", "solid"]
