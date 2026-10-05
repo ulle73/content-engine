@@ -150,6 +150,22 @@ templates = [
         ["hero", "steps", "cta"],
     ),
     (
+        "friskvard-portal-ad",
+        "Friskv\u00e5rd \u00b7 f\u00f6rm\u00e5nsportal",
+        "15 sekunder med banhook, portal, k\u00f6p, app och 300+ klubbar.",
+        "ads",
+        ["hook_asset_id", "portal_asset_id", "purchase_asset_id", "app_asset_id", "proof_asset_id"],
+        ["footage", "device", "device", "device", "footage", "end-card"],
+    ),
+    (
+        "friskvard-direct-ad",
+        "Friskv\u00e5rd \u00b7 direktk\u00f6p",
+        "14 sekunder f\u00f6r golfare utan f\u00f6rm\u00e5nsportal: webb, kvitto och 300+ klubbar.",
+        "ads",
+        ["hook_asset_id", "website_asset_id", "receipt_asset_id", "montage_asset_id"],
+        ["footage", "device", "device", "footage", "end-card"],
+    ),
+    (
         "gift-card-promo",
         "Ge bort golf",
         "Presentera ett riktigt presentkort med ett personligt budskap.",
@@ -270,6 +286,16 @@ for kind, rows in groups.items():
                 preview=None,
             )
         )
+template_optional_props = {
+    "friskvard-portal-ad": [
+        "hook_text", "portal_text", "purchase_text", "app_text", "proof_text", "end_text", "cta", "end_card_asset_id"
+    ],
+    "friskvard-direct-ad": [
+        "hook_text", "website_text", "receipt_text", "montage_text", "end_text", "cta", "end_card_asset_id"
+    ],
+}
+template_seconds = {"monthly-wrapped": 24, "friskvard-portal-ad": 15, "friskvard-direct-ad": 14}
+
 for id, name, desc, category, required, scenes in templates:
     items.append(
         dict(
@@ -282,13 +308,18 @@ for id, name, desc, category, required, scenes in templates:
             version=1,
             aspect_ratios=["9:16", "1:1", "16:9"],
             required_props=required,
-            optional_props=["end_card_asset_id", "cta"] if id == "monthly-wrapped" else ["asset_id", "secondary_asset_id", "end_card_asset_id", "cta", "attribution"],
+            optional_props=template_optional_props.get(
+                id,
+                ["end_card_asset_id", "cta"]
+                if id == "monthly-wrapped"
+                else ["asset_id", "secondary_asset_id", "end_card_asset_id", "cta", "attribution"],
+            ),
             source="content-engine/original-templates; HyperFrames-informed pacing",
             license="Repository LICENSE (original implementation)",
             status="candidate",
             preview=None,
             scene_components=scenes,
-            typical_seconds=24 if id == "monthly-wrapped" else len(scenes) * 4,
+            typical_seconds=template_seconds.get(id, len(scenes) * 4),
         )
     )
 assert len(items) == len({x["id"] for x in items})
