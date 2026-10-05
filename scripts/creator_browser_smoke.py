@@ -96,7 +96,7 @@ def exercise_creator(page, fixture, target, evidence, checks):
     form.locator("details.creator-options").first.locator("summary").click()
     form.locator('[name="camera"]').select_option("push_in")
     form.locator('[name="ending"]').select_option("match_end")
-    expect(page.locator("#creator-plan-status")).to_contain_text("LTX 2.5 Fast")
+    expect(page.locator("#creator-plan-status")).to_contain_text("Seedance 2.5")
     expect(page.locator("#creator-plan-status")).to_contain_text("8 sekunder")
     expect(page.locator("#creator-prompt-details")).to_be_visible()
     assert "END FRAME:" in page.locator("#creator-compiled-prompt").text_content()
