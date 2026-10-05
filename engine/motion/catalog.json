@@ -2770,6 +2770,110 @@
       "typical_seconds": 12
     },
     {
+      "id": "friskvard-portal-ad",
+      "name": "Friskvård · förmånsportal",
+      "description": "15 sekunder med banhook, portal, köp, app och 300+ klubbar.",
+      "kind": "template",
+      "category": "ads",
+      "tags": [
+        "friskvard-portal-ad",
+        "ads",
+        "friskvård · förmånsportal",
+        "footage",
+        "device",
+        "device",
+        "device",
+        "footage",
+        "end-card"
+      ],
+      "version": 1,
+      "aspect_ratios": [
+        "9:16",
+        "1:1",
+        "16:9"
+      ],
+      "required_props": [
+        "hook_asset_id",
+        "portal_asset_id",
+        "purchase_asset_id",
+        "app_asset_id",
+        "proof_asset_id"
+      ],
+      "optional_props": [
+        "hook_text",
+        "portal_text",
+        "purchase_text",
+        "app_text",
+        "proof_text",
+        "end_text",
+        "cta",
+        "end_card_asset_id"
+      ],
+      "source": "content-engine/original-templates; HyperFrames-informed pacing",
+      "license": "Repository LICENSE (original implementation)",
+      "status": "candidate",
+      "preview": null,
+      "scene_components": [
+        "footage",
+        "device",
+        "device",
+        "device",
+        "footage",
+        "end-card"
+      ],
+      "typical_seconds": 15
+    },
+    {
+      "id": "friskvard-direct-ad",
+      "name": "Friskvård · direktköp",
+      "description": "14 sekunder för golfare utan förmånsportal: webb, kvitto och 300+ klubbar.",
+      "kind": "template",
+      "category": "ads",
+      "tags": [
+        "friskvard-direct-ad",
+        "ads",
+        "friskvård · direktköp",
+        "footage",
+        "device",
+        "device",
+        "footage",
+        "end-card"
+      ],
+      "version": 1,
+      "aspect_ratios": [
+        "9:16",
+        "1:1",
+        "16:9"
+      ],
+      "required_props": [
+        "hook_asset_id",
+        "website_asset_id",
+        "receipt_asset_id",
+        "montage_asset_id"
+      ],
+      "optional_props": [
+        "hook_text",
+        "website_text",
+        "receipt_text",
+        "montage_text",
+        "end_text",
+        "cta",
+        "end_card_asset_id"
+      ],
+      "source": "content-engine/original-templates; HyperFrames-informed pacing",
+      "license": "Repository LICENSE (original implementation)",
+      "status": "candidate",
+      "preview": null,
+      "scene_components": [
+        "footage",
+        "device",
+        "device",
+        "footage",
+        "end-card"
+      ],
+      "typical_seconds": 14
+    },
+    {
       "id": "gift-card-promo",
       "name": "Ge bort golf",
       "description": "Presentera ett riktigt presentkort med ett personligt budskap.",
