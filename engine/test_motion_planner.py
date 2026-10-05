@@ -94,3 +94,33 @@ class PlannerTests(unittest.TestCase):
         )
         self.assertNotIn("headline", portal["properties"])
         self.assertNotIn("headline", direct["properties"])
+
+
+    def test_friskvard_ad_round_trip_is_editable(self):
+        from types import SimpleNamespace
+
+        from engine.motion.forms import revision_initial
+
+        fields = {
+            "hook_asset_id": "00000000-0000-0000-0000-000000000021",
+            "portal_asset_id": "00000000-0000-0000-0000-000000000022",
+            "purchase_asset_id": "00000000-0000-0000-0000-000000000023",
+            "app_asset_id": "00000000-0000-0000-0000-000000000024",
+            "proof_asset_id": "00000000-0000-0000-0000-000000000025",
+            "portal_text": "SÖK GOLFKUPONGER",
+        }
+        spec = compile_template("friskvard-portal-ad", fields)
+        initial = revision_initial(SimpleNamespace(title="Friskvård"), spec)
+        schema = template_schema("friskvard-portal-ad")
+        reconstructed_fields = {
+            name: initial[name]
+            for name in schema["properties"]
+            if name in initial and initial[name] not in (None, "")
+        }
+        rebuilt = compile_template(
+            "friskvard-portal-ad",
+            reconstructed_fields,
+            aspect_ratio=initial["aspect_ratio"],
+            audio=initial["audio"],
+        )
+        self.assertEqual(rebuilt, spec)
