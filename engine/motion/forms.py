@@ -7,7 +7,7 @@ from django.utils import timezone
 from engine.media import publishable_assets
 from engine.models import MediaAsset
 
-from .planner import compile_template, template_schema
+from .planner import SCREEN_AD_TEMPLATES, compile_template, template_schema
 
 
 class MotionForm(forms.Form):
@@ -98,6 +98,32 @@ class MotionForm(forms.Form):
 
 def revision_initial(project, spec):
     initial = {"title": project.title, "aspect_ratio": spec["aspect_ratio"], "audio": spec["audio"]["enabled"]}
+    if spec["template_id"] in SCREEN_AD_TEMPLATES:
+        scenes = {scene["id"]: scene for scene in spec["scenes"]}
+        if spec["template_id"] == "friskvard-portal-ad":
+            mapping = {
+                "hook": ("hook_asset_id", "hook_text"),
+                "portal": ("portal_asset_id", "portal_text"),
+                "purchase": ("purchase_asset_id", "purchase_text"),
+                "app": ("app_asset_id", "app_text"),
+                "proof": ("proof_asset_id", "proof_text"),
+            }
+        else:
+            mapping = {
+                "hook": ("hook_asset_id", "hook_text"),
+                "website": ("website_asset_id", "website_text"),
+                "receipt": ("receipt_asset_id", "receipt_text"),
+                "montage": ("montage_asset_id", "montage_text"),
+            }
+        for scene_id, (asset_field, text_field) in mapping.items():
+            props = scenes[scene_id]["props"]
+            initial[asset_field] = props["asset_id"]
+            initial[text_field] = props.get("headline", "")
+        end = scenes["end"]["props"]
+        initial["end_text"] = end.get("headline", "")
+        initial["cta"] = end.get("cta", "")
+        initial["end_card_asset_id"] = spec.get("end_card_asset_id")
+        return initial
     for scene in spec["scenes"]:
         for name, value in scene["props"].items():
             if value and name not in initial:

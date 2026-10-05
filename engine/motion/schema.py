@@ -129,7 +129,11 @@ class MotionSpec(Closed):
         for index, scene in enumerate(self.scenes):
             if scene.component == "footage" and scene.props.headline:
                 words = len(scene.props.headline.split())
-                if len(scene.props.headline) > 80 or words > 12 or scene.duration_frames < math.ceil((words / 2.5 + 1) * self.fps):
+                if self.template_id in {"friskvard-portal-ad", "friskvard-direct-ad"}:
+                    min_read_frames = math.ceil((words / 3.5) * self.fps)
+                else:
+                    min_read_frames = math.ceil((words / 2.5 + 1) * self.fps)
+                if len(scene.props.headline) > 80 or words > 12 or scene.duration_frames < min_read_frames:
                     raise ValueError("Footage text must be concise with enough reading time")
             if self.template_id == "sequence-film" and scene.component == "end-card":
                 words = len((scene.props.headline + " " + (scene.props.cta or scene.props.body)).split())

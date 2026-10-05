@@ -15,6 +15,36 @@ Förhandsvisningar och storyboardbilder hör till granskningen och kan inte väl
 
 Fältet för slutvideo använder en befintlig video från företagets Media. Anpassade scener/ljud från MCP bevaras: webben visar dem för granskning och rendering men låter det förenklade formuläret skriva över dem först när specifikationen faktiskt kan återges utan förlust.
 
+## Friskvårdsannonser med skärminspelningar
+
+Två registrerade 9:16-mallar är avsedda för Golfkupongers korta friskvårdsannonser. De använder riktiga MediaAsset-filer och deterministisk text; AI ska inte återskapa portal, webb, app, kvitto, logotyp eller annan kritisk UI.
+
+### Förmånsportal · 15 sekunder
+
+Mallen `friskvard-portal-ad` använder fem filer i låst ordning:
+
+1. `hook_asset_id` — banvideo/bild, 0–2 s.
+2. `portal_asset_id` — riktig skärminspelning från förmånsportalen, 2–5 s.
+3. `purchase_asset_id` — riktig skärminspelning av belopp/köp, 5–8 s.
+4. `app_asset_id` — riktig skärminspelning från Golfkuponger-appen, 8–11 s.
+5. `proof_asset_id` — banvideo/bild för 300+ klubbar, 11–13 s.
+6. Deterministiskt slutkort, 13–15 s. En befintlig `end_card_asset_id` kan ersätta det renderade slutkortet.
+
+Portal-, köp- och appscenerna använder den neutrala `device`-komponenten. Banmaterialet använder `footage`. Texten renderas av Motion Engine ovanpå materialet och kan ändras med mallens textfält utan att råmaterialet behöver genereras om.
+
+### Direktköp · 14 sekunder
+
+Mallen `friskvard-direct-ad` använder fyra filer:
+
+1. `hook_asset_id` — banvideo/bild, 0–2 s.
+2. `website_asset_id` — riktig inspelning från Golfkuponger.se, 2–5 s.
+3. `receipt_asset_id` — riktigt kvitto/mejl, 5–8 s.
+4. `montage_asset_id` — banmaterial, 8–11 s.
+5. Deterministiskt slutkort, 11–14 s.
+
+Banmaterial kan vara rättighetssäkrat originalmaterial eller ett separat AI-genererat klipp från Creative Engine/Higgsfield. Skärminspelningar och UI ska vara verkliga filer. Detta gör att samma komposition kan återanvändas med nya hooks, portalflöden och CTA-varianter utan att generera om resten av annonsen.
+
+
 ## Koppling till inspiration och sekvenser
 
 I Marknaden kan **Till Creative Engine** föra en relevant mekanism och en egen anpassning till ett contentbrief. Externt originalunderlag fortsätter vara separat från företagets egna fakta. Creative- och contentflödena kan sedan öppna Sequence med samma brief.
