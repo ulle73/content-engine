@@ -1,11 +1,14 @@
 """Export the same validated contract for the Node worker; run in CI to check drift."""
 
 import json
+import sys
 from pathlib import Path
-from engine.motion.schema import MotionSpec
-from engine.motion.catalog import ids
 
 root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(root))
+
+from engine.motion.catalog import ids
+from engine.motion.schema import MotionSpec
 schema = MotionSpec.model_json_schema()
 for field, kinds in [
     ("component", ("text", "data", "scene")),
