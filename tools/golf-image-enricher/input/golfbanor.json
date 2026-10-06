@@ -1532,7 +1532,13 @@
     "region": "Bohuslän & Dalsland",
     "slug": "dynekilen-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://static.wixstatic.com/media/16b727_9c15a5dbfcbf44898949fe4ebdd989a1~mv2.jpg",
+        "width": 4032,
+        "height": 3024
+      }
+    ]
   },
   {
     "name": "Eda GK",
@@ -1990,13 +1996,13 @@
     "active": true,
     "images": [
       {
-        "url": "https://flensgk.se/wp-content/uploads/2022/03/Hole8.jpeg",
-        "width": 1280,
+        "url": "https://flensgk.se/wp-content/uploads/2022/03/Hole8.jpeg",        "width": 1280,
         "height": 721
       }
     ]
   },
-  {    "name": "Flommens GK",
+  {
+    "name": "Flommens GK",
     "city": "",
     "country": "",
     "url": "http://www.flommensgk.com/",
@@ -2256,7 +2262,23 @@
     "region": "Uppsala & Mälardalen",
     "slug": "fullero-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://golfhaftet-img.b-cdn.net/golfclubs/fuller-gk_9490c2.jpg",
+        "width": 2000,
+        "height": 1190
+      },
+      {
+        "url": "https://images.citybreakcdn.com/image.aspx?ImageId=290788&fitaspect=1",
+        "width": 1224,
+        "height": 919
+      },
+      {
+        "url": "https://images.citybreakcdn.com/image.aspx?ImageId=290788",
+        "width": 1224,
+        "height": 919
+      }
+    ]
   },
   {
     "name": "Funäsdalsfjällens GK",
@@ -2973,8 +2995,7 @@
         "url": "https://www-static.haparandagk.com/wp-content/uploads/2021/06/122665397_404793863853798_9072510483296473456_n.jpg",
         "width": 4032,
         "height": 1960
-      }
-    ]
+      }    ]
   },
   {
     "name": "Harabäckens GK",
@@ -2995,7 +3016,8 @@
         "width": 2000,
         "height": 800
       },
-      {        "url": "https://www.harabacken.se/media/ce4fwj1j/2026-07-15.jpg?width=2000&height=800&quality=70&v=1dd144894610510",
+      {
+        "url": "https://www.harabacken.se/media/ce4fwj1j/2026-07-15.jpg?width=2000&height=800&quality=70&v=1dd144894610510",
         "width": 2000,
         "height": 800
       },
@@ -3972,8 +3994,7 @@
     "images": [
       {
         "url": "https://koberggk.se/wp-content/uploads/2024/04/Green-3e-4.jpg",
-        "width": 2508,
-        "height": 1672
+        "width": 2508,        "height": 1672
       },
       {
         "url": "https://koberggk.se/wp-content/smush-webp/2024/04/Green-3e-4-2048x1365.jpg.webp",
@@ -3994,7 +4015,8 @@
         "url": "https://koberggk.se/wp-content/smush-webp/2024/04/Mobelmastarna.png.webp",
         "width": 1739,
         "height": 1123
-      }    ]
+      }
+    ]
   },
   {
     "name": "Kristianstads Golfklubb",
@@ -4971,8 +4993,7 @@
       {
         "url": "https://lysegardensgk.se/wp-content/uploads/2021/05/Bana-oversikt-2.jpg",
         "width": 4056,
-        "height": 3040
-      },
+        "height": 3040      },
       {
         "url": "https://lysegardensgk.se/wp-content/uploads/2022/08/20220814_071250.jpg",
         "width": 4000,
@@ -4993,7 +5014,8 @@
   {
     "name": "Lysingsbadets Golfbana",
     "city": "",
-    "country": "",    "url": "https://www.lysingbadetsgk.se",
+    "country": "",
+    "url": "https://www.lysingbadetsgk.se",
     "region": "Småland & Öland",
     "slug": "lysingsbadets-golfbana",
     "active": true,
@@ -5970,8 +5992,7 @@
     "city": "",
     "country": "",
     "url": "https://www.nassjogk.se",
-    "region": "Småland & Öland",
-    "slug": "nassjo-gk",
+    "region": "Småland & Öland",    "slug": "nassjo-gk",
     "active": true,
     "images": [
       {
@@ -5992,7 +6013,8 @@
     ]
   },
   {
-    "name": "Olandsbygdens GK",    "city": "",
+    "name": "Olandsbygdens GK",
+    "city": "",
     "country": "",
     "url": "https://www.olandsbygdensgk.se",
     "region": "Uppsala & Mälardalen",
@@ -6969,8 +6991,7 @@
         "width": 1920,
         "height": 1281
       }
-    ]
-  },
+    ]  },
   {
     "name": "Skepparslövs GK",
     "city": "",
@@ -6991,7 +7012,8 @@
         "height": 2268
       },
       {
-        "url": "https://skepparslovsgk.wpengine.com/wp-content/uploads/2021/07/Ulf-Nygren-UB-20210615-12.jpg",        "width": 3992,
+        "url": "https://skepparslovsgk.wpengine.com/wp-content/uploads/2021/07/Ulf-Nygren-UB-20210615-12.jpg",
+        "width": 3992,
         "height": 2242
       },
       {
@@ -7968,8 +7990,7 @@
     "name": "Söderåsens GK",
     "city": "",
     "country": "",
-    "url": "https://www.soderasensgk.se/",
-    "region": "Skåne",
+    "url": "https://www.soderasensgk.se/",    "region": "Skåne",
     "slug": "soderasens-gk",
     "active": true,
     "images": [
@@ -7990,7 +8011,8 @@
     "active": true,
     "images": [
       {
-        "url": "https://www.solvesborgsgk.se/media/01rf1ycd/h%C3%A5l-6.jpg?width=2000&height=800&quality=70&v=1d74673d439f370",        "width": 2000,
+        "url": "https://www.solvesborgsgk.se/media/01rf1ycd/h%C3%A5l-6.jpg?width=2000&height=800&quality=70&v=1d74673d439f370",
+        "width": 2000,
         "height": 800
       },
       {
@@ -8967,8 +8989,7 @@
     "active": true,
     "images": [
       {
-        "url": "https://upsalagk.se/wp-content/uploads/2021/11/banner-1-data.jpg",
-        "width": 2000,
+        "url": "https://upsalagk.se/wp-content/uploads/2021/11/banner-1-data.jpg",        "width": 2000,
         "height": 1200
       },
       {
@@ -8989,7 +9010,8 @@
       {
         "url": "https://upsalagk.se/wp-content/uploads/2024/10/dsc08984-2-scaled-cropped-1.webp",
         "width": 1500,
-        "height": 1000      }
+        "height": 1000
+      }
     ]
   },
   {
@@ -9966,8 +9988,7 @@
     "url": "https://asundsholm.se/",
     "region": "Skaraborg & Sjuhärad",
     "slug": "asundsholm-golf-country-club",
-    "active": true,
-    "images": [
+    "active": true,    "images": [
       {
         "url": "https://asundsholm.se/wp-content/uploads/2024/09/asundsholm_high_five_golf.jpg",
         "width": 1365,
@@ -9988,7 +10009,8 @@
   {
     "name": "Åtvidaberg GK",
     "city": "",
-    "country": "",    "url": "https://www.villabaro.se/golf/",
+    "country": "",
+    "url": "https://www.villabaro.se/golf/",
     "region": "Östergötland",
     "slug": "atvidaberg-gk",
     "active": true,

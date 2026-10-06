@@ -63,11 +63,10 @@ MANUAL_CANDIDATES = {
         "https://www.svenskgolf.se/app/uploads/2019/12/6302d05a-5de3e12fd321e.jpg",
     ],
     "Helsingborgs GK": [
-        "https://media.golfbladet.se/2024/10/helsingborgs-gk-1536x959.jpg",
-        "https://media.golfbladet.se/2024/10/helsingborgs-gk-2048x1278.jpg",
-        "https://media.golfbladet.se/2024/10/helsingborgs-gk-scaled.jpg",
-        "https://media.golfbladet.se/2024/10/helsingborgs-gk-1024x639.jpg",
-        "https://cdn.allsquaregolf.com/pictures/pictures/000/130/211/large/helsingborgs_gk_viken_links_cover_picture.jpg",
+        "https://www.1golf.eu/images/golfclubs/helsingborgs-gk-viken-links_034848_1200-1200-60-0-0-0.jpg?v=2ede662c",
+        "https://www.1golf.eu/images/golfclubs/helsingborgs-gk-viken-links_034848_full.jpg",
+        "https://3.bp.blogspot.com/_6jmXbmjz99Y/TAkH-6o82uI/AAAAAAAAD9M/-hvhEDZfPZQ/s1600/Viken%2B1.jpg",
+        "https://media.helsingborg.se/uploads/networks/1/sites/3/2025/03/75a0024-1680x1120.webp",
     ],
     "Herrljunga GK": [
         "https://caddee-prod-media.s3.amazonaws.com/club-images/feeeaba1-ad45-477e-afda-5ac37c8e6430/header-normal_web.png",
