@@ -53,6 +53,16 @@ Detaljerna står i `skills/ad-studio/SKILL.md`. I korthet:
 
 `list_untagged_media`, sedan `view_media`, sedan `tag_media_asset`: AI:n tittar på bilden och sparar vad den visar. Det kostar inga extra API-anrop, eftersom assistenten själv ser bilden. Sätt `verified` när en människa bekräftat. `search_ad_assets` rankar på betydelse och föredrar verifierade taggar.
 
+## Faktabank
+
+**Annonser → Faktabank** (`/annonser/fakta/`, MCP: `list_ad_facts` och `propose_ad_fact`) samlar de påståenden Golfkuponger får använda. Varje påstående har status *verifierad*, *ej verifierad* eller *får inte användas*.
+
+- Första gången banken används kopieras startvärdena från skillen `golfkuponger-friskvard` in. Skattepåståenden börjar som spärrade.
+- Briefens `facts` kopplas till banken via `fact_id`, eller via exakt samma formulering, och får sin status därifrån.
+- AI:n kan föreslå påståenden men aldrig verifiera dem: MCP-uppdateringar nollställer `verified`.
+- Den som ändrar formuleringen nollställer verifieringen.
+- Ett spärrat påstående stoppar låsningen.
+
 ## Mallar
 
 Mallarna är definierade i `engine/motion/ad_templates.py`, och katalogen genereras med `scripts/generate_motion_catalog.py`. Tre mallar har ton och tempo: `golf-fracka` (fräck, 12 s), `golf-sista-chansen` (brådskande, 10 s, nedräkning) och `golf-premium` (lugn, 15 s). De har ingen standardtext, så varje ord kommer från briefen. Renderarens `spec.schema.json` måste exporteras om (`PYTHONPATH=. python scripts/export-motion-schema.py` och sedan prettier) när mallar läggs till. Ett test fångar avvikelser.

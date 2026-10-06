@@ -79,3 +79,10 @@
 .ad-facts { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
 .ad-facts label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
 .ad-facts small { display: block; color: var(--gk-muted); font-size: 12px; }
+
+/* Fact bank */
+.ad-fact-list { list-style: none; padding: 0; margin: 0 0 16px; max-width: 900px; }
+.ad-fact.is-verified { border-left: 4px solid var(--gk-green); }
+.ad-fact.is-unverified { border-left: 4px solid var(--gk-amber); }
+.ad-fact.is-blocked { border-left: 4px solid var(--gk-red); }
+.ad-fact-status { margin: 0 0 10px; font-weight: 600; font-size: 14px; }

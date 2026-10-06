@@ -106,3 +106,68 @@ class AdStudioWorkbenchTests(TestCase):
                          {"revision": draft.revision, "message": "Test", "facts_present": "1", "fact_verified": ["0"]})
         draft.refresh_from_db()
         self.assertEqual([f["verified"] for f in draft.brief["facts"]], [True, False])
+
+
+class FactBankTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(username="facts")
+        self.company = Company.objects.create(owner=self.user, name="Golfkuponger", profile="Golf")
+        self.client.force_login(self.user)
+
+    def url(self, name, **kw):
+        return reverse("engine:" + name, kwargs={"workspace_id": self.company.pk, **kw})
+
+    def test_seed_from_skill_is_unverified_and_only_once(self):
+        facts = service.list_facts(self.company)
+        self.assertGreaterEqual(len(facts), 5)
+        self.assertTrue(all(f["status"] in {"unverified", "blocked"} for f in facts))
+        self.assertTrue(any(f["status"] == "blocked" for f in facts))  # tax claims start blocked (❌ in the skill)
+        self.assertEqual(service.seed_facts(self.company), 0)
+
+    def test_brief_takes_verification_from_bank_and_blocked_stops_lock(self):
+        fact = service.propose_fact(self.company, claim="Finns i Epassi", source="avtal")
+        draft = service.start_draft(self.company, self.user, message="Test")
+        draft = service.update_draft(self.company, draft.pk, expected_revision=1,
+                                     changes={"facts": [{"claim": "finns i epassi", "source": "x", "verified": True}]})
+        linked = draft.brief["facts"][0]
+        self.assertEqual(linked["fact_id"], str(fact.pk))
+        self.assertFalse(linked["verified"])  # the assistant cannot self-verify
+        service.set_fact(self.company, fact.pk, status="verified")
+        self.assertFalse(any("Overifierade" in p for p in service.serialize(draft)["problems"]))
+        service.set_fact(self.company, fact.pk, status="blocked")
+        self.assertTrue(any("Får inte användas" in p for p in service.serialize(draft)["problems"]))
+
+    def test_editing_claim_resets_verification(self):
+        fact = service.propose_fact(self.company, claim="300+ klubbar", source="mall")
+        service.set_fact(self.company, fact.pk, status="verified")
+        fact = service.set_fact(self.company, fact.pk, claim="350+ klubbar")
+        self.assertEqual(fact.status, "unverified")
+
+    def test_fact_page_actions(self):
+        self.client.post(self.url("ad_facts"), {"action": "add", "claim": "Kvitto direkt", "source": "webb"})
+        fact = self.company.ad_facts.get(claim="Kvitto direkt")
+        self.client.post(self.url("ad_facts"), {"action": "verified", "fact_id": str(fact.pk)})
+        fact.refresh_from_db()
+        self.assertEqual(fact.status, "verified")
+        self.assertIsNotNone(fact.verified_at)
+        page = self.client.get(self.url("ad_facts"))
+        self.assertContains(page, "Kvitto direkt")
+        self.assertContains(page, "Verifierad")
+        self.client.post(self.url("ad_facts"), {"action": "delete", "fact_id": str(fact.pk)})
+        self.assertFalse(self.company.ad_facts.filter(pk=fact.pk).exists())
+
+    def test_studio_checkbox_verifies_linked_fact_in_bank(self):
+        fact = service.propose_fact(self.company, claim="Finns i Benify", source="avtal")
+        draft = service.start_draft(self.company, self.user, message="Test")
+        draft = service.update_draft(self.company, draft.pk, expected_revision=1,
+                                     changes={"facts": [{"claim": "Finns i Benify", "source": "avtal"}]})
+        self.client.post(self.url("ad_update", draft_id=draft.pk),
+                         {"revision": draft.revision, "message": "Test", "facts_present": "1", "fact_verified": ["0"]})
+        fact.refresh_from_db()
+        self.assertEqual(fact.status, "verified")
+
+    def test_assistant_cannot_self_verify_unlinked_fact(self):
+        draft = service.start_draft(self.company, self.user, message="Test")
+        draft = service.update_draft(self.company, draft.pk, expected_revision=1, human=False,
+                                     changes={"facts": [{"claim": "Helt ny sak", "source": "minne", "verified": True}]})
+        self.assertFalse(draft.brief["facts"][0]["verified"])

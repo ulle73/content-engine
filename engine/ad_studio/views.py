@@ -4,6 +4,7 @@ import uuid
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_POST
@@ -109,7 +110,14 @@ def ad_update(request, workspace_id, draft_id):
         }
         if post.get("facts_present"):
             checked = set(post.getlist("fact_verified"))
-            changes["facts"] = [{**f, "verified": str(i) in checked} for i, f in enumerate(brief.get("facts", []))]
+            facts = []
+            for i, fact in enumerate(brief.get("facts", [])):
+                verified = str(i) in checked
+                if fact.get("fact_id"):  # the bank decides; a human checking it here verifies it in the bank
+                    if verified != bool(fact.get("verified")):
+                        service.set_fact(company, fact["fact_id"], status="verified" if verified else "unverified")
+                facts.append({**fact, "verified": verified})
+            changes["facts"] = facts
         title, hook = post.get("angle_title", "").strip(), post.get("angle_hook", "").strip()
         if title and hook:
             changes["angle"] = {**(brief.get("angle") or {}), "title": title, "hook": hook}
@@ -229,3 +237,32 @@ def tags_for(asset):
         return asset.ad_tags
     except AssetTags.DoesNotExist:
         return None
+
+
+@login_required
+@company_required
+def ad_facts(request, workspace_id):
+    company = request.workspace
+    if request.method == "POST":
+        action = request.POST.get("action")
+        try:
+            if action == "add":
+                service.propose_fact(company, claim=request.POST.get("claim", ""), source=request.POST.get("source", ""),
+                                     note=request.POST.get("note", ""))
+                messages.success(request, "Påståendet är tillagt som ej verifierat.")
+            elif action in {"verified", "unverified", "blocked"}:
+                service.set_fact(company, request.POST.get("fact_id"), status=action)
+                messages.success(request, "Status uppdaterad.")
+            elif action == "save":
+                service.set_fact(company, request.POST.get("fact_id"), claim=request.POST.get("claim"),
+                                 source=request.POST.get("source"), note=request.POST.get("note"))
+                messages.success(request, "Sparat. Ändrad formulering måste verifieras igen.")
+            elif action == "delete":
+                company.ad_facts.filter(pk=request.POST.get("fact_id")).delete()
+                messages.success(request, "Borttaget.")
+            else:
+                raise ValueError("Okänd åtgärd.")
+        except (ValueError, ValidationError) as exc:
+            messages.error(request, str(exc) if not isinstance(exc, ValidationError) else "Ogiltigt id.")
+        return redirect("engine:ad_facts", workspace_id=workspace_id)
+    return render(request, "engine/ad_studio_facts.html", {"workspace": company, "facts": service.list_facts(company)})

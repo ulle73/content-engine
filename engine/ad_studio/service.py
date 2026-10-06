@@ -12,7 +12,7 @@ from engine.operator_common import serialize_asset
 
 from . import blueprints
 from .brief import AdBrief, BriefNotReady
-from .models import AdDraft, AssetTags
+from .models import AdDraft, AdFact, AssetTags
 
 # Templates that follow the scene-id convention in blueprints.py and can be filled from a brief.
 AD_TEMPLATES = ("friskvard-portal-ad", "friskvard-direct-ad", "golf-fracka", "golf-sista-chansen", "golf-premium")
@@ -45,7 +45,8 @@ def _parse(data: dict) -> AdBrief:
 
 
 def serialize(draft: AdDraft) -> dict:
-    brief = _parse(draft.brief)
+    synced, blocked = sync_facts(draft.company, draft.brief)
+    brief = _parse(synced)
     missing = brief.missing()
     return {
         "draft_id": str(draft.pk),
@@ -55,8 +56,8 @@ def serialize(draft: AdDraft) -> dict:
         "brief": brief.model_dump(mode="json", by_alias=True),
         "missing": missing,
         "next_question": NEXT_QUESTION.get(missing[0]) if missing else None,
-        "problems": brief.problems(),
-        "lockable": not missing and not brief.problems(),
+        "problems": brief.problems() + blocked,
+        "lockable": not missing and not brief.problems() and not blocked,
         "motion_project_id": str(draft.motion_project_id) if draft.motion_project_id else None,
         "studio_url": studio_url(draft),
     }
@@ -103,8 +104,11 @@ def start_draft(company: Company, user, *, message: str = "", title: str = "") -
 
 
 @transaction.atomic
-def update_draft(company: Company, draft_id, *, changes: dict, expected_revision: int) -> AdDraft:
-    """Shallow merge: every top-level key in `changes` replaces that key in the brief."""
+def update_draft(company: Company, draft_id, *, changes: dict, expected_revision: int, human: bool = True) -> AdDraft:
+    """Shallow merge: every top-level key in `changes` replaces that key in the brief.
+
+    human=False (the assistant via MCP) can never mark a fact verified; only the bank or a person can.
+    """
     draft = get_draft(company, draft_id, lock=True)
     if draft.revision != expected_revision:
         raise ValueError(f"Utkastet har ändrats (revision {draft.revision}). Läs om det och försök igen.")
@@ -113,7 +117,9 @@ def update_draft(company: Company, draft_id, *, changes: dict, expected_revision
     forbidden = {"status", "locked_at", "lock_hash", "version"} & set(changes)
     if forbidden:
         raise ValueError("Dessa fält sätts bara av systemet: " + ", ".join(sorted(forbidden)))
-    merged = {**draft.brief, **changes}
+    if not human and "facts" in changes:
+        changes = {**changes, "facts": [{**f, "verified": False} for f in (changes["facts"] or [])]}
+    merged, _ = sync_facts(company, {**draft.brief, **changes})
     brief = _parse(merged)
     _check_assets(company, brief)
     draft.brief = brief.model_dump(mode="json", by_alias=True)
@@ -129,7 +135,10 @@ def lock_draft(company: Company, draft_id, *, expected_revision: int) -> AdDraft
     draft = get_draft(company, draft_id, lock=True)
     if draft.revision != expected_revision:
         raise ValueError(f"Utkastet har ändrats (revision {draft.revision}). Läs om det och försök igen.")
-    brief = _parse(draft.brief)
+    synced, blocked = sync_facts(company, draft.brief)
+    if blocked:
+        raise ValueError("Briefen kan inte låsas: " + "; ".join(blocked))
+    brief = _parse(synced)
     _check_assets(company, brief)
     if brief.engine and brief.engine.remotion_template_id:
         blueprints.template_fields(brief)  # fail now, not at render time
@@ -504,3 +513,95 @@ def set_scene_asset(company: Company, draft_id, *, scene_id: str, asset_id: str,
     assets = [a for a in data["assets"] if a["asset_id"] in used or a["origin"] == "generate"]
     return update_draft(company, draft_id, expected_revision=expected_revision,
                         changes={"scenes": data["scenes"], "assets": assets})
+
+
+# ---- fact bank ----------------------------------------------------------------
+
+def serialize_fact(fact: AdFact) -> dict:
+    return {"fact_id": str(fact.pk), "claim": fact.claim, "source": fact.source, "note": fact.note,
+            "status": fact.status, "verified_at": fact.verified_at.isoformat() if fact.verified_at else None}
+
+
+def sync_facts(company: Company, data: dict) -> tuple[dict, list[str]]:
+    """Link brief facts to the bank and take `verified` from it. Returns (brief, blocking problems)."""
+    facts = list(data.get("facts") or [])
+    if not facts:
+        return data, []
+    bank = {str(f.pk): f for f in company.ad_facts.all()}
+    by_claim = {f.claim.casefold(): f for f in bank.values()}
+    blocked, out = [], []
+    for item in facts:
+        item = dict(item)
+        fact = bank.get(str(item.get("fact_id") or "")) or by_claim.get(str(item.get("claim", "")).casefold())
+        if item.get("fact_id") and fact is None:
+            raise ValueError(f"Påståendet '{item.get('claim', '')}' finns inte i faktabanken.")
+        if fact is not None:
+            item.update(fact_id=str(fact.pk), claim=fact.claim, source=fact.source or item.get("source") or "faktabanken",
+                        verified=fact.status == "verified")
+            if fact.status == "blocked":
+                blocked.append(f"Får inte användas enligt faktabanken: {fact.claim}")
+        out.append(item)
+    return {**data, "facts": out}, blocked
+
+
+SEED_SKILL = "golfkuponger-friskvard"
+
+
+def seed_facts(company: Company) -> int:
+    """First use: copy the skill's starting table into the bank as unverified. Never overwrites."""
+    from . import skills as skill_files
+
+    if company.ad_facts.exists():
+        return 0
+    try:
+        text = skill_files.read(SEED_SKILL)
+    except ValueError:
+        return 0
+    created = 0
+    for line in text.splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) != 4 or not re.fullmatch(r"F\d+", cells[0]):
+            continue
+        _, claim, source, status = cells
+        AdFact.objects.get_or_create(company=company, claim=claim[:300], defaults={
+            "source": source.replace("`", "")[:300], "note": status.replace("⚠️", "").replace("❌", "").replace("Se nedan", "").strip(" .")[:500],
+            "status": "blocked" if "❌" in status else "unverified"})
+        created += 1
+    return created
+
+
+def list_facts(company: Company) -> list[dict]:
+    seed_facts(company)
+    return [serialize_fact(f) for f in company.ad_facts.all()]
+
+
+def propose_fact(company: Company, *, claim: str, source: str, note: str = "") -> AdFact:
+    claim = claim.strip()
+    if not claim or not source.strip():
+        raise ValueError("Påstående och källa krävs.")
+    fact, _ = AdFact.objects.get_or_create(company=company, claim=claim[:300],
+                                           defaults={"source": source.strip()[:300], "note": note.strip()[:500]})
+    return fact
+
+
+def set_fact(company: Company, fact_id, *, status: str | None = None, claim: str | None = None,
+             source: str | None = None, note: str | None = None) -> AdFact:
+    """Human-only: used by the studio, never exposed as an MCP write."""
+    from django.utils import timezone
+
+    fact = AdFact.objects.filter(company=company, pk=fact_id).first()
+    if fact is None:
+        raise ValueError("Påståendet finns inte.")
+    if claim is not None and claim.strip() and claim.strip() != fact.claim:
+        fact.claim, fact.status, fact.verified_at = claim.strip()[:300], "unverified", None
+    if source is not None:
+        fact.source = source.strip()[:300]
+    if note is not None:
+        fact.note = note.strip()[:500]
+    if status is not None:
+        if status not in dict(AdFact.STATUS):
+            raise ValueError("Okänd status.")
+        fact.status = status
+        fact.verified_at = timezone.now() if status == "verified" else None
+    fact.save()
+    return fact

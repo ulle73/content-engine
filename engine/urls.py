@@ -12,6 +12,7 @@ from .performance_views import performance
 
 engine_urls = [
     path("annonser/", ad_views.ad_list, name="ad_list"),
+    path("annonser/fakta/", ad_views.ad_facts, name="ad_facts"),
     path("annonser/<uuid:draft_id>/", ad_views.ad_workspace, name="ad_workspace"),
     path("annonser/<uuid:draft_id>/spara/", ad_views.ad_update, name="ad_update"),
     path("annonser/<uuid:draft_id>/scen/<slug:scene_id>/bild/", ad_views.ad_pick, name="ad_pick"),

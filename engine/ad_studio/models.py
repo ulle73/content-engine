@@ -50,3 +50,23 @@ class AssetTags(models.Model):
     def search_text(self) -> str:
         parts = [self.description, self.theme, self.season, self.mood, self.source, *self.tags, *self.roles]
         return " ".join(p for p in parts if p).casefold()
+
+
+class AdFact(models.Model):
+    """A claim Golfkuponger may make in ads. Verified once by a human, reused by every brief."""
+
+    STATUS = [("unverified", "Ej verifierad"), ("verified", "Verifierad"), ("blocked", "Får inte användas")]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company = models.ForeignKey("engine.Company", on_delete=models.CASCADE, related_name="ad_facts")
+    claim = models.CharField(max_length=300)
+    source = models.CharField(max_length=300, blank=True)
+    note = models.CharField(max_length=500, blank=True)
+    status = models.CharField(max_length=12, choices=STATUS, default="unverified")
+    verified_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["status", "claim"]
+        constraints = [models.UniqueConstraint(fields=["company", "claim"], name="unique_ad_fact_claim")]
