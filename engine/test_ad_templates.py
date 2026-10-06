@@ -62,6 +62,42 @@ class AdTemplateTests(SimpleTestCase):
         self.assertEqual(spec["template_id"], "golf-sista-chansen")
         self.assertEqual(spec["scenes"][0]["props"]["value"], 3)
 
+
+    def test_reference_profile_flows_from_locked_brief_to_motion_spec(self):
+        bp = blueprints.blueprint("golf-fracka")
+        assets = {s["id"]: str(uuid.uuid4()) for s in bp["scenes"] if s["needs_asset"]}
+        profile = {
+            "label": "Editorial reference",
+            "motion_intensity": "high",
+            "camera_style": "push",
+            "transition_family": "dynamic",
+            "typography_behavior": "kinetic",
+            "beat_density": "dense",
+            "motion_preset": "snappy",
+            "color_behavior": "brand",
+            "bpm": 120,
+        }
+        brief = AdBrief.model_validate({
+            "message": "x", "objective": "conversion", "audience": "x",
+            "angle": {"title": "x", "hook": "x"},
+            "assets": [{"asset_id": a, "role": "footage"} for a in assets.values()],
+            "reference_profile": profile,
+            "engine": {"engine": "remotion", "remotion_template_id": "golf-fracka"},
+            "duration_s": bp["duration_s"],
+            "scenes": [{
+                "id": s["id"],
+                "purpose": s["purpose"],
+                "duration_s": s["duration_s"],
+                "on_screen_text": "Kort text",
+                **({"asset_id": assets[s["id"]]} if s["id"] in assets else {}),
+            } for s in bp["scenes"]],
+            "copy": {"headline": "x"},
+        })
+        spec = blueprints.compile_brief(brief.lock())
+        self.assertEqual(spec["reference_profile"]["label"], "Editorial reference")
+        self.assertEqual(spec["beat_map"]["source"], "profile")
+        self.assertIn("snappy", {scene["motion_preset"] for scene in spec["scenes"]})
+
     def test_renderer_schema_knows_every_template(self):
         """The Node worker validates against spec.schema.json; a missing id makes rendering fail."""
         schema = json.loads((ROOT / "motion-renderer/spec.schema.json").read_text())
