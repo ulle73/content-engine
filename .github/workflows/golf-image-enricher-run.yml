@@ -3,7 +3,7 @@ name: Golf image enrichment run
 on:
   push:
     branches:
-      - automation/golf-image-enricher-20261006
+      - automation/golf-image-enricher-pass3
 
 permissions:
   contents: write
