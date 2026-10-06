@@ -17,6 +17,7 @@ import { EffectLayers, contentEffectStyle } from "./effects";
 import { SceneContents } from "./scenes";
 import { transitionStyle } from "./transitions";
 import { clamp, dimensions, timeline } from "./math";
+import { beatPulse, motionStyle } from "../motion-presets.mjs";
 import type { Inputs, Spec, Brand } from "./types";
 
 const emptyProps = {
@@ -49,6 +50,7 @@ const defaultSpec: Spec = {
       background: "solid",
       transition: "cut",
       transition_frames: 0,
+      motion_preset: "legacy",
       effects: [],
       sfx: [],
     },
@@ -61,6 +63,14 @@ const defaultSpec: Spec = {
     fade_frames: 15,
     ducking: 0.3,
   },
+  beat_map: {
+    enabled: false,
+    bpm: null,
+    offset_frames: 0,
+    beat_frames: [],
+    source: "none",
+  },
+  reference_profile: null,
   end_card_asset_id: null,
 };
 const defaultBrand: Brand = {
@@ -118,6 +128,16 @@ export function MotionVideo({ spec, brand, assets }: Inputs) {
           seed: spec.seed + i * 7,
         };
         const isEnd = i === spec.scenes.length - 1 && spec.end_card_asset_id;
+        const effectStyle = contentEffectStyle(context);
+        const presetStyle = motionStyle(
+          scene.motion_preset,
+          local,
+          spec.fps,
+          beatPulse(spec, f),
+        );
+        const combinedTransform = [effectStyle.transform, presetStyle.transform]
+          .filter(Boolean)
+          .join(" ");
         return (
           <Sequence
             key={scene.id}
@@ -155,7 +175,13 @@ export function MotionVideo({ spec, brand, assets }: Inputs) {
               ) : (
                 <>
                   <Background {...context} />
-                  <AbsoluteFill style={contentEffectStyle(context)}>
+                  <AbsoluteFill
+                    style={{
+                      ...effectStyle,
+                      ...presetStyle,
+                      transform: combinedTransform || undefined,
+                    }}
+                  >
                     <SceneContents {...context} />
                   </AbsoluteFill>
                   <EffectLayers {...context} />
