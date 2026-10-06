@@ -37,7 +37,7 @@ Konfiguration: `.env.example`. Hemligheter hör hemma i `.env` lokalt eller webb
 
 Produktionsdatabasen `content_engine_app` ligger sedan 2026-09-13 i Neon-projektet `orange-band-72152493`, under ägarens verifierade konto. Befintliga användare, företag, ContentRuns, observations- och lärhistorik har kopierats från den tidigare Neon-servern och jämförts med radantal och SHA-256 över fullständiga rader. Media ligger kvar i samma privata R2-bucket och Postiz-krypteringsnyckeln är bevarad. Den gamla databasen är kvar för återgång. Se [migreringsrapporten](docs/2026-09-13-production-migration.md) innan eventuell återställning; byt aldrig tillbaka utan att först bevara data som skapats efter migreringen.
 
-Redigerare, OAuth och MCP körs tillsammans på `https://content-engine-mcp.onrender.com/`, med MCP på `/mcp`. Render-tjänsten deployar från `feature/chatgpt-content-engine-mcp`. Per 2026-09-23 är `main` synkroniserad med den deployade feature-grenen; verifiera alltid aktuella branch-heads och Render-deploy före nästa ändring.
+Redigerare, OAuth och MCP körs tillsammans på `https://content-engine-mcp.onrender.com/`, med MCP på `/mcp`. Render-tjänsten deployar från `main` (se `render.yaml`, sedan 2026-10-02). En merge till `main` går alltså till produktion; startkommandot kör migreringar automatiskt.
 
 ## Media och AI-generering
 
