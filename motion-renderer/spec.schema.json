@@ -158,8 +158,8 @@
         },
         "value": {
           "default": 0,
-          "maximum": 1000000000000,
-          "minimum": -1000000000000,
+          "maximum": 1000000000000.0,
+          "minimum": -1000000000000.0,
           "title": "Value",
           "type": "number"
         }
@@ -193,8 +193,8 @@
         },
         "value": {
           "default": 0,
-          "maximum": 1000000000000,
-          "minimum": -1000000000000,
+          "maximum": 1000000000000.0,
+          "minimum": -1000000000000.0,
           "title": "Value",
           "type": "number"
         },
