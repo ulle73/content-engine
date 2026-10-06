@@ -10,21 +10,27 @@ import enrich
 UPDATED_URLS = {
     "Dalsjö GK": "https://www.dalsjogolf.se/",
     "Hagge GK": "http://www.haggegk.com/",
-    "Helsingborgs GK": "https://vikensgk.se/info.html",
+    "Helsingborgs GK": "https://www.helsingborgsgk.com/",
     "Järvsöbadens GK": "https://www.jarvsobaden.se/golf/",
+    "Eksjö GK": "https://eksjogk.se/",
 }
 
 MANUAL_CANDIDATES = {
     "Billeruds GK": [
+        "https://static.wixstatic.com/media/422cbd_66611c95e46d4d85afc95174ca7cd46b~mv2.jpg",
         "https://static.wixstatic.com/media/ba5397_cf4e24e414854dddb98d44d0d2feb349~mv2.jpg",
     ],
     "Dalsjö GK": [
         "https://www.dalsjogolf.se/media/wfdhm2sp/haal9_green1.jpg",
     ],
     "Dynekilen GK": [
+        "https://static.wixstatic.com/media/16b727_49cbf9188e33418fb7265e0a992465e7~mv2.jpg",
         "https://static.wixstatic.com/media/16b727_e4ca3acee22940f1a1e2752510691d24~mv2.jpg",
     ],
     "Eksjö GK": [
+        "https://eksjogk.se/wp-content/uploads/2024/02/banner-img1.jpg",
+        "https://eksjogk.se/wp-content/uploads/2024/02/eksjo-img-3.jpg",
+        "https://eksjostadshotell.se/app/uploads/2023/05/63b1700-scaled.jpg",
         "https://cdn.allsquaregolf.com/pictures/pictures/000/127/519/large/eksjo_golfklubb_cover_picture.jpg",
     ],
     "Falsterbo GK": [
@@ -35,6 +41,10 @@ MANUAL_CANDIDATES = {
         "https://golf-pass.brightspotcdn.com/dims4/default/9b97f12/2147483647/strip/true/crop/960x540%2B0%2B0/resize/1200x675%21/format/webp/quality/90/?url=https%3A%2F%2Fgolf-pass-brightspot.s3.amazonaws.com%2Fa2%2F39%2F6668050e57a5a5096ad03b42f84c%2F82911.jpg",
     ],
     "Fullerö GK": [
+        "https://www.fullerogk.se/wp-content/uploads/2025/03/golfbana_vasteras_fullerogk.png",
+        "https://www.fullerogk.se/wp-content/webp-express/webp-images/uploads/2025/03/golfbana_vasteras_fullerogk.png.webp",
+        "https://www.fullerogk.se/wp-content/uploads/2025/03/fullerogk_golfbana_vasteras.png",
+        "https://www.fullerogk.se/wp-content/webp-express/webp-images/uploads/2025/03/fullerogk_golfbana_vasteras.png.webp",
         "https://caddee-prod-media.s3.amazonaws.com/course-images/47cd7793-2845-4fa4-a1f7-2cbc1de16114/course-normal_web_rxTTWyv.png",
     ],
     "Furudals Bruk GK": [
@@ -45,13 +55,18 @@ MANUAL_CANDIDATES = {
         "https://static.costadelsolmalaga.org/visita/subidas/imagenes/2/4/arc_31742_g.jpg",
     ],
     "Grönlund GK": [
+        "https://static.wixstatic.com/media/39e339_c9ffd552bdab4320a683dfa00703be49~mv2.jpg",
         "https://www.1golf.eu/images/golfclubs/groenlund-golfklubb_034318_full.jpg",
     ],
     "Hagge GK": [
         "https://www.svenskgolf.se/app/uploads/2019/12/6302d05a-5de3e12fd321e.jpg",
     ],
     "Helsingborgs GK": [
-        "https://golf-pass.brightspotcdn.com/dims4/default/cfd734d/2147483647/strip/true/crop/960x619%2B0%2B50/resize/1200x774%21/format/webp/quality/90/?url=https%3A%2F%2Fgolf-pass-brightspot.s3.amazonaws.com%2Fd9%2Ffc%2F1dde845f2cc5c8099c0f501abc66%2F83090.jpg",
+        "https://media.golfbladet.se/2024/10/helsingborgs-gk.jpg",
+        "https://media.golfbladet.se/2024/10/helsingborgs-gk-1024x639.jpg",
+        "https://media.golfbladet.se/2020/08/helsingborgsgk.jpg",
+        "https://media.golfbladet.se/2020/08/helsingborgsgk-681x1024.jpg",
+        "https://golf-pass-brightspot.s3.amazonaws.com/d9/fc/1dde845f2cc5c8099c0f501abc66/83090.jpg",
     ],
     "Herrljunga GK": [
         "https://caddee-prod-media.s3.amazonaws.com/club-images/feeeaba1-ad45-477e-afda-5ac37c8e6430/header-normal_web.png",
@@ -59,7 +74,12 @@ MANUAL_CANDIDATES = {
     "Hulta Bollebygd Golfklubb": [
         "https://www.hultagk.se/media/2bpfc2x3/nybildhemsida-scaled.jpg?height=800&quality=70&v=1dc7339e7452230&width=2000",
     ],
-    "Järvsöbadens GK": [],
+    "Järvsöbadens GK": [
+        "https://www.jarvsobaden.se/wp-content/uploads/lill-babs-golf-jarvsobaden.jpg",
+        "https://www.jarvsobaden.se/wp-content/uploads/jarvsobaden_hotel_konferens_golf.jpg",
+        "https://www.jarvsobaden.se/wp-content/uploads/elementor/thumbs/lill-babs-golf-jarvsobaden-q5n2ywrri1uu5x42am56tuopluopyy6drzi49k9j84.jpg",
+        "https://www.jarvsobaden.se/wp-content/uploads/elementor/thumbs/jarvsobaden_hotel_konferens_golf-q5n2z2esn22k3kvvdoky8t9h65wx94srsrf158166s.jpg",
+    ],
     "Kalix Golfklubb": [
         "https://golfhaftet-img.b-cdn.net/golfclubs/379-ef1420.png",
     ],
@@ -82,6 +102,8 @@ MANUAL_CANDIDATES = {
         "https://images.citybreakcdn.com/image.aspx?ImageId=6886460",
     ],
     "Sundsta Golf": [
+        "https://golf-pass-brightspot.s3.amazonaws.com/72/38/bb5bcf09a839bf8444123ca32cb7/84009.jpg",
+        "https://golf-pass.brightspotcdn.com/1d/d7/c2573084e75afb1161b524ebf98d/84007.jpg",
         "https://images.citybreak.com/7631553.jpeg",
         "https://www.visitroslagen.se/sites/cb_visitroslagen/files/styles/slide_large/http/images.citybreak.com/7631553.jpeg.webp?itok=3Ck6mdys",
     ],

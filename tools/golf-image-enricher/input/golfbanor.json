@@ -1334,7 +1334,13 @@
     "region": "Värmland, Örebro & Dalarna",
     "slug": "dalsjo-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://www.dalsjogolf.se/media/wfdhm2sp/haal9_green1.jpg",
+        "width": 4928,
+        "height": 3264
+      }
+    ]
   },
   {
     "name": "Danderyds GK",
@@ -1825,7 +1831,18 @@
     "region": "Skåne",
     "slug": "falsterbo-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://cdn.sanity.io/images/03mhssoh/production/22449433a95c1d60cf914e3f9df1469354354706-5280x2970.jpg",
+        "width": 5280,
+        "height": 2970
+      },
+      {
+        "url": "https://cdn.sanity.io/images/03mhssoh/production/40b5c468d7d2f8d76fc7dbbefafc81cb37d03902-5280x2970.jpg",
+        "width": 5280,
+        "height": 2970
+      }
+    ]
   },
   {
     "name": "Falun - Borlänge GK",
@@ -1979,8 +1996,7 @@
       {
         "url": "https://flommensgk.se/wp-content/smush-webp/2023/01/Flommens-GK_-Hal-10-green_Fotograf-JPS-1920x693.png.webp",
         "width": 1920,
-        "height": 693
-      },
+        "height": 693      },
       {
         "url": "https://flommensgk.se/wp-content/smush-webp/2025/03/460416147_1086168880176506_7915588954359718429_n.jpg.webp",
         "width": 2048,
@@ -1996,7 +2012,8 @@
   {
     "name": "Flädje GK",
     "city": "",
-    "country": "",    "url": "http://www.fladjegk.se/",
+    "country": "",
+    "url": "http://www.fladjegk.se/",
     "region": "Halland",
     "slug": "fladje-gk",
     "active": true,
@@ -2036,7 +2053,13 @@
     "region": "Uppsala & Mälardalen",
     "slug": "fogdo-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://golf-pass.brightspotcdn.com/dims4/default/9b97f12/2147483647/strip/true/crop/960x540%2B0%2B0/resize/1200x675%21/format/webp/quality/90/?url=https%3A%2F%2Fgolf-pass-brightspot.s3.amazonaws.com%2Fa2%2F39%2F6668050e57a5a5096ad03b42f84c%2F82911.jpg",
+        "width": 1200,
+        "height": 675
+      }
+    ]
   },
   {
     "name": "Forsbacka GK",
@@ -2257,7 +2280,13 @@
     "region": "Värmland, Örebro & Dalarna",
     "slug": "furudals-bruk-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://images.citybreakcdn.com/image.aspx?ImageId=302549",
+        "width": 2816,
+        "height": 2112
+      }
+    ]
   },
   {
     "name": "Fågelbro G & CC",
@@ -2374,7 +2403,13 @@
     "slug": "golfservice-marbella",
     "region": "",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://static.costadelsolmalaga.org/visita/subidas/imagenes/2/4/arc_31742_g.jpg",
+        "width": 1550,
+        "height": 1033
+      }
+    ]
   },
   {
     "name": "Gotska GK",
@@ -2724,7 +2759,13 @@
     "region": "Värmland, Örebro & Dalarna",
     "slug": "hagge-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://www.svenskgolf.se/app/uploads/2019/12/6302d05a-5de3e12fd321e.jpg",
+        "width": 1327,
+        "height": 882
+      }
+    ]
   },
   {
     "name": "Hallstaviks GK",
@@ -2954,8 +2995,7 @@
       },
       {
         "url": "https://hede-vemdalensgk.se/wp-content/uploads/2022/03/vy-over-golfbana-och-sonfjalletjpg-scaled.jpg",
-        "width": 2560,
-        "height": 1440
+        "width": 2560,        "height": 1440
       },
       {
         "url": "https://hede-vemdalensgk.se/wp-content/uploads/2022/04/Hede-Vemdalens-Golfklubb-Driving-Range.jpg",
@@ -2995,9 +3035,31 @@
     "city": "",
     "country": "",
     "url": "https://www.herrljungagk.se",
-    "region": "Skaraborg & Sjuhärad",    "slug": "herrljunga-gk",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "herrljunga-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://www.herrljungagk.se/UserFiles/Image/DSC_0129.jpg",
+        "width": 4592,
+        "height": 3104
+      },
+      {
+        "url": "https://images.squarespace-cdn.com/content/v1/5809bbd7e4fcb5ec7f0ef283/1490685739798-384HTA17AHSTPG2BWBJR/25+WC%3Adusch+besk.jpg?format=1500w",
+        "width": 1500,
+        "height": 700
+      },
+      {
+        "url": "https://images.squarespace-cdn.com/content/v1/5809bbd7e4fcb5ec7f0ef283/1490685740593-3FG967V7VNR9KSZCXFHX/25+Allrummet.jpg?format=1500w",
+        "width": 1500,
+        "height": 700
+      },
+      {
+        "url": "https://mnd-assets.mynewsdesk.com/image/upload/b_auto,c_pad,h_628,q_auto:good,w_1200/hyr0ylp1fbcdvvuytsxn.jpg",
+        "width": 1200,
+        "height": 628
+      }
+    ]
   },
   {
     "name": "Hills Golf & Sports Club",
@@ -3115,7 +3177,18 @@
     "region": "Skaraborg & Sjuhärad",
     "slug": "hulta-bollebygd-golfklubb",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://www.hultagk.se/media/2bpfc2x3/nybildhemsida-scaled.jpg?height=800&quality=70&v=1dc7339e7452230&width=2000",
+        "width": 2000,
+        "height": 800
+      },
+      {
+        "url": "https://www.hultagk.se/media/2bpfc2x3/nybildhemsida-scaled.jpg?v=1dc7339e7452230",
+        "width": 2560,
+        "height": 1441
+      }
+    ]
   },
   {
     "name": "Hälla GK",
@@ -3429,7 +3502,13 @@
     "region": "Norrland",
     "slug": "kalix-golfklubb",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://golfhaftet-img.b-cdn.net/golfclubs/379-ef1420.png",
+        "width": 2000,
+        "height": 1190
+      }
+    ]
   },
   {
     "name": "Kallfors GK",
@@ -3915,8 +3994,7 @@
         "height": 800
       },
       {
-        "url": "https://kristinehamnsgk.se/wp-content/uploads/2024/10/DJI_0585-1-1.jpg",
-        "width": 1440,
+        "url": "https://kristinehamnsgk.se/wp-content/uploads/2024/10/DJI_0585-1-1.jpg",        "width": 1440,
         "height": 810
       },
       {
@@ -3965,7 +4043,13 @@
     "region": "Göteborgsområdet",
     "slug": "kungsbacka-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://www.kungsbackagk.se/media/1gnn5ppg/250925_kungsbacka-gk_foto-daniel-stenholm_dji_20250925141516_0732_d.jpg",
+        "width": 2880,
+        "height": 1920
+      }
+    ]
   },
   {
     "name": "Kungälv - Kode GK",
@@ -3994,7 +4078,8 @@
       {
         "url": "https://mediakkgk.kkgk.se/2026/05/STec.png",
         "width": 1308,
-        "height": 606      }
+        "height": 606
+      }
     ]
   },
   {
@@ -4547,7 +4632,13 @@
     "region": "Norrland",
     "slug": "ljusdals-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://www.svenskgolf.se/app/uploads/8ee07a9a-ljusnans-gk.jpg",
+        "width": 1600,
+        "height": 899
+      }
+    ]
   },
   {
     "name": "Ljusterö GK",
@@ -4902,8 +4993,7 @@
       },
       {
         "url": "https://lackogk.se/wp-content/uploads/2021/02/oversikt_lackogk_new-1536x742.jpg",
-        "width": 1536,
-        "height": 742
+        "width": 1536,        "height": 742
       },
       {
         "url": "https://lackogk.se/wp-content/uploads/2021/01/Restaurang-1-scaled.jpg",
@@ -4993,7 +5083,8 @@
     "slug": "mariestads-gk",
     "active": true,
     "images": [
-      {        "url": "https://www.mariestadsgk.se/img/header17.jpg",
+      {
+        "url": "https://www.mariestadsgk.se/img/header17.jpg",
         "width": 3709,
         "height": 1841
       }
@@ -5538,7 +5629,13 @@
     "region": "Värmland, Örebro & Dalarna",
     "slug": "nora-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://www.noragolfklubb.se/wp-content/uploads/2025/03/Stallplats-staende-reception_Rityta-2-scaled-e1740945765224.webp",
+        "width": 2560,
+        "height": 1811
+      }
+    ]
   },
   {
     "name": "Norrfällsvikens GK",
@@ -5895,8 +5992,7 @@
         "width": 2048,
         "height": 1534
       }
-    ]
-  },
+    ]  },
   {
     "name": "Ombergs GK",
     "city": "",
@@ -5992,7 +6088,8 @@
     "url": "http://www.orustgk.org/",
     "region": "Bohuslän & Dalsland",
     "slug": "orust-gk",
-    "active": true,    "images": [
+    "active": true,
+    "images": [
       {
         "url": "https://www.orustgk.se/wp-content/uploads/2024/03/uu.jpg",
         "width": 2583,
@@ -6100,7 +6197,13 @@
     "region": "Skåne",
     "slug": "perstorps-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://golf-pass-brightspot.s3.amazonaws.com/6a/a6/3c4d182ab6646c274b1c7d5e5c94/83712.jpg",
+        "width": 1280,
+        "height": 960
+      }
+    ]
   },
   {
     "name": "Piteå GK",
@@ -6415,7 +6518,13 @@
     "region": "Skåne",
     "slug": "s-t-ibb-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://static.wixstatic.com/media/68b0ee_583c5a40df0f4bfabd9faf50721a5aa2~mv2.jpg",
+        "width": 1936,
+        "height": 1296
+      }
+    ]
   },
   {
     "name": "Sala GK",
@@ -6882,8 +6991,7 @@
       {
         "url": "https://skinnarebo.se/images/A_Sidbilder/skinnarebo_DSC_3004.jpg",
         "width": 1200,
-        "height": 800
-      },
+        "height": 800      },
       {
         "url": "https://skinnarebo.se/images/A_Sidbilder/skinnarebo_DJI_0171.jpg",
         "width": 1200,
@@ -6991,7 +7099,8 @@
       {
         "url": "https://slitegk.se/wp-content/uploads/2025/04/sgk220511-2.jpg",
         "width": 4032,
-        "height": 3024      },
+        "height": 3024
+      },
       {
         "url": "https://slitegk.se/wp-content/uploads/2025/03/DSC_2312.jpg",
         "width": 3840,
@@ -7022,7 +7131,13 @@
     "region": "Värmland, Örebro & Dalarna",
     "slug": "snoa-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://images.citybreakcdn.com/image.aspx?ImageId=6886460",
+        "width": 1421,
+        "height": 1066
+      }
+    ]
   },
   {
     "name": "Solbacka Golfklubb",
@@ -7512,7 +7627,13 @@
     "region": "Norrland",
     "slug": "sundsvalls-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://golf-pass-brightspot.s3.amazonaws.com/49/64/6d41aee7c4166dc56dc53f35f409/84011.jpg",
+        "width": 1440,
+        "height": 960
+      }
+    ]
   },
   {
     "name": "Sunne GK",
@@ -7559,7 +7680,18 @@
     "region": "Stockholmsområdet",
     "slug": "svartinge-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://cdn.sanity.io/images/03mhssoh/production/caab7c328bf4b86c6e384e1dc61a1a1e1c8f6ecc-1200x801.jpg?auto=format&fit=max&q=75&w=3840",
+        "width": 1200,
+        "height": 801
+      },
+      {
+        "url": "https://cdn.sanity.io/images/03mhssoh/production/caab7c328bf4b86c6e384e1dc61a1a1e1c8f6ecc-1200x801.jpg?auto=format",
+        "width": 1200,
+        "height": 801
+      }
+    ]
   },
   {
     "name": "Svegs GK",
@@ -7858,8 +7990,7 @@
   {
     "name": "Sörfjärdens gk",
     "city": "",
-    "country": "",
-    "url": "https://sorfjardensgk.se/",
+    "country": "",    "url": "https://sorfjardensgk.se/",
     "region": "Norrland",
     "slug": "sorfjardens-gk",
     "active": true,
@@ -7899,7 +8030,13 @@
     "region": "Norrland",
     "slug": "sorfors-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://static.wixstatic.com/media/d213b8_f183b3402471464a8bcab913d925a56e.jpg",
+        "width": 3456,
+        "height": 2304
+      }
+    ]
   },
   {
     "name": "Tegelberga GK",
@@ -7945,7 +8082,13 @@
     "region": "Norrland",
     "slug": "timra-gk",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://destinationsundsvall.se/images/18.41f70d8418df29f29d71ecd7/1710422871547/Timr%C3%A5%20GK%20h%C3%A5l%2018.jpg",
+        "width": 1922,
+        "height": 1335
+      }
+    ]
   },
   {
     "name": "Tjusta Golf",
@@ -7990,7 +8133,8 @@
     "url": "https://www.tjornsgk.se/",
     "region": "Bohuslän & Dalsland",
     "slug": "tjorns-gk",
-    "active": true,    "images": [
+    "active": true,
+    "images": [
       {
         "url": "https://www.tjornsgk.se/media/1rnhkdmr/tj%C3%B6rns-gk-207.jpg?width=2000&height=800&quality=70&v=1d6be7d618e1820",
         "width": 2000,
@@ -8828,7 +8972,13 @@
     "region": "Göteborgsområdet",
     "slug": "vallda-golf-country-club",
     "active": true,
-    "images": []
+    "images": [
+      {
+        "url": "https://golf-pass.brightspotcdn.com/1a/d5/4f26f468ad4a19460e1c6fb4bb7a/85028.jpg",
+        "width": 1440,
+        "height": 960
+      }
+    ]
   },
   {
     "name": "Valley GK",
@@ -8839,8 +8989,7 @@
     "slug": "valley-gk",
     "active": true,
     "images": [
-      {
-        "url": "https://valleygk.se/wp-content/themes/qt/dist/img/TGK-10-jub-113-scaled.jpg",
+      {        "url": "https://valleygk.se/wp-content/themes/qt/dist/img/TGK-10-jub-113-scaled.jpg",
         "width": 2560,
         "height": 1505
       },
@@ -8989,7 +9138,8 @@
         "height": 3948
       },
       {
-        "url": "https://vasatorp.golf/wp-content/uploads/2023/08/Vasatorp-Park-course-2022-1-2.jpg",        "width": 3840,
+        "url": "https://vasatorp.golf/wp-content/uploads/2023/08/Vasatorp-Park-course-2022-1-2.jpg",
+        "width": 3840,
         "height": 2157
       },
       {
@@ -9838,8 +9988,7 @@
       },
       {
         "url": "https://alvkarlebygk.com/wp-content/uploads/2026/10/260930-Vantan-pa-lunch.jpeg",
-        "width": 4032,
-        "height": 3024
+        "width": 4032,        "height": 3024
       },
       {
         "url": "https://alvkarlebygk.com/wp-content/uploads/2026/09/260909-Lars-H-L-O-P-Hans-S.jpg",
@@ -9988,7 +10137,8 @@
     "country": "Sverige",
     "url": "https://www.oijared.se/",
     "region": "Göteborgsområdet",
-    "slug": "oijared-resort",    "active": true,
+    "slug": "oijared-resort",
+    "active": true,
     "images": [
       {
         "url": "https://oijared.se/wp-content/uploads/2023/07/endorfin.png",
