@@ -241,6 +241,7 @@ class AdStudioReferenceProfileTests(AdStudioBase):
 
     def _reference_jpeg(self, data):
         import io
+
         from PIL import Image as PILImage
 
         image = PILImage.open(io.BytesIO(data))
