@@ -65,6 +65,16 @@ class AssistantTests(TestCase):
         self.assertContains(response, "AI-samtal och bildanalys debiteras")
         self.assertContains(response, self.url("assistant"))
 
+    def test_recent_conversations_are_exposed_as_persistent_history(self):
+        AssistantConversation.objects.create(company=self.company, author=self.user, title="Friskvårdsannons")
+        response = self.client.get(self.url("assistant"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="assistant-history"')
+        self.assertContains(response, 'class="assistant-history-list"')
+        self.assertContains(response, "Senaste")
+        self.assertContains(response, "Friskvårdsannons")
+        self.assertNotContains(response, "<summary>Senaste samtalen</summary>")
+
     def test_sending_compiles_without_creating_or_starting_media(self):
         with patch("engine.media_providers.start_video") as video, patch("engine.media_providers.generate_images") as images:
             plan = self.turn()
