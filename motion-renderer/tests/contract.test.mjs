@@ -97,3 +97,17 @@ test("numeric strings and nonfinite values blocked", () => {
 });
 test("template version pinned", () =>
   assert.throws(() => validateSpec({ ...base(), template_version: 999 })));
+
+test("beat maps are sorted unique and inside the video", () => {
+  for (const beats of [[15, 0], [0, 0], [0, 90], [-1, 15]]) {
+    const s = base();
+    s.beat_map = {
+      enabled: true,
+      bpm: 120,
+      offset_frames: 0,
+      beat_frames: beats,
+      source: "manual",
+    };
+    assert.throws(() => validateSpec(s), "invalid beats: " + JSON.stringify(beats));
+  }
+});
