@@ -4,6 +4,10 @@ Företagsunderlag → tre idéer → redigerbara Facebook-/Instagramtexter → u
 
 **Brightbean är borttaget.** Läs [arkitekturbeslutet](docs/2026-09-07-arkitekturbeslut.md). Social Media Skills används direkt som innehållsreferenser, och Django tillhandahåller standardfunktionerna för webbappen. Företag och innehållskörningar kompletteras av referenskonton, importer, poster, snapshots och beslutshändelser. En separat låsrad skyddar registreringen av första administratören.
 
+## Gör en annons från en idé
+
+Säg i ChatGPT/Claude: *"jag vill göra en ad med budskapet …"*. Ad Studio ställer frågor, föreslår vinklar och bilder, bygger storyboard, låser och producerar. Se [docs/ad-studio.md](docs/ad-studio.md).
+
 ## Kom igång i webbläsaren
 
 Öppna appens adress. Om inget konto finns visas **Skapa första administratören** automatiskt. Fyll i e-post, företag och ditt valda lösenord. Du loggas in och kan lägga till fler företag direkt i UI. Inga terminalkommandon eller förskapade lösenord behövs för användaren.

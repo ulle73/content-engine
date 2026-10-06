@@ -1,6 +1,6 @@
 import unittest
 
-from .ad_brief import AdBrief, BriefNotReady
+from .ad_studio.brief import AdBrief, BriefNotReady
 
 
 def ready_brief(**overrides):
