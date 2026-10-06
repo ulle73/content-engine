@@ -14,6 +14,7 @@ from .catalog import get_item
 
 Number = Annotated[float, Field(strict=True, allow_inf_nan=False, ge=-1e12, le=1e12)]
 Slug = Annotated[str, Field(pattern=r"^[a-z][a-z0-9-]{0,63}$")]
+MotionPreset = Literal["legacy", "soft", "snappy", "weighty", "editorial"]
 
 
 class Closed(BaseModel):
@@ -51,6 +52,36 @@ class Cue(Closed):
         return value
 
 
+class ReferenceProfileSnapshot(Closed):
+    source_asset_id: UUID | None = None
+    label: str = Field(default="", max_length=120)
+    motion_intensity: Literal["low", "medium", "high"] = "medium"
+    camera_style: Literal["locked", "push", "orbit", "dolly", "handheld", "macro", "aerial", "mixed"] = "mixed"
+    transition_family: Literal["cuts", "soft", "dynamic", "mixed"] = "mixed"
+    typography_behavior: Literal["none", "minimal", "kinetic", "editorial", "bold"] = "minimal"
+    beat_density: Literal["sparse", "medium", "dense"] = "medium"
+    motion_preset: MotionPreset = "soft"
+    color_behavior: Literal["brand", "natural", "muted", "high-contrast"] = "brand"
+    bpm: float | None = Field(default=None, ge=40, le=220, allow_inf_nan=False)
+    notes: str = Field(default="", max_length=600)
+
+
+class BeatMap(Closed):
+    enabled: bool = False
+    bpm: float | None = Field(default=None, ge=40, le=220, allow_inf_nan=False)
+    offset_frames: StrictInt = Field(default=0, ge=0, le=7200)
+    beat_frames: list[StrictInt] = Field(default_factory=list, max_length=512)
+    source: Literal["none", "profile", "built-in-pulse", "manual"] = "none"
+
+    @model_validator(mode="after")
+    def coherent(self):
+        if self.beat_frames != sorted(set(self.beat_frames)):
+            raise ValueError("Beat frames must be unique and sorted")
+        if self.enabled and self.bpm is None and not self.beat_frames:
+            raise ValueError("Enabled beat map requires bpm or beat frames")
+        return self
+
+
 class Scene(Closed):
     id: Slug
     component: Slug
@@ -59,6 +90,7 @@ class Scene(Closed):
     background: Slug = "solid"
     transition: Slug = "cut"
     transition_frames: StrictInt = Field(default=0, ge=0, le=60)
+    motion_preset: MotionPreset = "legacy"
     effects: list[Slug] = Field(default_factory=list, max_length=3)
     sfx: list[Cue] = Field(default_factory=list, max_length=40)
 
@@ -104,12 +136,14 @@ class MotionSpec(Closed):
     version: Literal[1] = 1
     template_id: Slug
     template_version: StrictInt = 1
-    aspect_ratio: Literal["9:16", "1:1", "16:9"] = "9:16"
+    aspect_ratio: Literal["9:16", "4:5", "1:1", "16:9"] = "9:16"
     fps: Literal[24, 25, 30, 60] = 30
     seed: StrictInt = Field(default=42, ge=0, le=2147483647)
     brand_id: Slug = "golfkuponger"
     scenes: list[Scene] = Field(min_length=1, max_length=24)
     audio: Audio = Field(default_factory=Audio)
+    beat_map: BeatMap = Field(default_factory=BeatMap)
+    reference_profile: ReferenceProfileSnapshot | None = None
     end_card_asset_id: UUID | None = None
 
     @field_validator("fps", "version", mode="before")
@@ -126,8 +160,11 @@ class MotionSpec(Closed):
             raise ValueError("Scene IDs must be unique")
         if self.scenes[0].transition_frames or self.scenes[0].transition != "cut":
             raise ValueError("First scene must start with a cut")
-        if sum(s.duration_frames - s.transition_frames for s in self.scenes) > 120 * self.fps:
+        total_frames = sum(s.duration_frames - s.transition_frames for s in self.scenes)
+        if total_frames > 120 * self.fps:
             raise ValueError("Video cannot exceed 120 seconds")
+        if any(frame >= total_frames for frame in self.beat_map.beat_frames):
+            raise ValueError("Beat lies outside video")
         for index, scene in enumerate(self.scenes):
             if scene.component == "footage" and scene.props.headline:
                 words = len(scene.props.headline.split())
@@ -177,6 +214,9 @@ def timeline(value: dict) -> list[dict]:
 
 def asset_ids(value: dict) -> set[str]:
     result = {str(value[k]) for k in ("end_card_asset_id",) if value.get(k)}
+    profile = value.get("reference_profile") or {}
+    if profile.get("source_asset_id"):
+        result.add(str(profile["source_asset_id"]))
     if value["audio"].get("music_asset_id"):
         result.add(str(value["audio"]["music_asset_id"]))
     for scene in value["scenes"]:
