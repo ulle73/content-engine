@@ -70,6 +70,20 @@ def serve():
         store_asset(company, blob.getvalue(), alt_text=f"Biblioteksbild TEST {index}")
     (target / "upload.png").write_bytes(blob.getvalue())
     (target / "fixture.json").write_text(json.dumps(fixture), encoding="utf-8")
+    # Since preflight failures became terminal (993de7d), a missing provider key fails the job
+    # before review. This isolated server has no keys by design, so it returns a fixed,
+    # non-billable estimate instead of calling Higgsfield. Paid start stays impossible.
+    from engine import media_providers
+
+    def offline_estimate(job):
+        model = (job.parameters or {}).get("provider_model") or "offline-test-model"
+        return model, {}, {"estimate": {"usd": "0.80"}, "model": model}
+
+    def no_paid_start(job):
+        raise media_providers.MediaError("Isolerad test: betald start är avstängd.")
+
+    media_providers.estimate_video = offline_estimate
+    media_providers.start_video = no_paid_start
     call_command("runserver", "127.0.0.1:8765", use_reloader=False, verbosity=0)
 
 
@@ -96,7 +110,8 @@ def exercise_creator(page, fixture, target, evidence, checks):
     form.locator("details.creator-options").first.locator("summary").click()
     form.locator('[name="camera"]').select_option("push_in")
     form.locator('[name="ending"]').select_option("match_end")
-    expect(page.locator("#creator-plan-status")).to_contain_text("Seedance 2.5")
+    # Auto routing changes as the model catalog grows; assert a compatible start/end-frame plan, not one vendor.
+    expect(page.locator("#creator-plan-status")).to_contain_text("Auto rekommenderar")
     expect(page.locator("#creator-plan-status")).to_contain_text("8 sekunder")
     expect(page.locator("#creator-prompt-details")).to_be_visible()
     assert "END FRAME:" in page.locator("#creator-compiled-prompt").text_content()
@@ -142,7 +157,9 @@ def exercise_creator(page, fixture, target, evidence, checks):
     page.wait_for_url(re.compile(r"/media/jobs/[^/]+/$"))
     job_url = page.url
     expect(page.get_by_role("heading", name="Granska f\u00f6re start", exact=True)).to_be_visible()
-    expect(page.get_by_role("button", name="Starta betald generation", exact=True)).to_have_count(0)
+    # With a confirmed (offline) price the review offers paid start; the smoke never clicks it and
+    # the isolated server refuses any start, so provider_id stays empty (asserted at the end).
+    expect(page.get_by_role("button", name="Starta betald generation", exact=True)).to_have_count(1)
     expect(page.locator(".generation-reference-review img")).to_have_count(2)
     page.screenshot(path=str(evidence / "after-review-desktop.png"), full_page=True)
     page.get_by_role("button", name="Avbryt", exact=True).click()
