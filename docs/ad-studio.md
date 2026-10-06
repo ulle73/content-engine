@@ -14,6 +14,20 @@ Chatten som idémotor: "jag vill göra en ad med budskapet att använda friskvå
 | Bilder i chatten | `engine/ad_studio/sheets.py` | Numrerat bildark, storyboard-skiss och granskningsark (Pillow, ingen kostnad) |
 | MCP | `engine/ad_studio/mcp.py` | 18 verktyg, registrerade i `engine/mcp_server.py` |
 
+## Studion i appen (verkstaden)
+
+Menyn **Annonser** (`/company/<id>/annonser/`) visar samma utkast som MCP skapar. Där kan man:
+
+- starta en annons med ett budskap,
+- välja mall och få scenerna upplagda,
+- skriva text per scen,
+- välja bild per scen i ett rutnät med förslag överst, eller ladda upp en ny bild som taggas direkt,
+- bocka i verifierade påståenden,
+- se storyboarden stort,
+- låsa, producera och öppna Motion-projektet för preview och rendering.
+
+Varje MCP-svar har `studio_url`, så chatten kan länka hit med *Öppna i studion*. Chatten och studion är samma utkast med samma revision. Den som sparar på en gammal revision får ett tydligt meddelande om att utkastet har ändrats.
+
 ## Flödet i MCP
 
 Detaljerna står i `skills/ad-studio/SKILL.md`. I korthet:
@@ -41,6 +55,6 @@ Detaljerna står i `skills/ad-studio/SKILL.md`. I korthet:
 
 ## Inte byggt än
 
-- Klickbar widget med kryssrutor. Idag väljer man med siffror i det numrerade arket, vilket fungerar i både ChatGPT och Claude.
+- Klickbar widget direkt i ChatGPT och Claude. Klickandet sker i studion via länken.
 - Fler Remotion-mallar utöver friskvårdsmallarna.
 - Fler format (4:5, 1:1) för skärm-annonsmallarna.

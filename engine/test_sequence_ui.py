@@ -273,7 +273,7 @@ class SequenceWorkspaceF1Tests(TestCase):
                     for link in parser.links
                     if link_class in link.get("class", "").split()
                 ]
-                self.assertEqual(len(links), 6)
+                self.assertEqual(len(links), 7)
                 active = [link for link in links if link.get("aria-current") == "page"]
                 self.assertEqual(len(active), 1)
                 self.assertEqual(

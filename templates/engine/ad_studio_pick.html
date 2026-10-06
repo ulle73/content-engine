@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Välj bild · {{ draft.title }}{% endblock %}
+
+{% block content %}
+<main class="engine ad-studio">
+  <p class="small"><a href="{% url 'engine:ad_workspace' workspace_id=workspace.pk draft_id=draft.pk %}#scene-{{ scene.id }}">← Tillbaka till annonsen</a></p>
+  <header class="page-header"><div><p class="eyebrow">Scen · {{ label }}</p><h1>Välj bild</h1>
+    {% if scene.on_screen_text %}<p class="intro">Text i scenen: ”{{ scene.on_screen_text }}”</p>{% endif %}</div></header>
+
+  <form method="get" class="ad-search"><label class="visually-hidden" for="q">Sök</label>
+    <input id="q" name="q" value="{{ query }}" placeholder="Sök på t.ex. morgon, bana, portal, epassi"><button type="submit" class="button-secondary">Sök</button></form>
+
+  <form method="post" class="ad-pick">{% csrf_token %}<input type="hidden" name="revision" value="{{ draft.revision }}">
+    <div class="ad-grid">
+      {% for item in results %}
+      <label class="ad-tile {% if item.id in suggested %}is-suggested{% endif %}">
+        <input type="radio" name="asset_id" value="{{ item.id }}" {% if scene.asset_id == item.id %}checked{% endif %}>
+        {% if item.kind == 'video' %}<video src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=item.id %}" muted playsinline preload="metadata"></video>
+        {% else %}<img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=item.id %}" alt="{{ item.alt_text }}" loading="lazy">{% endif %}
+        <span class="ad-tile-caption">{% if item.id in suggested %}<b>Förslag</b> · {% endif %}{{ item.tags.description|default:item.alt_text|default:"Otaggad"|truncatechars:60 }}</span>
+      </label>
+      {% empty %}<p class="small">Inga bilder matchade. Ladda upp en nedan.</p>{% endfor %}
+    </div>
+    {% if results %}<div class="ad-save"><button type="submit">Använd vald bild</button></div>{% endif %}
+  </form>
+
+  <form method="post" enctype="multipart/form-data" class="ad-card ad-upload">{% csrf_token %}<input type="hidden" name="revision" value="{{ draft.revision }}">
+    <h2>Ladda upp ny</h2>
+    <div class="field"><label for="u-file">Bild eller video</label><input id="u-file" type="file" name="file" accept="image/*,video/mp4" required></div>
+    <div class="field"><label for="u-desc">Vad visar den?</label><input id="u-desc" name="description" maxlength="500" placeholder="T.ex. Skärminspelning av Epassi-portalen, sök Golfkuponger"></div>
+    <button type="submit">Ladda upp och använd</button>
+    {% if untagged %}<p class="small">{{ untagged }} bilder i biblioteket saknar beskrivning. Be ChatGPT/Claude tagga dem, så blir förslagen bättre.</p>{% endif %}
+  </form>
+</main>
+{% endblock %}

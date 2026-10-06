@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Annonser · {{ workspace.name }}{% endblock %}
+
+{% block content %}
+<main class="engine ad-studio">
+  <header class="page-header"><div><p class="eyebrow">Annonser</p><h1>Från idé till färdig annons</h1>
+    <p class="intro">Skriv budskapet här eller säg det till ChatGPT/Claude. Utkasten hamnar på samma ställe.</p></div></header>
+  <form method="post" class="ad-new">{% csrf_token %}
+    <label for="ad-message" class="visually-hidden">Budskap</label>
+    <input id="ad-message" name="message" maxlength="200" required placeholder="T.ex. Använd ditt friskvårdsbidrag på golf innan det brinner inne" autocomplete="off">
+    <button type="submit">Ny annons</button>
+  </form>
+  <section class="ad-drafts" aria-labelledby="ad-drafts-title"><h2 id="ad-drafts-title">Utkast</h2>
+    {% for item in drafts %}
+      <a class="ad-draft-row" href="{% url 'engine:ad_workspace' workspace_id=workspace.pk draft_id=item.draft_id %}">
+        <span><strong>{{ item.title }}</strong>
+          <small>{% if item.status == 'locked' %}Låst · redo att producera{% elif item.status == 'producing' %}Produceras{% elif item.lockable %}Redo att låsa{% else %}{{ item.missing|length }} saker kvar{% endif %}</small></span>
+        <span aria-hidden="true">→</span>
+      </a>
+    {% empty %}<p class="small">Inga utkast än. Skriv ett budskap ovan, eller be ChatGPT/Claude göra en annons.</p>{% endfor %}
+  </section>
+</main>
+{% endblock %}
