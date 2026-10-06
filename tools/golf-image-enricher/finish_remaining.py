@@ -24,8 +24,9 @@ MANUAL_CANDIDATES = {
         "https://www.dalsjogolf.se/media/wfdhm2sp/haal9_green1.jpg",
     ],
     "Dynekilen GK": [
-        "https://static.wixstatic.com/media/16b727_49cbf9188e33418fb7265e0a992465e7~mv2.jpg",
-        "https://static.wixstatic.com/media/16b727_e4ca3acee22940f1a1e2752510691d24~mv2.jpg",
+        "https://cdn.flyawaygolf.com/golfs/covers/640510183629523812/default.jpg",
+        "https://static.wixstatic.com/media/a315ac_78f6a9e1f4354782a3a3eb781521a1fa~mv2.jpg",
+        "https://static.wixstatic.com/media/16b727_9c15a5dbfcbf44898949fe4ebdd989a1~mv2.jpg",
     ],
     "Eksjö GK": [
         "https://eksjogk.se/wp-content/uploads/2024/02/banner-img1.jpg",
@@ -41,11 +42,11 @@ MANUAL_CANDIDATES = {
         "https://golf-pass.brightspotcdn.com/dims4/default/9b97f12/2147483647/strip/true/crop/960x540%2B0%2B0/resize/1200x675%21/format/webp/quality/90/?url=https%3A%2F%2Fgolf-pass-brightspot.s3.amazonaws.com%2Fa2%2F39%2F6668050e57a5a5096ad03b42f84c%2F82911.jpg",
     ],
     "Fullerö GK": [
-        "https://www.fullerogk.se/wp-content/uploads/2025/03/golfbana_vasteras_fullerogk.png",
+        "https://visitvastmanland.com/assets/bilder/Fullero-Golfklubb/visit-vastmanland-fullero-golf-runda.jpg",
+        "https://golfhaftet-img.b-cdn.net/golfclubs/fuller-gk_9490c2.jpg",
+        "https://images.citybreakcdn.com/image.aspx?ImageId=290788&fitaspect=1&height=700&width=1400",
         "https://www.fullerogk.se/wp-content/webp-express/webp-images/uploads/2025/03/golfbana_vasteras_fullerogk.png.webp",
-        "https://www.fullerogk.se/wp-content/uploads/2025/03/fullerogk_golfbana_vasteras.png",
         "https://www.fullerogk.se/wp-content/webp-express/webp-images/uploads/2025/03/fullerogk_golfbana_vasteras.png.webp",
-        "https://caddee-prod-media.s3.amazonaws.com/course-images/47cd7793-2845-4fa4-a1f7-2cbc1de16114/course-normal_web_rxTTWyv.png",
     ],
     "Furudals Bruk GK": [
         "https://images.citybreakcdn.com/image.aspx?ImageId=302549",
@@ -62,11 +63,11 @@ MANUAL_CANDIDATES = {
         "https://www.svenskgolf.se/app/uploads/2019/12/6302d05a-5de3e12fd321e.jpg",
     ],
     "Helsingborgs GK": [
-        "https://media.golfbladet.se/2024/10/helsingborgs-gk.jpg",
+        "https://media.golfbladet.se/2024/10/helsingborgs-gk-1536x959.jpg",
+        "https://media.golfbladet.se/2024/10/helsingborgs-gk-2048x1278.jpg",
+        "https://media.golfbladet.se/2024/10/helsingborgs-gk-scaled.jpg",
         "https://media.golfbladet.se/2024/10/helsingborgs-gk-1024x639.jpg",
-        "https://media.golfbladet.se/2020/08/helsingborgsgk.jpg",
-        "https://media.golfbladet.se/2020/08/helsingborgsgk-681x1024.jpg",
-        "https://golf-pass-brightspot.s3.amazonaws.com/d9/fc/1dde845f2cc5c8099c0f501abc66/83090.jpg",
+        "https://cdn.allsquaregolf.com/pictures/pictures/000/130/211/large/helsingborgs_gk_viken_links_cover_picture.jpg",
     ],
     "Herrljunga GK": [
         "https://caddee-prod-media.s3.amazonaws.com/club-images/feeeaba1-ad45-477e-afda-5ac37c8e6430/header-normal_web.png",
