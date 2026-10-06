@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import copy, csv, json, sys
+import copy, csv, json, sys, concurrent.futures
 from pathlib import Path
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode, unquote
 
@@ -138,40 +138,56 @@ def acceptable(url, referer=""):
         return None, f"rejected {w}x{h} ratio={ratio:.2f}"
     return {"url": final, "width": w, "height": h}, ""
 
+def solve_target(i, club):
+    name=club.get('name','')
+    temp=copy.deepcopy(club)
+    if name in UPDATED_URLS:
+        temp['url']=UPDATED_URLS[name]
+    result=enrich.process_club(i,temp,max_pages=12,max_probes=300,max_images=5)
+    imgs=list(result.images or [])
+    seen={x['url'] for x in imgs if isinstance(x,dict) and x.get('url')}
+    manual_errors=[]
+    for raw in MANUAL_CANDIDATES.get(name,[]):
+        if len(imgs)>=5: break
+        for u in variants(raw):
+            if len(imgs)>=5: break
+            img,err=acceptable(u, UPDATED_URLS.get(name, club.get('url','')))
+            if img and img['url'] not in seen:
+                imgs.append(img); seen.add(img['url'])
+            elif err:
+                manual_errors.append(f"{u} -> {err}")
+    status='ok' if imgs else result.status
+    row={
+        'index':i,'name':name,'status':status,'images_added':len(imgs),
+        'crawler_status':result.status,'pages_checked':result.pages_checked,
+        'candidates_found':result.candidates_found,'candidates_probed':result.candidates_probed,
+        'error': result.error or ('; '.join(manual_errors[-3:]) if not imgs else '')
+    }
+    return i, imgs, row
+
+
 def main():
     inp=Path(sys.argv[1]); outp=Path(sys.argv[2]); sump=Path(sys.argv[3])
     baseline=json.load(inp.open(encoding='utf-8'))
     output=copy.deepcopy(baseline)
     rows=[]
-    targets=[(i,c) for i,c in enumerate(output) if c.get('active') is True and not c.get('images')]
+    targets=[(i,copy.deepcopy(c)) for i,c in enumerate(output) if c.get('active') is True and not c.get('images')]
     print(f"Final pass targets: {len(targets)}")
-    for n,(i,club) in enumerate(targets,1):
-        name=club.get('name','')
-        temp=copy.deepcopy(club)
-        if name in UPDATED_URLS:
-            temp['url']=UPDATED_URLS[name]
-        result=enrich.process_club(i,temp,max_pages=12,max_probes=300,max_images=5)
-        imgs=list(result.images or [])
-        seen={x['url'] for x in imgs if isinstance(x,dict) and x.get('url')}
-        manual_errors=[]
-        for raw in MANUAL_CANDIDATES.get(name,[]):
-            if len(imgs)>=5: break
-            for u in variants(raw):
-                if len(imgs)>=5: break
-                img,err=acceptable(u, UPDATED_URLS.get(name, club.get('url','')))
-                if img and img['url'] not in seen:
-                    imgs.append(img); seen.add(img['url'])
-                elif err:
-                    manual_errors.append(f"{u} -> {err}")
-        output[i]['images']=imgs
-        status='ok' if imgs else result.status
-        rows.append({
-            'index':i,'name':name,'status':status,'images_added':len(imgs),
-            'crawler_status':result.status,'pages_checked':result.pages_checked,
-            'candidates_found':result.candidates_found,'candidates_probed':result.candidates_probed,
-            'error': result.error or ('; '.join(manual_errors[-3:]) if not imgs else '')
-        })
-        print(f"[{n:02d}/{len(targets)}] {name}: {status}, {len(imgs)} images")
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+        future_map={pool.submit(solve_target,i,club):(i,club) for i,club in targets}
+        for n,future in enumerate(concurrent.futures.as_completed(future_map),1):
+            i,club=future_map[future]
+            try:
+                idx,imgs,row=future.result()
+            except Exception as exc:
+                idx=i; imgs=[]
+                row={'index':i,'name':club.get('name',''),'status':'error','images_added':0,
+                     'crawler_status':'error','pages_checked':0,'candidates_found':0,'candidates_probed':0,
+                     'error':str(exc)[:500]}
+            output[idx]['images']=imgs
+            rows.append(row)
+            print(f"[{n:02d}/{len(targets)}] {row['name']}: {row['status']}, {len(imgs)} images")
+    rows.sort(key=lambda r:r['index'])
     errors=enrich.validate_output(baseline,output)
     if errors:
         print('VALIDATION FAILED')
