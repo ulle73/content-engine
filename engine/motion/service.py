@@ -208,7 +208,12 @@ def queue_render(company, user, project_id, *, mode, expected_revision, key):
             status="queued",
             brief=project.title,
             prompt="",
-            parameters={"motion_revision_id": str(revision.id), "spec_hash": revision.spec_hash, "mode": mode},
+            parameters={
+                "motion_revision_id": str(revision.id),
+                "spec_hash": revision.spec_hash,
+                "mode": mode,
+                "motion": __import__("engine.motion.critic", fromlist=["provenance"]).provenance(revision.spec),
+            },
         )
         job = MotionRender.objects.create(revision=revision, generation=generation, mode=mode)
     finish_action(action, result={"render_id": str(job.id)})
@@ -216,6 +221,41 @@ def queue_render(company, user, project_id, *, mode, expected_revision, key):
 
     transaction.on_commit(wake_worker)
     return job
+
+
+def critique_render(company, render_id):
+    """Spec-grounded critic for a completed preview; visual quality remains a separate review."""
+    from .critic import critique_spec
+
+    job = get_render(company, render_id)
+    if job.mode != "preview" or job.generation.status != "completed":
+        raise ValueError("Critic kräver en färdig preview.")
+    storyboard = list(job.storyboard.order_by("frame").values_list("scene_id", flat=True))
+    return critique_spec(job.revision.spec, storyboard_scene_ids=storyboard or None)
+
+
+def improve_from_critique(company, user, render_id, *, expected_revision, key):
+    """Create one immutable safe-fix revision. Never edits copy, assets or arbitrary code."""
+    from .critic import improve_spec
+
+    _owner(company, user)
+    job = get_render(company, render_id)
+    if job.mode != "preview" or job.generation.status != "completed":
+        raise ValueError("Critic-förbättring kräver en färdig preview.")
+    project = get_project(company, job.revision.project_id)
+    if project.current_revision != expected_revision or job.revision.number != expected_revision:
+        raise ValueError("Previewn gäller inte projektets aktuella version.")
+    spec, changes = improve_spec(job.revision.spec)
+    if not changes:
+        return project
+    return update_project(
+        company,
+        user,
+        project.id,
+        spec=spec,
+        expected_revision=expected_revision,
+        key=key,
+    )
 
 
 @transaction.atomic

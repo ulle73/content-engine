@@ -1,4 +1,5 @@
-export type Ratio = "9:16" | "1:1" | "16:9";
+export type Ratio = "9:16" | "4:5" | "1:1" | "16:9";
+export type MotionPreset = "legacy" | "soft" | "snappy" | "weighty" | "editorial";
 export type Datum = { label: string; value: number };
 export type SceneProps = {
   headline: string;
@@ -20,10 +21,31 @@ export type SceneSpec = {
   duration_frames: number;
   transition: string;
   transition_frames: number;
+  motion_preset: MotionPreset;
   background: string;
   effects: string[];
   props: SceneProps;
   sfx: Cue[];
+};
+export type BeatMap = {
+  enabled: boolean;
+  bpm: number | null;
+  offset_frames: number;
+  beat_frames: number[];
+  source: "none" | "profile" | "built-in-pulse" | "manual";
+};
+export type ReferenceProfile = {
+  source_asset_id: string | null;
+  label: string;
+  motion_intensity: "low" | "medium" | "high";
+  camera_style: "locked" | "push" | "orbit" | "dolly" | "handheld" | "macro" | "aerial" | "mixed";
+  transition_family: "cuts" | "soft" | "dynamic" | "mixed";
+  typography_behavior: "none" | "minimal" | "kinetic" | "editorial" | "bold";
+  beat_density: "sparse" | "medium" | "dense";
+  motion_preset: MotionPreset;
+  color_behavior: "brand" | "natural" | "muted" | "high-contrast";
+  bpm: number | null;
+  notes: string;
 };
 export type Spec = {
   version: 1;
@@ -42,6 +64,8 @@ export type Spec = {
     fade_frames: number;
     ducking: number;
   };
+  beat_map: BeatMap;
+  reference_profile: ReferenceProfile | null;
   end_card_asset_id: string | null;
 };
 export type Brand = {

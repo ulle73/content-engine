@@ -137,3 +137,78 @@ class MotionJobTests(TestCase):
         self.assertIsNone(claim_job())
         job.refresh_from_db()
         self.assertEqual(job.generation.status, "failed")
+
+
+    def test_preview_records_motion_provenance(self):
+        spec = dict(self.spec)
+        spec["scenes"] = [dict(spec["scenes"][0], motion_preset="snappy")]
+        spec["beat_map"] = {
+            "enabled": True,
+            "bpm": 120.0,
+            "offset_frames": 0,
+            "beat_frames": [0, 15, 30, 45, 60, 75],
+            "source": "manual",
+        }
+        p = self.service().create_project(
+            self.company, self.user, title="Harness", spec=spec, key="harness-project"
+        )
+        job = self.service().queue_render(
+            self.company, self.user, p.id, mode="preview", expected_revision=1, key="harness-preview"
+        )
+        motion = job.generation.parameters["motion"]
+        self.assertEqual(motion["motion_presets"], ["snappy"])
+        self.assertEqual(motion["beat_map"]["bpm"], 120.0)
+        self.assertEqual(motion["aspect_ratio"], "9:16")
+
+    def test_completed_preview_can_be_critic_improved_as_new_revision(self):
+        p = self.project(key="critic-project")
+        job = self.service().queue_render(
+            self.company, self.user, p.id, mode="preview", expected_revision=1, key="critic-preview"
+        )
+        job.generation.status = "completed"
+        job.generation.save(update_fields=["status"])
+        try:
+            report = self.service().critique_render(self.company, job.id)
+        except AttributeError as exc:
+            self.fail(f"Motion service must expose critique_render: {exc}")
+        self.assertTrue(report["visual_review_required"])
+
+        try:
+            improved = self.service().improve_from_critique(
+                self.company,
+                self.user,
+                job.id,
+                expected_revision=1,
+                key="critic-improve",
+            )
+        except AttributeError as exc:
+            self.fail(f"Motion service must expose improve_from_critique: {exc}")
+        improved.refresh_from_db()
+        self.assertEqual(improved.current_revision, 2)
+        old = improved.revisions.get(number=1).spec
+        new = improved.revisions.get(number=2).spec
+        self.assertEqual(old["scenes"][0]["props"], new["scenes"][0]["props"])
+        self.assertNotEqual(old["scenes"][0].get("motion_preset", "legacy"), new["scenes"][0]["motion_preset"])
+
+
+    def test_mcp_registers_critic_read_and_safe_fix_tools(self):
+        from engine.motion import mcp as motion_mcp
+
+        class FakeMCP:
+            def __init__(self):
+                self.titles = []
+
+            def tool(self, **kwargs):
+                self.titles.append(kwargs.get("title"))
+                return lambda fn: fn
+
+        fake = FakeMCP()
+        motion_mcp.register(
+            fake,
+            company_for=lambda ref: self.company,
+            run_for=lambda company_ref, run_id: None,
+            user_for=lambda: self.user,
+            safe_call=lambda fn, *args, **kwargs: fn(*args, **kwargs),
+        )
+        self.assertIn("Critique motion preview", fake.titles)
+        self.assertIn("Improve motion from critic", fake.titles)

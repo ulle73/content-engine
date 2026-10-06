@@ -49,6 +49,11 @@ jobs:
           python manage.py check --settings=engine.test_settings
           python manage.py test engine.test_motion_audio engine.test_motion_jobs engine.test_motion_planner engine.test_motion_schema engine.test_motion_worker engine.test_ad_templates --settings=engine.test_settings
 
+      - name: Verify exported MotionSpec schema is committed
+        run: |
+          python scripts/export-motion-schema.py
+          git diff --exit-code -- motion-renderer/spec.schema.json
+
       - name: Verify renderer contracts and build
         working-directory: motion-renderer
         run: |

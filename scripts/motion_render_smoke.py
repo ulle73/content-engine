@@ -24,7 +24,7 @@ DEST.mkdir(parents=True, exist_ok=True)
 brand = {**PRESETS["golfkuponger"], "name": "Golfkuponger", "logo_asset_id": None}
 results = []
 
-for mode, ratio in [("preview", "9:16"), ("final", "9:16"), ("final", "1:1"), ("final", "16:9")]:
+for mode, ratio in [("preview", "9:16"), ("final", "9:16"), ("final", "4:5"), ("final", "1:1"), ("final", "16:9")]:
     folder = DEST / (mode + "-" + ratio.replace(":", "x"))
     folder.mkdir(exist_ok=True)
     spec = compile_template(

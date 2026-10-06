@@ -109,6 +109,35 @@ def register(mcp, company_for, run_for, user_for, safe_call):
     def get_motion_project(company_ref: str, project_id: str) -> dict:
         return serialize_project(safe_call(service.get_project, company_for(company_ref), project_id))
 
+    @mcp.tool(title="Critique motion preview", annotations=read)
+    @database_tool
+    def critique_motion_preview(company_ref: str, render_id: str) -> dict:
+        """Score only properties that can be proven from the current MotionSpec/storyboard.
+        The result always declares which visual checks still require human/vision review."""
+        return safe_call(service.critique_render, company_for(company_ref), render_id)
+
+    @mcp.tool(title="Improve motion from critic", annotations=write)
+    @database_tool
+    def improve_motion_from_critic(
+        company_ref: str,
+        render_id: str,
+        expected_revision: int,
+        idempotency_key: str,
+    ) -> dict:
+        """Apply only allow-listed deterministic motion/timing improvements to a completed current preview.
+        Copy, facts, assets and arbitrary code are never changed. A changed spec becomes a new immutable revision,
+        clears preview approval and must be rendered/reviewed again."""
+        return serialize_project(
+            safe_call(
+                service.improve_from_critique,
+                company_for(company_ref),
+                user_for(),
+                render_id,
+                expected_revision=expected_revision,
+                key=idempotency_key,
+            )
+        )
+
     @mcp.tool(title="Update motion project", annotations=write)
     @database_tool
     def update_motion_project(

@@ -101,6 +101,15 @@ export function validateSpec(input) {
     end += scene.duration_frames - scene.transition_frames;
   }
   if (end > 120 * value.fps) throw new Error("Duration exceeds 120 seconds");
+  const beats = value.beat_map?.beat_frames || [];
+  if (
+    beats.some((beat, index) => beat < 0 || (index > 0 && beat <= beats[index - 1]))
+  )
+    throw new Error("Beat frames must be non-negative, unique and sorted");
+  if (beats.some((beat) => beat >= end))
+    throw new Error("Beat outside video");
+  if (value.beat_map?.enabled && value.beat_map.bpm == null && beats.length === 0)
+    throw new Error("Enabled beat map requires BPM or beat frames");
   return value;
 }
 

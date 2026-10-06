@@ -110,4 +110,9 @@ def compile_brief(brief: AdBrief) -> dict:
         fields,
         aspect_ratio=brief.formats[0] if brief.formats else "9:16",
         brand_id=brief.brand_preset,
+        reference_profile=(
+            brief.reference_profile.model_dump(mode="json")
+            if brief.reference_profile
+            else None
+        ),
     )

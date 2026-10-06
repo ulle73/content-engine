@@ -119,6 +119,84 @@ def _to_jpeg(image: Image.Image) -> bytes:
     return out.getvalue()
 
 
+# ---- reference video ------------------------------------------------------
+
+def reference_video_sheet(asset, frames: int = 6) -> bytes:
+    """Evenly sample a company-owned reference video into one local JPEG sheet."""
+    if getattr(asset, "kind", "") != "video":
+        raise ValueError("Referensen måste vara en video.")
+    if type(frames) is not int or not 3 <= frames <= 12:
+        raise ValueError("Välj 3–12 referensbilder.")
+
+    samples: list[tuple[Image.Image, float]] = []
+    try:
+        with open_asset(asset) as file:
+            with av.open(file) as container:
+                stream = next(iter(container.streams.video), None)
+                if stream is None:
+                    raise ValueError("Videon saknar ett läsbart videospår.")
+                duration = float(getattr(asset, "duration_seconds", 0) or 0)
+                if duration <= 0 and stream.duration is not None and stream.time_base is not None:
+                    duration = float(stream.duration * stream.time_base)
+                if duration <= 0 and stream.frames and stream.average_rate:
+                    duration = float(stream.frames / stream.average_rate)
+                end = max(0.001, duration * 0.98) if duration > 0 else 0
+                targets = [end * i / (frames - 1) for i in range(frames)] if end else []
+                target_index = 0
+                last: tuple[Image.Image, float] | None = None
+                for index, frame in enumerate(container.decode(video=0)):
+                    timestamp = (
+                        float(frame.time)
+                        if frame.time is not None
+                        else index / float(stream.average_rate or 30)
+                    )
+                    image = frame.to_image().convert("RGB")
+                    last = (image, timestamp)
+                    if targets:
+                        while target_index < len(targets) and timestamp >= targets[target_index]:
+                            samples.append((image.copy(), timestamp))
+                            target_index += 1
+                    elif len(samples) < frames:
+                        samples.append((image.copy(), timestamp))
+                    if targets and target_index >= len(targets):
+                        break
+                if last is None:
+                    raise ValueError("Videon saknar läsbara bilder.")
+                while len(samples) < frames:
+                    samples.append((last[0].copy(), last[1]))
+    except ValueError:
+        raise
+    except (av.error.FFmpegError, OSError) as exc:
+        raise ValueError("Referensvideon kunde inte läsas.") from exc
+
+    colors = brand_colors()
+    cols = min(3, frames)
+    rows = (frames + cols - 1) // cols
+    pad, tile_w, tile_h, caption_h, header_h = 16, 320, 180, 30, 58
+    sheet = Image.new(
+        "RGB",
+        (pad + cols * (tile_w + pad), header_h + rows * (tile_h + caption_h + pad)),
+        colors["paper"],
+    )
+    draw = ImageDraw.Draw(sheet)
+    draw.text((pad, 15), "Referensvideo · kreativa mekaniker", font=_font(24, bold=True), fill=colors["ink"])
+    for index, (image, timestamp) in enumerate(samples[:frames]):
+        row, col = divmod(index, cols)
+        x = pad + col * (tile_w + pad)
+        y = header_h + row * (tile_h + caption_h + pad)
+        sheet.paste(_cover(image, (tile_w, tile_h)), (x, y))
+        draw.rounded_rectangle([x + 8, y + 8, x + 80, y + 38], 8, fill=colors["ink"])
+        draw.text(
+            (x + 44, y + 23),
+            f"{timestamp:.1f} s",
+            font=_font(15, bold=True),
+            fill=colors["foreground"],
+            anchor="mm",
+        )
+        draw.text((x, y + tile_h + 6), f"Bild {index + 1}", font=_font(15, bold=True), fill=colors["ink"])
+    return _to_jpeg(sheet)
+
+
 # ---- picker ---------------------------------------------------------------
 
 def picker_sheet(items: list[tuple[object, str]], title: str = "") -> bytes:

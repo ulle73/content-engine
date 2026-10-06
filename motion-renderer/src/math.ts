@@ -29,9 +29,11 @@ export function timeline(
 export function dimensions(ratio: string): [number, number] {
   return ratio === "9:16"
     ? [1080, 1920]
-    : ratio === "1:1"
-      ? [1080, 1080]
-      : [1920, 1080];
+    : ratio === "4:5"
+      ? [1080, 1350]
+      : ratio === "1:1"
+        ? [1080, 1080]
+        : [1920, 1080];
 }
 export function safe(width: number, height: number) {
   const portrait = height > width * 1.2;

@@ -28,7 +28,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-AD_BRIEF_VERSION = "ad-brief/1"
+AD_BRIEF_VERSION = "ad-brief/2"
 
 # Hard copy rules. These are craft rules for short social video, not taste.
 MAX_WORDS_ON_SCREEN = 8          # per scene; people read ~3-4 words/second
@@ -40,10 +40,33 @@ Engine = Literal["remotion", "higgsfield", "hybrid"]
 Objective = Literal["awareness", "consideration", "conversion", "retargeting"]
 AssetRole = Literal["hook", "footage", "screen", "product", "proof", "end_card", "logo", "other"]
 ScenePurpose = Literal["hook", "problem", "solution", "how", "proof", "offer", "cta"]
+MotionPreset = Literal["legacy", "soft", "snappy", "weighty", "editorial"]
+MotionIntensity = Literal["low", "medium", "high"]
+CameraStyle = Literal["locked", "push", "orbit", "dolly", "handheld", "macro", "aerial", "mixed"]
+TransitionFamily = Literal["cuts", "soft", "dynamic", "mixed"]
+TypographyBehavior = Literal["none", "minimal", "kinetic", "editorial", "bold"]
+BeatDensity = Literal["sparse", "medium", "dense"]
+ColorBehavior = Literal["brand", "natural", "muted", "high-contrast"]
 
 
 class _Strict(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+
+class ReferenceProfile(_Strict):
+    """Reusable mechanics from a reference creative, never its claims or identity."""
+
+    source_asset_id: str | None = Field(default=None, max_length=100)
+    label: str = Field(default="", max_length=120)
+    motion_intensity: MotionIntensity = "medium"
+    camera_style: CameraStyle = "mixed"
+    transition_family: TransitionFamily = "mixed"
+    typography_behavior: TypographyBehavior = "minimal"
+    beat_density: BeatDensity = "medium"
+    motion_preset: MotionPreset = "soft"
+    color_behavior: ColorBehavior = "brand"
+    bpm: float | None = Field(default=None, ge=40, le=220)
+    notes: str = Field(default="", max_length=600)
 
 
 class Fact(_Strict):
@@ -112,8 +135,9 @@ class AdBrief(_Strict):
     # Phase 2 - angle
     angle: Angle | None = None
 
-    # Phase 3 - assets
+    # Phase 3 - assets + optional motion grammar from a reference creative
     assets: list[Asset] = Field(default_factory=list)
+    reference_profile: ReferenceProfile | None = None
 
     # Phase 4 - engine
     engine: EngineChoice | None = None

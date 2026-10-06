@@ -218,3 +218,79 @@ class AdStudioSkillTests(TestCase):
     def test_process_skill_available(self):
         self.assertIn("ad-studio", {s["name"] for s in skills.available()})
         self.assertIn("Förslag före frågor", skills.read("ad-studio"))
+
+
+
+class AdStudioReferenceProfileTests(AdStudioBase):
+    def test_reference_video_sheet_samples_company_video(self):
+        from .test_media import movie
+
+        video = store_asset(self.company, movie())
+        try:
+            data = service.reference_video_sheet(self.company, str(video.pk), frames=6)
+        except AttributeError as exc:
+            self.fail(f"Reference video contact sheet is missing: {exc}")
+        image = self._reference_jpeg(data)
+        self.assertGreater(image.width, 600)
+        self.assertGreater(image.height, 300)
+
+        other = Company.objects.create(owner=self.user, name="Reference Other", profile="x")
+        foreign = store_asset(other, movie())
+        with self.assertRaises(ValueError):
+            service.reference_video_sheet(self.company, str(foreign.pk), frames=6)
+
+    def _reference_jpeg(self, data):
+        import io
+
+        from PIL import Image as PILImage
+
+        image = PILImage.open(io.BytesIO(data))
+        self.assertEqual(image.format, "JPEG")
+        return image
+
+    def test_reference_profile_is_strict_and_company_scoped(self):
+        from .test_media import movie
+
+        video = store_asset(self.company, movie())
+        draft = service.start_draft(self.company, self.user, message="Reference style")
+        profile = {
+            "source_asset_id": str(video.pk),
+            "label": "Reference grammar",
+            "motion_intensity": "high",
+            "camera_style": "push",
+            "transition_family": "dynamic",
+            "typography_behavior": "kinetic",
+            "beat_density": "dense",
+            "motion_preset": "snappy",
+            "color_behavior": "brand",
+            "bpm": 120,
+            "notes": "Use only the motion grammar.",
+        }
+        try:
+            draft = service.set_reference_profile(
+                self.company,
+                draft.pk,
+                profile=profile,
+                expected_revision=1,
+            )
+        except (AttributeError, ValueError) as exc:
+            self.fail(f"Reference profile should be persistable: {exc}")
+        self.assertEqual(draft.brief["reference_profile"]["source_asset_id"], str(video.pk))
+
+        with self.assertRaises(ValueError):
+            service.set_reference_profile(
+                self.company,
+                draft.pk,
+                profile={**profile, "code": "alert(1)"},
+                expected_revision=draft.revision,
+            )
+
+        other = Company.objects.create(owner=self.user, name="Other", profile="x")
+        foreign = store_asset(other, movie())
+        with self.assertRaises(ValueError):
+            service.set_reference_profile(
+                self.company,
+                draft.pk,
+                profile={**profile, "source_asset_id": str(foreign.pk)},
+                expected_revision=draft.revision,
+            )

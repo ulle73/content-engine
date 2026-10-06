@@ -266,7 +266,7 @@ for kind, rows in groups.items():
                 category=kind,
                 tags=[id, kind, name.lower()],
                 version=1,
-                aspect_ratios=["9:16", "1:1", "16:9"],
+                aspect_ratios=["9:16", "4:5", "1:1", "16:9"],
                 required_props=["headline"] if kind in ("text", "data", "scene") else [],
                 optional_props=[
                     "body",
@@ -306,7 +306,11 @@ for id, name, desc, category, required, scenes in templates:
             category=category,
             tags=[id, category, name.lower()] + scenes,
             version=1,
-            aspect_ratios=["9:16", "1:1", "16:9"],
+            aspect_ratios=(
+                ["9:16", "1:1", "16:9"]
+                if id == "sequence-film"
+                else ["9:16", "4:5", "1:1", "16:9"]
+            ),
             required_props=required,
             optional_props=template_optional_props.get(
                 id,
