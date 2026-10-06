@@ -1046,3 +1046,6 @@ from .motion.models import (  # noqa: F401,E402
     MotionRevision,
     MotionWorkerSession,
 )
+
+# Ad Studio: persisted AdBrief drafts and the tagged image bank.
+from .ad_studio.models import AdDraft, AssetTags  # noqa: F401,E402

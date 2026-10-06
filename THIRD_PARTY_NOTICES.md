@@ -8,3 +8,5 @@ Den aktiva applikationen innehåller inte Brightbean. Dess submodul, Python-impo
 - Övriga Python-bibliotek installeras från `requirements.txt` och behåller sina medföljande licenser. Exempel: OpenAI SDK och HTTPX (Apache-2.0/BSD respektive BSD), cryptography (Apache-2.0 eller BSD), psycopg (LGPL-3.0). Att ta bort Brightbean betyder inte att tredjepartslicenser upphör att gälla.
 
 Ingen ny öppen licens tilldelas projektets egen kod utan ägarens val. Tidigare revisioner med Brightbean och AGPL finns kvar i Git-historiken, med sina dåvarande licensvillkor. De har inte retroaktivt omlicensierats. Licenstexten för den tidigare versionen finns under `docs/licenses/`.
+
+- **Inter** (typsnitt för storyboard- och granskningsbilder): https://github.com/rsms/inter, SIL Open Font License 1.1. Licenstext i `engine/ad_studio/fonts/Inter-OFL.txt`.

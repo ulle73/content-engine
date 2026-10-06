@@ -1,0 +1,46 @@
+# Ad Studio
+
+Chatten som idémotor: "jag vill göra en ad med budskapet att använda friskvårdsbidraget innan det brinner inne" → smarta frågor → vinklar → bildförslag → Remotion eller Higgsfield → storyboard → lås → produktion.
+
+## Delar
+
+| Del | Fil | Ansvar |
+|---|---|---|
+| Kontrakt | `engine/ad_studio/brief.py` | `AdBrief`: vad som är bestämt, vad som saknas (`missing`), regelbrott (`problems`), `lock()` med hash |
+| Lagring | `engine/ad_studio/models.py` | `AdDraft` (brief + revision + status), `AssetTags` (sökbar bildbank) |
+| Logik | `engine/ad_studio/service.py` | Företagsscopat: starta, uppdatera, låsa, öppna igen, producera, tagga, söka |
+| Mallbrygga | `engine/ad_studio/blueprints.py` | Remotion-mall → scenskelett; låst brief → mallfält |
+| Kunskap | `skills/*/SKILL.md` | Brand och friskvård. Läses av AI:n via `read_ad_skill` |
+| Bilder i chatten | `engine/ad_studio/sheets.py` | Numrerat bildark, storyboard-skiss och granskningsark (Pillow, ingen kostnad) |
+| MCP | `engine/ad_studio/mcp.py` | 18 verktyg, registrerade i `engine/mcp_server.py` |
+
+## Flödet i MCP
+
+Detaljerna står i `skills/ad-studio/SKILL.md`. I korthet:
+
+1. `read_ad_skill` för `ad-studio`, `golfkuponger-brand` och domänskillen.
+2. `start_ad_brief(message)`. Svaret innehåller `missing` och `next_question`.
+3. Första svaret är en komplett rekommendation: tre vinklar, motor och mall, och max tre frågor med färdiga svar.
+4. Bilder: `suggest_scene_assets`, sedan `show_ad_images` (numrerat ark, användaren svarar "ta 2 och 5"). Bilder som klistras in i chatten sparas, taggas och kopplas med `add_ad_image`.
+5. Remotion: `get_ad_template_blueprint(template_id)` ger exakta scener, tider och text- och bildplatser.
+6. `update_ad_brief` och sedan `preview_ad_storyboard` (hela annonsen som en bild, med safe zones och regelbrott). Iterera.
+7. `lock_ad_brief`, `produce_ad`, `render_motion_project` (preview).
+8. `review_ad_render`: nyckelbilder med safe zones, poängsatta mot checklistan, innan `approve_motion_preview` och final.
+
+## Garantier
+
+- Produktionen läser bara en låst brief vars hash stämmer.
+- Mallarnas standardtexter (som innehåller overifierade påståenden som "300+ klubbar" och "31/12") används aldrig. Varje textplats måste fyllas i briefen.
+- Påståenden ligger i `facts` och blockerar låsning tills de är verifierade.
+- Higgsfield kräver godkänd kostnad i briefen. Generering sker via befintliga granskade mediaverktyg.
+- Optimistisk låsning via `expected_revision`, och allt är scopat till företaget.
+
+## Bildbanken
+
+`list_untagged_media`, sedan `view_media`, sedan `tag_media_asset`: AI:n tittar på bilden och sparar vad den visar. Det kostar inga extra API-anrop, eftersom assistenten själv ser bilden. Sätt `verified` när en människa bekräftat. `search_ad_assets` rankar på betydelse och föredrar verifierade taggar.
+
+## Inte byggt än
+
+- Klickbar widget med kryssrutor. Idag väljer man med siffror i det numrerade arket, vilket fungerar i både ChatGPT och Claude.
+- Fler Remotion-mallar utöver friskvårdsmallarna.
+- Fler format (4:5, 1:1) för skärm-annonsmallarna.
