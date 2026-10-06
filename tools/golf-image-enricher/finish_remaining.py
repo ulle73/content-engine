@@ -140,22 +140,37 @@ def acceptable(url, referer=""):
 
 def solve_target(i, club):
     name=club.get('name','')
-    temp=copy.deepcopy(club)
-    if name in UPDATED_URLS:
-        temp['url']=UPDATED_URLS[name]
-    result=enrich.process_club(i,temp,max_pages=12,max_probes=300,max_images=5)
-    imgs=list(result.images or [])
-    seen={x['url'] for x in imgs if isinstance(x,dict) and x.get('url')}
+    referer=UPDATED_URLS.get(name, club.get('url',''))
+
+    # Fast path: verify curated candidates first. If at least one is valid,
+    # there is no reason to spend minutes recrawling a known-hard website.
+    imgs=[]
+    seen=set()
     manual_errors=[]
     for raw in MANUAL_CANDIDATES.get(name,[]):
         if len(imgs)>=5: break
         for u in variants(raw):
             if len(imgs)>=5: break
-            img,err=acceptable(u, UPDATED_URLS.get(name, club.get('url','')))
+            img,err=acceptable(u, referer)
             if img and img['url'] not in seen:
                 imgs.append(img); seen.add(img['url'])
             elif err:
                 manual_errors.append(f"{u} -> {err}")
+    if imgs:
+        return i, imgs, {
+            'index':i,'name':name,'status':'ok','images_added':len(imgs),
+            'crawler_status':'manual_verified','pages_checked':0,
+            'candidates_found':len(MANUAL_CANDIDATES.get(name,[])),
+            'candidates_probed':len(MANUAL_CANDIDATES.get(name,[])),
+            'error':''
+        }
+
+    # Slow fallback only for clubs whose curated candidates failed or were absent.
+    temp=copy.deepcopy(club)
+    if name in UPDATED_URLS:
+        temp['url']=UPDATED_URLS[name]
+    result=enrich.process_club(i,temp,max_pages=12,max_probes=300,max_images=5)
+    imgs=list(result.images or [])
     status='ok' if imgs else result.status
     row={
         'index':i,'name':name,'status':status,'images_added':len(imgs),
