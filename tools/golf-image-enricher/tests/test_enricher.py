@@ -38,6 +38,21 @@ class EnricherTests(unittest.TestCase):
         u = "https://x.test/wp-content/uploads/course-1536x1024.jpg"
         self.assertEqual(enrich.original_variant(u), "https://x.test/wp-content/uploads/course.jpg")
 
+    def test_wix_original_variant(self):
+        u = (
+            "https://static.wixstatic.com/media/abc123~mv2.jpg/"
+            "v1/fill/w_1600,h_1068,q_85/abc123~mv2.jpg"
+        )
+        self.assertEqual(
+            enrich.original_variant(u),
+            "https://static.wixstatic.com/media/abc123~mv2.jpg",
+        )
+
+    def test_generic_background_attribute_candidate(self):
+        body = '<div data-background-image="/course-wide.jpg" class="hero golf"></div>'
+        cands, _ = enrich.extract_candidates("https://club.test/", body)
+        self.assertTrue(any(c.url == "https://club.test/course-wide.jpg" for c in cands))
+
     def test_end_to_end_against_local_http_server(self):
         with tempfile.TemporaryDirectory() as td:
             td = Path(td)
