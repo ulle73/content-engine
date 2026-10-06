@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from django.db import transaction
+from django.utils import timezone
 from pydantic import ValidationError as PydanticValidationError
 
 from engine.models import Company, MediaAsset
