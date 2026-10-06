@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.urls import include, path
 
 from . import ads_views, intelligence_views, market_views, media_views, prompt_views, sequence_views, views
+from .ad_studio import views as ad_views
 from .assistant import views as assistant_views
 from .company_settings import company_settings, costs
 from .motion import views as motion_views
@@ -10,6 +11,12 @@ from .onboarding import SignInView, setup
 from .performance_views import performance
 
 engine_urls = [
+    path("annonser/", ad_views.ad_list, name="ad_list"),
+    path("annonser/<uuid:draft_id>/", ad_views.ad_workspace, name="ad_workspace"),
+    path("annonser/<uuid:draft_id>/spara/", ad_views.ad_update, name="ad_update"),
+    path("annonser/<uuid:draft_id>/scen/<slug:scene_id>/bild/", ad_views.ad_pick, name="ad_pick"),
+    path("annonser/<uuid:draft_id>/storyboard.jpg", ad_views.ad_storyboard, name="ad_storyboard"),
+    path("annonser/<uuid:draft_id>/atgard/", ad_views.ad_action, name="ad_action"),
     path("studio/", assistant_views.workspace, name="assistant"),
     path("studio/new/", assistant_views.create, name="assistant_create"),
     path("studio/assets/", assistant_views.assets, name="assistant_assets"),

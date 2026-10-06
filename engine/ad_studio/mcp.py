@@ -21,6 +21,8 @@ FLOW = (
     "8) Vid 'kör': lock_ad_brief, sedan produce_ad, sedan render_motion_project (preview). "
     "9) När previewn är klar: review_ad_render. Granska varje bildruta mot brand-skillens checklista, "
     "visa resultatet och föreslå rättningar innan approve_motion_preview och final. "
+    "Varje svar innehåller studio_url: ge användaren länken 'Öppna i studion' när något är lättare att klicka "
+    "(välja bilder, ladda upp, ändra text per scen, se storyboarden stort). Samma utkast, samma brief. "
     "Hitta aldrig på fakta. Varje påstående läggs i facts med källa."
 )
 

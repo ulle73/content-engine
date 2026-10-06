@@ -161,13 +161,13 @@ class AppShellTests(TestCase):
         self.assertContains(response, "Min profil")
         self.assertContains(response, 'class="errorlist"')
 
-    def test_navigation_has_six_distinct_destinations_and_one_active_item_per_menu(self):
+    def test_navigation_has_seven_distinct_destinations_and_one_active_item_per_menu(self):
         response = self.client.get(reverse("engine:own_performance", kwargs={"workspace_id": self.workspace.pk}))
         elements = UIElements(response).elements
         for link_class in ("app-nav-link", "mobile-nav-link"):
             links = [attrs for tag, attrs in elements if tag == "a" and link_class in attrs.get("class", "").split()]
-            self.assertEqual(len(links), 6)
-            self.assertEqual(len({link["href"] for link in links}), 6)
+            self.assertEqual(len(links), 7)  # Skapa, Annonser, Media, Inspiration, Resultat, Inställningar, Kostnader
+            self.assertEqual(len({link["href"] for link in links}), 7)
             active = [link for link in links if link.get("aria-current") == "page"]
             self.assertEqual(len(active), 1)
             self.assertEqual(active[0]["href"], reverse("engine:own_performance", kwargs={"workspace_id": self.workspace.pk}))

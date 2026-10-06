@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}{{ draft.title }} · Annonser{% endblock %}
+
+{% block content %}
+<main class="engine ad-studio">
+  <p class="small"><a href="{% url 'engine:ad_list' workspace_id=workspace.pk %}">← Alla annonser</a></p>
+  <header class="page-header"><div><p class="eyebrow">Annons · {% if draft.status == 'draft' %}utkast{% elif draft.status == 'locked' %}låst{% else %}produceras{% endif %}</p>
+    <h1>{{ draft.title }}</h1></div></header>
+
+      <section class="ad-card ad-storyboard-card">
+    <h2>Storyboard</h2>
+    {% if scenes %}<a href="{% url 'engine:ad_storyboard' workspace_id=workspace.pk draft_id=draft.pk %}?r={{ draft.revision }}" target="_blank" rel="noopener"><img class="ad-storyboard" src="{% url 'engine:ad_storyboard' workspace_id=workspace.pk draft_id=draft.pk %}?r={{ draft.revision }}" alt="Storyboard-skiss av annonsen"></a>
+    <p class="small">Skiss. Exakt utseende syns i previewn efter produktion.</p>{% else %}<p class="small">Skissen visas när scenerna finns.</p>{% endif %}
+  </section>
+
+  <div class="ad-layout">
+    <form method="post" action="{% url 'engine:ad_update' workspace_id=workspace.pk draft_id=draft.pk %}" class="ad-brief" id="ad-brief">{% csrf_token %}
+      <input type="hidden" name="revision" value="{{ draft.revision }}">
+      <fieldset {% if not editable %}disabled{% endif %}>
+        <section class="ad-card"><h2>Budskap</h2>
+          <div class="field"><label for="f-message">Det tittaren ska minnas</label><input id="f-message" name="message" maxlength="200" value="{{ brief.message }}"></div>
+          <div class="ad-two">
+            <div class="field"><label for="f-audience">Målgrupp</label><input id="f-audience" name="audience" maxlength="300" value="{{ brief.audience }}"></div>
+            <div class="field"><label for="f-objective">Mål</label><select id="f-objective" name="objective"><option value="">Välj</option>{% for value, label in objectives %}<option value="{{ value }}" {% if brief.objective == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+          </div>
+          <div class="ad-two">
+            <div class="field"><label for="f-angle">Vinkel</label><input id="f-angle" name="angle_title" maxlength="120" value="{{ brief.angle.title|default:'' }}"></div>
+            <div class="field"><label for="f-hook">Hook (max 8 ord)</label><input id="f-hook" name="angle_hook" maxlength="120" value="{{ brief.angle.hook|default:'' }}"></div>
+          </div>
+        </section>
+
+        <section class="ad-card"><h2>Mall</h2>
+          <div class="ad-templates" role="radiogroup" aria-label="Mall">
+            {% for t in templates %}<label class="ad-template"><input type="radio" name="template_id" value="{{ t.id }}" {% if brief.engine.remotion_template_id == t.id %}checked{% endif %}><span><strong>{{ t.name }}</strong><small>{{ t.description }}</small></span></label>{% endfor %}
+          </div>
+          <p class="small">Remotion · gratis. Byter du mall behålls text och bilder i scener med samma namn.</p>
+        </section>
+
+        <section class="ad-card"><h2>Scener</h2>
+          {% if not scenes %}<p class="small">Välj en mall och spara, så läggs scenerna upp.</p>{% endif %}
+          <ol class="ad-scenes">
+            {% for scene in scenes %}
+            <li class="ad-scene" id="scene-{{ scene.id }}">
+              <div class="ad-thumb">
+                {% if scene.asset %}
+                  {% if scene.asset.kind == 'video' %}<video src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=scene.asset.pk %}" muted playsinline preload="metadata"></video>
+                  {% else %}<img src="{% url 'engine:asset_file' workspace_id=workspace.pk asset_id=scene.asset.pk %}" alt="{{ scene.asset.alt_text }}" loading="lazy">{% endif %}
+                {% elif scene.purpose == 'cta' %}<span class="ad-thumb-end">Slutkort</span>
+                {% else %}<span class="ad-thumb-empty">Ingen bild</span>{% endif %}
+              </div>
+              <div class="ad-scene-body">
+                <p class="ad-scene-head"><strong>{{ forloop.counter }}. {{ scene.label }}</strong> <span>{{ scene.start|floatformat:"-1" }}–{{ scene.start|add:scene.duration_s|floatformat:"-1" }} s</span></p>
+                <label class="visually-hidden" for="t-{{ scene.id }}">Text i scen {{ forloop.counter }}</label>
+                <input id="t-{{ scene.id }}" name="scene_{{ scene.id }}_text" maxlength="120" value="{{ scene.on_screen_text }}" placeholder="Text på skärmen (max 8 ord)">
+                {% if scene.purpose != 'cta' and editable %}<a class="ad-pick-link" href="{% url 'engine:ad_pick' workspace_id=workspace.pk draft_id=draft.pk scene_id=scene.id %}">{% if scene.asset %}Byt bild{% else %}Välj bild{% endif %}</a>{% endif %}
+              </div>
+            </li>
+            {% endfor %}
+          </ol>
+        </section>
+
+        {% if brief.facts %}<section class="ad-card"><h2>Påståenden i annonsen</h2>
+          <p class="small">Bocka bara i det du själv har kontrollerat mot källan. Overifierade påståenden stoppar låsningen.</p>
+          <ul class="ad-facts">{% for f in brief.facts %}<li><label><input type="checkbox" name="fact_verified" value="{{ forloop.counter0 }}" {% if f.verified %}checked{% endif %}> <span>{{ f.claim }}<small>Källa: {{ f.source }}</small></span></label></li>{% endfor %}</ul>
+          <input type="hidden" name="facts_present" value="1">
+        </section>{% endif %}
+
+        <section class="ad-card"><h2>Text i flödet</h2>
+          <div class="field"><label for="f-headline">Rubrik</label><input id="f-headline" name="headline" maxlength="60" value="{{ brief.copy.headline }}"></div>
+          <div class="field"><label for="f-primary">Primärtext</label><textarea id="f-primary" name="primary_text" maxlength="600" rows="3">{{ brief.copy.primary_text }}</textarea></div>
+        </section>
+        {% if editable %}<div class="ad-save"><button type="submit">Spara och uppdatera skissen</button></div>{% endif %}
+      </fieldset>
+    </form>
+
+    <aside class="ad-side" aria-label="Förhandsvisning och status">
+
+      <section class="ad-card ad-status">
+        {% if data.problems or data.missing %}
+          <h2>Kvar innan låsning</h2>
+          <ul>{% for m in data.missing %}<li>Saknas: {{ m }}</li>{% endfor %}{% for p in data.problems %}<li>{{ p }}</li>{% endfor %}</ul>
+        {% elif draft.status == 'draft' %}<h2>Redo</h2><p class="small">Allt är på plats. Lås briefen, så produceras den exakt så här.</p>{% endif %}
+        <form method="post" action="{% url 'engine:ad_action' workspace_id=workspace.pk draft_id=draft.pk %}" class="ad-actions">{% csrf_token %}
+          <input type="hidden" name="revision" value="{{ draft.revision }}">
+          {% if draft.status == 'draft' %}<button name="action" value="lock" {% if not data.lockable %}disabled{% endif %}>Lås briefen</button>
+          {% elif draft.status == 'locked' %}<button name="action" value="produce">Producera video</button><button name="action" value="reopen" class="button-secondary">Ändra igen</button>
+          {% else %}<button name="action" value="produce">Öppna videoprojektet</button>{% endif %}
+          <button name="action" value="archive" class="button-secondary">Arkivera</button>
+        </form>
+      </section>
+    </aside>
+  </div>
+</main>
+{% endblock %}

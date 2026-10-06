@@ -14,6 +14,9 @@ from . import blueprints
 from .brief import AdBrief, BriefNotReady
 from .models import AdDraft, AssetTags
 
+# Templates that follow the scene-id convention in blueprints.py and can be filled from a brief.
+AD_TEMPLATES = ("friskvard-portal-ad", "friskvard-direct-ad")
+
 ROLE_VALUES = {"hook", "footage", "screen", "product", "proof", "end_card", "logo", "other"}
 
 # Which question to ask next for each missing field. The assistant turns these
@@ -55,6 +58,7 @@ def serialize(draft: AdDraft) -> dict:
         "problems": brief.problems(),
         "lockable": not missing and not brief.problems(),
         "motion_project_id": str(draft.motion_project_id) if draft.motion_project_id else None,
+        "studio_url": studio_url(draft),
     }
 
 
@@ -454,3 +458,49 @@ def review_image(company: Company, draft_id) -> bytes:
         raise ValueError("Renderingen saknar nyckelbilder att granska.")
     fps = revision.spec.get("fps", 30)
     return sheets.review_sheet(keyframes, fps, f"{render.mode.upper()} · {draft.title}"[:90])
+
+
+# ---- workbench helpers -------------------------------------------------------
+
+def studio_url(draft: AdDraft) -> str:
+    from django.conf import settings
+    from django.urls import reverse
+
+    path = reverse("engine:ad_workspace", kwargs={"workspace_id": draft.company_id, "draft_id": draft.pk})
+    return settings.APP_URL.rstrip("/") + path
+
+
+def apply_template(company: Company, draft_id, *, template_id: str, expected_revision: int) -> AdDraft:
+    """Choose a Remotion template and lay out its scenes, keeping text/images for scenes with the same id."""
+    bp = blueprints.blueprint(template_id)
+    current = _parse(get_draft(company, draft_id).brief)
+    old = {s.id: s for s in current.scenes}
+    scenes = []
+    for slot in bp["scenes"]:
+        previous = old.get(slot["id"])
+        scene = {"id": slot["id"], "purpose": slot["purpose"], "duration_s": slot["duration_s"]}
+        if previous:
+            scene.update(on_screen_text=previous.on_screen_text, motion=previous.motion,
+                         **({"asset_id": previous.asset_id} if previous.asset_id and slot["needs_asset"] else {}))
+        scenes.append(scene)
+    engine = {"engine": "remotion", "remotion_template_id": template_id}
+    return update_draft(company, draft_id, expected_revision=expected_revision,
+                        changes={"engine": engine, "scenes": scenes, "duration_s": bp["duration_s"]})
+
+
+def set_scene_asset(company: Company, draft_id, *, scene_id: str, asset_id: str, expected_revision: int) -> AdDraft:
+    brief = _parse(get_draft(company, draft_id).brief)
+    data = brief.model_dump(mode="json", by_alias=True)
+    if scene_id not in {s["id"] for s in data["scenes"]}:
+        raise ValueError("Scenen finns inte i briefen.")
+    for scene in data["scenes"]:
+        if scene["id"] == scene_id:
+            scene["asset_id"] = asset_id
+    if asset_id not in {a["asset_id"] for a in data["assets"]}:
+        purpose = next(s["purpose"] for s in data["scenes"] if s["id"] == scene_id)
+        role = (SCENE_ROLES.get(purpose) or ["footage"])[0]
+        data["assets"].append({"asset_id": asset_id, "role": role, "origin": "library"})
+    used = {s.get("asset_id") for s in data["scenes"]}
+    assets = [a for a in data["assets"] if a["asset_id"] in used or a["origin"] == "generate"]
+    return update_draft(company, draft_id, expected_revision=expected_revision,
+                        changes={"scenes": data["scenes"], "assets": assets})
