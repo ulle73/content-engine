@@ -112,6 +112,8 @@ URL_OVERRIDES = {
     "Bodens GK, Sävast": "https://bodensgk.se/",
     "Borås GK": "https://www.borasgolfklubb.se/",
     "Drottningholms GK": "https://kdrgk.se/",
+    "Dalsjö GK": "https://www.dalsjogolf.se/",
+    "Eksjö GK": "https://eksjogk.se/",
     "Falkenbergs GK": "https://www.falkenbergsgk.se/",
     "Falsterbo GK": "https://www.falsterbogk.se/",
     "Finspångs GK": "https://finspangsgk.se/",
@@ -133,11 +135,24 @@ URL_OVERRIDES = {
     "Orust GK": "https://www.orustgk.se/",
     "Oskarshamns GK": "https://oskarshamnsgk.se/",
     "Saltsjöbadens Golfshop/Pro Swede Golf AB": "https://saltsjobadensgolfshop.se/",
-    "Sundsta Golf": "https://www.sundsta.se/",
+    "Sundsta Golf": "https://www.sundsta.se/golf-norrtalje/",
     "Sundsvalls GK": "https://sundsvallsgk.se/",
     "Timrå GK": "https://www.timragk.se/",
     "Tyresö GK": "https://tyresogolf.se/",
     "Åda GK": "https://adagolf.se/",
+}
+
+INSECURE_PUBLIC_HOSTS = {"haggegk.se"}
+
+MANUAL_CANDIDATES = {
+    # Official-site images used only where the site blocks automated page fetches.
+    # Pixel dimensions are still verified from the real image bytes before acceptance.
+    "Sundsvalls GK": [
+        "https://sundsvallsgk.se/wp-content/uploads/2021/08/DJI_0258.jpg",
+    ],
+    "Timrå GK": [
+        "https://www.timragk.se/wp-content/uploads/2026/06/Header_-Timra-GK_summer-stor.png",
+    ],
 }
 
 IMG_EXT_RE = re.compile(r"\.(?:jpe?g|png|webp)(?:$|[?#])", re.I)
@@ -208,6 +223,10 @@ def host_key(url: str) -> str:
     except Exception:
         return ""
     return h[4:] if h.startswith("www.") else h
+
+
+def verify_tls(url: str) -> bool:
+    return host_key(url) not in INSECURE_PUBLIC_HOSTS
 
 
 def same_site(url: str, official_host: str) -> bool:
@@ -342,6 +361,30 @@ def extract_candidates(page_url: str, body: str) -> tuple[list[Candidate], list[
         for _, raw in CSS_URL_RE.findall(text):
             add(raw, "stylesheet background", "style-tag")
 
+    # Catch CMS/lazy-loader attributes that do not use standard img/src names.
+    # This is especially useful for Wix/Elementor/custom themes using data-bg,
+    # data-background-image, data-bgset, or JSON-ish image attributes.
+    for tag in soup.find_all(True):
+        context = " ".join(str(tag.get(k) or "") for k in ("alt", "title", "class", "id"))
+        for key, value in tag.attrs.items():
+            if key in {"src", "data-src", "data-lazy-src", "data-original", "data-url", "srcset", "data-srcset", "href", "style"}:
+                continue
+            values = value if isinstance(value, list) else [value]
+            for raw_value in values:
+                text_value = str(raw_value or "")
+                if not text_value:
+                    continue
+                if "srcset" in key.lower() or "bgset" in key.lower():
+                    for u in choose_srcset(text_value, page_url)[:4]:
+                        add(u, context, f"attr:{key}")
+                    continue
+                for _, raw in CSS_URL_RE.findall(text_value):
+                    add(raw, context, f"attr:{key}")
+                # Absolute/relative image-looking attribute values.
+                if (IMG_EXT_RE.search(text_value) or "wp-content/uploads/" in text_value.lower()
+                        or "static.wixstatic.com/media/" in text_value.lower()):
+                    add(text_value, context, f"attr:{key}")
+
     for a in soup.find_all("a", href=True):
         href = make_absolute(str(a.get("href") or ""), page_url)
         if href:
@@ -354,9 +397,15 @@ def extract_candidates(page_url: str, body: str) -> tuple[list[Candidate], list[
 def original_variant(url: str) -> Optional[str]:
     try:
         p = urlparse(url)
+        # WordPress resized derivative -> original upload.
         new_path = WP_SIZE_RE.sub("", p.path)
         if new_path != p.path:
             return urlunparse((p.scheme, p.netloc, new_path, p.params, p.query, p.fragment))
+        # Wix transformed delivery URL -> original media asset. This also avoids
+        # automatic AVIF transforms that Pillow/servers may negotiate differently.
+        if p.netloc.lower().endswith("wixstatic.com") and "/media/" in p.path and "/v1/" in p.path:
+            original_path = p.path.split("/v1/", 1)[0]
+            return urlunparse((p.scheme, p.netloc, original_path, "", "", ""))
     except Exception:
         pass
     return None
@@ -365,7 +414,7 @@ def original_variant(url: str) -> Optional[str]:
 def fetch_text(url: str, timeout: tuple[float, float] = (6, 18)) -> tuple[str, str]:
     session = get_session()
     headers = {"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.5"}
-    r = session.get(url, timeout=timeout, headers=headers, allow_redirects=True)
+    r = session.get(url, timeout=timeout, headers=headers, allow_redirects=True, verify=verify_tls(url))
     r.raise_for_status()
     ctype = (r.headers.get("content-type") or "").lower()
     if "text/" not in ctype and "html" not in ctype and "xml" not in ctype and ctype:
@@ -437,6 +486,7 @@ def discover_wordpress_media(home_url: str, max_items: int = 100) -> list[Candid
             timeout=(6, 18),
             headers={"Accept": "application/json"},
             allow_redirects=True,
+            verify=verify_tls(api),
         )
         r.raise_for_status()
         items = r.json()
@@ -479,7 +529,7 @@ def probe_image(url: str, referer: str = "", max_header_bytes: int = 2_000_000) 
         "Referer": referer or url,
     }
     try:
-        with session.get(url, stream=True, timeout=(6, 20), headers=headers, allow_redirects=True) as r:
+        with session.get(url, stream=True, timeout=(6, 20), headers=headers, allow_redirects=True, verify=verify_tls(url)) as r:
             r.raise_for_status()
             ctype = (r.headers.get("content-type") or "").lower()
             if ctype and "image" not in ctype and not IMG_EXT_RE.search(r.url):
@@ -570,6 +620,8 @@ def process_club(index: int, club: dict, max_pages: int, max_probes: int, max_im
     official_host = host_key(final_home)
 
     all_candidates: list[Candidate] = list(wp_candidates)
+    for manual_url in MANUAL_CANDIDATES.get(name, []):
+        all_candidates.append(Candidate(manual_url, official, "official-site manual fallback", "manual-official"))
     page_queue: list[tuple[int, str]] = [(999, final_home)]
     seen_pages: set[str] = set()
     queued: set[str] = {normalize_url(final_home)}
