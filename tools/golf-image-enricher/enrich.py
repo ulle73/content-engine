@@ -106,6 +106,40 @@ IMAGE_NEGATIVE = {
     "favicon": -50,
 }
 
+URL_OVERRIDES = {
+    "Billingens GK": "https://billingensgk.se/",
+    "Bjurholms GK": "https://www.bjurholmsgk.se/",
+    "Bodens GK, Sävast": "https://bodensgk.se/",
+    "Borås GK": "https://www.borasgolfklubb.se/",
+    "Drottningholms GK": "https://kdrgk.se/",
+    "Falkenbergs GK": "https://www.falkenbergsgk.se/",
+    "Falsterbo GK": "https://www.falsterbogk.se/",
+    "Finspångs GK": "https://finspangsgk.se/",
+    "Fjällbacka GK": "https://fjallbackagk.se/",
+    "Flommens GK": "https://flommensgk.se/",
+    "Flädje GK": "https://fladjegolf.se/",
+    "Friibergh GK": "https://friiberghsgk.se/",
+    "Glasrikets GK": "https://www.glasriketsgk.se/",
+    "Göran Knutsson Golf Academy": "https://gkgolf.se/",
+    "Hagge GK": "https://haggegk.se/",
+    "Kiruna GK": "https://kiruna.golf/",
+    "Lysingsbadets Golfbana": "https://vastervikresort.se/upplev/sportiga-aktiviteter/golf/",
+    "Malmö Burlöv Golfklubb": "https://www.malmoburlovgk.com/",
+    "Malungs GK": "https://malungsgk.se/",
+    "Michael Wigh Golf AB": "https://www.golfstore.se/butik/bosjokloster/",
+    "Naturligtvis GCC": "https://www.naturligtvisgcc.se/",
+    "Nya Johannesberg G & CC": "https://www.johannesbergsgolf.se/",
+    "När GK": "https://www.nargk.se/",
+    "Orust GK": "https://www.orustgk.se/",
+    "Oskarshamns GK": "https://oskarshamnsgk.se/",
+    "Saltsjöbadens Golfshop/Pro Swede Golf AB": "https://saltsjobadensgolfshop.se/",
+    "Sundsta Golf": "https://www.sundsta.se/",
+    "Sundsvalls GK": "https://sundsvallsgk.se/",
+    "Timrå GK": "https://www.timragk.se/",
+    "Tyresö GK": "https://tyresogolf.se/",
+    "Åda GK": "https://adagolf.se/",
+}
+
 IMG_EXT_RE = re.compile(r"\.(?:jpe?g|png|webp)(?:$|[?#])", re.I)
 CSS_URL_RE = re.compile(r"url\((['\"]?)(.*?)\1\)", re.I)
 WP_SIZE_RE = re.compile(r"-(\d{2,5})x(\d{2,5})(?=\.(?:jpe?g|png|webp)$)", re.I)
@@ -349,7 +383,7 @@ def discover_sitemap_pages(home_url: str, official_host: str, max_urls: int = 8)
     except Exception:
         return []
 
-    soup = BeautifulSoup(body, "xml")
+    soup = BeautifulSoup(body, "html.parser")
     locs = [x.get_text(strip=True) for x in soup.find_all("loc")]
     # If sitemap is an index, inspect only a few likely child sitemaps.
     if locs and all(("sitemap" in x.lower() or x.lower().endswith(".xml")) for x in locs[: min(5, len(locs))]):
@@ -358,7 +392,7 @@ def discover_sitemap_pages(home_url: str, official_host: str, max_urls: int = 8)
         for child in child_urls:
             try:
                 _, child_body = fetch_text(child, timeout=(5, 12))
-                child_soup = BeautifulSoup(child_body, "xml")
+                child_soup = BeautifulSoup(child_body, "html.parser")
                 expanded.extend(x.get_text(strip=True) for x in child_soup.find_all("loc"))
             except Exception:
                 continue
@@ -381,6 +415,59 @@ def discover_sitemap_pages(home_url: str, official_host: str, max_urls: int = 8)
         out.append(u)
         if len(out) >= max_urls:
             break
+    return out
+
+
+def discover_wordpress_media(home_url: str, max_items: int = 100) -> list[Candidate]:
+    """Use a site's public WordPress media endpoint as a cheap fallback."""
+    p = urlparse(home_url)
+    if not p.scheme or not p.netloc:
+        return []
+    api = urlunparse((p.scheme, p.netloc, "/wp-json/wp/v2/media", "", "", ""))
+    try:
+        r = get_session().get(
+            api,
+            params={
+                "per_page": min(max_items, 100),
+                "media_type": "image",
+                "orderby": "date",
+                "order": "desc",
+                "_fields": "source_url,media_details,alt_text,caption,title",
+            },
+            timeout=(6, 18),
+            headers={"Accept": "application/json"},
+            allow_redirects=True,
+        )
+        r.raise_for_status()
+        items = r.json()
+        if not isinstance(items, list):
+            return []
+    except Exception:
+        return []
+
+    out: list[Candidate] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        context_parts = [str(item.get("alt_text") or "")]
+        for key in ("caption", "title"):
+            value = item.get(key)
+            if isinstance(value, dict):
+                context_parts.append(str(value.get("rendered") or ""))
+        context = clean_text(" ".join(context_parts))
+        urls = []
+        source = str(item.get("source_url") or "").strip()
+        if source:
+            urls.append(source)
+        media = item.get("media_details")
+        if isinstance(media, dict):
+            sizes = media.get("sizes")
+            if isinstance(sizes, dict):
+                full = sizes.get("full")
+                if isinstance(full, dict) and full.get("source_url"):
+                    urls.append(str(full.get("source_url")))
+        for u in urls:
+            out.append(Candidate(u, home_url, context, "wordpress-rest"))
     return out
 
 
@@ -445,13 +532,14 @@ def candidate_group_key(url: str) -> str:
 
 def process_club(index: int, club: dict, max_pages: int, max_probes: int, max_images: int) -> ClubResult:
     name = str(club.get("name") or "")
-    official = normalize_start_url(str(club.get("url") or club.get("website_source") or ""))
+    official = normalize_start_url(URL_OVERRIDES.get(name, str(club.get("url") or club.get("website_source") or "")))
     result = ClubResult(index=index, name=name, status="error", official_url=official, images=[])
     if not official:
         result.status = "no_url"
         result.error = "club has no official URL in JSON"
         return result
 
+    wp_candidates = discover_wordpress_media(official, max_items=100)
     try:
         final_home, home_body = fetch_text(official)
     except Exception as exc:
@@ -465,9 +553,14 @@ def process_club(index: int, club: dict, max_pages: int, max_probes: int, max_im
             try:
                 final_home, home_body = fetch_text(alt)
             except Exception:
-                result.status = "fetch_failed"
-                result.error = str(exc)[:300]
-                return result
+                if wp_candidates:
+                    final_home, home_body = official, ""
+                else:
+                    result.status = "fetch_failed"
+                    result.error = str(exc)[:300]
+                    return result
+        elif wp_candidates:
+            final_home, home_body = official, ""
         else:
             result.status = "fetch_failed"
             result.error = str(exc)[:300]
@@ -476,7 +569,7 @@ def process_club(index: int, club: dict, max_pages: int, max_probes: int, max_im
     result.final_home_url = final_home
     official_host = host_key(final_home)
 
-    all_candidates: list[Candidate] = []
+    all_candidates: list[Candidate] = list(wp_candidates)
     page_queue: list[tuple[int, str]] = [(999, final_home)]
     seen_pages: set[str] = set()
     queued: set[str] = {normalize_url(final_home)}
@@ -494,12 +587,16 @@ def process_club(index: int, club: dict, max_pages: int, max_probes: int, max_im
         page_queue.append((s, url))
 
     # Parse home immediately and use it to discover useful internal pages.
-    cands, links = extract_candidates(final_home, home_body)
-    all_candidates.extend(cands)
-    seen_pages.add(normalize_url(final_home))
-    result.pages_checked = 1
-    for href, label in links:
-        enqueue(href, label)
+    if home_body:
+        cands, links = extract_candidates(final_home, home_body)
+        all_candidates.extend(cands)
+        seen_pages.add(normalize_url(final_home))
+        result.pages_checked = 1
+        for href, label in links:
+            enqueue(href, label)
+    else:
+        seen_pages.add(normalize_url(final_home))
+        result.pages_checked = 0
 
     # Sitemap can rescue sparse homepages without adding a browser dependency.
     if len(page_queue) <= 2:
