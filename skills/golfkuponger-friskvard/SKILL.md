@@ -7,9 +7,11 @@ description: Affärskunskap om Golfkuponger och friskvårdsbidraget – köpväg
 
 Den här skillen gör att idéerna blir *Golfkupongers* och inte generiska. Den har två delar: **fakta** (vad vi får säga) och **idémotor** (frågor, vinklar, storyboard-mönster).
 
-## Regel nummer ett: bara godkända påståenden
+## Regel nummer ett: bara verifierade påståenden från faktabanken
 
-Allt som visas eller sägs i en annons och som är ett faktapåstående läggs i `AdBrief.facts` med källa. `verified: true` får bara sättas för rader med status ✅ nedan. Är du osäker, omformulera till något som inte är ett påstående ("kolla med din arbetsgivare") eller fråga Jonas.
+**Faktabanken i appen är sanningen** (Annonser → Faktabank, MCP: `list_ad_facts`). Tabellen nedan är bara startvärden. Den kopieras in i banken som ej verifierad första gången och används sedan inte. Bara en människa kan verifiera eller spärra ett påstående i banken. Du kan föreslå nya med `propose_ad_fact`.
+
+Allt som visas eller sägs i en annons och som är ett faktapåstående läggs i `AdBrief.facts` med sitt `fact_id` från banken. Status hämtas därifrån, så du sätter aldrig `verified` själv. Är du osäker, omformulera till något som inte är ett påstående ("kolla med din arbetsgivare") eller fråga Jonas.
 
 ### Faktabank
 
@@ -23,7 +25,7 @@ Allt som visas eller sägs i en annons och som är ett faktapåstående läggs i
 | F6 | Friskvårdsbidraget "brinner inne 31/12" | standardhook i mallen | ⚠️ Gäller per arbetsgivare, inte universellt. Se nedan |
 | F7 | Skattefri nivå och vad som räknas som friskvård | Skatteverket | ❌ Använd inte förrän formulering är verifierad mot Skatteverket och juridiskt OK |
 
-*Fyll i, uppdatera och ändra ⚠️ → ✅ när du har verifierat. Lägg till datum och källa.*
+*Startvärden. Verifiering sker i faktabanken, inte här.*
 
 ### Formuleringar som är säkra utan verifiering
 

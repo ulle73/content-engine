@@ -23,7 +23,9 @@ FLOW = (
     "visa resultatet och föreslå rättningar innan approve_motion_preview och final. "
     "Varje svar innehåller studio_url: ge användaren länken 'Öppna i studion' när något är lättare att klicka "
     "(välja bilder, ladda upp, ändra text per scen, se storyboarden stort). Samma utkast, samma brief. "
-    "Hitta aldrig på fakta. Varje påstående läggs i facts med källa."
+    "Fakta: läs list_ad_facts. Använd bara påståenden med status verified, och lägg dem i facts med deras fact_id. "
+    "Saknas något, föreslå det med propose_ad_fact och be användaren verifiera i faktabanken. "
+    "Du kan aldrig verifiera själv. Hitta aldrig på fakta."
 )
 
 
@@ -72,9 +74,11 @@ def register(mcp, company_for, run_for, user_for, safe_call):
         remotion/higgsfield/hybrid, remotion_template_id, estimated_cost_sek, cost_approved}, formats, duration_s,
         scenes [{id, purpose hook/problem/solution/how/proof/offer/cta, duration_s, asset_id, on_screen_text <=8 words,
         voiceover, motion, transition_in}], copy {primary_text, headline, cta_label, landing_url}, facts [{claim, source,
-        verified}], forbid, variants. Only set cost_approved or fact verified=true when the user confirmed it."""
+        fact_id}], forbid, variants. Facts get their verified status from the fact bank; you cannot verify. Only set
+        cost_approved when the user confirmed the cost."""
         draft = safe_call(
-            service.update_draft, company_for(company_ref), draft_id, changes=changes, expected_revision=expected_revision
+            service.update_draft, company_for(company_ref), draft_id, changes=changes,
+            expected_revision=expected_revision, human=False,
         )
         return service.serialize(draft)
 
@@ -162,6 +166,26 @@ def register(mcp, company_for, run_for, user_for, safe_call):
         text inside the guides and readable, max 8 words, hook visible at once, real UI not distorted, logo/end card
         correct, premium Scandinavian feel. Report findings and propose fixes before approving."""
         return Image(data=safe_call(service.review_image, company_for(company_ref), draft_id), format="jpeg")
+
+    @mcp.tool(title="List ad facts", annotations=read)
+    @database_tool
+    def list_ad_facts(company_ref: str) -> dict:
+        """The company's fact bank: claims allowed in ads, each verified / unverified / blocked by a human.
+        Only verified claims may appear on screen; reference them in the brief as facts[].fact_id."""
+        company = company_for(company_ref)
+        facts = service.list_facts(company)
+        from django.conf import settings
+        from django.urls import reverse
+
+        url = settings.APP_URL.rstrip("/") + reverse("engine:ad_facts", kwargs={"workspace_id": company.pk})
+        return {"facts": facts, "fact_bank_url": url}
+
+    @mcp.tool(title="Propose ad fact", annotations=write)
+    @database_tool
+    def propose_ad_fact(company_ref: str, claim: str, source: str, note: str = "") -> dict:
+        """Add a claim to the fact bank as UNVERIFIED, with where it comes from. A human verifies it in the studio."""
+        fact = safe_call(service.propose_fact, company_for(company_ref), claim=claim, source=source, note=note)
+        return service.serialize_fact(fact)
 
     @mcp.tool(title="Produce ad", annotations=write)
     @database_tool

@@ -4,7 +4,8 @@
 {% block content %}
 <main class="engine ad-studio">
   <header class="page-header"><div><p class="eyebrow">Annonser</p><h1>Från idé till färdig annons</h1>
-    <p class="intro">Skriv budskapet här eller säg det till ChatGPT/Claude. Utkasten hamnar på samma ställe.</p></div></header>
+    <p class="intro">Skriv budskapet här eller säg det till ChatGPT/Claude. Utkasten hamnar på samma ställe.</p>
+    <p class="small"><a href="{% url 'engine:ad_facts' workspace_id=workspace.pk %}">Faktabank: vad vi får påstå i annonser →</a></p></div></header>
   <form method="post" class="ad-new">{% csrf_token %}
     <label for="ad-message" class="visually-hidden">Budskap</label>
     <input id="ad-message" name="message" maxlength="200" required placeholder="T.ex. Använd ditt friskvårdsbidrag på golf innan det brinner inne" autocomplete="off">

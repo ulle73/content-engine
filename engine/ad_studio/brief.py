@@ -52,6 +52,7 @@ class Fact(_Strict):
     claim: str = Field(min_length=1, max_length=300)
     source: str = Field(min_length=1, max_length=300, description="Skill section, URL or document the claim comes from")
     verified: bool = False
+    fact_id: str | None = Field(default=None, max_length=36, description="AdFact in the company fact bank; its status decides `verified`")
 
 
 class Asset(_Strict):

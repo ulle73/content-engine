@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Faktabank · {{ workspace.name }}{% endblock %}
+{% block content %}
+<main class="engine ad-studio">
+  <p class="small"><a href="{% url 'engine:ad_list' workspace_id=workspace.pk %}">← Annonser</a></p>
+  <header class="page-header"><div><p class="eyebrow">Annonser</p><h1>Faktabank</h1>
+    <p class="intro">Påståenden Golfkuponger får använda i annonser. Verifiera en gång mot källan, så kan alla annonser använda dem. AI:n kan föreslå nya, men bara ni kan verifiera.</p></div></header>
+  <ul class="ad-fact-list">
+    {% for f in facts %}
+    <li class="ad-card ad-fact is-{{ f.status }}">
+      <form method="post" class="ad-fact-form">{% csrf_token %}<input type="hidden" name="fact_id" value="{{ f.fact_id }}">
+        <p class="ad-fact-status">{% if f.status == 'verified' %}✅ Verifierad{% if f.verified_at %} · {{ f.verified_at|slice:":10" }}{% endif %}{% elif f.status == 'blocked' %}⛔ Får inte användas{% else %}⚠️ Ej verifierad{% endif %}</p>
+        <div class="field"><label for="c-{{ f.fact_id }}">Påstående</label><input id="c-{{ f.fact_id }}" name="claim" maxlength="300" value="{{ f.claim }}"></div>
+        <div class="ad-two">
+          <div class="field"><label for="s-{{ f.fact_id }}">Källa</label><input id="s-{{ f.fact_id }}" name="source" maxlength="300" value="{{ f.source }}"></div>
+          <div class="field"><label for="n-{{ f.fact_id }}">Anteckning</label><input id="n-{{ f.fact_id }}" name="note" maxlength="500" value="{{ f.note }}"></div>
+        </div>
+        <div class="ad-actions">
+          {% if f.status != 'verified' %}<button name="action" value="verified">Verifiera</button>{% else %}<button name="action" value="unverified" class="button-secondary">Ta bort verifiering</button>{% endif %}
+          <button name="action" value="save" class="button-secondary">Spara text</button>
+          {% if f.status != 'blocked' %}<button name="action" value="blocked" class="button-secondary">Får inte användas</button>{% endif %}
+          <button name="action" value="delete" class="button-secondary">Ta bort</button>
+        </div>
+      </form>
+    </li>
+    {% empty %}<li class="small">Inga påståenden än.</li>{% endfor %}
+  </ul>
+  <form method="post" class="ad-card ad-upload">{% csrf_token %}<input type="hidden" name="action" value="add">
+    <h2>Lägg till påstående</h2>
+    <div class="field"><label for="new-claim">Påstående</label><input id="new-claim" name="claim" maxlength="300" required placeholder="T.ex. Golfkuponger finns i Epassi"></div>
+    <div class="field"><label for="new-source">Källa</label><input id="new-source" name="source" maxlength="300" required placeholder="Länk, avtal eller dokument"></div>
+    <button type="submit">Lägg till</button>
+  </form>
+</main>
+{% endblock %}

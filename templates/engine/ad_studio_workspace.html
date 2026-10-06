@@ -60,7 +60,7 @@
         </section>
 
         {% if brief.facts %}<section class="ad-card"><h2>Påståenden i annonsen</h2>
-          <p class="small">Bocka bara i det du själv har kontrollerat mot källan. Overifierade påståenden stoppar låsningen.</p>
+          <p class="small">Bocka bara i det du själv har kontrollerat mot källan. Påståenden från <a href="{% url 'engine:ad_facts' workspace_id=workspace.pk %}">faktabanken</a> verifieras där och gäller sedan i alla annonser. Overifierade påståenden stoppar låsningen.</p>
           <ul class="ad-facts">{% for f in brief.facts %}<li><label><input type="checkbox" name="fact_verified" value="{{ forloop.counter0 }}" {% if f.verified %}checked{% endif %}> <span>{{ f.claim }}<small>Källa: {{ f.source }}</small></span></label></li>{% endfor %}</ul>
           <input type="hidden" name="facts_present" value="1">
         </section>{% endif %}
