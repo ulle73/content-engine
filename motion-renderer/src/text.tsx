@@ -44,6 +44,22 @@ function linesAt(
   }
   return lines;
 }
+/** Largest size at which the longest word still fits on one line, so words are never split mid-word. */
+function longestWordCap(
+  text: string,
+  width: number,
+  font: string,
+  weight: number,
+) {
+  if (typeof document === "undefined") return Infinity;
+  canvas ||= document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  ctx.font = `${weight} 100px ${font}`;
+  let widest = 0;
+  for (const word of text.split(/\s+/))
+    widest = Math.max(widest, ctx.measureText(word).width);
+  return widest > 0 ? Math.floor((100 * width) / widest) : Infinity;
+}
 export function fitText(
   text: string,
   width: number,
@@ -53,7 +69,7 @@ export function fitText(
   weight = 800,
 ) {
   let lo = 12,
-    hi = max;
+    hi = Math.max(12, Math.min(max, longestWordCap(text, width, font, weight)));
   for (let i = 0; i < 12; i++) {
     const mid = (lo + hi) / 2;
     if (linesAt(text, mid, width, font, weight).length * mid * 1.12 <= height)

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import uuid
 
+from engine.motion.ad_templates import AD_TEMPLATES
 from engine.motion.planner import compile_template, template_schema
 
 from .brief import AdBrief
@@ -32,25 +33,35 @@ def blueprint(template_id: str) -> dict:
     schema = template_schema(template_id)
     props = schema.get("properties", {})
     dummy = {name: str(uuid.uuid4()) for name in schema.get("required", []) if name.endswith("_asset_id")}
+    for name in schema.get("required", []):
+        if name.endswith("_text") and name not in dummy:
+            dummy[name] = "X"
     spec = compile_template(template_id, dummy)
     fps = spec["fps"]
+    defined = {s["id"]: s for s in AD_TEMPLATES.get(template_id, {}).get("scenes", [])}
     scenes = []
     for scene in spec["scenes"]:
         sid = scene["id"]
         scenes.append(
             {
                 "id": sid,
-                "purpose": _purpose(sid, scene["component"]),
-                "duration_s": scene["duration_frames"] / fps,
+                "purpose": defined[sid]["purpose"] if sid in defined else _purpose(sid, scene["component"]),
+                "duration_s": (scene["duration_frames"] - scene["transition_frames"]) / fps,
+                "component": scene["component"],
+                "title": defined.get(sid, {}).get("title", ""),
                 "needs_asset": f"{sid}_asset_id" in dummy,
                 "asset_kind": "real screen recording" if scene["component"] == "device" else "footage/image",
                 "text_field": f"{sid}_text" if f"{sid}_text" in props else ("end_text" if sid == "end" else None),
-                "default_text_not_verified": scene.get("props", {}).get("headline", ""),
+                "default_text_not_verified": "" if template_id in AD_TEMPLATES else scene.get("props", {}).get("headline", ""),
                 "text_max_chars": props.get(f"{sid}_text", props.get("end_text", {})).get("maxLength"),
             }
         )
+    meta = AD_TEMPLATES.get(template_id, {})
     return {
         "template_id": template_id,
+        "tone": meta.get("tone", "informativ"),
+        "tempo": meta.get("tempo", "balanserad"),
+        "when": meta.get("when", "Friskvård med riktiga skärminspelningar av köpvägen."),
         "aspect_ratio": spec["aspect_ratio"],
         "duration_s": sum(s["duration_s"] for s in scenes),
         "scenes": scenes,

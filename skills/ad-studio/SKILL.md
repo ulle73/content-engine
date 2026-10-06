@@ -75,6 +75,20 @@ Sedan, utan att vänta om det går: kör `suggest_scene_assets` och visa bildark
 
 **Dåligt första svar:** "Vad kul! Vilken målgrupp? Vilket format? Vilken ton? Har du bilder? Vill du ha Remotion eller Higgsfield? Hur lång?"
 
+## Välj mall efter ton
+
+Kör `get_ad_template_blueprint` för mallen du rekommenderar. Svaret innehåller `tone`, `tempo` och `when`.
+
+| Mall | Längd | Ton | Bäst när |
+|---|---|---|---|
+| `friskvard-portal-ad` | 15 s | informativ | Köpvägen i förmånsportalen ska visas med riktiga skärmar |
+| `friskvard-direct-ad` | 14 s | informativ | Målgruppen saknar portal och köper direkt med kvitto |
+| `golf-sista-chansen` | 10 s | brådskande | Deadline, "brinner inne", kampanj som tar slut. Nedräkningen 3–2–1 ligger i hooken |
+| `golf-fracka` | 12 s | fräck | "Rolig och fräck", sticka ut i flödet, överraskande påstående |
+| `golf-premium` | 15 s | lugn premium | Varumärke, säsongsstart, presentkort, B2B |
+
+Föreslå gärna två mallar med olika ton som varianter, till exempel `golf-sista-chansen` och `golf-fracka` för samma budskap. Det är ett billigt A/B-test, eftersom båda är gratis i Remotion.
+
 ## Storyboard som säljer
 
 - **Scen 1 (0–2 s):** problem eller löfte, rörelse från frame 0, text inom safe zone.

@@ -322,6 +322,13 @@ for id, name, desc, category, required, scenes in templates:
             typical_seconds=template_seconds.get(id, len(scenes) * 4),
         )
     )
+# Ad Studio templates are defined once in engine/motion/ad_templates.py (pure module, loaded by path).
+import importlib.util as _util
+
+_spec = _util.spec_from_file_location("ad_templates", ROOT / "engine/motion/ad_templates.py")
+_ad = _util.module_from_spec(_spec)
+_spec.loader.exec_module(_ad)
+items.extend(_ad.catalog_entries())
 assert len(items) == len({x["id"] for x in items})
 path = ROOT / "engine/motion/catalog.json"
 path.write_text(json.dumps({"version": 1, "items": items}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

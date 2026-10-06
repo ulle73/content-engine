@@ -48,6 +48,8 @@ Allt som visas eller sägs i en annons och som är ett faktapåstående läggs i
 
 Vet du inte vilket spår som gäller, fråga. Det avgör mall, bilder och copy.
 
+Utan krav på skärminspelningar fungerar även `golf-sista-chansen` (brådska) och `golf-fracka` (rolig och fräck) för friskvårdsbudskap. Se tonregistret i `golfkuponger-brand`.
+
 ## Säsong (vinklar, inte fakta)
 
 - **Okt–dec**: "Brinner inne", sista chansen, julklapp till dig själv. Högsta trycket.

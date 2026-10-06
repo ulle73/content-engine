@@ -10,6 +10,7 @@ No factual claim or arbitrary React/CSS is generated here.
 from __future__ import annotations
 import math
 import re
+from .ad_templates import AD_TEMPLATES, compile_scenes, field_schema
 from .catalog import get_item
 from .schema import validate_spec
 
@@ -60,6 +61,13 @@ FIELDS = {
 
 def template_schema(template_id):
     template = get_item(template_id, kinds={"template"})
+    if template_id in AD_TEMPLATES:
+        return {
+            "type": "object",
+            "required": template["required_props"],
+            "additionalProperties": False,
+            "properties": field_schema(template_id),
+        }
     fields = set(
         template["required_props"] + template["optional_props"] + ["headline", "body", "cta", "end_card_asset_id"]
     )
@@ -290,6 +298,28 @@ def compile_template(
     if tempo not in {"calm", "balanced", "energetic"}:
         raise ValueError("Ogiltigt tempo.")
     fps = 30
+    if template_id in AD_TEMPLATES:
+        return validate_spec(
+            {
+                "version": 1,
+                "template_id": template_id,
+                "template_version": template["version"],
+                "aspect_ratio": aspect_ratio,
+                "fps": fps,
+                "seed": 42,
+                "brand_id": brand_id,
+                "scenes": compile_scenes(template_id, fields, fps),
+                "audio": {
+                    "enabled": audio,
+                    "gain": 0.7,
+                    "music": "pulse" if AD_TEMPLATES[template_id]["tempo"] == "snabb" else "bed",
+                    "music_asset_id": None,
+                    "fade_frames": 18,
+                    "ducking": 0.3,
+                },
+                "end_card_asset_id": fields.get("end_card_asset_id"),
+            }
+        )
     if template_id in SCREEN_AD_TEMPLATES:
         return validate_spec(
             {
