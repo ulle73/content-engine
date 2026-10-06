@@ -225,6 +225,8 @@ class MotionDesignHarnessContractTests(unittest.TestCase):
 
         spec = self.base_spec()
         before = copy.deepcopy(spec)
+        from engine.motion.schema import validate_spec
+        canonical_before = validate_spec(before)
         report = critique_spec(spec, storyboard_scene_ids=["intro"])
         self.assertTrue(report["visual_review_required"])
         self.assertEqual(
@@ -235,7 +237,7 @@ class MotionDesignHarnessContractTests(unittest.TestCase):
 
         improved, changes = improve_spec(spec)
         self.assertTrue(changes)
-        self.assertEqual(improved["scenes"][0]["props"], before["scenes"][0]["props"])
-        self.assertEqual(improved["end_card_asset_id"], before["end_card_asset_id"])
-        self.assertEqual(improved["template_id"], before["template_id"])
+        self.assertEqual(improved["scenes"][0]["props"], canonical_before["scenes"][0]["props"])
+        self.assertEqual(improved["end_card_asset_id"], canonical_before["end_card_asset_id"])
+        self.assertEqual(improved["template_id"], canonical_before["template_id"])
         self.assertNotEqual(improved["scenes"][0]["motion_preset"], "legacy")
