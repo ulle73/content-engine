@@ -104,6 +104,40 @@ def critique_spec(spec: dict, *, storyboard_scene_ids: list[str] | None = None) 
     }
 
 
+def provenance(spec: dict) -> dict:
+    """Stable, non-secret creative-mechanics provenance for later learning joins."""
+    data = validate_spec(spec)
+    profile = data.get("reference_profile")
+    return {
+        "critic_version": CRITIC_VERSION,
+        "template_id": data["template_id"],
+        "template_version": data["template_version"],
+        "aspect_ratio": data["aspect_ratio"],
+        "motion_presets": sorted({scene.get("motion_preset", "legacy") for scene in data["scenes"]}),
+        "transitions": [scene["transition"] for scene in data["scenes"]],
+        "beat_map": {
+            "enabled": data["beat_map"]["enabled"],
+            "bpm": data["beat_map"].get("bpm"),
+            "source": data["beat_map"]["source"],
+        },
+        "reference_profile": (
+            {
+                "source_asset_id": profile.get("source_asset_id"),
+                "motion_intensity": profile["motion_intensity"],
+                "camera_style": profile["camera_style"],
+                "transition_family": profile["transition_family"],
+                "typography_behavior": profile["typography_behavior"],
+                "beat_density": profile["beat_density"],
+                "motion_preset": profile["motion_preset"],
+                "color_behavior": profile["color_behavior"],
+                "bpm": profile.get("bpm"),
+            }
+            if profile
+            else None
+        ),
+    }
+
+
 def _frames_for_bpm(bpm: float, fps: int, total_frames: int) -> list[int]:
     step = fps * 60 / bpm
     frames, index = [], 0
