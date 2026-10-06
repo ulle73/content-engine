@@ -17,7 +17,11 @@
         },
         "music": {
           "default": "bed",
-          "enum": ["none", "bed", "pulse"],
+          "enum": [
+            "none",
+            "bed",
+            "pulse"
+          ],
           "title": "Music",
           "type": "string"
         },
@@ -85,7 +89,10 @@
           "type": "number"
         }
       },
-      "required": ["kind", "frame"],
+      "required": [
+        "kind",
+        "frame"
+      ],
       "title": "Cue",
       "type": "object"
     },
@@ -99,13 +106,15 @@
         },
         "value": {
           "default": 0,
-          "maximum": 1000000000000.0,
-          "minimum": -1000000000000.0,
+          "maximum": 1000000000000,
+          "minimum": -1000000000000,
           "title": "Value",
           "type": "number"
         }
       },
-      "required": ["label"],
+      "required": [
+        "label"
+      ],
       "title": "Item",
       "type": "object"
     },
@@ -132,8 +141,8 @@
         },
         "value": {
           "default": 0,
-          "maximum": 1000000000000.0,
-          "minimum": -1000000000000.0,
+          "maximum": 1000000000000,
+          "minimum": -1000000000000,
           "title": "Value",
           "type": "number"
         },
@@ -191,7 +200,10 @@
         },
         "alignment": {
           "default": "left",
-          "enum": ["left", "center"],
+          "enum": [
+            "left",
+            "center"
+          ],
           "title": "Alignment",
           "type": "string"
         }
@@ -340,10 +352,205 @@
           "maxItems": 40,
           "title": "Sfx",
           "type": "array"
+        },
+        "motion_preset": {
+          "default": "legacy",
+          "enum": [
+            "legacy",
+            "soft",
+            "snappy",
+            "weighty",
+            "editorial"
+          ],
+          "title": "Motion Preset",
+          "type": "string"
         }
       },
-      "required": ["id", "component", "duration_frames"],
+      "required": [
+        "id",
+        "component",
+        "duration_frames"
+      ],
       "title": "Scene",
+      "type": "object"
+    },
+    "BeatMap": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "bpm": {
+          "anyOf": [
+            {
+              "maximum": 220,
+              "minimum": 40,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bpm"
+        },
+        "offset_frames": {
+          "default": 0,
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "Offset Frames",
+          "type": "integer"
+        },
+        "beat_frames": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 512,
+          "title": "Beat Frames",
+          "type": "array"
+        },
+        "source": {
+          "default": "none",
+          "enum": [
+            "none",
+            "profile",
+            "built-in-pulse",
+            "manual"
+          ],
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "title": "BeatMap",
+      "type": "object"
+    },
+    "ReferenceProfileSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "source_asset_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Asset Id"
+        },
+        "label": {
+          "default": "",
+          "maxLength": 120,
+          "title": "Label",
+          "type": "string"
+        },
+        "motion_intensity": {
+          "default": "medium",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Motion Intensity",
+          "type": "string"
+        },
+        "camera_style": {
+          "default": "mixed",
+          "enum": [
+            "locked",
+            "push",
+            "orbit",
+            "dolly",
+            "handheld",
+            "macro",
+            "aerial",
+            "mixed"
+          ],
+          "title": "Camera Style",
+          "type": "string"
+        },
+        "transition_family": {
+          "default": "mixed",
+          "enum": [
+            "cuts",
+            "soft",
+            "dynamic",
+            "mixed"
+          ],
+          "title": "Transition Family",
+          "type": "string"
+        },
+        "typography_behavior": {
+          "default": "minimal",
+          "enum": [
+            "none",
+            "minimal",
+            "kinetic",
+            "editorial",
+            "bold"
+          ],
+          "title": "Typography Behavior",
+          "type": "string"
+        },
+        "beat_density": {
+          "default": "medium",
+          "enum": [
+            "sparse",
+            "medium",
+            "dense"
+          ],
+          "title": "Beat Density",
+          "type": "string"
+        },
+        "motion_preset": {
+          "default": "soft",
+          "enum": [
+            "legacy",
+            "soft",
+            "snappy",
+            "weighty",
+            "editorial"
+          ],
+          "title": "Motion Preset",
+          "type": "string"
+        },
+        "color_behavior": {
+          "default": "brand",
+          "enum": [
+            "brand",
+            "natural",
+            "muted",
+            "high-contrast"
+          ],
+          "title": "Color Behavior",
+          "type": "string"
+        },
+        "bpm": {
+          "anyOf": [
+            {
+              "maximum": 220,
+              "minimum": 40,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bpm"
+        },
+        "notes": {
+          "default": "",
+          "maxLength": 600,
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "title": "ReferenceProfileSnapshot",
       "type": "object"
     }
   },
@@ -391,13 +598,23 @@
     },
     "aspect_ratio": {
       "default": "9:16",
-      "enum": ["9:16", "1:1", "16:9"],
+      "enum": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
       "title": "Aspect Ratio",
       "type": "string"
     },
     "fps": {
       "default": 30,
-      "enum": [24, 25, 30, 60],
+      "enum": [
+        24,
+        25,
+        30,
+        60
+      ],
       "title": "Fps",
       "type": "integer"
     },
@@ -413,7 +630,10 @@
       "pattern": "^[a-z][a-z0-9-]{0,63}$",
       "title": "Brand Id",
       "type": "string",
-      "enum": ["golfkuponger", "workspace"]
+      "enum": [
+        "golfkuponger",
+        "workspace"
+      ]
     },
     "scenes": {
       "items": {
@@ -439,9 +659,27 @@
       ],
       "default": null,
       "title": "End Card Asset Id"
+    },
+    "beat_map": {
+      "$ref": "#/$defs/BeatMap"
+    },
+    "reference_profile": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReferenceProfileSnapshot"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reference Profile"
     }
   },
-  "required": ["template_id", "scenes"],
+  "required": [
+    "template_id",
+    "scenes"
+  ],
   "title": "MotionSpec",
   "type": "object"
 }
