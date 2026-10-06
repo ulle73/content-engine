@@ -150,7 +150,7 @@ def catalog_entries() -> list[dict]:
             "category": "ads",
             "tags": [template_id, "ads", spec["name"].lower(), spec["tone"], spec["tempo"], *components],
             "version": 1,
-            "aspect_ratios": ["9:16", "1:1", "16:9"],
+            "aspect_ratios": ["9:16", "4:5", "1:1", "16:9"],
             "required_props": required,
             "optional_props": optional,
             "source": "content-engine/ad-studio templates; HyperFrames-informed pacing",
