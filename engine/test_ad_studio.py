@@ -222,6 +222,31 @@ class AdStudioSkillTests(TestCase):
 
 
 class AdStudioReferenceProfileTests(AdStudioBase):
+    def test_reference_video_sheet_samples_company_video(self):
+        from .test_media import movie
+
+        video = store_asset(self.company, movie())
+        try:
+            data = service.reference_video_sheet(self.company, str(video.pk), frames=6)
+        except AttributeError as exc:
+            self.fail(f"Reference video contact sheet is missing: {exc}")
+        image = self._reference_jpeg(data)
+        self.assertGreater(image.width, 600)
+        self.assertGreater(image.height, 300)
+
+        other = Company.objects.create(owner=self.user, name="Reference Other", profile="x")
+        foreign = store_asset(other, movie())
+        with self.assertRaises(ValueError):
+            service.reference_video_sheet(self.company, str(foreign.pk), frames=6)
+
+    def _reference_jpeg(self, data):
+        import io
+        from PIL import Image as PILImage
+
+        image = PILImage.open(io.BytesIO(data))
+        self.assertEqual(image.format, "JPEG")
+        return image
+
     def test_reference_profile_is_strict_and_company_scoped(self):
         from .test_media import movie
 
