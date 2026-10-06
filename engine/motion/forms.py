@@ -13,7 +13,13 @@ from .planner import SCREEN_AD_TEMPLATES, compile_template, template_schema
 class MotionForm(forms.Form):
     title = forms.CharField(label="Projektnamn", max_length=160)
     aspect_ratio = forms.ChoiceField(
-        label="Format", choices=[("9:16", "Stående · 9:16"), ("1:1", "Kvadrat · 1:1"), ("16:9", "Liggande · 16:9")]
+        label="Format",
+        choices=[
+            ("9:16", "Stående · 9:16"),
+            ("4:5", "Flöde · 4:5"),
+            ("1:1", "Kvadrat · 1:1"),
+            ("16:9", "Liggande · 16:9"),
+        ],
     )
     audio = forms.BooleanField(label="Musik och ljudeffekter", required=False, initial=True)
 
