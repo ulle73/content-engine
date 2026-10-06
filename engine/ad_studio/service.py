@@ -75,8 +75,6 @@ def get_draft(company: Company, draft_id, *, lock=False) -> AdDraft:
 
 def _check_assets(company: Company, brief: AdBrief) -> None:
     ids = [a.asset_id for a in brief.assets if a.origin != "generate"]
-    if not ids:
-        return
     try:
         found = set(
             str(pk) for pk in MediaAsset.objects.filter(company=company, pk__in=ids).values_list("pk", flat=True)
@@ -86,6 +84,17 @@ def _check_assets(company: Company, brief: AdBrief) -> None:
     unknown = [i for i in ids if i not in found]
     if unknown:
         raise ValueError("Dessa bilder/videor finns inte i företagets media: " + ", ".join(unknown))
+    if brief.reference_profile and brief.reference_profile.source_asset_id:
+        try:
+            reference = MediaAsset.objects.filter(
+                company=company,
+                pk=brief.reference_profile.source_asset_id,
+                kind="video",
+            ).first()
+        except Exception as exc:
+            raise ValueError("Reference Profile har ett ogiltigt source_asset_id.") from exc
+        if reference is None:
+            raise ValueError("Reference Profile måste peka på en video i detta företags media.")
 
 
 def list_drafts(company: Company) -> list[dict]:
@@ -128,6 +137,23 @@ def update_draft(company: Company, draft_id, *, changes: dict, expected_revision
     draft.revision += 1
     draft.save()
     return draft
+
+
+def set_reference_profile(
+    company: Company,
+    draft_id,
+    *,
+    profile: dict | None,
+    expected_revision: int,
+) -> AdDraft:
+    """Persist bounded creative grammar; the source remains inspiration only."""
+    return update_draft(
+        company,
+        draft_id,
+        changes={"reference_profile": profile},
+        expected_revision=expected_revision,
+        human=False,
+    )
 
 
 @transaction.atomic
