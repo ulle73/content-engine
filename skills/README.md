@@ -4,6 +4,7 @@ Kunskap som AI:n läser innan den skapar något. Få men djupa.
 
 | Skill | Vad den kan |
 |---|---|
+| `ad-studio` | Hur idésamtalet leds: förslag före frågor, mall för första svaret, exempel, storyboardregler, kvalitetsgranskning med poäng |
 | `golfkuponger-brand` | Bildspråk, färger, typografi, safe zones, rörelse, ton |
 | `golfkuponger-friskvard` | Faktabank (med verifieringsstatus), köpvägar, säsong, frågor, vinklar, storyboard-mönster |
 

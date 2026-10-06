@@ -1,5 +1,6 @@
 """Ad Studio MCP tools: the idea-engine flow from first sentence to production."""
 
+from mcp.server.mcpserver import Image
 from mcp.types import ToolAnnotations
 
 from engine.mcp_db import database_tool
@@ -7,13 +8,20 @@ from engine.mcp_db import database_tool
 from . import blueprints, service, skills
 
 FLOW = (
-    "Ad Studio-flöde: 1) read_ad_skill för golfkuponger-brand och golfkuponger-friskvard (eller relevant skill). "
-    "2) start_ad_brief med användarens budskap. 3) Följ next_question: max tre frågor åt gången, alltid med "
-    "färdiga förslag. 4) Föreslå tre olika vinklar. 5) search_ad_assets per scenroll, visa kandidater, låt användaren "
-    "välja eller ladda upp. 6) Remotion (gratis) eller Higgsfield (kostar): rekommendera och visa kostnad. 7) För Remotion: "
-    "get_ad_template_blueprint och bygg storyboarden på exakt de scenerna. 8) update_ad_brief efter varje beslut. "
-    "9) När användaren säger kör: lock_ad_brief och sedan produce_ad. Hitta aldrig på fakta, och lägg varje påstående i "
-    "facts med källa."
+    "Ad Studio-flöde. Var proaktiv: föreslå hellre en komplett plan som användaren justerar än att ställa många frågor. "
+    "1) read_ad_skill: ad-studio (hur samtalet leds), golfkuponger-brand och relevant domänskill. "
+    "2) start_ad_brief med användarens budskap. "
+    "3) Max 3 frågor, bara det som verkligen saknas (next_question), alltid med färdiga svarsförslag. "
+    "4) Föreslå tre olika vinklar och rekommendera en. "
+    "5) Remotion (gratis, mall) eller Higgsfield (kostar): rekommendera och visa kostnad. För Remotion: "
+    "get_ad_template_blueprint och bygg scenerna exakt på mallens scen-id och tider. "
+    "6) suggest_scene_assets och visa sedan kandidaterna med show_ad_images (numrerade), så användaren svarar "
+    "'ta 2 och 5'. Bilder som användaren klistrar in i chatten sparas med add_ad_image. "
+    "7) update_ad_brief med hela förslaget och visa preview_ad_storyboard. Iterera tills användaren är nöjd. "
+    "8) Vid 'kör': lock_ad_brief, sedan produce_ad, sedan render_motion_project (preview). "
+    "9) När previewn är klar: review_ad_render. Granska varje bildruta mot brand-skillens checklista, "
+    "visa resultatet och föreslå rättningar innan approve_motion_preview och final. "
+    "Hitta aldrig på fakta. Varje påstående läggs i facts med källa."
 )
 
 
@@ -113,6 +121,45 @@ def register(mcp, company_for, run_for, user_for, safe_call):
     def reopen_ad_brief(company_ref: str, draft_id: str) -> dict:
         """Unlock a locked brief to change it (not after production started)."""
         return service.serialize(safe_call(service.reopen_draft, company_for(company_ref), draft_id))
+
+    @mcp.tool(title="Show ad images", annotations=read)
+    @database_tool
+    def show_ad_images(company_ref: str, asset_ids: list[str], title: str = "") -> Image:
+        """Visual picker: up to 12 images/videos as one numbered sheet (1..n in the given order). Show it and let the
+        user answer with numbers. Keep your own number→asset_id mapping from the order you passed."""
+        return Image(data=safe_call(service.show_images, company_for(company_ref), asset_ids, title), format="jpeg")
+
+    @mcp.tool(title="Suggest scene assets", annotations=read)
+    @database_tool
+    def suggest_scene_assets(company_ref: str, draft_id: str) -> dict:
+        """Best image-bank candidates per scene (no asset repeated as first choice). Follow with show_ad_images."""
+        return safe_call(service.suggest_scene_assets, company_for(company_ref), draft_id)
+
+    @mcp.tool(title="Add ad image", annotations=write)
+    @database_tool
+    def add_ad_image(company_ref: str, draft_id: str, image_base64: str, role: str, description: str,
+                     tags: list[str], expected_revision: int, theme: str = "", source: str = "") -> dict:
+        """Save an image the user pasted in chat into the media bank, tag it (describe only what is visible) and attach
+        it to the brief in one step. role: hook/footage/screen/product/proof/end_card/other. Accepts base64 or data URL."""
+        draft, asset = safe_call(service.add_image, company_for(company_ref), user_for(), draft_id,
+                                 image_base64=image_base64, role=role, description=description, tags=tags,
+                                 expected_revision=expected_revision, theme=theme, source=source)
+        return dict(service.serialize(draft), added_asset_id=str(asset.pk))
+
+    @mcp.tool(title="Preview ad storyboard", annotations=read)
+    @database_tool
+    def preview_ad_storyboard(company_ref: str, draft_id: str) -> Image:
+        """The whole ad as one image before rendering: every scene with its picture, on-screen text, timing, safe-zone
+        guides (yellow) and any rule problems in red. Show it after each storyboard change. Free."""
+        return Image(data=safe_call(service.storyboard_image, company_for(company_ref), draft_id), format="jpeg")
+
+    @mcp.tool(title="Review ad render", annotations=read)
+    @database_tool
+    def review_ad_render(company_ref: str, draft_id: str) -> Image:
+        """Keyframes of the latest finished render with safe-zone guides. Check each frame against the brand checklist:
+        text inside the guides and readable, max 8 words, hook visible at once, real UI not distorted, logo/end card
+        correct, premium Scandinavian feel. Report findings and propose fixes before approving."""
+        return Image(data=safe_call(service.review_image, company_for(company_ref), draft_id), format="jpeg")
 
     @mcp.tool(title="Produce ad", annotations=write)
     @database_tool

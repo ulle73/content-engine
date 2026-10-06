@@ -11,17 +11,21 @@ Chatten som idémotor: "jag vill göra en ad med budskapet att använda friskvå
 | Logik | `engine/ad_studio/service.py` | Företagsscopat: starta, uppdatera, låsa, öppna igen, producera, tagga, söka |
 | Mallbrygga | `engine/ad_studio/blueprints.py` | Remotion-mall → scenskelett; låst brief → mallfält |
 | Kunskap | `skills/*/SKILL.md` | Brand och friskvård. Läses av AI:n via `read_ad_skill` |
-| MCP | `engine/ad_studio/mcp.py` | 13 verktyg, registrerade i `engine/mcp_server.py` |
+| Bilder i chatten | `engine/ad_studio/sheets.py` | Numrerat bildark, storyboard-skiss och granskningsark (Pillow, ingen kostnad) |
+| MCP | `engine/ad_studio/mcp.py` | 18 verktyg, registrerade i `engine/mcp_server.py` |
 
 ## Flödet i MCP
 
-1. `read_ad_skill` för `golfkuponger-brand` och `golfkuponger-friskvard`.
+Detaljerna står i `skills/ad-studio/SKILL.md`. I korthet:
+
+1. `read_ad_skill` för `ad-studio`, `golfkuponger-brand` och domänskillen.
 2. `start_ad_brief(message)`. Svaret innehåller `missing` och `next_question`.
-3. Frågor och förslag. Varje beslut sparas med `update_ad_brief(changes, expected_revision)`.
-4. Bilder: `search_ad_assets(query, role)`, visa med `view_media`, och låt användaren välja. Nya uppladdningar går via befintliga ingest-verktyg.
+3. Första svaret är en komplett rekommendation: tre vinklar, motor och mall, och max tre frågor med färdiga svar.
+4. Bilder: `suggest_scene_assets`, sedan `show_ad_images` (numrerat ark, användaren svarar "ta 2 och 5"). Bilder som klistras in i chatten sparas, taggas och kopplas med `add_ad_image`.
 5. Remotion: `get_ad_template_blueprint(template_id)` ger exakta scener, tider och text- och bildplatser.
-6. `lock_ad_brief` när användaren säger kör. Den misslyckas med exakta skäl om något saknas.
-7. `produce_ad` skapar ett Motion-projekt av exakt den låsta briefen. Sedan körs befintliga `render_motion_project` (preview), `approve_motion_preview` och final.
+6. `update_ad_brief` och sedan `preview_ad_storyboard` (hela annonsen som en bild, med safe zones och regelbrott). Iterera.
+7. `lock_ad_brief`, `produce_ad`, `render_motion_project` (preview).
+8. `review_ad_render`: nyckelbilder med safe zones, poängsatta mot checklistan, innan `approve_motion_preview` och final.
 
 ## Garantier
 
@@ -37,6 +41,6 @@ Chatten som idémotor: "jag vill göra en ad med budskapet att använda friskvå
 
 ## Inte byggt än
 
-- Bildväljar-widget (rutnät med kryssrutor och uppladdning) i MCP-appen. Idag sker valet i chatten.
-- Automatisk QA av renderade frames mot brand-checklistan.
+- Klickbar widget med kryssrutor. Idag väljer man med siffror i det numrerade arket, vilket fungerar i både ChatGPT och Claude.
 - Fler Remotion-mallar utöver friskvårdsmallarna.
+- Fler format (4:5, 1:1) för skärm-annonsmallarna.

@@ -279,3 +279,178 @@ def search_assets(company: Company, *, query: str = "", role: str = "", kind: st
 def untagged_assets(company: Company, limit: int = 20) -> list[dict]:
     qs = MediaAsset.objects.filter(company=company, purpose="content", kind__in=["image", "video"], ad_tags__isnull=True)
     return [serialize_asset(a) for a in qs.order_by("-created_at")[: max(1, min(limit, 50))]]
+
+
+# ---- upload straight into the flow ----------------------------------------
+
+MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+
+
+def _decode_image(value: str) -> bytes:
+    import base64
+
+    value = (value or "").strip()
+    if value.startswith("data:"):
+        value = value.split(",", 1)[-1]
+    try:
+        data = base64.b64decode(value, validate=True)
+    except Exception as exc:
+        raise ValueError("Bilden kunde inte avkodas från base64.") from exc
+    if not data:
+        raise ValueError("Bilden är tom.")
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise ValueError("Bilden är större än 25 MB.")
+    return data
+
+
+def add_image(company: Company, user, draft_id, *, image_base64: str, role: str, description: str,
+              tags: list[str], expected_revision: int, theme: str = "", source: str = "") -> tuple[AdDraft, MediaAsset]:
+    """Save an image the user dropped in chat, tag it, and attach it to the brief in one step."""
+    import hashlib
+
+    from engine.media import store_asset
+    from engine.media_storage import MediaError
+
+    if role not in ROLE_VALUES:
+        raise ValueError("Okänd roll. Tillåtna: " + ", ".join(sorted(ROLE_VALUES)))
+    data = _decode_image(image_base64)
+    with transaction.atomic():
+        draft = get_draft(company, draft_id, lock=True)
+        if draft.revision != expected_revision:
+            raise ValueError(f"Utkastet har ändrats (revision {draft.revision}). Läs om det och försök igen.")
+        if draft.status != "draft":
+            raise ValueError("Briefen är låst. Använd reopen_ad_brief för att lägga till bilder.")
+        digest = hashlib.sha256(data).hexdigest()
+        asset = MediaAsset.objects.filter(company=company, sha256=digest, purpose="content").first()
+        if asset is None:
+            try:
+                asset = store_asset(company, data, alt_text=description[:500])
+            except MediaError as exc:
+                raise ValueError(str(exc)) from exc
+        tag_asset(company, asset.pk, description=description, tags=tags, roles=[role], theme=theme,
+                  source=source or "uppladdad i chatten", verified=True)
+        brief = _parse(draft.brief)
+        if all(a.asset_id != str(asset.pk) for a in brief.assets):
+            assets = [*brief.model_dump(mode="json", by_alias=True)["assets"],
+                      {"asset_id": str(asset.pk), "role": role, "origin": "upload", "note": description[:300]}]
+            draft.brief = _parse({**draft.brief, "assets": assets}).model_dump(mode="json", by_alias=True)
+            draft.revision += 1
+            draft.save()
+    return draft, asset
+
+
+# ---- per-scene suggestions --------------------------------------------------
+
+SCENE_ROLES = {
+    "hook": ["hook", "footage"],
+    "problem": ["footage", "hook"],
+    "solution": ["footage", "product"],
+    "how": ["screen", "product"],
+    "proof": ["proof", "footage"],
+    "offer": ["product", "footage"],
+    "cta": ["end_card"],
+}
+
+
+def suggest_scene_assets(company: Company, draft_id, per_scene: int = 3) -> dict:
+    """Best bank candidates for every scene that needs a picture, without repeating assets."""
+    brief = _parse(get_draft(company, draft_id).brief)
+    slots = []
+    if brief.scenes:
+        slots = [(s.id, s.purpose, s.on_screen_text) for s in brief.scenes]
+    elif brief.engine and brief.engine.remotion_template_id:
+        bp = blueprints.blueprint(brief.engine.remotion_template_id)
+        slots = [(s["id"], s["purpose"], "") for s in bp["scenes"] if s["needs_asset"]]
+    if not slots:
+        raise ValueError("Välj mall eller skapa scener först, så kan jag föreslå bilder per scen.")
+    base = " ".join(filter(None, [brief.message, brief.campaign, brief.angle.hook if brief.angle else ""]))
+    used: set[str] = set()
+    out = []
+    for scene_id, purpose, text in slots:
+        roles = SCENE_ROLES.get(purpose, ["footage"])
+        if scene_id in {"portal", "purchase", "app", "website", "receipt"}:
+            roles = ["screen"]
+        candidates = []
+        for role in roles:
+            found = search_assets(company, query=f"{base} {scene_id} {text}", role=role, limit=10)["results"]
+            if not found:
+                found = search_assets(company, role=role, limit=10)["results"]
+            for item in found:
+                if item["id"] not in used and item["id"] not in {c["id"] for c in candidates}:
+                    candidates.append(item)
+            if len(candidates) >= per_scene:
+                break
+        picked = candidates[:per_scene]
+        if picked:
+            used.add(picked[0]["id"])
+        out.append({"scene_id": scene_id, "purpose": purpose, "roles": roles, "candidates": picked,
+                    "missing": not picked})
+    return {
+        "scenes": out,
+        "hint": "Visa kandidaterna med show_ad_images (numrerade) och låt användaren välja. "
+                "Saknas bild för en scen: be om uppladdning, och använd add_ad_image.",
+    }
+
+
+# ---- visual sheets ---------------------------------------------------------
+
+def _assets_by_id(company: Company, ids) -> dict:
+    ids = [i for i in ids if i]
+    if not ids:
+        return {}
+    try:
+        return {str(a.pk): a for a in MediaAsset.objects.filter(company=company, pk__in=ids)}
+    except Exception as exc:
+        raise ValueError("Ett eller flera asset_id är ogiltiga.") from exc
+
+
+def show_images(company: Company, asset_ids: list[str], title: str = "") -> bytes:
+    from . import sheets
+
+    if not asset_ids:
+        raise ValueError("Ange minst en bild.")
+    if len(asset_ids) > 12:
+        raise ValueError("Visa högst 12 bilder åt gången.")
+    found = _assets_by_id(company, asset_ids)
+    missing = [i for i in asset_ids if i not in found]
+    if missing:
+        raise ValueError("Finns inte i företagets media: " + ", ".join(missing))
+    items = []
+    for asset_id in asset_ids:
+        asset = found[asset_id]
+        try:
+            tags = asset.ad_tags
+        except AssetTags.DoesNotExist:
+            tags = None
+        items.append((asset, (tags.description if tags and tags.description else asset.alt_text)
+                      or ("Otaggad video" if asset.kind == "video" else "Otaggad bild")))
+    return sheets.picker_sheet(items, title=title)
+
+
+def storyboard_image(company: Company, draft_id) -> bytes:
+    from . import sheets
+
+    brief = _parse(get_draft(company, draft_id).brief)
+    if not brief.scenes:
+        raise ValueError("Briefen har inga scener än. Bygg storyboarden först.")
+    assets = _assets_by_id(company, [s.asset_id for s in brief.scenes])
+    problems = [f"Saknas: {m}" for m in brief.missing()] + brief.problems()
+    return sheets.storyboard(brief, assets, problems)
+
+
+def review_image(company: Company, draft_id) -> bytes:
+    from . import sheets
+
+    draft = get_draft(company, draft_id)
+    project = draft.motion_project
+    if project is None:
+        raise ValueError("Annonsen har inte producerats än. Kör produce_ad först.")
+    revision = project.revisions.get(number=project.current_revision)
+    render = (revision.renders.filter(output_asset__isnull=False).order_by("-created_at").first())
+    if render is None:
+        raise ValueError("Det finns ingen färdig rendering än. Kör render_motion_project (preview) och vänta tills den är klar.")
+    keyframes = [(k.scene_id, k.frame, k.asset) for k in render.storyboard.select_related("asset").order_by("frame")]
+    if not keyframes:
+        raise ValueError("Renderingen saknar nyckelbilder att granska.")
+    fps = revision.spec.get("fps", 30)
+    return sheets.review_sheet(keyframes, fps, f"{render.mode.upper()} · {draft.title}"[:90])
