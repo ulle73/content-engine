@@ -13,13 +13,16 @@ FLOW = (
     "2) start_ad_brief med användarens budskap. "
     "3) Max 3 frågor, bara det som verkligen saknas (next_question), alltid med färdiga svarsförslag. "
     "4) Föreslå tre olika vinklar och rekommendera en. "
-    "5) Remotion (gratis, mall) eller Higgsfield (kostar): rekommendera och visa kostnad. För Remotion: "
+    "5) Om användaren har en referensvideo i mediabanken: visa den med preview_ad_reference_video, analysera endast "
+    "rörelsegrammatik (tempo, kamera, transitioner, typografi) och spara med set_ad_reference_profile. Kopiera aldrig "
+    "referensens claims, loggor, personer eller produktidentitet. "
+    "6) Remotion (gratis, mall) eller Higgsfield (kostar): rekommendera och visa kostnad. För Remotion: "
     "get_ad_template_blueprint och bygg scenerna exakt på mallens scen-id och tider. "
-    "6) suggest_scene_assets och visa sedan kandidaterna med show_ad_images (numrerade), så användaren svarar "
+    "7) suggest_scene_assets och visa sedan kandidaterna med show_ad_images (numrerade), så användaren svarar "
     "'ta 2 och 5'. Bilder som användaren klistrar in i chatten sparas med add_ad_image. "
-    "7) update_ad_brief med hela förslaget och visa preview_ad_storyboard. Iterera tills användaren är nöjd. "
-    "8) Vid 'kör': lock_ad_brief, sedan produce_ad, sedan render_motion_project (preview). "
-    "9) När previewn är klar: review_ad_render. Granska varje bildruta mot brand-skillens checklista, "
+    "8) update_ad_brief med hela förslaget och visa preview_ad_storyboard. Iterera tills användaren är nöjd. "
+    "9) Vid 'kör': lock_ad_brief, sedan produce_ad, sedan render_motion_project (preview). "
+    "10) När previewn är klar: review_ad_render. Granska varje bildruta mot brand-skillens checklista, "
     "visa resultatet och föreslå rättningar innan approve_motion_preview och final. "
     "Varje svar innehåller studio_url: ge användaren länken 'Öppna i studion' när något är lättare att klicka "
     "(välja bilder, ladda upp, ändra text per scen, se storyboarden stort). Samma utkast, samma brief. "
@@ -79,6 +82,42 @@ def register(mcp, company_for, run_for, user_for, safe_call):
         draft = safe_call(
             service.update_draft, company_for(company_ref), draft_id, changes=changes,
             expected_revision=expected_revision, human=False,
+        )
+        return service.serialize(draft)
+
+    @mcp.tool(title="Preview ad reference video", annotations=read)
+    @database_tool
+    def preview_ad_reference_video(company_ref: str, asset_id: str, frames: int = 6) -> Image:
+        """Show 3–12 evenly sampled frames from a company-owned reference video. Free/local.
+        Use it to infer only creative mechanics such as motion intensity, camera style, transition family,
+        typography behavior, beat density and color behavior; never copy source claims or identity."""
+        return Image(
+            data=safe_call(service.reference_video_sheet, company_for(company_ref), asset_id, frames=frames),
+            format="jpeg",
+        )
+
+    @mcp.tool(title="Set ad reference profile", annotations=write)
+    @database_tool
+    def set_ad_reference_profile(
+        company_ref: str,
+        draft_id: str,
+        profile: dict,
+        expected_revision: int,
+    ) -> dict:
+        """Persist an allow-listed Reference Profile after visually reviewing the reference.
+        Allowed profile fields: source_asset_id, label, motion_intensity low/medium/high,
+        camera_style locked/push/orbit/dolly/handheld/macro/aerial/mixed,
+        transition_family cuts/soft/dynamic/mixed,
+        typography_behavior none/minimal/kinetic/editorial/bold,
+        beat_density sparse/medium/dense,
+        motion_preset legacy/soft/snappy/weighty/editorial,
+        color_behavior brand/natural/muted/high-contrast, optional bpm 40–220 and notes."""
+        draft = safe_call(
+            service.set_reference_profile,
+            company_for(company_ref),
+            draft_id,
+            profile=profile,
+            expected_revision=expected_revision,
         )
         return service.serialize(draft)
 
