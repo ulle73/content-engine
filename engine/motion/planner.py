@@ -275,6 +275,66 @@ def _compile_screen_ad(template_id, fields, fps):
     ]
 
 
+def _template_motion_preset(template_id: str) -> str:
+    if template_id in AD_TEMPLATES:
+        tempo = AD_TEMPLATES[template_id]["tempo"]
+        return "snappy" if tempo == "snabb" else "weighty" if tempo == "lugn" else "soft"
+    if template_id in SCREEN_AD_TEMPLATES:
+        return "soft"
+    return "legacy"
+
+
+def _beat_frames(bpm: float, fps: int, total_frames: int, offset_frames: int = 0) -> list[int]:
+    step = fps * 60 / bpm
+    frames, index = [], 0
+    while len(frames) < 512:
+        frame = round(offset_frames + index * step)
+        if frame >= total_frames:
+            break
+        if frame >= 0 and (not frames or frames[-1] != frame):
+            frames.append(frame)
+        index += 1
+    return frames
+
+
+def _apply_motion_harness(spec: dict, *, template_id: str, reference_profile: dict | None) -> dict:
+    data = validate_spec(spec)
+    profile = dict(reference_profile) if reference_profile else None
+    preset = profile.get("motion_preset") if profile else _template_motion_preset(template_id)
+    family = profile.get("transition_family", "mixed") if profile else "mixed"
+    dynamic = ("whip", "flash", "push")
+
+    for index, scene in enumerate(data["scenes"]):
+        # Source footage already has authored movement. Do not add a second camera move.
+        scene["motion_preset"] = "legacy" if scene["component"] == "footage" else preset
+        if not index or scene["component"] == "footage":
+            scene["transition"], scene["transition_frames"] = "cut", 0
+        elif family == "cuts":
+            scene["transition"], scene["transition_frames"] = "cut", 0
+        elif family == "soft":
+            scene["transition"], scene["transition_frames"] = "fade", min(8, scene["duration_frames"] // 3)
+        elif family == "dynamic":
+            scene["transition"] = dynamic[(index - 1) % len(dynamic)]
+            scene["transition_frames"] = min(8, scene["duration_frames"] // 3)
+
+    total_frames = sum(scene["duration_frames"] - scene["transition_frames"] for scene in data["scenes"])
+    bpm = profile.get("bpm") if profile else None
+    source = "profile" if bpm else "none"
+    if bpm is None and data["audio"]["enabled"] and data["audio"]["music"] == "pulse":
+        bpm, source = 120.0, "built-in-pulse"
+    if bpm:
+        data["beat_map"] = {
+            "enabled": True,
+            "bpm": float(bpm),
+            "offset_frames": 0,
+            "beat_frames": _beat_frames(float(bpm), data["fps"], total_frames),
+            "source": source,
+        }
+    if profile:
+        data["reference_profile"] = profile
+    return validate_spec(data)
+
+
 def compile_template(
     template_id,
     fields,
@@ -284,6 +344,7 @@ def compile_template(
     audio=True,
     tempo="balanced",
     end_card_seconds=5,
+    reference_profile=None,
 ):
     from jsonschema import Draft202012Validator
 
@@ -299,7 +360,7 @@ def compile_template(
         raise ValueError("Ogiltigt tempo.")
     fps = 30
     if template_id in AD_TEMPLATES:
-        return validate_spec(
+        return _apply_motion_harness(
             {
                 "version": 1,
                 "template_id": template_id,
@@ -318,10 +379,12 @@ def compile_template(
                     "ducking": 0.3,
                 },
                 "end_card_asset_id": fields.get("end_card_asset_id"),
-            }
+            },
+            template_id=template_id,
+            reference_profile=reference_profile,
         )
     if template_id in SCREEN_AD_TEMPLATES:
-        return validate_spec(
+        return _apply_motion_harness(
             {
                 "version": 1,
                 "template_id": template_id,
@@ -340,7 +403,9 @@ def compile_template(
                     "ducking": 0.3,
                 },
                 "end_card_asset_id": fields.get("end_card_asset_id"),
-            }
+            },
+            template_id=template_id,
+            reference_profile=reference_profile,
         )
     scenes = []
     transitions = ["cut", "fade", "wipe", "push", "fade"]
@@ -448,4 +513,4 @@ def compile_template(
             "end_card_asset_id": end_id,
         }
     )
-    return spec
+    return _apply_motion_harness(spec, template_id=template_id, reference_profile=reference_profile)
