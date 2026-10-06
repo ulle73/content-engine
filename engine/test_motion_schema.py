@@ -152,3 +152,90 @@ class MotionContractTests(unittest.TestCase):
             self.assertTrue(item["license"])
             self.assertTrue(item["source"])
             self.assertIn("required_props", item)
+
+
+
+class MotionDesignHarnessContractTests(unittest.TestCase):
+    def base_spec(self):
+        return MotionContractTests().spec()
+
+    def test_motion_spec_accepts_only_bounded_harness_data_and_4x5(self):
+        from engine.motion.schema import validate_spec
+
+        spec = self.base_spec()
+        spec["aspect_ratio"] = "4:5"
+        spec["scenes"][0]["motion_preset"] = "snappy"
+        spec["beat_map"] = {
+            "enabled": True,
+            "bpm": 120.0,
+            "offset_frames": 0,
+            "beat_frames": [0, 15, 30, 45, 60, 75],
+            "source": "built-in-pulse",
+        }
+        spec["reference_profile"] = {
+            "label": "Reference grammar",
+            "motion_intensity": "high",
+            "camera_style": "push",
+            "transition_family": "dynamic",
+            "typography_behavior": "kinetic",
+            "beat_density": "dense",
+            "motion_preset": "snappy",
+            "color_behavior": "brand",
+            "bpm": 120.0,
+            "notes": "Use rhythm, not source content.",
+        }
+        try:
+            result = validate_spec(spec)
+        except ValueError as exc:
+            self.fail(f"Motion harness contract should be accepted: {exc}")
+        self.assertEqual(result["aspect_ratio"], "4:5")
+        self.assertEqual(result["scenes"][0]["motion_preset"], "snappy")
+        self.assertEqual(result["beat_map"]["source"], "built-in-pulse")
+        self.assertEqual(result["reference_profile"]["camera_style"], "push")
+
+        bad = copy.deepcopy(spec)
+        bad["scenes"][0]["motion_preset"] = "javascript"
+        with self.assertRaises(ValueError):
+            validate_spec(bad)
+        bad = copy.deepcopy(spec)
+        bad["reference_profile"]["code"] = "alert(1)"
+        with self.assertRaises(ValueError):
+            validate_spec(bad)
+
+    def test_beat_map_rejects_unsorted_duplicate_and_out_of_range_beats(self):
+        from engine.motion.schema import validate_spec
+
+        for beats in ([15, 0], [0, 0], [0, 90]):
+            spec = self.base_spec()
+            spec["beat_map"] = {
+                "enabled": True,
+                "bpm": 120.0,
+                "offset_frames": 0,
+                "beat_frames": beats,
+                "source": "manual",
+            }
+            with self.subTest(beats=beats), self.assertRaises(ValueError):
+                validate_spec(spec)
+
+    def test_motion_critic_is_honest_and_safe_fix_preserves_content(self):
+        try:
+            from engine.motion.critic import critique_spec, improve_spec
+        except ModuleNotFoundError as exc:
+            self.fail(f"Motion critic module is missing: {exc}")
+
+        spec = self.base_spec()
+        before = copy.deepcopy(spec)
+        report = critique_spec(spec, storyboard_scene_ids=["intro"])
+        self.assertTrue(report["visual_review_required"])
+        self.assertEqual(
+            report["visual_review_checklist"],
+            ["ui_product_fidelity", "brand_finish", "visual_artifacts"],
+        )
+        self.assertGreater(report["max_score"], 0)
+
+        improved, changes = improve_spec(spec)
+        self.assertTrue(changes)
+        self.assertEqual(improved["scenes"][0]["props"], before["scenes"][0]["props"])
+        self.assertEqual(improved["end_card_asset_id"], before["end_card_asset_id"])
+        self.assertEqual(improved["template_id"], before["template_id"])
+        self.assertNotEqual(improved["scenes"][0]["motion_preset"], "legacy")
