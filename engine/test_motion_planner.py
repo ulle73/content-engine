@@ -25,6 +25,13 @@ class PlannerTests(unittest.TestCase):
             s = template_schema(t["id"])
             self.assertTrue(set(s["required"]).issubset(s["properties"]))
 
+    def test_non_sequence_templates_expose_4x5_for_paid_social(self):
+        for template in catalog(kind="template"):
+            if template["category"] != "sequence":
+                self.assertIn("4:5", template["aspect_ratios"], template["id"])
+        from engine.motion.forms import MotionForm
+        self.assertIn(("4:5", "Flöde · 4:5"), list(MotionForm.base_fields["aspect_ratio"].choices))
+
     def test_missing_required_field_rejected(self):
         with self.assertRaises(ValueError):
             compile_template("monthly-wrapped", {"month": "September"})
