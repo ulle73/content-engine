@@ -73,6 +73,24 @@ Grön dominerar, vitt ger luft och guld används sparsamt.
 **Bra:** "Ditt friskvårdsbidrag brinner inne. Gör det till golf."
 **Dåligt:** "🔥 MISSA INTE!!! Världens bästa golfdeal!!!"
 
+## Tonregister
+
+Användaren beskriver ofta tonen med vardagsord ("lite rolig och fräck", "seriös", "stressa dem lite"). Översätt till ett av fyra register och använd mallen som hör till. Inom alla register gäller resten av den här skillen.
+
+| Register | Låter som | Tillåtet | Aldrig | Mall |
+|---|---|---|---|---|
+| **Lugn premium** | Självklar, varm, få ord | Korta påståenden, tystnad, stora bilder | Brådska, utropstecken | `golf-premium` |
+| **Informativ** | Kompis som förklarar | Konkreta steg, riktiga skärmar | Säljfloskler | `friskvard-portal-ad`, `friskvard-direct-ad` |
+| **Brådskande** | Vänlig påminnelse med klocka | Deadline (verifierad), förlust ("snart borta") | Skrämsel, falska deadlines, "ALLA förlorar" | `golf-sista-chansen` |
+| **Fräck** | Glimten i ögat | Överraskande hook, självironi, golfhumor, lätt överdrift som alla förstår är skämt ("Din chef bjuder på golf") | Håna arbetsgivare, kollegor eller andra golfare, svordomar, sexuella anspelningar, påhittade fakta i skämtform | `golf-fracka` |
+
+**Fräck, gjort rätt:** hooken överraskar, vändningen förklarar med glimten i ögat, och punchline plus bevis landar i något sant. Skämtet får aldrig vara ett faktapåstående. "Din chef bjuder på golf" fungerar bara om vändningen direkt säger vad det betyder (friskvårdsbidraget).
+
+## Text som ska se bra ut stort
+
+- Rubriker skalas så att det **längsta ordet** får plats på en rad. Långa sammansättningar, som "Friskvårdsbidraget", blir därför små. I stora text-scener (hook, punch, statement) ska du hellre skriva "Bidraget" eller "Ditt friskvårdsbidrag" med radbrytning (` / `).
+- Max cirka 6 ord i hook-scener och 8 i övriga.
+
 ## Slutkort
 
 Djupgrön bakgrund, logga centrerad (officiell logga via `company.official_logo`, aldrig AI-genererad), en rad nytta och `Golfkuponger.se`. 2 sekunder.

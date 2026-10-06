@@ -53,8 +53,12 @@ Detaljerna står i `skills/ad-studio/SKILL.md`. I korthet:
 
 `list_untagged_media`, sedan `view_media`, sedan `tag_media_asset`: AI:n tittar på bilden och sparar vad den visar. Det kostar inga extra API-anrop, eftersom assistenten själv ser bilden. Sätt `verified` när en människa bekräftat. `search_ad_assets` rankar på betydelse och föredrar verifierade taggar.
 
+## Mallar
+
+Mallarna är definierade i `engine/motion/ad_templates.py`, och katalogen genereras med `scripts/generate_motion_catalog.py`. Tre mallar har ton och tempo: `golf-fracka` (fräck, 12 s), `golf-sista-chansen` (brådskande, 10 s, nedräkning) och `golf-premium` (lugn, 15 s). De har ingen standardtext, så varje ord kommer från briefen. Renderarens `spec.schema.json` måste exporteras om (`PYTHONPATH=. python scripts/export-motion-schema.py` och sedan prettier) när mallar läggs till. Ett test fångar avvikelser.
+
 ## Inte byggt än
 
 - Klickbar widget direkt i ChatGPT och Claude. Klickandet sker i studion via länken.
-- Fler Remotion-mallar utöver friskvårdsmallarna.
+- Visuell variation per ton (färg och typografi). Idag skiljer sig tonerna i tempo, övergångar, musik och komponenter, men alla använder samma gröna brand-preset.
 - Fler format (4:5, 1:1) för skärm-annonsmallarna.

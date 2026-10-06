@@ -8,6 +8,8 @@ from typing import Annotated, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator, model_validator
+
+from .ad_templates import AD_TEMPLATES
 from .catalog import get_item
 
 Number = Annotated[float, Field(strict=True, allow_inf_nan=False, ge=-1e12, le=1e12)]
@@ -129,7 +131,7 @@ class MotionSpec(Closed):
         for index, scene in enumerate(self.scenes):
             if scene.component == "footage" and scene.props.headline:
                 words = len(scene.props.headline.split())
-                if self.template_id in {"friskvard-portal-ad", "friskvard-direct-ad"}:
+                if self.template_id in {"friskvard-portal-ad", "friskvard-direct-ad", *AD_TEMPLATES}:
                     min_read_frames = math.ceil((words / 3.5) * self.fps)
                 else:
                     min_read_frames = math.ceil((words / 2.5 + 1) * self.fps)

@@ -15,7 +15,7 @@ from .brief import AdBrief, BriefNotReady
 from .models import AdDraft, AssetTags
 
 # Templates that follow the scene-id convention in blueprints.py and can be filled from a brief.
-AD_TEMPLATES = ("friskvard-portal-ad", "friskvard-direct-ad")
+AD_TEMPLATES = ("friskvard-portal-ad", "friskvard-direct-ad", "golf-fracka", "golf-sista-chansen", "golf-premium")
 
 ROLE_VALUES = {"hook", "footage", "screen", "product", "proof", "end_card", "logo", "other"}
 
