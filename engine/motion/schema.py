@@ -75,6 +75,8 @@ class BeatMap(Closed):
 
     @model_validator(mode="after")
     def coherent(self):
+        if any(frame < 0 or frame > 7200 for frame in self.beat_frames):
+            raise ValueError("Beat frames must stay within supported bounds")
         if self.beat_frames != sorted(set(self.beat_frames)):
             raise ValueError("Beat frames must be unique and sorted")
         if self.enabled and self.bpm is None and not self.beat_frames:
