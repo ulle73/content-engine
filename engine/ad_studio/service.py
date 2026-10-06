@@ -443,6 +443,22 @@ def _assets_by_id(company: Company, ids) -> dict:
         raise ValueError("Ett eller flera asset_id är ogiltiga.") from exc
 
 
+def reference_video_sheet(company: Company, asset_id: str, frames: int = 6) -> bytes:
+    from . import sheets
+
+    if type(frames) is not int or not 3 <= frames <= 12:
+        raise ValueError("Välj 3–12 referensbilder.")
+    try:
+        asset = MediaAsset.objects.filter(company=company, pk=asset_id, kind="video").first()
+    except Exception as exc:
+        raise ValueError("Referensvideons asset_id är ogiltigt.") from exc
+    if asset is None:
+        raise ValueError("Referensvideon finns inte i företagets media.")
+    if asset.expires_at and asset.expires_at <= timezone.now():
+        raise ValueError("Referensvideon har gått ut.")
+    return sheets.reference_video_sheet(asset, frames=frames)
+
+
 def show_images(company: Company, asset_ids: list[str], title: str = "") -> bytes:
     from . import sheets
 
