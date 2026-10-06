@@ -1,0 +1,44 @@
+name: Golf image enrichment run
+
+on:
+  push:
+    branches:
+      - automation/golf-image-enricher-20261006
+
+permissions:
+  contents: write
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: tools/golf-image-enricher/requirements.txt
+      - name: Install dependencies
+        run: python -m pip install -r tools/golf-image-enricher/requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s tools/golf-image-enricher/tests -v
+      - name: Enrich all missing club images
+        working-directory: tools/golf-image-enricher
+        run: |
+          python enrich.py input/golfbanor.json \
+            --output output/golfbanor_med_bilder.json \
+            --audit output/audit.jsonl \
+            --summary output/summary.csv \
+            --workers 6 \
+            --fresh
+      - name: Upload result artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: golf-image-enrichment-result
+          path: |
+            tools/golf-image-enricher/output/golfbanor_med_bilder.json
+            tools/golf-image-enricher/output/audit.jsonl
+            tools/golf-image-enricher/output/summary.csv
+          if-no-files-found: error
+          retention-days: 7
