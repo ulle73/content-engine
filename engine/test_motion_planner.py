@@ -124,3 +124,42 @@ class PlannerTests(unittest.TestCase):
             audio=initial["audio"],
         )
         self.assertEqual(rebuilt, spec)
+
+
+    def test_reference_profile_compiles_motion_grammar_without_source_content(self):
+        fields = {
+            "hook_text": "ANVÄND BIDRAGET",
+            "twist_text": "MER GOLF",
+            "twist_asset_id": "00000000-0000-4000-8000-000000000001",
+            "punch_text": "NÄR DET PASSAR DIG",
+            "proof_text": "VÄLJ SENARE",
+            "proof_asset_id": "00000000-0000-4000-8000-000000000002",
+            "end_text": "GOLFKUPONGER",
+        }
+        reference = {
+            "label": "Fast editorial reference",
+            "motion_intensity": "high",
+            "camera_style": "push",
+            "transition_family": "dynamic",
+            "typography_behavior": "kinetic",
+            "beat_density": "dense",
+            "motion_preset": "snappy",
+            "color_behavior": "brand",
+            "bpm": 120.0,
+            "notes": "Do not copy source claims or identity.",
+        }
+        try:
+            spec = compile_template("golf-fracka", fields, aspect_ratio="4:5", reference_profile=reference)
+        except TypeError as exc:
+            self.fail(f"compile_template must accept reference_profile: {exc}")
+        self.assertEqual(spec["aspect_ratio"], "4:5")
+        self.assertEqual(spec["reference_profile"]["label"], reference["label"])
+        self.assertTrue(spec["beat_map"]["enabled"])
+        self.assertEqual(spec["beat_map"]["bpm"], 120.0)
+        self.assertEqual(spec["beat_map"]["source"], "profile")
+        self.assertEqual(spec["scenes"][0]["motion_preset"], "snappy")
+        self.assertTrue(all(
+            scene["motion_preset"] in {"legacy", "snappy"}
+            for scene in spec["scenes"]
+        ))
+        self.assertNotIn(reference["notes"], str(spec["scenes"]))
