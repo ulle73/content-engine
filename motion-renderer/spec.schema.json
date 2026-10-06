@@ -405,6 +405,8 @@
         },
         "beat_frames": {
           "items": {
+            "maximum": 7200,
+            "minimum": 0,
             "type": "integer"
           },
           "maxItems": 512,
