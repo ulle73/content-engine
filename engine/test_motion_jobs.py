@@ -189,3 +189,26 @@ class MotionJobTests(TestCase):
         new = improved.revisions.get(number=2).spec
         self.assertEqual(old["scenes"][0]["props"], new["scenes"][0]["props"])
         self.assertNotEqual(old["scenes"][0].get("motion_preset", "legacy"), new["scenes"][0]["motion_preset"])
+
+
+    def test_mcp_registers_critic_read_and_safe_fix_tools(self):
+        from engine.motion import mcp as motion_mcp
+
+        class FakeMCP:
+            def __init__(self):
+                self.titles = []
+
+            def tool(self, **kwargs):
+                self.titles.append(kwargs.get("title"))
+                return lambda fn: fn
+
+        fake = FakeMCP()
+        motion_mcp.register(
+            fake,
+            company_for=lambda ref: self.company,
+            run_for=lambda company_ref, run_id: None,
+            user_for=lambda: self.user,
+            safe_call=lambda fn, *args, **kwargs: fn(*args, **kwargs),
+        )
+        self.assertIn("Critique motion preview", fake.titles)
+        self.assertIn("Improve motion from critic", fake.titles)
