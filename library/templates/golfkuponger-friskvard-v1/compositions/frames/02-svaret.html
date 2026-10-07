@@ -1,0 +1,359 @@
+<template>
+  <style>
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500-italic.woff2") format('woff2');font-weight:500;font-style:italic;font-display:block;}
+
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      container-type: size;
+      color: #F8F4EC;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    /* ---- full-bleed ground: misty course plate + deep-green scrim ---- */
+    [id="02-svaret-bg"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #01170F;
+      z-index: 0;
+    }
+    [id="02-svaret-bg-img"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 58%;
+      transform-origin: 50% 74%;
+    }
+    [id="02-svaret-scrim"] {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(1, 23, 15, 0.74) 0%,
+        rgba(1, 23, 15, 0.6) 34%,
+        rgba(1, 23, 15, 0.5) 62%,
+        rgba(1, 23, 15, 0.34) 100%
+      );
+    }
+
+    /* ---- headline block (upper third, left, 70/30) ---- */
+    [id="02-svaret-head"] {
+      position: absolute;
+      left: 7cqw;
+      top: 17cqh;
+      width: 80cqw;
+      transform-origin: 0 0;
+      z-index: 2;
+    }
+    [class~="02-svaret-line"] {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    [id="02-svaret-l1"] {
+      font-size: 9.6cqw;
+      line-height: 1.04;
+      letter-spacing: -0.02em;
+    }
+    [id="02-svaret-l2"] {
+      margin-top: 1.4cqh;
+      font-size: 6.6cqw;
+      line-height: 1.1;
+      letter-spacing: -0.012em;
+    }
+    [class~="02-svaret-w"] {
+      display: inline-block;
+    }
+    [id="02-svaret-gold"] {
+      color: #D6A536;
+      font-style: italic;
+    }
+    [id="02-svaret-dot"] {
+      color: #F8F4EC;
+      font-style: normal;
+    }
+
+    /* ---- hero figure: 5 000 kr ---- */
+    [id="02-svaret-fig"] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 33.5cqh;
+      display: flex;
+      justify-content: center;
+      transform-origin: 50% 60%;
+      z-index: 3;
+    }
+    [id="02-svaret-fig-text"] {
+      display: block;
+      padding: 0.07em 0.06em;
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 20cqw;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      white-space: nowrap;
+      color: transparent;
+      background-image: linear-gradient(
+        110deg,
+        #F8F4EC 0%,
+        #F8F4EC 43%,
+        #E2BE6A 47.5%,
+        #FBEFC8 50%,
+        #D6A536 52.5%,
+        #F8F4EC 57%,
+        #F8F4EC 100%
+      );
+      background-size: 300% 100%;
+      background-position: 90% 50%;
+      background-repeat: no-repeat;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    /* The digits live directly in the gradient-text element and "kr" is its ::after,
+       so one background-clip:text gradient paints both and the shimmer is one continuous sweep. */
+    [id="02-svaret-fig-text"] {
+      font-variant-numeric: lining-nums tabular-nums;
+      font-feature-settings: "lnum" 1, "tnum" 1;
+      white-space: pre;
+      word-spacing: -0.03em;
+    }
+    [id="02-svaret-fig-text"]::after {
+      content: " kr";
+      margin-left: 0.9cqw;
+      font-size: 8cqw;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      font-variant-numeric: normal;
+      font-feature-settings: normal;
+    }
+
+    /* ---- gold rule + supporting lines ---- */
+    [id="02-svaret-rule"] {
+      position: absolute;
+      left: 41cqw;
+      top: 58cqh;
+      width: 18cqw;
+      height: 2px;
+      background: #D6A536;
+      transform-origin: 50% 50%;
+      z-index: 3;
+    }
+    [id="02-svaret-sub"] {
+      position: absolute;
+      left: 7cqw;
+      right: 7cqw;
+      top: 61.2cqh;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 3.8cqw;
+      line-height: 1.2;
+      letter-spacing: 0.004em;
+      white-space: nowrap;
+      color: rgba(248, 244, 236, 0.94);
+      z-index: 3;
+    }
+    [id="02-svaret-fine"] {
+      position: absolute;
+      left: 7cqw;
+      right: 7cqw;
+      top: 74.5cqh;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 2.1cqw;
+      line-height: 1.3;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: rgba(248, 244, 236, 0.7);
+      z-index: 3;
+    }
+  </style>
+
+  <div data-hf-id="hf-fndt" id="root" data-composition-id="02-svaret" data-start="0" data-duration="6.418" data-width="1080" data-height="1080">
+    <div data-hf-id="hf-0u3p" id="02-svaret-bg" class="clip" data-start="0" data-duration="6.418" data-track-index="0">
+      <img data-hf-id="hf-j4zr" id="02-svaret-bg-img" src="assets/experiment-card-v1.jpg" alt="">
+      <div data-hf-id="hf-ffzc" id="02-svaret-scrim"></div>
+    </div>
+
+    <div data-hf-id="hf-ujo4" id="02-svaret-head">
+      <div data-hf-id="hf-y5z1" id="02-svaret-l1" class="02-svaret-line"><span data-hf-id="hf-izea" class="02-svaret-w">Det</span> <span data-hf-id="hf-fhq5" class="02-svaret-w">kan</span> <span data-hf-id="hf-s9vm" class="02-svaret-w">hen.</span></div>
+      <div data-hf-id="hf-2432" id="02-svaret-l2" class="02-svaret-line"><span data-hf-id="hf-nz1l" class="02-svaret-w">Med</span> <span data-hf-id="hf-n6d1" class="02-svaret-w"><span data-hf-id="hf-juse" id="02-svaret-gold">friskvårdsbidraget</span><span data-hf-id="hf-xhi0" id="02-svaret-dot">.</span></span></div>
+    </div>
+
+    <div data-hf-id="hf-tno8" id="02-svaret-fig">
+      <div data-hf-id="hf-fhog" id="02-svaret-fig-text">0</div>
+    </div>
+
+    <div data-hf-id="hf-a5b8" id="02-svaret-rule"></div>
+    <div data-hf-id="hf-u640" id="02-svaret-sub">per år – skattefritt</div>
+    <div data-hf-id="hf-t0mb" id="02-svaret-fine">Arbetsgivaren bestämmer beloppet.</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      // Music grid: 165 BPM -> one beat = 0.3636s. Every cue sits on it.
+      var B = 60 / 165;
+      var T_LINE2 = 3 * B; //  1.091  "Med friskvårdsbidraget."
+      var T_SWAP = 6 * B; //   2.182  headline steps up, count starts
+      var T_LAND = 10 * B; //  3.636  figure lands (soft impact)
+      var T_SUB = 11 * B; //   4.000  "per år – skattefritt"
+      var T_SHINE = 12 * B; // 4.364  gold specular sweep (sparkle)
+      var T_FINE = 13 * B; //  4.727  small print
+      var DURATION = 5.818;
+
+      var el = function (id) {
+        return document.getElementById(id);
+      };
+      var bgImg = el("02-svaret-bg-img");
+      var scrim = el("02-svaret-scrim");
+      var head = el("02-svaret-head");
+      var l1Words = Array.prototype.slice.call(el("02-svaret-l1").children);
+      var l2Words = Array.prototype.slice.call(el("02-svaret-l2").children);
+      var fig = el("02-svaret-fig");
+      var figText = el("02-svaret-fig-text");
+      var num = figText; // digits are the figure's own text node; "kr" is its ::after
+      var rule = el("02-svaret-rule");
+      var sub = el("02-svaret-sub");
+      var fine = el("02-svaret-fine");
+
+      var CQ = 1080 / 100; // 1cqw / 1cqh in px on the 1080x1080 canvas
+
+      // Swedish thousands grouping: 5000 -> "5 000". Integers only.
+      var fmt = function (value) {
+        var n = Math.round(value);
+        if (n < 1000) return String(n);
+        var rest = n % 1000;
+        return Math.floor(n / 1000) + " " + (rest < 10 ? "00" : rest < 100 ? "0" : "") + rest;
+      };
+
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- Ground: slow push-in on the misty course plate (whole shot) ----
+      tl.fromTo(bgImg, { scale: 1 }, { scale: 1.07, duration: DURATION, ease: "none" }, 0);
+
+      // ---- Text entrance helper: soft rise + blur-to-sharp, per word ----
+      var riseIn = function (words, at, stagger) {
+        tl.fromTo(
+          words,
+          { yPercent: 42 },
+          { yPercent: 0, duration: 1.1, ease: "expo.out", stagger: stagger },
+          at,
+        );
+        tl.fromTo(
+          words,
+          { opacity: 0, filter: "blur(14px)" },
+          { opacity: 1, filter: "blur(0px)", duration: 0.75, ease: "power2.out", stagger: stagger },
+          at,
+        );
+      };
+
+      // ---- Scene 1 (0.000): "Det kan hen." ----
+      riseIn(l1Words, 0, B / 4);
+
+      // ---- Scene 2 (1.091): "Med friskvårdsbidraget." ----
+      riseIn(l2Words, T_LINE2, B / 4);
+
+      // ---- Scene 3 (2.182): scale-swap — headline steps up + shrinks, figure arrives ----
+      tl.fromTo(
+        head,
+        { y: 0, scale: 1, opacity: 1 },
+        { y: -8.5 * CQ, scale: 0.78, opacity: 0.92, duration: 2 * B, ease: "power3.inOut" },
+        T_SWAP,
+      );
+
+      // counting-dynamic-scale: value + scale share timing and ease
+      var COUNT_DUR = T_LAND - T_SWAP; // 1.4545s
+      // gentle ease-out: digits keep ticking right up to the 3.636s impact
+      var COUNT_EASE = "power1.out";
+      var START_SCALE = 0.5;
+      var counter = { value: 0 };
+      tl.fromTo(
+        counter,
+        { value: 0 },
+        {
+          value: 5000,
+          duration: COUNT_DUR,
+          ease: COUNT_EASE,
+          onUpdate: function () {
+            num.textContent = fmt(counter.value);
+          },
+        },
+        T_SWAP,
+      );
+      tl.fromTo(
+        fig,
+        { scale: START_SCALE },
+        { scale: 1, duration: COUNT_DUR, ease: COUNT_EASE },
+        T_SWAP,
+      );
+      // incoming of the swap: blur-to-sharp, sits above the outgoing headline
+      tl.fromTo(
+        fig,
+        { opacity: 0, filter: "blur(18px)" },
+        { opacity: 1, filter: "blur(0px)", duration: 0.62, ease: "power2.out" },
+        T_SWAP,
+      );
+
+      // ---- Scene 4 (3.636): landing — gold rule draws, light lifts, subline rises ----
+      tl.fromTo(
+        rule,
+        { scaleX: 0 },
+        { scaleX: 1, duration: T_SUB - T_LAND, ease: "power3.out" },
+        T_LAND,
+      );
+      tl.fromTo(scrim, { opacity: 1 }, { opacity: 0.84, duration: 0.12, ease: "power2.out" }, T_LAND);
+      tl.fromTo(
+        scrim,
+        { opacity: 0.84 },
+        { opacity: 1, duration: 1.1, ease: "sine.inOut", immediateRender: false },
+        T_LAND + 0.12,
+      );
+      tl.fromTo(
+        sub,
+        { opacity: 0, yPercent: 60, filter: "blur(8px)" },
+        { opacity: 1, yPercent: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" },
+        T_SUB,
+      );
+
+      // ---- Scene 5 (4.364): one gold specular sweep through the figure (text-shimmer) ----
+      tl.fromTo(
+        figText,
+        { backgroundPosition: "90% 50%" },
+        { backgroundPosition: "10% 50%", duration: 0.9, ease: "sine.inOut" },
+        T_SHINE,
+      );
+
+      // ---- 4.727: small print, then hold ----
+      tl.fromTo(
+        fine,
+        { opacity: 0, y: 0.8 * CQ },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+        T_FINE,
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["02-svaret"] = tl;
+    })();
+  </script>
+</template>

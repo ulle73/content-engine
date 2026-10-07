@@ -43,23 +43,25 @@ class AdBriefTests(unittest.TestCase):
         tampered = locked.model_copy(update={"message": "Något annat"})
         self.assertFalse(tampered.verify_lock())
 
-    def test_too_many_words_on_screen(self):
+    def test_many_words_on_screen_is_advice_not_a_blocker(self):
         brief = ready_brief()
         brief.scenes[0].on_screen_text = "ett två tre fyra fem sex sju åtta nio"
-        with self.assertRaises(BriefNotReady) as ctx:
-            brief.lock()
-        self.assertIn("max 8", str(ctx.exception))
+        self.assertEqual(brief.problems(), [])
+        self.assertTrue(any("9 ord" in a for a in brief.advisories()))
+        self.assertEqual(brief.lock().status, "locked")
 
     def test_duration_must_match_scenes(self):
         with self.assertRaises(BriefNotReady):
             ready_brief(duration_s=15).lock()
 
-    def test_story_must_start_with_hook_and_end_with_cta(self):
+    def test_scene_order_is_free_with_advice(self):
         brief = ready_brief()
         brief.scenes.reverse()
-        problems = brief.problems()
-        self.assertTrue(any("hook" in p for p in problems))
-        self.assertTrue(any("CTA" in p for p in problems))
+        self.assertEqual(brief.problems(), [])
+        advisories = brief.advisories()
+        self.assertTrue(any("hook" in a for a in advisories))
+        self.assertTrue(any("CTA" in a for a in advisories))
+        self.assertEqual(brief.lock().status, "locked")
 
     def test_higgsfield_needs_cost_approval(self):
         brief = ready_brief(engine={"engine": "higgsfield", "estimated_cost_sek": 40})

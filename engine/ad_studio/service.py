@@ -58,6 +58,7 @@ def serialize(draft: AdDraft) -> dict:
         "missing": missing,
         "next_question": NEXT_QUESTION.get(missing[0]) if missing else None,
         "problems": brief.problems() + blocked,
+        "advisories": brief.advisories(),
         "lockable": not missing and not brief.problems() and not blocked,
         "motion_project_id": str(draft.motion_project_id) if draft.motion_project_id else None,
         "studio_url": studio_url(draft),

@@ -19,7 +19,7 @@ Användaren ska känna att hen pratar med en skarp creative director som redan k
 
 | Steg | Du gör | Verktyg |
 |---|---|---|
-| 0 | Läs brand + domänskill | `read_ad_skill` |
+| 0 | Sök färdiga, snygga mallar/effekter i Content Library att utgå från (stilen är fri) och läs brand + domänskill | `search_content_library` → `read_ad_skill` |
 | 1 | Starta, förstå målet | `start_ad_brief` |
 | 2 | **Första svaret** (se mall nedan): tolkning, tre vinklar, rekommenderad motor och mall, max tre frågor | `get_ad_template_blueprint` |
 | 3 | Bilder per scen, visade som numrerat ark | `suggest_scene_assets` → `show_ad_images` |
@@ -104,9 +104,9 @@ Poängsätt varje punkt 0–2 och visa tabellen. Under 12 av 14 ska du föreslå
 | Punkt | 2 = bra |
 |---|---|
 | Hook | Budskapet syns och förstås inom 1 s |
-| Läsbarhet | All text inom gula linjer, god kontrast, max 8 ord |
+| Läsbarhet | Texten hinns läsas på mobil, ligger inom gula linjer, god kontrast |
 | Tempo | Varje text hinns läsas, inget står still för länge |
 | Trovärdighet | Riktigt UI, inga AI-artefakter, naturliga människor |
-| Brand | Grön/vit/sparsamt guld, Inter, lugnt premiumuttryck |
+| Brand | Känns som Golfkuponger – eller medvetet annorlunda enligt idén (brand-skillen är ett utgångsläge) |
 | Fakta | Varje påstående finns i `facts` och är verifierat |
 | CTA | En tydlig handling och rätt adress på slutkortet |
