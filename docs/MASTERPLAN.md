@@ -11,8 +11,8 @@
 ## 1. Slutmål (ägarens egna ord, sammanfattat)
 
 **En automatisk marknadsavdelning i molnet** för flera bolag – främst **Golfkuponger** (golfkuponger på 300+
-svenska klubbar; friskvårdsbidrag, företagspaket, presentkort) och **FAIV** (grill-kit till bilar och
-extrabelysning till bilar). Två användare: Jonas och en kollega.
+svenska klubbar; friskvårdsbidrag, företagspaket, presentkort) och **FAIV** (främst extraljus/LED-ramper till bilar –
+jämförbara: Ekstralys, Strands, Lazer Lamps, Nordic Lights; i andra hand grill-kit till bilar). Två användare: Jonas och en kollega.
 
 1. **Bevakar** konton (konkurrenter, inspiration, kreatörer), Meta Ads Library (vilka annonser som körs och hur
    länge – länge = fungerar) och viralt innehåll – i branschen, i närliggande branscher och breda virala format.
