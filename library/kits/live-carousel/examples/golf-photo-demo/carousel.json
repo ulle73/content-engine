@@ -1,0 +1,70 @@
+﻿{
+    "title":  "Golf i kväll",
+    "handle":  "golfkuponger",
+    "caption":  "Spela mer golf i år. Boka på golfkuponger.se",
+    "mode":  "photo",
+    "slides":  [
+                   "01",
+                   "02",
+                   "03",
+                   "04"
+               ],
+    "cues":  {
+                 "01":  {
+                            "dur":  6,
+                            "hits":  [
+                                         0.5
+                                     ],
+                            "shine":  [
+                                          1.0,
+                                          3.5
+                                      ],
+                            "extrude":  true,
+                            "sky":  0.016,
+                            "push":  0.026
+                        },
+                 "02":  {
+                            "dur":  6,
+                            "hits":  [
+                                         2.0
+                                     ],
+                            "shine":  [
+                                          0.6,
+                                          3.6
+                                      ],
+                            "extrude":  true,
+                            "sky":  0.022,
+                            "motes":  22
+                        },
+                 "03":  {
+                            "dur":  6,
+                            "hits":  [
+                                         2.0
+                                     ],
+                            "shine":  [
+                                          0.6,
+                                          3.6
+                                      ],
+                            "extrude":  false,
+                            "sky":  0.016
+                        },
+                 "04":  {
+                            "dur":  6,
+                            "hits":  [
+                                         2.0
+                                     ],
+                            "shine":  [
+                                          1.0,
+                                          3.0
+                                      ],
+                            "extrude":  false,
+                            "sky":  0.012,
+                            "push":  0.03,
+                            "hitAt":  [
+                                          540,
+                                          760
+                                      ]
+                        }
+             },
+    "music":  null
+}

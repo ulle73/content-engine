@@ -1,0 +1,18 @@
+{
+  "cobalt": {
+    "about": "The house look: saturated cobalt world, orange accent, cream type. Default.",
+    "colors": { "hero": "#2041f2", "hero-hi": "#3a5cff", "hero-deep": "#1530c8", "paper": "#fff3e0", "accent": "#ff6a1f", "accent-hi": "#ff9a5c", "accent-deep": "#e4500d", "ink": "#0c1236" }
+  },
+  "tomato": {
+    "about": "Warm and loud: tomato red world, lemon accent, cream type. Food, lifestyle, hot takes.",
+    "colors": { "hero": "#d93a26", "hero-hi": "#ec5638", "hero-deep": "#a82a18", "paper": "#fff4e2", "accent": "#ffc531", "accent-hi": "#ffe07a", "accent-deep": "#e0a100", "ink": "#2b0d08" }
+  },
+  "forest": {
+    "about": "Calm and premium: deep green world, orange accent, bone type. Finance, wellness, slow topics.",
+    "colors": { "hero": "#1f6a4c", "hero-hi": "#2c8460", "hero-deep": "#144a35", "paper": "#f5efdf", "accent": "#ff7a2e", "accent-hi": "#ffa66b", "accent-deep": "#db5a12", "ink": "#0a231a" }
+  },
+  "noir": {
+    "about": "Editorial dark: charcoal world, orange accent, warm white type. Tech, AI, serious tone.",
+    "colors": { "hero": "#1b1b21", "hero-hi": "#2c2c35", "hero-deep": "#0e0e12", "paper": "#f3eee5", "accent": "#ff5b2e", "accent-hi": "#ff8e66", "accent-deep": "#d63f15", "ink": "#050507" }
+  }
+}

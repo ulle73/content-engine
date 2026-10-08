@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1350" />
+    <title>Live Carousel 01: Hook</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /*@CHROME@*/
+
+      #small-top {
+        position: absolute;
+        left: 72px;
+        top: 322px;
+      }
+      .fps {
+        position: absolute;
+        right: 72px;
+        top: 834px;
+        height: 54px;
+        padding: 0 20px 0 18px;
+        border-radius: 27px;
+        border: 2px solid rgba(255, 243, 224, 0.75);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--mono);
+        font-size: 25px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: var(--cream);
+      }
+      .fps .rec {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--cream);
+        opacity: 0.5;
+        display: block;
+      }
+      .fps .num {
+        display: block;
+        width: 2.2ch;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .wordbox {
+        position: absolute;
+        left: 72px;
+        top: 440px;
+        width: 936px;
+        height: 320px;
+        perspective: 1600px;
+        perspective-origin: 50% 40%;
+      }
+      .wordbox .big {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 936px;
+        justify-content: center;
+      }
+      #small-bot {
+        position: absolute;
+        left: 72px;
+        top: 826px;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+      }
+      /* selection box (design-tool frame) */
+      .sel {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .sel-line {
+        position: absolute;
+        background: var(--cream);
+      }
+      .sel-handle {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        background: var(--cream);
+        border: 3px solid var(--ink);
+      }
+      .sel-label {
+        position: absolute;
+        font-family: var(--mono);
+        font-size: 24px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--cream);
+        white-space: nowrap;
+      }
+      .sel-size {
+        position: absolute;
+        height: 40px;
+        padding: 0 14px;
+        border-radius: 8px;
+        background: var(--orange);
+        color: var(--ink);
+        font-family: var(--mono);
+        font-size: 24px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+      }
+      .triplet {
+        position: absolute;
+        left: 72px;
+        top: 1112px;
+        font-family: var(--mono);
+        font-size: 26px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        color: var(--cream);
+      }
+      .swipe {
+        position: absolute;
+        right: 72px;
+        top: 1098px;
+      }
+      .swipe svg {
+        display: block;
+      }
+      .ring {
+        position: absolute;
+        left: -60px;
+        top: -60px;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 10px solid var(--orange);
+        opacity: 0;
+      }
+      .ring.cream {
+        border: 5px solid var(--cream);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="6" data-width="1080" data-height="1350">
+      <div id="scene" class="scene clip" data-start="0" data-duration="6" data-track-index="0">
+        <div id="world" class="world">
+          <canvas id="grid" class="grid" width="1080" height="1350"></canvas>
+          <div id="glow" class="glow"></div>
+
+          <div class="topbar">
+            <div class="tb-left"><span class="dot"></span><span>Motion Design 101</span></div>
+            <div>01 / 04</div>
+          </div>
+          <div class="hairline"></div>
+
+          <div id="small-top" class="small" data-layout-allow-overlap>this post is</div>
+          <div id="fps" class="fps"><span id="rec" class="rec"></span><span id="fpsnum" class="num">0</span><span>FPS</span></div>
+
+          <div id="sel" class="sel"></div>
+
+          <div id="wordbox" class="wordbox">
+            <div id="w-static" class="big" data-word="STATIC." data-layout-allow-overlap></div>
+            <div id="w-alive" class="big" data-word="ALIVE." data-layout-allow-overlap></div>
+          </div>
+
+          <div id="small-bot" class="small">yours can be too.</div>
+
+          <div id="fx" class="layer"></div>
+          <div id="flash" class="layer" style="background: #fff3e0; mix-blend-mode: difference; opacity: 0"></div>
+          <div id="balls" class="layer"></div>
+
+          <div class="triplet">2 RULES · 1 BALL · 0 STILL FRAMES</div>
+          <div id="swipe" class="swipe pill solid">
+            <span>Swipe</span>
+            <svg width="34" height="20" viewBox="0 0 34 20"><path d="M2 10 H30 M21 2 L31 10 L21 18" fill="none" stroke="#0C1236" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </div>
+
+          <div id="ruler" class="ruler"></div>
+        </div>
+        <!--@GRAIN@-->
+      </div>
+      <audio id="mix" src="assets/audio/mix.wav" data-start="0" data-duration="6" data-track-index="2" data-volume="1"></audio>
+    </div>
+
+    <script>
+      //@ENGINE@
+    </script>
+    <script>
+      (function () {
+        const L = window.LC;
+        const DUR = 6;
+        const R = 44; // ball radius
+        const root = document.getElementById("root");
+
+        function rel(el) {
+          let x = 0,
+            y = 0,
+            n = el;
+          while (n && n !== root) {
+            x += n.offsetLeft;
+            y += n.offsetTop;
+            n = n.offsetParent;
+          }
+          return { x, y, w: el.offsetWidth, h: el.offsetHeight };
+        }
+
+        function fit(el, chars, target) {
+          // biggest font-size whose wdth >= 52 still fits; then tune wdth to fill exactly
+          let F = 400;
+          const setW = (w) => chars.forEach((c) => c.el.style.setProperty("--w", w));
+          for (; F > 200; F -= 4) {
+            el.style.fontSize = F + "px";
+            setW(52);
+            if (el.scrollWidth <= target) break;
+          }
+          let lo = 52,
+            hi = 150;
+          for (let i = 0; i < 22; i++) {
+            const mid = (lo + hi) / 2;
+            setW(mid);
+            if (el.scrollWidth > target) hi = mid;
+            else lo = mid;
+          }
+          setW(lo);
+          return { F, w: lo };
+        }
+
+        function build() {
+          const wsEl = document.getElementById("w-static");
+          const waEl = document.getElementById("w-alive");
+          const S = L.buildWord(wsEl);
+          const A = L.buildWord(waEl);
+          const fitS = fit(wsEl, S, 936);
+          // ALIVE. uses the same font size, its own width axis to fill the same box
+          waEl.style.fontSize = fitS.F + "px";
+          let lo = 52,
+            hi = 150;
+          for (let i = 0; i < 22; i++) {
+            const mid = (lo + hi) / 2;
+            A.forEach((c) => c.el.style.setProperty("--w", mid));
+            if (waEl.scrollWidth > 936) hi = mid;
+            else lo = mid;
+          }
+          A.forEach((c) => c.el.style.setProperty("--w", lo));
+          const wA = lo;
+          const wS = fitS.w;
+          const F = fitS.F;
+
+          // ink ascent per glyph (cap tops) from canvas metrics
+          const mc = document.createElement("canvas").getContext("2d");
+          mc.font = `900 ${F}px Anybody`;
+          const measure = (arr) =>
+            arr.map((c) => {
+              const r = rel(c.el);
+              const b = rel(c.base);
+              const asc = mc.measureText(c.c).actualBoundingBoxAscent;
+              return { cx: r.x + r.w / 2, top: b.y - asc, base: b.y, w: r.w, left: r.x };
+            });
+          const mS = measure(S);
+          const mA = measure(A);
+          const baseY = mS[0].base;
+          const capTop = Math.min(...mS.map((m) => m.top));
+
+          // ---------- selection box around STATIC. ----------
+          const sel = document.getElementById("sel");
+          const bx0 = mS[0].left - 22,
+            bx1 = mS[mS.length - 1].left + mS[mS.length - 1].w + 22;
+          const by0 = capTop - 24,
+            by1 = baseY + 22;
+          const lines = [
+            { x: bx0, y: by0, w: bx1 - bx0, h: 3, o: "0 50%" },
+            { x: bx0, y: by1, w: bx1 - bx0, h: 3, o: "100% 50%" },
+            { x: bx0, y: by0, w: 3, h: by1 - by0, o: "50% 100%" },
+            { x: bx1 - 3, y: by0, w: 3, h: by1 - by0, o: "50% 0" },
+          ].map((d) => {
+            const e = document.createElement("div");
+            e.className = "sel-line";
+            e.style.cssText = `left:${d.x}px;top:${d.y}px;width:${d.w}px;height:${d.h}px;transform-origin:${d.o}`;
+            sel.appendChild(e);
+            return e;
+          });
+          const hx = [bx0, (bx0 + bx1) / 2, bx1],
+            hy = [by0, (by0 + by1) / 2, by1];
+          const handles = [];
+          hx.forEach((x, i) =>
+            hy.forEach((y, j) => {
+              if (i === 1 && j === 1) return;
+              const e = document.createElement("div");
+              e.className = "sel-handle";
+              e.style.left = x + "px";
+              e.style.top = y + "px";
+              sel.appendChild(e);
+              const cx = (bx0 + bx1) / 2,
+                cy = (by0 + by1) / 2;
+              const a = Math.atan2(y - cy, x - cx);
+              handles.push({ el: e, a, k: handles.length });
+            }),
+          );
+          const label = document.createElement("div");
+          label.className = "sel-label";
+          label.style.right = 1080 - bx1 + "px";
+          label.style.top = by0 - 40 + "px";
+          label.textContent = "FRAME 01 — static.png";
+          sel.appendChild(label);
+          const size = document.createElement("div");
+          size.className = "sel-size";
+          size.setAttribute("data-layout-allow-overlap", "");
+          size.textContent = `${Math.round(bx1 - bx0)} × ${Math.round(by1 - by0)}`;
+          size.style.left = (bx0 + bx1) / 2 + "px";
+          size.style.top = by1 + 16 + "px";
+          sel.appendChild(size);
+
+          // ---------- ball path ----------
+          const cy = (m) => m.top - R; // centre when resting on a glyph
+          const pts = [
+            { t: 0.26, x: mS[0].cx, y: -70 },
+            { t: 0.5, x: mS[0].cx, y: cy(mS[0]), ease: "in", contact: { q: 0.6 } },
+          ];
+          const hopT = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+          for (let i = 1; i <= 6; i++) {
+            pts.push({ t: hopT[i - 1], x: mS[i].cx, y: cy(mS[i]), h: i === 6 ? 70 : 64 + i * 6, contact: { q: i === 6 ? 0.55 : 0.32 } });
+          }
+          // launch off the period, high arc back to centre, SLAM on ALIVE.
+          pts.push({ t: 2.5, x: mA[2].cx, y: cy(mA[2]), h: 330, contact: { q: 0.7 } });
+          pts.push({ t: 3.0, x: mA[3].cx, y: cy(mA[3]), h: 190, contact: { q: 0.42 } });
+          pts.push({ t: 3.5, x: mA[4].cx, y: cy(mA[4]), h: 190, contact: { q: 0.42 } });
+          pts.push({ t: 4.0, x: mA[5].cx, y: cy(mA[5]), h: 150, contact: { q: 0.5 } });
+          pts.push({ t: 4.5, x: 1080 + R + 30, y: 1010, h: 230 });
+          const path = L.makePath(pts);
+          const hits = pts.filter((p) => p.contact);
+
+          // ---------- elements ----------
+          const ballsLayer = document.getElementById("balls");
+          const ghosts = [];
+          for (let k = 4; k >= 1; k--) {
+            const g = L.makeBall(ballsLayer, "ghost", R);
+            ghosts.push({ g, k });
+          }
+          const ball = L.makeBall(ballsLayer, "", R);
+
+          const fx = document.getElementById("fx");
+          const rings = [0, 1, 2].map((i) => {
+            const e = document.createElement("div");
+            e.className = "ring" + (i === 1 ? " cream" : "");
+            fx.appendChild(e);
+            return e;
+          });
+          const burstSlam = L.makeBurst(fx, 26, 11);
+          const burstFirst = L.makeBurst(fx, 12, 77);
+
+          const grid = L.makeGrid(document.getElementById("grid"), { color: "#FFF3E0", gap: 45 });
+          const waves = hits.map((h, i) => ({
+            t: h.t,
+            x: h.x,
+            y: h.y + R,
+            a: h.t === 0.5 ? 1 : h.t === 2.5 ? 1.4 : h.t === 2.0 ? 0.8 : 0.35,
+            v: h.t === 2.5 ? 1700 : 1300,
+          }));
+
+          const ruler = L.makeRuler(document.getElementById("ruler"), {
+            frameStart: 0,
+            frames: 180,
+            width: 1080,
+            duration: DUR,
+            keys: [0.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.75],
+          });
+
+          const world = document.getElementById("world");
+          const glow = document.getElementById("glow");
+          const fpsnum = document.getElementById("fpsnum");
+          const rec = document.getElementById("rec");
+          const swipe = document.getElementById("swipe");
+          const flash = document.getElementById("flash");
+
+          // ---------- the frame function ----------
+          const FLIP_OUT = 2.0,
+            FLIP_BACK = 4.72;
+
+          function aliveEnv(t) {
+            // 0 = dead still, 1 = fully alive
+            if (t < 0.5) return 0;
+            if (t < 4.5) return 1;
+            return 1 - L.easeOut(L.prog(t, 4.5, 5.15));
+          }
+          function beatPhase(t) {
+            // beats since the slam, slowing down (tape stop) after 4.5
+            if (t < 2.5) return 0;
+            if (t < 4.5) return (t - 2.5) / 0.5;
+            const d = Math.min(t - 4.5, 0.55);
+            return 4 + (d - (d * d) / (2 * 0.55)) / 0.5;
+          }
+
+          function render(t) {
+            const env = aliveEnv(t);
+
+            // camera shake (decaying) on the big hits
+            let sx = 0,
+              sy = 0;
+            for (const h of hits) {
+              const dt = t - h.t;
+              if (dt < 0 || dt > 0.6) continue;
+              const amp = h.t === 2.5 ? 20 : h.t === 0.5 ? 13 : h.t === 2.0 ? 7 : 2.5;
+              const e = Math.exp(-dt * 9) * amp;
+              sx += Math.sin(dt * 61 + h.t * 7) * e;
+              sy += Math.cos(dt * 53 + h.t * 3) * e;
+            }
+            world.style.transform = `translate(${sx.toFixed(2)}px, ${sy.toFixed(2)}px)`;
+
+            // ----- word flips -----
+            const ph = beatPhase(t);
+            const flipS = (i) => {
+              // STATIC letter i: 0 = upright, 1 = flat (gone)
+              const out = L.easeIn(L.prog(t, FLIP_OUT + i * 0.028, FLIP_OUT + i * 0.028 + 0.12));
+              const back = L.prog(t, FLIP_BACK + 0.12 + i * 0.05, FLIP_BACK + 0.12 + i * 0.05 + 0.34);
+              return t < FLIP_BACK ? out : 1 - (back >= 1 ? 1 : L.easeOutBack(back, 2.2));
+            };
+            const flipA = (j) => {
+              const inn = L.prog(t, FLIP_OUT + 0.13 + j * 0.04, FLIP_OUT + 0.13 + j * 0.04 + 0.28);
+              const out = L.easeIn(L.prog(t, FLIP_BACK + j * 0.045, FLIP_BACK + j * 0.045 + 0.16));
+              if (t < FLIP_BACK) return inn >= 1 ? 0 : 1 - L.easeOutBack(inn, 2.2);
+              return out;
+            };
+
+            S.forEach((c, i) => {
+              const f = flipS(i);
+              const hitT = i === 0 ? 0.5 : hopT[i - 1];
+              const k = L.kick(t - hitT, 2.4, 6.5);
+              const dip = (i === 0 ? 34 : i === 6 ? 30 : 22) * k;
+              const sq = (i === 0 ? 0.16 : 0.1) * k;
+              // a hit letter wakes up and keeps a tiny bob until the flip
+              const wake = t > hitT && t < FLIP_OUT + 0.3 ? 4 * Math.sin((t - hitT) * 12.6 + i) * Math.exp(-(t - hitT) * 2) : 0;
+              const rx = -f * 90;
+              c.el.style.opacity = f > 0.995 ? 0 : 1;
+              c.el.style.transform = `translateY(${(dip + wake).toFixed(2)}px) rotateX(${rx.toFixed(2)}deg) scale(${(1 + sq * 0.7).toFixed(4)}, ${(1 - sq).toFixed(4)})`;
+            });
+
+            A.forEach((c, j) => {
+              const f = flipA(j);
+              // slam squash (all letters), ball hits, and the beat bob
+              const slam = L.kick(t - 2.5, 2.1, 5.2);
+              let dip = 26 * slam * (1 - Math.abs(j - 2) * 0.12);
+              let sq = 0.2 * slam;
+              const hitIdx = { 3: 3.0, 4: 3.5, 5: 4.0 }[j];
+              if (hitIdx) {
+                const k = L.kick(t - hitIdx, 2.6, 7);
+                dip += 24 * k;
+                sq += 0.09 * k;
+              }
+              const bobEnv = L.prog(t, 2.7, 3.0) * env;
+              const u = ph - j * 0.12;
+              const bob = -15 * Math.abs(Math.sin(Math.PI * u)) * bobEnv;
+              const rot = 2.6 * Math.sin(Math.PI * u) * bobEnv;
+              const rx = f * 90;
+              c.el.style.opacity = f > 0.995 ? 0 : 1;
+              // width axis breathes out on the slam (type squashes wider)
+              c.el.style.setProperty("--w", (wA + 9 * Math.max(0, slam)).toFixed(2));
+              c.el.style.transform = `translateY(${(dip + bob).toFixed(2)}px) rotateX(${rx.toFixed(2)}deg) rotate(${rot.toFixed(2)}deg) scale(${(1 + sq * 0.6).toFixed(4)}, ${(1 - sq).toFixed(4)})`;
+            });
+
+            // ----- selection box: breaks on the first hit, redraws at the end -----
+            const brk = t - 0.5;
+            const rebuild = L.prog(t, 5.0, 5.45);
+            lines.forEach((e, i) => {
+              let s;
+              if (t < 0.5) s = 1;
+              else if (t < 5.0) s = 1 - L.easeOut(L.prog(t, 0.5, 0.68));
+              else s = L.easeInOut(L.prog(t, 5.0 + i * 0.05, 5.32 + i * 0.05));
+              const vertical = i >= 2;
+              e.style.transform = vertical ? `scaleY(${s.toFixed(4)})` : `scaleX(${s.toFixed(4)})`;
+            });
+            handles.forEach((h) => {
+              if (t < 0.5) {
+                h.el.style.opacity = 1;
+                h.el.style.transform = "none";
+              } else if (t < 5.1) {
+                const d = Math.min(brk, 1.2);
+                const spd = 700 + (h.k % 3) * 160;
+                const x = Math.cos(h.a) * spd * d;
+                const y = Math.sin(h.a) * spd * d + 0.5 * 2400 * d * d - 260 * d;
+                h.el.style.opacity = L.clamp(1 - d / 0.7);
+                h.el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotate(${(d * (300 + h.k * 40)).toFixed(1)}deg)`;
+              } else {
+                const s = L.settle(t - (5.15 + h.k * 0.03), 2.8, 7);
+                h.el.style.opacity = s > 0 ? 1 : 0;
+                h.el.style.transform = `scale(${Math.max(0, s).toFixed(4)})`;
+              }
+            });
+            const labOn = t < 0.5 ? 1 : t < 5.2 ? 1 - L.prog(t, 0.5, 0.62) : L.prog(t, 5.25, 5.5);
+            label.style.opacity = labOn;
+            label.style.transform = `translateY(${((1 - labOn) * -14).toFixed(1)}px)`;
+            size.style.opacity = labOn;
+            size.style.transform = `translateX(-50%) scale(${(0.8 + 0.2 * labOn).toFixed(3)})`;
+
+            // ----- FPS pill -----
+            let fps = 0;
+            if (t >= 0.5 && t < 4.6) fps = Math.round(60 * L.easeOut(L.prog(t, 0.5, 0.85)));
+            else if (t >= 4.6) fps = Math.round(60 * (1 - L.easeIn(L.prog(t, 4.6, 5.2))));
+            fpsnum.textContent = String(fps);
+            const blink = t >= 0.5 && t < 4.6 ? (Math.floor((t - 0.5) / 0.25) % 2 === 0 ? 1 : 0.35) : 0.5;
+            rec.style.opacity = blink;
+            rec.style.background = t >= 0.5 && t < 4.75 ? "#FF6A1F" : "#FFF3E0";
+
+            // ----- glow -----
+            const slamFlash = t > 2.5 ? Math.exp(-(t - 2.5) * 3) : 0;
+            const beatGlow = t > 2.5 ? 0.5 + 0.18 * Math.cos(Math.PI * 2 * ph) : 0;
+            glow.style.opacity = ((beatGlow * env + slamFlash * 0.8 + (t > 0.5 && t < 2.5 ? 0.25 * env : 0)) * 1).toFixed(3);
+            glow.style.transform = `translateY(${(capTop - 560).toFixed(1)}px) scale(${(0.9 + slamFlash * 0.3).toFixed(3)})`;
+
+            // ----- rings + bursts -----
+            const slamX = mA[2].cx,
+              slamY = mA[2].top;
+            rings.forEach((e, i) => {
+              const dt = t - (2.5 + i * 0.07);
+              if (dt < 0 || dt > 0.7) {
+                e.style.opacity = 0;
+                return;
+              }
+              const s = 0.4 + L.easeOut(dt / 0.7) * (5.2 + i * 1.6);
+              e.style.opacity = (1 - dt / 0.7).toFixed(3);
+              e.style.transform = `translate(${slamX}px, ${slamY}px) scale(${s.toFixed(3)})`;
+            });
+            burstSlam(t, 2.5, slamX, slamY, 1.2);
+            burstFirst(t, 0.5, mS[0].cx, mS[0].top, 0.9);
+
+            // ----- ball + onion skins -----
+            const bs = L.ballState(path, t, R);
+            const visible = t >= 0.26 && t <= 4.5;
+            ball.pos.style.opacity = visible ? 1 : 0;
+            if (visible) L.applyBall(ball, bs);
+            ghosts.forEach(({ g, k }) => {
+              const tg = t - k * 0.05;
+              const vis = tg >= 0.26 && tg <= 4.5 && visible;
+              if (!vis) {
+                g.pos.style.opacity = 0;
+                return;
+              }
+              const gs = L.ballState(path, tg, R);
+              const speed = Math.hypot(gs.vx, gs.vy);
+              g.pos.style.opacity = (L.clamp(speed / 1400) * (0.75 - k * 0.15)).toFixed(3);
+              L.applyBall(g, gs);
+            });
+
+            // ----- dot grid -----
+            grid(t, waves, env);
+
+            // impact frame: 2 inverted frames on the slam
+            flash.style.opacity = t >= 2.5 && t < 2.566 ? 1 : 0;
+
+            // ----- ruler + swipe nudge -----
+            ruler(t);
+            const nud = t > 5.25 ? Math.max(0, Math.sin((t - 5.25) * Math.PI * 2 * 1.6)) * Math.exp(-(t - 5.25) * 1.5) : 0;
+            const nudBeat = t > 2.5 && t < 4.5 ? Math.max(0, Math.sin(Math.PI * 2 * ph)) * 0.5 : 0;
+            swipe.style.transform = `translateX(${((nud + nudBeat) * 14).toFixed(2)}px)`;
+          }
+
+          const tl = gsap.timeline({ paused: true });
+          const clock = { t: 0 };
+          tl.fromTo(clock, { t: 0 }, { t: DUR, duration: DUR, ease: "none", onUpdate: () => render(clock.t) }, 0);
+          render(0);
+          window.__timelines["main"] = tl;
+        }
+
+        document.fonts.load("900 100px Anybody");
+        document.fonts.load("500 26px 'JetBrains Mono'");
+        document.fonts.load("italic 420 76px Fraunces");
+        document.fonts.ready.then(build);
+      })();
+    </script>
+  </body>
+</html>

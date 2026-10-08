@@ -1,0 +1,159 @@
+/* Photo mode: the user's finished slide is the background; every effect sits on top of it.
+   --fx-a / --fx-b are set per slide from the colours prep_photo.py found in the image. */
+:root {
+  --fx-a: #ffffff;
+  --fx-b: #ffb347;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  width: 1080px;
+  height: 1350px;
+  overflow: hidden;
+  background: #000;
+}
+#root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+.stage {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.full {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1080px;
+  height: 1350px;
+}
+.layer {
+  position: absolute;
+  inset: 0;
+}
+.masked {
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.shine {
+  mix-blend-mode: screen;
+}
+.leak {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1000px;
+  height: 1000px;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 45%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.28) 100%);
+  pointer-events: none;
+}
+.flare-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 220, 170, 0.6) 14%, rgba(255, 160, 90, 0.22) 38%, rgba(255, 120, 80, 0) 66%);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+.flare-streak {
+  position: absolute;
+  width: 1040px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.95) 0%, rgba(255, 210, 160, 0.55) 30%, rgba(255, 160, 100, 0) 70%);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+.ring {
+  position: absolute;
+  left: -60px;
+  top: -60px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 6px solid var(--fx-a);
+  opacity: 0;
+}
+.ring.warm {
+  border: 9px solid var(--fx-b);
+}
+.particle {
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--fx-a);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.particle.alt {
+  background: var(--fx-b);
+}
+.particle.mote {
+  width: 8px;
+  height: 8px;
+  left: -4px;
+  top: -4px;
+}
+.counter-num {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Anton", sans-serif;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pill-lit {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 28px;
+  background: #ffffff;
+  color: #13286b;
+  font-weight: 600;
+  font-size: 22px;
+  white-space: nowrap;
+  box-shadow: 0 0 26px 4px rgba(255, 255, 255, 0.55), 0 8px 18px rgba(10, 30, 80, 0.25);
+  opacity: 0;
+}
+.spark {
+  position: absolute;
+  left: -50px;
+  top: -6px;
+  width: 100px;
+  height: 12px;
+  border-radius: 6px;
+  background: radial-gradient(ellipse at 70% 50%, #ffffff 0%, rgba(255, 220, 180, 0.9) 25%, rgba(255, 138, 61, 0) 70%);
+  box-shadow: 0 0 22px 6px rgba(255, 190, 130, 0.65);
+  opacity: 0;
+}

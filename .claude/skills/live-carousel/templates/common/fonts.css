@@ -1,0 +1,30 @@
+/* Free fonts (SIL Open Font License, licences in shared/fonts/). Only the faces a slide uses get downloaded. */
+@font-face {
+  font-family: "Anybody";
+  src: url("assets/fonts/Anybody-Var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-stretch: 50% 150%;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("assets/fonts/Fraunces-Italic-Var.woff2") format("woff2");
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: block;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("assets/fonts/JetBrainsMono-Var.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Anton";
+  src: url("assets/fonts/Anton.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}

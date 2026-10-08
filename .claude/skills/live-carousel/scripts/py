@@ -1,0 +1,10 @@
+#!/bin/sh
+# Git Bash wrapper: runs Python with the packages live-carousel needs (numpy, opencv).
+# The venv is made by setup.ps1 with the signed Python 3.12 (Windows). Usage: scripts/py <script.py> [args...]
+D="$(cd "$(dirname "$0")/.." && pwd)"
+export PYTHONUTF8=1 PYTHONIOENCODING=utf-8
+if [ -n "${LIVE_CAROUSEL_PYTHON:-}" ]; then exec "$LIVE_CAROUSEL_PYTHON" "$@"; fi
+if [ -x "$D/.venv/Scripts/python.exe" ]; then exec "$D/.venv/Scripts/python.exe" "$@"; fi
+if [ -x "$D/.venv/bin/python" ]; then exec "$D/.venv/bin/python" "$@"; fi
+echo "live-carousel: no venv yet. Run: powershell -ExecutionPolicy Bypass -File .claude/skills/live-carousel/scripts/setup.ps1" >&2
+exit 1
