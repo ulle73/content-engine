@@ -105,7 +105,11 @@ def list_drafts(company: Company) -> list[dict]:
 
 @transaction.atomic
 def start_draft(company: Company, user, *, message: str = "", title: str = "") -> AdDraft:
-    brief = AdBrief(company=company.name.casefold(), message=message.strip()[:200])
+    from engine.motion.brand import brand_id_for, landing_url
+
+    brief = AdBrief(company=company.name.casefold(), brand_preset=brand_id_for(company), message=message.strip()[:200])
+    if landing_url(company):
+        brief.copy_.landing_url = landing_url(company)
     return AdDraft.objects.create(
         company=company,
         author=user,
@@ -492,7 +496,7 @@ def storyboard_image(company: Company, draft_id) -> bytes:
         raise ValueError("Briefen har inga scener än. Bygg storyboarden först.")
     assets = _assets_by_id(company, [s.asset_id for s in brief.scenes])
     problems = [f"Saknas: {m}" for m in brief.missing()] + brief.problems()
-    return sheets.storyboard(brief, assets, problems)
+    return sheets.storyboard(brief, assets, problems, company=company)
 
 
 def review_image(company: Company, draft_id) -> bytes:
@@ -588,17 +592,20 @@ def sync_facts(company: Company, data: dict) -> tuple[dict, list[str]]:
     return {**data, "facts": out}, blocked
 
 
-SEED_SKILL = "golfkuponger-friskvard"
+# The fact skill that seeds a company's bank comes from its brand kit (engine/motion/brand.fact_skill).
 
 
 def seed_facts(company: Company) -> int:
     """First use: copy the skill's starting table into the bank as unverified. Never overwrites."""
     from . import skills as skill_files
 
-    if company.ad_facts.exists():
+    from engine.motion.brand import fact_skill
+
+    seed_skill = fact_skill(company)
+    if not seed_skill or company.ad_facts.exists():
         return 0
     try:
-        text = skill_files.read(SEED_SKILL)
+        text = skill_files.read(seed_skill)
     except ValueError:
         return 0
     created = 0

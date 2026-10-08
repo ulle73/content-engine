@@ -24,12 +24,49 @@ class BrandForm(forms.ModelForm):
             "valid_until": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
         }
 
+    brand_background = forms.CharField(label="Bakgrund", required=False, max_length=7, widget=forms.TextInput(attrs={"type": "color"}))
+    brand_foreground = forms.CharField(label="Text på bakgrund", required=False, max_length=7, widget=forms.TextInput(attrs={"type": "color"}))
+    brand_accent = forms.CharField(label="Accentfärg", required=False, max_length=7, widget=forms.TextInput(attrs={"type": "color"}))
+    brand_font_family = forms.CharField(label="Typsnitt", required=False, max_length=200, widget=forms.TextInput(attrs={"placeholder": "Inter, Arial, sans-serif"}))
+    brand_landing_url = forms.URLField(label="Webbadress i annonser", required=False, max_length=300, assume_scheme="https")
+    brand_skills = forms.CharField(label="Skills för bolaget", required=False, max_length=400, help_text="Kommaseparerade namn från skills/, t.ex. faiv-brand, faiv-extraljus.")
+    brand_fact_skill = forms.CharField(label="Skill som fyller faktabanken", required=False, max_length=60)
+
+    BRAND_FIELDS = ("background", "foreground", "accent", "font_family", "landing_url", "skills", "fact_skill")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        kit = self.instance.brand if isinstance(self.instance.brand, dict) else {}
+        for key in self.BRAND_FIELDS:
+            value = kit.get(key, "")
+            self.fields[f"brand_{key}"].initial = ", ".join(value) if isinstance(value, list) else value
+
     def clean(self):
+        from .motion.brand import clean_kit
+
         data = super().clean()
         for field in ["profile", "voice", "current"]:
             if len(data.get(field, "")) > 16000:
                 self.add_error(field, "Högst 16 000 tecken.")
+        raw = {key: data.get(f"brand_{key}") for key in self.BRAND_FIELDS}
+        # An untouched color picker posts #000000; treat it as "not set" unless it was saved before.
+        kit = self.instance.brand if isinstance(self.instance.brand, dict) else {}
+        for key in ("background", "foreground", "accent"):
+            if raw[key] == "#000000" and kit.get(key) != "#000000":
+                raw[key] = ""
+        try:
+            self.cleaned_brand = clean_kit(raw)
+        except ValueError as exc:
+            self.add_error(None, str(exc))
         return data
+
+    def save(self, commit=True):
+        company = super().save(commit=False)
+        if hasattr(self, "cleaned_brand"):
+            company.brand = self.cleaned_brand
+        if commit:
+            company.save()
+        return company
 
 
 def validate_context(context):

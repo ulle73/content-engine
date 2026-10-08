@@ -20,6 +20,7 @@ from .motion.outputs import SIZES
 from .motion.schema import Closed, validate_spec
 from .operator_common import begin_action, finish_action
 from .sequence import _assert_generation_matches_current_anchors, _assert_bridge_generation_matches_current_anchors, assert_sequence_project_video_ready
+from engine.motion.brand import brand_id_for
 
 
 class FilmSettings(Closed):
@@ -150,7 +151,7 @@ def compile_film(sequence, settings):
     scenes.append(dict(id="ending", component="end-card", duration_frames=ending_frames,
         props={"headline": settings["headline"], "cta": settings["cta"], "eyebrow": sequence.company.name[:80]}))
     return validate_spec(dict(template_id="sequence-film", aspect_ratio=settings["aspect_ratio"],
-        brand_id="golfkuponger" if sequence.company.name.casefold() == "golfkuponger" else "workspace",
+        brand_id=brand_id_for(sequence.company),
         scenes=scenes, audio={"enabled": settings["music"] != "none", "music": settings["music"], "fade_frames": 30}))
 
 

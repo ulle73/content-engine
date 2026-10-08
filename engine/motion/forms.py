@@ -8,6 +8,7 @@ from engine.media import publishable_assets
 from engine.models import MediaAsset
 
 from .planner import SCREEN_AD_TEMPLATES, compile_template, template_schema
+from .brand import brand_id_for
 
 
 class MotionForm(forms.Form):
@@ -98,7 +99,7 @@ class MotionForm(forms.Form):
             fields,
             aspect_ratio=self.cleaned_data["aspect_ratio"],
             audio=self.cleaned_data["audio"],
-            brand_id="golfkuponger" if self.company.name.casefold() == "golfkuponger" else "workspace",
+            brand_id=brand_id_for(self.company),
         )
 
 
