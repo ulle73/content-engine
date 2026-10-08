@@ -597,9 +597,9 @@ def sync_facts(company: Company, data: dict) -> tuple[dict, list[str]]:
 
 def seed_facts(company: Company) -> int:
     """First use: copy the skill's starting table into the bank as unverified. Never overwrites."""
-    from . import skills as skill_files
-
     from engine.motion.brand import fact_skill
+
+    from . import skills as skill_files
 
     seed_skill = fact_skill(company)
     if not seed_skill or company.ad_facts.exists():
