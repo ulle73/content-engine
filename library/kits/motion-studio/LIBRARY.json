@@ -1,0 +1,2371 @@
+{
+ "kit": "motion-studio",
+ "title": "Motion Studio (regissörsflöde för motion graphics)",
+ "source": {
+  "name": "motion-studio skill",
+  "url": "",
+  "license": "Ingen licens angiven för skillen – endast egen användning; tredjepart enligt LICENSES.md"
+ },
+ "items": [
+  {
+   "id": "motion-studio.skill.motion-studio",
+   "name": "Motion Studio — regissörsflöde L1/L2/L3 (skill)",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Regissörsflöde för high-end motion graphics: L1 showreel utan musik, L2 lyric-video med egen ACE-Step-låt, L3 berättelsefilm med score, hundratals syntetiserade SFX och kritikloop.",
+   "tags": [
+    "motion-graphics",
+    "showreel",
+    "lyric-video",
+    "story-film",
+    "director",
+    "premium",
+    "music",
+    "wow"
+   ],
+   "path": ".claude/skills/motion-studio/SKILL.md",
+   "use": "Skill /motion-studio — t.ex. 'Level 2: lyric video om ...'",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg",
+    "python:numpy",
+    "acestep"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Musik via befintliga ACE-Step i C:\\Users\\rydqv\\video-tools (CPU). Självtest-render kördes inte vid importen."
+  },
+  {
+   "id": "motion-studio.style.pastel-daylight",
+   "name": "Art direction: Mjukt pastelldagsljus",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Lila/persika/mint/smör-blobbar på varmt papper med filmkorn och EN elektriskt violett accent; Instrument Serif kursiv + JetBrains Mono.",
+   "tags": [
+    "pastel",
+    "soft",
+    "airy",
+    "paper",
+    "grain",
+    "lugn",
+    "elegant"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Användes i ett av kitets exempelvideor."
+  },
+  {
+   "id": "motion-studio.style.acid-chrome",
+   "name": "Art direction: Acid Chrome (Y2K flytande metall)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Void #0A0712, djuplila, krom #EEEAF7, syra-lime #C6FF1F, het rosa #FF2D8A, holo-shader; Unbounded 900 + Space Mono.",
+   "tags": [
+    "y2k",
+    "chrome",
+    "rave",
+    "acid",
+    "neon",
+    "hyperpop",
+    "intensiv",
+    "kaxig"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Användes i ett av kitets exempelvideor."
+  },
+  {
+   "id": "motion-studio.style.cinematic-night-to-day",
+   "name": "Art direction: Filmisk natt → dag (färg är berättelsen)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Natt #070B16 → en nyans per roll → gryning → fullt dagsljus #FFF1DC på droppen; Fraunces + Courier Prime.",
+   "tags": [
+    "cinematic",
+    "story",
+    "night",
+    "sunrise",
+    "emotional",
+    "känslosam",
+    "episk"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Användes i ett av kitets exempelvideor."
+  },
+  {
+   "id": "motion-studio.style.bright-print",
+   "name": "Art direction: Ljust tryck",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Kräm, vermiljon, kobolt och gult; Archivo Black + JetBrains Mono.",
+   "tags": [
+    "print",
+    "bold",
+    "primary-colors",
+    "editorial",
+    "glad",
+    "grafisk"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Användes i ett av kitets exempelvideor."
+  },
+  {
+   "id": "motion-studio.style.neon-risograph",
+   "name": "Art direction: Neon-risograf",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "2–3 spotfärger, feltryck och halvton.",
+   "tags": [
+    "risograph",
+    "halftone",
+    "spot-color",
+    "indie",
+    "texture",
+    "lekfull"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förslag 'att prova' — bara en rad i kitet; palett och typsnitt bestäms i frame.md."
+  },
+  {
+   "id": "motion-studio.style.holographic-glass",
+   "name": "Art direction: Holografiskt glas",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Refraktion och kromatiska kanter.",
+   "tags": [
+    "glass",
+    "holographic",
+    "refraction",
+    "futuristic",
+    "premium",
+    "skimrande"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förslag 'att prova' — bara en rad i kitet; palett och typsnitt bestäms i frame.md."
+  },
+  {
+   "id": "motion-studio.style.swiss-brutalist",
+   "name": "Art direction: Swiss grid brutalist",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En röd, svart på off-white, hårda klipp på griden.",
+   "tags": [
+    "swiss",
+    "grid",
+    "brutalist",
+    "red",
+    "minimal",
+    "stram"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förslag 'att prova' — bara en rad i kitet; palett och typsnitt bestäms i frame.md."
+  },
+  {
+   "id": "motion-studio.style.paper-cut",
+   "name": "Art direction: Pappersklipp stop-motion",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Lagrat papper, kastade skuggor, 12 fps-hold.",
+   "tags": [
+    "paper",
+    "stop-motion",
+    "handmade",
+    "craft",
+    "mysig",
+    "lekfull"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förslag 'att prova' — bara en rad i kitet; palett och typsnitt bestäms i frame.md."
+  },
+  {
+   "id": "motion-studio.style.blueprint",
+   "name": "Art direction: Blueprint / teknisk",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Cyan linjeteckning, måttangivelser, strokes som ritas på.",
+   "tags": [
+    "blueprint",
+    "technical",
+    "lines",
+    "engineering",
+    "precise",
+    "nördig"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förslag 'att prova' — bara en rad i kitet; palett och typsnitt bestäms i frame.md."
+  },
+  {
+   "id": "motion-studio.style.editorial-print",
+   "name": "Art direction: Editorial print",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Stor serif, pull quotes, spaltlinjer.",
+   "tags": [
+    "editorial",
+    "serif",
+    "magazine",
+    "elegant",
+    "sofistikerad"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förslag 'att prova' — bara en rad i kitet; palett och typsnitt bestäms i frame.md."
+  },
+  {
+   "id": "motion-studio.style.claymation-3d",
+   "name": "Art direction: Claymation-mjuk 3D",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Rundat, matt, fjädrande.",
+   "tags": [
+    "clay",
+    "3d",
+    "soft",
+    "bouncy",
+    "cute",
+    "gullig"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förslag 'att prova' — bara en rad i kitet; palett och typsnitt bestäms i frame.md."
+  },
+  {
+   "id": "motion-studio.style.crt-phosphor",
+   "name": "Art direction: Terminal / CRT-fosfor",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En färg, scanlines — sök registret först.",
+   "tags": [
+    "crt",
+    "terminal",
+    "retro",
+    "scanlines",
+    "hacker",
+    "mörk"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förslag 'att prova' — bara en rad i kitet; palett och typsnitt bestäms i frame.md."
+  },
+  {
+   "id": "motion-studio.style.noir",
+   "name": "Art direction: Noir",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Hög kontrast, ljuspölar, persienn-skuggor.",
+   "tags": [
+    "noir",
+    "high-contrast",
+    "shadows",
+    "moody",
+    "mystisk",
+    "dramatisk"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Välj i /motion-studio och skriv in i frame.md (palett, typsnitt, rörelse, ban-lista)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förslag 'att prova' — bara en rad i kitet; palett och typsnitt bestäms i frame.md."
+  },
+  {
+   "id": "motion-studio.transition.shape-mask-reveal",
+   "name": "Formmask-reveal",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Nästa scen avslöjas genom en växande form (cirkel, blob, logotyp) som mask.",
+   "tags": [
+    "mask",
+    "reveal",
+    "shape",
+    "clean",
+    "transition"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Beskriv i STORYBOARD.md; bygg via /hyperframes-animation eller sök registret (npx hyperframes catalog --query)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kitet beskriver övergången, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.transition.liquid-iris",
+   "name": "Flytande iris",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En organisk, vätskeartad iris öppnar mot nästa värld.",
+   "tags": [
+    "liquid",
+    "iris",
+    "organic",
+    "smooth",
+    "flytande",
+    "transition"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Beskriv i STORYBOARD.md; bygg via /hyperframes-animation eller sök registret (npx hyperframes catalog --query)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kitet beskriver övergången, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.transition.slice-shutter",
+   "name": "Slice shutter",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Bilden skivas i ränder som slår igen/upp som en slutare.",
+   "tags": [
+    "slice",
+    "shutter",
+    "stripes",
+    "snappy",
+    "energisk",
+    "transition"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Beskriv i STORYBOARD.md; bygg via /hyperframes-animation eller sök registret (npx hyperframes catalog --query)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kitet beskriver övergången, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.transition.zoom-through",
+   "name": "Zoom-through",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Kameran zoomar genom ett element (en bokstav, ett fönster) in i nästa scen.",
+   "tags": [
+    "zoom",
+    "fly-through",
+    "depth",
+    "dynamic",
+    "transition"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Beskriv i STORYBOARD.md; bygg via /hyperframes-animation eller sök registret (npx hyperframes catalog --query)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kitet beskriver övergången, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.transition.push-through-match-cut",
+   "name": "Push-through match-cut",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En form eller rörelse fortsätter sömlöst över klippet in i nästa scen.",
+   "tags": [
+    "match-cut",
+    "seamless",
+    "continuity",
+    "cinematic",
+    "transition"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Beskriv i STORYBOARD.md; bygg via /hyperframes-animation eller sök registret (npx hyperframes catalog --query)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kitet beskriver övergången, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.transition.light-leak-crossfade",
+   "name": "Ljusläcka-crossfade",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En varm ljusläcka blommar och bär över till nästa scen.",
+   "tags": [
+    "light-leak",
+    "glow",
+    "warm",
+    "film",
+    "drömsk",
+    "transition"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Beskriv i STORYBOARD.md; bygg via /hyperframes-animation eller sök registret (npx hyperframes catalog --query)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kitet beskriver övergången, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.transition.hard-cut-on-drop",
+   "name": "Hårt klipp på droppen",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett enda hårt klipp exakt på musikens drop — största visuella ögonblicket.",
+   "tags": [
+    "hard-cut",
+    "drop",
+    "music-sync",
+    "impact",
+    "kraftfull",
+    "transition"
+   ],
+   "path": ".claude/skills/motion-studio/references/art-direction.md",
+   "use": "Beskriv i STORYBOARD.md; bygg via /hyperframes-animation eller sök registret (npx hyperframes catalog --query)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kitet beskriver övergången, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.squash-stretch",
+   "name": "Squash & stretch",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett objekt landar med tryck och sträck — tecknad tyngd.",
+   "tags": [
+    "squash",
+    "stretch",
+    "bounce",
+    "cartoon",
+    "lekfull",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.ui-micro-interaction",
+   "name": "UI-mikrointeraktion",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En markör trycker en knapp eller toggle med riktig respons.",
+   "tags": [
+    "ui",
+    "cursor",
+    "button",
+    "toggle",
+    "product",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.masked-kinetic-type",
+   "name": "Maskerad kinetisk typografi",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett ordfack som cyklar ord genom en mask (\"I make things move / breathe / dance\").",
+   "tags": [
+    "kinetic-type",
+    "mask",
+    "word-slot",
+    "typography",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.3d-tile-flip-wave",
+   "name": "3D-brickvändning i våg",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett element delas i brickor som vänds i en diagonal 3D-våg.",
+   "tags": [
+    "3d",
+    "tiles",
+    "flip",
+    "wave",
+    "grid",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.springy-chart-to-wave",
+   "name": "Fjädrande diagram → linje → våg",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Stapeldiagram som fjädrar upp, vars linje smälter till en våg.",
+   "tags": [
+    "data-viz",
+    "chart",
+    "spring",
+    "morph",
+    "data",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.svg-morph",
+   "name": "SVG-morf",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En form morfar till en annan.",
+   "tags": [
+    "svg",
+    "morph",
+    "shape",
+    "smooth",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.stroke-draw-on",
+   "name": "Stroke draw-on",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Linjer ritar sig själva.",
+   "tags": [
+    "stroke",
+    "draw-on",
+    "line-art",
+    "reveal",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.particle-sphere-typography",
+   "name": "Partikelsfär / partikeltypografi i 3D",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En prick exploderar till en roterande partikelsfär som sätter ihop ordmärket.",
+   "tags": [
+    "particles",
+    "3d",
+    "sphere",
+    "typography",
+    "wow",
+    "spektakulär",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.liquid-blob",
+   "name": "Flytande blob",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En mjuk metaball-blob som flyter och delar sig.",
+   "tags": [
+    "liquid",
+    "blob",
+    "organic",
+    "soft",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.depth-parallax-push",
+   "name": "Djup-parallax kamerapush",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Kameran trycker in genom lager med parallax.",
+   "tags": [
+    "parallax",
+    "depth",
+    "camera",
+    "layers",
+    "cinematic",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.logo-lockup",
+   "name": "Logo-lockup",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Allt landar i ordmärket med en sista punkt som full stop.",
+   "tags": [
+    "logo",
+    "lockup",
+    "ending",
+    "brand",
+    "sting",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.effect.corner-chrome",
+   "name": "Hörnkrom (etiketter, timecode, progress)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Tekniketiketter 01/07, timecode och progressbar i hörnen — ser designat ut.",
+   "tags": [
+    "chrome",
+    "labels",
+    "timecode",
+    "hud",
+    "designed",
+    "showreel"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Ingår i L1-showreelns teknikmeny; bygg via /hyperframes-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Beskrivning i kitet, ingen färdig kod."
+  },
+  {
+   "id": "motion-studio.sound.key",
+   "name": "SFX: Tangentklick",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Tangentbordsklick, heavy för mellanslag/enter — ett per skrivet tecken.",
+   "tags": [
+    "typing",
+    "keyboard",
+    "ui",
+    "click",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"key\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.key.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.pop",
+   "name": "SFX: UI-pop",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Kort chirp uppåt när ett kort/knapp dyker upp.",
+   "tags": [
+    "pop",
+    "ui",
+    "appear",
+    "playful",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"pop\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.pop.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.blip",
+   "name": "SFX: Blip",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Liten ton för tänkprickar och små UI-detaljer.",
+   "tags": [
+    "blip",
+    "ui",
+    "tiny",
+    "tech",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"blip\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.blip.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.chime",
+   "name": "SFX: Notis-chime",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Tvåtonsnotis för meddelande eller framgång.",
+   "tags": [
+    "chime",
+    "notification",
+    "success",
+    "bright",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"chime\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.chime.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.whoosh",
+   "name": "SFX: Whoosh",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Svept brusförbifart med panorering — varje klipp, kamerarörelse; låt toppen landa på klippet.",
+   "tags": [
+    "whoosh",
+    "transition",
+    "swoosh",
+    "movement",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"whoosh\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.whoosh.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.impact",
+   "name": "SFX: Filmisk impact",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Låg filmisk smäll med svans — repliken som landar, en stämpel.",
+   "tags": [
+    "impact",
+    "hit",
+    "cinematic",
+    "low",
+    "dramatisk",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"impact\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.impact.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.boom",
+   "name": "SFX: Boom (droppen)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Enorm sub-boom för THE drop.",
+   "tags": [
+    "boom",
+    "drop",
+    "sub",
+    "huge",
+    "episk",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"boom\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.boom.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.glitch",
+   "name": "SFX: Glitch-crunch",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Bitkrossat, gatat knaster — smällar, fel, överväldigande.",
+   "tags": [
+    "glitch",
+    "digital",
+    "crunch",
+    "error",
+    "aggressiv",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"glitch\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.glitch.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.error",
+   "name": "SFX: Felsurr",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Error-buzz (\"render failed\").",
+   "tags": [
+    "error",
+    "buzz",
+    "ui",
+    "fail",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"error\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.error.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.riser",
+   "name": "SFX: Riser",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Brus + ton som stiger IN i en träff (align end).",
+   "tags": [
+    "riser",
+    "build-up",
+    "tension",
+    "transition",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"riser\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.riser.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.swell",
+   "name": "SFX: Reverse swell",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Baklänges svall in i en träff (align end).",
+   "tags": [
+    "swell",
+    "reverse",
+    "build",
+    "cinematic",
+    "mjuk",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"swell\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.swell.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.tapestop",
+   "name": "SFX: Tape stop",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Tonhöjd som kollapsar till noll — tiden fryser.",
+   "tags": [
+    "tape-stop",
+    "freeze",
+    "slowdown",
+    "lofi",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"tapestop\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.tapestop.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.paper",
+   "name": "SFX: Papper",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Pappers-/sidrörelse för sidor och kort.",
+   "tags": [
+    "paper",
+    "foley",
+    "page",
+    "organic",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"paper\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.paper.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.tick",
+   "name": "SFX: Tick",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Klock-/räknartick, accelerera för nedräkningar.",
+   "tags": [
+    "tick",
+    "clock",
+    "counter",
+    "precise",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"tick\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.tick.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.snap",
+   "name": "SFX: Magnetisk snap",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Lågt thock + klick när klipp landar på en tidslinje.",
+   "tags": [
+    "snap",
+    "magnetic",
+    "land",
+    "ui",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"snap\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.snap.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.shimmer",
+   "name": "SFX: Shimmer",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Luftig gnistrande bädd för avslöjanden, titlar, dagsljus.",
+   "tags": [
+    "shimmer",
+    "sparkle",
+    "magic",
+    "airy",
+    "drömsk",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"shimmer\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.shimmer.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.subdrop",
+   "name": "SFX: Sub-drop",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Sub-bas-dropp under en träff.",
+   "tags": [
+    "sub",
+    "bass",
+    "drop",
+    "weight",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"subdrop\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.subdrop.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.shutter",
+   "name": "SFX: Kameraslutare",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Kameraslutare / bildruta som renderas.",
+   "tags": [
+    "shutter",
+    "camera",
+    "photo",
+    "click",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: {\"fx\": \"shutter\"} → bash .claude/skills/motion-studio/scripts/py .claude/skills/motion-studio/scripts/sfx/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.shutter.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.sound.room-tone",
+   "name": "SFX: Rumston",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Tyst rumsbädd (brunt brus, luft, avlägsen kyl) via room_env-keyframes.",
+   "tags": [
+    "room-tone",
+    "ambience",
+    "bed",
+    "quiet",
+    "lugn",
+    "sfx",
+    "synthesized",
+    "numpy"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/sfx_lib.py",
+   "use": "audio/sfx_cues.json: \"room_env\": [[t, gain], …] → bash .claude/skills/motion-studio/scripts/py …/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/motion-studio.sound.room-tone.jpg"
+   },
+   "notes": "Syntetiserad vid importen (48 kHz stereo); förhandsbild = vågform + spektrum. WAV i work/motion-studio/sfx-preview/."
+  },
+  {
+   "id": "motion-studio.prompt.critique-loop",
+   "name": "Kritikloop (snapshot → betyg → 3 värsta → fixa)",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Ta snapshots vid varje scens mitt, betygsätt 1–10 per axel, skriv de 3 värsta problemen, fixa, upprepa tills allt är 8+.",
+   "tags": [
+    "critique",
+    "qa",
+    "self-review",
+    "iteration",
+    "quality"
+   ],
+   "path": ".claude/skills/motion-studio/references/critique-loop.md",
+   "use": "Kör efter varje byggrunda (L1: 1 runda, L2: 3, L3: 4)",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.prompt.example-level-1-showreel",
+   "name": "Exempelprompt: L1 pastell-showreel",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Den riktiga prompten bakom 16 s/60 fps-showreelen: en violett form som aldrig klipps genom 7 tekniker.",
+   "tags": [
+    "prompt",
+    "showreel",
+    "pastel",
+    "one-shot",
+    "example"
+   ],
+   "path": ".claude/skills/motion-studio/examples/prompts/level-1-showreel.txt",
+   "use": "Klistra in eller låt /motion-studio expandera en egen",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.prompt.example-level-2-lyric-video",
+   "name": "Exempelprompt: L2 lyric-video \"Sixty Frames Out\"",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Hela regissörsbriefen för en 35,6 s hyperpop-lyric-video med egen låt, 9 världar, varje ord på sin sjungna onset.",
+   "tags": [
+    "prompt",
+    "lyric-video",
+    "hyperpop",
+    "music",
+    "example",
+    "intensiv"
+   ],
+   "path": ".claude/skills/motion-studio/examples/prompts/level-2-lyric-video.txt",
+   "use": "Klistra in i /motion-studio",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.prompt.example-level-3-story-film",
+   "name": "Exempelprompt: L3 berättelsefilm \"One Conversation\"",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Regissörsbriefen för en 68,5 s berättelsefilm: beat sheet, score med drop, 375 SFX, kritikloop.",
+   "tags": [
+    "prompt",
+    "story",
+    "film",
+    "score",
+    "example",
+    "episk"
+   ],
+   "path": ".claude/skills/motion-studio/examples/prompts/level-3-story-film.txt",
+   "use": "Klistra in i /motion-studio",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.prompt.brief-level-1",
+   "name": "Brief-mall L1 showreel",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Fyll-i-mall för showreel/sting/intro: look, ban-lista, genomgående objekt, hörnkrom, grindar.",
+   "tags": [
+    "brief",
+    "template",
+    "showreel",
+    "sting"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-1-showreel.md",
+   "use": "Fyll varje fält själv",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.prompt.brief-level-2",
+   "name": "Brief-mall L2 lyric-video",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Fyll-i-mall + pipeline för lyric-video: låt, världar, tekniker, musik, timing, SFX, grindar.",
+   "tags": [
+    "brief",
+    "template",
+    "lyric-video",
+    "music-sync"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-2-lyric-video.md",
+   "use": "Följ pipeline-stegen",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.prompt.brief-level-3",
+   "name": "Brief-mall L3 berättelsefilm",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Fyll-i-mall + pipeline för 45–90 s berättelsefilm med score, parallella scenarbetare och kritikloop.",
+   "tags": [
+    "brief",
+    "template",
+    "story",
+    "film",
+    "score"
+   ],
+   "path": ".claude/skills/motion-studio/references/level-3-story-film.md",
+   "use": "Följ pipeline-stegen",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.prompt.lessons",
+   "name": "Lärdomar (HyperFrames, Three.js, musik)",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Sub-kompositions-id:n, klock-tweens, deterministik, typsnitt, Three.js r147, musik och timing — varje punkt kostade en debugrunda.",
+   "tags": [
+    "lessons",
+    "pitfalls",
+    "threejs",
+    "hyperframes"
+   ],
+   "path": ".claude/skills/motion-studio/references/lessons.md",
+   "use": "Läs före bygget",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.prompt.sound-design",
+   "name": "Ljuddesign: varje effekt är matte",
+   "type": "prompt",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Placeringsregler (whoosh toppar på klippet, riser slutar på träffen), gain-nivåer och mix med /hyperframes-audio.",
+   "tags": [
+    "sound-design",
+    "sfx",
+    "mix",
+    "rules"
+   ],
+   "path": ".claude/skills/motion-studio/references/sound-design.md",
+   "use": "Läs före SFX-passet",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.prompt.music",
+   "name": "Musik: gratis, lokal, tajmad (song.json-guide)",
+   "type": "prompt",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Hur man skriver caption/lyrics så ACE-Step sjunger tillbaka rätt, och varför pipelinen ser ut som den gör.",
+   "tags": [
+    "music",
+    "acestep",
+    "songwriting",
+    "guide"
+   ],
+   "path": ".claude/skills/motion-studio/references/music.md",
+   "use": "Läs före song.json",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.template.song-json",
+   "name": "Mall: song.json (låt med sång)",
+   "type": "prompt",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "ACE-Step-låtspec: caption, lyrics, bpm, längd, seeds (exempel: hyperpop 140 BPM).",
+   "tags": [
+    "song",
+    "acestep",
+    "lyrics",
+    "template"
+   ],
+   "path": ".claude/skills/motion-studio/templates/song.json",
+   "use": "new_project.sh <dir> 2 kopierar in den",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.template.score-json",
+   "name": "Mall: score.json (instrumentalt score med båge)",
+   "type": "prompt",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Score-läge med drop_window och loudness-arc för en berättelsefilm.",
+   "tags": [
+    "score",
+    "acestep",
+    "arc",
+    "cinematic",
+    "template"
+   ],
+   "path": ".claude/skills/motion-studio/templates/score.json",
+   "use": "new_project.sh <dir> 3 kopierar in den",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.template.sfx-cues",
+   "name": "Mall: sfx_cues.json",
+   "type": "prompt",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Cue-lista för build_sfx.py: whoosh som toppar, riser som slutar på träffen, impact.",
+   "tags": [
+    "sfx",
+    "cues",
+    "template"
+   ],
+   "path": ".claude/skills/motion-studio/templates/sfx_cues.json",
+   "use": "Fyll i och kör build_sfx.py",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.template.selftest",
+   "name": "Självtest-komposition (3 s)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "960×540: en prick faller och landar på impact med squash & stretch, ordet 'ready.' wipe:ar in på whooshen.",
+   "tags": [
+    "selftest",
+    "squash",
+    "wipe",
+    "sync-test"
+   ],
+   "path": ".claude/skills/motion-studio/templates/selftest/index.html",
+   "use": "bash .claude/skills/motion-studio/scripts/selftest.sh",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Inte renderad vid importen (hoppades över av budgetskäl)."
+  },
+  {
+   "id": "motion-studio.tool.setup",
+   "name": "Setup-kontroll",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Kontrollerar Node, ffmpeg, numpy, HyperFrames och (med --music) den befintliga ACE-Step-installationen — installerar inget.",
+   "tags": [
+    "setup",
+    "check",
+    "acestep"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/setup.sh",
+   "use": "bash .claude/skills/motion-studio/scripts/setup.sh --music",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Omskriven för Windows; kördes vid importen: 'All set' (demucs saknas)."
+  },
+  {
+   "id": "motion-studio.tool.new-project",
+   "name": "Nytt projekt (HyperFrames + ljudmallar)",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "npx hyperframes init + audio/song.json och sfx_cues.json för vald nivå.",
+   "tags": [
+    "scaffold",
+    "project",
+    "init"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/new_project.sh",
+   "use": "bash .claude/skills/motion-studio/scripts/new_project.sh work/motion-studio/<namn> <1|2|3>",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.tool.selftest",
+   "name": "Självtest (SFX → check → render → A/V)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Syntetiserar SFX, kör hyperframes check, renderar 3 s och kontrollerar A/V-synk.",
+   "tags": [
+    "selftest",
+    "qa",
+    "pipeline"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/selftest.sh",
+   "use": "bash .claude/skills/motion-studio/scripts/selftest.sh",
+   "requires": [
+    "hyperframes",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.tool.run-music",
+   "name": "Generera musiktagningar (ACE-Step)",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Genererar tagningar från song.json med ett-jobb-lås, sparar latenter och avkodar i separat process.",
+   "tags": [
+    "music",
+    "acestep",
+    "generation",
+    "local",
+    "free"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/music/run_music.sh",
+   "use": "bash .claude/skills/motion-studio/scripts/music/run_music.sh work/motion-studio/<namn> [seeds]",
+   "requires": [
+    "acestep",
+    "uv"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Pekar på C:\\Users\\rydqv\\video-tools\\ACE-Step-1.5; CPU ~3.8x realtid; LM av på CPU. Ej körd vid importen."
+  },
+  {
+   "id": "motion-studio.tool.gen-track",
+   "name": "Snabb instrumental (gen_track.py)",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Fristående instrumental från en caption utan projekt — den befintliga ACE-Step-installationens eget skript.",
+   "tags": [
+    "music",
+    "instrumental",
+    "bed",
+    "acestep",
+    "quick"
+   ],
+   "path": ".claude/skills/motion-studio/SETUP.md",
+   "use": "cd C:\\Users\\rydqv\\video-tools\\ACE-Step-1.5 && uv run --no-sync python gen_track.py <sek> <ut.wav> \"<caption>\" [bpm]",
+   "requires": [
+    "acestep",
+    "uv"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.tool.stems",
+   "name": "Stems + vokaltranskript (demucs)",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Delar tagningar i sång/instrumental och transkriberar sångstemmet för ordtiming.",
+   "tags": [
+    "stems",
+    "demucs",
+    "vocals",
+    "transcribe"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/music/stems.sh",
+   "use": "bash …/stems.sh <projekt> seed11 seed23",
+   "requires": [
+    "acestep",
+    "demucs"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "demucs är inte installerat i ACE-miljön — fråga användaren innan uv pip install demucs."
+  },
+  {
+   "id": "motion-studio.tool.rank-takes",
+   "name": "Ranka tagningar utan att lyssna",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Sjungna ord i ordning (song) eller passform mot loudness-bågen (score), straffar tidiga slut.",
+   "tags": [
+    "music",
+    "ranking",
+    "analysis"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/music/rank_takes.py",
+   "use": "bash .claude/skills/motion-studio/scripts/py …/rank_takes.py <projekt>",
+   "requires": [
+    "python:numpy",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.tool.timing",
+   "name": "Timing: beats, downbeats, drop, ordonsets",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Mäter vald tagning → audio/timing.json + assets/js/timing.js som driver ALL animation.",
+   "tags": [
+    "timing",
+    "beats",
+    "lyrics",
+    "sync",
+    "music-sync"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/music/timing.py",
+   "use": "bash .claude/skills/motion-studio/scripts/py …/timing.py <projekt> --take seedN",
+   "requires": [
+    "python:numpy",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.tool.trim",
+   "name": "Trimma till musikaliskt slut",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Klipper tagningen vid musikaliska slutet med kort fade.",
+   "tags": [
+    "trim",
+    "fade",
+    "audio"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/music/trim.sh",
+   "use": "bash …/trim.sh take.wav <slut> assets/audio/song.wav",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.tool.score-viz",
+   "name": "Score-visualisering (vågform + pianorulle)",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Bakar riktiga scorens vågform och tonhöjdsspårade pianorulle till JSON för en 'kompositör'-scen.",
+   "tags": [
+    "visualization",
+    "waveform",
+    "piano-roll",
+    "audio-reactive"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/music/score_viz.py",
+   "use": "bash .claude/skills/motion-studio/scripts/py …/score_viz.py score.wav <start> <slut> out.json [bpm]",
+   "requires": [
+    "python:numpy",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.tool.build-sfx",
+   "name": "Bygg SFX-stems från cue-lista",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "audio/sfx_cues.json + scenernas *.motion.json → SFX-stems, rumston och cue-sheet.",
+   "tags": [
+    "sfx",
+    "stems",
+    "cues",
+    "synthesized"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/sfx/build_sfx.py",
+   "use": "bash .claude/skills/motion-studio/scripts/py …/build_sfx.py <projekt>",
+   "requires": [
+    "python:numpy"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.tool.av-check",
+   "name": "A/V-synkkontroll",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Kollar ljudström, längd och att träffar ligger inom en bildruta i renderad MP4.",
+   "tags": [
+    "qa",
+    "sync",
+    "audio",
+    "verify"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/qa/av_check.py",
+   "use": "bash .claude/skills/motion-studio/scripts/py …/av_check.py render.mp4 --expect <tider>",
+   "requires": [
+    "python:numpy",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "motion-studio.tool.contact-sheet",
+   "name": "Kontaktark från MP4",
+   "type": "tool",
+   "medium": "image",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Bildrutor vid valda tider i ett märkt rutnät, 4 per rad.",
+   "tags": [
+    "contact-sheet",
+    "qa",
+    "review"
+   ],
+   "path": ".claude/skills/motion-studio/scripts/qa/contact_sheet.sh",
+   "use": "bash …/contact_sheet.sh render.mp4 sheet.jpg <tider…>",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Typsnittssökväg fixad för native ffmpeg på Windows."
+  }
+ ]
+}

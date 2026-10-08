@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>type-roles</title>
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000}
+  #root{position:relative;width:1080px;height:1920px;overflow:hidden}
+
+  .graded{filter:url(#persa-grade)}
+  .cam{position:absolute;left:0;top:0;width:1080px;height:1920px;object-fit:cover}
+
+  /* The one thing that makes any of this land: a soft top vignette on the MEDIA.
+     BLACKLIST #3 bans a band behind text and explicitly allows darkening the media
+     instead. Every role here needs a ground darker than a lit white wall — his own
+     room is already shadowed up top, ours is not, so we make it. */
+  .vig{position:absolute;left:0;top:0;width:1080px;height:1080px;
+    background:linear-gradient(180deg,rgba(12,9,8,.60) 0%,rgba(12,9,8,.40) 46%,rgba(12,9,8,0) 100%)}
+
+  /* ═══ ROLE 2 · EMPHASIS OUTLINE ═══════════════════════════════════════════════════
+     The "gradient" word. Hollow — a whisper of fill, no more — plus a wide bloom in the
+     stroke's own hue, screened over the picture so the room shows through the counters.
+     WHITE and AMBER only: coral is never an outline (that is ROLE 3).
+     It only pays off over a PHOTOGRAPHIC ground. On flat cream there is nothing to show
+     through and it collapses into ordinary outlined type.                              */
+  .emph{
+    position:absolute;left:0;width:1080px;text-align:center;
+    font-family:var(--font-display-heavy);line-height:1;letter-spacing:.012em;
+    text-transform:uppercase;
+    color:var(--emph-fill);-webkit-text-fill-color:var(--emph-fill);
+    -webkit-text-stroke-width:var(--emph-stroke);
+    mix-blend-mode:screen;
+    will-change:transform,opacity;
+  }
+  .e-w{-webkit-text-stroke-color:var(--emph-white);filter:var(--glow-white)}
+  .e-a{-webkit-text-stroke-color:var(--emph-amber);filter:var(--glow-amber)}
+
+  /* ═══ ROLE 1 · TITLE STACK ════════════════════════════════════════════════════════
+     Hook only. Four layers over the LIVE take — never on a plate, never in a card.
+     The mark is the product's SQUARE app mark, not its wordmark: a wordmark is type,
+     and stacking type on type is the thing this role exists to avoid.                  */
+  .tstack{position:absolute;left:0;top:86px;width:1080px;
+    display:flex;flex-direction:column;align-items:center;gap:16px}
+  .tpill{font:400 38px var(--font-ui);color:#fff;background:rgba(15,12,10,.5);
+    padding:11px 32px;border-radius:var(--r-pill);letter-spacing:.01em}
+  .tmark{width:212px;height:212px;object-fit:contain;
+    filter:drop-shadow(0 10px 26px rgba(0,0,0,.5))}
+  .tline{font-family:var(--font-marker);font-size:64px;color:#fff;letter-spacing:.02em;
+    text-transform:uppercase;white-space:nowrap;
+    filter:drop-shadow(0 5px 16px rgba(0,0,0,.6))}
+
+  /* ═══ ROLE 3 · THE PAYOFF WORD ════════════════════════════════════════════════════
+     FILLED coral, never outlined. Hook and CTA only. Sampled identically in both his
+     reels, so it is a fixed brand red — the one place a flat colour word is allowed.   */
+  .tword,.payoff{font-family:var(--font-display-heavy);line-height:.9;text-transform:uppercase;
+    color:var(--display-coral);letter-spacing:.008em;
+    filter:drop-shadow(0 8px 30px rgba(0,0,0,.55))}
+  .payoff{position:absolute;left:0;width:1080px;text-align:center}
+
+  /* ═══ ROLE 4 · ANNOTATION ═════════════════════════════════════════════════════════
+     Typed INTO the product's own empty space, aligned to its grid. No box, no card.
+     Our version drops his emoji — BLACKLIST #4.                                        */
+  .med{position:absolute;display:block;object-fit:contain}
+  .annot{position:absolute;font-family:var(--font-pixel);font-weight:700;
+    color:var(--annot-lime);filter:var(--glow-lime);line-height:1.45;letter-spacing:.02em;
+    white-space:pre}
+
+  /* ═══ TREATMENT · UI OWNS THE FRAME, CAMERA BECOMES A CARD ══════════════════════
+     The one treatment the house style does not own. The media fills the frame edge to
+     edge and the camera drops to a rounded card anchored to the BOTTOM — no border, no
+     shadow, no label. Measured off reel B: width ≈79% of frame, radius ≈4% of width.
+     House BLACKLIST #11 bans shrinking him; that rule is HOUSE-ONLY and does not apply
+     in this style, where shrinking him is the point.                                    */
+  .uifull{position:absolute;left:0;top:0;width:1080px;height:1920px;object-fit:cover}
+  /* card measured off reel B and scaled: left 10.6% · width 79.7% · top 59.5% · radius 3.6% */
+  .camcard{position:absolute;left:114px;top:1143px;width:861px;height:777px;
+    overflow:hidden;border-radius:39px}
+  /* THE CARD IS NOT THE WHOLE TREATMENT. His head is MATTED and pops out ABOVE the card's
+     top edge, over the app chrome — verified at 16.4s, 19.0s and 23.5s of reel B. That is
+     our own pop-out technique, over a UI instead of cream. So this beat is TWO layers from
+     one source: the raw take clipped by the card, and the alpha matte drawn over it,
+     unclipped, at the same position. */
+  /* scale 0.80 — the camera must FILL the card (861px wide), so it cannot be smaller
+     than 861/1080 = 0.797. Both layers share one position; the card's inner offsets are
+     just the free layer's position minus the card's origin (114,1143). */
+  .camcard video{position:absolute;left:-6px;top:-692px;width:864px;height:1536px;
+    object-fit:cover}
+  .camfree{position:absolute;left:108px;top:451px;width:864px;height:1536px;
+    object-fit:contain}
+
+  /* our existing caption, unchanged — three styles, not four (BLACKLIST #15) */
+  .cap{position:absolute;left:0;width:1080px;text-align:center;will-change:transform,opacity}
+  .c-ws{font:900 96px var(--font-heavy);color:#fff;text-transform:uppercase;letter-spacing:-.02em;
+    filter:drop-shadow(0 4px 14px rgba(0,0,0,.55))}
+
+  .lbl{position:absolute;left:0;top:1790px;width:1080px;text-align:center;
+    font:500 32px var(--font-mono);color:#fff;letter-spacing:.07em;
+    filter:drop-shadow(0 3px 10px rgba(0,0,0,.9))}
+</style>
+</head>
+<body>
+<!-- persa grade — scripts/make-grade-filter.py --strength 0.75
+     Apply with  style="filter:url(#persa-grade)"  on the camera AND on every b-roll clip,
+     so every photographic surface in the cut sits on the same curve. -->
+<svg class="grade-defs" width="0" height="0" aria-hidden="true"
+     style="position:absolute;pointer-events:none">
+  <filter id="persa-grade" color-interpolation-filters="sRGB">
+    <feComponentTransfer>
+      <feFuncR type="table" tableValues="0.0225 0.0500 0.0786 0.1086 0.1355 0.1556 0.1754 0.1989 0.2219 0.2466 0.2740 0.3019 0.3306 0.3635 0.3974 0.4325 0.4686 0.5060 0.5446 0.5843 0.6251 0.6605 0.6931 0.7258 0.7586 0.7912 0.8214 0.8515 0.8814 0.9113 0.9417 0.9731 1.0000"/>
+      <feFuncG type="table" tableValues="0.0225 0.0516 0.0815 0.1124 0.1448 0.1790 0.2138 0.2478 0.2823 0.3159 0.3480 0.3798 0.4115 0.4411 0.4702 0.4989 0.5271 0.5552 0.5830 0.6103 0.6372 0.6661 0.6960 0.7259 0.7557 0.7854 0.8156 0.8457 0.8757 0.9057 0.9361 0.9673 0.9985"/>
+      <feFuncB type="table" tableValues="0.0225 0.0554 0.0839 0.1057 0.1302 0.1643 0.2000 0.2349 0.2714 0.3070 0.3404 0.3741 0.4073 0.4294 0.4499 0.4689 0.4864 0.5085 0.5302 0.5512 0.5713 0.5993 0.6318 0.6647 0.6981 0.7327 0.7726 0.8134 0.8551 0.8975 0.9361 0.9673 0.9985"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<div id="root" data-composition-id="main" data-no-timeline data-start="0" data-duration="26"
+     data-width="1080" data-height="1920" data-fps="30">
+
+  <!-- ground: the raw take, full bleed, one continuous photographic frame -->
+  <video class="clip cam graded" id="g0" src="assets/recording.mp4" data-start="0" data-duration="26"
+         data-media-start="4.2" data-track-index="1" muted playsinline></video>
+
+  <!-- the media darkening — under every graphic, over the camera -->
+  <div class="clip vig" id="v0" data-start="0" data-duration="12.4" data-track-index="2"></div>
+
+  <!-- ── 0.2–4.0 · ROLES 1 + 3 · the title stack over the live take ──────────────── -->
+  <div class="clip tstack" id="t0" data-start="0.2" data-duration="3.8" data-track-index="10">
+    <div class="tpill">Claude Code v2.0.0</div>
+    <img class="tmark" src="assets/brand/claude-coral.svg" alt=""/>
+    <div class="tline">the agent that actually</div>
+    <div class="tword" style="font-size:208px">SHIPS</div>
+  </div>
+  <div class="clip lbl" id="l0" data-start="0.2" data-duration="3.8" data-track-index="40">ROLE 1 · TITLE STACK · pill &rarr; real mark &rarr; marker line &rarr; payoff</div>
+
+  <!-- ── 4.2–9.6 · ROLE 2 · the emphasis outline — white and amber, never coral ──── -->
+  <!-- font-size = min(290, 940 / (0.46 × chars)) — stamped, never left implicit -->
+  <div class="clip emph e-w" id="e0" data-start="4.2" data-duration="2.6" data-track-index="11"
+       style="top:300px;font-size:290px">THEM</div>
+  <div class="clip lbl" id="l1" data-start="4.2" data-duration="2.6" data-track-index="40">ROLE 2 · EMPHASIS · white — the neutral word</div>
+
+  <div class="clip emph e-a" id="e1" data-start="7.0" data-duration="2.6" data-track-index="11"
+       style="top:340px;font-size:255px">MANUALLY</div>
+  <div class="clip lbl" id="l2" data-start="7.0" data-duration="2.6" data-track-index="40">ROLE 2 · EMPHASIS · amber — the pain word</div>
+
+  <!-- ── 9.8–12.4 · ROLE 3 · the payoff word, FILLED, on the darkened plate ──────── -->
+  <div class="clip payoff" id="e2" data-start="9.8" data-duration="2.6" data-track-index="11"
+       style="top:300px;font-size:290px">FREE</div>
+  <div class="clip lbl" id="l3" data-start="9.8" data-duration="2.6" data-track-index="40">ROLE 3 · PAYOFF · coral, FILLED — never an outline</div>
+
+  <!-- ── 12.6–19.0 · ROLE 4 · a claim typed into the UI's own negative space ─────── -->
+  <img class="clip med" id="p0" src="assets/askrecord.png" data-start="12.6" data-duration="6.2"
+       data-track-index="12" style="left:0px;top:0px;width:1080px;height:1180px" alt=""/>
+  <div class="clip annot" id="a0" data-start="13.0" data-duration="5.8" data-track-index="13"
+       style="left:96px;top:860px;font-size:62px">FREE! +
+OPEN SOURCE
+NO SUBSCRIPTION</div>
+  <div class="clip lbl" id="l4" data-start="12.6" data-duration="6.2" data-track-index="40">ROLE 4 · ANNOTATION · typed in the UI's own empty space</div>
+
+  <!-- our caption, unchanged, at the full-face line we already use -->
+  <div class="clip cap c-ws" id="c0" data-start="4.2" data-duration="2.6" data-track-index="30" style="top:1400px">CAPTION</div>
+  <div class="clip cap c-ws" id="c1" data-start="7.0" data-duration="2.6" data-track-index="31" style="top:1400px">STAYS</div>
+  <div class="clip cap c-ws" id="c2" data-start="9.8" data-duration="2.6" data-track-index="30" style="top:1400px">PUT</div>
+
+  <!-- ── 19.2–26.0 · TREATMENT · the UI owns the frame, he becomes a card ────────── -->
+  <img class="clip uifull" id="u0" src="assets/askrecord.png" data-start="19.2" data-duration="6.8"
+       data-track-index="3" style="left:0px;top:0px;width:1080px;height:1920px" alt=""/>
+  <!-- the wrapper is UNTIMED — only the video carries the clip contract. A <video
+       data-start> nested inside a timed element renders FROZEN. -->
+  <div class="camcard">
+    <video class="clip graded" id="cc0v" src="assets/recording.mp4" data-start="19.2" data-duration="6.8"
+           data-media-start="23.33" data-track-index="4" muted playsinline></video>
+  </div>
+  <video class="clip camfree graded" id="cc0f" src="assets/person-alpha.webm" data-start="19.2"
+         data-duration="6.8" data-media-start="0" data-track-index="5" muted playsinline></video>
+  <!-- the caption does NOT move: 1400 of 1920 is 72.9%, so it lands inside the card -->
+  <div class="clip cap c-ws" id="c3" data-start="19.6" data-duration="2.9" data-track-index="30" style="top:1400px">HEAD</div>
+  <div class="clip cap c-ws" id="c4" data-start="22.6" data-duration="2.9" data-track-index="31" style="top:1400px">POPS OUT</div>
+  <div class="clip lbl" id="l5" data-start="19.2" data-duration="6.8" data-track-index="40">TREATMENT · UI OWNS FRAME · card 79% wide + the head matted OVER its edge</div>
+
+</div>
+</body>
+</html>

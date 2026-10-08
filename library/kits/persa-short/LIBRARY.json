@@ -1,0 +1,1603 @@
+{
+ "kit": "persa-short",
+ "title": "PERSA Short Editing (talking-head 9:16)",
+ "source": {
+  "name": "persa-short-editing (NextPhase/Jad)",
+  "url": "",
+  "license": "Ingen licens angiven – endast egen användning"
+ },
+ "items": [
+  {
+   "id": "persa-short.skill.persa-short-editing",
+   "name": "PERSA short-redigering (skill)",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Redigerar en talking-head till en 9:16-short i persa-stilen: helbild-kamera, produktdemo som äger bilden, matt-frilagt huvud över kameran-kortet och full display-typografi.",
+   "tags": [
+    "talking-head",
+    "short",
+    "reels",
+    "tiktok",
+    "full-bleed",
+    "product-demo",
+    "premium",
+    "instagram"
+   ],
+   "path": ".claude/skills/persa-short-editing/SKILL.md",
+   "use": "Skill /persa-short-editing — be om 'en persa-edit av den här inspelningen'",
+   "requires": [
+    "hyperframes",
+    "ffmpeg",
+    "python:numpy,pillow",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.caption.persa-captions.jpg"
+   },
+   "notes": "Ljudpaletten och musikbädden ingår inte (licens) — se SETUP.md §4. Preview = kitets sample-collage."
+  },
+  {
+   "id": "persa-short.type.word-caption",
+   "name": "Ordtext — ett vitt ord på 72,9 %",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett vitt versalord i taget, ordsynkat och fastnålat på y 1400 (72,9 %) — flyttar sig aldrig.",
+   "tags": [
+    "caption",
+    "one-word",
+    "white",
+    "clean",
+    "minimal",
+    "lugn",
+    "talking-head"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.word-caption.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.emphasis-outline-white",
+   "name": "Ihålig konturglöd — vit",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Ihålig Anton-versal med 4 px kontur och mjuk bloom i screen-läge; rummet lyser genom bokstäverna. För det neutrala nyckelordet.",
+   "tags": [
+    "outline",
+    "glow",
+    "hollow",
+    "screen-blend",
+    "premium",
+    "cinematic",
+    "stilren"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.emphasis-outline-white.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.emphasis-outline-amber",
+   "name": "Ihålig konturglöd — bärnsten",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Samma ihåliga konturord i bärnsten — reserverat för smärtordet (MANUALLY, HOUR).",
+   "tags": [
+    "outline",
+    "glow",
+    "amber",
+    "pain-word",
+    "warm",
+    "dramatisk",
+    "emphasis"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.emphasis-outline-amber.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.name-tag",
+   "name": "Namnskylt över UI",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Konturordet i ~40 % storlek över UI:t som en aktör jobbar i — rollnamn på rad utan att bygga nya grafiker.",
+   "tags": [
+    "name-tag",
+    "outline",
+    "roll-call",
+    "ui",
+    "label",
+    "density"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.name-tag.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.payoff-word-coral",
+   "name": "Payoff-ord — korall, fyllt",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Fyllt korallrött (#E12A2B) jätteord i Anton för hook och CTA; aldrig som kontur.",
+   "tags": [
+    "payoff",
+    "coral",
+    "red",
+    "bold",
+    "hook",
+    "punchy",
+    "kaxig"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.payoff-word-coral.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.title-stack",
+   "name": "Titelstack (pill + märke + marker + payoff)",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Fyra lager över livetagningen: produktnamn i mörk pill, kvadratisk app-ikon, handskriven markerrad och korallrött payoff-ord.",
+   "tags": [
+    "title",
+    "hook",
+    "stack",
+    "pill",
+    "marker",
+    "brand",
+    "intro",
+    "energisk"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.title-stack.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.marker-line",
+   "name": "Markerrad — handskriven",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Permanent Marker, vit, versaler, 64–78 px, får aldrig radbrytas.",
+   "tags": [
+    "marker",
+    "handwritten",
+    "casual",
+    "personlig",
+    "lekfull",
+    "white"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.marker-line.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.pill-label",
+   "name": "Pill-etikett",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Liten Inter-text i mörk genomskinlig kapsel — produktnamn som gör demon trovärdig.",
+   "tags": [
+    "pill",
+    "label",
+    "small",
+    "ui",
+    "credible",
+    "subtle",
+    "clean"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.pill-label.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.lime-claim",
+   "name": "Lime-påstående i UI:ts tomrum",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Limegrön pixeltext med glöd, inskriven i produktens eget tomma utrymme (find-empty-space.py) — inget kort, ingen pil.",
+   "tags": [
+    "lime",
+    "pixel",
+    "annotation",
+    "claim",
+    "tech",
+    "glow",
+    "nördig"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.lime-claim.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.lime-reaction",
+   "name": "Lime-reaktion — ett ord",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett enda limegrönt pixelord som reaktion (RESPECT!) — utan emoji.",
+   "tags": [
+    "lime",
+    "pixel",
+    "reaction",
+    "one-word",
+    "playful",
+    "lekfull"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.lime-reaction.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.pixel-speech-bubble",
+   "name": "Pixelpratbubbla",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Stegad, kantig SVG-pratbubbla (crispEdges) med Silkscreen — ett ord som en pixelaktör säger.",
+   "tags": [
+    "pixel",
+    "speech-bubble",
+    "retro",
+    "8-bit",
+    "game",
+    "lekfull",
+    "character"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.pixel-speech-bubble.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.stacked-repetition",
+   "name": "Staplad upprepning",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Samma ord kaskaderar nedåt-höger på takten, först kontur sedan fyllt, ut ur bild (AGAIN AGAIN AGAIN).",
+   "tags": [
+    "repetition",
+    "cascade",
+    "rhythm",
+    "outline-to-solid",
+    "energetic",
+    "intensiv"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.stacked-repetition.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.type.arced-sentence",
+   "name": "Böjd mening",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "En hel mening böjd längs en båge via ett SVG-textPath — gemener, Inter 600, rinner av bildkanterna.",
+   "tags": [
+    "arc",
+    "curved",
+    "textpath",
+    "sentence",
+    "flow",
+    "elegant",
+    "mjuk"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/index.html",
+   "use": "Kopiera klassen/blocket från components/persa-captions (build.py) in i kompositionen; spec i reference/TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.type.arced-sentence.jpg"
+   },
+   "notes": "Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified. Kompositionen kräver assets/recording.mp4 (+ person-alpha.webm / fork.png för UI-beats) i projektmappen."
+  },
+  {
+   "id": "persa-short.caption.persa-captions",
+   "name": "Caption-boken — alla 13 typbehandlingar",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "En 34 s komposition som visar alla 13 display-typbehandlingar i följd, genererad av build.py.",
+   "tags": [
+    "captions",
+    "typography",
+    "showcase",
+    "kinetic-type",
+    "all-in-one",
+    "referens"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/persa-captions/build.py",
+   "use": "library/.venv/Scripts/python.exe build.py && npx hyperframes render . -o out/captions.mp4 (i en kopia med assets/)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "still": "library/previews/persa-short.caption.persa-captions.jpg"
+   },
+   "notes": "Kräver assets/recording.mp4, person-alpha.webm, fork.png och assets/brand/claude-coral.svg (byt till eget märke). Förhandsbilden är en beskärning av kitets egen sample-rendering (components/persa-captions/sample/all.png), granskad vid importen men inte renderad här — därför unverified."
+  },
+  {
+   "id": "persa-short.text.type-roles-demo",
+   "name": "Typroller-demo + kamerakort",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "26 s demo av de fyra kärnrollerna (titelstack, kontur, payoff, annotering) plus UI-äger-bilden med matt-frilagt huvud över kortet.",
+   "tags": [
+    "demo",
+    "title-stack",
+    "camera-card",
+    "pop-out",
+    "grade",
+    "typography"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/type-roles-demo/index.html",
+   "use": "Kopiera in i ett videoprojekt med assets/, npx hyperframes render",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "tokens.css saknades bredvid demot i kitet — kopierad från persa-captions vid importen."
+  },
+  {
+   "id": "persa-short.text.design-tokens",
+   "name": "Persa design-tokens (färger, typsnitt, glöd)",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "tokens.css med korall, bärnsten, lime, glödfilter och typsnittsvariabler (Anton, Permanent Marker, Silkscreen, Inter …).",
+   "tags": [
+    "tokens",
+    "css",
+    "palette",
+    "fonts",
+    "coral",
+    "lime",
+    "design-system"
+   ],
+   "path": ".claude/skills/persa-short-editing/assets/tokens.css",
+   "use": "<link rel=stylesheet href=tokens.css> — använd variablerna, aldrig råa hex",
+   "requires": [
+    "google-fonts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.grade.persa-grade",
+   "name": "Persa-grade (SVG feComponentTransfer)",
+   "type": "grade",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Varma högdagrar över svala, lätt gröna skuggor, blått avrullat ~20 %, liten svartlyftning — SVG-filter, styrka 0,75.",
+   "tags": [
+    "grade",
+    "warm",
+    "teal-shadows",
+    "filmic",
+    "subtle",
+    "svg-filter",
+    "mysig"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/grade-persa.svg",
+   "use": "style=\"filter:url(#persa-grade)\" på kamera och b-roll, aldrig på UI",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Valfri — används bara om kreatören vill. Härled per inspelning med make-grade-filter.py."
+  },
+  {
+   "id": "persa-short.tool.make-grade-filter",
+   "name": "Härled grade per inspelning",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Mäter kanalförhållanden per luma-band och skriver en feComponentTransfer-grade matchad mot referenslooken.",
+   "tags": [
+    "grade",
+    "color",
+    "derive",
+    "lut",
+    "analysis"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/make-grade-filter.py",
+   "use": "library/.venv/Scripts/python.exe scripts/make-grade-filter.py --derive assets/recording.mp4 --out components/grade-<slug>.svg",
+   "requires": [
+    "python:numpy,pillow",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.rvm-matte",
+   "name": "RVM-frilägg av personen",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Robust Video Matting → BGRA-ramar med alfa, tidsstabil (ingen flimmer); grunden för huvudet över kortet och text bakom huvudet.",
+   "tags": [
+    "matting",
+    "cutout",
+    "background-removal",
+    "rvm",
+    "pop-out",
+    "depth"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/rvm-matte.py",
+   "use": "work/persa-short/rvm_env/Scripts/python.exe scripts/rvm-matte.py --src in.mp4 --out frames --frames 150 (se SETUP.md §3)",
+   "requires": [
+    "python:torch,opencv",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "RVM-miljön (torch) är inte skapad på maskinen — se SETUP.md. Alternativ: npx hyperframes remove-background."
+  },
+  {
+   "id": "persa-short.tool.matte-pipeline",
+   "name": "Chunkad matte → alpha.mkv",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Kör RVM i bitar om 700 ramar och packar alfan till en gråskale-FFV1 (assets/alpha.mkv) för kompositen.",
+   "tags": [
+    "matting",
+    "pipeline",
+    "alpha",
+    "ffv1",
+    "batch"
+   ],
+   "path": ".claude/skills/persa-short-editing/template/matte.sh",
+   "use": "bash matte.sh (från videomappen)",
+   "requires": [
+    "ffmpeg",
+    "rvm_env"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Omskriven för Windows: hittar skillen uppåt och RVM-miljön i work/persa-short/rvm_env."
+  },
+  {
+   "id": "persa-short.tool.find-cut-line",
+   "name": "Hitta snittlinjen (huvud/nacke)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Läser matte-silhuetten och hittar huvudtopp, nacke och mitt-huvud för kortets överkant — mätt, aldrig gissat.",
+   "tags": [
+    "matting",
+    "measure",
+    "head",
+    "geometry"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/find-cut-line.py",
+   "use": "python scripts/find-cut-line.py --frames frames_rvm --cut mid-head",
+   "requires": [
+    "python:opencv,numpy"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kräver opencv (finns i RVM-miljön, inte i library/.venv)."
+  },
+  {
+   "id": "persa-short.tool.measure-head",
+   "name": "Huvudtopp per beat",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Mäter huvudets översta rad per beat från alfan genom varje akts kameralösning → geometry.json.",
+   "tags": [
+    "measure",
+    "head",
+    "geometry",
+    "layout"
+   ],
+   "path": ".claude/skills/persa-short-editing/template/measure-head.py",
+   "use": "library/.venv/Scripts/python.exe measure-head.py",
+   "requires": [
+    "python:numpy",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.make-rect-mask",
+   "name": "Rundad rektangelmask",
+   "type": "tool",
+   "medium": "image",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Genererar vit rundad rektangel på svart för ffmpeg alphamerge (kamerakortets fönster).",
+   "tags": [
+    "mask",
+    "rounded-rect",
+    "alphamerge"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/make-rect-mask.py",
+   "use": "library/.venv/Scripts/python.exe scripts/make-rect-mask.py --w 861 --h 777 --radius 39 --out mask.png",
+   "requires": [
+    "python:pillow"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.composite",
+   "name": "Lagerkomposit på orörd kamera",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Lägger transparenta HyperFrames-lager + personens matte på den ORÖRDA kamerafilen i ffmpeg (ingen färgförskjutning via Chrome).",
+   "tags": [
+    "composite",
+    "layers",
+    "ffmpeg",
+    "color-accurate",
+    "pipeline"
+   ],
+   "path": ".claude/skills/persa-short-editing/template/composite.py",
+   "use": "library/.venv/Scripts/python.exe composite.py out/<slug>-FINAL.mp4 --audio out/<slug>-audio.wav",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.find-empty-space",
+   "name": "Hitta tomrum i en skärmbild",
+   "type": "tool",
+   "medium": "image",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Hittar största verkligt tomma rektangeln i en UI-bild (ovanför kortet) där lime-påståendet får stå.",
+   "tags": [
+    "layout",
+    "negative-space",
+    "annotation",
+    "ui",
+    "measure"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/find-empty-space.py",
+   "use": "library/.venv/Scripts/python.exe scripts/find-empty-space.py <bild> --max-y 1143 --json",
+   "requires": [
+    "python:pillow"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.shoot-page-9x16",
+   "name": "Skärmdump av sida som 9:16-ruta",
+   "type": "tool",
+   "medium": "image",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Fotar en riktig webbsida i smal viewport (stor text) som helbild 1080×1920 och mäter fraspositioner från DOM:en.",
+   "tags": [
+    "screenshot",
+    "web",
+    "playwright",
+    "ui",
+    "9:16",
+    "b-roll"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/shoot-page-9x16.py",
+   "use": "library/.venv/Scripts/python.exe scripts/shoot-page-9x16.py <url> out.png --hl \"fras\"",
+   "requires": [
+    "python:playwright",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Faller tillbaka på installerade Chrome om Playwrights Chromium saknas."
+  },
+  {
+   "id": "persa-short.tool.camera-decode",
+   "name": "Kameradekod (D-Log M / HLG → Rec.709)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Avkodar log/HLG-material till Rec.709 1080×1920 i 32-bit float innan något annat rör filen.",
+   "tags": [
+    "color",
+    "log",
+    "hlg",
+    "dji",
+    "decode",
+    "rec709"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/camera-decode.py",
+   "use": "library/.venv/Scripts/python.exe scripts/camera-decode.py --src <fil> --probe, sedan --out assets/recording.mp4",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "DJI-LUT:en ingår inte; lägg den i work/persa-short/luts/ eller PERSA_LUT."
+  },
+  {
+   "id": "persa-short.tool.find-keepout",
+   "name": "Ansiktets keep-out-zon",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Mäter hur långt ner ett flytande kort får nå innan det täcker huvudet (temporal varians, ingen modell).",
+   "tags": [
+    "layout",
+    "face",
+    "safe-zone",
+    "measure"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/find-keepout.py",
+   "use": "library/.venv/Scripts/python.exe scripts/find-keepout.py assets/recording.mp4",
+   "requires": [
+    "python:numpy,pillow",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.check-density",
+   "name": "Densitetsgrind",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Faller bygget om det är för långa 'inget händer'-luckor (>6 s) eller två likadana beats i rad.",
+   "tags": [
+    "qa",
+    "pacing",
+    "density",
+    "gate",
+    "retention"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/check-density.py",
+   "use": "library/.venv/Scripts/python.exe scripts/check-density.py work/persa-short/videos/<slug>",
+   "requires": [
+    "python"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.fetch-source",
+   "name": "Hämta källmedia (YouTube/Reddit/X)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Hämtar ett klipp (yt-dlp) normaliserat till 30 fps med kontaktark, eller fotar ett inlägg som 9:16.",
+   "tags": [
+    "sourcing",
+    "b-roll",
+    "yt-dlp",
+    "reddit",
+    "download"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/fetch-source.py",
+   "use": "library/.venv/Scripts/python.exe scripts/fetch-source.py video \"<url>\" out.mp4 --probe",
+   "requires": [
+    "yt-dlp",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förfalskad webbläsar-user-agent borttagen vid importen. Kontrollera rättigheter (SOURCING.md §3)."
+  },
+  {
+   "id": "persa-short.tool.source-scout",
+   "name": "Källscout — fyra alternativ per beat",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Bygger SOURCING.html med fyra källförslag per beat (YouTube, Reddit, X, webb) att godkänna innan bygget.",
+   "tags": [
+    "sourcing",
+    "approval",
+    "research",
+    "b-roll"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/source-scout.py",
+   "use": "library/.venv/Scripts/python.exe scripts/source-scout.py work/persa-short/videos/<slug>/scout.json",
+   "requires": [
+    "yt-dlp",
+    "python:playwright"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.mix-sfx",
+   "name": "Mixa SFX på cue",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Lägger svaga ljudeffekter på exakta tider från en cue-fil; video strömkopieras.",
+   "tags": [
+    "sfx",
+    "mix",
+    "cues",
+    "audio"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/mix-sfx.sh",
+   "use": "bash scripts/mix-sfx.sh in.mp4 out.mp4 cues.txt",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kräver egna ljud i sfx/ (eller syntetiserade via motion-studio sfx_lib)."
+  },
+  {
+   "id": "persa-short.tool.lay-bed",
+   "name": "Lägg musikbädd (loop med equal-power-skarvar)",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Loopar bakgrundsmusiken under hela videon med klickfria acrossfade-skarvar, nivå efter LUFS.",
+   "tags": [
+    "music",
+    "bed",
+    "loop",
+    "crossfade",
+    "lufs"
+   ],
+   "path": ".claude/skills/persa-short-editing/scripts/lay-bed.sh",
+   "use": "bash scripts/lay-bed.sh in.mp4 out.mp4 [bed.m4a]",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ingen bädd ingår (originalet var kommersiell musik). python3 ersatt med awk för Windows."
+  },
+  {
+   "id": "persa-short.tool.build-audio",
+   "name": "Ljudbygge: röst + bädd + SFX",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Mixar orörd röst, LUFS-nivåad bädd och SFX-cues; skriver även SFX-only för mätning.",
+   "tags": [
+    "audio",
+    "mix",
+    "sfx",
+    "bed"
+   ],
+   "path": ".claude/skills/persa-short-editing/template/build-audio.py",
+   "use": "library/.venv/Scripts/python.exe build-audio.py",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.verify-sfx",
+   "name": "SFX-nivågrind",
+   "type": "tool",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Mäter varje cue på tystnad mot lokala röst-toppen (≥ 8 dB under).",
+   "tags": [
+    "qa",
+    "audio",
+    "levels",
+    "sfx",
+    "gate"
+   ],
+   "path": ".claude/skills/persa-short-editing/template/verify-sfx.py",
+   "use": "library/.venv/Scripts/python.exe verify-sfx.py",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.check-delivery",
+   "name": "Leveransgrind 1080p",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Kontrollerar 1080×1920@30, verklig skärpa mot källan och bitrate innan granskning.",
+   "tags": [
+    "qa",
+    "delivery",
+    "1080p",
+    "sharpness",
+    "gate"
+   ],
+   "path": ".claude/skills/persa-short-editing/template/check-delivery.py",
+   "use": "library/.venv/Scripts/python.exe check-delivery.py",
+   "requires": [
+    "ffmpeg",
+    "python:numpy,pillow"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.rec-pages",
+   "name": "Spela in live-sida på videoklockan",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Driver en riktig webbsida bildruta för bildruta med pausad klocka så resultatet landar på talarens ord.",
+   "tags": [
+    "screen-recording",
+    "playwright",
+    "ui",
+    "demo",
+    "frame-accurate"
+   ],
+   "path": ".claude/skills/persa-short-editing/template/rec-pages.py",
+   "use": "Kopiera och anpassa URL:er/steg, kör med library/.venv/Scripts/python.exe",
+   "requires": [
+    "python:playwright",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.tool.cut-film",
+   "name": "Klipp ur leverantörsfilm",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Skär spann ur en leverantörsfilm, beskär skarpt till 1080 bred över filmens egen bakgrund, 30 fps CFR.",
+   "tags": [
+    "b-roll",
+    "crop",
+    "ffmpeg",
+    "vendor-film"
+   ],
+   "path": ".claude/skills/persa-short-editing/template/cut-film.sh",
+   "use": "bash cut-film.sh ID SS TO CX CY CW CH TOP",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.template.persa-95s-build",
+   "name": "Persa-mall: levererad 95,8 s-short",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Sista levererade persa-bygget (22 beats, ingen grade): BEATS-tabell, faktafixar, typografi-fitters, kortets hål, ordtexter, CTA, mid/fg-lager.",
+   "tags": [
+    "template",
+    "short",
+    "talking-head",
+    "product-demo",
+    "pipeline",
+    "complete",
+    "premium"
+   ],
+   "path": ".claude/skills/persa-short-editing/template/build.py",
+   "use": "Kopiera template/ till work/persa-short/videos/<slug>/ och följ template/README.md",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg",
+    "python"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Media borttagen i kitet; kräver egen inspelning, transkript, alpha och källklipp."
+  },
+  {
+   "id": "persa-short.scene.full-face",
+   "name": "Scen: helbild ansikte",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Råa tagningen i helbild med ordtext + ett display-ord — ansiktet bär ~40 % av videon.",
+   "tags": [
+    "scene",
+    "face",
+    "talking-head",
+    "full-bleed",
+    "intim"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/PERSA.md",
+   "use": "Beat-typ 'face' i template/build.py",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.scene.ui-owns-frame",
+   "name": "Scen: UI äger bilden + kamerakort med pop-out",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Produktens UI fyller hela rutan, kameran krymper till rundat kort (114/1143/861×777, r39) med huvudet matt-frilagt över kanten.",
+   "tags": [
+    "scene",
+    "product-demo",
+    "camera-card",
+    "pop-out",
+    "ui",
+    "demo-spine",
+    "signature"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/PERSA.md",
+   "use": "Beat-typ 'ui' i template/build.py; demo i components/type-roles-demo",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "rvm"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.scene.floating-window",
+   "name": "Scen: flytande riktigt fönster",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Riktigt appfönster ~65 % bredd i övre tredjedelen över livetagningen, med skugga.",
+   "tags": [
+    "scene",
+    "window",
+    "ui",
+    "overlay",
+    "shadow"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/PERSA.md",
+   "use": "Se PERSA.md §3",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.scene.broll-composited-object",
+   "name": "Scen: b-roll + ett inkomponerat objekt",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Riktig b-roll med det enda objektet det talas om inkomponerat i fel skala.",
+   "tags": [
+    "scene",
+    "b-roll",
+    "composite",
+    "surreal",
+    "object"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/PERSA.md",
+   "use": "Beat-typ 'broll'; se PERSA.md §3 och §7",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.scene.handheld-device",
+   "name": "Scen: telefon i handen",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "En riktig telefon i handen som kör den riktiga appen.",
+   "tags": [
+    "scene",
+    "phone",
+    "handheld",
+    "app",
+    "authentic"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/PERSA.md",
+   "use": "Se PERSA.md §3",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.scene.cta-comment-keyword",
+   "name": "Scen: CTA — COMMENT + nyckelord + pil",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Husets CTA: produktkort, COMMENT, nyckelord i korallgradient-serif och en pil som ritar sig nedåt; kreatören i nedre halvan.",
+   "tags": [
+    "cta",
+    "comment",
+    "keyword",
+    "arrow",
+    "outro",
+    "conversion"
+   ],
+   "path": ".claude/skills/persa-short-editing/components/cta-old.html",
+   "use": "Kopiera cta-old.html exakt (skriv aldrig om pilen)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.prompt.style-preset",
+   "name": "Persa-stilpreset (maskinläsbar)",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "styles/persa.json: geometri, palett, regler, signaturgrepp och ljud för persa-stilen.",
+   "tags": [
+    "preset",
+    "style",
+    "json",
+    "rules",
+    "palette"
+   ],
+   "path": ".claude/skills/persa-short-editing/styles/persa.json",
+   "use": "Läs in som stilreferens i ett bygge",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.prompt.blacklist",
+   "name": "BLACKLIST + test före render",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Det som aldrig ska in i en short (liten text, emojis, bandade captions …) och checklistan före render — tips, inte spärrar.",
+   "tags": [
+    "checklist",
+    "qa",
+    "rules",
+    "pre-render",
+    "review"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/BLACKLIST.md",
+   "use": "Gå igenom innan render; persa upphäver #2b, #7, #11, #12",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.prompt.concepts-map",
+   "name": "Vad visas för vad som sägs",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "concepts.json: vilket bildinnehåll som hör till vad kreatören säger (produktnamn → riktig ikon, påstående → lime-text …).",
+   "tags": [
+    "asset-rule",
+    "mapping",
+    "b-roll",
+    "planning"
+   ],
+   "path": ".claude/skills/persa-short-editing/library/concepts.json",
+   "use": "Slå upp per beat vid beat-kartan",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.prompt.sourcing",
+   "name": "Källregler för webbmedia",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Var rörlig media hämtas, i vilken ordning (leverantörsfilm > liveinspelning > animation) och rättigheter.",
+   "tags": [
+    "sourcing",
+    "rights",
+    "b-roll",
+    "research"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/SOURCING.md",
+   "use": "Läs före varje hämtning",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.prompt.sound-design",
+   "name": "Ljuddesign — tunn persa-pass",
+   "type": "prompt",
+   "medium": "audio",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "En cue per 2–3 s, swell på layoutbyten, riser på hook-payoff; ping/swoosh/confirm/beep bannade; bädd nivåad efter LUFS.",
+   "tags": [
+    "sound-design",
+    "sfx",
+    "rules",
+    "lufs",
+    "subtle"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/sound-design.md",
+   "use": "Läs PERSA-avsnittet före ljudpasset",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.prompt.motion-grammar",
+   "name": "Rörelsegrammatik",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Entréer, betoningar, exits och övergångar — variera, para varje entré med en exit.",
+   "tags": [
+    "motion",
+    "animation",
+    "easing",
+    "vocabulary"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/motion-grammar.md",
+   "use": "Referens vid animering",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.prompt.lessons",
+   "name": "Persa-lärdomar (tysta buggar)",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Buggar som passerade alla grindar och bara syntes i en samplad bildruta — framing, timing, rendering, ljud, leverans.",
+   "tags": [
+    "lessons",
+    "debugging",
+    "qa",
+    "pitfalls"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/PERSA-LESSONS.md",
+   "use": "Läs före bygget",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "persa-short.prompt.how-we-edit",
+   "name": "HyperFrames-klippkontraktet + densitet",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "clip-kontraktet (class=clip, data-start/duration/track), densitetsregler och arbetssätt.",
+   "tags": [
+    "hyperframes",
+    "contract",
+    "density",
+    "workflow"
+   ],
+   "path": ".claude/skills/persa-short-editing/reference/HOW-WE-EDIT.md",
+   "use": "Läs §1 och §6",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  }
+ ]
+}

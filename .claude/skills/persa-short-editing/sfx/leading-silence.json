@@ -1,0 +1,70 @@
+{
+ "beep": {
+  "lead": 0.0,
+  "peak": -3.3
+ },
+ "camera-shutter": {
+  "lead": 0.0,
+  "peak": 0.0
+ },
+ "click": {
+  "lead": 0.124,
+  "peak": -11.4
+ },
+ "confirm": {
+  "lead": 0.031,
+  "peak": -2.1
+ },
+ "futuristic-click": {
+  "lead": 0.0,
+  "peak": -0.1
+ },
+ "glitch": {
+  "lead": 0.024,
+  "peak": -4.1
+ },
+ "highlighter": {
+  "lead": 0.331,
+  "peak": -2.0
+ },
+ "keyboard": {
+  "lead": 0.112,
+  "peak": -4.5
+ },
+ "magic-reveal": {
+  "lead": 0.892,
+  "peak": -12.2
+ },
+ "ping": {
+  "lead": 0.304,
+  "peak": -7.7
+ },
+ "pop": {
+  "lead": 0.0,
+  "peak": -4.7
+ },
+ "riser": {
+  "lead": 0.0,
+  "peak": 0.0
+ },
+ "swell": {
+  "lead": 0.0,
+  "peak": -2.0
+ },
+ "swoosh": {
+  "lead": 0.246,
+  "peak": -1.2
+ },
+ "vinyl-rewind": {
+  "lead": 0.054,
+  "peak": 2.1
+ },
+ "whoosh": {
+  "lead": 0.516,
+  "peak": -9.4
+ },
+ "whoosh-2": {
+  "lead": 0.12,
+  "peak": -1.6
+ }
+}

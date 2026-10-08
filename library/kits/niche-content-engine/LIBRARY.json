@@ -1,0 +1,567 @@
+{
+ "kit": "niche-content-engine",
+ "title": "Niche Content Engine (manus & strategi för short-form)",
+ "source": {
+  "name": "niche-content-engine skill",
+  "url": "",
+  "license": "Ingen licens angiven – endast egen användning"
+ },
+ "items": [
+  {
+   "id": "niche-content-engine.skill.niche-content-engine",
+   "name": "Niche Content Engine (skill)",
+   "type": "skill",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Researchar vad som går viralt just nu i valfri nisch och skriver 5 färdiga, ord-för-ord-manus för Reels/TikTok/Shorts med kommentars-CTA.",
+   "tags": [
+    "scripts",
+    "strategy",
+    "viral",
+    "research",
+    "short-form",
+    "content-plan",
+    "lokalt-företag",
+    "hooks"
+   ],
+   "path": ".claude/skills/niche-content-engine/SKILL.md",
+   "use": "Skill /niche-content-engine — 'innehållsidéer för <nisch, stad>' (ange gärna 'skriv på svenska')",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-red-flags",
+   "name": "Manusformat: Red flags",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"If your {trade} says this, walk away.\" Kropp: 3 red flags, one line each, what to say instead. 100–140 ord — bäst för trust, \"don't get scammed\".",
+   "tags": [
+    "trust",
+    "warning",
+    "lead",
+    "skeptisk",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/red-flags.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Red flags\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-what-id-never-do",
+   "name": "Manusformat: What I'd never do",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"I've been a {trade} for X years. Here's what I'd never do in my own home.\" Kropp: 3 things + why, one pro detail each. 110–150 ord — bäst för authority.",
+   "tags": [
+    "authority",
+    "insider",
+    "expert",
+    "trovärdig",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/what-id-never-do.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"What I'd never do\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-price-reveal",
+   "name": "Manusformat: Price reveal",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"Here's what a {service} actually costs in {city} right now.\" Kropp: what drives the price, range (only the user's real numbers), what's a rip-off. 100–140 ord — bäst för leads — highest intent.",
+   "tags": [
+    "price",
+    "cost",
+    "lead",
+    "transparent",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/price-reveal.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Price reveal\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-is-this-normal",
+   "name": "Manusformat: Is this normal?",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"Is this normal? [shows photo/damage]\" Kropp: what it is, how bad, what to do. 80–120 ord — bäst för reaction, comments.",
+   "tags": [
+    "reaction",
+    "comments",
+    "visual",
+    "nyfiken",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/is-this-normal.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Is this normal?\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-myth-vs-truth",
+   "name": "Manusformat: Myth vs truth",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"Everyone thinks X. That's wrong.\" Kropp: the myth, the truth, the proof on camera. 90–130 ord — bäst för shares.",
+   "tags": [
+    "myth",
+    "debunk",
+    "shares",
+    "provocerande",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/myth-vs-truth.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Myth vs truth\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-signs-you-need-it",
+   "name": "Manusformat: Signs you need it",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"3 signs you need a new roof before the next storm.\" Kropp: 3 visible signs viewers can check today. 90–130 ord — bäst för leads.",
+   "tags": [
+    "signs",
+    "checklist",
+    "lead",
+    "helpful",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/signs-you-need-it.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Signs you need it\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-job-site-story",
+   "name": "Manusformat: Job-site story",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: Starts mid-action: \"We pulled this shingle off and found…\" Kropp: the problem → what it would've cost → the fix. 100–150 ord — bäst för trust, watch time.",
+   "tags": [
+    "story",
+    "behind-the-scenes",
+    "trust",
+    "spännande",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/job-site-story.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Job-site story\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-before-after",
+   "name": "Manusformat: Before / after",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"This roof was 2 weeks from caving in.\" Kropp: the problem, the process in 3 beats, the result. 60–110 ord — bäst för visual proof.",
+   "tags": [
+    "before-after",
+    "transformation",
+    "visual",
+    "tillfredsställande",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/before-after.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Before / after\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-diy-vs-pro",
+   "name": "Manusformat: DIY vs call a pro",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"You can fix this yourself. This one, you can't.\" Kropp: one DIY fix, one \"call someone\" line. 100–140 ord — bäst för helpfulness, saves.",
+   "tags": [
+    "diy",
+    "helpful",
+    "saves",
+    "pedagogisk",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/diy-vs-pro.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"DIY vs call a pro\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-timely-news",
+   "name": "Manusformat: Timely / news",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"{City} just got hit with hail. Here's what to check today.\" Kropp: 3 checks, what insurance usually needs (general), CTA. 90–130 ord — bäst för urgency.",
+   "tags": [
+    "news",
+    "timely",
+    "urgency",
+    "local",
+    "brådskande",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/timely-news.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Timely / news\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-verdict-list",
+   "name": "Manusformat: Verdict list",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"Metal roof: worth it. Tile: depends. 3-tab shingles: …\" Kropp: one-clause verdict each, best last. 50–120 ord — bäst för comments, debate.",
+   "tags": [
+    "verdict",
+    "ranking",
+    "debate",
+    "tierlist",
+    "snabb",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/verdict-list.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Verdict list\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-answer-a-comment",
+   "name": "Manusformat: Answer a comment / question",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"Someone asked me: …\" Kropp: direct answer + one surprise fact. 80–120 ord — bäst för series, community.",
+   "tags": [
+    "q-and-a",
+    "community",
+    "series",
+    "personlig",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/answer-a-comment.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Answer a comment / question\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.format-day-in-the-life",
+   "name": "Manusformat: Day in the life / POV",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook: \"POV: you're a {trade} in 110° heat.\" Kropp: fast montage, one real lesson at the end. 40–90 ord — bäst för relatability, reach.",
+   "tags": [
+    "pov",
+    "day-in-the-life",
+    "relatable",
+    "montage",
+    "rolig",
+    "script",
+    "short-form",
+    "format"
+   ],
+   "path": "library/kits/niche-content-engine/formats/day-in-the-life.md",
+   "use": "Klistra in prompten i filen, eller be /niche-content-engine om formatet \"Day in the life / POV\"",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.intake",
+   "name": "Intag — frågorna i ett meddelande",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Sju frågor (nisch+ort, kund, kreatörer/eget innehåll/ämnen, giveaway, fakta, filmstil, tabun) + standardval när något saknas.",
+   "tags": [
+    "intake",
+    "questions",
+    "onboarding",
+    "brief"
+   ],
+   "path": ".claude/skills/niche-content-engine/references/intake.md",
+   "use": "Steg 1 i skillen",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.research",
+   "name": "Research — fyra svep efter viralt",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Söksträngar för nischens outliers, publikens frågor (Reddit, PAA), veckans krok och namngivna kreatörers mönster.",
+   "tags": [
+    "research",
+    "viral",
+    "search",
+    "reddit",
+    "trends",
+    "outliers"
+   ],
+   "path": ".claude/skills/niche-content-engine/references/research.md",
+   "use": "Steg 2 i skillen",
+   "requires": [
+    "web-search"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.script-rules",
+   "name": "Manusregler + slutkontroll",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Hook/re-hook/kropp/tips/CTA, röst, sanningsregler och checklista före överlämning.",
+   "tags": [
+    "script",
+    "rules",
+    "hook",
+    "cta",
+    "checklist",
+    "copywriting"
+   ],
+   "path": ".claude/skills/niche-content-engine/references/script-rules.md",
+   "use": "Steg 3 i skillen",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.output-template",
+   "name": "Leveransmall för innehållsplan",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Fynd med länkar, idétabell, manus, filmanteckningar och postningsordning.",
+   "tags": [
+    "template",
+    "content-plan",
+    "deliverable",
+    "markdown"
+   ],
+   "path": ".claude/skills/niche-content-engine/references/output-template.md",
+   "use": "Steg 4 i skillen",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "niche-content-engine.prompt.mixing-and-deliverables",
+   "name": "Blandningsregel + kommentars-giveaways",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Hur 5 format blandas per batch och vilka giveaways (checklista, prisguide …) som bär ett 'Kommentera ORD'-CTA.",
+   "tags": [
+    "mix",
+    "cta",
+    "lead-magnet",
+    "keyword",
+    "giveaway"
+   ],
+   "path": ".claude/skills/niche-content-engine/references/formats.md",
+   "use": "Läs vid val av batch",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  }
+ ]
+}
