@@ -1,0 +1,411 @@
+{
+  "kit": "claude-animation-skill",
+  "title": "claude-animation (buildwithhanif)",
+  "source": {
+    "name": "buildwithhanif/claude-animation-skill",
+    "url": "https://github.com/buildwithhanif/claude-animation-skill",
+    "license": "MIT"
+  },
+  "items": [
+    {
+      "id": "ext.claude-animation-skill.skill",
+      "name": "claude-animation: handritad 2D-animation som kod",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "16:9",
+        "9:16",
+        "1:1"
+      ],
+      "engine": "canvas",
+      "description": "Skill för handritade 2D-filmer i JavaScript (node canvas + ffmpeg): pensel, blyerts, akvarell, papper, kläckning, riggar, syntetiserat ljud; frame(ctx, t) som ren funktion.",
+      "tags": [
+        "handritat",
+        "akvarell",
+        "storybook",
+        "canvas",
+        "node",
+        "animation",
+        "skill"
+      ],
+      "path": "library/external/claude-animation-skill/skill/SKILL.md",
+      "use": "cd library/external/claude-animation-skill/skill && npm install; följ SKILL.md (templates/film-template.mjs).",
+      "requires": [
+        "node",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT. Riggen critter.mjs (Clawd-lik maskot) är medvetet inte kopierad; examples/ inte kopierade."
+    },
+    {
+      "id": "ext.claude-animation-skill.detail-bible",
+      "name": "Detaljbibeln: bas → textur → kant",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Referens för att be om detalj yta för yta: material, texturer, linjevikt som faller med djup, karaktärsdetaljer.",
+      "tags": [
+        "detalj",
+        "textur",
+        "material",
+        "illustration",
+        "guide"
+      ],
+      "path": "library/external/claude-animation-skill/skill/references/detail.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.motion-ref",
+      "name": "Timing, skådespel, klipp, kamera, övergångar",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Rörelsereferens för kodanimation: timing, antecipation, squash/stretch, klipp och kamera.",
+      "tags": [
+        "timing",
+        "rörelse",
+        "kamera",
+        "övergångar",
+        "guide"
+      ],
+      "path": "library/external/claude-animation-skill/skill/references/motion.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.styles",
+      "name": "Stilar: editorial-textur, pensel-akvarell, line-doodle, low-poly",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Hur man väljer/matchar en look och vilka bibliotek som bär den.",
+      "tags": [
+        "stil",
+        "akvarell",
+        "low-poly",
+        "doodle"
+      ],
+      "path": "library/external/claude-animation-skill/skill/references/styles.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.traps",
+      "name": "Fällor och fixar (kodanimation)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Saker som gick fel på riktiga filmer och hur de löstes.",
+      "tags": [
+        "traps",
+        "felsökning",
+        "qa"
+      ],
+      "path": "library/external/claude-animation-skill/skill/references/traps.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.beat-sheet",
+      "name": "Beat sheet-mall för animation",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Mall för att planera en animerad kortfilm beat för beat innan kod.",
+      "tags": [
+        "beat-sheet",
+        "storyboard",
+        "mall"
+      ],
+      "path": "library/external/claude-animation-skill/skill/templates/beat-sheet.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.film-template",
+      "name": "Filmmall (film-template.mjs)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "16:9",
+        "9:16",
+        "1:1"
+      ],
+      "engine": "canvas",
+      "description": "Körbar startfil: frame(ctx, t), sheet/strip/verify/render via lib/film.mjs.",
+      "tags": [
+        "mall",
+        "starter",
+        "canvas",
+        "node"
+      ],
+      "path": "library/external/claude-animation-skill/skill/templates/film-template.mjs",
+      "use": "",
+      "requires": [
+        "node",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT. Kräver npm install (@napi-rs/canvas)."
+    },
+    {
+      "id": "ext.claude-animation-skill.pen",
+      "name": "Pen: penseldrag, blyerts, akvarell som blommar, text som skriver sig själv",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Tapered brush stroke, trepass-blyerts, överskjutande lådhörn, blommande akvarell-wash, självskrivande text, stabila namngivna seeds, valfri boil.",
+      "tags": [
+        "pensel",
+        "akvarell",
+        "blyerts",
+        "handritat",
+        "text-write-on"
+      ],
+      "path": "library/external/claude-animation-skill/skill/lib/pen.mjs",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.textures",
+      "name": "Texturer: papper, ljusband, sol/måne, gräs, jord, natthimmel, filmfinish",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Procedurella bakgrunder och ytor för storybook-look.",
+      "tags": [
+        "papper",
+        "textur",
+        "bakgrund",
+        "grain"
+      ],
+      "path": "library/external/claude-animation-skill/skill/lib/textures.mjs",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.lowpoly",
+      "name": "Low-poly affischstil (fasetterade landskap, sömlösa loopar)",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Platta vektorlandskap i fasetterad low-poly-stil för ambienta loopar.",
+      "tags": [
+        "low-poly",
+        "landskap",
+        "loop",
+        "affisch"
+      ],
+      "path": "library/external/claude-animation-skill/skill/lib/lowpoly.mjs",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.fx",
+      "name": "Action-fx: hit-stop, skak, gnistor, serietidningsord, skadesiffror",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Spelkänsla för kodanimation: hit-stop, kameraskak, gnistor, comic words, combo-räknare, boss-mätare.",
+      "tags": [
+        "hit-stop",
+        "shake",
+        "gnistor",
+        "comic",
+        "action"
+      ],
+      "path": "library/external/claude-animation-skill/skill/lib/fx.mjs",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.sound",
+      "name": "sound.mjs: SFX syntetiserade från bildens tidslinje",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "19 syntetiserade effekter (pop, whoosh, whip, tick, thump, crack, sparkle, riser, chime …), cue 0,03 s före bilden, tvåpass-loudnorm och limiter, muxas på bilden.",
+      "tags": [
+        "sfx",
+        "syntes",
+        "ljud",
+        "loudnorm",
+        "cues"
+      ],
+      "path": "library/external/claude-animation-skill/skill/scripts/sound.mjs",
+      "use": "node sound.mjs cues.json picture.mp4 out.mp4 [--bed bed.wav]",
+      "requires": [
+        "node",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT. Inga samplingar – inget att licensiera."
+    },
+    {
+      "id": "ext.claude-animation-skill.music",
+      "name": "music.mjs: lekfull syntetiserad musikbädd",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Karplus-Strong-ukulele på C-G-Am-F, pentatoniskt klockmotiv, shaker och mjuk kick; tysta fönster och slutackord.",
+      "tags": [
+        "musik",
+        "bädd",
+        "syntes",
+        "ukulele"
+      ],
+      "path": "library/external/claude-animation-skill/skill/scripts/music.mjs",
+      "use": "node music.mjs bed.wav --dur 15 --bpm 108 --end 14.4",
+      "requires": [
+        "node"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.ambient",
+      "name": "ambient.mjs: ambient syntetiserad bädd",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Lugn, ambient bädd för loopar.",
+      "tags": [
+        "musik",
+        "ambient",
+        "loop",
+        "syntes"
+      ],
+      "path": "library/external/claude-animation-skill/skill/scripts/ambient.mjs",
+      "use": "",
+      "requires": [
+        "node"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    },
+    {
+      "id": "ext.claude-animation-skill.chiptune",
+      "name": "chiptune.mjs: syntetiserat chiptune-soundtrack",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "8-bit-musik för spelkänsla.",
+      "tags": [
+        "musik",
+        "chiptune",
+        "8-bit",
+        "syntes"
+      ],
+      "path": "library/external/claude-animation-skill/skill/scripts/chiptune.mjs",
+      "use": "",
+      "requires": [
+        "node"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    }
+  ]
+}

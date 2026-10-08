@@ -1,0 +1,123 @@
+{
+  "kit": "pdoomvideo",
+  "title": "PDoomVideo – I'm Upping My P(doom) (JohnHeibel)",
+  "source": {
+    "name": "JohnHeibel/PDoomVideo",
+    "url": "https://github.com/JohnHeibel/PDoomVideo",
+    "license": "Ingen licens angiven – alla rättigheter förbehållna; endast länkar"
+  },
+  "items": [
+    {
+      "id": "ext.pdoomvideo.animation-guide",
+      "name": "PDoom: animationsguide för underagenter",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "canvas",
+      "description": "Guiden huvudagenten skrev för parallella kapitelagenter: ett kapitel per fil, varje tagning en ren funktion av t, delade filer skrivskyddade, säkra zoner, stilregler, prestandabudget och kontrollark.",
+      "tags": [
+        "subagents",
+        "animation-guide",
+        "p5-brush",
+        "akvarell",
+        "musikvideo",
+        "parallell"
+      ],
+      "path": "https://github.com/JohnHeibel/PDoomVideo/blob/main/ANIMATION_GUIDE.md",
+      "use": "Läs som förebild; vår egen mall: prompts.motion-studio.parallel-chapters.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens – läs, kopiera inte."
+    },
+    {
+      "id": "ext.pdoomvideo.storyboard",
+      "name": "PDoom: storyboard (idé, rollista, kapitel, palettbåge)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Storyboard för en 156 s musikvideo: idé med twist, rollista, vad som binder ihop (en scen som återkommer, motiverade övergångar, kamera i varje tagning, palettbåge) och nio kapitel med tider.",
+      "tags": [
+        "storyboard",
+        "musikvideo",
+        "kapitel",
+        "palett",
+        "berättelse"
+      ],
+      "path": "https://github.com/JohnHeibel/PDoomVideo/blob/main/STORYBOARD.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "ext.pdoomvideo.music-video",
+      "name": "PDoom: hela musikvideoprojektet (p5.js + p5.brush)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "canvas",
+      "description": "Källkoden till en målad akvarellmusikvideo gjord helt av Claude Opus 5.5: kapitel i src/ch, delad motor, karaoke, penselsvep mellan kapitel.",
+      "tags": [
+        "musikvideo",
+        "akvarell",
+        "p5-brush",
+        "karaoke",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/JohnHeibel/PDoomVideo",
+      "use": "",
+      "requires": [
+        "node",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens; innehåller Anthropics maskot Clawd och en låt utan klar licens – endast studieobjekt."
+    },
+    {
+      "id": "ext.pdoomvideo.render",
+      "name": "PDoom: render.mjs (parallella, återupptagbara bildrutor + kontaktark)",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Headless Chrome-renderare som målar bildrutor parallellt och återupptagbart, gör kontaktark och kodar MP4 med ljud.",
+      "tags": [
+        "render",
+        "headless-chrome",
+        "parallell",
+        "kontaktark"
+      ],
+      "path": "https://github.com/JohnHeibel/PDoomVideo/blob/main/render.mjs",
+      "use": "",
+      "requires": [
+        "node",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens."
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "kit": "claudeanimationbase",
+  "title": "ClaudeAnimationBase (JohnHeibel)",
+  "source": {
+    "name": "JohnHeibel/ClaudeAnimationBase",
+    "url": "https://github.com/JohnHeibel/ClaudeAnimationBase",
+    "license": "MIT"
+  },
+  "items": [
+    {
+      "id": "ext.claudeanimationbase.animation-guide",
+      "name": "Animationsguide: handgjort, levande, en helhet",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "canvas",
+      "description": "Reglerna och arbetsflödet modellen följer: penseldrag/platt 2D/'boil', ingen text, något händer i varje scen, timing för tittaren, alltid övergångar, en vision före kod; storyboard → bygg → kontaktark/strip/crop → rendera.",
+      "tags": [
+        "animation-guide",
+        "regler",
+        "storyboard",
+        "review-loop",
+        "p5-brush",
+        "karaktärsanimation"
+      ],
+      "path": "library/external/ClaudeAnimationBase/ANIMATION_GUIDE.md",
+      "use": "Läs reglerna och granskningsloopen; byt Clawd mot egen figur.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT (kopierad med LICENSE). Guidens API-delar beskriver Clawd (Anthropics maskot) – använd inte figuren i Golfkuponger-innehåll."
+    },
+    {
+      "id": "ext.claudeanimationbase.starter",
+      "name": "Startkit: tecknad akvarellanimation (p5.js + p5.brush)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "canvas",
+      "description": "Startkit för handmålade tecknade filmer: kärna med målning/tid/kamera/ljus/papper, tidslinje med penselsvep, scenfiler, renderare.",
+      "tags": [
+        "starter",
+        "akvarell",
+        "p5-brush",
+        "tecknat",
+        "karaktär"
+      ],
+      "path": "https://github.com/JohnHeibel/ClaudeAnimationBase",
+      "use": "Klona, öppna i Claude Code: 'Read ANIMATION_GUIDE.md, then make a 15-second video of …'. Byt ut Clawd.",
+      "requires": [
+        "node",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT. Långsam utan dedikerat GPU (akvarellfyllningar) – be modellen undvika dem på integrerad grafik."
+    },
+    {
+      "id": "ext.claudeanimationbase.render-harness",
+      "name": "render.mjs: sheet / strip / crop / crop-at / stills / clip",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Granskningsharness: kontaktark av valda tider, VARJE ruta i ett intervall, fullupplösta beskärningar (även följande en världspunkt genom kameran), stillbilder och MP4.",
+      "tags": [
+        "render",
+        "kontaktark",
+        "strip",
+        "crop",
+        "review",
+        "puppeteer"
+      ],
+      "path": "https://github.com/JohnHeibel/ClaudeAnimationBase/blob/main/render.mjs",
+      "use": "",
+      "requires": [
+        "node",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT."
+    }
+  ]
+}

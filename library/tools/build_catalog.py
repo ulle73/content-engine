@@ -173,6 +173,8 @@ def write_gallery(items: list[dict]) -> None:
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     items, problems = load_manifests()
     for problem in problems:
         print(f"  ✗ {problem}")

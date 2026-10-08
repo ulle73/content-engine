@@ -58,6 +58,8 @@ def score(item: dict, words: list[str]) -> float:
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("query", nargs="?", default="")
     parser.add_argument("--type")

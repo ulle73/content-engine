@@ -1,0 +1,516 @@
+{
+  "kit": "awesome-claude-video-skills",
+  "title": "Awesome Claude Video Skills – urval (zhuyansen)",
+  "source": {
+    "name": "zhuyansen/awesome-claude-video-skills",
+    "url": "https://github.com/zhuyansen/awesome-claude-video-skills",
+    "license": "CC0 (listan); varje repo har egen licens – se notes"
+  },
+  "items": [
+    {
+      "id": "ext.awesome-claude-video-skills.list",
+      "name": "Awesome Claude Video Skills (252 repon, säkerhetsgraderade)",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Lista över öppna skills/verktyg som låter kodagenter göra video, sorterad per typ, varje repo säkerhetsgraderat (SAFE/CAUTION) av Agent Skills Hub.",
+      "tags": [
+        "awesome-list",
+        "skills",
+        "säkerhet",
+        "katalog"
+      ],
+      "path": "https://github.com/zhuyansen/awesome-claude-video-skills",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC0 för listan · 463 ★. Live-sida: agentskillshub.top/best/claude-video-skills/. CAUTION-graderade: howseen-ai/claude-motion-design, wshuyi/remotion-video-skill, argus-metis/hermes-video-editing m.fl."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.openmontage",
+      "name": "calesthio/OpenMontage",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Agentiskt videoproduktionssystem: 12 pipelines, 100+ verktyg, 700+ skill-/kunskapsfiler.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "frameworks-toolkits",
+        "video"
+      ],
+      "path": "https://github.com/calesthio/OpenMontage",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: AGPL-3.0 · 64979 ★ · senast pushad 2026-10-03 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.hypit",
+      "name": "hypit-ai/hypit",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Klona en viral video med agenter: byt ansikte, ord och B-roll, många varianter per kommando.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "frameworks-toolkits",
+        "video"
+      ],
+      "path": "https://github.com/hypit-ai/hypit",
+      "use": "",
+      "requires": [],
+      "cost": "paid",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: Modifierad Apache-2.0 med kommersiella villkor · 19988 ★ · senast pushad 2026-10-04 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.claude-code-video-toolkit",
+      "name": "digitalsamba/claude-code-video-toolkit",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "AI-nativ verktygslåda för videoproduktion i Claude Code.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "frameworks-toolkits",
+        "remotion"
+      ],
+      "path": "https://github.com/digitalsamba/claude-code-video-toolkit",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 2174 ★ · senast pushad 2026-10-05 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.motion-skills",
+      "name": "iart-ai/motion-skills",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "50 skills för motion graphics: kinetisk typografi, data-viz, explainers, TikTok/Reels.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "frameworks-toolkits",
+        "video"
+      ],
+      "path": "https://github.com/iart-ai/motion-skills",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 734 ★ · senast pushad 2026-09-30 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.bang-motion",
+      "name": "bangtutorial/bang-motion",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "hyperframes",
+      "description": "Webbläsarbaserad motion graphics: openers, promos, bumpers, kinetisk typografi, fem explainerstilar.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "frameworks-toolkits",
+        "hyperframes"
+      ],
+      "path": "https://github.com/bangtutorial/bang-motion",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 576 ★ · senast pushad 2026-09-15 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.showtime",
+      "name": "FavioVazquez/showtime",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Lokal videostudio för kodagenten: en mening in, agenten regisserar, datorn renderar.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "frameworks-toolkits",
+        "video"
+      ],
+      "path": "https://github.com/FavioVazquez/showtime",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 173 ★ · senast pushad 2026-10-06 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.onetake",
+      "name": "feitangyuan/onetake",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "hyperframes",
+      "description": "Motionfilmer som aldrig klipper: varje beat växer ur det förra, en kontinuerlig kamera.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "promo-demos",
+        "hyperframes"
+      ],
+      "path": "https://github.com/feitangyuan/onetake",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: PolyForm Noncommercial – INTE för kommersiellt bruk · 1867 ★ · senast pushad 2026-09-29 · säkerhetsbetyg SAFE (Agent Skills Hub). Icke-kommersiell licens: får inte användas för Golfkupongers marknadsföring."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.motion-video-kit",
+      "name": "echris6/motion-video-kit",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "hyperframes",
+      "description": "Kit för premium företagsvideor: oberoende kritikerloop, motionprinciper från 28 lanseringsfilmer.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "promo-demos",
+        "hyperframes"
+      ],
+      "path": "https://github.com/echris6/motion-video-kit",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 1058 ★ · senast pushad 2026-09-28 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.saas-motion-kit",
+      "name": "tugrawork-creator/saas-motion-kit",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "hyperframes",
+      "description": "Promo- och motionvideor för mjukvara med HyperFrames; tonmatris så att inga två filmer känns lika.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "promo-demos",
+        "hyperframes"
+      ],
+      "path": "https://github.com/tugrawork-creator/saas-motion-kit",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 213 ★ · senast pushad 2026-10-04 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.motion-video-skill",
+      "name": "bestagentkits/motion-video-skill",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "hyperframes",
+      "description": "Taktsynkade 1080p-motionvideor i HyperFrames (HTML + GSAP) med AI-röst och karaoke.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "promo-demos",
+        "hyperframes"
+      ],
+      "path": "https://github.com/bestagentkits/motion-video-skill",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 113 ★ · senast pushad 2026-09-28 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.remotion-ad-video-skill",
+      "name": "leosssvip-dot/remotion-ad-video-skill",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Remotion-annonsprojekt från en URL utan videogenererings-AI.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "promo-demos",
+        "remotion"
+      ],
+      "path": "https://github.com/leosssvip-dot/remotion-ad-video-skill",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 110 ★ · senast pushad 2026-06-10 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.motion-graphics-skills",
+      "name": "charlie947/motion-graphics-skills",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "13 skills för lanseringsklassad motion graphics – varje ruta är kod.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "promo-demos",
+        "video"
+      ],
+      "path": "https://github.com/charlie947/motion-graphics-skills",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 81 ★ · senast pushad 2026-09-30 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.remotion-ads",
+      "name": "Maartenlouis/remotion-ads",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Instagram Reels- och karusellannonser med Remotion.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "shorts-social",
+        "remotion"
+      ],
+      "path": "https://github.com/Maartenlouis/remotion-ads",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 60 ★ · senast pushad 2026-05-06 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.lemo-opuscar",
+      "name": "lemomo-ai/lemo-opuscar",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Kortfilmer utan videomodell: 43 filmstilar, var och en med stilprompt och demo gjord i kod.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "stories-animation",
+        "canvas"
+      ],
+      "path": "https://github.com/lemomo-ai/lemo-opuscar",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT (kod) + CC BY 4.0 (guider/stilar) · 1340 ★ · senast pushad 2026-10-05 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.reelmimic",
+      "name": "edenfunf/reelmimic",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Visa en video du gillar, få en ny i samma stil: en AI-crew planerar, bygger och granskar.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "stories-animation",
+        "video"
+      ],
+      "path": "https://github.com/edenfunf/reelmimic",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 1692 ★ · senast pushad 2026-10-07 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.lottie",
+      "name": "diffusionstudio/lottie",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Produktionsklara Lottie-animationer med Claude Code/Codex.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "motion-graphics",
+        "video"
+      ],
+      "path": "https://github.com/diffusionstudio/lottie",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 5547 ★ · senast pushad 2026-07-25 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.pixel2motion",
+      "name": "nolangz/pixel2motion",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Logoanimation: rasterlogga → mjuk SVG-animation, HTML-demo, GIF/video.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "motion-graphics",
+        "video"
+      ],
+      "path": "https://github.com/nolangz/pixel2motion",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 2395 ★ · senast pushad 2026-08-21 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.explainroo",
+      "name": "vincentsch/explainroo",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Explainers och produktdemos: lokal röst (Kokoro), ordtiming (Whisper), gratis.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "explainers",
+        "video"
+      ],
+      "path": "https://github.com/vincentsch/explainroo",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 481 ★ · senast pushad 2026-10-04 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.remotion-motion-graphics-skill",
+      "name": "Liamrjohnston/remotion-motion-graphics-skill",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Produktionsklara Remotion motion graphics-skills.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "motion-graphics",
+        "remotion"
+      ],
+      "path": "https://github.com/Liamrjohnston/remotion-motion-graphics-skill",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 85 ★ · senast pushad 2026-07-24 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    },
+    {
+      "id": "ext.awesome-claude-video-skills.remotion-video-skills",
+      "name": "diko0071/remotion-video-skills",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Remotion-fabrik: deterministiska produktvideor som kod, motionkit och mätt replika-verktyg.",
+      "tags": [
+        "awesome-claude-video-skills",
+        "frameworks-toolkits",
+        "remotion"
+      ],
+      "path": "https://github.com/diko0071/remotion-video-skills",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Licens: MIT · 8 ★ · senast pushad 2026-10-06 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+    }
+  ]
+}

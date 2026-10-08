@@ -1,0 +1,2112 @@
+{
+  "kit": "awesome-ai-motion",
+  "title": "Awesome AI Motion (guanmo-ai)",
+  "source": {
+    "name": "guanmo-ai/awesome-ai-motion",
+    "url": "https://github.com/guanmo-ai/awesome-ai-motion",
+    "license": "MIT (egen kod/text); tredjepartsprompts, videor och omslag omfattas INTE – länkas, kopieras inte"
+  },
+  "items": [
+    {
+      "id": "ext.awesome-ai-motion.gallery",
+      "name": "Awesome AI Motion – galleri (581 verk)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Kurerat galleri med AI-gjorda motionverk, kategoriserade, med länk till originalpost, källkod och 83 publika författarprompts.",
+      "tags": [
+        "galleri",
+        "inspiration",
+        "prompts",
+        "motion",
+        "opus-5-5"
+      ],
+      "path": "https://guanmo-ai.github.io/awesome-ai-motion/?lang=en",
+      "use": "Bläddra för inspiration; filtrera på 'prompt=original' för fulla prompts.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Repo: MIT för egen kod/text; tredjepartsprompts och videor omfattas inte."
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103273003555402193",
+      "name": "One shape, a seamless UI morph loop",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "Buttons, loaders, players and charts morph continuously in time with music.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103273003555402193.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@twoclipping · Claude Opus 5.5 · 19303 bokmärken · fulltext i repot · original: https://x.com/twoclipping/status/2103273003555402193"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103315922098470926",
+      "name": "A 15-second motion design showreel",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A short brief gives the model freedom to choose scenes, materials and transitions.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103315922098470926.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@stephanlivera · Claude Opus 5.5 · 11692 bokmärken · fulltext i repot · original: https://x.com/stephanlivera/status/2103315922098470926"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102801274173587569",
+      "name": "Claude Pop: a mixed-workflow music video",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A music video combines references, character assets, external generation and coded animation.",
+      "tags": [
+        "awesome-ai-motion",
+        "musik",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102801274173587569.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@donaldjewkes · Claude Opus 5.5 · 8096 bokmärken · bara länk till originalet · original: https://x.com/donaldjewkes/status/2102801274173587569"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102787937482252537",
+      "name": "A one-line prompt for an inference startup launch",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A concise launch film that makes an abstract inference service easier to explain.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102787937482252537.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@deedydas · Claude Opus 5.5 · 4697 bokmärken · fulltext i repot · original: https://x.com/deedydas/status/2102787937482252537"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103449416325890146",
+      "name": "Fifteen-Second Motion Design Reel",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Fifteen-Second Motion Design Reel, shared by Ajith. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103449416325890146.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@ajith_io · Claude Opus 5.5 · 4403 bokmärken · fulltext i repot · original: https://x.com/ajith_io/status/2103449416325890146"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102476258948927543",
+      "name": "A pixel wizard casting spells",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A detailed specification covers pixel dimensions, palette, character motion and looping.",
+      "tags": [
+        "awesome-ai-motion",
+        "pixel-karaktär",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102476258948927543.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@majidmanzarpour · Claude Opus 5.5 · 2639 bokmärken · fulltext i repot · original: https://x.com/majidmanzarpour/status/2102476258948927543"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103918792845963545",
+      "name": "A character-led Pocketsflow product explainer",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Portfolio-style motion graphics and a speaking character introduce a product.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103918792845963545.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@achxvi · Claude Opus 5.5 · 2005 bokmärken · fulltext i repot · original: https://x.com/achxvi/status/2103918792845963545"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103683057689522564",
+      "name": "Transformers: from intuition to mathematics",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A technical explainer starts with intuition before covering attention and mathematical details.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103683057689522564.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@dotey · Claude Opus 5.5 · 1457 bokmärken · fulltext i repot · original: https://x.com/dotey/status/2103683057689522564"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102853258582880547",
+      "name": "An animated cocktail recipe",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "Ingredients, names and quantities appear as a cocktail is built step by step.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102853258582880547.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@Ror_Fly · Claude Opus 5.5 · 1442 bokmärken · fulltext i repot · original: https://x.com/Ror_Fly/status/2102853258582880547"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102554209166000267",
+      "name": "Beat-Synced Product Motion Ad",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Beat-Synced Product Motion Ad, shared by zero. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102554209166000267.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@twoclipping · Claude Opus 5.5 · 1422 bokmärken · fulltext i repot · original: https://x.com/twoclipping/status/2102554209166000267"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103381720410333314",
+      "name": "The rise of Anthropic",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A short Chinese instruction asks for a company story, music and sound effects.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103381720410333314.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@VincentWei93 · Claude Opus 5.5 · 1207 bokmärken · fulltext i repot · original: https://x.com/VincentWei93/status/2103381720410333314"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102606609574941028",
+      "name": "Atmospheric circulation explained",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Geography, bilingual captions and narration are combined in an educational animation.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102606609574941028.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@akokoi1 · Claude Opus 5.5 · 810 bokmärken · fulltext i repot · original: https://x.com/akokoi1/status/2102606609574941028"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102583898865873225",
+      "name": "Five thousand years of Chinese history",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A one-sentence Chinese prompt turns a historical topic into a line-art explainer.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102583898865873225.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@akokoi1 · Claude Opus 5.5 · 762 bokmärken · fulltext i repot · original: https://x.com/akokoi1/status/2102583898865873225"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103499977632997524",
+      "name": "Explain a business in five scenes",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Problem, solution, steps, evidence and branding form a 30-second business explainer.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103499977632997524.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@alex_prompter · Claude Opus 5.5 · 659 bokmärken · fulltext i repot · original: https://x.com/alex_prompter/status/2103499977632997524"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103576084499358051",
+      "name": "Leon’s 15-second motion design reel",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The same short prompt as another showreel produces different camera and material choices.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103576084499358051.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@leonabboud · Claude Opus 5.5 · 642 bokmärken · fulltext i repot · original: https://x.com/leonabboud/status/2103576084499358051"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103272686570918334",
+      "name": "Animated Story of an Unreadable Book",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Animated Story of an Unreadable Book, shared by Ethan Mollick. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103272686570918334.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@emollick · Claude Opus 5.5 · 642 bokmärken · fulltext i repot · original: https://x.com/emollick/status/2103272686570918334"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102876925102555526",
+      "name": "What it feels like to be you",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "Text, connecting lines and abstract imagery answer an open-ended question in a 30-second film.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102876925102555526.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@goodside · Claude Opus 5.5 · 638 bokmärken · fulltext i repot · original: https://x.com/goodside/status/2102876925102555526"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103144778481475686",
+      "name": "Automated Talking-Head Edit",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Automated Talking-Head Edit, shared by Sabba Keynejad. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103144778481475686.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@sab8a · Claude Opus 5.5 · 581 bokmärken · fulltext i repot · original: https://x.com/sab8a/status/2103144778481475686"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103099194693271874",
+      "name": "Pip travels through twelve visual styles",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A detailed character and scene brief keeps a robot consistent across visual styles.",
+      "tags": [
+        "awesome-ai-motion",
+        "pixel-karaktär",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103099194693271874.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@pradeepXkapoor · Claude Opus 5.5 · 532 bokmärken · bara länk till originalet · original: https://x.com/pradeepXkapoor/status/2103099194693271874"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2106144184449085474",
+      "name": "A bilingual news-editing experiment",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "The creator demonstrates sourcing, narration and editing with two language versions and a public prompt.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2106144184449085474.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@dotey · Claude Opus 5.5、Gemini 3.8 Flash TTS · 499 bokmärken · bara länk till originalet · original: https://x.com/dotey/status/2106144184449085474"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102940980379017293",
+      "name": "Peach Blossom Spring: A Guided Three.js Journey",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator iterated a Three.js adaptation of Peach Blossom Spring with Opus 5.5 and public models. The roughly 4-minute-17-second post links to an explorable scene, source and initial prompt.",
+      "tags": [
+        "awesome-ai-motion",
+        "3d-interaktivt",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102940980379017293.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@dotey · Claude Opus 5.5 · 460 bokmärken · bara länk till originalet · original: https://x.com/dotey/status/2102940980379017293"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2105816670896009224",
+      "name": "A tea-drinking character beside ukiyo-e waves",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A short request for a cool animation produces a tea-drinking character alongside waves and a Mount Fuji scene. The creator reports about 15 minutes of work and attributes it to Fable 5.5, whose exact version is unverified. The request remains at the source post.",
+      "tags": [
+        "awesome-ai-motion",
+        "pixel-karaktär",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2105816670896009224.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@cherry_mx_reds · Claude (reported Fable 5.5; version unverified) · 457 bokmärken · bara länk till originalet · original: https://x.com/cherry_mx_reds/status/2105816670896009224"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102827887732932956",
+      "name": "Turn a talking-head video into a line-art explainer",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "The original voice, captions and duration are retained while the main footage becomes animation.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102827887732932956.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@AxtonLiu · Claude Opus 5.5 · 411 bokmärken · fulltext i repot · original: https://x.com/AxtonLiu/status/2102827887732932956"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102827288190689364",
+      "name": "Punchy Promo for a Writing Tool",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Punchy Promo for a Writing Tool, shared by Shri. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102827288190689364.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@shribuilds · Claude Opus 5.5 · 383 bokmärken · fulltext i repot · original: https://x.com/shribuilds/status/2102827288190689364"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102838830285898214",
+      "name": "Passwords and Passkeys Explained",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Passwords and Passkeys Explained, shared by Tz. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102838830285898214.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@Tz_2022 · Claude Opus 5.5 · 376 bokmärken · fulltext i repot · original: https://x.com/Tz_2022/status/2102838830285898214"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2107186094777434454",
+      "name": "Inbox Zero: a code-based product-video workflow",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "An inbox-product film demonstrates code-driven production with a full reusable prompt template.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2107186094777434454.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@elie2222 · Claude Code、Codex（版本未注明） · 371 bokmärken · bara länk till originalet · original: https://x.com/elie2222/status/2107186094777434454"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102788223835463902",
+      "name": "1990s-Style 3D Cartoon Story",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "1990s-Style 3D Cartoon Story, shared by Shimecki. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102788223835463902.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@scheemunai · Claude Opus 5.5 · 370 bokmärken · fulltext i repot · original: https://x.com/scheemunai/status/2102788223835463902"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103128559174971663",
+      "name": "Manim Lesson on Derivatives",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Manim Lesson on Derivatives, shared by LinearUncle. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103128559174971663.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@LinearUncle · Claude Opus 5.5 · 360 bokmärken · fulltext i repot · original: https://x.com/LinearUncle/status/2103128559174971663"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103483957266268381",
+      "name": "MakerMap: a continuous product journey",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "Signup, maps, matching and events form one continuous product journey.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103483957266268381.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@verbove · Claude Opus 5.5 · 334 bokmärken · fulltext i repot · original: https://x.com/verbove/status/2103483957266268381"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103116235009347650",
+      "name": "The Battle of Austerlitz in code",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A long-form historical film with terrain, camera work and publicly shared source code.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103116235009347650.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@WinterArc2125 · Claude Opus 5.5 · 272 bokmärken · fulltext i repot · original: https://x.com/WinterArc2125/status/2103116235009347650"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2106091485125091695",
+      "name": "Shantou Day One: an AI-edited vlog",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Travel footage becomes a themed vlog, with the editing request and result shared together.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2106091485125091695.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@dashiAIxz · Claude Opus 5.5 · 197 bokmärken · bara länk till originalet · original: https://x.com/dashiAIxz/status/2106091485125091695"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2106958663525314769",
+      "name": "A short video about five Gmail features",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Code graphics and narration organize Gmail tips with the author's skill-level prompt published.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2106958663525314769.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@ClaudeCode_UT · Claude Opus 5.5 · 186 bokmärken · bara länk till originalet · original: https://x.com/ClaudeCode_UT/status/2106958663525314769"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102751132502446549",
+      "name": "Introduction to GitHub Version Control",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Introduction to GitHub Version Control, shared by sundyme. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102751132502446549.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@sundyme · Claude Opus 5.5 · 140 bokmärken · fulltext i repot · original: https://x.com/sundyme/status/2102751132502446549"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102695622042411419",
+      "name": "Eighty-One Years of Indonesian History",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "Eighty-One Years of Indonesian History, shared by Hanif | AI For Productivity. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102695622042411419.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@hanifproduktif · Claude Opus 5.5 · 120 bokmärken · fulltext i repot · original: https://x.com/hanifproduktif/status/2102695622042411419"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103511590884815282",
+      "name": "81 years of Indonesian history",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Presidents and maps connect a historical narrative with regionally inspired music.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103511590884815282.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@sonnylazuardi · Claude Opus 5.5 · 102 bokmärken · fulltext i repot · original: https://x.com/sonnylazuardi/status/2103511590884815282"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103757767727255661",
+      "name": "RainStation: a mixed image-and-code workflow",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "hyperframes",
+      "description": "A timed shot list specifies action, eyelines and sound for a narrative short.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103757767727255661.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@zhu185178 · Claude Opus 5.5 · 100 bokmärken · fulltext i repot · original: https://x.com/zhu185178/status/2103757767727255661"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103742861971726495",
+      "name": "Unbranded and branded motion design variants",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Two versions show how supplying a brand asset kit changes the result.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103742861971726495.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@lukasersil · Claude Opus 5.5 · 98 bokmärken · fulltext i repot · original: https://x.com/lukasersil/status/2103742861971726495"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102450239923720440",
+      "name": "A prehistoric island: Opus 5 vs. Opus 5.5",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A complete interactive island includes an underwater cutaway and animated animals.",
+      "tags": [
+        "awesome-ai-motion",
+        "3d-interaktivt",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102450239923720440.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@vib3coded · Claude Opus 5.5 · 77 bokmärken · bara länk till originalet · original: https://x.com/vib3coded/status/2102450239923720440"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103557735086428547",
+      "name": "90 seconds of motion design and original piano",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A showreel brief adds an audio direction, original piano and export specifications.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103557735086428547.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@kloss_xyz · Claude Opus 5.5 · 70 bokmärken · fulltext i repot · original: https://x.com/kloss_xyz/status/2103557735086428547"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103119648271290566",
+      "name": "Pelican Cycling Along a Seaside Pier",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Pelican Cycling Along a Seaside Pier, shared by Axton. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "3d-interaktivt",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103119648271290566.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@AxtonLiu · Claude Opus 5.5 · 57 bokmärken · fulltext i repot · original: https://x.com/AxtonLiu/status/2103119648271290566"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103171088637419631",
+      "name": "Option Formula Beside a Runner Game",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Option Formula Beside a Runner Game, shared by Riley Goodside. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103171088637419631.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@goodside · Claude Opus 5.5 · 45 bokmärken · fulltext i repot · original: https://x.com/goodside/status/2103171088637419631"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102731669853573582",
+      "name": "SEO and GEO in Animation",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "SEO and GEO in Animation, shared by OscarMartin. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102731669853573582.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@oscarmartin · Claude Opus 5.5 · 22 bokmärken · fulltext i repot · original: https://x.com/oscarmartin/status/2102731669853573582"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103502614134718609",
+      "name": "A poster breaks out of its own frame",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Typography and colored shapes break free of a poster, with camera motion and sound driving a 30-second piece.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103502614134718609.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@pankajkumar_dev · Claude Opus 5.5 · 16 bokmärken · fulltext i repot · original: https://x.com/pankajkumar_dev/status/2103502614134718609"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104200939095904322",
+      "name": "One shot beauty of physics animation",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "One shot beauty of physics animation, shared by WY. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104200939095904322.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@akokoi1 · Claude Opus 5.5 · 14 bokmärken · fulltext i repot · original: https://x.com/akokoi1/status/2104200939095904322"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103761658745335993",
+      "name": "A 30-second product motion brief",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A short product brief leaves the script, color palette and music to the model.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103761658745335993.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@sudo_kiran · Claude Opus 5.5 · 11 bokmärken · fulltext i repot · original: https://x.com/sudo_kiran/status/2103761658745335993"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104397688511103374",
+      "name": "Blue-Scarf Duckling by a Peach Orchard Stream",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "The creator’s public brief calls for a roughly 30-second vertical 3D character animation about a yellow duckling in a blue scarf exploring a peach orchard and stream. The post credits Seedance 2.5.",
+      "tags": [
+        "awesome-ai-motion",
+        "pixel-karaktär",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104397688511103374.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@Zarnab_with_Ai · Seedance 2.5 · 11 bokmärken · bara länk till originalet · original: https://x.com/Zarnab_with_Ai/status/2104397688511103374"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104392249400594823",
+      "name": "Reach the Desk Unseen: an Office Chase Short",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator’s brief sets a roughly 30-second challenge to reach a desk without being caught, with continuous tracking, an office route and timed beats. The post credits Seedance 2.5 and FishCreativeHQ.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104392249400594823.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@AIwithJessica · Seedance 2.5；FishCreativeHQ · 7 bokmärken · bara länk till originalet · original: https://x.com/AIwithJessica/status/2104392249400594823"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2107093105992417482",
+      "name": "Dynamic visuals for a Suno song",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "An Opus visual track accompanies a Suno song; the source includes the short synchronization prompt.",
+      "tags": [
+        "awesome-ai-motion",
+        "musik",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2107093105992417482.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@hungryturbo · Claude Opus 5.5、Suno · 6 bokmärken · bara länk till originalet · original: https://x.com/hungryturbo/status/2107093105992417482"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104207707980869918",
+      "name": "Fifteen second motion design demo",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Fifteen second motion design demo, shared by Adam Sandler. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104207707980869918.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@TheViableEdge · Claude Opus 5.5 · 5 bokmärken · fulltext i repot · original: https://x.com/TheViableEdge/status/2104207707980869918"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102787822855893072",
+      "name": "Ad for a UI Components Product",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "Ad for a UI Components Product, shared by Claudia Galeán (💫,💫). Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102787822855893072.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@deweytn · Claude Opus 5.5 · 4 bokmärken · fulltext i repot · original: https://x.com/deweytn/status/2102787822855893072"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104590334152056983",
+      "name": "Walking Architecture: A Space for People",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator asked Opus 5.5 for walking architecture and revised it to accommodate people, listing Blender, Remotion and AvisSpeech. The post has two videos; this page previews the first and links to the other at the source.",
+      "tags": [
+        "awesome-ai-motion",
+        "3d-interaktivt",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104590334152056983.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@shion_takk · Claude Opus 5.5 · 3 bokmärken · fulltext i repot · original: https://x.com/shion_takk/status/2104590334152056983"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2107469294238134394",
+      "name": "A finger-snap journey at the Temple of Heaven",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "A finger snap links modern and historical costumes; the source includes the generation prompt.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2107469294238134394.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@Adam38363368936 · Seedance（版本未注明） · 2 bokmärken · bara länk till originalet · original: https://x.com/Adam38363368936/status/2107469294238134394"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2107455787823952091",
+      "name": "AI Takes Over: a song-visual experiment",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "hyperframes",
+      "description": "Typography and dot-based imagery accompany a song about AI takeover and its initiating prompt.",
+      "tags": [
+        "awesome-ai-motion",
+        "musik",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2107455787823952091.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@Dheepanratnam · Claude Opus 5.5、ElevenLabs、HyperFrames · 2 bokmärken · bara länk till originalet · original: https://x.com/Dheepanratnam/status/2107455787823952091"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2107399895011434935",
+      "name": "ASHEN FRONTIER: a wasteland side-scroller",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A Canvas 2D wasteland action game accompanies a detailed world, character and combat prompt.",
+      "tags": [
+        "awesome-ai-motion",
+        "pixel-karaktär",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2107399895011434935.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@jiangjiangling · Codex（版本未注明） · 2 bokmärken · bara länk till originalet · original: https://x.com/jiangjiangling/status/2107399895011434935"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104044910769016888",
+      "name": "Git explained for beginners",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A beginner audience and specific commands guide a narrated Chinese Git tutorial.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104044910769016888.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@Yunn260414 · Claude Opus 5.5 · 2 bokmärken · fulltext i repot · original: https://x.com/Yunn260414/status/2104044910769016888"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103741636635496583",
+      "name": "An animated lyric video",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "A lyric video develops a visual treatment, then aligns typography to an existing song.",
+      "tags": [
+        "awesome-ai-motion",
+        "musik",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103741636635496583.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@kurahu_capten · Claude Opus 5.5 · 2 bokmärken · fulltext i repot · original: https://x.com/kurahu_capten/status/2103741636635496583"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104249941136666741",
+      "name": "Hoplite feature launch animation",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Hoplite feature launch animation, shared by Ryan Morrissey. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104249941136666741.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@ryan_morr · Claude Opus 5.5 · 2 bokmärken · fulltext i repot · original: https://x.com/ryan_morr/status/2104249941136666741"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2105354432460554648",
+      "name": "Humanity’s future: the same challenge for Opus and Astra",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator gives Claude Opus 5.5 Max and GPT-6 Astra High the same 30-second film challenge about humanity’s future. The post contains two videos; the first is visibly labeled Opus 5.5 Max and is the one played in the gallery. Open the original post for the full comparison.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2105354432460554648.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@yulikay · Claude Opus 5.5 Max / GPT-6 Astra High · 1 bokmärken · bara länk till originalet · original: https://x.com/yulikay/status/2105354432460554648"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102899866762440893",
+      "name": "Collision-Driven Musical Machine",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Collision-Driven Musical Machine, shared by Çağrı | KAM Studio. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "musik",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102899866762440893.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@KamStudioLabs · Claude Opus 5.5 · 1 bokmärken · fulltext i repot · original: https://x.com/KamStudioLabs/status/2102899866762440893"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102903173161877996",
+      "name": "The Bug That Refused to Be Fixed",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The Bug That Refused to Be Fixed, shared by Çağrı | KAM Studio. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102903173161877996.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@KamStudioLabs · Claude Opus 5.5 · 1 bokmärken · fulltext i repot · original: https://x.com/KamStudioLabs/status/2102903173161877996"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103418429248069973",
+      "name": "Motion Graphic of a Cocktail Recipe",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Motion Graphic of a Cocktail Recipe, shared by Sarutobi Sasuke🥷. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103418429248069973.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@Sarut0biSasuke · Claude Opus 5.5 · 1 bokmärken · fulltext i repot · original: https://x.com/Sarut0biSasuke/status/2103418429248069973"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2107498302388482100",
+      "name": "NextDoor: a second showreel experiment",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "The creator shares a showreel experiment, its prompt, commentary and visual results.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2107498302388482100.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@sankalpdomore · Claude Opus 5.5 · 0 bokmärken · bara länk till originalet · original: https://x.com/sankalpdomore/status/2107498302388482100"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2107449614412493219",
+      "name": "Growl Engine: JavaScript bass music",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Code synthesizes bass music with playback and spectral visuals; the original short prompt is public.",
+      "tags": [
+        "awesome-ai-motion",
+        "musik",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2107449614412493219.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@HOTHEAD01TH · Claude Opus 5.5 · 0 bokmärken · bara länk till originalet · original: https://x.com/HOTHEAD01TH/status/2107449614412493219"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2107443821630107654",
+      "name": "Learning Linjiangxian through animation",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "remotion",
+      "description": "Historical-style imagery supports poetry learning; six visual prompts appear in the source.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2107443821630107654.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@7998l201 · Omni、Codex、Remotion · 0 bokmärken · bara länk till originalet · original: https://x.com/7998l201/status/2107443821630107654"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2107367735466573937",
+      "name": "Showtime: a motion-design skill sample",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A locally rendered showreel includes its prompt and a link to the creator's Showtime toolkit.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2107367735466573937.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@FavioVaz · Claude Opus 5.5、Showtime · 0 bokmärken · bara länk till originalet · original: https://x.com/FavioVaz/status/2107367735466573937"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2106734468715466818",
+      "name": "Show Me Your Mind",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Wordless abstract forms respond to the creator's prompt about the model's artistic inner world.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2106734468715466818.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@argbeknwn · Claude Opus 5.5、Remotion · 0 bokmärken · bara länk till originalet · original: https://x.com/argbeknwn/status/2106734468715466818"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2106715812023226687",
+      "name": "A fifteen-second motion-design showreel",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Typography, layout and timing form a showreel experiment with the tested prompt published.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2106715812023226687.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@Adimazuz03 · Claude Opus 5.5 · 0 bokmärken · bara länk till originalet · original: https://x.com/Adimazuz03/status/2106715812023226687"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2106057217040368042",
+      "name": "Uptimepage: a 30-second Three.js promo",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator publishes a Spanish task asking for a clear-paced 30-second Three.js motion video for Uptimepage. The post reports Sonnet 5.5, 1080p and 60 fps; the version, timing and cost have not been independently tested.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2106057217040368042.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@kevindatas · Claude (reported Sonnet 5.5; version unverified) · 0 bokmärken · bara länk till originalet · original: https://x.com/kevindatas/status/2106057217040368042"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2106040262245896675",
+      "name": "The orbital post office: a brass-and-planet world",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A Codex-generated orbital post-office scene combines a green planet, brass rings and orbiting mail pods in a turntable reveal. The creator says the prompt is shown in the video and posts it as an OpenAI Side Quest entry; entry does not establish a prize.",
+      "tags": [
+        "awesome-ai-motion",
+        "3d-interaktivt",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2106040262245896675.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@allenrokxlate · Codex (model unspecified) · 0 bokmärken · bara länk till originalet · original: https://x.com/allenrokxlate/status/2106040262245896675"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2105567585680941521",
+      "name": "A one-minute concept promo for a podcast",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A one-minute podcast concept promo. The creator says one prompt led Opus 5.5 to develop the concept, storyboard, captions, code-drawn animation and music, and explicitly labels it an unofficial experiment.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2105567585680941521.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@wuhao1031 · Claude Opus 5.5 · 0 bokmärken · bara länk till originalet · original: https://x.com/wuhao1031/status/2105567585680941521"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2105245039521628213",
+      "name": "A felt character: Sol and Opus with the same reference",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator compares interactive Three.js felt characters made with GPT 6.1 Sol and Opus 5.5 using the same prompt and reference image, with code and shaders only. The post identifies Sol on the left and Opus on the right; a reply links the prompt, both projects and a side-by-side video.",
+      "tags": [
+        "awesome-ai-motion",
+        "3d-interaktivt",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2105245039521628213.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@JakubAntowski · GPT 6.1 Sol / Claude Opus 5.5 · 0 bokmärken · bara länk till originalet · original: https://x.com/JakubAntowski/status/2105245039521628213"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2105230653457650116",
+      "name": "One Prompt: A p5.js Music Video",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator used Opus 5.5 and ClaudeAnimationBase to storyboard, draw and render a p5.js music video around supplied audio, lyrics and timings. Replies share the original instruction and a making-of link.",
+      "tags": [
+        "awesome-ai-motion",
+        "musik",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2105230653457650116.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@ppop123 · Claude Opus 5.5 · 0 bokmärken · bara länk till originalet · original: https://x.com/ppop123/status/2105230653457650116"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104788406656184436",
+      "name": "The Beauty of Three.js: A Cinematic Long Take",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator asked Opus 5.5 for a roughly two-minute cinematic long take showcasing Three.js modeling, materials, lighting, cameras, particles and shaders, and shared the Chinese instruction. The attached video runs about 113 seconds.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104788406656184436.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@yupengfei990919 · Claude Opus 5.5 · 0 bokmärken · bara länk till originalet · original: https://x.com/yupengfei990919/status/2104788406656184436"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104039666093572362",
+      "name": "A promotional animation for deckuse",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "A concise prompt asks for motion, music and sound effects around an open-source product.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104039666093572362.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@feiflow · Claude Opus 5.5 · 0 bokmärken · fulltext i repot · original: https://x.com/feiflow/status/2104039666093572362"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103746671591256286",
+      "name": "An analytics product made from real web assets",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Real website assets or screenshots form the basis of a coded product animation.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103746671591256286.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@zigapoto · Claude Opus 5.5 · 0 bokmärken · fulltext i repot · original: https://x.com/zigapoto/status/2103746671591256286"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104254444603076730",
+      "name": "Code drawn music video",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Code drawn music video, shared by Linus. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "musik",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104254444603076730.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@linus5x · Claude Opus 5.5 · 0 bokmärken · fulltext i repot · original: https://x.com/linus5x/status/2104254444603076730"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102954743442399395",
+      "name": "Long-Form Passkey Explainer",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Long-Form Passkey Explainer, shared by 十文. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "explainer",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102954743442399395.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@imShiWen · Claude Opus 5.5 · 0 bokmärken · fulltext i repot · original: https://x.com/imShiWen/status/2102954743442399395"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2102908742518100086",
+      "name": "Wordless Story of a Lighthouse Keeper",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Wordless Story of a Lighthouse Keeper, shared by Çağrı | KAM Studio. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2102908742518100086.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@KamStudioLabs · Claude Opus 5.5 · 0 bokmärken · fulltext i repot · original: https://x.com/KamStudioLabs/status/2102908742518100086"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2103019799614034026",
+      "name": "Paper-Shadow Film About Home",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "Paper-Shadow Film About Home, shared by 4b47. Production attribution follows the creator’s post. Source verified; full viewing review pending.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2103019799614034026.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@x4b47x · Claude Opus 5.5 · 0 bokmärken · fulltext i repot · original: https://x.com/x4b47x/status/2103019799614034026"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104443232512020686",
+      "name": "Waterfall Trail: a Seedance 2.5 Nature Clip",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator’s production brief describes a roughly 15-second rainforest, waterfall and walking clip. The post also opens with a separate waves-and-sunset description, so its text is mixed. The creator credits Seedance 2.5.",
+      "tags": [
+        "awesome-ai-motion",
+        "berättelse",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104443232512020686.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@ZorviaLux · Seedance 2.5 · 0 bokmärken · bara länk till originalet · original: https://x.com/ZorviaLux/status/2104443232512020686"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104765209596612730",
+      "name": "Creative Promo from a Single Instruction",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator says Opus 5.5 made this animated promo in code and shares the single Chinese instruction used. Time and usage figures are self-reported.",
+      "tags": [
+        "awesome-ai-motion",
+        "produkt-marknad",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104765209596612730.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@nikomaster01 · Claude Opus 5.5 · 0 bokmärken · fulltext i repot · original: https://x.com/nikomaster01/status/2104765209596612730"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104756321908375866",
+      "name": "Four Models, One Motion Showreel Prompt",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "The creator compares GPT-6 Astra, Opus 5.5, Grok Bot and Meta Muse on the same 15-second showreel prompt. The attached four-panel video has model labels and is catalogued as one comparison work.",
+      "tags": [
+        "awesome-ai-motion",
+        "motion-design",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104756321908375866.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@MasonMosen · GPT-6 Astra；Claude Opus 5.5；Grok Bot；Meta Muse · 0 bokmärken · bara länk till originalet · original: https://x.com/MasonMosen/status/2104756321908375866"
+    },
+    {
+      "id": "ext.awesome-ai-motion.p2104193522715029657",
+      "name": "Three Vehicles Combine into a Robot",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "The creator asked Opus 5.5 for an anime-style 3D scene of three vehicles combining into a robot, reporting that one Python file generated the models, shading, outlines, music and effects.",
+      "tags": [
+        "awesome-ai-motion",
+        "pixel-karaktär",
+        "author-prompt",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/guanmo-ai/awesome-ai-motion/blob/main/cases/2104193522715029657.en.md",
+      "use": "Läs författarens prompt via länken; ta strukturen och skriv en egen version (se motion-studio-playbook). Kopiera inte texten.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "@allforbigfire · Claude Opus 5.5 · 0 bokmärken · bara länk till originalet · original: https://x.com/allforbigfire/status/2104193522715029657"
+    }
+  ]
+}
