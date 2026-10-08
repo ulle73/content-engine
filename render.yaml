@@ -33,7 +33,7 @@ services:
       - key: OPENROUTER_API_KEY
         sync: false
       - key: OPENROUTER_ANALYSIS_MODEL
-        value: "@preset/gk-free"
+        value: google/gemini-2.5-flash
       - key: OPENROUTER_ANALYSIS_FALLBACK_MODEL
         value: z-ai/glm-5.3-flash
       - key: MEDIA_STORAGE
