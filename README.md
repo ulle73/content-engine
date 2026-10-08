@@ -1,5 +1,7 @@
 # Social Content Engine
 
+> **Riktning och plan:** [docs/MASTERPLAN.md](docs/MASTERPLAN.md) – slutmål, beslut med motivering, faser och klart-kriterier.
+
 Företagsunderlag → tre idéer → redigerbara Facebook-/Instagramtexter → utkast i **hosted Postiz**. Slutgranskning, kalender, schemaläggning, publicering och resultat hanteras i Postiz.
 
 **Brightbean är borttaget.** Läs [arkitekturbeslutet](docs/2026-09-07-arkitekturbeslut.md). Social Media Skills används direkt som innehållsreferenser, och Django tillhandahåller standardfunktionerna för webbappen. Företag och innehållskörningar kompletteras av referenskonton, importer, poster, snapshots och beslutshändelser. En separat låsrad skyddar registreringen av första administratören.
@@ -75,7 +77,7 @@ Den centrala entrypointen är nu **`python manage.py run_daily`**. Den kör konk
 
 `APIFY_API_TOKEN` läses från miljön. `APIFY_USER_ID` är valfri kontometadata, aldrig autentisering. Manuell hämtning och status finns i UI. Scheduler använder `python manage.py run_daily`; även det äldre `refresh_competitors --wait` går genom samma reservationsskydd. Primäractorn saknar cursor/datumfilter och hämtar därför ett begränsat aktuellt överlapp, inte hela historiken. Mycket aktiva konton kan få dataluckor.
 
-GitHub-workflowen **Content Engine Daily** finns för daglig körning 06:17 UTC. Den är **avstängd tills secrets och aktiveringsvariabel satts**. Driftansvarig lägger Actions-secrets enligt [driftdokumentet](docs/2026-09-09-daily-and-logo.md), och sätter repository-variabeln `CONTENT_INTELLIGENCE_ENABLED=true`. Ingen credential checkas in. Miljönycklar flyttas inte automatiskt till GitHub. Kommandot använder den befintliga databasen; det kräver inga egna workers och kan köras i en befintlig schemaläggare.
+GitHub-workflowen **Content Engine Daily** finns för daglig körning 06:17 UTC. Den är **påslagen** (`CONTENT_INTELLIGENCE_ENABLED=true` sedan 2026-09-13). Analysen kräver `CONTENT_OPENROUTER_KEY` i Actions-secrets; viral marknadsbevakning kräver `CONTENT_VIRLO_KEY` (valfri). Driftansvarig lägger Actions-secrets enligt [driftdokumentet](docs/2026-09-09-daily-and-logo.md), och sätter repository-variabeln `CONTENT_INTELLIGENCE_ENABLED=true`. Ingen credential checkas in. Miljönycklar flyttas inte automatiskt till GitHub. Kommandot använder den befintliga databasen; det kräver inga egna workers och kan köras i en befintlig schemaläggare.
 
 ## Kontroller och begränsningar
 
