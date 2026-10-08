@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: 'Inter'; src: url("assets/fonts/inter-600.woff2") format('woff2'); font-weight: 600; font-display: block; }
+        #root { position: absolute; inset: 0; overflow: hidden; background: #01170F; }
+        #s3-bg { position: absolute; inset: 0;
+          background: radial-gradient(ellipse 90% 60% at 50% 45%, #0C4430 0%, #052A1C 55%, #01170F 100%); }
+        #s3-stage { position: absolute; inset: 0; perspective: 2200px; perspective-origin: 50% 40%; }
+        #s3-tilt { position: absolute; inset: 0; transform-style: preserve-3d; }
+        /* the page sheet lives in PAGE space (1080 px wide = 430 css px of the real site at 2.512x) */
+        #s3-sheet { position: absolute; left: 0; top: 0; width: 1080px; height: 6530px; transform-origin: 0 0; }
+        #s3-page { position: absolute; left: 0; top: 0; width: 1080px; height: 6530px; display: block; border-radius: 34px;
+          box-shadow: 0 60px 140px rgba(0, 0, 0, 0.55), 0 0 0 3px rgba(214, 165, 54, 0.55); }
+        #s3-mark { position: absolute; background: #F0C048; mix-blend-mode: multiply; border-radius: 10px; transform-origin: 0 50%; }
+        #s3-mark2 { position: absolute; background: rgba(240, 192, 72, 0.34); border-radius: 10px; transform-origin: 0 50%; }
+        #s3-dim { position: absolute; left: 0; top: 0; width: 1080px; height: 6530px; border-radius: 34px; background: #01170F; opacity: 0; }
+        #s3-card { position: absolute; display: block; transform-origin: 50% 50%; opacity: 0; }
+        #s3-cardshadow { position: absolute; border-radius: 26px; background: rgba(0, 0, 0, 0.6); filter: blur(40px); opacity: 0; }
+        #s3-cardglint { position: absolute; overflow: hidden; border-radius: 24px; opacity: 0; pointer-events: none; }
+        #s3-cardglint i { position: absolute; top: -10%; left: -50%; width: 34%; height: 120%; display: block; transform: rotate(16deg);
+          background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 252, 235, 0.7), rgba(255, 255, 255, 0)); }
+        #s3-ring { position: absolute; width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 50%;
+          border: 5px solid #F2D27A; box-shadow: 0 0 30px rgba(242, 210, 122, 0.8); opacity: 0; }
+        #s3-cursor { position: absolute; left: 0; top: 0; width: 84px; height: 104px; overflow: visible;
+          filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.45)); transform-origin: 8px 6px; }
+        .s3-chip { position: absolute; display: flex; align-items: center; gap: 18px; padding: 0 34px 0 22px; height: 108px;
+          border-radius: 48px; background: rgba(1, 23, 15, 0.82); border: 2.5px solid #D6A536; white-space: nowrap;
+          box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), inset 0 2px 8px rgba(255, 240, 200, 0.18);
+          font-family: 'Inter', sans-serif; font-weight: 600; font-size: 47px; color: #F8F4EC; letter-spacing: 0.01em; }
+        .s3-chip b { display: flex; align-items: center; justify-content: center; width: 54px; height: 54px; border-radius: 50%;
+          background: linear-gradient(160deg, #F4D584, #C8922A); }
+        .s3-chip svg { width: 30px; height: 30px; }
+        #s3-cover { position: absolute; inset: 0; background: #D6A536; }
+        #s3-flash { position: absolute; inset: 0; background: #FFF6E2; opacity: 0; }
+      </style>
+
+      <div id="root" data-composition-id="s3-product" data-width="1080" data-height="1920" data-duration="6">
+        <div id="s3-bg"></div>
+        <div id="s3-stage">
+          <div id="s3-tilt">
+            <div id="s3-sheet" data-layout-allow-overflow>
+              <img id="s3-page" src="assets/friskvard-page.jpg" alt="">
+              <div id="s3-mark"></div>
+              <div id="s3-mark2"></div>
+              <div id="s3-dim"></div>
+              <div id="s3-cardshadow"></div>
+              <img id="s3-card" data-hf-motion-blur='{"samplesPerFrame": 24}' src="assets/card-2000.png" alt="">
+              <div id="s3-cardglint"><i></i></div>
+            </div>
+          </div>
+        </div>
+        <div id="s3-ring"></div>
+        <div class="s3-chip" id="s3-chip1"><b><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="#01170F" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></b>Greenfee</div>
+        <div class="s3-chip" id="s3-chip2"><b><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="#01170F" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></b>Range</div>
+        <div class="s3-chip" id="s3-chip3"><b><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="#01170F" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></b>Lektioner</div>
+        <svg id="s3-cursor" viewBox="0 0 46 58"><path d="M4 3 L4 46 L15 36 L23 54 L31 50 L23 33 L39 33 Z" fill="#ffffff" stroke="#0b1a12" stroke-width="3" stroke-linejoin="round"/></svg>
+        <div id="s3-cover"></div>
+        <div id="s3-flash"></div>
+      </div>
+
+      <script>
+        (function () {
+          const root = document.querySelector('[data-composition-id="s3-product"]');
+          const $ = (s) => root.querySelector(s);
+          const FMT = (root.closest('[data-fmt]') || { dataset: {} }).dataset.fmt || '9x16';
+          const W = 1080, H = { '9x16': 1920, '4x5': 1350, '1x1': 1080 }[FMT];
+          const K = 1080 / 430;                     // css px of the captured site -> page px
+          const R = (x, y, w, h) => ({ x: x * K, y: y * K, w: w * K, h: h * K });
+          // rects measured from the live DOM at capture (assets/ui/ui.json)
+          const WORD = R(67.375, 180.2, 295.25, 52);          // "friskvårdsbidraget" in the h1
+          const CARD = R(52.5, 425.6, 325, 450);              // the "Populärast 2,000 kr" card
+          const PRICE = R(153.9, 535.6, 122.2, 48);           // "2,000 kr"
+          const fit = (r, f) => Math.min(W * f / r.w, H * f / r.h);
+          const P = {   // camera poses: page point (cx, cy) at frame centre, scale s
+            intro: { cx: 540, cy: Math.min(1000, H * 0.53 + 30), s: fit({ w: 1080, h: Math.min(2050, H * 1.07) }, 0.9) },
+            head:  { cx: 540, cy: WORD.y + WORD.h / 2 - 20, s: Math.min(1.25, fit({ w: 900, h: 360 }, 0.95)) },
+            card:  null,
+          };
+          const LIFT = {
+            '9x16': { s: 1.06, dx: 0, dy: -70, ls: 1.1, chips: 'row' },
+            '4x5':  { s: 0.86, dx: -150, dy: 0, ls: 1.02, chips: 'col' },
+            '1x1':  { s: 0.70, dx: -165, dy: 0, ls: 1.02, chips: 'col' },
+          }[FMT];
+          P.card = { cx: CARD.x + CARD.w / 2, cy: CARD.y + CARD.h / 2, s: LIFT.s };
+
+          // static placement in page space
+          Object.assign($('#s3-mark').style, { left: WORD.x - 10 + 'px', top: WORD.y + 8 + 'px', width: WORD.w + 20 + 'px', height: WORD.h - 4 + 'px' });
+          Object.assign($('#s3-mark2').style, { left: WORD.x - 10 + 'px', top: WORD.y + 8 + 'px', width: WORD.w + 20 + 'px', height: WORD.h - 4 + 'px' });
+          const cardBox = { left: CARD.x + 'px', top: CARD.y + 'px', width: CARD.w + 'px', height: CARD.h + 'px' };
+          Object.assign($('#s3-card').style, cardBox);
+          Object.assign($('#s3-cardglint').style, { left: CARD.x + 2 + 'px', top: CARD.y + 40 + 'px', width: CARD.w - 4 + 'px', height: CARD.h - 42 + 'px' });
+          Object.assign($('#s3-cardshadow').style, { left: CARD.x + 40 + 'px', top: CARD.y + 80 + 'px', width: CARD.w - 80 + 'px', height: CARD.h - 40 + 'px' });
+          $('#s3-card').style.transformOrigin = '50% 50%';
+          // the shadow + glint follow the card: they get the same lift transform
+
+          // screen position of a page point under a pose
+          const scr = (p, x, y) => ({ x: W / 2 + (x - p.cx) * p.s, y: H / 2 + (y - p.cy) * p.s });
+          // chips: placed in screen space around the lifted card
+          const cardScr = { w: CARD.w * LIFT.s * LIFT.ls, h: CARD.h * LIFT.s * LIFT.ls };
+          const chips = ['#s3-chip1', '#s3-chip2', '#s3-chip3'].map((s) => $(s));
+          if (LIFT.chips === 'row') {
+            // row under the card, centred; widths measured once at build
+            const ws = [366, 286, 384]; chips.forEach((c, i) => { c.style.width = ws[i] + 'px'; }); const gap = 14; const tot = ws.reduce((a, b) => a + b, 0) + gap * 2;
+            let x = (W - tot) / 2; const y = H / 2 + LIFT.dy + cardScr.h / 2 + 40;
+            chips.forEach((c, i) => { c.style.left = x + 'px'; c.style.top = y + 'px'; x += ws[i] + gap; });
+          } else {
+            const x0 = W / 2 + LIFT.dx + cardScr.w / 2 - 70;
+            chips.forEach((c, i) => { c.style.width = [366, 286, 384][i] + 'px'; c.style.left = x0 + 'px'; c.style.top = (H / 2 - 170 + i * 124) + 'px'; });
+          }
+
+          // single camera writer
+          const cam = { cx: P.intro.cx, cy: P.intro.cy, s: P.intro.s, rx: 0, ry: 0, ty: 0 };
+          const sheet = $('#s3-sheet'), tilt = $('#s3-tilt');
+          const apply = () => {
+            sheet.style.transform = `translate(${(W / 2 - cam.cx * cam.s).toFixed(2)}px, ${(H / 2 - cam.cy * cam.s + cam.ty).toFixed(2)}px) scale(${cam.s.toFixed(5)})`;
+            tilt.style.transform = `rotateX(${cam.rx.toFixed(3)}deg) rotateY(${cam.ry.toFixed(3)}deg)`;
+          };
+          const tl = gsap.timeline({ paused: true });
+          const go = (pose, t, d, ease) => tl.to(cam, { cx: pose.cx, cy: pose.cy, s: pose.s, duration: d, ease: ease || 'power3.inOut', onUpdate: apply }, t);
+
+          // 0.00 (7.00) gold wipes up, the real page rises out of depth and lands
+          tl.fromTo('#s3-cover', { clipPath: 'inset(0% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.42, ease: 'power3.inOut' }, 0);
+          tl.fromTo(cam, { rx: 34, ty: 700, s: P.intro.s * 0.86, cx: P.intro.cx, cy: P.intro.cy, ry: -6 },
+            { rx: 0, ty: 0, s: P.intro.s, ry: 0, duration: 1.0, ease: 'expo.out', onUpdate: apply }, 0);
+          // 0.80–1.80 push in on the headline; 1.00 (8.00) marker sweep + underline
+          go(P.head, 1.0, 0.9, 'power2.inOut');
+          tl.fromTo('#s3-mark', { scaleX: 0, opacity: 0.85 }, { scaleX: 1, duration: 0.36, ease: 'power2.out' }, 1.0);
+          tl.fromTo('#s3-mark2', { scaleX: 0 }, { scaleX: 1, duration: 0.36, ease: 'power2.out' }, 1.0);
+          // 2.00 (9.00) tilt down to the price cards
+          go(P.card, 2.0, 0.75, 'power3.inOut');
+          tl.to(cam, { rx: -4, duration: 0.38, ease: 'power2.in', onUpdate: apply }, 2.0);
+          tl.to(cam, { rx: 0, duration: 0.5, ease: 'power2.out', onUpdate: apply }, 2.38);
+
+          // cursor: in at 2.5 (9.5), on the price by 3.3, click 3.5 (10.5)
+          const tgt = scr(P.card, PRICE.x + PRICE.w * 0.62, PRICE.y + PRICE.h * 0.55);
+          tl.fromTo('#s3-cursor', { x: W + 60, y: H * 0.86, opacity: 1 }, { x: tgt.x, y: tgt.y, duration: 0.8, ease: 'power3.out' }, 2.5);
+          tl.set('#s3-cursor', { opacity: 0 }, 0);
+          tl.set('#s3-cursor', { opacity: 1 }, 2.5);
+          tl.to('#s3-cursor', { scale: 0.82, duration: 0.07, ease: 'power2.in' }, 3.43);
+          tl.to('#s3-cursor', { scale: 1, duration: 0.18, ease: 'power2.out' }, 3.5);
+          tl.set('#s3-ring', { left: tgt.x, top: tgt.y }, 0);
+          tl.fromTo('#s3-ring', { scale: 0.3, opacity: 1 }, { scale: 1.6, opacity: 0, duration: 0.5, ease: 'power2.out', immediateRender: false }, 3.5);
+          tl.set('#s3-card', { opacity: 1 }, 3.43);
+          tl.to('#s3-card', { scale: 0.965, duration: 0.07, ease: 'power2.in' }, 3.43);
+          tl.to('#s3-card', { scale: 1, duration: 0.2, ease: 'power2.out' }, 3.5);
+          tl.to('#s3-cursor', { x: tgt.x + 260, y: tgt.y + 420, opacity: 0, duration: 0.45, ease: 'power2.in' }, 3.8);
+
+          // 4.00 (11.00) the card lifts out of the page in 3D; the page falls back into the dark
+          const liftTo = { x: LIFT.dx / LIFT.s, y: LIFT.dy / LIFT.s - 10, scale: LIFT.ls, rotationY: -12, rotationX: 7, transformPerspective: 1600 };
+          ['#s3-card', '#s3-cardglint'].forEach((s) => tl.to(s, { ...liftTo, duration: 0.6, ease: 'back.out(1.4)' }, 4.0));
+          tl.to('#s3-cardshadow', { opacity: 1, x: LIFT.dx / LIFT.s + 30, y: LIFT.dy / LIFT.s + 70, scale: LIFT.ls, duration: 0.6, ease: 'power2.out' }, 4.0);
+          tl.to('#s3-dim', { opacity: 0.62, duration: 0.5, ease: 'power2.out' }, 4.0);
+          tl.to(cam, { s: P.card.s * 0.97, duration: 1.9, ease: 'power1.out', onUpdate: apply }, 4.0);
+          tl.set('#s3-cardglint', { opacity: 1 }, 4.2);
+          tl.fromTo('#s3-cardglint i', { xPercent: 0 }, { xPercent: 460, duration: 0.7, ease: 'power2.inOut' }, 4.25);
+          // gentle float while the chips land
+          ['#s3-card', '#s3-cardglint'].forEach((s) => tl.to(s, { rotationY: 9, rotationX: 4, y: LIFT.dy / LIFT.s - 28, duration: 1.15, ease: 'sine.inOut' }, 4.6));
+          // chips on 4.5 / 5.0 / 5.5 (11.5 / 12.0 / 12.5)
+          chips.forEach((c, i) => tl.fromTo(c, { opacity: 0, scale: 0.4, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: 'back.out(2.2)' }, 4.5 + i * 0.5));
+          // 5.75 (12.75) the card flies at the lens; hard cut on 6.00 (13.00)
+          ['#s3-card', '#s3-cardglint'].forEach((s) => tl.to(s, { scale: 4.2, rotationY: 0, rotationX: 0, duration: 0.25, ease: 'power3.in' }, 5.75));
+          tl.to(chips, { opacity: 0, y: 60, duration: 0.18, ease: 'power2.in', stagger: 0.03 }, 5.72);
+          tl.fromTo('#s3-flash', { opacity: 0 }, { opacity: 0.85, duration: 0.1, ease: 'power2.in' }, 5.9);
+
+          apply();
+          window.__timelines['s3-product'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
