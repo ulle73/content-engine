@@ -92,6 +92,53 @@ Detaljer: kodgranskningen i sessionens underlag; relevanta filer listas per fas 
                                            └──────────────► tillbaka till BESLUTA
 ```
 
+## 4b. Produktionsmotorn – referens → recept → modell per scen → klipp
+
+*Ägarens vision (2026-10-09):* bevakningen hittar inlägg/annonser vi bör göra. Biblioteket har skills, mallar och
+exempelpromptar **per videotyp och per modell**, så att Claude/ChatGPT kan bygga en film lika bra som referensen –
+fast med vår spinn. Exempel: en verklig människa vid en Volvo som visar FAIV:s nya grillkit – då ska allt finnas för
+att göra människan perfekt, produkten exakt och allt runt omkring optimalt för respektive modell.
+
+```
+Referens (bevakad annons/inlägg, eller egen idé)
+   │  1. NEDBRYTNING – vision-modell: scener, tider, kamera, ljus, krok, klipprytm, ljud, varför det fungerar
+   ▼
+Produktionsrecept (library: recipes/<typ>)  e.g. "person-presenterar-produkt-vid-bil", "mörker→ljus-reveal",
+   │                                              "gatuintervju", "sketch-med-återkommande-karaktär", "UGC-tips"
+   │  2. SHOTLIST med vår spinn: vinkel, fakta (faktabanken), varumärke (brand-kit), material (mediabank)
+   ▼
+   3. MODELLVAL PER SCEN (model playbooks i library: models/<modell>)
+      • karaktär/människa  → konsekvent karaktär (referensbild-ark) + bästa människomodell (t.ex. Seedance)
+      • tal/läppsynk       → modell med native ljud/läppsynk (t.ex. Veo 3.1) eller röst (ElevenLabs/egen) + lipsync
+      • produkt i rörelse   → Kling/Seedance med första/sista bild från exakt produktfoto (aldrig påhittad produkt)
+      • miljö/b-roll       → billigaste modell som klarar scenen
+      • effekter/grafik    → HyperFrames-library (kod, gratis)
+      • bild/förstarutor   → gpt-image-2 (komposit: person + bil + riktig produkt)
+   │  4. PROMPT PER MODELL – modellens eget format, parametrar, kända fallgropar, verifierade exempel
+   ▼
+   5. GENERERA (kostnadsgrind, preflight-estimat) → 6. VISION-QA per klipp (händer, ansikte, produkt exakt?)
+   ▼
+   7. KLIPP & FINISH (HyperFrames i molnet): beat, kamerarörelser, typografi, grade, ljud/SFX, −14 LUFS
+   ▼
+   8. KRITIKLOOP mot referensen (poäng ≥ 8) → mobilgodkännande → publicering → lärande per recept & modell
+```
+
+**Biblioteket utökas med två nya typer** (utöver mallar/effekter/prompts):
+- `library/models/<modell>/PLAYBOOK.md` – styrkor/svagheter, promptformat, parametrar, pris, fallgropar
+  (händer, text, produktlogotyper), 3–5 verifierade exempel med prompt + resultat. Källa för `creative_director`.
+- `library/recipes/<typ>/RECIPE.md` + `recipe.json` – scenstruktur, modellval per scen, promptmallar, klipp-mall
+  (HyperFrames), ljudmall, QA-checklista och referensexempel. Varje recept testas och märks verified.
+
+| # | Beslut | Varför | Bortvalt |
+|---|---|---|---|
+| D10 | **Modellval per scen, inte per film** – routning efter scentyp via model playbooks; modellregistret (`engine/creative_registry.py`) är sanningen om vad som är tillgängligt/verifierat. | Ingen modell vinner allt (Seedance människor/produkt, Veo läppsynk/dialog, Kling produktrörelse/längre klipp). | En modell för allt (sämre per scen). |
+| D11 | **Recept är den återanvändbara enheten** – varje lyckad film blir ett recept med promptar, modellval och klipp-mall som nästa film startar från; lärandet mäter per recept och modell. | "Börja aldrig från noll" i praktiken; jämförbart och förbättringsbart. | Fri prompt varje gång (inkonsekvent, går inte att lära av). |
+| D12 | **Exakt produkt, genererad omgivning** – produkter (grillkit, logotyper, appskärmar) kommer från riktiga foton/inspelningar som första/sista bild eller komposit; AI genererar människa, miljö och rörelse. | AI hittar på produktdetaljer; varumärkesrisk. | Låta modellen rita produkten. |
+
+**Pilot (först):** två recept, ett per bolag, byggda och verifierade end-to-end:
+1. FAIV – "person vid bil visar grillkit, mörker→ljus" (ref: Xenonkungen "Monterat & Klart", Ljusgiganten POV, Ultra Vision grillkit-reveal).
+2. Golfkuponger – "återkommande karaktär / sketch om friskvårdsbidraget" (ref: Timeplan, Melkers julkalender, Duolingo-påminnelse).
+
 ## 5. Beslut (med varför och bortvalda alternativ)
 
 | # | Beslut | Varför | Bortvalt (och varför) |
@@ -122,7 +169,7 @@ Varje fas levereras som PR mot `main` med tester och en kort "vad ändrades / hu
 - Postiz-koppling för Golfkuponger och FAIV (ägaren skapar Postiz-konto/kanaler).
 - **Klart när:** båda bolagen har profil, fakta, brand-kit, ≥10 bevakade konton, ≥5 bevakade annonssidor, Postiz-kanaler.
 
-### Fas 2 – Toppkvalitet på video (ägarens prio 1)
+### Fas 2 – Toppkvalitet på video (ägarens prio 1) – se §4b produktionsmotorn
 - Referensbibliotek: 10–12 godkända referensannonser (pågår) → strukturerad "grammatik" per referens.
 - Videopipeline: shotlist från referens → klipp (egen bank / AI-video) → redigering i HyperFrames (beat, kamera,
   typografi som finish) → vision-kritik → render.
@@ -191,5 +238,7 @@ gärna förslag. Datera och signera.*
 | Datum | Beslut | Av |
 |---|---|---|
 | 2026-10-09 | Masterplan v1 (D1–D9, faser 0–7) | Claude + Jonas (intervju) |
+| 2026-10-09 | Produktionsmotorn: modell per scen, recept, exakt produkt (D10–D12), pilot ett recept per bolag | Jonas + Claude |
+| 2026-10-09 | Analys: gratis → GLM 5.3 Flash → Gemini 3.1 Flash-Lite, även annonser | Jonas |
 | 2026-10-07 | Stilregler blir råd, inte spärrar (AdBrief advisories); fakta spärrar fortfarande | Jonas |
 | 2026-10-08 | Content Library + /studio mergat (PR #85) | Jonas |
