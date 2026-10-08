@@ -1,0 +1,11 @@
+# content-engine: build products and renders the tools write when run on a demo/example inside the skill
+# (work in work/animate/ instead; these keep the skill folder clean if someone builds in place)
+**/index.html
+**/frames/
+**/frames-*/
+**/renders/
+**/review/
+**/review-*/
+**/storyboard*.png
+**/tile.png
+node_modules/
