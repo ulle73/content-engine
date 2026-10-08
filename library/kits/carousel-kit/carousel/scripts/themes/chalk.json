@@ -1,0 +1,24 @@
+{
+  "_notes": [
+    "Chalk-on-Ground Editorial: all lettering (and so every mark) is chalk white; yellow is reserved for the one outlined accent word and red for the footer lockup, so neither may touch a chart. The greens belong to the photograph.",
+    "Emphasis = solid chalk #F5F5EF vs faded chalk rgba(245,245,239,.42) (~#81866C over the shadowed ground #2D360D).",
+    "Validated with a local CIE-Lab/Machado script (the dataviz validate_palette.js was not installed): emphasis dE normal 43.2, deuteranope 42.8; contrast vs ground 11.69:1 (lit) and 3.39:1 (faded) - both >= 3:1.",
+    "Ordinal ramp = chalk mixed onto shadow green at 34/48/62/78/100%: luminance 0.129 -> 0.909, monotone, adjacent gaps >= 0.09. The darkest step is only 2.18:1 on the ground - relief: every mark in these charts carries a direct chalk label."
+  ],
+  "ink": "#F5F5EF",
+  "ink2": "rgba(245,245,239,.80)",
+  "axis": "rgba(245,245,239,.66)",
+  "accent": "#F5F5EF",
+  "muted": "rgba(245,245,239,.42)",
+  "surface": "#2D360D",
+  "grid": "rgba(245,245,239,.16)",
+  "track": "rgba(245,245,239,.10)",
+  "track_line": "rgba(245,245,239,.30)",
+  "bar_ctx": "rgba(245,245,239,.40)",
+  "baseline": "rgba(245,245,239,.50)",
+  "h_scale": 0.86,
+  "glow": "",
+  "glow_soft": "",
+  "area_op": ".14",
+  "ramp": ["#616757", "#808577", "#A0A397", "#C4C6BC", "#F5F5EF"]
+}

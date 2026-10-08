@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Concept catalog — what to show for what he says</title>
+<style>
+:root{--coral:#D97757;--coral-deep:#BD5D3A;--red:#E03A2F;--cream:#F0EDE4;--cream-card:#EAE6DA;
+  --ink:#191817;--ink-soft:#6B6660;--dark:#201512;--on:#F7F3EF;--ok:#3F7A43;
+  --shadow:0 20px 60px rgba(0,0,0,.10),0 4px 14px rgba(0,0,0,.05)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"Inter",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:0 26px 110px}
+header{padding:56px 0 26px;border-bottom:3px solid var(--ink)}
+.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--coral-deep);font-weight:700}
+h1{font-size:clamp(34px,5vw,58px);line-height:1.03;margin:12px 0 14px;letter-spacing:-.03em;font-weight:800}
+.lede{font-size:18px;max-width:76ch;color:var(--ink-soft)} .lede strong{color:var(--ink)}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.86em;background:var(--cream-card);
+  padding:1px 6px;border-radius:5px}
+.rules{margin:22px 0 0;padding:20px 24px;background:var(--ink);color:#D9D2C8;border-radius:16px}
+.rules ol{margin:0;padding-left:20px;font-size:14.5px;line-height:1.6}
+.rules li{margin-bottom:6px} .rules li:first-child{color:#fff;font-weight:600}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}
+nav a{font:700 12px/1 -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;
+  text-decoration:none;color:var(--ink);background:#fff;padding:9px 13px;border-radius:999px;
+  box-shadow:var(--shadow)}
+nav a:hover{background:var(--coral);color:#fff}
+
+.concept{margin-top:44px;background:#fff;border-radius:22px;padding:26px 28px;box-shadow:var(--shadow)}
+.concept.has-gap{border-left:6px solid var(--red)}
+.head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.head h2{margin:0;font-size:30px;letter-spacing:-.02em;font-family:ui-monospace,Menlo,monospace}
+.count{font-size:13px;color:var(--ink-soft)}
+.says{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 16px}
+.say{font:600 13px ui-monospace,Menlo,monospace;background:var(--cream);color:var(--ink-soft);
+  padding:5px 11px;border-radius:8px}
+.rulepair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:760px){.rulepair{grid-template-columns:1fr}}
+.do,.dont{margin:0;font-size:14.5px;line-height:1.5;padding:14px 16px;border-radius:12px}
+.do{background:#EFF6EF;color:#2C4A2E} .do b{color:var(--ok);display:block;font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.dont{background:#FDF1ED;color:#6B3A2C} .dont b{color:var(--red);display:block;font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+
+.assets{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.asset{margin:0;background:var(--cream);border-radius:16px;overflow:hidden}
+.frameholder{position:relative;width:100%;overflow:hidden;background:var(--cream)}
+.frameholder iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;
+  pointer-events:none;transform:scale(var(--s,.2))}
+.fitbadge{position:absolute;left:8px;bottom:8px;z-index:2;font:800 9px -apple-system,sans-serif;
+  letter-spacing:.1em;background:rgba(25,24,23,.8);color:#fff;padding:4px 7px;border-radius:6px}
+.imgholder{aspect-ratio:9/16;display:flex;align-items:center;justify-content:center;padding:18px;
+  background:var(--cream-card)}
+.imgholder img{max-width:100%;max-height:100%;object-fit:contain;image-rendering:pixelated}
+.gapholder,.noteholder{aspect-ratio:9/16;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:20px;font-size:13px;color:var(--ink-soft);background:var(--cream-card)}
+.gapholder{background:#FDF1ED;color:#A33B25;font-weight:600}
+figcaption{padding:12px 14px 14px;background:#fff}
+.kind{display:inline-block;font:800 9.5px -apple-system,sans-serif;letter-spacing:.12em;
+  background:var(--ink);color:var(--on);padding:4px 8px;border-radius:999px;margin-bottom:7px}
+.k-gap .kind{background:var(--red)} .k-block .kind{background:var(--coral)}
+figcaption b{display:block;font-size:12.5px;line-height:1.4;font-weight:600}
+.open{display:inline-block;margin-top:8px;font-size:11.5px;color:var(--coral-deep);text-decoration:none}
+.open:hover{text-decoration:underline}
+</style></head><body><div class="wrap">
+
+<header>
+  <div class="eyebrow">Library · knowledge base</div>
+  <h1>What to show, for what he says.</h1>
+  <p class="lede">The editor's lookup. Read it <strong>before</strong> choosing any asset:
+  find what the line is about, use what's under it. Terms and counts are mined from the 22
+  shipped transcripts, so the list is what he actually talks about — not what the library happens
+  to contain. Every block below is <strong>live and animating</strong>, not a screenshot.</p>
+  <div class="rules"><ol><li>A PRODUCT is shown as its real UI, animated. Never a mascot standing in for a product.</li><li>A MASCOT is only ever the actor — the thing tending, carrying, conducting or reacting. It is never the session, the model, the app or the file.</li><li>If he names a tool, that tool&#x27;s own UI is on screen on the word.</li><li>Plural concepts get plural UI. &#x27;sessions&#x27; is more than one window, not one window.</li><li>No small text — see reference/BLACKLIST.md #1. If the only asset is a text screenshot, build a block instead.</li><li>A page screenshot is shot FOR ITS SLOT: b-roll full = a true 9:16 frame; split = the marker band in the top half; transparent = a card above his head. Never one crop reused in all three.</li></ol></div>
+  <nav><a href="#c-session">session</a><a href="#c-permission">permission</a><a href="#c-computers">computers</a><a href="#c-claude-code">claude-code</a><a href="#c-other-assistants">other-assistants</a><a href="#c-prompt">prompt</a><a href="#c-agent">agent</a><a href="#c-skills">skills</a><a href="#c-terminal">terminal</a><a href="#c-repo">repo</a><a href="#c-model">model</a><a href="#c-free-price">free-price</a><a href="#c-files">files</a><a href="#c-claim-quote">claim-quote</a></nav>
+</header>
+
+
+<section class="concept" id="c-session">
+  <div class="head">
+    <h2>session</h2>
+    <span class="count">12 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">session</span><span class="say">sessions</span><span class="say">claude session</span><span class="say">codex session</span><span class="say">another session</span><span class="say">each session</span><span class="say">parallel</span><span class="say">at the same time</span><span class="say">multiple</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> Real session windows — several of them. One mascot may tend them, but the SESSIONS are the UI.</p>
+    <p class="dont"><b>Never</b> A mascot as the session. A single window when he says &#x27;sessions&#x27;. A sleeping mascot for &#x27;waiting&#x27;.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/sessions-grid.html?mode=babysit" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>babysit — 4 sessions, 3 stalled, mascot running between them (the PAIN)</b><a class="open" href="ui-blocks/sessions-grid.html?mode=babysit" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/sessions-grid.html?mode=parallel" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>parallel — 4 sessions all working, ticks landing on their own (the PAYOFF)</b><a class="open" href="ui-blocks/sessions-grid.html?mode=parallel" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/sessions-hub.html?mode=talk" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>talk — one session messages another</b><a class="open" href="ui-blocks/sessions-hub.html?mode=talk" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-permission">
+  <div class="head">
+    <h2>permission</h2>
+    <span class="count">9 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">approve</span><span class="say">approved</span><span class="say">permission</span><span class="say">allow</span><span class="say">deny</span><span class="say">safe</span><span class="say">safely</span><span class="say">stray</span><span class="say">without asking</span><span class="say">consent</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> The real permission prompt inside a session window — a request arriving, Allow / Deny, one of them lighting up.</p>
+    <p class="dont"><b>Never</b> A padlock icon, a shield, an abstract gate.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/sessions-grid.html?mode=approve" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>approve — a message arrives, Allow / Deny</b><a class="open" href="ui-blocks/sessions-grid.html?mode=approve" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-computers">
+  <div class="head">
+    <h2>computers</h2>
+    <span class="count">7 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">computer</span><span class="say">computers</span><span class="say">machine</span><span class="say">machines</span><span class="say">mac</span><span class="say">macos</span><span class="say">linux</span><span class="say">windows</span><span class="say">laptop</span><span class="say">desktop</span><span class="say">mac mini</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> Distinct machines, each with its own session on it. Platform names as cream chips on coral; the unsupported one outlined and dimmed.</p>
+    <p class="dont"><b>Never</b> A generic cloud icon. A screenshot of a docs availability table.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/sessions-hub.html?mode=hub" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>hub — one session conducting mac mini / laptop / desktop</b><a class="open" href="ui-blocks/sessions-hub.html?mode=hub" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-note">
+      <div class="noteholder">built in the composition, not a library file</div>
+      <figcaption><span class="kind">IN-COMP</span>
+        <b>platform chips — .chip / .chip.off in the composition, cream on coral</b></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-claude-code">
+  <div class="head">
+    <h2>claude-code</h2>
+    <span class="count">11 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">claude code</span><span class="say">claude</span><span class="say">cloud code</span><span class="say">anthropic</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> The genuine Claude Code surface — the composer, or the pixel wordmark at full bleed.</p>
+    <p class="dont"><b>Never</b> A serif stand-in for the wordmark. The wordmark on its shipped black plate (use the alpha cut). A BARE COMPOSER CROP — the composer always comes with the lockup above it: mark spins in, wordmark writes on, chips stagger. That is the §11 &#x27;every assistant, same move&#x27; treatment, and it is what makes cutting between two assistants read as one system.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/ai-new-chat.html?brand=claude" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>the real Claude composer, with the three-phase camera move</b><a class="open" href="ui-blocks/ai-new-chat.html?brand=claude" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-image">
+      <div class="imgholder"><img src="brand/claude-code-wordmark-alpha.png" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">IMAGE</span>
+        <b>the real pixel wordmark, plate keyed out</b><a class="open" href="brand/claude-code-wordmark-alpha.png" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-other-assistants">
+  <div class="head">
+    <h2>other-assistants</h2>
+    <span class="count">16 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">chatgpt</span><span class="say">openai</span><span class="say">codex</span><span class="say">gemini</span><span class="say">grok</span><span class="say">perplexity</span><span class="say">cursor</span><span class="say">copilot</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> That assistant&#x27;s OWN new-chat screen, through the same three-phase camera move — push in on the composer, pan the prompt, pull out as the lockup writes itself on. Never the composer alone.</p>
+    <p class="dont"><b>Never</b> A logo on a plain card. A competitor&#x27;s UI faked in your own style.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/ai-new-chat.html?brand=chatgpt" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>ChatGPT composer</b><a class="open" href="ui-blocks/ai-new-chat.html?brand=chatgpt" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/ai-new-chat.html?brand=gemini" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>Gemini composer</b><a class="open" href="ui-blocks/ai-new-chat.html?brand=gemini" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/ai-new-chat.html?brand=grok" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>Grok composer</b><a class="open" href="ui-blocks/ai-new-chat.html?brand=grok" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/ai-new-chat.html?brand=perplexity" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>Perplexity composer</b><a class="open" href="ui-blocks/ai-new-chat.html?brand=perplexity" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-prompt">
+  <div class="head">
+    <h2>prompt</h2>
+    <span class="count">22 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">prompt</span><span class="say">type</span><span class="say">typing</span><span class="say">ask</span><span class="say">asked</span><span class="say">tell</span><span class="say">write</span><span class="say">send</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> A real composer with his actual words typing into it, camera pushed in on the caret.</p>
+    <p class="dont"><b>Never</b> A typeset quote card.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/ai-new-chat.html?brand=claude" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>composer, type-on + camera pan</b><a class="open" href="ui-blocks/ai-new-chat.html?brand=claude" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-mascot">
+      <div class="imgholder"><img src="mascot/outline/mascot-typing.webp" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">MASCOT</span>
+        <b>mascot-typing — only ALONGSIDE a UI, never instead of one</b><a class="open" href="mascot/outline/mascot-typing.webp" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-agent">
+  <div class="head">
+    <h2>agent</h2>
+    <span class="count">22 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">agent</span><span class="say">agents</span><span class="say">subagent</span><span class="say">helper</span><span class="say">helpers</span><span class="say">team</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> Mascots are legitimate here — an agent is an actor, not a product. Show several arriving, or one conducting.</p>
+    <p class="dont"><b>Never</b> One mascot when he says a number greater than one.</p>
+  </div>
+  <div class="assets"><figure class="asset k-mascot">
+      <div class="imgholder"><img src="mascot/outline/mascot-conducting.webp" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">MASCOT</span>
+        <b>conducting — one directing many</b><a class="open" href="mascot/outline/mascot-conducting.webp" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-mascot">
+      <div class="imgholder"><img src="mascot/outline/mascot-juggling.webp" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">MASCOT</span>
+        <b>juggling — many at once</b><a class="open" href="mascot/outline/mascot-juggling.webp" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-mascot">
+      <div class="imgholder"><img src="mascot/outline/mascot-carrying.webp" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">MASCOT</span>
+        <b>carrying — handing work over</b><a class="open" href="mascot/outline/mascot-carrying.webp" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-skills">
+  <div class="head">
+    <h2>skills</h2>
+    <span class="count">8 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">skill</span><span class="say">skills</span><span class="say">slash</span><span class="say">command</span><span class="say">commands</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> The real skills surface — the slash menu, or the folder fanning its files.</p>
+    <p class="dont"><b>Never</b> A bulleted list of skill names.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/skills-beat.html?mode=slash" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>the slash-command menu</b><a class="open" href="ui-blocks/skills-beat.html?mode=slash" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/skill-folder.html" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>the folder fan — files lift out and arc</b><a class="open" href="ui-blocks/skill-folder.html" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-terminal">
+  <div class="head">
+    <h2>terminal</h2>
+    <span class="count">29 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">terminal</span><span class="say">cli</span><span class="say">command line</span><span class="say">run</span><span class="say">runs</span><span class="say">install</span><span class="say">npm</span><span class="say">shell</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> A real terminal, with the command actually typing and output streaming.</p>
+    <p class="dont"><b>Never</b> A static screenshot of a terminal.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/sessions-grid.html?mode=parallel" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>session windows with live commands</b><a class="open" href="ui-blocks/sessions-grid.html?mode=parallel" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-image">
+      <div class="imgholder"><img src="ui/terminal.png" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">IMAGE</span>
+        <b>terminal crop — stills only as a last resort</b><a class="open" href="ui/terminal.png" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-repo">
+  <div class="head">
+    <h2>repo</h2>
+    <span class="count">3 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">github</span><span class="say">repo</span><span class="say">repository</span><span class="say">open source</span><span class="say">star</span><span class="say">stars</span><span class="say">fork</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> The repo&#x27;s own OG card — curl opengraph.githubassets.com/1/&lt;owner&gt;/&lt;repo&gt;.</p>
+    <p class="dont"><b>Never</b> A GitHub card while the line is about anything else. This was the single worst note ever given.</p>
+  </div>
+  <div class="assets"><figure class="asset k-image">
+      <div class="imgholder"><img src="ui/gh-skills-og.png" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">IMAGE</span>
+        <b>a real repo OG card</b><a class="open" href="ui/gh-skills-og.png" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-image">
+      <div class="imgholder"><img src="ui/github-stars.png" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">IMAGE</span>
+        <b>star count</b><a class="open" href="ui/github-stars.png" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-model">
+  <div class="head">
+    <h2>model</h2>
+    <span class="count">16 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">model</span><span class="say">models</span><span class="say">opus</span><span class="say">sonnet</span><span class="say">haiku</span><span class="say">gpt</span><span class="say">version</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> The model picker inside a real composer, or the brand marks side by side.</p>
+    <p class="dont"><b>Never</b> A typeset comparison table.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/ai-new-chat.html?brand=claude" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>the model chip in the composer</b><a class="open" href="ui-blocks/ai-new-chat.html?brand=claude" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-image">
+      <div class="imgholder"><img src="brand/claude.svg" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">IMAGE</span>
+        <b>Claude mark</b><a class="open" href="brand/claude.svg" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-image">
+      <div class="imgholder"><img src="brand/si-googlegemini.svg" loading="lazy" alt=""></div>
+      <figcaption><span class="kind">IMAGE</span>
+        <b>Gemini mark</b><a class="open" href="brand/si-googlegemini.svg" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept has-gap" id="c-free-price">
+  <div class="head">
+    <h2>free-price</h2>
+    <span class="count">25 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">free</span><span class="say">price</span><span class="say">pricing</span><span class="say">cost</span><span class="say">costs</span><span class="say">cheap</span><span class="say">credits</span><span class="say">limit</span><span class="say">quota</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> The real pricing surface if one exists at readable size; otherwise a designed number that counts up. NEEDS A BLOCK — none exists yet.</p>
+    <p class="dont"><b>Never</b> A screenshot of a pricing page (small text).</p>
+  </div>
+  <div class="assets"><figure class="asset k-gap">
+      <div class="gapholder">nothing in the library covers this yet</div>
+      <figcaption><span class="kind">MISSING</span>
+        <b>GAP — build a price/limit block with a count-up and a big number</b></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-files">
+  <div class="head">
+    <h2>files</h2>
+    <span class="count">12 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">file</span><span class="say">files</span><span class="say">folder</span><span class="say">context</span><span class="say">codebase</span><span class="say">index</span><span class="say">indexed</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> The folder fan, or a file tree that builds itself.</p>
+    <p class="dont"><b>Never</b> A screenshot of a file explorer.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/skill-folder.html" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>the folder fan</b><a class="open" href="ui-blocks/skill-folder.html" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+<section class="concept" id="c-claim-quote">
+  <div class="head">
+    <h2>claim-quote</h2>
+    <span class="count">14 mentions across the scripts</span>
+  </div>
+  <div class="says"><span class="say">actually</span><span class="say">apparently</span><span class="say">they said</span><span class="say">the docs say</span><span class="say">turns out</span><span class="say">only</span><span class="say">not yet</span><span class="say">supported</span><span class="say">announced</span><span class="say">according to</span></div>
+  <div class="rulepair">
+    <p class="do"><b>Show</b> The REAL page as a full 9:16 frame, shot at ~640 CSS px so its type scales ~1.7x UP. No browser chrome, no URL bar, no sticky site header — the frame is the CONTENT. The marker is opaque ink drawn across the real words (one bar per wrapped line), and the push zooms INTO the marker, clamped so the line never leaves the frame.</p>
+    <p class="dont"><b>Never</b> Two separate highlights on screen — one sentence or paragraph, never a lone word, never two marks. A crop of a desktop page. A small section dropped into a box. A URL bar or browser dots. A rect nudged by eye. A translucent rounded selection box instead of ink. A zoom into the middle of the page while the highlight drifts out of shot.</p>
+  </div>
+  <div class="assets"><figure class="asset k-block">
+      <div class="frameholder f-full" style="aspect-ratio:1080/1920"><iframe src="ui-blocks/page-highlight.html?src=pages/example-page.png&fit=full&zoom=in" loading="lazy" scrolling="no" tabindex="-1" style="width:1080px;height:1920px;--fw:1080"></iframe><span class="fitbadge">FULL · 1080×1920</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>b-roll full — 9:16, the page owns the frame, slow push in</b><a class="open" href="ui-blocks/page-highlight.html?src=pages/example-page.png&fit=full&zoom=in" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-block">
+      <div class="frameholder f-half" style="aspect-ratio:1000/880"><iframe src="ui-blocks/page-highlight.html?src=pages/example-page.png&fit=half&zoom=out" loading="lazy" scrolling="no" tabindex="-1" style="width:1000px;height:880px;--fw:1000"></iframe><span class="fitbadge">HALF · 1000×880</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>split — the marker band parked in the 1000x880 top half, pulling out</b><a class="open" href="ui-blocks/page-highlight.html?src=pages/example-page.png&fit=half&zoom=out" target="_blank">open ↗</a></figcaption>
+    </figure><figure class="asset k-block">
+      <div class="frameholder f-head" style="aspect-ratio:1000/620"><iframe src="ui-blocks/page-highlight.html?src=pages/example-page.png&fit=head&zoom=hold" loading="lazy" scrolling="no" tabindex="-1" style="width:1000px;height:620px;--fw:1000"></iframe><span class="fitbadge">HEAD · 1000×620</span></div>
+      <figcaption><span class="kind">LIVE BLOCK</span>
+        <b>transparent — a card above his head</b><a class="open" href="ui-blocks/page-highlight.html?src=pages/example-page.png&fit=head&zoom=hold" target="_blank">open ↗</a></figcaption>
+    </figure></div>
+</section>
+
+</div>
+<script>
+/* Scale every preview from its MEASURED width. This used to be a CSS calc() on container-query
+   units, which silently resolves to transform:none — so all 19 previews rendered at full
+   1080x1920 inside a 220px card and only their blank top-left corner was visible. */
+function fitPreviews(){
+  document.querySelectorAll(".frameholder").forEach(function(h){
+    var f = h.querySelector("iframe"); if (!f) return;
+    var native = parseFloat(f.style.width) || 1080;
+    f.style.setProperty("--s", (h.clientWidth / native).toFixed(4));
+  });
+}
+addEventListener("resize", fitPreviews);
+addEventListener("load", fitPreviews);
+fitPreviews();
+setTimeout(fitPreviews, 400); setTimeout(fitPreviews, 1500);
+</script>
+</body></html>

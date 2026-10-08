@@ -1,0 +1,310 @@
+<template>
+  <style>
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500-italic.woff2") format('woff2');font-weight:500;font-style:italic;font-display:block;}
+  </style>
+
+  <style>
+    /* Frame root — styled by #root only (never a class on the composition root). */
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: 'Inter', sans-serif;
+      color: #142018;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    /* Full-bleed cream paper ground — its own full-duration clip on the lowest track. */
+    .\30 5-portaler-ground {
+      position: absolute;
+      inset: 0;
+      background: #F8F4EC;
+    }
+
+    /* Camera layer — everything that drifts with the slow push. */
+    .\30 5-portaler-stage {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 45%;
+    }
+
+    /* ---------- Header block (top-left, inside the 7cqw safe margin) ---------- */
+    .\30 5-portaler-head {
+      position: absolute;
+      left: 7cqw;
+      top: 7cqw;
+      width: 86cqw;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .\30 5-portaler-label {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 2.2cqw;
+      line-height: 1.2;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #8D6511;
+      white-space: nowrap;
+    }
+    .\30 5-portaler-headline {
+      margin: 2.2cqw 0 0 0;
+      font-family: 'Playfair Display', serif;
+      font-weight: 500;
+      font-size: 8.6cqw;
+      line-height: 1.02;
+      letter-spacing: -0.015em;
+      color: #073C2B;
+    }
+    .\30 5-portaler-line {
+      display: block;
+      white-space: nowrap;
+    }
+    .\30 5-portaler-word {
+      display: inline-block;
+    }
+    .\30 5-portaler-rule {
+      margin-top: 2.6cqw;
+      width: 9cqw;
+      height: 2px;
+      background: #D6A536;
+      transform-origin: 0% 50%;
+    }
+
+    /* ---------- 2x2 logo grid (center of frame, margin to margin) ---------- */
+    .\30 5-portaler-grid {
+      position: absolute;
+      left: 7cqw;
+      top: 35.6cqw;
+      width: 86cqw;
+      height: 38cqw;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 2cqw;
+    }
+    .\30 5-portaler-slot {
+      position: relative;
+    }
+    /* Faint slot outline: establishes the grid before the cards land in it. */
+    .\30 5-portaler-ghost {
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      border: 2px solid rgba(7, 60, 43, 0.07);
+    }
+    /* logo-card: white, 8px radius, 2px green hairline at ~14% — flat, no shadow. */
+    .\30 5-portaler-card {
+      position: absolute;
+      inset: 0;
+      background: #FFFFFF;
+      border-radius: 8px;
+      border: 2px solid rgba(7, 60, 43, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    /* Real portal marks, native colors, contained — never cropped, recolored or stretched. */
+    .\30 5-portaler-logo {
+      display: block;
+      width: 24cqw;
+      height: 16cqw;
+      object-fit: contain;
+    }
+    /* Optical balance only: the 3:2 box is scaled uniformly, the mark itself is untouched. */
+    .\30 5-portaler-logo-soderberg {
+      width: 26cqw;
+      height: 17.333cqw;
+    }
+    .\30 5-portaler-logo-edenred {
+      width: 20.4cqw;
+      height: 13.6cqw;
+    }
+
+    /* ---------- Footer line (above the 83% keep-out) ---------- */
+    .\30 5-portaler-foot {
+      position: absolute;
+      left: 7cqw;
+      top: 77cqw;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 3.1cqw;
+      line-height: 1.38;
+      color: #142018;
+      white-space: nowrap;
+    }
+    .\30 5-portaler-lead {
+      display: inline-block;
+    }
+    .\30 5-portaler-url {
+      position: relative;
+      display: inline-block;
+      font-weight: 600;
+      color: #073C2B;
+    }
+    .\30 5-portaler-underline {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0.05cqw;
+      height: 2px;
+      background: #D6A536;
+      transform-origin: 0% 50%;
+    }
+  </style>
+
+  <div data-hf-id="hf-hdhw" id="root" data-composition-id="05-portaler" data-start="0" data-duration="4.964" data-width="1080" data-height="1080">
+    <div data-hf-id="hf-k05f" id="05-portaler-ground" class="05-portaler-ground clip" data-start="0" data-duration="4.964" data-track-index="0"></div>
+
+    <div data-hf-id="hf-naug" id="05-portaler-stage" class="05-portaler-stage clip" data-start="0" data-duration="4.964" data-track-index="1">
+      <div data-hf-id="hf-j0z0" class="05-portaler-head">
+        <div data-hf-id="hf-kscz" id="05-portaler-label" class="05-portaler-label">Friskvård via arbetsgivaren</div>
+        <div data-hf-id="hf-iq02" id="05-portaler-headline" class="05-portaler-headline">
+          <span data-hf-id="hf-op5t" class="05-portaler-line"><span data-hf-id="hf-i5xa" class="05-portaler-word">Köp</span> <span data-hf-id="hf-b4ex" class="05-portaler-word">via</span> <span data-hf-id="hf-27pq" class="05-portaler-word">din</span></span>
+          <span data-hf-id="hf-5uut" class="05-portaler-line"><span data-hf-id="hf-9iys" class="05-portaler-word">förmånsportal</span></span>
+        </div>
+        <div data-hf-id="hf-0zuu" id="05-portaler-rule" class="05-portaler-rule"></div>
+      </div>
+
+      <div data-hf-id="hf-yg6y" id="05-portaler-grid" class="05-portaler-grid">
+        <div data-hf-id="hf-t2wi" class="05-portaler-slot">
+          <div data-hf-id="hf-8ph7" class="05-portaler-ghost"></div>
+          <div data-hf-id="hf-z4is" id="05-portaler-card-benifex" class="05-portaler-card">
+            <img data-hf-id="hf-sdrp" id="05-portaler-logo-benifex" class="05-portaler-logo" src="assets/portal-benifex.png" alt="Benifex">
+          </div>
+        </div>
+        <div data-hf-id="hf-pxva" class="05-portaler-slot">
+          <div data-hf-id="hf-do6z" class="05-portaler-ghost"></div>
+          <div data-hf-id="hf-f4lw" id="05-portaler-card-epassi" class="05-portaler-card">
+            <img data-hf-id="hf-0b0z" id="05-portaler-logo-epassi" class="05-portaler-logo" src="assets/portal-epassi.jpg" alt="ePassi">
+          </div>
+        </div>
+        <div data-hf-id="hf-qc6b" class="05-portaler-slot">
+          <div data-hf-id="hf-d9vy" class="05-portaler-ghost"></div>
+          <div data-hf-id="hf-wek4" id="05-portaler-card-soderberg" class="05-portaler-card">
+            <img data-hf-id="hf-xpg8" id="05-portaler-logo-soderberg" class="05-portaler-logo 05-portaler-logo-soderberg" src="assets/portal-soderberg-partners.jpg" alt="Söderberg & Partners">
+          </div>
+        </div>
+        <div data-hf-id="hf-qqhc" class="05-portaler-slot">
+          <div data-hf-id="hf-cvkx" class="05-portaler-ghost"></div>
+          <div data-hf-id="hf-y5ri" id="05-portaler-card-edenred" class="05-portaler-card">
+            <img data-hf-id="hf-1ffk" id="05-portaler-logo-edenred" class="05-portaler-logo 05-portaler-logo-edenred" src="assets/portal-edenred.jpg" alt="Edenred">
+          </div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-x1ui" id="05-portaler-foot" class="05-portaler-foot"><span data-hf-id="hf-p6gu" id="05-portaler-lead" class="05-portaler-lead">…eller direkt hos oss på</span> <span data-hf-id="hf-idp6" id="05-portaler-url" class="05-portaler-url">golfkuponger.se<span data-hf-id="hf-7l2j" id="05-portaler-underline" class="05-portaler-underline"></span></span></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var PREFIX = "05-portaler-";
+      var BEAT = 60 / 165; // music grid: 165 BPM -> 0.3636s
+      var DURATION = 4.364;
+      var CQ = 1080 / 100; // 1cqw in px on the 1080 canvas (transform offsets are authored in px)
+
+      var byId = function (name) { return document.getElementById(PREFIX + name); };
+      var toArray = function (list) { return Array.prototype.slice.call(list); };
+
+      var stage = byId("stage");
+      var label = byId("label");
+      var headline = byId("headline");
+      var words = toArray(headline.getElementsByClassName(PREFIX + "word"));
+      var rule = byId("rule");
+      var ghosts = toArray(byId("grid").getElementsByClassName(PREFIX + "ghost"));
+      var lead = byId("lead");
+      var url = byId("url");
+      var underline = byId("underline");
+
+      var tl = gsap.timeline({ paused: true });
+
+      // Camera: one barely-there pull-back under the whole shot (zoom-OUT in miniature) —
+      // alive but resting, and it only ever moves content inward, never past the 7cqw safe margin.
+      tl.fromTo(stage, { scale: 1 }, { scale: 0.988, duration: DURATION, ease: "none" }, 0);
+
+      // ---------- Scene 1 (0.000-0.727): label + headline, soft rise + blur-to-sharp ----------
+      tl.fromTo(
+        label,
+        { opacity: 0, y: 1.4 * CQ, filter: "blur(6px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7, ease: "power3.out" },
+        0.06
+      );
+      words.forEach(function (word, i) {
+        tl.fromTo(
+          word,
+          { opacity: 0, y: 3 * CQ, filter: "blur(10px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.95, ease: "expo.out" },
+          0.14 + i * 0.07
+        );
+      });
+      tl.fromTo(rule, { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "expo.out" }, 0.46);
+      // The empty grid region is established before the first card arrives.
+      tl.fromTo(ghosts, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out", stagger: 0.05 }, 0.3);
+
+      // ---------- Scene 2 (0.727-2.182): logo-cards assemble one per beat ----------
+      // dynamic-content-sequencing: content array -> flat pre-computed TIMELINE (start/end), built once.
+      var PORTALS = [
+        { key: "benifex", beats: 1 },
+        { key: "epassi", beats: 1 },
+        { key: "soderberg", beats: 1 },
+        { key: "edenred", beats: 1 }
+      ];
+      var cursor = 2 * BEAT; // first card on beat 2 = 0.727s (click SFX)
+      var SEQUENCE = PORTALS.map(function (entry) {
+        var start = cursor;
+        cursor += entry.beats * BEAT;
+        return { key: entry.key, start: start, end: cursor };
+      });
+      SEQUENCE.forEach(function (item) {
+        var card = byId("card-" + item.key);
+        var logo = byId("logo-" + item.key);
+        tl.fromTo(
+          card,
+          { opacity: 0, y: 3.2 * CQ, scale: 0.985, filter: "blur(7px)" },
+          { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.64, ease: "power3.out" },
+          item.start
+        );
+        tl.fromTo(
+          logo,
+          { opacity: 0, y: 0.9 * CQ },
+          { opacity: 1, y: 0, duration: 0.58, ease: "power3.out" },
+          item.start + 0.05
+        );
+      });
+
+      // ---------- Scene 3 (2.182-4.364): closing line under the grid, then hold ----------
+      var T_FOOT = 7 * BEAT; // 2.545s
+      tl.fromTo(
+        lead,
+        { opacity: 0, y: 1.8 * CQ, filter: "blur(6px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" },
+        T_FOOT
+      );
+      tl.fromTo(
+        url,
+        { opacity: 0, y: 1.8 * CQ, filter: "blur(6px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" },
+        T_FOOT + 0.09
+      );
+      tl.fromTo(underline, { scaleX: 0 }, { scaleX: 1, duration: 0.75, ease: "expo.out" }, 8 * BEAT);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["05-portaler"] = tl;
+    })();
+  </script>
+</template>

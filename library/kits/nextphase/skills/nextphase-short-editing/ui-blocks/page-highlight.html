@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>page-highlight</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/*  page-highlight — a REAL page, shot as a full 9:16 frame, with the marker sweeping the real
+    words and a slow push. Built 2026-08-10 after Jad's note:
+
+      "on the highlighter I don't like the way it's formatted... you have to understand WHERE in
+       the video it will be placed — b-roll, split screen, transparent — because the screenshot
+       needs to look different. If it's b-roll it needs to be 9:16, and you should be able to
+       zoom in and zoom out smoothly. I don't want a small section screenshotted and dropped in."
+
+    So: the screenshot IS the frame (1080x1920, shot at ~560 CSS px so type scales ~1.9x UP —
+    never a crop of a desktop page), and the block knows which layout it is going into.
+
+      ?src=pages/<name>.png     the 9:16 shot; its .json sidecar carries the marker rects,
+                                measured from the live DOM by scripts/shoot-page-9x16.py
+      ?fit=full                 B-ROLL FULL — fills 1080x1920, the page owns the frame
+      ?fit=half                 SPLIT — re-laid for the 1000x880 top half
+      ?fit=head                 TRANSPARENT — a card that sits above his head
+      ?zoom=in|out|hold         smooth push in / pull out / hold, always eased, never a cut
+      ?seek=<s>                 hold one instant, for scripts/block-render.py
+
+    The marker is mix-blend-mode:multiply so the words stay dark THROUGH it, and grows with
+    scaleX from a left origin so it DRAWS rather than appears. One bar per wrapped line.        */
+:root{
+  --T:6s; --ease:cubic-bezier(.4,0,.2,1);
+  --hl:#F7E23C; --mono:"JetBrains Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{background:#fff}
+body.half{width:1000px;height:880px}
+body.head{width:1000px;height:620px}
+body.bare{background:transparent}
+
+#frame{position:absolute;inset:0;overflow:hidden}
+/* Media sits IN the page — no rounded plate, no drop shadow, no border. A card behind the
+   shot reads as a sticker and makes it look smaller. See reference/BLACKLIST.md #2b:
+   "I want it to be IN the page instead. Not only for Claude Code, for everything." */
+
+/* the camera: one continuous, eased move — never a cut between highlights */
+/* transform-origin is set from the MARKER CENTROID at runtime — a fixed 50% 34% pushes into
+   the middle of the page and leaves the highlight drifting out of frame. */
+#cam{position:absolute;left:0;top:0;width:100%;height:100%;
+  transform-origin:var(--ox,50%) var(--oy,40%);
+  animation:push var(--T) var(--ease) infinite both}
+@keyframes push{0%{transform:scale(1.00)} 100%{transform:scale(var(--z,1.22))}}
+body.zoom-out #cam{animation-name:pull}
+@keyframes pull{0%{transform:scale(var(--z,1.22))} 100%{transform:scale(1.00)}}
+body.zoom-hold #cam{animation:none;transform:scale(calc((1 + var(--z,1.22)) / 2))}
+
+#page{position:absolute;left:0;top:0;width:100%}     /* page + ink move as one */
+#shot{display:block;width:100%}
+/* SPLIT and TRANSPARENT are not 9:16 — show the band of the page the markers are in,
+   scaled so the type stays the same size it would be at full bleed */
+body.half #page,body.head #page{width:100%}   /* slid vertically by script */
+
+
+/* A real marker is not a rounded rectangle at 60%. It is opaque ink that the words show
+   THROUGH (multiply), it overshoots the cap height, its edges are slightly ragged, and the
+   stroke sits a hair off-level because a hand drew it. */
+.hl{position:absolute;mix-blend-mode:multiply;transform:scaleX(0);transform-origin:left center;
+  animation:sweep var(--dur,.62s) cubic-bezier(.25,.8,.4,1) both;
+  animation-delay:var(--d,0s);animation-iteration-count:1}
+.hl i{position:absolute;inset:0;background:var(--hl);opacity:.92;border-radius:2px 5px 4px 3px;
+  transform:rotate(var(--tilt,-.35deg))}
+/* the pressed-down end of a stroke is darker where the pen starts and lifts */
+.hl i::before,.hl i::after{content:"";position:absolute;top:0;bottom:0;width:16px;
+  background:var(--hl);opacity:.55}
+.hl i::before{left:-6px;border-radius:8px 0 0 8px}
+.hl i::after{right:-7px;border-radius:0 9px 9px 0}
+@keyframes sweep{from{transform:scaleX(0)} to{transform:scaleX(1)}}
+</style>
+</head>
+<body>
+<div id="frame">
+  <div id="cam"><div id="page"><img id="shot" alt=""></div></div>
+</div>
+
+<script>
+const q    = new URLSearchParams(location.search);
+const SRC  = q.get("src")  || "pages/example-page.png";
+const FIT  = q.get("fit")  || "full";
+const ZOOM = q.get("zoom") || "in";
+
+if (FIT === "half"){ document.body.classList.add("half");
+  document.documentElement.style.cssText = "width:1000px;height:880px;overflow:hidden"; }
+if (FIT === "head"){ document.body.classList.add("head");
+  document.documentElement.style.cssText = "width:1000px;height:620px;overflow:hidden"; }
+if (ZOOM === "out")  document.body.classList.add("zoom-out");
+if (ZOOM === "hold") document.body.classList.add("zoom-hold");
+if (q.get("plate")  === "none") document.body.classList.add("bare");
+
+const shot = document.getElementById("shot");
+const page = document.getElementById("page");
+shot.src = "../" + SRC;
+
+(async () => {
+  let meta = {rects: []};
+  try { meta = await (await fetch("../" + SRC.replace(/\.png$/, ".json"))).json(); } catch (e) {}
+
+  const cam = document.getElementById("cam");
+
+  // ONE highlight at a time. Never two separate marks on screen — a single sentence or
+  // paragraph is the unit. When that sentence WRAPS, its lines are still ONE stroke, so the
+  // second line starts the instant the first finishes, the way a pen carries on.
+  const rects = meta.rects.filter(r => r.phrase === meta.rects[0].phrase);
+  if (meta.rects.length !== rects.length) {
+    console.warn("page-highlight: more than one phrase supplied; only the first is drawn.");
+  }
+  const GROW = 0.55;                     // the pen overshoots the cap height
+  const DRAW = 0.62;                     // seconds to draw one line
+  const T    = 6;
+  rects.forEach((r, i) => {
+    const d = document.createElement("div");
+    d.className = "hl";
+    d.style.cssText =
+      `left:${r.left - 0.6}%;top:${r.top - r.height * GROW * 0.55}%;` +
+      `width:${r.width + 1.2}%;height:${r.height * (1 + GROW)}%;` +
+      `--d:${(0.5 + i * DRAW).toFixed(2)}s;--dur:${DRAW}s;` +
+      `--tilt:${(i % 2 ? -0.45 : 0.35)}deg`;
+    d.innerHTML = "<i></i>";
+    page.appendChild(d);
+  });
+
+  // SPLIT / TRANSPARENT are not 9:16, so the 1080x1920 shot has to be PARKED on the band the
+  // marker is in — width fills the slot, then slide vertically until the marker sits on the
+  // slot's centre line. Percentages cannot express this; it needs the real pixel heights.
+  const FRAME = {full: [1080, 1920], half: [1000, 880], head: [1000, 620]}[FIT];
+  if (FIT !== "full" && rects.length) {
+    const shownH = FRAME[0] * (1920 / 1080);          // shot scaled to the slot width
+    const cyPct  = (Math.min(...rects.map(r => r.top)) +
+                    Math.max(...rects.map(r => r.top + r.height))) / 2;
+    let top = FRAME[1] / 2 - (cyPct / 100) * shownH;  // marker on the slot centre line
+    top = Math.min(0, Math.max(FRAME[1] - shownH, top));   // never expose blank above/below
+    page.style.top = top.toFixed(1) + "px";
+  }
+
+  // Push INTO the words. Origin is the centre of the marker BOUNDING BOX, and the scale is
+  // clamped so that box still fits the frame at full zoom — otherwise the end of the line
+  // pushes off the right edge exactly when you most want to read it.
+  if (rects.length) {
+    const x0 = Math.min(...rects.map(r => r.left));
+    const x1 = Math.max(...rects.map(r => r.left + r.width));
+    const y0 = Math.min(...rects.map(r => r.top));
+    const y1 = Math.max(...rects.map(r => r.top + r.height));
+    cam.style.setProperty("--ox", ((x0 + x1) / 2).toFixed(2) + "%");
+    cam.style.setProperty("--oy", ((y0 + y1) / 2).toFixed(2) + "%");
+    // in a short slot the marker already fills most of the height, so allow less push
+    const cap = FIT === "full" ? 1.28 : 1.12;
+    const fit = Math.min(96 / Math.max(x1 - x0, 1), 92 / Math.max(y1 - y0, 1));
+    const z = Math.max(1.04, Math.min(cap, fit));
+    document.documentElement.style.setProperty("--z", z.toFixed(3));
+  }
+
+  // ?seek — hold one instant so a headless shot lands where you want it
+  const s = q.get("seek");
+  if (s !== null) {
+    const go = () => document.getAnimations().forEach(a => {
+      a.pause(); a.currentTime = parseFloat(s) * 1000; });
+    requestAnimationFrame(() => requestAnimationFrame(() => { go(); setTimeout(go, 300); }));
+  }
+})();
+</script>
+</body>
+</html>

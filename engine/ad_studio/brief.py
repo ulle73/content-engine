@@ -30,7 +30,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 AD_BRIEF_VERSION = "ad-brief/2"
 
-# Hard copy rules. These are craft rules for short social video, not taste.
+# Craft advice for short social video. Reported by advisories(); never blocks locking.
 MAX_WORDS_ON_SCREEN = 8          # per scene; people read ~3-4 words/second
 MIN_SCENE_SECONDS = 1.0
 DURATION_TOLERANCE_SECONDS = 0.25
@@ -184,7 +184,12 @@ class AdBrief(_Strict):
         return gaps
 
     def problems(self) -> list[str]:
-        """Rule violations. Empty list == lockable (together with missing())."""
+        """Technical blockers. Empty list == lockable (together with missing()).
+
+        Creative choices (word count, scene order) are never blockers; they are
+        reported by advisories() and the user decides. Unverified factual claims
+        still block: ads may only state verified facts.
+        """
         out = []
         asset_ids = {a.asset_id for a in self.assets}
 
@@ -193,17 +198,10 @@ class AdBrief(_Strict):
             out.append("Scen-id måste vara unika.")
 
         for s in self.scenes:
-            words = len(s.on_screen_text.split())
-            if words > MAX_WORDS_ON_SCREEN:
-                out.append(f"Scen '{s.id}': {words} ord på skärmen, max {MAX_WORDS_ON_SCREEN}.")
             if s.asset_id and s.asset_id not in asset_ids:
                 out.append(f"Scen '{s.id}' använder asset '{s.asset_id}' som inte är vald.")
 
         if self.scenes:
-            if self.scenes[0].purpose != "hook":
-                out.append("Första scenen måste vara en hook.")
-            if self.scenes[-1].purpose != "cta":
-                out.append("Sista scenen måste vara en CTA.")
             total = sum(s.duration_s for s in self.scenes)
             if self.duration_s is not None and abs(total - self.duration_s) > DURATION_TOLERANCE_SECONDS:
                 out.append(f"Scenerna är {total:g} s men annonsen ska vara {self.duration_s:g} s.")
@@ -223,6 +221,20 @@ class AdBrief(_Strict):
         unverified = [f.claim for f in self.facts if not f.verified]
         if unverified:
             out.append("Overifierade påståenden: " + "; ".join(unverified))
+        return out
+
+    def advisories(self) -> list[str]:
+        """Non-blocking advice shown to the user. Never prevents locking."""
+        out = []
+        for s in self.scenes:
+            words = len(s.on_screen_text.split())
+            if words > MAX_WORDS_ON_SCREEN:
+                out.append(f"Tips: scen '{s.id}' har {words} ord på skärmen; fler än {MAX_WORDS_ON_SCREEN} kan bli svårt att hinna läsa.")
+        if self.scenes:
+            if self.scenes[0].purpose != "hook":
+                out.append("Tips: första scenen är ingen hook.")
+            if self.scenes[-1].purpose != "cta":
+                out.append("Tips: sista scenen är ingen CTA.")
         return out
 
     # ---- lock ---------------------------------------------------------

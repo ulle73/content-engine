@@ -1,0 +1,239 @@
+<template>
+  <style>
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500-italic.woff2") format('woff2');font-weight:500;font-style:italic;font-display:block;}
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      isolation: isolate;
+      color: #F8F4EC;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ---- background clip: green-deep ground + photo plate + scrim ---- */
+    [id="01-kroken-bg"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #01170F;
+    }
+    [id="01-kroken-plate"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    [id="01-kroken-photo"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 0% 50%;
+      transform-origin: 34% 44%;
+      display: block;
+    }
+    [id="01-kroken-scrim"] {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(1, 23, 15, 0.42) 0%,
+        rgba(1, 23, 15, 0.16) 34%,
+        rgba(1, 23, 15, 0.22) 62%,
+        rgba(1, 23, 15, 0.78) 100%
+      );
+    }
+
+    /* ---- type clip: one centered question, four phrase lines ---- */
+    [id="01-kroken-type"] {
+      position: absolute;
+      inset: 0;
+    }
+    [class~="01-kroken-stage"] {
+      position: absolute;
+      left: 7cqw;
+      right: 7cqw;
+      top: 6cqh;
+      bottom: 19cqh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    [class~="01-kroken-stack"] {
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      font-weight: 500;
+      font-size: 14cqw;
+      line-height: 0.98;
+      letter-spacing: -0.02em;
+      text-align: center;
+      color: #F8F4EC;
+    }
+    [class~="01-kroken-line"] {
+      display: block;
+      white-space: nowrap;
+    }
+    [class~="01-kroken-word"] {
+      display: inline-block;
+      will-change: transform, opacity, filter;
+    }
+    [class~="01-kroken-gold"] {
+      color: #D6A536;
+      font-style: italic;
+    }
+    /* "golf?" carries the specular sweep (text-shimmer, adapted to brand gold).
+       Padding widens the paint box so italic overhang and the "g" descender
+       stay inside the clipped gradient; negative margins keep layout unchanged. */
+    [class~="01-kroken-shimmer"] {
+      padding: 0.04em 0.12em 0.14em;
+      margin: -0.04em -0.12em -0.14em;
+      color: transparent;
+      background-image: linear-gradient(
+        110deg,
+        #D6A536 0%,
+        #D6A536 40%,
+        #E7CA87 47%,
+        #FFFDF8 50%,
+        #E2BE6C 53%,
+        #D6A536 60%,
+        #D6A536 100%
+      );
+      background-position: 100% 50%;
+      background-repeat: no-repeat;
+      background-size: 300% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+
+  <div data-hf-id="hf-ltjr" id="root" data-composition-id="01-kroken" data-width="1080" data-height="1080" data-duration="4.764">
+    <div data-hf-id="hf-4tl5" id="01-kroken-bg" class="clip" data-start="0" data-duration="4.764" data-track-index="0">
+      <div data-hf-id="hf-2dxy" id="01-kroken-plate">
+        <img data-hf-id="hf-bzzr" id="01-kroken-photo" src="assets/anvnd-friskvrdsbidraget-till-golf.jpg" alt="">
+      </div>
+      <div data-hf-id="hf-7fvc" id="01-kroken-scrim"></div>
+    </div>
+
+    <div data-hf-id="hf-rp0p" id="01-kroken-type" class="clip" data-start="0" data-duration="4.764" data-track-index="1">
+      <div data-hf-id="hf-wpbz" class="01-kroken-stage">
+        <h1 data-hf-id="hf-7v1z" class="01-kroken-stack">
+          <span data-hf-id="hf-o5bh" class="01-kroken-line" data-phrase="0"><span data-hf-id="hf-8o3z" class="01-kroken-word">Vill</span> <span data-hf-id="hf-ux51" class="01-kroken-word">du</span> <span data-hf-id="hf-zl15" class="01-kroken-word">att</span></span>
+          <span data-hf-id="hf-l61w" class="01-kroken-line" data-phrase="1"><span data-hf-id="hf-rptp" class="01-kroken-word">din</span> <span data-hf-id="hf-jjg3" class="01-kroken-word 01-kroken-gold">chef</span></span>
+          <span data-hf-id="hf-w1jj" class="01-kroken-line" data-phrase="2"><span data-hf-id="hf-9lej" class="01-kroken-word">ska</span> <span data-hf-id="hf-mkun" class="01-kroken-word">betala</span></span>
+          <span data-hf-id="hf-s3fi" class="01-kroken-line" data-phrase="3"><span data-hf-id="hf-g68h" class="01-kroken-word">din</span> <span data-hf-id="hf-qd1z" id="01-kroken-golf" class="01-kroken-word 01-kroken-gold 01-kroken-shimmer">golf?</span></span>
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      // ---- music grid: 165 BPM, every cue is an exact beat multiple ----
+      var BEAT = 60 / 165;              // 0.3636s
+      var DURATION = 12 * BEAT;         // 4.364s
+      var PULLBACK_END = 6 * BEAT;      // photo at rest by 2.182s
+      var SWEEP_AT = 8 * BEAT;          // 2.909s gold sweep through "golf?"
+      var SWEEP = 0.9;                  // text-shimmer fixed sweep length
+
+      // ---- content sequence (dynamic-content-sequencing, beat-locked) ----
+      // Each phrase owns one beat slot; per-word starts are pre-computed once.
+      var PHRASES = [
+        { phrase: 0, beat: 0 },         // "Vill du att"   0.000s
+        { phrase: 1, beat: 2 },         // "din chef"      0.727s
+        { phrase: 2, beat: 4 },         // "ska betala"    1.455s
+        { phrase: 3, beat: 6 }          // "din golf?"     2.182s
+      ];
+      var WORD_GAP = 0.075;             // per-word stagger inside a phrase
+      var WORD_DUR = 0.9;               // soft rise + blur-to-sharp
+      var GOLD_DUR = 1.05;              // gold words settle a touch slower
+
+      var root = document.getElementById("root");
+      var plate = document.getElementById("01-kroken-plate");
+      var photo = document.getElementById("01-kroken-photo");
+      var golf = document.getElementById("01-kroken-golf");
+      var lines = root.querySelectorAll("[data-phrase]");
+
+      var SEQUENCE = [];
+      PHRASES.forEach(function (entry) {
+        var line = lines[entry.phrase];
+        var words = line.querySelectorAll('[class~="01-kroken-word"]');
+        var start = entry.beat * BEAT;
+        for (var i = 0; i < words.length; i++) {
+          var isGold = words[i].classList.contains("01-kroken-gold");
+          SEQUENCE.push({
+            el: words[i],
+            start: start + i * WORD_GAP,
+            dur: isGold ? GOLD_DUR : WORD_DUR,
+            blur: isGold ? 18 : 14
+          });
+        }
+      });
+
+      var tl = gsap.timeline({ paused: true });
+
+      // Scene 1 — photo fades up from black to ~35% and pulls back to rest.
+      tl.fromTo(
+        plate,
+        { opacity: 0 },
+        { opacity: 0.36, duration: 1.4, ease: "power2.out" },
+        0
+      );
+      tl.fromTo(
+        photo,
+        { scale: 1.12 },
+        { scale: 1, duration: PULLBACK_END, ease: "power2.out" },
+        0
+      );
+
+      // Scenes 1–2 — the question assembles phrase by phrase on the beat.
+      SEQUENCE.forEach(function (item) {
+        tl.fromTo(
+          item.el,
+          { autoAlpha: 0, yPercent: 34, filter: "blur(" + item.blur + "px)" },
+          {
+            autoAlpha: 1,
+            yPercent: 0,
+            filter: "blur(0px)",
+            duration: item.dur,
+            ease: "power3.out"
+          },
+          item.start
+        );
+      });
+
+      // Scene 3 — the question holds; one specular gold pass through "golf?".
+      tl.fromTo(
+        golf,
+        { backgroundPosition: "100% 50%" },
+        { backgroundPosition: "0% 50%", duration: SWEEP, ease: "sine.inOut" },
+        SWEEP_AT
+      );
+      // Elastic hold (from text-shimmer): an off-glyph drift keeps the clean
+      // end state alive to the last frame without any visible change.
+      tl.to(
+        golf,
+        { backgroundPosition: "4% 50%", duration: DURATION - (SWEEP_AT + SWEEP), ease: "sine.inOut" },
+        SWEEP_AT + SWEEP
+      );
+
+      tl.seek(0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["01-kroken"] = tl;
+    })();
+  </script>
+</template>

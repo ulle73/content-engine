@@ -1,0 +1,106 @@
+/* NextPhase Studio — design tokens. Import this into EVERY scene. Never hardcode a hex or font. */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..900&family=Montserrat:wght@700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Anton&family=Permanent+Marker&family=Silkscreen:wght@400;700&display=swap');
+
+:root{
+  /* Brand (shared) */
+  --coral:#D97757; --coral-deep:#BD5D3A; --coral-soft:#E8A38A;
+  --red:#E03A2F;
+  --hl-yellow:#F7E23C;        /* the marker sweep — multiply blend, ~.62 alpha */              /* Parallax caption style — the important-line red */
+
+  /* SHORT — Claude paper + grid (the house plate since 2026-08-07; flat cream is
+     kept only for cards and for the rare beat that needs a dead-quiet ground) */
+  --cream:#F0EDE4; --cream-card:#EAE6DA; --paper:#F0EDE4;
+  --grid-minor:rgba(25,24,23,.075); --grid-major:rgba(25,24,23,.15);
+  --grid-minor-w:2px; --grid-major-w:5px;
+  --grid-minor-size:32px; --grid-major-size:160px;
+  --ink:#191817; --ink-soft:#6B6660;
+
+  /* LONG — dark dotted-grid */
+  --dark:#201512; --dark-2:#140D0B; --on:#F7F3EF; --on-soft:#B9A59C;
+  --dot:rgba(217,119,87,.16);
+
+  /* Terminal (both) */
+  --term-bg:#17140F; --term-prompt:#E0A15F; --term-text:#E7E2D7;
+
+  /* Type */
+  --font-serif:"Fraunces",Georgia,serif;      /* display TITLES */
+  --font-heavy:"Montserrat",sans-serif;        /* captions + big stats, weight 900 */
+  --font-ui:"Inter",sans-serif;                /* labels, body, UI mockups */
+  --font-mono:"JetBrains Mono",monospace;      /* terminals, data labels */
+
+
+  /* ── REFERENCE TYPE ROLES — torn down from the @artzenmedia reels, 2026-08-26 ──────
+     Three roles that did NOT exist before. They are display type, not caption styles:
+     there are still exactly THREE caption styles (c-par / c-ws / c-hl, BLACKLIST #15). */
+  --display-coral:#E12A2B;   /* hook + CTA payoff word. Sampled IDENTICALLY in both reels —
+                                this is his fixed brand red, not a per-video choice. */
+  --emph-white:#FFFFFF;      /* emphasis outline — neutral word */
+  --emph-amber:#D99A12;      /* emphasis outline — the pain word (core sampled #B28B00) */
+  --emph-coral:#E12A2B;      /* emphasis outline — the payoff word */
+  --annot-lime:#B9DA31;      /* a claim, typed into a UI's own negative space */
+  --annot-lime-soft:#C0DD5E; /* the same face used for a one-word reaction */
+  --emph-stroke:4px;         /* outline weight at 1080x1920 */
+  --emph-fill:rgba(255,255,255,.09);   /* NOT fully transparent: a whisper of fill, screened,
+                                          lifts the interior the way his does — and keeps
+                                          `hyperframes check` from failing text_not_painted */
+
+  /* The glow IS the technique: a wide soft bloom in the stroke's own hue, composited with
+     mix-blend-mode:screen so the picture behind shows through the counters. Without this the
+     word is just outlined text sitting on top of a photo. Filter lists, so the rgba stays here. */
+  --glow-white:drop-shadow(0 0 12px rgba(255,255,255,.95)) drop-shadow(0 0 46px rgba(255,255,255,.55));
+  --glow-amber:drop-shadow(0 0 12px rgba(217,154,18,.95))  drop-shadow(0 0 46px rgba(217,154,18,.55));
+  --glow-coral:drop-shadow(0 0 12px rgba(225,42,43,.95))   drop-shadow(0 0 46px rgba(225,42,43,.5));
+  --glow-lime:drop-shadow(0 0 10px rgba(185,218,49,.85))   drop-shadow(0 0 30px rgba(185,218,49,.45));
+
+  --font-display-heavy:"Anton",Impact,"Arial Narrow",sans-serif;  /* emphasis + hook payoff */
+  --font-marker:"Permanent Marker",cursive;                       /* the handwritten hook line */
+  --font-pixel:"Silkscreen",ui-monospace,monospace;               /* lime annotations */
+
+  /* ── TIERLIST STYLE — the third preset, added 2026-08-27 ────────────────────────────
+     The board is the frame's top half for the WHOLE video and the camera is the bottom
+     half. The ground is BLACK, not cream — that is deliberate and it is the only reason
+     the white cards and the tier colours read at all. BLACKLIST #10 fixes the HOUSE
+     plate as flat cream; it does not claim cream is the only ground in the skill (persa
+     has no plate at all).
+     The five row colours are the tiermaker defaults, unaltered — this palette is a
+     recognised object and inventing our own hues would just read as a broken tier list. */
+  --tier-s:#FF7F7F; --tier-a:#FFBF7F; --tier-b:#FFDF7F;
+  --tier-c:#FFFF7F; --tier-d:#BFFF7F; --tier-e:#7FFF7F; --tier-f:#7FFFFF;
+  --tier-void:#0B0B0B;        /* the ground: everything above the seam that is not a row */
+  --tier-row:#141414;         /* an empty row's content area — lifted off the void, barely */
+  --tier-rule:#2E2E2E;        /* the 2px hairline between rows and down the label gutter */
+  --tier-label-ink:#1A1A1A;   /* the S/A/B letter — ink on the colour, never white */
+  --tier-card:#FFFFFF;        /* a placed item is a WHITE card. Always. */
+
+  /* Radius / shadow */
+  --r-card:22px; --r-sm:12px; --r-pill:999px;
+  --shadow-card:0 20px 60px rgba(0,0,0,.12),0 4px 14px rgba(0,0,0,.06);
+  --shadow-cam:0 -14px 40px rgba(0,0,0,.10);
+
+  /* Motion (cinematic, never linear) */
+  --ease-out:cubic-bezier(.16,1,.3,1);   /* primary entrance */
+  --ease-soft:cubic-bezier(.4,0,.2,1);
+  --ease-overshoot:cubic-bezier(.34,1.56,.64,1);
+  --dur-enter:600ms; --dur-exit:380ms; --dur-pop:180ms; --dur-draw:850ms;
+  --stagger:80ms;
+}
+
+/* Reusable backgrounds (apply to the scene root) */
+.bg-cream{background:var(--cream)}          /* flat — cards, and quiet beats only */
+/* WHITE — for a b-roll beat whose subject is a laptop or a product shot. The grid fights
+   a device's own edges and screen content; white leaves the object alone in the frame. */
+.bg-white{background:#FFFFFF}
+/* THE HOUSE PLATE. Graph paper: a fine minor grid with a heavier major line every
+   five squares. Pure CSS, no texture file, free at render. Apply to the scene root. */
+.bg-paper{background:var(--cream)}  /* grid retired 2026-08-10 */   /* flat cream — the grid was retired 2026-08-08 */
+.bg-darkgrid{
+  background:
+    radial-gradient(80% 90% at 8% 0%, #4a2417 0%, transparent 55%),
+    radial-gradient(120% 120% at 100% 100%, #100a08 0%, transparent 60%),
+    linear-gradient(135deg,#2a1a13,#160f0c 70%);
+  position:relative;
+}
+.bg-darkgrid::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(var(--dot) 1.4px, transparent 1.6px);background-size:30px 30px;
+  mask-image:radial-gradient(120% 100% at 50% 40%, #000 40%, transparent 90%);}
+.bg-darkgrid::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 320px rgba(0,0,0,.55)}

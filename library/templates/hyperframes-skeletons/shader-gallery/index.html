@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1080" />
+    <!-- Shadergalleri: alla 14 HyperShader-övergångar från HyperFrames docs/guides/claude-design-hyperframes.md §4
+         (@hyperframes/shader-transitions, MIT). En scen per färg, 2,4 s per scen, övergång 0,8 s mitt på scengränsen.
+         Scen N visar namnet på shadern som förde in den. -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/core/dist/hyperframe.runtime.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1080px; overflow: hidden; background: #0b0b10; }
+      .scene { position: absolute; top: 0; left: 0; width: 1080px; height: 1080px; overflow: hidden; }
+      .scene-content { position: relative; z-index: 1; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 34px; }
+      .clip { }
+      .orb { position: absolute; top: 160px; width: 520px; height: 520px; border-radius: 50%; opacity: 0.9; }
+      .num { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 380px; line-height: 0.9; letter-spacing: -0.05em; }
+      .rule { width: 120px; height: 8px; border-radius: 4px; }
+      .lbl { font-family: "JetBrains Mono", monospace; font-weight: 500; font-size: 46px; letter-spacing: 0.04em; }
+      #g01{background-color:#0b0b10;color:#f4f3f8} #g01 .orb{left:500px;background:radial-gradient(circle, #8b7bff 0%, #8b7bff00 68%)} #g01 .lbl{color:#8b7bff} #g01 .rule{background:#8b7bff}
+      #g02{background-color:#ffb547;color:#1a1206} #g02 .orb{left:60px;background:radial-gradient(circle, #1a1206 0%, #1a120600 68%)} #g02 .lbl{color:#1a1206} #g02 .rule{background:#1a1206}
+      #g03{background-color:#10302a;color:#e9fff6} #g03 .orb{left:500px;background:radial-gradient(circle, #3ee6a8 0%, #3ee6a800 68%)} #g03 .lbl{color:#3ee6a8} #g03 .rule{background:#3ee6a8}
+      #g04{background-color:#f4f1ea;color:#141414} #g04 .orb{left:60px;background:radial-gradient(circle, #ff4d2e 0%, #ff4d2e00 68%)} #g04 .lbl{color:#ff4d2e} #g04 .rule{background:#ff4d2e}
+      #g05{background-color:#1b1035;color:#ffffff} #g05 .orb{left:500px;background:radial-gradient(circle, #ff5ccd 0%, #ff5ccd00 68%)} #g05 .lbl{color:#ff5ccd} #g05 .rule{background:#ff5ccd}
+      #g06{background-color:#e8f0ff;color:#0b1a3a} #g06 .orb{left:60px;background:radial-gradient(circle, #2d5bff 0%, #2d5bff00 68%)} #g06 .lbl{color:#2d5bff} #g06 .rule{background:#2d5bff}
+      #g07{background-color:#2a0f0f;color:#ffe9e0} #g07 .orb{left:500px;background:radial-gradient(circle, #ff6a2b 0%, #ff6a2b00 68%)} #g07 .lbl{color:#ff6a2b} #g07 .rule{background:#ff6a2b}
+      #g08{background-color:#0e1a12;color:#eaffd6} #g08 .orb{left:60px;background:radial-gradient(circle, #a6ff4d 0%, #a6ff4d00 68%)} #g08 .lbl{color:#a6ff4d} #g08 .rule{background:#a6ff4d}
+      #g09{background-color:#fff3d6;color:#3a2400} #g09 .orb{left:500px;background:radial-gradient(circle, #d98a00 0%, #d98a0000 68%)} #g09 .lbl{color:#d98a00} #g09 .rule{background:#d98a00}
+      #g10{background-color:#071a2a;color:#dff3ff} #g10 .orb{left:60px;background:radial-gradient(circle, #38bdf8 0%, #38bdf800 68%)} #g10 .lbl{color:#38bdf8} #g10 .rule{background:#38bdf8}
+      #g11{background-color:#f9e0ea;color:#3a0a1f} #g11 .orb{left:500px;background:radial-gradient(circle, #d6336c 0%, #d6336c00 68%)} #g11 .lbl{color:#d6336c} #g11 .rule{background:#d6336c}
+      #g12{background-color:#111111;color:#fafafa} #g12 .orb{left:60px;background:radial-gradient(circle, #fafafa 0%, #fafafa00 68%)} #g12 .lbl{color:#fafafa} #g12 .rule{background:#fafafa}
+      #g13{background-color:#2b2d42;color:#edf2f4} #g13 .orb{left:500px;background:radial-gradient(circle, #ef233c 0%, #ef233c00 68%)} #g13 .lbl{color:#ef233c} #g13 .rule{background:#ef233c}
+      #g14{background-color:#e0fbfc;color:#14213d} #g14 .orb{left:60px;background:radial-gradient(circle, #ee6c4d 0%, #ee6c4d00 68%)} #g14 .lbl{color:#ee6c4d} #g14 .rule{background:#ee6c4d}
+      #g15{background-color:#0a0a0d;color:#f5f5f7} #g15 .orb{left:500px;background:radial-gradient(circle, #7c6cff 0%, #7c6cff00 68%)} #g15 .lbl{color:#7c6cff} #g15 .rule{background:#7c6cff}
+    </style>
+  </head>
+  <body>
+    <div id="main" data-composition-id="main" data-width="1080" data-height="1080" data-start="0" data-duration="36">
+      <div class="scene clip" id="g01" data-start="0.0" data-duration="2.4" data-track-index="0">
+        <div class="orb" id="g01-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g01-num">01</div>
+          <div class="rule"></div>
+          <div class="lbl">HyperShader · 14 övergångar</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g02" data-start="2.4" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g02-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g02-num">02</div>
+          <div class="rule"></div>
+          <div class="lbl">← domain-warp</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g03" data-start="4.8" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g03-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g03-num">03</div>
+          <div class="rule"></div>
+          <div class="lbl">← ridged-burn</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g04" data-start="7.2" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g04-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g04-num">04</div>
+          <div class="rule"></div>
+          <div class="lbl">← whip-pan</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g05" data-start="9.6" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g05-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g05-num">05</div>
+          <div class="rule"></div>
+          <div class="lbl">← sdf-iris</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g06" data-start="12.0" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g06-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g06-num">06</div>
+          <div class="rule"></div>
+          <div class="lbl">← ripple-waves</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g07" data-start="14.4" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g07-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g07-num">07</div>
+          <div class="rule"></div>
+          <div class="lbl">← gravitational-lens</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g08" data-start="16.8" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g08-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g08-num">08</div>
+          <div class="rule"></div>
+          <div class="lbl">← cinematic-zoom</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g09" data-start="19.2" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g09-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g09-num">09</div>
+          <div class="rule"></div>
+          <div class="lbl">← chromatic-split</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g10" data-start="21.6" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g10-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g10-num">10</div>
+          <div class="rule"></div>
+          <div class="lbl">← swirl-vortex</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g11" data-start="24.0" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g11-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g11-num">11</div>
+          <div class="rule"></div>
+          <div class="lbl">← thermal-distortion</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g12" data-start="26.4" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g12-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g12-num">12</div>
+          <div class="rule"></div>
+          <div class="lbl">← flash-through-white</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g13" data-start="28.8" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g13-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g13-num">13</div>
+          <div class="rule"></div>
+          <div class="lbl">← cross-warp-morph</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g14" data-start="31.2" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g14-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g14-num">14</div>
+          <div class="rule"></div>
+          <div class="lbl">← light-leak</div>
+        </div>
+      </div>
+      <div class="scene clip" id="g15" data-start="33.6" data-duration="2.4" data-track-index="0" style="opacity:0;">
+        <div class="orb" id="g15-orb"></div>
+        <div class="scene-content">
+          <div class="num" id="g15-num">15</div>
+          <div class="rule"></div>
+          <div class="lbl">← glitch</div>
+        </div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      tl.set("#g01", { opacity: 1 }, 0);
+      // Kontinuerlig drift i varje scen (inga entréer — då syns båda scenerna helt under övergången)
+      tl.to("#g01-orb", { y: 60, scale: 1.12, duration: 2.4, ease: "none" }, 0.0);
+      tl.to("#g01-num", { scale: 1.06, duration: 2.4, ease: "none" }, 0.0);
+      tl.to("#g02-orb", { y: -60, scale: 1.12, duration: 2.4, ease: "none" }, 2.4);
+      tl.to("#g02-num", { scale: 1.06, duration: 2.4, ease: "none" }, 2.4);
+      tl.to("#g03-orb", { y: 60, scale: 1.12, duration: 2.4, ease: "none" }, 4.8);
+      tl.to("#g03-num", { scale: 1.06, duration: 2.4, ease: "none" }, 4.8);
+      tl.to("#g04-orb", { y: -60, scale: 1.12, duration: 2.4, ease: "none" }, 7.2);
+      tl.to("#g04-num", { scale: 1.06, duration: 2.4, ease: "none" }, 7.2);
+      tl.to("#g05-orb", { y: 60, scale: 1.12, duration: 2.4, ease: "none" }, 9.6);
+      tl.to("#g05-num", { scale: 1.06, duration: 2.4, ease: "none" }, 9.6);
+      tl.to("#g06-orb", { y: -60, scale: 1.12, duration: 2.4, ease: "none" }, 12.0);
+      tl.to("#g06-num", { scale: 1.06, duration: 2.4, ease: "none" }, 12.0);
+      tl.to("#g07-orb", { y: 60, scale: 1.12, duration: 2.4, ease: "none" }, 14.4);
+      tl.to("#g07-num", { scale: 1.06, duration: 2.4, ease: "none" }, 14.4);
+      tl.to("#g08-orb", { y: -60, scale: 1.12, duration: 2.4, ease: "none" }, 16.8);
+      tl.to("#g08-num", { scale: 1.06, duration: 2.4, ease: "none" }, 16.8);
+      tl.to("#g09-orb", { y: 60, scale: 1.12, duration: 2.4, ease: "none" }, 19.2);
+      tl.to("#g09-num", { scale: 1.06, duration: 2.4, ease: "none" }, 19.2);
+      tl.to("#g10-orb", { y: -60, scale: 1.12, duration: 2.4, ease: "none" }, 21.6);
+      tl.to("#g10-num", { scale: 1.06, duration: 2.4, ease: "none" }, 21.6);
+      tl.to("#g11-orb", { y: 60, scale: 1.12, duration: 2.4, ease: "none" }, 24.0);
+      tl.to("#g11-num", { scale: 1.06, duration: 2.4, ease: "none" }, 24.0);
+      tl.to("#g12-orb", { y: -60, scale: 1.12, duration: 2.4, ease: "none" }, 26.4);
+      tl.to("#g12-num", { scale: 1.06, duration: 2.4, ease: "none" }, 26.4);
+      tl.to("#g13-orb", { y: 60, scale: 1.12, duration: 2.4, ease: "none" }, 28.8);
+      tl.to("#g13-num", { scale: 1.06, duration: 2.4, ease: "none" }, 28.8);
+      tl.to("#g14-orb", { y: -60, scale: 1.12, duration: 2.4, ease: "none" }, 31.2);
+      tl.to("#g14-num", { scale: 1.06, duration: 2.4, ease: "none" }, 31.2);
+      tl.to("#g15-orb", { y: 60, scale: 1.12, duration: 2.4, ease: "none" }, 33.6);
+      tl.to("#g15-num", { scale: 1.06, duration: 2.4, ease: "none" }, 33.6);
+      window.HyperShader.init({
+        bgColor: "#0b0b10",
+        accentColor: "#8b7bff",
+        scenes: ["g01", "g02", "g03", "g04", "g05", "g06", "g07", "g08", "g09", "g10", "g11", "g12", "g13", "g14", "g15"],
+        timeline: tl,
+        transitions: [
+          { time: 2.0, shader: "domain-warp", duration: 0.8 },
+          { time: 4.4, shader: "ridged-burn", duration: 0.8 },
+          { time: 6.8, shader: "whip-pan", duration: 0.8 },
+          { time: 9.2, shader: "sdf-iris", duration: 0.8 },
+          { time: 11.6, shader: "ripple-waves", duration: 0.8 },
+          { time: 14.0, shader: "gravitational-lens", duration: 0.8 },
+          { time: 16.4, shader: "cinematic-zoom", duration: 0.8 },
+          { time: 18.8, shader: "chromatic-split", duration: 0.8 },
+          { time: 21.2, shader: "swirl-vortex", duration: 0.8 },
+          { time: 23.6, shader: "thermal-distortion", duration: 0.8 },
+          { time: 26.0, shader: "flash-through-white", duration: 0.8 },
+          { time: 28.4, shader: "cross-warp-morph", duration: 0.8 },
+          { time: 30.8, shader: "light-leak", duration: 0.8 },
+          { time: 33.2, shader: "glitch", duration: 0.8 }
+        ],
+      });
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

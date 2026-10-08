@@ -1,0 +1,5005 @@
+{
+ "kit": "nextphase",
+ "title": "NextPhase Skill Pack",
+ "source": {
+  "name": "NextPhase (Jad) – NextPhase Skill Pack",
+  "url": "",
+  "license": "Ingen licens angiven – endast egen användning. Registry-block/komponenter: HyperFrames (Apache-2.0)."
+ },
+ "items": [
+  {
+   "id": "nextphase.studio.skill",
+   "name": "NextPhase Studio – stilväljaren",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Router för NextPhase-kitet: frågar short (9:16) eller long (16:9) och vilken av åtta stilar, och lämnar över till rätt stilskill.",
+   "tags": [
+    "router",
+    "talking-head",
+    "redigering",
+    "stilval",
+    "short",
+    "long"
+   ],
+   "path": ".claude/skills/nextphase-studio/SKILL.md",
+   "use": "/nextphase-studio – 'redigera den här inspelningen i en NextPhase-stil' (eller via /studio)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.studio.skill.jpg"
+   },
+   "notes": "Förhandsbilden är ett kollage av stilarnas showcase-sidor (renderade). Hela redigeringsflödet (transkribering → render) är inte provkört i importen."
+  },
+  {
+   "id": "nextphase.short.skill",
+   "name": "NextPhase Short-redigering (9:16)",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Hela short-pipelinen för talking-head: hook → ansikte → body → CTA, ordsynkad grafik, riktig källmedia, highlighter, pop-out-matte och tät SFX.",
+   "tags": [
+    "short",
+    "reels",
+    "tiktok",
+    "talking-head",
+    "energetic",
+    "retention",
+    "captions"
+   ],
+   "path": ".claude/skills/nextphase-short-editing/SKILL.md",
+   "use": "/nextphase-short-editing – 'redigera den här shorten, house-stil' (eller persa/tierlist)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.style-house.jpg"
+   },
+   "notes": "Komponenter verifierade var för sig; hela arbetsflödet ej provkört. Kräver egen bed (bgm/) och ev. RVM-venv för pop-out."
+  },
+  {
+   "id": "nextphase.long.skill",
+   "name": "NextPhase Long-redigering (16:9, coral)",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Long-form YouTube-redigering: cold open, kapitel med chapter wipe, re-hooks, tystnadstrimning, layoutrotation, SFX + duckad musikbädd.",
+   "tags": [
+    "youtube",
+    "long-form",
+    "talking-head",
+    "kapitel",
+    "premium",
+    "explainer"
+   ],
+   "path": ".claude/skills/nextphase-long-editing/SKILL.md",
+   "use": "/nextphase-long-editing – 'redigera den här YouTube-videon i NextPhase-stilen'",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.system.jpg"
+   },
+   "notes": "Skripten (tighten, concat, mix-sfx, mix-bgm) provkörda på testklipp; hela flödet ej."
+  },
+  {
+   "id": "nextphase.motiongraphics.skill",
+   "name": "Motiongraphics-stilen (violett glow)",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Long-form där grafiken är showen: belysta glasbrickor, självbyggande diagram, slam-rubriker, light leak och 17 rörelse-devices.",
+   "tags": [
+    "motion graphics",
+    "premium",
+    "cinematic",
+    "glow",
+    "violet",
+    "diagram",
+    "long-form"
+   ],
+   "path": ".claude/skills/motiongraphics/SKILL.md",
+   "use": "/motiongraphics – 'gör den här videon i motiongraphics-stilen' eller be om en enskild scen/device",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.system.jpg"
+   },
+   "notes": "Alla scener/devices verifierade separat; hela flödet ej provkört."
+  },
+  {
+   "id": "nextphase.persa.skill",
+   "name": "Persa-stilen (varm film-grade)",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Varm, avmättad film-look med hårdklippta enordscaptions och motivet matte:at framför stora emfasord och mediapaneler.",
+   "tags": [
+    "film",
+    "grade",
+    "cinematic",
+    "captions",
+    "text-bakom-huvud",
+    "talking-head"
+   ],
+   "path": ".claude/skills/persa/SKILL.md",
+   "use": "/persa – 'gör den här i persa-stilen' (16:9 eller 9:16)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.system.jpg"
+   },
+   "notes": "Grade och scener verifierade separat; matte kräver RVM-venv (library/.venv)."
+  },
+  {
+   "id": "nextphase.vibecode.skill",
+   "name": "Vibecode-stilen (kobolt klipp-papper)",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Klipp-papper-collage på koboltblå grund: papperstidslinje, röda X, affischversaler, urklippta skärmdumpar och stop-motion-churn.",
+   "tags": [
+    "collage",
+    "papper",
+    "playful",
+    "energetic",
+    "kobolt",
+    "stop-motion",
+    "long-form"
+   ],
+   "path": ".claude/skills/vibecode/SKILL.md",
+   "use": "/vibecode – 'gör den här videon i vibecode-stilen'",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.system.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.zak.skill",
+   "name": "Zak-stilen (stilla fönster på svart)",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Minimal: ett rundat fönster på helsvart, en seriffrad ovanför och vita 2–4-ordscaptions som hårdklipper. Ingen rörelse alls.",
+   "tags": [
+    "minimal",
+    "lugn",
+    "seriös",
+    "monolog",
+    "serif",
+    "premium"
+   ],
+   "path": ".claude/skills/zak/SKILL.md",
+   "use": "/zak – 'gör den här i zak-stilen' (16:9 eller 9:16)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.system.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.short.style-house",
+   "name": "House-stil – cream-platta (short)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Standardlooken för shorts: grafik i övre zonen på cream-platta, ordcaption i mitten, kameran i nedre kortet; byter bild varje beat.",
+   "tags": [
+    "short",
+    "cream",
+    "clean",
+    "energetic",
+    "talking-head",
+    "coral"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/short-blocks.html",
+   "use": "/nextphase-short-editing, stil A (house); öppna short-blocks.html för stilprovet",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.style-house.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fyra scener fångade (titel+stat, terminal, graf, uppgiftslista)."
+  },
+  {
+   "id": "nextphase.short.style-persa",
+   "name": "Persa full bleed – short-preset",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Kameran ÄR bilden: grafik över en sammanhängande tagning, fyra display-typroller (titelstack, outline-ord, coral payoff, lime-anteckning).",
+   "tags": [
+    "short",
+    "full bleed",
+    "instagram",
+    "cinematic",
+    "display type"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/styles/persa.json",
+   "use": "/nextphase-short-editing, stil B (persa); läs reference/STYLES.md + TYPE-ROLES.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förutsättning enligt kitet: en riktig produktdemo på 15 s+. Ingen fristående komponent att rendera."
+  },
+  {
+   "id": "nextphase.short.style-tierlist",
+   "name": "Tierlist – tier board (short)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Rankningsformat: en tier board (S–D) äger övre halvan, kameran nedre; kort presenteras stort och flyger sedan till sin rad.",
+   "tags": [
+    "short",
+    "tier list",
+    "ranking",
+    "playful",
+    "energetic",
+    "board"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/tier-board.html",
+   "use": "/nextphase-short-editing, stil C (tierlist); kopiera tier-board.html in i index.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.style-tierlist.jpg"
+   },
+   "notes": "Renderad i en värdsida med 8 utplacerade platshållarkort (tierSlot()). PRESENT→PLACE-rörelsen ej fångad i still."
+  },
+  {
+   "id": "nextphase.long.style-coral-grid",
+   "name": "NextPhase long – coral på mörkt prickrutnät",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Husstilens 16:9-kit: mörkt prickrutnät, coral accent, skärmdelning med kamerabubbla, split, kapitelkort, lower third, statistik och recap.",
+   "tags": [
+    "long-form",
+    "dark",
+    "coral",
+    "grid",
+    "youtube",
+    "explainer"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/long-blocks.html",
+   "use": "/nextphase-long-editing; öppna long-blocks.html och kopiera blocken",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.system.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.motiongraphics.system",
+   "name": "Motiongraphics – hela systemet på en sida",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Alla tio scener, light leak, 17 devices, palett, material och kadens live på en sida – stilens referensbok.",
+   "tags": [
+    "motion graphics",
+    "premium",
+    "violet",
+    "glow",
+    "design system"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-system.html",
+   "use": "/motiongraphics; öppna mg-system.html och kopiera scen/device",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.system.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Lade till <meta charset> (sidan visade mojibake utan)."
+  },
+  {
+   "id": "nextphase.persa.system",
+   "name": "Persa – systemsidan",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Persas fem scener, båda caption-nivåerna, z-ordningen (caption > motiv > emfasord > panel > platta), palett och kadens.",
+   "tags": [
+    "persa",
+    "film",
+    "captions",
+    "z-order",
+    "design system"
+   ],
+   "path": "library/kits/nextphase/skills/persa/components/persa-system.html",
+   "use": "/persa; öppna persa-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.system.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.system",
+   "name": "Vibecode – systemsidan",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Vibecodes palett, sju scener, tre grunder och kadens – papper, tejp, röda X och churn på en sida.",
+   "tags": [
+    "vibecode",
+    "collage",
+    "papper",
+    "kobolt",
+    "design system"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/components/vibecode-system.html",
+   "use": "/vibecode; öppna vibecode-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.system.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Den Claude-lika pixelmaskoten ersatt med en neutral pixel-golfboll."
+  },
+  {
+   "id": "nextphase.zak.system",
+   "name": "Zak – systemsidan",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Zaks fem scener i båda format, typtabell, kadens (allt hårdklipp) och listan över vad som förstör stilen.",
+   "tags": [
+    "zak",
+    "minimal",
+    "serif",
+    "svart",
+    "design system"
+   ],
+   "path": "library/kits/nextphase/skills/zak/components/zak-system.html",
+   "use": "/zak; öppna zak-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.system.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-clean-face",
+   "name": "Clean face",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Helbildskamera utan grafik med långsam push – vilobeatet, 30–40 % av speltiden.",
+   "tags": [
+    "vila",
+    "kamera",
+    "minimal",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-system.html",
+   "use": "/motiongraphics – scenen 'Clean face', eller kopiera stage-blocket ur mg-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-clean-face.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fryst i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-floating-panels",
+   "name": "Ansikte + flytande paneler",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Halvgenomskinliga, märkta UI-paneler driver över bilden och lämnar åt var sitt håll.",
+   "tags": [
+    "overlay",
+    "ui",
+    "glass",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-system.html",
+   "use": "/motiongraphics – scenen 'Ansikte + flytande paneler', eller kopiera stage-blocket ur mg-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-floating-panels.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fryst i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-point-stack",
+   "name": "Ansikte + punktlista",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Violett rubrik byggs ord för ord, vita punkter staggrar in i vänstra tredjedelen.",
+   "tags": [
+    "lista",
+    "argument",
+    "text",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "/motiongraphics – scenen 'Ansikte + punktlista', eller kopiera stage-blocket ur mg-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-point-stack.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fryst i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-stat-card",
+   "name": "Ansikte + statistikkort",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Glaskort med räknare (count-up) glider in bredvid talarens hand.",
+   "tags": [
+    "statistik",
+    "count-up",
+    "glas",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "/motiongraphics – scenen 'Ansikte + statistikkort', eller kopiera stage-blocket ur mg-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-stat-card.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fryst i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-brand-lockup",
+   "name": "Varumärkes-lockup + ackumulerande caption",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Co-brand lower third (blur-in, hålls länge) med caption som byggs ord för ord och markerar nyckelord.",
+   "tags": [
+    "brand",
+    "lower third",
+    "caption",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "/motiongraphics – scenen 'Varumärkes-lockup + ackumulerande caption', eller kopiera stage-blocket ur mg-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-brand-lockup.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fryst i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-diagram-takeover",
+   "name": "Diagram-takeover",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Systemdiagram som bygger sig själv på kugghjulsfältet: titel ord för ord, paneler, noder och kopplingar.",
+   "tags": [
+    "diagram",
+    "nodes",
+    "explainer",
+    "premium",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "/motiongraphics – scenen 'Diagram-takeover', eller kopiera stage-blocket ur mg-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-diagram-takeover.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fryst i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-slam-card",
+   "name": "Slam card",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "En slam-rubrik på svepande magenta stapel, ett hjältemedia i kantbelyst kort och en ritad progressring.",
+   "tags": [
+    "slam",
+    "rubrik",
+    "payoff",
+    "energetic",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "/motiongraphics – scenen 'Slam card', eller kopiera stage-blocket ur mg-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-slam-card.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fryst i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-screen-stage",
+   "name": "Screen stage",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Riktig skärminspelning som kantbelyst kort på railscenen med kamerabubbla; kameran följer markören.",
+   "tags": [
+    "demo",
+    "skärminspelning",
+    "screen",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "/motiongraphics – scenen 'Screen stage', eller kopiera stage-blocket ur mg-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-screen-stage.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fryst i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-object-stage",
+   "name": "Object stage (två akter)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Akt 1: belyst figur + genomskinliga glasbrickor; akt 2: solida brickor med ikoner och riktiga kamerarörelser.",
+   "tags": [
+    "3d",
+    "objekt",
+    "glas",
+    "cinematic",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "/motiongraphics – scenen 'Object stage (två akter)', eller kopiera stage-blocket ur mg-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.object-stage-acts.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Strip över tidslinjen."
+  },
+  {
+   "id": "nextphase.motiongraphics.scene-persona-circle",
+   "name": "Persona-cirkel",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Kameran maskad i en cirkel med glödande ring på ribbonscenen; citat och namn skrivs ut.",
+   "tags": [
+    "citat",
+    "persona",
+    "cirkel",
+    "motiongraphics",
+    "violet",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "/motiongraphics – scenen 'Persona-cirkel', eller kopiera stage-blocket ur mg-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-persona-circle.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Fryst i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-cursor-card",
+   "name": "Cursor card",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Glaskort byggs, en markör flyttar in, hovrar och klickar, kortet försvinner; jättelikt spökordmärke bakom.",
+   "tags": [
+    "ui",
+    "cursor",
+    "klick",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Cursor card' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-cursor-card.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-tag-cloud",
+   "name": "Tag cloud",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Piller flyger in från växlande sidor med kraftig riktningsoskärpa och snäpper till ett kluster.",
+   "tags": [
+    "piller",
+    "taggar",
+    "motion blur",
+    "energetic",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Tag cloud' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-tag-cloud.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-blur-swap",
+   "name": "Blur swap",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "En etikett blir nästa genom tung horisontell oskärpa – 4 bildrutor ut, 4 in.",
+   "tags": [
+    "text",
+    "swap",
+    "blur",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Blur swap' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-blur-swap.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-wave-journey",
+   "name": "Wave journey",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Fylld våg som böljar medan två nålmarkörer rider på ytan – 'härifrån till dit' utan stapeldiagram.",
+   "tags": [
+    "graf",
+    "våg",
+    "resa",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Wave journey' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-wave-journey.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-goals-list",
+   "name": "Goals list",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Numrerade glasbrickor med rader som byggs ord för ord på perspektivgolvet medan kameran pushar in.",
+   "tags": [
+    "lista",
+    "mål",
+    "perspektiv",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Goals list' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-goals-list.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-ladder-climb",
+   "name": "Ladder climb",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Glödande stege där en markör klättrar steg för steg, sedan lutar hela stegen – en progress-metafor.",
+   "tags": [
+    "metafor",
+    "progress",
+    "stege",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Ladder climb' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-ladder-climb.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-alert-flash",
+   "name": "Alert flash",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Riktigt media med slam-rubrik som blinkar över till larmläge (röd glöd) – vändpunkten.",
+   "tags": [
+    "larm",
+    "vändpunkt",
+    "röd",
+    "slam",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Alert flash' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-alert-flash.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-bloom-question",
+   "name": "Bloom question",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "En ackumulerande fråga på ett överexponerat ljusfält – stilens enda ljusa ögonblick.",
+   "tags": [
+    "fråga",
+    "hook",
+    "ljus",
+    "bloom",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Bloom question' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-bloom-question.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-orb-countup",
+   "name": "Orb count-up",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett tal räknar upp inuti en växande sfär medan ett halvtonsfält framträder bakom.",
+   "tags": [
+    "statistik",
+    "count-up",
+    "sfär",
+    "premium",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Orb count-up' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-orb-countup.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-skeleton-fill",
+   "name": "Skeleton fill",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett kort anländer som tomma platshållarrader som fylls en i taget; sista raden markeras.",
+   "tags": [
+    "reveal",
+    "leaderboard",
+    "skeleton",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Skeleton fill' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-skeleton-fill.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-chip-marquee",
+   "name": "Chip marquee",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett band av blanka chips som rullar kontinuerligt över bilden – verktyg, namn, plattformar.",
+   "tags": [
+    "band",
+    "marquee",
+    "chips",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Chip marquee' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-chip-marquee.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-countdown-swap",
+   "name": "Countdown swap",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Siffra och etikett byter genom oskärpa 3 → 2 → 1 över den böljande vågen.",
+   "tags": [
+    "nedräkning",
+    "text",
+    "blur",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Countdown swap' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-countdown-swap.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-orbit-hub",
+   "name": "Orbit hub",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "En märkt sfär med satelliter som kretsar framför och bakom – en sak som driver två andra.",
+   "tags": [
+    "diagram",
+    "omloppsbana",
+    "relation",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Orbit hub' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-orbit-hub.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-notification-pileup",
+   "name": "Notification pile-up",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Notiser staplas en i taget och trycker ner högen – socialt bevis som ackumuleras.",
+   "tags": [
+    "notiser",
+    "socialt bevis",
+    "stack",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Notification pile-up' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-notification-pileup.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-grid-3d",
+   "name": "3D numrerat rutnät",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Tvåkolumnig numrerad lista byggs rad för rad, sedan tippar hela rutnätet in i perspektiv.",
+   "tags": [
+    "lista",
+    "3d",
+    "perspektiv",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device '3D numrerat rutnät' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-grid-3d.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.device-chat-countup",
+   "name": "Chat count-up",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "En ljus chattbubbla på mörk scen med en badge som räknar upp och en markör på skicka.",
+   "tags": [
+    "chat",
+    "count-up",
+    "inversion",
+    "motiongraphics",
+    "violet",
+    "device"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "/motiongraphics – device 'Chat count-up' (en per beat), eller kopiera #d-blocket ur mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-chat-countup.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Hållen i 'settled'-läge."
+  },
+  {
+   "id": "nextphase.motiongraphics.light-leak",
+   "name": "Light leak flash-through",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Violettvit strimma blommar (5f), vitnar ut (3f) och avslöjar nästa scen som redan ligger bakom (4f) – 12 bildrutor.",
+   "tags": [
+    "light-leak",
+    "flash",
+    "glow",
+    "premium",
+    "cinematic",
+    "övergång"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "/motiongraphics, eller kopiera .mg-leak-blocket + s9-tidslinjen; ljud: swoosh + riser-svans",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.light-leak.jpg"
+   },
+   "notes": "Strip om 6 bildrutor seekad över tidslinjen (0,70–1,30 s)."
+  },
+  {
+   "id": "nextphase.motiongraphics.bar-wipe",
+   "name": "Slam-rubrik på svepande stapel (bar wipe)",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Rubriken byggs ord för ord och en violett/magenta markeringsstapel sveper upp bakom slam-ordet (scaleX, 12f) med ljusast framkant.",
+   "tags": [
+    "slam",
+    "bar wipe",
+    "highlight",
+    "energetic",
+    "rubrik"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "Kopiera .mg-slam + .mg-hl ur mg-blocks.html (scen s1)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.bar-wipe.jpg"
+   },
+   "notes": "Strip över s1-tidslinjen."
+  },
+  {
+   "id": "nextphase.motiongraphics.word-build",
+   "name": "Ordbygge med omcentrering",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Titeln sätts ihop ett ord i taget (8f per ord, 7f isär) medan hela raden hela tiden omcentreras.",
+   "tags": [
+    "titel",
+    "kinetic typography",
+    "ord för ord",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "Kopiera .mg-section-titeln + tidslinjen ur scen s2",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.word-build.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.motiongraphics.camera-pullback",
+   "name": "Kamera pull-back",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Titeln landar stort och allt krymper i ett obrutet utzoom medan innehåll anländer under – inte stegvisa omskalningar.",
+   "tags": [
+    "kamera",
+    "zoom ut",
+    "camera move",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "Se reference/motion-grammar.md; mönstret i scen s2 (diagram)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.word-build.jpg"
+   },
+   "notes": "Synlig i strip-bilden: titeln stor → mindre när panelerna kommer."
+  },
+  {
+   "id": "nextphase.motiongraphics.camera-drift",
+   "name": "Kontinuerlig kameradrift",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Inget står helt still: varje hållen scen skalar långsamt 1,00→1,04 linjärt över hela sin livstid.",
+   "tags": [
+    "kamera",
+    "drift",
+    "subtle",
+    "camera move"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/assets/tokens.css",
+   "use": "Token --mg-ease-drift; se reference/motion-grammar.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Rörelsen syns inte i stillbild – ej verifierad visuellt."
+  },
+  {
+   "id": "nextphase.motiongraphics.ring-draw",
+   "name": "Progressring som ritas",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Konisk progressring sveper medurs (18f) och startar medvetet ~0,5 s efter att lockupen landat.",
+   "tags": [
+    "ring",
+    "progress",
+    "count",
+    "stat"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "Kopiera ringen ur scen s1 (slam card)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.bar-wipe.jpg"
+   },
+   "notes": "Ringen syns i sista rutan av stripen."
+  },
+  {
+   "id": "nextphase.motiongraphics.caption-accumulating",
+   "name": "Ackumulerande caption (captions: on)",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Frasen byggs ord för ord – sagda ord fet vit, nyaste ordet ljusare, nyckelord får magenta markeringsruta på sin onset.",
+   "tags": [
+    "caption",
+    "karaoke",
+    "highlight",
+    "ord för ord"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-blocks.html",
+   "use": "Scen s8 i mg-blocks.html; slå på 'captions: on' i PLAN.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.scene-brand-lockup.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.motiongraphics.materials",
+   "name": "Material: glasbricka, piller, mediakort, orb",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Stilens ytor: solid och genomskinlig bricka, glödande nodpiller, violett panel, kantbelyst mediakort, orb, glassiffra och figur.",
+   "tags": [
+    "glas",
+    "glow",
+    "material",
+    "rim light",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/assets/tokens.css",
+   "use": "Klasserna .mg-tile, .mg-tile-glass, .mg-pill, .mg-panel, .mg-media, .mg-orb, .mg-numeral, .mg-figure",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.materials.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.motiongraphics.bg-bloom",
+   "name": "Grund: Bloom – centrumglöd",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Mörk violett bas med en mjuk centrumblomning.",
+   "tags": [
+    "bakgrund",
+    "violet",
+    "glow",
+    "premium",
+    "motiongraphics"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/assets/tokens.css",
+   "use": "class=\"mg-bg-bloom\" på scenen (importera tokens.css)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.grounds.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.motiongraphics.bg-field",
+   "name": "Grund: Gear field – kugghjulsfält",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Djupviolett gradientfält (kugghjulen läggs som element ovanpå).",
+   "tags": [
+    "bakgrund",
+    "violet",
+    "glow",
+    "premium",
+    "motiongraphics"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/assets/tokens.css",
+   "use": "class=\"mg-bg-field\" på scenen (importera tokens.css)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.grounds.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.motiongraphics.bg-rails",
+   "name": "Grund: Rails – kantskenor",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Två lysande kantskenor för skärminspelningsscenen.",
+   "tags": [
+    "bakgrund",
+    "violet",
+    "glow",
+    "premium",
+    "motiongraphics"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/assets/tokens.css",
+   "use": "class=\"mg-bg-rails\" på scenen (importera tokens.css)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.grounds.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.motiongraphics.bg-ribbon",
+   "name": "Grund: Ribbon – S-kurva",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Mjuk diagonal violett ljusribbon över svart.",
+   "tags": [
+    "bakgrund",
+    "violet",
+    "glow",
+    "premium",
+    "motiongraphics"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/assets/tokens.css",
+   "use": "class=\"mg-bg-ribbon\" på scenen (importera tokens.css)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.grounds.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.motiongraphics.bg-blowout",
+   "name": "Grund: Blowout – överexponerat ljusfält",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Stilens enda ljusa grund: ett utblåst violettvitt ljus.",
+   "tags": [
+    "bakgrund",
+    "violet",
+    "glow",
+    "premium",
+    "motiongraphics"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/assets/tokens.css",
+   "use": "class=\"mg-bg-blowout\" på scenen (importera tokens.css)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.grounds.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.motiongraphics.bg-aurora-floor",
+   "name": "Grund: aurora floor (perspektivgolv)",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Perspektiviskt trådgolv med violetta norrskensmoln som driver – omgivningen andra devices står på.",
+   "tags": [
+    "bakgrund",
+    "aurora",
+    "perspektiv",
+    "grid floor",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/components/mg-motion-library.html",
+   "use": "class=\"mg-bg-floor\" eller device 07 i mg-motion-library.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.motiongraphics.device-aurora-floor.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.motiongraphics.bg-vortex",
+   "name": "Grund: vortex",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Svaga koncentriska violetta virvelbågar bakom innehållet (används under notification pile-up).",
+   "tags": [
+    "bakgrund",
+    "vortex",
+    "subtle",
+    "violet"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/assets/tokens.css",
+   "use": "class=\"mg-bg-vortex\"",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Renderad men nästan osynlig i stillbild (mycket låg kontrast) – lämnad som unverified."
+  },
+  {
+   "id": "nextphase.motiongraphics.check-placeholders",
+   "name": "Render-gate: kvarglömd kit-copy",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Skript som stoppar renderingen om kitets platshållartext eller lånade namn finns kvar i ett segment.",
+   "tags": [
+    "gate",
+    "qa",
+    "copy",
+    "bash"
+   ],
+   "path": "library/kits/nextphase/skills/motiongraphics/scripts/check-placeholders.sh",
+   "use": "bash library/kits/nextphase/skills/motiongraphics/scripts/check-placeholders.sh work/nextphase/videos/<namn>",
+   "requires": [
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Provkörd i Git Bash på en testmapp: fungerar (rapporterade 'clean')."
+  },
+  {
+   "id": "nextphase.persa.scene-clean-face",
+   "name": "Persa: Clean face",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Graderad helbild med en vit enordscaption på brösthöjd – vilobeatet, ~40 % av tiden.",
+   "tags": [
+    "persa",
+    "film",
+    "talking-head",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/persa/components/persa-system.html",
+   "use": "/persa – scenen 'Clean face'; markup i persa-system.html + klasserna i tokens.css",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.scene-clean-face.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Visad i 9:16 (stilens mätformat); .pa-16x9 ger 16:9."
+  },
+  {
+   "id": "nextphase.persa.scene-panel-over-face",
+   "name": "Persa: Panel över ansiktet (signaturen)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Rundad mediapanel ovanför, huvudet bryter panelens underkant tack vare matten; valfri app-chip.",
+   "tags": [
+    "persa",
+    "film",
+    "talking-head",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/persa/components/persa-system.html",
+   "use": "/persa – scenen 'Panel över ansiktet (signaturen)'; markup i persa-system.html + klasserna i tokens.css",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.scene-panel-over-face.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Visad i 9:16 (stilens mätformat); .pa-16x9 ger 16:9."
+  },
+  {
+   "id": "nextphase.persa.scene-media-full-head-card",
+   "name": "Persa: Media full + huvudkort",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Skärminnehållet är poängen; talaren som huvudkort som blöder ut i underkant.",
+   "tags": [
+    "persa",
+    "film",
+    "talking-head",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/persa/components/persa-system.html",
+   "use": "/persa – scenen 'Media full + huvudkort'; markup i persa-system.html + klasserna i tokens.css",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.scene-media-full-head-card.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Visad i 9:16 (stilens mätformat); .pa-16x9 ger 16:9."
+  },
+  {
+   "id": "nextphase.persa.scene-split-break-the-box",
+   "name": "Persa: Split – bryt rutan",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Media ovanför, huvudkort nedanför, huvudet korsar skarven mellan dem.",
+   "tags": [
+    "persa",
+    "film",
+    "talking-head",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/persa/components/persa-system.html",
+   "use": "/persa – scenen 'Split – bryt rutan'; markup i persa-system.html + klasserna i tokens.css",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.scene-split-break-the-box.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Visad i 9:16 (stilens mätformat); .pa-16x9 ger 16:9."
+  },
+  {
+   "id": "nextphase.persa.scene-hand-note",
+   "name": "Persa: Handtextad not",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "En handskriven rad i lime, ofta böjd längs en riktig kant i rummet.",
+   "tags": [
+    "persa",
+    "film",
+    "talking-head",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/persa/components/persa-system.html",
+   "use": "/persa – scenen 'Handtextad not'; markup i persa-system.html + klasserna i tokens.css",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.scene-hand-note.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Visad i 9:16 (stilens mätformat); .pa-16x9 ger 16:9."
+  },
+  {
+   "id": "nextphase.persa.caption-hard-cut",
+   "name": "Persa enordscaption (hårdklipp)",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett vitt ord på brösthöjd (73 %) som byts på varje stavelse med noll bildrutors övergång – ingen fade, ingen pop.",
+   "tags": [
+    "caption",
+    "hard cut",
+    "ett ord",
+    "minimal",
+    "film"
+   ],
+   "path": "library/kits/nextphase/skills/persa/assets/tokens.css",
+   "use": "class=\"pa-caption\"; bygg med scripts/build-captions.py från transcript-tight.json",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.caption-hard-cut.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.persa.emphasis-behind-head",
+   "name": "Emfasord bakom huvudet",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett jättelikt konturord (amber/coral/lime) placerat bakom det matte:ade motivet så att huvudet skymmer det – texten står i rummet.",
+   "tags": [
+    "text-bakom-motiv",
+    "outline",
+    "matte",
+    "cinematic",
+    "emphasis"
+   ],
+   "path": "library/kits/nextphase/skills/persa/assets/tokens.css",
+   "use": "class=\"pa-emph\" (+ --lime/--solid) under .pa-subject i z-ordningen; kräver RVM-matte för riktigt bakom-effekt",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.emphasis-behind-head.jpg"
+   },
+   "notes": "Platshållarfigur i showcase; den riktiga ocklusionen kräver matte av egen footage."
+  },
+  {
+   "id": "nextphase.persa.slam-opener",
+   "name": "Slam-öppnare + handtextad rad",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Röd kondenserad slam-rubrik med en handskriven rad ovanför, bakom huvudet – öppningsbeatet.",
+   "tags": [
+    "slam",
+    "hook",
+    "rubrik",
+    "handskrift",
+    "energetic"
+   ],
+   "path": "library/kits/nextphase/skills/persa/components/persa-system.html",
+   "use": "class=\"pa-slam\" + .pa-hand ur persa-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.slam-opener.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.persa.grade",
+   "name": "Persa-grade (film-look)",
+   "type": "grade",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Blått trycks ned, grönt lyfts i skuggor/högdagrar, avmättat, bloom, vinjett och grain – varm, disig, lite gammal film.",
+   "tags": [
+    "grade",
+    "film",
+    "varm",
+    "lut",
+    "ffmpeg",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/persa/scripts/persa-grade.sh",
+   "use": "bash library/kits/nextphase/skills/persa/scripts/persa-grade.sh in.mp4 ut.mp4 plate|soft|full (balansera först med persa-balance.py)",
+   "requires": [
+    "ffmpeg",
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.persa.grade.jpg"
+   },
+   "notes": "Provkörd på färgkarta: original / plate / soft / full. Importfix: bloom blandas i RGB (format=gbrp) – i yuv420p blev allt magenta; -vsync → -fps_mode (ffmpeg 9)."
+  },
+  {
+   "id": "nextphase.persa.balance-and-check",
+   "name": "Persa färgbalans + grade-check",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Mäter källans färgstick per luminansband och skriver en kompenserande kurva; grade-check mäter om ett klipp ligger i persa-färgrymden.",
+   "tags": [
+    "grade",
+    "färgbalans",
+    "qa",
+    "numpy"
+   ],
+   "path": "library/kits/nextphase/skills/persa/scripts/persa-balance.py",
+   "use": "library/.venv/Scripts/python.exe …/persa/scripts/persa-balance.py in.mp4 --out bal.mp4; sedan grade-check.py",
+   "requires": [
+    "ffmpeg",
+    "numpy"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Båda provkörda med library/.venv (numpy). grade-check underkänner en färgkarta som väntat – kalibrerad för riktig footage."
+  },
+  {
+   "id": "nextphase.persa.build-captions",
+   "name": "Persa caption-byggare",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Transkript → hårdklippta enordscaptions som HTML, med valfria emfasord.",
+   "tags": [
+    "caption",
+    "transkript",
+    "automation"
+   ],
+   "path": "library/kits/nextphase/skills/persa/scripts/build-captions.py",
+   "use": "python …/persa/scripts/build-captions.py transcript-tight.json --out seg-01/captions.html --emphasis ord1,ord2",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Provkörd på ett svenskt testtranskript: OK (UTF-8-fix tillagd)."
+  },
+  {
+   "id": "nextphase.persa.check-persa",
+   "name": "Persa render-gate",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Stoppar rendering vid kvarglömd kit-copy, lånade namn och persa-specifika stilbrott.",
+   "tags": [
+    "gate",
+    "qa",
+    "bash"
+   ],
+   "path": "library/kits/nextphase/skills/persa/scripts/check-persa.sh",
+   "use": "bash …/persa/scripts/check-persa.sh work/nextphase/videos/<namn>",
+   "requires": [
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Provkörd i Git Bash: OK."
+  },
+  {
+   "id": "nextphase.vibecode.scene-paper-timeline",
+   "name": "Vibecode: Papperstidslinje (signaturen)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Linjerat anteckningspapper med riven kant där klipp byggs vänster→höger och en spelhuvudlinje sveper.",
+   "tags": [
+    "tidslinje",
+    "redigering",
+    "papper",
+    "vibecode",
+    "collage",
+    "playful"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/components/vibecode-system.html",
+   "use": "/vibecode – scenen 'Papperstidslinje (signaturen)'; markup i vibecode-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.scene-paper-timeline.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.scene-tile-row-red-x",
+   "name": "Vibecode: Brickrad + röda X",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Tre papperbrickor i olika lutning med marinblå piktogram; sedan landar ett handritat rött X på varje.",
+   "tags": [
+    "röda X",
+    "negation",
+    "gamla sättet",
+    "vibecode",
+    "collage",
+    "playful"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/components/vibecode-system.html",
+   "use": "/vibecode – scenen 'Brickrad + röda X'; markup i vibecode-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.scene-tile-row-red-x.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.scene-poster",
+   "name": "Vibecode: Affisch",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Två rader kondenserade versaler där rad två är 1,7–1,8× rad ett, hård marinblå skugga och gul pil.",
+   "tags": [
+    "affisch",
+    "versaler",
+    "rubrik",
+    "bold",
+    "vibecode",
+    "collage",
+    "playful"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/components/vibecode-system.html",
+   "use": "/vibecode – scenen 'Affisch'; markup i vibecode-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.scene-poster.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.scene-workspace",
+   "name": "Vibecode: Workspace (cream)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Steglista med exakt en aktiv rad, mediakort, huvudkort och skrubbskena – i papper på cream-grund.",
+   "tags": [
+    "workspace",
+    "steg",
+    "cream",
+    "ui",
+    "vibecode",
+    "collage",
+    "playful"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/components/vibecode-system.html",
+   "use": "/vibecode – scenen 'Workspace (cream)'; markup i vibecode-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.scene-workspace.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.scene-sticker-wall",
+   "name": "Vibecode: Klistermärkesvägg + caption-lozenge",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "3–5 riktiga tillgångar urklippta med vit papperskant och olika lutning, plus hårdklippt caption-lozenge.",
+   "tags": [
+    "stickers",
+    "urklipp",
+    "collage",
+    "vibecode",
+    "collage",
+    "playful"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/components/vibecode-system.html",
+   "use": "/vibecode – scenen 'Klistermärkesvägg + caption-lozenge'; markup i vibecode-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.scene-sticker-wall.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.scene-agent-beat",
+   "name": "Vibecode: Agent-beat (pixelmaskot)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Pixelmaskoten gör en sak i 1,5–3 s med blinkande gula gnistor – AI:ns kropp som punktuering.",
+   "tags": [
+    "maskot",
+    "pixel",
+    "agent",
+    "vibecode",
+    "collage",
+    "playful"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/components/vibecode-system.html",
+   "use": "/vibecode – scenen 'Agent-beat (pixelmaskot)'; markup i vibecode-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.scene-agent-beat.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad. Maskoten är nu en neutral platshållare (pixel-golfboll)."
+  },
+  {
+   "id": "nextphase.vibecode.scene-teaser",
+   "name": "Vibecode: Teaser (mörk)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Mörk mellanruta mellan kapitel: huvudkort, suddig förhandsvisning av det som kommer och 'COMING UP'.",
+   "tags": [
+    "teaser",
+    "kapitel",
+    "mörk",
+    "vibecode",
+    "collage",
+    "playful"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/components/vibecode-system.html",
+   "use": "/vibecode – scenen 'Teaser (mörk)'; markup i vibecode-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.scene-teaser.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.ground-cobalt",
+   "name": "Vibecode-grund: kobolt (standard)",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "python",
+   "description": "Mättad koboltblå platta med halvtonsprickar, mittlyft och vinjett.",
+   "tags": [
+    "bakgrund",
+    "halvton",
+    "papper",
+    "vibecode"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/scripts/make-paper.py",
+   "use": "python …/vibecode/scripts/make-paper.py ground --out assets/ground.png --theme cobalt (CSS-varianten: .vc-frame)",
+   "requires": [
+    "pillow"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.grounds.jpg"
+   },
+   "notes": "Renderad med make-paper.py (library/.venv) och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.ground-cream",
+   "name": "Vibecode-grund: cream/guld",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "python",
+   "description": "Lugn cream-och-guld-grund för lugna kapitel och pengabeats (.vc-cream).",
+   "tags": [
+    "bakgrund",
+    "halvton",
+    "papper",
+    "vibecode"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/scripts/make-paper.py",
+   "use": "python …/vibecode/scripts/make-paper.py ground --out assets/ground.png --theme cream (CSS-varianten: .vc-frame .vc-cream)",
+   "requires": [
+    "pillow"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.grounds.jpg"
+   },
+   "notes": "Renderad med make-paper.py (library/.venv) och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.ground-dark",
+   "name": "Vibecode-grund: mörk",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "python",
+   "description": "Mörk brun-svart grund för teaser och CTA (.vc-dark).",
+   "tags": [
+    "bakgrund",
+    "halvton",
+    "papper",
+    "vibecode"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/scripts/make-paper.py",
+   "use": "python …/vibecode/scripts/make-paper.py ground --out assets/ground.png --theme dark (CSS-varianten: .vc-frame .vc-dark)",
+   "requires": [
+    "pillow"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.grounds.jpg"
+   },
+   "notes": "Renderad med make-paper.py (library/.venv) och granskad."
+  },
+  {
+   "id": "nextphase.vibecode.red-x",
+   "name": "Röda X-negationen",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Två röda streck med rundade ändar ritas med stroke-dash (5f, andra 3f senare) och skjuter över kortets kanter – stilens punchline.",
+   "tags": [
+    "röda X",
+    "negation",
+    "handritat",
+    "stroke"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/assets/tokens.css",
+   "use": "class=\"vc-x-stroke\" (se tile-row-scenen); ljud: marker-scratch, högst i stilen",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.scene-tile-row-red-x.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.vibecode.churn",
+   "name": "Stop-motion-churn på 2s",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Innehållet byts mellan korten var 2–3:e bildruta, korten jittrar ±1,2° och gnistor blinkar 2 på/2 av – stegade värden, aldrig tween.",
+   "tags": [
+    "stop-motion",
+    "churn",
+    "jitter",
+    "playful",
+    "energetic"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/reference/motion-grammar.md",
+   "use": "Se reference/motion-grammar.md §churn; stega värden med tl.set var 2:a bildruta",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Syns inte i stillbild – ej verifierad visuellt."
+  },
+  {
+   "id": "nextphase.vibecode.paper-wipe",
+   "name": "Pappers-wipe (övergång)",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett pappersark sveper över bilden på 9 bildrutor – övergången vid kapitelbyte/grundbyte.",
+   "tags": [
+    "wipe",
+    "papper",
+    "övergång",
+    "kapitel"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/reference/motion-grammar.md",
+   "use": "Se reference/motion-grammar.md (paper wipe 9f)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara spec i texten, ingen färdig komponent – ej renderad."
+  },
+  {
+   "id": "nextphase.vibecode.caption-lozenge",
+   "name": "Caption-lozenge (hårdklipp)",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Kondenserad caption i en papperslozenge längst ned, hårdklipper in och ut, gult accentord.",
+   "tags": [
+    "caption",
+    "hard cut",
+    "lozenge",
+    "versaler"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/assets/tokens.css",
+   "use": "class=\"vc-caption\"",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.vibecode.scene-sticker-wall.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.vibecode.check-vibecode",
+   "name": "Vibecode render-gate",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Kontrollerar emojis, kit-copy, papper-regler och antal riktiga tillgångar före rendering.",
+   "tags": [
+    "gate",
+    "qa",
+    "bash"
+   ],
+   "path": "library/kits/nextphase/skills/vibecode/scripts/check-vibecode.sh",
+   "use": "bash …/vibecode/scripts/check-vibecode.sh work/nextphase/videos/<namn>",
+   "requires": [
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Provkörd i Git Bash: fungerar."
+  },
+  {
+   "id": "nextphase.zak.scene-locked-window",
+   "name": "Zak: Låst fönster",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Rundat fönster med lika mycket luft ovan/under, seriffrad i luften, 2–4 vita ord i fönstret – det mesta av speltiden.",
+   "tags": [
+    "zak",
+    "minimal",
+    "svart",
+    "fönster",
+    "lugn"
+   ],
+   "path": "library/kits/nextphase/skills/zak/components/zak-system.html",
+   "use": "/zak – scenen 'Låst fönster'; markup i zak-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.scene-locked-window.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.zak.scene-media-window",
+   "name": "Zak: Mediafönster",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Fönstret visar den riktiga resursen i stället för ansiktet.",
+   "tags": [
+    "zak",
+    "minimal",
+    "svart",
+    "fönster",
+    "lugn"
+   ],
+   "path": "library/kits/nextphase/skills/zak/components/zak-system.html",
+   "use": "/zak – scenen 'Mediafönster'; markup i zak-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.scene-media-window.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.zak.scene-split-window",
+   "name": "Zak: Delat fönster",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Ansiktet och saken samtidigt, en yttre radie.",
+   "tags": [
+    "zak",
+    "minimal",
+    "svart",
+    "fönster",
+    "lugn"
+   ],
+   "path": "library/kits/nextphase/skills/zak/components/zak-system.html",
+   "use": "/zak – scenen 'Delat fönster'; markup i zak-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.scene-split-window.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.zak.scene-title-card",
+   "name": "Zak: Titelkort",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Kapitelbrytning: fönstret blir mörkt och seriffraden bär bilden.",
+   "tags": [
+    "zak",
+    "minimal",
+    "svart",
+    "fönster",
+    "lugn"
+   ],
+   "path": "library/kits/nextphase/skills/zak/components/zak-system.html",
+   "use": "/zak – scenen 'Titelkort'; markup i zak-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.scene-title-card.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.zak.scene-full-bleed",
+   "name": "Zak: Full bleed – stilens enda rörelse",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Fönstret växer till helbild på 6 bildrutor – en eller två gånger per video.",
+   "tags": [
+    "zak",
+    "minimal",
+    "svart",
+    "fönster",
+    "lugn"
+   ],
+   "path": "library/kits/nextphase/skills/zak/components/zak-system.html",
+   "use": "/zak – scenen 'Full bleed – stilens enda rörelse'; markup i zak-system.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.scene-full-bleed.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.zak.caption",
+   "name": "Zak-caption (2–4 ord, hårdklipp, ingen skugga)",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Vit Inter 700 med −0,065em spärrning, 2–4 ord, byts på en enda bildruta var ~22:a – utan skugga, kontur eller ruta.",
+   "tags": [
+    "caption",
+    "hard cut",
+    "minimal",
+    "tight",
+    "inter"
+   ],
+   "path": "library/kits/nextphase/skills/zak/scripts/build-captions.py",
+   "use": "python …/zak/scripts/build-captions.py transcript-tight.json --out seg-01/captions.html; gate: check-contrast.py",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.scene-locked-window-9x16.jpg"
+   },
+   "notes": "Utseendet verifierat i showcase; byggaren provkörd på svenskt testtranskript."
+  },
+  {
+   "id": "nextphase.zak.serif-title",
+   "name": "Zak seriffrad",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "En Didone-seriffrad (Playfair) sätts en gång i luften ovanför fönstret och ändras aldrig.",
+   "tags": [
+    "serif",
+    "didone",
+    "titel",
+    "minimal",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/zak/assets/tokens.css",
+   "use": "class=\"zk-title\"",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.scene-title-card.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.zak.plate-grade",
+   "name": "Zak-platta: omkadrering + lågmäld grade",
+   "type": "grade",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Beskär källan in i fönstret (2,35:1 i 16:9) med valbar crop-y och drar ned exponeringen till en varm, lågmäld platta.",
+   "tags": [
+    "grade",
+    "reframe",
+    "low-key",
+    "ffmpeg"
+   ],
+   "path": "library/kits/nextphase/skills/zak/scripts/zak-plate.sh",
+   "use": "bash …/zak/scripts/zak-plate.sh in.mp4 ut.mp4 16x9 0.35 plate",
+   "requires": [
+    "ffmpeg",
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.zak.plate-grade.jpg"
+   },
+   "notes": "Provkörd på färgkarta (före/efter). Importfix: -vsync → -fps_mode."
+  },
+  {
+   "id": "nextphase.zak.gates",
+   "name": "Zak gates: check-zak + check-contrast",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Statisk gate (ingen rörelse, 2–4 ord, .zk-frame) och kontrastgate på renderingen – captionen har ingen skugga och dör tyst på ljus platta.",
+   "tags": [
+    "gate",
+    "qa",
+    "kontrast",
+    "numpy"
+   ],
+   "path": "library/kits/nextphase/skills/zak/scripts/check-contrast.py",
+   "use": "bash …/zak/scripts/check-zak.sh work/nextphase/videos/<namn>; library/.venv/Scripts/python.exe …/check-contrast.py out/seg-01.mp4",
+   "requires": [
+    "numpy",
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Båda provkörda (check-zak flaggade korrekt en testmapp utan .zk-frame)."
+  },
+  {
+   "id": "nextphase.long.layout-screen-share-bubble",
+   "name": "Layout: skärmdelning + kamerabubbla",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Inspelningen i helbild, talaren i bubblan nere till höger, små callouts med pil över skärmen.",
+   "tags": [
+    "demo",
+    "screen share",
+    "bubbla",
+    "callout",
+    "long-form",
+    "coral",
+    "dark grid"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/long-blocks.html",
+   "use": "/nextphase-long-editing; kopiera blocket 'Layout: skärmdelning + kamerabubbla' ur long-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.layout-screen-share-bubble.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.long.layout-split-media-face",
+   "name": "Layout: split media/ansikte",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Media 0–1150 px i en coral-ram, talaren till höger, coral etikett – speglas för variation.",
+   "tags": [
+    "split",
+    "half and half",
+    "coral",
+    "long-form",
+    "coral",
+    "dark grid"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/long-blocks.html",
+   "use": "/nextphase-long-editing; kopiera blocket 'Layout: split media/ansikte' ur long-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.layout-split-media-face.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.long.chapter-card",
+   "name": "Kapitelkort",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Kicker + serif-titel + coral linje på prickrutnätet, med progress-skena – vid varje kapitelgräns (~2 s).",
+   "tags": [
+    "kapitel",
+    "titel",
+    "serif",
+    "long-form",
+    "coral",
+    "dark grid"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/long-blocks.html",
+   "use": "/nextphase-long-editing; kopiera blocket 'Kapitelkort' ur long-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.chapter-card.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.long.stat-reveal",
+   "name": "Statistik-reveal (count-up + spike)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Stort tal räknar upp med coral understrykning och källa under.",
+   "tags": [
+    "statistik",
+    "count-up",
+    "siffra",
+    "källa",
+    "long-form",
+    "coral",
+    "dark grid"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/long-blocks.html",
+   "use": "/nextphase-long-editing; kopiera blocket 'Statistik-reveal (count-up + spike)' ur long-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.stat-reveal.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.long.search-autocomplete",
+   "name": "Sökfält med autocomplete",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Glödande sökfält som skrivs ut och fäller ned numrerade förslag.",
+   "tags": [
+    "sök",
+    "ui",
+    "autocomplete",
+    "explainer",
+    "long-form",
+    "coral",
+    "dark grid"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/long-blocks.html",
+   "use": "/nextphase-long-editing; kopiera blocket 'Sökfält med autocomplete' ur long-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.search-autocomplete.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.long.terminal-panel",
+   "name": "Terminal/kodpanel",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Mörk terminal med prompt, körning och grön bock.",
+   "tags": [
+    "terminal",
+    "kod",
+    "ui",
+    "long-form",
+    "coral",
+    "dark grid"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/long-blocks.html",
+   "use": "/nextphase-long-editing; kopiera blocket 'Terminal/kodpanel' ur long-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.terminal-panel.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.long.recap-ladder",
+   "name": "Recap-stege",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Numrerad sammanfattning med coral-siffror som staggrar in – avslutningen.",
+   "tags": [
+    "recap",
+    "lista",
+    "sammanfattning",
+    "long-form",
+    "coral",
+    "dark grid"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/long-blocks.html",
+   "use": "/nextphase-long-editing; kopiera blocket 'Recap-stege' ur long-blocks.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.recap-ladder.jpg"
+   },
+   "notes": "Showcase-sidan renderad i headless Chrome och granskad."
+  },
+  {
+   "id": "nextphase.long.lower-third",
+   "name": "Lower third (clip-reveal)",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Namn + undertext i en mörk ruta med coral vänsterkant som wipe:as in via clip-path, 3,5–5 s.",
+   "tags": [
+    "lower third",
+    "namn",
+    "källa",
+    "clip-path"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/lower-third.html",
+   "use": "Klistra in lower-third.html i kompositionen; sätt IN/OUT till ordets onset",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.lower-third-reveal.jpg"
+   },
+   "notes": "Renderad i värdsida med egen platshållartext; strip över reveal."
+  },
+  {
+   "id": "nextphase.long.chapter-wipe",
+   "name": "Chapter wipe (coral framkant)",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Prickrutnätet sveper över bilden på en coral framkant (0,6 s), sedan kicker → titel → linje ritas.",
+   "tags": [
+    "chapter wipe",
+    "övergång",
+    "coral",
+    "kapitel"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/chapter-card.html",
+   "use": "Klistra in chapter-card.html; ljud: riser som toppar på wipen",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.chapter-wipe.jpg"
+   },
+   "notes": "Strip om 6 bildrutor seekad i värdsida."
+  },
+  {
+   "id": "nextphase.long.article-highlight",
+   "name": "Artikel-highlight 16:9",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Riktig artikelsida som läsruta på mörka rutnätet med långsam Ken Burns; gul överstrykningspenna (multiply) sveper över de riktiga orden.",
+   "tags": [
+    "highlighter",
+    "artikel",
+    "källa",
+    "överstrykning",
+    "ken burns"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/article-highlight.html",
+   "use": "Klistra in article-highlight.html; byt bild + %-rektanglar mot din sida",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.article-highlight.jpg"
+   },
+   "notes": "Renderad med den egna exempelsidan (pages/example-page.png) och anpassade rektanglar."
+  },
+  {
+   "id": "nextphase.long.logo-blur-reveal",
+   "name": "Logga blur-reveal 16:9",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Den riktiga loggan ligger suddig från första sekund och skärps exakt på ordet där namnet sägs; ordmärket landar efter.",
+   "tags": [
+    "logga",
+    "reveal",
+    "blur",
+    "hook",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/components/logo-blur-reveal.html",
+   "use": "Klistra in logo-blur-reveal.html; sätt REVEAL = namnets onset; ljud: riser + magic-reveal",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.logo-blur-reveal.jpg"
+   },
+   "notes": "Renderad med egen neutral flagg-ikon som logga."
+  },
+  {
+   "id": "nextphase.long.layout-transparent-popout",
+   "name": "Layout: Transparent background (pop-out)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Talaren frilagd med RVM och komponerad över designad grund; torson syns genom ett rundat fönster så att hen 'poppar ut' ur rektangeln.",
+   "tags": [
+    "pop-out",
+    "frilägg",
+    "matte",
+    "rvm",
+    "cutout"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/scripts/cutout-hook.sh",
+   "use": "Se reference/cutout-compositing.md: rvm-matte.py (library/.venv) → cutout-hook.sh; mått från find-cut-line.py",
+   "requires": [
+    "ffmpeg",
+    "torch",
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kräver RVM-venv (torch CPU, ~200 MB) – inte installerad/provkörd i importen. make-rect-mask.py provkörd OK."
+  },
+  {
+   "id": "nextphase.long.layout-full-frame-face",
+   "name": "Layout: helbildsansikte",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Kameran kant till kant för cold open, vändpunkten, emfatiska rader och CTA.",
+   "tags": [
+    "ansikte",
+    "kamera",
+    "talking-head"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/reference/design-system.md",
+   "use": "Se design-system.md (layouter) + kamerazoomarna",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara spec – kräver egen footage."
+  },
+  {
+   "id": "nextphase.long.camera-slow-push",
+   "name": "Kamerarörelse: Slow push",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Standardzoomen på helbildsansikte: långsam linjär inzoomning. (origin 50% 44–46%, scale 1,00→1,06 (long) / 1,10 (short), ease none).",
+   "tags": [
+    "kamera",
+    "zoom",
+    "camera move",
+    "ansikte",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/reference/motion-grammar.md",
+   "use": "/nextphase-long-editing eller /nextphase-short-editing – 'Slow push' på helbildsansiktet; zooma bara kameraelementet",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Spec i motion-grammar.md / SKILL.md – ingen färdig komponent; ej renderad."
+  },
+  {
+   "id": "nextphase.long.camera-face-punch",
+   "name": "Kamerarörelse: Face punch",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Intim/varnande inzoomning för vändpunkten. (origin 50% 38%, scale 1,00→1,14 (long) / 1,20 (short), power2.inOut).",
+   "tags": [
+    "kamera",
+    "zoom",
+    "camera move",
+    "ansikte",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/reference/motion-grammar.md",
+   "use": "/nextphase-long-editing eller /nextphase-short-editing – 'Face punch' på helbildsansiktet; zooma bara kameraelementet",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Spec i motion-grammar.md / SKILL.md – ingen färdig komponent; ej renderad."
+  },
+  {
+   "id": "nextphase.long.camera-handheld-drift",
+   "name": "Kamerarörelse: Handheld drift",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Filmisk rad: lätt inzoom med liten sinusvajning i x/y. (scale 1,04→1,08 (long) / 1,06→1,11 (short) + sin-sway).",
+   "tags": [
+    "kamera",
+    "zoom",
+    "camera move",
+    "ansikte",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/reference/motion-grammar.md",
+   "use": "/nextphase-long-editing eller /nextphase-short-editing – 'Handheld drift' på helbildsansiktet; zooma bara kameraelementet",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Spec i motion-grammar.md / SKILL.md – ingen färdig komponent; ej renderad."
+  },
+  {
+   "id": "nextphase.long.transition-push",
+   "name": "Övergång: Push",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Utgående glider ut åt vänster (x 0→−540 + fade), inkommande in från höger (power3.out, ~0,44 s) – vid grafikbyten i en layout.",
+   "tags": [
+    "övergång",
+    "push",
+    "rörelse"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/reference/motion-grammar.md",
+   "use": "/nextphase-long-editing (eller short) – 'Push'; tider i reference/motion-grammar.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara spec i texten, ingen färdig komponentfil – ej renderad."
+  },
+  {
+   "id": "nextphase.long.transition-whip-pan",
+   "name": "Övergång: Whip-pan",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Snabb riktad glidning med motion-blur-strimma (~0,28 s) på en swoosh – long-formens arbetshäst mellan layouter.",
+   "tags": [
+    "övergång",
+    "whip-pan",
+    "rörelse"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/reference/motion-grammar.md",
+   "use": "/nextphase-long-editing (eller short) – 'Whip-pan'; tider i reference/motion-grammar.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara spec i texten, ingen färdig komponentfil – ej renderad."
+  },
+  {
+   "id": "nextphase.long.transition-dissolve",
+   "name": "Övergång: Dissolve",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "300 ms övertoning för lugna ämnesskiften inom ett kapitel.",
+   "tags": [
+    "övergång",
+    "dissolve",
+    "rörelse"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/reference/motion-grammar.md",
+   "use": "/nextphase-long-editing (eller short) – 'Dissolve'; tider i reference/motion-grammar.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara spec i texten, ingen färdig komponentfil – ej renderad."
+  },
+  {
+   "id": "nextphase.long.transition-coral-flash",
+   "name": "Övergång: Coral flash-cut",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "1–2 bildrutor coral-blixt på payoff-spiken och vändpunkten – max ~3 gånger per video.",
+   "tags": [
+    "övergång",
+    "coral-flash",
+    "coral"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/reference/motion-grammar.md",
+   "use": "/nextphase-long-editing (eller short) – 'Coral flash-cut'; tider i reference/motion-grammar.md",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara spec i texten, ingen färdig komponentfil – ej renderad."
+  },
+  {
+   "id": "nextphase.long.tighten-cuts",
+   "name": "Tystnadstrimning + transkript-remap",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Kapar döda luckor och utfyllnadsord i inspelningen och skriver ett omräknat transcript-tight.json – enda tidskällan efteråt.",
+   "tags": [
+    "tystnad",
+    "jump cut",
+    "transkript",
+    "automation",
+    "ffmpeg"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/scripts/tighten-cuts.py",
+   "use": "python library/kits/nextphase/skills/nextphase-long-editing/scripts/tighten-cuts.py --src assets/recording.mp4 --transcript assets/transcript.json --out assets/recording-tight.mp4",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.tighten-cuts.jpg"
+   },
+   "notes": "Provkörd: 10,0 s → 6,7 s. Importfixar: -filter_complex_script → -/filter_complex (borttaget i ffmpeg 8+), UTF-8 för svenska transkript."
+  },
+  {
+   "id": "nextphase.long.concat-segments",
+   "name": "Segment-concat + YouTube-kapitel",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Slår ihop kapitelrenderingar (förlustfritt när de matchar) och skriver chapters.txt från de verkliga längderna.",
+   "tags": [
+    "concat",
+    "kapitel",
+    "youtube",
+    "ffmpeg"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/scripts/concat-segments.sh",
+   "use": "bash …/nextphase-long-editing/scripts/concat-segments.sh out/final-visual.mp4 out/seg-*.mp4",
+   "requires": [
+    "ffmpeg",
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.concat-segments.jpg"
+   },
+   "notes": "Provkörd med två testsegment. Importfix: concat-listan skrivs med Windows-sökvägar (pwd -W)."
+  },
+  {
+   "id": "nextphase.long.mix-sfx",
+   "name": "SFX-mixer (cue-fil → ljudspår)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Mixar ljudeffekter på exakta tider från sfx-cues.txt ovanpå en låst render, med gain per cue och limiter; videon strömkopieras.",
+   "tags": [
+    "sfx",
+    "ljuddesign",
+    "mix",
+    "ffmpeg"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/scripts/mix-sfx.sh",
+   "use": "bash library/kits/nextphase/skills/nextphase-long-editing/scripts/mix-sfx.sh in.mp4 ut.mp4 sfx-cues.txt (anropa på sin plats i skillmappen)",
+   "requires": [
+    "ffmpeg",
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.long.mix-sfx.jpg"
+   },
+   "notes": "Provkörd med 15 cues och gratispaletten."
+  },
+  {
+   "id": "nextphase.long.mix-bgm",
+   "name": "Duckad musikbädd (sidechain)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Lägger en musikbädd under rösten med sidechain-kompressor (duckning), in-/utfade, ~22–26 dB under rösttopparna.",
+   "tags": [
+    "musik",
+    "bed",
+    "ducking",
+    "sidechain",
+    "ffmpeg"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/scripts/mix-bgm.sh",
+   "use": "bash …/nextphase-long-editing/scripts/mix-bgm.sh out/sfx.mp4 out/final.mp4 assets/music/bed.mp3 (egen rättighetsklar bädd, t.ex. ACE-Step)",
+   "requires": [
+    "ffmpeg",
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Provkörd med syntetisk testbädd – fungerar; ingen meningsfull stillbild att granska."
+  },
+  {
+   "id": "nextphase.long.rvm-matte",
+   "name": "RVM-matte (bakgrundsborttagning)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Robust Video Matting → BGRA-bildrutor med alfa och stabil hårkant; grunden för pop-out och text-bakom-huvud.",
+   "tags": [
+    "matte",
+    "frilägg",
+    "rvm",
+    "torch",
+    "ai"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-long-editing/scripts/rvm-matte.py",
+   "use": "library/.venv/Scripts/python.exe …/rvm-matte.py --src in.mp4 --out frames --frames 150 --device cpu",
+   "requires": [
+    "torch",
+    "opencv"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kräver torch i library/.venv (se SETUP.md) – ej installerat/provkört i importen. Alternativ: npx hyperframes remove-background."
+  },
+  {
+   "id": "nextphase.short.caption-parallax",
+   "name": "Caption: Parallax stretch-in",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Instrument Serif i röd/coral, stort; ordet kommer in med vertikal sträckning scaleY 2,8 → 1 – för raderna som betyder något.",
+   "tags": [
+    "caption",
+    "ord för ord",
+    "parallax",
+    "kinetic typography",
+    "energetic"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/caption-styles.html",
+   "use": "Kopiera .cap-parallax + tweenen ur caption-styles.html; ett ord i taget på sin onset",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.caption-styles.jpg"
+   },
+   "notes": "caption-styles.html skrevs vid importen efter kitets spec (HOW-WE-EDIT.md) – kitet hade bara prosa. Renderad och granskad."
+  },
+  {
+   "id": "nextphase.short.caption-weight-shift",
+   "name": "Caption: Weight shift",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Montserrat där vikt 300 tonar över till 900 när ordet landar, scale 0,85 → 1 – vanlig berättarröst.",
+   "tags": [
+    "caption",
+    "ord för ord",
+    "weight-shift",
+    "kinetic typography",
+    "energetic"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/caption-styles.html",
+   "use": "Kopiera .cap-weight + tweenen ur caption-styles.html; ett ord i taget på sin onset",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.caption-styles.jpg"
+   },
+   "notes": "caption-styles.html skrevs vid importen efter kitets spec (HOW-WE-EDIT.md) – kitet hade bara prosa. Renderad och granskad."
+  },
+  {
+   "id": "nextphase.short.caption-highlighted",
+   "name": "Caption: Highlighted marker",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Cream-text på en coral markering som sveper in bakom ordet – varje Half & Half-beat.",
+   "tags": [
+    "caption",
+    "ord för ord",
+    "highlighted",
+    "kinetic typography",
+    "energetic"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/caption-styles.html",
+   "use": "Kopiera .cap-hl + tweenen ur caption-styles.html; ett ord i taget på sin onset",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.caption-styles.jpg"
+   },
+   "notes": "caption-styles.html skrevs vid importen efter kitets spec (HOW-WE-EDIT.md) – kitet hade bara prosa. Renderad och granskad."
+  },
+  {
+   "id": "nextphase.short.caption-highlight-box",
+   "name": "Caption: röd markeringsruta (registry)",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Hela frasen i versaler där aktivt ord får en röd/coral ruta bakom sig – karaoke-highlight.",
+   "tags": [
+    "caption",
+    "karaoke",
+    "highlight",
+    "versaler"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/caption-highlight.html",
+   "use": "Sub-komposition/komponent från HyperFrames-registret: kopiera caption-highlight.html (texturerna ligger bredvid)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.caption-highlight-box.jpg"
+   },
+   "notes": "Seekad på tre tidpunkter och granskad."
+  },
+  {
+   "id": "nextphase.short.caption-gradient-fill",
+   "name": "Caption: gradientfyllning",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Ord för ord med en rosa→orange gradient genom bokstäverna.",
+   "tags": [
+    "caption",
+    "gradient",
+    "färg",
+    "playful"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/caption-gradient-fill.html",
+   "use": "Sub-komposition/komponent från HyperFrames-registret: kopiera caption-gradient-fill.html (texturerna ligger bredvid)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.caption-gradient-fill.jpg"
+   },
+   "notes": "Seekad på tre tidpunkter och granskad."
+  },
+  {
+   "id": "nextphase.short.caption-texture",
+   "name": "Caption: textur-fyllning",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Tjocka Anton-versaler fyllda med en textur (lava, marmor, metall, trä, sten, betong) via mask.",
+   "tags": [
+    "caption",
+    "textur",
+    "mask",
+    "bold",
+    "cinematic"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/caption-texture.html",
+   "use": "Sub-komposition/komponent från HyperFrames-registret: kopiera caption-texture.html (texturerna ligger bredvid)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.caption-texture.jpg"
+   },
+   "notes": "Seekad på tre tidpunkter och granskad. Texturerna är ambientCG (CC0) + lava från registret; sökvägen compositions/components/ förväntas i ett HyperFrames-projekt."
+  },
+  {
+   "id": "nextphase.short.caption-blend-difference",
+   "name": "Caption: blend difference (auto-invert)",
+   "type": "caption",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Vit text som inverteras per pixel mot bakgrunden (mix-blend-mode: difference) – läsbar över både ljusa och mörka partier.",
+   "tags": [
+    "caption",
+    "blend mode",
+    "invert",
+    "kontrast"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/caption-blend-difference.html",
+   "use": "Lägg .blend-difference (eller -soft / -screen) på caption-lagret; isolation:isolate på gemensam förälder",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.caption-blend-difference.jpg"
+   },
+   "notes": "Renderad i värdsida över ljus/mörk delning."
+  },
+  {
+   "id": "nextphase.short.logo-blur-reveal",
+   "name": "Logga blur-reveal 9:16 (hook)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Hook när produktnamnet hålls hemligt: loggan suddig från start, skärps på namnets onset med coral-flash och magic-reveal.",
+   "tags": [
+    "logga",
+    "reveal",
+    "blur",
+    "hook",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/logo-blur-reveal.html",
+   "use": "Klistra in logo-blur-reveal.html; REVEAL = namnets onset",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.logo-blur-reveal.jpg"
+   },
+   "notes": "Renderad i värdsida med egen neutral ikon."
+  },
+  {
+   "id": "nextphase.short.article-highlight",
+   "name": "Artikel-highlight 9:16",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Riktig artikelskärmdump som vit sida i 9:16 med gul överstrykning (multiply, scaleX) som sveper över orden i takt med rösten.",
+   "tags": [
+    "highlighter",
+    "artikel",
+    "källa",
+    "överstrykning"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/article-highlight.html",
+   "use": "Klistra in article-highlight.html; byt bild + rektanglar",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.article-highlight.jpg"
+   },
+   "notes": "Renderad med den egna exempelsidan."
+  },
+  {
+   "id": "nextphase.short.page-highlight",
+   "name": "Page highlight (9:16-sida + markör)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "En riktig sida fångad som äkta 9:16-ram; markören ritas över en fras i taget med mjuk push in/ut, i tre passformer (full/half/head).",
+   "tags": [
+    "highlighter",
+    "sida",
+    "källa",
+    "push",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/ui-blocks/page-highlight.html",
+   "use": "ui-blocks/page-highlight.html?src=pages/<namn>.png&fit=full|half|head&zoom=in|out|hold; fånga sidan med shoot-page-9x16.py",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.page-highlight.jpg"
+   },
+   "notes": "Renderad med egen exempelsida (full + half)."
+  },
+  {
+   "id": "nextphase.short.cta-comment-keyword",
+   "name": "CTA: Comment \"KEYWORD\" + pil",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Avslutande CTA-pill med märke, COMMENT, nyckelordet i kursiv serif med coral-gradient och en pil som ritas nedåt.",
+   "tags": [
+    "cta",
+    "kommentera",
+    "nyckelord",
+    "pil",
+    "engagemang"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/cta-old.html",
+   "use": "Kopiera cta-old.html (markup + CSS) – nyckelordet landar på sin onset, pilen efter",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.cta-comment-keyword.jpg"
+   },
+   "notes": "Renderad i värdsida med exempelord."
+  },
+  {
+   "id": "nextphase.short.parallax-zoom",
+   "name": "Parallax zoom (kortrutnät)",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Ett kortrutnät där fokuskortet skalar upp till helbild medan syskonen trycks utåt och tonar – en zoom-in-övergång.",
+   "tags": [
+    "zoom",
+    "parallax",
+    "grid",
+    "övergång",
+    "premium"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/parallax-zoom.html",
+   "use": "Driv --pz-progress 0→1 från tidslinjen; markera fokuskortet med data-pz-focus",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.parallax-zoom.jpg"
+   },
+   "notes": "Renderad i värdsida, 4 steg."
+  },
+  {
+   "id": "nextphase.short.grain-overlay",
+   "name": "Grain overlay",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Animerad filmkorn-textur (SVG-turbulens) över hela bilden.",
+   "tags": [
+    "grain",
+    "film",
+    "textur",
+    "overlay"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/grain-overlay.html",
+   "use": "Klistra in grain-overlay.html; justera opacity",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.grain-overlay.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "nextphase.short.grade-persa-svg",
+   "name": "Persa-grade som SVG-filter",
+   "type": "grade",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Persa-kurvan som SVG feComponentTransfer – läggs med filter:url(#persa-grade) på kamera och b-roll direkt i HTML.",
+   "tags": [
+    "grade",
+    "svg",
+    "filter",
+    "varm",
+    "film"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/components/grade-persa.svg",
+   "use": "Klistra in grade-persa.svg och sätt style=\"filter:url(#persa-grade)\"; generera nya med scripts/make-grade-filter.py",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.grade-persa-svg.jpg"
+   },
+   "notes": "Renderad före/efter på färgkarta."
+  },
+  {
+   "id": "nextphase.short.data-chart",
+   "name": "Datadiagram (staplar + linje)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Animerat kombinerat stapel- och linjediagram på papper med serif-rubrik.",
+   "tags": [
+    "diagram",
+    "data",
+    "statistik",
+    "editorial",
+    "registry"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/blocks/data-chart.html",
+   "use": "HyperFrames-block: <div data-composition-src=\"blocks/data-chart.html\" …> (se blocks/README.md; 16:9 – skala som band i 9:16)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.data-chart.jpg"
+   },
+   "notes": "Seekad på tre tidpunkter och granskad."
+  },
+  {
+   "id": "nextphase.short.code-snippet-dark",
+   "name": "Kodfönster (VS Code-mörkt)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Editorfönster där kod skrivs ut rad för rad över en skrivbordsbakgrund.",
+   "tags": [
+    "kod",
+    "editor",
+    "ui",
+    "typing",
+    "registry"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/blocks/code-snippet-dark-2026.html",
+   "use": "HyperFrames-block: <div data-composition-src=\"blocks/code-snippet-dark-2026.html\" …> (se blocks/README.md; 16:9 – skala som band i 9:16)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.code-snippet-dark.jpg"
+   },
+   "notes": "Ligger i <template>; renderad genom att klona mallen efter förladdad GSAP. Bakgrunden är registrets macOS-skrivbordsbild."
+  },
+  {
+   "id": "nextphase.short.liquid-glass-notification",
+   "name": "Liquid glass-notiser",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "iOS-liknande notiskort i flytande glas över ett färgstarkt vätskefält.",
+   "tags": [
+    "notiser",
+    "glas",
+    "ios",
+    "färgstark",
+    "registry"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/blocks/liquid-glass-notification.html",
+   "use": "HyperFrames-block: <div data-composition-src=\"blocks/liquid-glass-notification.html\" …> (se blocks/README.md; 16:9 – skala som band i 9:16)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.liquid-glass-notification.jpg"
+   },
+   "notes": "Kräver WebGPU för vätskefältet enligt kitet; renderade i headless Chrome."
+  },
+  {
+   "id": "nextphase.short.mk-background",
+   "name": "Mesh gradient-bakgrund",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Mjuk rosa/turkos mesh gradient som andas och kan krympa till ett kort.",
+   "tags": [
+    "mesh gradient",
+    "bakgrund",
+    "pastell",
+    "minimal",
+    "registry"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/blocks/mk-background.html",
+   "use": "HyperFrames-block: <div data-composition-src=\"blocks/mk-background.html\" …> (se blocks/README.md; 16:9 – skala som band i 9:16)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.mk-background.jpg"
+   },
+   "notes": "Seekad på tre tidpunkter och granskad."
+  },
+  {
+   "id": "nextphase.short.yt-lcd-background",
+   "name": "LCD-rutnät-bakgrund",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Ljusgrå LCD-pixelstruktur med titel som blurrar in.",
+   "tags": [
+    "lcd",
+    "pixel",
+    "bakgrund",
+    "minimal",
+    "registry"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/blocks/yt-lcd-background.html",
+   "use": "HyperFrames-block: <div data-composition-src=\"blocks/yt-lcd-background.html\" …> (se blocks/README.md; 16:9 – skala som band i 9:16)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.yt-lcd-background.jpg"
+   },
+   "notes": "Seekad på tre tidpunkter och granskad."
+  },
+  {
+   "id": "nextphase.short.vfx-liquid-background",
+   "name": "Liquid three.js-övergång",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "WebGL-vattenyta som krusar och tonar mellan två UI-paneler (dashboard → flöde).",
+   "tags": [
+    "three.js",
+    "webgl",
+    "liquid",
+    "övergång",
+    "cinematic",
+    "registry"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/blocks/vfx-liquid-background.html",
+   "use": "HyperFrames-block: <div data-composition-src=\"blocks/vfx-liquid-background.html\" …> (se blocks/README.md; 16:9 – skala som band i 9:16)",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.vfx-liquid-background.jpg"
+   },
+   "notes": "Vanlig sidskärmdump blir vit i headless Chrome; fångad via canvas.toDataURL efter hf-seek. Verifiera i HyperFrames-render innan skarp användning."
+  },
+  {
+   "id": "nextphase.short.ui-ai-new-chat",
+   "name": "UI-block: AI new-chat med kameraåkning",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Valfri assistents nya-chatt-skärm (?brand=) med samma tredelade kamerarörelse: push in, panorering efter markören, utzoom.",
+   "tags": [
+    "ui",
+    "kamerarörelse",
+    "produkt-ui",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/ui-blocks/ai-new-chat.html",
+   "use": "ui-blocks/ai-new-chat.html?seek=<s>; rendera till mp4 med scripts/block-render.py (aldrig som still)",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.ui-ai-new-chat.jpg"
+   },
+   "notes": "Renderad via lokal server. Loggor/maskot är neutrala platshållare (brand/, mascot/); UI:t imiterar AI-chattprodukter – byt copy/märken."
+  },
+  {
+   "id": "nextphase.short.ui-claude-new-chat",
+   "name": "UI-block: Chatt-UI ombyggd i DOM",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "En chatt-startsida byggd som DOM så att kameran kan pusha in utan att bli suddig; prompten skrivs ut.",
+   "tags": [
+    "ui",
+    "kamerarörelse",
+    "produkt-ui",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/ui-blocks/claude-new-chat.html",
+   "use": "ui-blocks/claude-new-chat.html?seek=<s>; rendera till mp4 med scripts/block-render.py (aldrig som still)",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.ui-claude-new-chat.jpg"
+   },
+   "notes": "Renderad via lokal server. Loggor/maskot är neutrala platshållare (brand/, mascot/); UI:t imiterar AI-chattprodukter – byt copy/märken."
+  },
+  {
+   "id": "nextphase.short.ui-inbound-policy",
+   "name": "UI-block: Inställningskontroll accept/hold/refuse",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "En riktig inställningsrad med tre lägen och en inkommande notis – för säkerhets-/policybeats.",
+   "tags": [
+    "ui",
+    "kamerarörelse",
+    "produkt-ui",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/ui-blocks/inbound-policy.html",
+   "use": "ui-blocks/inbound-policy.html?seek=<s>; rendera till mp4 med scripts/block-render.py (aldrig som still)",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.ui-inbound-policy.jpg"
+   },
+   "notes": "Renderad via lokal server. Loggor/maskot är neutrala platshållare (brand/, mascot/); UI:t imiterar AI-chattprodukter – byt copy/märken."
+  },
+  {
+   "id": "nextphase.short.ui-sessions-grid",
+   "name": "UI-block: Sessionsrutnät (terminaler + maskot)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Flera terminalsessioner i rutnät där en maskot springer mellan dem; lägen babysit/parallel/approve/relay.",
+   "tags": [
+    "ui",
+    "kamerarörelse",
+    "produkt-ui",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/ui-blocks/sessions-grid.html",
+   "use": "ui-blocks/sessions-grid.html?seek=<s>; rendera till mp4 med scripts/block-render.py (aldrig som still)",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.ui-sessions-grid.jpg"
+   },
+   "notes": "Renderad via lokal server. Loggor/maskot är neutrala platshållare (brand/, mascot/); UI:t imiterar AI-chattprodukter – byt copy/märken."
+  },
+  {
+   "id": "nextphase.short.ui-sessions-hub",
+   "name": "UI-block: Sessionsnav (maskoter + trådar)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Maskoter som ändpunkter på en tråd där meddelanden åker över – maskiner och överlämningar.",
+   "tags": [
+    "ui",
+    "kamerarörelse",
+    "produkt-ui",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/ui-blocks/sessions-hub.html",
+   "use": "ui-blocks/sessions-hub.html?seek=<s>; rendera till mp4 med scripts/block-render.py (aldrig som still)",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.ui-sessions-hub.jpg"
+   },
+   "notes": "Renderad via lokal server. Loggor/maskot är neutrala platshållare (brand/, mascot/); UI:t imiterar AI-chattprodukter – byt copy/märken."
+  },
+  {
+   "id": "nextphase.short.ui-skill-folder",
+   "name": "UI-block: Mapp-solfjäder",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "En mapp öppnas och filerna lyfter ut på egna bågar, fläktas ut, hålls och faller tillbaka.",
+   "tags": [
+    "ui",
+    "kamerarörelse",
+    "produkt-ui",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/ui-blocks/skill-folder.html",
+   "use": "ui-blocks/skill-folder.html?seek=<s>; rendera till mp4 med scripts/block-render.py (aldrig som still)",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.ui-skill-folder.jpg"
+   },
+   "notes": "Renderad via lokal server. Loggor/maskot är neutrala platshållare (brand/, mascot/); UI:t imiterar AI-chattprodukter – byt copy/märken."
+  },
+  {
+   "id": "nextphase.short.ui-skills-beat",
+   "name": "UI-block: Slash-meny / repo-kort",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Tre sätt att visa 'skills': slash-meny som fälls ned, repo-kort som pushas in, mapplista som scrollas.",
+   "tags": [
+    "ui",
+    "kamerarörelse",
+    "produkt-ui",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/ui-blocks/skills-beat.html",
+   "use": "ui-blocks/skills-beat.html?seek=<s>; rendera till mp4 med scripts/block-render.py (aldrig som still)",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.ui-skills-beat.jpg"
+   },
+   "notes": "Renderad via lokal server. Loggor/maskot är neutrala platshållare (brand/, mascot/); UI:t imiterar AI-chattprodukter – byt copy/märken."
+  },
+  {
+   "id": "nextphase.short.ui-article-highlight-retired",
+   "name": "UI-block: article-highlight (pensionerat)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Originaltekniken med flera överstrykningar samtidigt och webbläsarkrom – ersatt av page-highlight.",
+   "tags": [
+    "highlighter",
+    "pensionerad",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/ui-blocks/article-highlight.html",
+   "use": "Använd page-highlight i stället",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.ui-article-highlight-retired.jpg"
+   },
+   "notes": "Pekar nu på pages/example-page.png; rektanglarna är kalibrerade för originalets sida och hamnar fel."
+  },
+  {
+   "id": "nextphase.short.sfx-palette",
+   "name": "Gratis SFX-palett (16 ljud)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "whoosh, swoosh, pop, click, riser, swell, camera-shutter, highlighter, confirm, ping, beep, keyboard m.fl. – HyperFrames/Pixabay + syntes, samma namn som kitets cues.",
+   "tags": [
+    "sfx",
+    "ljud",
+    "gratis",
+    "pixabay",
+    "ljuddesign"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/make-free-sfx.py",
+   "use": "python library/kits/nextphase/skills/nextphase-short-editing/scripts/make-free-sfx.py (redan körd; filerna ligger i sfx/)",
+   "requires": [
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.sfx-palette.jpg"
+   },
+   "notes": "Ersätter kitets betalda pack. Vågformerna renderade och granskade; mätvärdena i sound-design.md gällde originalet."
+  },
+  {
+   "id": "nextphase.short.sfx-elevenlabs",
+   "name": "SFX via ElevenLabs (betalt)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Genererar 7 grundljud via ElevenLabs Sound Effects API – valfritt alternativ till gratispaletten.",
+   "tags": [
+    "sfx",
+    "ai",
+    "elevenlabs",
+    "betald"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/gen-sfx.sh",
+   "use": "bash …/scripts/gen-sfx.sh (kräver ELEVENLABS_API i .env)",
+   "requires": [
+    "api:elevenlabs",
+    "git-bash"
+   ],
+   "cost": "paid",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kostar krediter – inte standard, inte provkört."
+  },
+  {
+   "id": "nextphase.short.lay-bed",
+   "name": "Bädd-loop under en short",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Loopar en 36 s-bädd under hela videon med in-/utfade (nivå ≈ −34 LUFS).",
+   "tags": [
+    "musik",
+    "bed",
+    "loop",
+    "ffmpeg"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/lay-bed.sh",
+   "use": "bash …/scripts/lay-bed.sh in.mp4 ut.mp4 egen-bed.m4a (originalets kommersiella låt borttagen)",
+   "requires": [
+    "ffmpeg",
+    "git-bash"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Provkörd med syntetisk bädd: OK. Utan 3:e argument och tom bgm/ ger den ett tydligt felmeddelande."
+  },
+  {
+   "id": "nextphase.short.block-picker",
+   "name": "Block-picker (alla UI-block live)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "En sida med alla UI-block i alla dokumenterade lägen som levande iframes – välj block innan något hämtas från webben.",
+   "tags": [
+    "picker",
+    "översikt",
+    "ui-block",
+    "katalog"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/BLOCK-PICKER.html",
+   "use": "Öppna BLOCK-PICKER.html via lokal server (python -m http.server i skillmappen); bygg om med scripts/build-block-picker.py --all --serve .",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.block-picker.jpg"
+   },
+   "notes": "Originalets sida var tom (fel sökvägar) – genererad om vid importen."
+  },
+  {
+   "id": "nextphase.short.block-render",
+   "name": "Block → mp4 (block-render.py)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Fotograferar ett CSS-animerat UI-block bildruta för bildruta i headless Chrome och sätter ihop en 30 fps-mp4.",
+   "tags": [
+    "render",
+    "chrome",
+    "mp4",
+    "ui-block"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/block-render.py",
+   "use": "BLOCK_BASE=http://127.0.0.1:8777/ui-blocks/ python …/scripts/block-render.py \"skill-folder.html\" ut.mp4 --dur 6 --fps 20",
+   "requires": [
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": null,
+    "still": "library/previews/nextphase.short.block-render.jpg"
+   },
+   "notes": "Provkörd: 1080×1920-mp4 skapad. Chrome-sökväg nu Windows (env CHROME)."
+  },
+  {
+   "id": "nextphase.short.sourcing-toolchain",
+   "name": "Källverktyg: source-scout, shoot-page-9x16, fetch-source",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Fyra kandidater per beat för godkännande, riktiga sidor fångade som 9:16-ramar med markörrektanglar, och klipp/inlägg normaliserade till 30 fps.",
+   "tags": [
+    "sourcing",
+    "skärmdump",
+    "playwright",
+    "yt-dlp",
+    "research"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/source-scout.py",
+   "use": "python …/scripts/source-scout.py work/nextphase/videos/<slug>/scout.json; se reference/SOURCING.md",
+   "requires": [
+    "playwright",
+    "yt-dlp",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kräver Python-paketet playwright (ej installerat). Falsk Mac-user-agent i fetch-source.py ersatt med ärlig UA."
+  },
+  {
+   "id": "nextphase.short.storyboard-density",
+   "name": "Storyboard + densitetsgate",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Bygger en storyboard-sida med riktiga bildrutor, roll, rad, captionstil och ljud per beat; densitetsgaten varnar för >4 s utan förändring.",
+   "tags": [
+    "storyboard",
+    "planering",
+    "qa",
+    "retention"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/build-storyboard.py",
+   "use": "python …/scripts/build-storyboard.py work/nextphase/videos/<slug>; python …/scripts/check-density.py work/nextphase/videos/<slug>",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Förväntar ett videoprojekt (build.py m.m.) – ej provkört i importen."
+  },
+  {
+   "id": "nextphase.short.library-builders",
+   "name": "Registry-hylla + rörelsestrips",
+   "type": "tool",
+   "medium": "image",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Bygger kontaktark över HyperFrames-registrets animationer (build-shelf.py, build-motion-strips.py).",
+   "tags": [
+    "registry",
+    "kontaktark",
+    "översikt"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/build-shelf.py",
+   "use": "Använd i stället npx hyperframes catalog / skillen hyperframes-registry",
+   "requires": [],
+   "cost": "free",
+   "status": "broken",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Trasig utanför originalrepot: kräver broll-library/registry/previews + brand-grade.json som aldrig ingick i kitet."
+  },
+  {
+   "id": "nextphase.short.maintenance-tools",
+   "name": "Kit-underhåll: blocks-sida, koncept-katalog, verify-package, empty-space",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Hjälpskript: bygger BLOCKS-sida och koncept-katalog, kontrollerar att refererade sökvägar finns, hittar tom yta i en bildruta.",
+   "tags": [
+    "underhåll",
+    "qa",
+    "katalog"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/verify-package.py",
+   "use": "python …/scripts/verify-package.py (m.fl.)",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej provkörda i importen."
+  },
+  {
+   "id": "nextphase.short.concepts",
+   "name": "Koncept-katalog: vad visas för vad som sägs",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "14 koncept med triggerord, vad som ska visas och vad som aldrig ska visas – tankemodell för bildval per replik.",
+   "tags": [
+    "prompt",
+    "koncept",
+    "bildval",
+    "regi"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/library/concepts.json",
+   "use": "Läs innan du väljer media för en replik; anpassa koncepten till golf/Golfkuponger",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "AI-nyhetsexempel; behandla som mall."
+  },
+  {
+   "id": "nextphase.short.edit-standard",
+   "name": "Redigeringsstandard: BLACKLIST + HOW-WE-EDIT",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Originalskaparens erfarenheter: klippkontraktet, kamerageometri, captionband, densitet och 17 saker som fått klipp underkända.",
+   "tags": [
+    "prompt",
+    "checklista",
+    "kvalitet",
+    "regi"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/reference/HOW-WE-EDIT.md",
+   "use": "Läs som tips före bygge – förval, inte spärrar",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Skrivet för en AI-nyhetskreatör; reglerna är valfria för oss."
+  },
+  {
+   "id": "nextphase.studio.house-rules",
+   "name": "NextPhase husregler (kitets CLAUDE.md)",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "16:9",
+    "9:16"
+   ],
+   "engine": "none",
+   "description": "Kitets gemensamma regler och fallgropar (transkriptionsluckor, 30 fps CFR, cqh-typografi, immediateRender) – valfri vägledning.",
+   "tags": [
+    "prompt",
+    "husregler",
+    "gotchas",
+    "workflow"
+   ],
+   "path": "library/kits/nextphase/reference/nextphase-house-rules.md",
+   "use": "Läs som referens; inte projektets CLAUDE.md",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Intagsfrågorna är kitets förval, inte ett krav. Reklam-sign-off borttagen."
+  },
+  {
+   "id": "nextphase.short.registry-9x16-host",
+   "name": "Registry-block i 9:16 (band-värd)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "Exempel på hur 16:9-block från registret skalas som band i en 1080×1920-komposition med husplattan runt om.",
+   "tags": [
+    "registry",
+    "9:16",
+    "band",
+    "layout"
+   ],
+   "path": "library/kits/nextphase/skills/nextphase-short-editing/blocks/EXAMPLE-9x16-host.html",
+   "use": "Kopiera mönstret .band{transform:scale(.5625)} ur EXAMPLE-9x16-host.html",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kräver HyperFrames-runtime (data-composition-src) – inte renderad fristående."
+  }
+ ]
+}

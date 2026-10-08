@@ -1,0 +1,418 @@
+/* ============================================================
+   VIBECODE — design tokens
+   Measured from two reference edits, not invented. See
+   reference/reference-log.md for the frame-by-frame evidence.
+
+   REF-B (the spine)  youtu.be/Ohyo6-VO1jY  0-45s  Jason Cooperson
+   REF-A (the furniture) youtu.be/vI4RdXMSq8c 0-80s Sandy Lee AI
+
+   Import into every vibecode composition. Use these variables
+   only. Never mix with nextphase, motiongraphics or persa tokens.
+   ============================================================ */
+
+:root {
+  /* -- THE GROUND (REF-B, sampled #226DE5) ----------------- */
+  --vc-ground:        #226DE5;
+  --vc-ground-lift:   #3A82F0;   /* radial lift, upper-centre   */
+  --vc-ground-deep:   #1449A8;   /* vignette corners            */
+  --vc-dot:           rgba(11, 30, 69, .20);
+  --vc-dot-gap:       1.30cqh;   /* halftone pitch              */
+  --vc-dot-size:      0.16cqh;
+
+  /* -- PAPER (the material everything is cut from) ---------- */
+  --vc-paper:         #FEFEF5;
+  --vc-paper-warm:    #FFF9EB;   /* display type fill           */
+  --vc-paper-edge:    #F2EEDD;   /* torn-edge inner shade       */
+  --vc-rule:          #AEBED4;   /* notebook rule               */
+  --vc-rule-w:        0.14cqh;
+
+  /* -- INK -------------------------------------------------- */
+  --vc-ink:           #162949;
+  --vc-ink-soft:      rgba(22, 41, 73, .55);
+  --vc-ink-line:      0.28cqh;   /* pictogram + clip outline    */
+
+  /* -- ACCENTS (one job each — never decorate with these) ---- */
+  --vc-red:           #E54926;   /* NEGATION ONLY: X, strike     */
+  --vc-yellow:        #FFDD36;   /* arrows, sparkles, highlight  */
+  --vc-cyan:          #3DDEFE;   /* clip block / track 1         */
+  --vc-pink:          #FF9EC0;   /* clip block / track 2         */
+  --vc-blue:          #2F68E0;   /* clip block / track 3         */
+  --vc-mascot:        #EE8A4E;   /* the pixel agent              */
+
+  /* -- HARD PAPER SHADOW (offset, ZERO blur) ---------------- */
+  --vc-shadow-x:      0.55cqh;
+  --vc-shadow-y:      0.75cqh;
+  --vc-shadow:        rgba(11, 30, 69, .42);
+  --vc-shadow-card:   var(--vc-shadow-x) var(--vc-shadow-y) 0 var(--vc-shadow);
+
+  /* -- CHROMATIC FRINGE (print misregistration) ------------- */
+  --vc-fringe:        0.18cqh;
+  --vc-fringe-a:      #FF3DC8;   /* leading edge                 */
+  --vc-fringe-b:      #2BF0E8;   /* trailing edge                */
+
+  /* -- TYPE ------------------------------------------------- */
+  --vc-display: 'Anton', 'Archivo Black', 'Oswald', Impact, sans-serif;
+  --vc-body:    'Inter', 'Figtree', -apple-system, sans-serif;
+  --vc-display-xl:    13.0cqh;   /* poster line 2                */
+  --vc-display-lg:     7.4cqh;   /* poster line 1                */
+  --vc-caption:        4.2cqh;
+  --vc-label:          1.95cqh;
+  --vc-label-track:    .12em;
+  --vc-eyebrow:        1.55cqh;
+  --vc-eyebrow-track:  .30em;
+
+  /* -- FRAME ------------------------------------------------ */
+  --vc-safe-x:        6%;
+  --vc-safe-y:        5%;
+  --vc-radius:        0.9cqh;    /* paper barely rounds          */
+  --vc-tilt:          1.6deg;    /* base hand-placed tilt        */
+
+  /* -- MOTION (frames @30fps — see motion-grammar.md) -------- */
+  --vc-hold:          2;         /* STOP-MOTION: update on 2s    */
+  --vc-in-card:       7;
+  --vc-in-stroke:     5;
+  --vc-stagger:       3;
+  --vc-out:           4;
+  --vc-caption-in:    0;         /* HARD CUT. always.            */
+  --vc-jitter-rot:    1.2deg;
+  --vc-jitter-pos:    0.3cqh;
+}
+
+/* ============================================================
+   THE CREAM GROUND  —  REF-A's palette, same material rules.
+   Put .vc-cream on the composition root. Use for calm chapters
+   and money or spec beats; the cobalt ground is the default.
+   ============================================================ */
+.vc-cream {
+  --vc-ground:        #F7F1DD;
+  --vc-ground-lift:   #FFFCEF;
+  --vc-ground-deep:   #F4E8CC;
+  --vc-dot:           rgba(120, 92, 30, .10);
+  --vc-paper:         #FFFCEF;
+  --vc-paper-warm:    #FFFAE8;
+  --vc-rule:          #E4D6B4;
+  --vc-ink:           #11140C;
+  --vc-ink-soft:      rgba(17, 20, 12, .55);
+  --vc-yellow:        #D3A74B;   /* the gold takes yellow's job  */
+  --vc-cyan:          #D7B05B;
+  --vc-pink:          #B8943E;
+  --vc-blue:          #8E6B22;
+  --vc-shadow:        rgba(120, 92, 30, .22);
+  --vc-fringe-a:      transparent;   /* no misregistration here  */
+  --vc-fringe-b:      transparent;
+}
+
+/* The dark interstitial (REF-A 77s, the "coming up" teaser). */
+.vc-dark {
+  --vc-ground:        #19140A;
+  --vc-ground-lift:   #2A2113;
+  --vc-ground-deep:   #0D0A05;
+  --vc-dot:           rgba(210, 164, 80, .10);
+  --vc-ink:           #FFF9EB;
+  --vc-yellow:        #D2A450;
+  --vc-shadow:        rgba(0, 0, 0, .55);
+}
+
+/* ============================================================
+   THE FRAME
+   .vc-frame MUST be on the composition root — type is sized in
+   cqh and resolves against a size container. Without it every
+   string renders tiny and the layout still looks plausible.
+   ============================================================ */
+.vc-frame {
+  container-type: size;
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: var(--vc-ground);
+  font-family: var(--vc-body);
+  color: var(--vc-ink);
+}
+
+/* The ground plate: radial lift, vignette, halftone dots. */
+.vc-frame::before {
+  content: '';
+  position: absolute;
+  inset: -2%;
+  background:
+    radial-gradient(60% 50% at 50% 34%,
+      var(--vc-ground-lift) 0%, transparent 68%),
+    radial-gradient(120% 100% at 50% 50%,
+      transparent 42%, var(--vc-ground-deep) 100%),
+    var(--vc-ground);
+  z-index: 0;
+}
+.vc-frame::after {
+  content: '';
+  position: absolute;
+  inset: -2%;
+  background-image: radial-gradient(
+    var(--vc-dot) var(--vc-dot-size), transparent var(--vc-dot-size));
+  background-size: var(--vc-dot-gap) var(--vc-dot-gap);
+  z-index: 1;
+  pointer-events: none;
+}
+.vc-frame > * { position: relative; z-index: 2; }
+
+.vc-safe {
+  position: absolute;
+  inset: var(--vc-safe-y) var(--vc-safe-x);
+}
+
+/* ============================================================
+   PAPER — the one material. Every card, tile, panel and sticker
+   is cut from it. Torn edge via clip-path, hard offset shadow,
+   hand-placed tilt.
+   ============================================================ */
+.vc-paper {
+  background: var(--vc-paper);
+  box-shadow: var(--vc-shadow-card);
+  transform: rotate(var(--vc-tilt));
+  clip-path: polygon(
+    0.6% 2.2%,  22% 0.0%,  47% 2.4%,  73% 0.2%,  99.4% 1.8%,
+    98.6% 26%,  100% 51%,  98.4% 77%, 99.6% 97.8%,
+    74% 100%,   49% 97.4%, 25% 99.9%, 0.4% 98.0%,
+    1.5% 74%,   0% 49%,    1.3% 24%);
+}
+
+/* Ruled notebook paper — the timeline and list surfaces. */
+.vc-paper-ruled {
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(4.6cqh - var(--vc-rule-w)),
+      var(--vc-rule) calc(4.6cqh - var(--vc-rule-w)),
+      var(--vc-rule) 4.6cqh),
+    var(--vc-paper);
+}
+
+/* The chromatic fringe. Wrap it round any paper or type that
+   should read as printed slightly out of register. */
+.vc-fringe {
+  filter:
+    drop-shadow(calc(var(--vc-fringe) * -1) 0 0 var(--vc-fringe-a))
+    drop-shadow(var(--vc-fringe) 0 0 var(--vc-fringe-b));
+}
+
+/* A real asset (app icon, screenshot, logo) cut out with
+   scissors: white paper border, torn edge, hard shadow. */
+.vc-sticker {
+  padding: 0.9cqh;
+  background: var(--vc-paper);
+  box-shadow: var(--vc-shadow-card);
+  transform: rotate(calc(var(--vc-tilt) * -1));
+  clip-path: polygon(
+    1% 2%, 30% 0%, 62% 1.8%, 99% 0.6%,
+    98.4% 32%, 100% 66%, 98.8% 99%,
+    66% 100%, 32% 98.2%, 1.2% 99.4%,
+    0.4% 66%, 1.6% 33%);
+}
+.vc-sticker > img,
+.vc-sticker > video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* ============================================================
+   TYPE
+   ============================================================ */
+.vc-display {
+  font-family: var(--vc-display);
+  font-size: var(--vc-display-xl);
+  line-height: .88;
+  text-transform: uppercase;
+  color: var(--vc-paper-warm);
+  letter-spacing: .005em;
+  text-shadow:
+    var(--vc-shadow-x) var(--vc-shadow-y) 0 var(--vc-ink);
+}
+.vc-display-sm { font-size: var(--vc-display-lg); }
+
+.vc-label {
+  font-family: var(--vc-display);
+  font-size: var(--vc-label);
+  letter-spacing: var(--vc-label-track);
+  text-transform: uppercase;
+  color: var(--vc-paper-warm);
+  text-shadow: 0.22cqh 0.3cqh 0 var(--vc-ink);
+}
+
+.vc-eyebrow {
+  font-family: var(--vc-body);
+  font-weight: 800;
+  font-size: var(--vc-eyebrow);
+  letter-spacing: var(--vc-eyebrow-track);
+  text-transform: uppercase;
+  color: var(--vc-yellow);
+}
+
+/* The caption lozenge — REF-A. HARD CUT in and out, always. */
+.vc-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 11%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  gap: .38em;
+  padding: 0.9cqh 1.6cqh;
+  background: var(--vc-paper);
+  border-radius: 1.1cqh;
+  box-shadow: var(--vc-shadow-card);
+  font-family: var(--vc-display);
+  font-size: var(--vc-caption);
+  text-transform: uppercase;
+  color: var(--vc-ink);
+  white-space: nowrap;
+}
+.vc-caption .hot { color: var(--vc-yellow); }
+
+/* ============================================================
+   THE NEGATION MARK — red, hand-drawn, draws on. The ONLY use
+   of --vc-red. Never fill anything red, never colour type red.
+   ============================================================ */
+.vc-strike,
+.vc-x-stroke {
+  stroke: var(--vc-red);
+  stroke-width: 1.1cqh;
+  stroke-linecap: round;
+  fill: none;
+  filter: drop-shadow(0.2cqh 0.28cqh 0 var(--vc-shadow));
+}
+
+/* ============================================================
+   THE TIMELINE — REF-B drew Premiere on notebook paper. This is
+   the style's centrepiece: it BUILDS, block by block.
+   ============================================================ */
+.vc-timeline { position: relative; padding: 6.9cqh 3cqh; }
+/* One track == one ruled lane. Do not add margin between tracks: it puts the
+   clips out of phase with the rules and the card stops reading as paper. */
+.vc-track    { position: relative; height: 4.6cqh; }
+.vc-clip {
+  position: absolute;
+  top: 12%;
+  height: 76%;
+  border: var(--vc-ink-line) solid var(--vc-ink);
+  box-shadow: 0.28cqh 0.36cqh 0 var(--vc-shadow);
+  transform-origin: left center;
+}
+.vc-clip.t1 { background: var(--vc-cyan); }
+.vc-clip.t2 { background: var(--vc-pink); }
+.vc-clip.t3 { background: var(--vc-blue); }
+
+/* NOTE: .vc-paper clips its children. A playhead hung outside the card loses
+   its triangle silently — keep it inset. */
+.vc-playhead {
+  position: absolute;
+  top: 1.6cqh;
+  bottom: 1.6cqh;
+  width: var(--vc-ink-line);
+  background: var(--vc-ink);
+}
+.vc-playhead::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left:  1.25cqh solid transparent;
+  border-right: 1.25cqh solid transparent;
+  border-top:   1.6cqh solid var(--vc-ink);
+}
+
+/* ============================================================
+   THE STEP LIST — REF-A. One row per task; the ACTIVE row is
+   filled, the rest outlined. Rows arrive one at a time.
+   ============================================================ */
+.vc-step {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqh;
+  padding: 1.5cqh 2.2cqh;
+  margin-bottom: 1.1cqh;
+  background: var(--vc-paper);
+  border-radius: 1.3cqh;
+  box-shadow: var(--vc-shadow-card);
+  font-family: var(--vc-display);
+  font-size: 3.1cqh;
+  text-transform: uppercase;
+  color: var(--vc-ink);
+}
+.vc-step .num {
+  display: grid;
+  place-items: center;
+  width: 3.4cqh;
+  height: 3.4cqh;
+  border-radius: 50%;
+  border: 0.22cqh solid var(--vc-yellow);
+  font-size: 1.7cqh;
+  color: var(--vc-yellow);
+}
+.vc-step.is-active { border: 0.2cqh solid var(--vc-yellow); }
+.vc-step.is-active .num { background: var(--vc-yellow); color: var(--vc-paper); }
+
+/* ============================================================
+   THE METER CARD — REF-A 64s. A stat as a filling bar.
+   Grows with scaleX + transform-origin. Never width.
+   ============================================================ */
+.vc-meter { padding: 1.8cqh 2cqh; background: var(--vc-paper);
+            border-radius: 1.3cqh; box-shadow: var(--vc-shadow-card); }
+.vc-meter .rail {
+  position: relative; height: 2.2cqh; border-radius: 1.1cqh;
+  background: var(--vc-paper-edge);
+  border: 0.16cqh solid var(--vc-ink-soft);
+  overflow: hidden;
+}
+.vc-meter .fill {
+  position: absolute; inset: 0;
+  background: var(--vc-yellow);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+/* ============================================================
+   THE APP CHROME — REF-A's persistent furniture. A scrub rail
+   pinned to the bottom of every workspace scene.
+   ============================================================ */
+.vc-rail {
+  position: absolute; left: 4%; right: 4%; bottom: 2.6%;
+  display: flex; align-items: center; gap: 1.4cqh;
+}
+.vc-rail .track {
+  position: relative; flex: 1; height: 0.36cqh;
+  background: var(--vc-ink-soft);
+}
+.vc-rail .track > i {
+  position: absolute; inset: 0; background: var(--vc-yellow);
+  transform-origin: left center; transform: scaleX(0);
+}
+
+/* ============================================================
+   SPARKLE — the yellow burst. Blinks on 2s, never fades.
+   ============================================================ */
+.vc-sparkle {
+  width: 4.4cqh; height: 4.4cqh;
+  background: var(--vc-yellow);
+  clip-path: polygon(
+    50% 0%, 60% 33%, 79% 21%, 70% 42%, 100% 50%, 70% 58%,
+    79% 79%, 60% 67%, 50% 100%, 40% 67%, 21% 79%, 30% 58%,
+    0% 50%, 30% 42%, 21% 21%, 40% 33%);
+}
+
+/* ============================================================
+   MEDIA — real resources. Always inside .vc-sticker or on a
+   .vc-paper card. Raw un-cut rectangles are not this style.
+   ============================================================ */
+.vc-panel {
+  background: var(--vc-paper);
+  padding: 1cqh;
+  box-shadow: var(--vc-shadow-card);
+  transform: rotate(calc(var(--vc-tilt) * -0.6));
+}
+.vc-panel > img, .vc-panel > video {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+}
+
+/* The speaker, as a cut-out card. */
+.vc-head { background: var(--vc-paper); padding: 0.8cqh;
+           box-shadow: var(--vc-shadow-card); }
+.vc-head > video { display: block; width: 100%; height: 100%;
+                   object-fit: cover; }

@@ -1,0 +1,1553 @@
+{
+ "kit": "live-carousel",
+ "title": "Live Carousel (HyperFrames + GSAP + numpy)",
+ "source": {
+  "name": "live-carousel-skill (Claude Code skill, nedladdad)",
+  "url": "",
+  "license": "Kod: ingen licens angiven – endast egen användning. Typsnitt: SIL OFL 1.1. Grain: HyperFrames-registret."
+ },
+ "items": [
+  {
+   "id": "live-carousel.skill",
+   "name": "Live Carousel (skill)",
+   "type": "skill",
+   "medium": "carousel",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Instagram-karuseller där varje slide är en loopande 1080x1350-video med syntljud. Motion-läge (ny karusell från ett ämne, editorial big-word-stil) och photo-läge (väcker färdiga slide-bilder till liv). Gratis, lokalt.",
+   "tags": [
+    "carousel",
+    "instagram",
+    "4:5",
+    "loop",
+    "gsap",
+    "sound-design",
+    "windows"
+   ],
+   "path": ".claude/skills/live-carousel/SKILL.md",
+   "use": "/live-carousel i Claude Code från repo-roten; setup: powershell -ExecutionPolicy Bypass -File .claude/skills/live-carousel/scripts/setup.ps1",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg",
+    "python"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.skill.mp4",
+    "still": "library/previews/live-carousel.skill.jpg"
+   },
+   "notes": "Windows-portad. Utdata i work/live-carousel/<namn>/. Motion-demo 4 slides 125 s, photo-demo 4 slides 153 s rendertid."
+  },
+  {
+   "id": "live-carousel.template.motion-design-101",
+   "name": "Motion Design 101 – referenskarusell (studsboll)",
+   "type": "carousel",
+   "medium": "carousel",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Komplett 4-slides motion-karusell: hook STATIC→ALIVE, EASING (linear vs eased), WEIGHT (squash & stretch), CTA kommentera MOTION. En orange boll reser genom alla slides, linjal löper över hela karusellen, 120 BPM-groove.",
+   "tags": [
+    "carousel",
+    "bouncing-ball",
+    "big-word",
+    "cobalt",
+    "ruler",
+    "cta"
+   ],
+   "path": ".claude/skills/live-carousel/templates/motion/src",
+   "use": "new_carousel.py <namn> (motion) → render_all.py <namn>",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.template.motion-design-101.mp4",
+    "still": "library/previews/live-carousel.template.motion-design-101.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.template.photo-golf-demo",
+   "name": "Photo-läge – golfkarusell (exempel)",
+   "type": "carousel",
+   "medium": "carousel",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Fyra färdiga golfslides (svenska, designade i HTML över golfkuponger-foton) väckta till liv: drivande himmel/hav, 3D-extrusion bakom rubriken, glansvep, flare+ringar, kameratryck, partiklar, musik och SFX. Frame 0 = originalbilden.",
+   "tags": [
+    "carousel",
+    "photo",
+    "cinemagraph",
+    "golf",
+    "svenska",
+    "extrusion"
+   ],
+   "path": "library/kits/live-carousel/examples/golf-photo-demo",
+   "use": "Se examples/golf-photo-demo/README.md",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.template.photo-golf-demo.mp4",
+    "still": "library/previews/live-carousel.template.photo-golf-demo.jpg"
+   },
+   "notes": "Slide 04: rubrikdetektionen valde knappen → extrude av där. Slide 03: extrude av (mörk rubrik över träd blev grötig)."
+  },
+  {
+   "id": "live-carousel.template.photo-slide",
+   "name": "Photo-slide-mall (_slide.html)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Mall för en photo-slide: originalbilden som bas + cinemagraph, kamera, light leak, extrusion, shine, motes, flare/ringar/gnistor. Tider från carousel.json → cues.",
+   "tags": [
+    "photo",
+    "template",
+    "cues"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/src/_slide.html",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.template.photo-golf-demo.mp4",
+    "still": "library/previews/live-carousel.template.photo-golf-demo.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.audio.lc-audio",
+   "name": "lc_audio – syntad groove + SFX",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Numpy-synt: 120 BPM groove (kick/clap/hats/sub/Am9-pad), boop/boing/whoosh/tick/clunk/scribble/crash, tape-stop, loop-exakt master med wrap av svansar. Namngivna one-shots från media-use-SFX-paketet om det finns, annars syntade.",
+   "tags": [
+    "audio",
+    "synth",
+    "120bpm",
+    "loop",
+    "sfx",
+    "numpy"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/audio/lc_audio.py",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "python",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.audio.lc-audio.mp4",
+    "still": "library/previews/live-carousel.audio.lc-audio.jpg"
+   },
+   "notes": "Port: master-tak sänkt till 0.6 (~-4.4 dBFS) – HyperFrames 0.8.140 vägrar AAC true peak > -1 dBTP."
+  },
+  {
+   "id": "live-carousel.audio.photo-mix",
+   "name": "Photo-läge ljudmix (make_audio.py)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Groove eller egen låt (music_bed, bar-alignad över slides) + whoosh/sub-boom/crash på hits och sparkle på shine, tajmat från carousel.json cues.",
+   "tags": [
+    "audio",
+    "photo",
+    "cues",
+    "music-bed"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/audio/make_audio.py",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "python",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.audio.photo-mix.mp4",
+    "still": "library/previews/live-carousel.audio.photo-mix.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.tool.prep-photo",
+   "name": "prep_photo.py – lagerdelning av färdiga slides",
+   "type": "tool",
+   "medium": "image",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "python",
+   "description": "Delar en färdig slide i lager: bg 2x, clean plate (inpaint), flow-map, text-/rubrik-/accentmattor, ev. subject-cutout, geo.json + maskvis-bild.",
+   "tags": [
+    "photo",
+    "opencv",
+    "matte",
+    "inpaint",
+    "flow-map"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/prep_photo.py",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "python",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.tool.prep-photo.mp4",
+    "still": "library/previews/live-carousel.tool.prep-photo.jpg"
+   },
+   "notes": "Port: --no-accent, accentblobbar >60% bredd/35% höjd ignoreras (fairway/lövverk), stora rubrikord grupperas. Kvar: rubrik kan missas på mörka foton med solbelyst lövverk."
+  },
+  {
+   "id": "live-carousel.tool.render-all",
+   "name": "render_all.py + new_carousel.py",
+   "type": "tool",
+   "medium": "carousel",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "python",
+   "description": "Scaffold (motion/photo, tema) och pipeline audio → build → check → render → verifiering → contact sheet, sömbilder, swipe-preview.html.",
+   "tags": [
+    "pipeline",
+    "contact-sheet",
+    "preview",
+    "windows"
+   ],
+   "path": ".claude/skills/live-carousel/scripts/render_all.py",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "python",
+    "hyperframes",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.tool.render-all.mp4",
+    "still": "library/previews/live-carousel.tool.render-all.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.tool.setup-windows",
+   "name": "setup.ps1 – Windows-setup",
+   "type": "tool",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Kollar Node 22+, ffmpeg, HyperFrames CLI + Chrome; skapar privat venv med signerade Python 3.12 (numpy, opencv).",
+   "tags": [
+    "setup",
+    "windows",
+    "venv"
+   ],
+   "path": ".claude/skills/live-carousel/scripts/setup.ps1",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "python"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Körd OK 2026-10-07 (19 s). Ingen visuell preview."
+  },
+  {
+   "id": "live-carousel.theme.cobalt",
+   "name": "Tema cobalt",
+   "type": "grade",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Palett för motion-läget: koboltblå värld, orange accent, cremetext (standard). build.py byter alla hex/rgba-tokens mot theme.json.",
+   "tags": [
+    "theme",
+    "palette",
+    "cobalt"
+   ],
+   "path": ".claude/skills/live-carousel/templates/themes.json",
+   "use": "new_carousel.py <namn> --theme cobalt",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.theme.cobalt.mp4",
+    "still": "library/previews/live-carousel.theme.cobalt.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.theme.tomato",
+   "name": "Tema tomato",
+   "type": "grade",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Palett för motion-läget: tomatröd värld, citronaccent – mat, livsstil, heta åsikter. build.py byter alla hex/rgba-tokens mot theme.json.",
+   "tags": [
+    "theme",
+    "palette",
+    "tomato"
+   ],
+   "path": ".claude/skills/live-carousel/templates/themes.json",
+   "use": "new_carousel.py <namn> --theme tomato",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej renderad i importen."
+  },
+  {
+   "id": "live-carousel.theme.forest",
+   "name": "Tema forest",
+   "type": "grade",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Palett för motion-läget: djupgrön värld, orange accent – ekonomi, hälsa, lugna ämnen. build.py byter alla hex/rgba-tokens mot theme.json.",
+   "tags": [
+    "theme",
+    "palette",
+    "forest"
+   ],
+   "path": ".claude/skills/live-carousel/templates/themes.json",
+   "use": "new_carousel.py <namn> --theme forest",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej renderad i importen."
+  },
+  {
+   "id": "live-carousel.theme.noir",
+   "name": "Tema noir",
+   "type": "grade",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Palett för motion-läget: kolsvart editorial, orange accent – tech, AI, seriöst. build.py byter alla hex/rgba-tokens mot theme.json.",
+   "tags": [
+    "theme",
+    "palette",
+    "noir"
+   ],
+   "path": ".claude/skills/live-carousel/templates/themes.json",
+   "use": "new_carousel.py <namn> --theme noir",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej renderad i importen."
+  },
+  {
+   "id": "live-carousel.recipe.hook-dead-to-alive",
+   "name": "Hook: död → levande",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Ramen ser stilla ut (0 FPS, markeringsram), bollen kraschar in, ordet vänds STATIC→ALIVE, beatet droppar, tape-stop tillbaka.",
+   "tags": [
+    "recipe",
+    "slide",
+    "hook"
+   ],
+   "path": ".claude/skills/live-carousel/templates/motion/src/01-hook.html",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.recipe.hook-dead-to-alive.mp4",
+    "still": "library/previews/live-carousel.recipe.hook-dead-to-alive.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.recipe.hook-contradiction",
+   "name": "Hook: motsägelse",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "BIG WORD säger vanföreställningen, protagonisten slår ut en bokstav så ordet blir sanningen (POST MORE → POST LESS).",
+   "tags": [
+    "recipe",
+    "slide",
+    "hook"
+   ],
+   "path": ".claude/skills/live-carousel/references/slide-recipes.md",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept (beskrivning) utan färdig kod – ej renderat."
+  },
+  {
+   "id": "live-carousel.recipe.hook-number-slam",
+   "name": "Hook: siffer-slam",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Count-up som överskjuter och landar på statistiken, ordet squashar vid landning.",
+   "tags": [
+    "recipe",
+    "slide",
+    "hook"
+   ],
+   "path": ".claude/skills/live-carousel/references/slide-recipes.md",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept (beskrivning) utan färdig kod – ej renderat."
+  },
+  {
+   "id": "live-carousel.recipe.hook-split-screen",
+   "name": "Hook: delad skärm",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Deras sätt vänster, rätt sätt höger, samma objekt i båda banorna.",
+   "tags": [
+    "recipe",
+    "slide",
+    "hook"
+   ],
+   "path": ".claude/skills/live-carousel/references/slide-recipes.md",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept (beskrivning) utan färdig kod – ej renderat."
+  },
+  {
+   "id": "live-carousel.recipe.value-demo-dont-tell",
+   "name": "Värde: visa, säg inte (strike-out)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Objektet utför regeln; fel sätt i BIG WORD stryks över med markör när rätt sätt spelas.",
+   "tags": [
+    "recipe",
+    "slide",
+    "value"
+   ],
+   "path": ".claude/skills/live-carousel/templates/motion/src/02-easing.html",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.recipe.value-demo-dont-tell.mp4",
+    "still": "library/previews/live-carousel.recipe.value-demo-dont-tell.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.recipe.value-compare-lanes",
+   "name": "Värde: jämförande banor",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Två banor, samma sträcka och tid, olika spacing – tickmarkeringar var 2:a frame + kurvikoner.",
+   "tags": [
+    "recipe",
+    "slide",
+    "value"
+   ],
+   "path": ".claude/skills/live-carousel/templates/motion/src/02-easing.html",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.recipe.value-compare-lanes.mp4",
+    "still": "library/previews/live-carousel.recipe.value-compare-lanes.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.recipe.value-before-after-wipe",
+   "name": "Värde: före/efter-wipe",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Vertikal wipe över samma layout när objektet passerar.",
+   "tags": [
+    "recipe",
+    "slide",
+    "value"
+   ],
+   "path": ".claude/skills/live-carousel/references/slide-recipes.md",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept (beskrivning) utan färdig kod – ej renderat."
+  },
+  {
+   "id": "live-carousel.recipe.value-annotated-slow-mo",
+   "name": "Värde: annoterad slow-mo",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Strobe-spöken (kronofotografi) + 2–3 callouts med ritade ledarlinjer.",
+   "tags": [
+    "recipe",
+    "slide",
+    "value"
+   ],
+   "path": ".claude/skills/live-carousel/templates/motion/src/03-weight.html",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.recipe.value-annotated-slow-mo.mp4",
+    "still": "library/previews/live-carousel.recipe.value-annotated-slow-mo.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.recipe.cta-comment-keyword",
+   "name": "CTA: kommentera nyckelord",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Objektet blir en bokstav i nyckelordet, kommentarsfält skriver det, cursor trycker Post, svar + hjärtan.",
+   "tags": [
+    "recipe",
+    "slide",
+    "cta"
+   ],
+   "path": ".claude/skills/live-carousel/templates/motion/src/04-cta.html",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.recipe.cta-comment-keyword.mp4",
+    "still": "library/previews/live-carousel.recipe.cta-comment-keyword.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.recipe.cta-save-bookmark",
+   "name": "CTA: spara (bokmärke)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Objektet faller ner i en bokmärkesikon som fylls.",
+   "tags": [
+    "recipe",
+    "slide",
+    "cta"
+   ],
+   "path": ".claude/skills/live-carousel/references/slide-recipes.md",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept (beskrivning) utan färdig kod – ej renderat."
+  },
+  {
+   "id": "live-carousel.recipe.continuity-one-shot",
+   "name": "Kontinuitet: en tagning över swipes",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Objektet lämnar till höger och kommer in från vänster på nästa slide, linjalens frames fortsätter, samma groove i hela takter.",
+   "tags": [
+    "recipe",
+    "slide",
+    "continuity"
+   ],
+   "path": ".claude/skills/live-carousel/references/slide-recipes.md",
+   "use": "Skill /live-carousel",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.recipe.continuity-one-shot.mp4",
+    "still": "library/previews/live-carousel.recipe.continuity-one-shot.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.ball-physics",
+   "name": "Bollfysik: paraboler, stretch & squash, onion-skin",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "LC.makePath/ballState/applyBall: paraboliska bågar, stretch längs hastigheten, volymbevarande squash vid kontakt, spöken med opacitet efter fart.",
+   "tags": [
+    "physics",
+    "squash-stretch",
+    "ball",
+    "ghosts"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.ball-physics.mp4",
+    "still": "library/previews/live-carousel.engine.ball-physics.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.glyph-flip",
+   "name": "Per-glyf rotateX-flip (ordbyte)",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Gammalt ord fälls 0→90° per bokstav, nytt ord -90°→0 med easeOutBack, 0.03 s stagger, perspektiv på ordboxen.",
+   "tags": [
+    "text",
+    "flip",
+    "3d",
+    "word-swap"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.glyph-flip.mp4",
+    "still": "library/previews/live-carousel.engine.glyph-flip.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.variable-font-squash",
+   "name": "Variabel-font squash (Anybody wdth)",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "LC.buildWord/fitWord/measureWord: fyller kolumnen exakt, animerar wdth-axeln så bokstäver blir bredare vid nedslag och smalare i fart.",
+   "tags": [
+    "text",
+    "variable-font",
+    "squash",
+    "anybody"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.variable-font-squash.mp4",
+    "still": "library/previews/live-carousel.engine.variable-font-squash.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.dot-grid-shockwave",
+   "name": "Prickrutnät med chockvågor",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "LC.makeGrid: canvas-prickrutnät som rippar ut från nedslag och andas när scenen lever.",
+   "tags": [
+    "background",
+    "grid",
+    "shockwave",
+    "canvas"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.dot-grid-shockwave.mp4",
+    "still": "library/previews/live-carousel.engine.dot-grid-shockwave.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.confetti-burst",
+   "name": "Deterministisk konfetti/gnistor",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "LC.makeBurst: romber/prickar med gravitation, seedad hash i stället för Math.random (seek-säker).",
+   "tags": [
+    "particles",
+    "confetti",
+    "burst"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.confetti-burst.mp4",
+    "still": "library/previews/live-carousel.engine.confetti-burst.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.inverted-flash",
+   "name": "Inverterad impact-flash",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "2 frames med mix-blend-mode: difference-lager på slammet – klassisk impact frame.",
+   "tags": [
+    "flash",
+    "impact",
+    "invert"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.inverted-flash.mp4",
+    "still": "library/previews/live-carousel.engine.inverted-flash.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.spring-kick-shake",
+   "name": "Spring-kick kameraskak",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "LC.kick: dämpad fjäderimpuls för skak/wobble på världen vid nedslag, avklingar.",
+   "tags": [
+    "shake",
+    "spring",
+    "impact"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.spring-kick-shake.mp4",
+    "still": "library/previews/live-carousel.engine.spring-kick-shake.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.typing-caret",
+   "name": "Skrivande text + blinkande caret",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "textContent = ord.slice(0, prog*len) med caret som blinkar i 0.25 s-steg; key-press-ljud per tecken.",
+   "tags": [
+    "typing",
+    "caret",
+    "ui"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.typing-caret.mp4",
+    "still": "library/previews/live-carousel.engine.typing-caret.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.svg-draw-on",
+   "name": "SVG draw-on (ledarlinjer, överstrykning)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "strokeDasharray = len, strokeDashoffset = len*(1-p): ritade callout-linjer och markörstreck.",
+   "tags": [
+    "svg",
+    "draw-on",
+    "callout"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.svg-draw-on.mp4",
+    "still": "library/previews/live-carousel.engine.svg-draw-on.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.timeline-ruler",
+   "name": "Tidslinjelinjal över hela karusellen",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "LC.makeRuler: tick + tidskoder som fortsätter slide till slide, playhead som sveper en gång per loop, keyframe-romber som poppar.",
+   "tags": [
+    "ruler",
+    "timeline",
+    "continuity"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.timeline-ruler.mp4",
+    "still": "library/previews/live-carousel.engine.timeline-ruler.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.spring-settle-popin",
+   "name": "Spring settle pop-in",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "LC.settle: 0→1 med överskjut för taggar, bubblor, hjärtan.",
+   "tags": [
+    "spring",
+    "pop-in",
+    "ui"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/engine.js",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.engine.spring-settle-popin.mp4",
+    "still": "library/previews/live-carousel.engine.spring-settle-popin.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.engine.film-grain",
+   "name": "Animerat filmkorn",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "HyperFrames-registrets grain-overlay (CSS keyframes, seek-säkert), opacitet 0.11.",
+   "tags": [
+    "grain",
+    "texture"
+   ],
+   "path": ".claude/skills/live-carousel/templates/common/grain-overlay.html",
+   "use": "window.LC i en slide (se references/engine-api.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Finns i alla renders men för subtilt för att bedöma i stillbilder."
+  },
+  {
+   "id": "live-carousel.photo.cinemagraph-sky",
+   "name": "Cinemagraph: WebGL flow-map-drift (himmel/vatten)",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.cinemagraph: rör bara rörliga områden (flow.png B-kanal) längs vindfält, sömlöst över loopen; text/ansikten står still.",
+   "tags": [
+    "cinemagraph",
+    "webgl",
+    "sky",
+    "water"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.photo.cinemagraph-sky.mp4",
+    "still": "library/previews/live-carousel.photo.cinemagraph-sky.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.photo.camera-push-shake",
+   "name": "Kamera: push-in + skakkickar",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.camera: periodisk långsam push (sömlös) + avklingande skak på hits.",
+   "tags": [
+    "camera",
+    "push",
+    "shake"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.photo.camera-push-shake.mp4",
+    "still": "library/previews/live-carousel.photo.camera-push-shake.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.photo.extrusion-headline",
+   "name": "3D-extrusion bakom rubrikmatte",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.extrusion: staplade förskjutna kopior i bildens accentfärger bakom rubriken, platt ansikte ommålat ovanpå; poppar på första hit.",
+   "tags": [
+    "3d",
+    "extrusion",
+    "headline"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.photo.extrusion-headline.mp4",
+    "still": "library/previews/live-carousel.photo.extrusion-headline.jpg"
+   },
+   "notes": "Bäst på vit/svart text mot lugn bakgrund; stäng av på rörig bild."
+  },
+  {
+   "id": "live-carousel.photo.shine-sweep",
+   "name": "Glansvep över text",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.shine: ljusband (screen) genom textmatten, 0.5 s per svep.",
+   "tags": [
+    "shine",
+    "sweep",
+    "light"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.photo.shine-sweep.mp4",
+    "still": "library/previews/live-carousel.photo.shine-sweep.jpg"
+   },
+   "notes": "Falska textlinjer i träd kan också glänsa – kolla maskvis."
+  },
+  {
+   "id": "live-carousel.photo.flare-shockwave",
+   "name": "Flare + chockvågsringar + gnistor",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.flare + PH.ring (+ LC.makeBurst): ljusblomma och streak, två ringar, gnistor på varje hit.",
+   "tags": [
+    "flare",
+    "ring",
+    "shockwave",
+    "impact"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.photo.flare-shockwave.mp4",
+    "still": "library/previews/live-carousel.photo.flare-shockwave.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.photo.motes",
+   "name": "Svävande partiklar (motes)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.motes: damm/gnistor/eldflugor, periodiska i t så loopen blir sömlös.",
+   "tags": [
+    "particles",
+    "dust",
+    "sparkles"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.photo.motes.mp4",
+    "still": "library/previews/live-carousel.photo.motes.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.photo.masked-repaint",
+   "name": "Maskad ommålning (masked)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.masked: valfri fyllning genom en matte – målar om rubrikens ansikte och accentord ovanpå effekter.",
+   "tags": [
+    "mask",
+    "repaint"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/live-carousel.photo.masked-repaint.mp4",
+    "still": "library/previews/live-carousel.photo.masked-repaint.jpg"
+   },
+   "notes": ""
+  },
+  {
+   "id": "live-carousel.photo.light-leak",
+   "name": "Ljusläcka (light leak)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.leak: mjuk färgad glöd (accentfärg, screen) som driver periodiskt över bilden.",
+   "tags": [
+    "light-leak",
+    "glow"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kördes i golfdemon men för subtil för att bekräfta i stillbilder."
+  },
+  {
+   "id": "live-carousel.photo.lift",
+   "name": "Lift: bildens egna pixlar som rörligt lager",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.lift: lyfter en region (matte) med skugga, skala ≥ 1 så originalet täcks – t.ex. staplar som växer.",
+   "tags": [
+    "lift",
+    "parallax"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej renderat i importen."
+  },
+  {
+   "id": "live-carousel.photo.brush-wet-paint",
+   "name": "Penselord: pop + våt-färg-glans",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.brush: nyckelat penselord poppar och får glansvep.",
+   "tags": [
+    "brush",
+    "script",
+    "shine"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej renderat i importen."
+  },
+  {
+   "id": "live-carousel.photo.pills",
+   "name": "Piller som tänds i sekvens",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.pills: taggar lyser upp en i taget med en gnista som löper mellan dem.",
+   "tags": [
+    "pills",
+    "tags",
+    "sequence"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej renderat i importen."
+  },
+  {
+   "id": "live-carousel.photo.counter",
+   "name": "Count-up som täcker bakat tal",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.counter: räknar upp över en clean plate av siffrorna; visar slutvärdet på frame 0.",
+   "tags": [
+    "counter",
+    "stat",
+    "numbers"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej renderat i importen."
+  },
+  {
+   "id": "live-carousel.photo.cursor",
+   "name": "Pekare som trycker CTA",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.cursor: SVG-pekare att flytta/trycka (scale 0.92) med ring och click-ljud.",
+   "tags": [
+    "cursor",
+    "cta",
+    "click"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej renderat i importen."
+  },
+  {
+   "id": "live-carousel.photo.echo",
+   "name": "Tvåfärgs-echo av matte",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "PH.echo: magenta/orange förskjutna kopior av en matte.",
+   "tags": [
+    "echo",
+    "chromatic",
+    "headline"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/photo.js",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Ej renderat i importen."
+  },
+  {
+   "id": "live-carousel.photo.subject-parallax-pop",
+   "name": "Parallax-pop av motiv (cutout)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "prep_photo --cutout (HyperFrames remove-background) + subject.png som skalas 1.00→1.03 på hit medan bakgrunden driver.",
+   "tags": [
+    "cutout",
+    "parallax",
+    "subject"
+   ],
+   "path": ".claude/skills/live-carousel/templates/photo/src/_slide.html",
+   "use": "window.PH i en photo-slide (se references/photo-mode.md)",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kräver engångsnedladdning (~170 MB) av bakgrundsmodellen; ej kört i importen."
+  }
+ ]
+}

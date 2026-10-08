@@ -1,0 +1,381 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOTIONGRAPHICS — design tokens (16:9, 1920×1080 @ 30fps)
+
+   Import this into EVERY scene. Never hardcode a hex, a font, or a duration.
+
+   Every value below was SAMPLED from the two reference edits, not invented:
+     REF-A  youtube.com/watch?v=vwlK6MbdAto   (0:00–3:10)  violet + coral, diagram-led
+     REF-B  youtube.com/watch?v=xkj74ykB9Fw   (0:00–0:50)  magenta, glow/3D-led
+   A token carrying a measurement is marked with the glyph  ⌁
+   (CSS comments do not nest — never write a closing marker inside this block.)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,700;1,900&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+
+  /* ── GROUND ─────────────────────────────────────────────────────────────
+     Near-black, tinted violet. Never pure #000 — the glow needs something
+     to sit on, and pure black crushes to blocking artefacts on YouTube. */
+  --mg-void:      #08070C;   /* ⌁ deepest corners / vignette floor */
+  --mg-base:      #0D0B14;   /* ⌁ default scene background */
+  --mg-panel:     #100C1E;   /* ⌁ panel + pill fill (barely lifted off base) */
+  --mg-panel-2:   #171029;   /* raised panel / hover state */
+  --mg-field:     #241860;   /* ⌁ REF-A the indigo "gear field" backdrop */
+
+  /* ── VIOLET RAMP — the primary accent (REF-A) ───────────────────────── */
+  --mg-violet:      #843CF0;  /* ⌁ core accent. Bars, rules, glow, titles. */
+  --mg-violet-hi:   #9C6CFC;  /* ⌁ lit edge / hovered / leading wipe edge */
+  --mg-violet-deep: #5418B4;  /* ⌁ shadow side of a gradient */
+  --mg-violet-ink:  #300C6C;  /* ⌁ deep fill under a glass surface */
+
+  /* ── MAGENTA RAMP — the hot accent (REF-B) ──────────────────────────────
+     Use for the payoff / the slam / the one thing that must pop hardest.
+     Two accents in one frame is the maximum. */
+  --mg-magenta:    #A824CC;   /* ⌁ hot fill */
+  --mg-magenta-hi: #C054E4;   /* ⌁ highlight box behind a slam word */
+  --mg-orchid:     #CC6CF0;   /* ⌁ brightest tint / bloom core */
+
+  /* ── CORAL — the brand/secondary accent (REF-A, = NextPhase --coral) ───
+     Reserved for marks, doc icons and wordmarks. Never a background. */
+  --mg-coral:      #D87854;   /* ⌁ */
+  --mg-coral-deep: #BD5D3A;
+
+  /* ── ALERT — SEMANTIC ONLY, never an accent ─────────────────────────────
+     Deliberately off the violet ramp so it can never be mistaken for brand
+     colour. Used by the alert-flash device and nothing else. */
+  --mg-alert:      #E0344A;
+  --mg-alert-deep: #7A0F20;
+
+  /* ── STROKE + TEXT ──────────────────────────────────────────────────── */
+  --mg-edge:      #A99CF5;              /* ⌁ the lavender 2px pill/panel stroke */
+  --mg-edge-soft: rgba(169,156,245,.38);
+  --mg-rim:       rgba(255,255,255,.62); /* ⌁ REF-B white rim on a glass tile */
+  --mg-on:        #FFFFFF;
+  --mg-on-soft:   #C8C2DA;
+  --mg-on-dim:    #7E7795;
+
+  /* ── GLOW — the single most identifying property of this style ─────────
+     Nothing in this look has a hard edge without a halo behind it. */
+  --mg-glow-violet: 0 0 38px rgba(132,60,240,.55), 0 0 92px rgba(132,60,240,.26);
+  --mg-glow-magenta:0 0 38px rgba(192,84,228,.60), 0 0 96px rgba(192,84,228,.28);
+  --mg-glow-edge:   0 0 16px rgba(169,156,245,.70), 0 0 44px rgba(132,60,240,.35);
+  --mg-glow-rim:    0 0 22px rgba(255,255,255,.45), 0 6px 40px rgba(132,60,240,.55);
+  --mg-glow-text:   0 0 24px rgba(132,60,240,.75);
+  --mg-shadow:      0 26px 70px rgba(0,0,0,.62), 0 4px 16px rgba(0,0,0,.4);
+
+  /* ── TYPE ───────────────────────────────────────────────────────────────
+     Two faces carry the whole system: a HEAVY ITALIC for anything that
+     slams, and a clean grotesque for anything that is read. */
+  --mg-font-slam:    "Montserrat", "Helvetica Neue", sans-serif;  /* 900 italic */
+  --mg-font-ui:      "Inter", "Helvetica Neue", sans-serif;
+  --mg-font-display: "Instrument Serif", Georgia, serif;          /* wordmarks */
+  --mg-font-mono:    "JetBrains Mono", monospace;                 /* kickers, stat subs */
+
+  /* Scale — ⌁ measured off the 1920-wide reference frames. */
+  --mg-t-slam:     100px;  /* ⌁ REF-B "JUST TO GET" / "THE FINAL RESULT" */
+  --mg-t-section:   48px;  /* ⌁ REF-A "CONTENT GROWTH SYSTEM" (top of frame) */
+  --mg-t-hero:      84px;  /* full-frame single statement */
+  --mg-t-stat:     140px;  /* count-up number */
+  --mg-t-card:      34px;  /* ⌁ REF-B glass-tile label */
+  --mg-t-panel:     26px;  /* ⌁ REF-A panel title ("Content Strategy & Positioning") */
+  --mg-t-body:      30px;  /* ⌁ REF-A bullet line in a point stack */
+  --mg-t-pill:      24px;  /* ⌁ REF-A node-map pill label */
+  --mg-t-cap:       54px;  /* accumulating caption */
+  --mg-t-label:     22px;  /* kicker / mono label, .18em tracking, uppercase */
+
+  /* ── LAYOUT ─────────────────────────────────────────────────────────── */
+  --mg-pad:    96px;   /* title-safe margin — nothing outside this, ever */
+  --mg-pad-y:  54px;
+  --mg-gutter: 32px;
+
+  --mg-r-tile:  30px;  /* ⌁ REF-B glass tile */
+  --mg-r-card:  22px;  /* panel / media card */
+  --mg-r-sm:    12px;
+  --mg-r-pill:  999px; /* ⌁ REF-A node pill */
+  --mg-stroke:  2px;   /* ⌁ every lit edge in both references is 2px */
+
+  /* ── MOTION ─────────────────────────────────────────────────────────────
+     ⌁ Frame-counted off the references at 30fps. Do not round these to
+     "nice" numbers — the cadence is what makes it read as the same edit. */
+  --mg-ease-out:      cubic-bezier(.16,1,.3,1);     /* primary entrance */
+  --mg-ease-slam:     cubic-bezier(.22,1.4,.36,1);  /* overshoot on a slam */
+  --mg-ease-soft:     cubic-bezier(.4,0,.2,1);
+  --mg-ease-drift:    linear;                        /* held-scene camera drift */
+
+  --mg-dur-word:      267ms;  /* ⌁ 8f  one word fades 0→1 in a title build */
+  --mg-dur-cadence:   233ms;  /* ⌁ 7f  gap between word onsets */
+  --mg-dur-wipe:      400ms;  /* ⌁ 12f the violet bar scaleX 0→1 */
+  --mg-dur-leak:      400ms;  /* ⌁ 12f full light-leak flash-through */
+  --mg-dur-pop:       180ms;  /* ⌁ 5f  a tile/icon pops in */
+  --mg-dur-ring:      600ms;  /* ⌁ 18f conic ring sweep */
+  --mg-dur-refit:     500ms;  /* ⌁ 15f the panel stack rescales to fit a new panel */
+  --mg-dur-exit:      100ms;  /* ⌁ 3f  hard exit — this style leaves FAST */
+  --mg-stagger:       90ms;   /* ⌁ between staggered siblings */
+  --mg-overlap:       67ms;   /* ⌁ 2f  incoming overlaps outgoing. Never a gap. */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BACKGROUNDS — apply one to the scene root. A motiongraphics scene is
+   NEVER on flat black; there is always a light source somewhere.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ⌁ REF-B — the default. Purple radial bloom, dark corners, faint noise grid. */
+.mg-bg-bloom{
+  background:
+    radial-gradient(64% 58% at 50% 46%, var(--mg-violet-ink) 0%, transparent 68%),
+    radial-gradient(90% 80% at 12% 104%, rgba(168,36,204,.30) 0%, transparent 60%),
+    var(--mg-base);
+  position:relative;
+}
+.mg-bg-bloom::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(rgba(169,156,245,.10) 1.2px, transparent 1.4px);
+  background-size:26px 26px;
+  -webkit-mask-image:radial-gradient(110% 95% at 50% 45%,#000 35%,transparent 88%);
+          mask-image:radial-gradient(110% 95% at 50% 45%,#000 35%,transparent 88%);}
+
+/* ⌁ REF-A — the "gear field". Big slow-rotating cog silhouettes in indigo with a
+   violet glow rising off the bottom edge. The system-diagram backdrop. */
+.mg-bg-field{
+  background:
+    radial-gradient(120% 70% at 50% 118%, var(--mg-violet) 0%, transparent 58%),
+    linear-gradient(180deg, var(--mg-void) 0%, var(--mg-field) 100%);
+  position:relative;overflow:hidden;
+}
+/* the cogs themselves are .mg-cog elements — see components/mg-blocks.html */
+
+/* ⌁ REF-A — the "ribbon". One big soft violet S-curve sweeping the frame.
+   The stage for a device mockup or a persona circle. */
+.mg-bg-ribbon{background:var(--mg-void);position:relative;overflow:hidden}
+.mg-bg-ribbon::before{content:"";position:absolute;left:-18%;top:14%;width:136%;height:74%;
+  background:radial-gradient(closest-side, var(--mg-violet) 0%, transparent 72%);
+  border-radius:50%;transform:rotate(-13deg) scaleY(.46);filter:blur(58px);opacity:.92}
+
+/* ⌁ REF-A — the "rails". Two soft violet light streaks hugging the frame edges.
+   The screen-share stage: it lights the card without competing with it. */
+.mg-bg-rails{background:var(--mg-base);position:relative;overflow:hidden}
+.mg-bg-rails::before,.mg-bg-rails::after{content:"";position:absolute;top:-12%;height:124%;
+  width:300px;background:radial-gradient(closest-side, var(--mg-violet) 0%, transparent 74%);
+  filter:blur(50px);opacity:.8}
+.mg-bg-rails::before{left:-90px}
+.mg-bg-rails::after{right:-90px}
+
+/* ⌁ REF-GRID v2 — the perspective grid floor with drifting aurora.
+   The converging lines are REAL SVG geometry (see components/mg-motion-library.html
+   → buildFloor). A CSS-gradient grid under an extreme rotateX collapses to
+   nothing, and a sub-pixel stroke anti-aliases away in a scaled preview — keep
+   the stroke at 3px. */
+.mg-bg-floor{background:var(--mg-void);position:relative;overflow:hidden}
+.mg-bg-floor .grid-l{position:absolute;inset:0}
+.mg-bg-floor .grid-l line{stroke:rgba(169,156,245,.42);stroke-width:3}
+.mg-bg-floor .aur{position:absolute;border-radius:50%;filter:blur(90px);opacity:.85;
+  background:radial-gradient(closest-side, var(--mg-violet) 0%, transparent 72%)}
+
+/* ⌁ REF-GRID v3 — the blown-out light field. The ONE place this style goes
+   bright; text on it is dark, not white. */
+.mg-bg-blowout{background:radial-gradient(48% 62% at 50% 46%,
+  #F2E9FF 0%, #C9A6F2 26%, #6A3AA8 56%, var(--mg-base) 82%)}
+
+/* ⌁ REF-GRID v4 — the dark drifting vortex. Near-invisible on purpose; it
+   gives a still stack of cards something to sit against. */
+.mg-bg-vortex{background:var(--mg-void);position:relative;overflow:hidden}
+.mg-bg-vortex i{position:absolute;border-radius:50%;
+  border:80px solid rgba(132,60,240,.10);filter:blur(34px)}
+
+/* ⌁ REF-GRID v3 — halftone dot field, masked open at the centre so a hero
+   object sits in clear air. */
+.mg-dots{position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(var(--mg-violet) 2.4px, transparent 2.6px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(58% 58% at 50% 50%, transparent 38%, #000 78%);
+          mask-image:radial-gradient(58% 58% at 50% 50%, transparent 38%, #000 78%);
+  opacity:.5}
+
+/* ⌁ REF-GRID v1 — radial speed lines. Generate the children in JS. */
+.mg-rays{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.mg-rays i{position:absolute;left:50%;top:50%;height:2px;border-radius:2px;
+  transform-origin:0 50%;background:linear-gradient(90deg,transparent,var(--mg-magenta-hi))}
+
+/* ⌁ REF-GRID v1 — the giant ghosted wordmark watermark. ~4.5% opacity: any
+   more and it competes with the content it sits behind. */
+.mg-ghost{position:absolute;left:0;right:0;top:6%;text-align:center;pointer-events:none;
+  font:900 italic 250px/1 var(--mg-font-slam);text-transform:lowercase;
+  letter-spacing:-.03em;color:rgba(255,255,255,.045)}
+
+/* ⌁ REF-GRID v2/v4 — the glass numeral badge. Set --nsz for the numeral size. */
+.mg-numeral{display:flex;align-items:center;justify-content:center;border-radius:16px;
+  background:linear-gradient(160deg, rgba(169,156,245,.34), rgba(132,60,240,.16));
+  border:1px solid rgba(255,255,255,.24);
+  box-shadow:inset 0 1px 6px rgba(255,255,255,.36), 0 0 22px rgba(132,60,240,.4);
+  font:700 var(--nsz,46px)/1 var(--mg-font-slam);color:#fff;
+  text-shadow:0 0 16px rgba(255,255,255,.5)}
+
+/* ⌁ REF-GRID v3/v4 — the glowing orb. Holds a count-up, a label, or nothing. */
+.mg-orb{border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 38% 32%, rgba(200,140,240,.85) 0%,
+             rgba(140,60,200,.55) 42%, rgba(60,16,100,.9) 78%);
+  box-shadow:inset 0 6px 22px -4px rgba(255,255,255,.7),
+             inset 0 -20px 40px rgba(20,4,40,.7),
+             0 0 60px rgba(168,85,216,.5), 0 0 140px rgba(132,60,240,.3)}
+
+/* ⌁ REF-GRID v1/v4 — the pointer. Always a drawn SVG arrow, never an emoji or
+   a system cursor glyph. */
+.mg-cursor{position:absolute;width:52px;height:60px;z-index:50;pointer-events:none;
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.8))}
+
+/* Vignette — every scene gets one. Keeps the eye centre-frame. */
+.mg-vignette{position:absolute;inset:0;pointer-events:none;z-index:60;
+  box-shadow:inset 0 0 320px rgba(0,0,0,.62)}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MATERIALS — the four surfaces this style is built from.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1 · GLASS TILE  ⌁ REF-B 41–45s — saturated violet fill, white rim brightest
+   along the BOTTOM edge (it is lit from below), heavy outer bloom. */
+.mg-tile{
+  background:linear-gradient(168deg, rgba(168,36,204,.92), rgba(108,24,156,.86));
+  border:var(--mg-stroke) solid var(--mg-rim);
+  border-radius:var(--mg-r-tile);
+  box-shadow:var(--mg-glow-rim), var(--mg-shadow);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;padding:34px;
+}
+.mg-tile .label{font:300 var(--mg-t-card)/1.15 var(--mg-font-ui);color:var(--mg-on);
+  text-align:center;letter-spacing:.005em}
+
+/* 1b · GLASS TILE, TRANSLUCENT  ⌁ REF-B 36–40s — the FLOATING variant. The
+   background reads through it and the rim light sits along the TOP edge,
+   because in that shot the key light is above. Not interchangeable with the
+   solid .mg-tile above: matching each rim to the scene's light is what makes
+   them read as objects rather than stickers. */
+.mg-tile-glass{
+  aspect-ratio:1/1.16;border-radius:16%;
+  background:linear-gradient(168deg, rgba(150,62,206,.52), rgba(92,32,140,.42));
+  border:1.5px solid rgba(255,255,255,.30);
+  box-shadow:inset 0 3px 10px -2px rgba(255,255,255,.85),
+             0 0 34px rgba(168,85,216,.42), 0 14px 40px rgba(0,0,0,.5);
+  backdrop-filter:blur(3px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8%;
+}
+.mg-tile-glass svg{width:44%;fill:var(--mg-orchid);
+  filter:drop-shadow(0 -2px 2px rgba(255,255,255,.55))}
+/* px, not %: a percentage font-size resolves against the PARENT's font-size,
+   not the element's width. Scale the whole tile with transform instead. */
+.mg-tile-glass span{font:300 25px/1.22 var(--mg-font-ui);color:var(--mg-on);text-align:center}
+
+/* 1c · THE FIGURE  ⌁ REF-B 35–40s — the anchor of the object stage. A sphere
+   head and an egg torso, shaded from the upper-left, each carrying a crescent
+   rim-light along its TOP edge plus a wide halo. Two soft white vertical ovals
+   for eyes. All CSS — no asset, no 3D runtime. */
+.mg-figure{position:absolute}
+.mg-figure .head{width:300px;height:300px;border-radius:50%;position:relative;
+  background:radial-gradient(circle at 38% 30%, #B072E0 0%, #8A3FC8 46%, #6A25A6 78%, #521A85 100%);
+  box-shadow:inset 0 10px 22px -6px rgba(255,255,255,.95),
+             inset 0 -18px 34px rgba(40,8,70,.55),
+             0 0 70px rgba(168,85,216,.60), 0 0 150px rgba(132,60,240,.34)}
+.mg-figure .eye{position:absolute;top:38%;width:44px;height:82px;border-radius:50%;
+  background:#fff;filter:blur(.4px);box-shadow:0 0 12px rgba(255,255,255,.6)}
+.mg-figure .eye:nth-of-type(1){left:27%}
+.mg-figure .eye:nth-of-type(2){right:27%}
+.mg-figure .torso{width:380px;height:430px;margin:-26px 0 0 -40px;
+  border-radius:50% 50% 42% 42% / 62% 62% 38% 38%;
+  background:radial-gradient(ellipse at 40% 22%, #A85FD8 0%, #8A3FC8 44%, #6A25A6 76%, #4E1880 100%);
+  box-shadow:inset 0 12px 26px -8px rgba(255,255,255,.9), 0 0 70px rgba(168,85,216,.45)}
+
+/* 2 · NODE PILL  ⌁ REF-A 44–52s — near-black fill, 2px lavender stroke, glow
+   inside and out. The atom of every flow diagram in this style. */
+.mg-pill{
+  background:var(--mg-panel);
+  border:var(--mg-stroke) solid var(--mg-edge);
+  border-radius:var(--mg-r-pill);
+  box-shadow:var(--mg-glow-edge), inset 0 0 18px rgba(132,60,240,.30);
+  padding:14px 34px;
+  font:500 var(--mg-t-pill)/1 var(--mg-font-ui);color:var(--mg-on);
+  letter-spacing:.01em;white-space:nowrap;
+}
+
+/* 3 · PANEL  ⌁ REF-A 30–58s — the container the diagram lives in. Same stroke
+   language as a pill, square corners, title centred on the top edge. */
+.mg-panel{
+  background:rgba(10,9,16,.72);
+  border:var(--mg-stroke) solid var(--mg-violet);
+  border-radius:var(--mg-r-card);
+  box-shadow:var(--mg-glow-violet), var(--mg-shadow);
+  position:relative;
+}
+.mg-panel > .title{position:absolute;top:16px;left:0;right:0;text-align:center;
+  font:700 var(--mg-t-panel)/1 var(--mg-font-ui);color:var(--mg-on);
+  text-shadow:var(--mg-glow-text)}
+
+/* 4 · MEDIA CARD  ⌁ REF-B 25–34s / REF-A 130s — how REAL media is always
+   presented: never full-bleed, always a rounded card with a lit rim on a
+   stage. The border is what sells it as an object rather than a still. */
+.mg-media{
+  border:3px solid rgba(255,255,255,.88);
+  border-radius:var(--mg-r-card);
+  box-shadow:var(--mg-glow-rim), var(--mg-shadow);
+  overflow:hidden;background:var(--mg-panel);
+}
+.mg-media.phone{border-radius:36px}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYPE ROLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* SLAM  ⌁ REF-B 46s — heavy italic caps, tight, white, glowing. */
+.mg-slam{font:900 italic var(--mg-t-slam)/.96 var(--mg-font-slam);
+  color:var(--mg-on);letter-spacing:-.02em;text-transform:uppercase;
+  text-shadow:0 0 30px rgba(255,255,255,.30), 0 6px 40px rgba(0,0,0,.7)}
+
+/* The highlight box behind ONE word of a slam. ⌁ REF-B: it wipes open with
+   scaleX from the left and its leading edge is the brightest part. */
+.mg-hl{position:relative;display:inline-block;padding:2px 16px;color:var(--mg-on);z-index:1}
+.mg-hl::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:6px;
+  background:linear-gradient(90deg, var(--mg-magenta) 0%, var(--mg-magenta-hi) 78%, var(--mg-orchid) 100%);
+  box-shadow:var(--mg-glow-magenta);
+  transform:scaleX(0);transform-origin:left center}
+
+/* SECTION TITLE ⌁ REF-A 28s — violet, heavy, caps, sits at the top of frame,
+   built one word at a time while the line re-centres. */
+.mg-section{font:800 var(--mg-t-section)/1 var(--mg-font-slam);
+  color:var(--mg-violet-hi);letter-spacing:.02em;text-transform:uppercase;
+  text-shadow:var(--mg-glow-text);display:flex;gap:.34em;justify-content:center}
+
+/* POINT STACK ⌁ REF-A 98–110s — a violet headline over white bullets, held on
+   the LEFT third so the speaker keeps the right. Text-only, and the one place
+   in this style where that is allowed. */
+.mg-point-head{font:700 40px/1.15 var(--mg-font-ui);color:var(--mg-violet-hi);
+  text-shadow:var(--mg-glow-text)}
+.mg-point{font:500 var(--mg-t-body)/1.32 var(--mg-font-ui);color:var(--mg-on);
+  text-shadow:0 2px 14px rgba(0,0,0,.85)}
+
+.mg-kicker{font:500 var(--mg-t-label)/1 var(--mg-font-mono);letter-spacing:.18em;
+  text-transform:uppercase;color:var(--mg-violet-hi)}
+.mg-stat{font:900 var(--mg-t-stat)/1 var(--mg-font-slam);color:var(--mg-on);
+  font-variant-numeric:tabular-nums;text-shadow:var(--mg-glow-text)}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SAFE ZONES — 16:9, identical to the NextPhase long-form frame so the two
+   skills can share a recording and a camera bubble.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mg-safe{position:absolute;left:var(--mg-pad);right:var(--mg-pad);
+  top:var(--mg-pad-y);bottom:var(--mg-pad-y)}
+.mg-cam-bubble{position:absolute;left:1364px;top:738px;width:500px;height:282px;
+  border-radius:var(--mg-r-card);overflow:hidden;z-index:40;
+  border:var(--mg-stroke) solid var(--mg-edge);box-shadow:var(--mg-glow-edge),var(--mg-shadow)}
+/* ⌁ REF-A 162–175s — the circular variant. Same footage, different object. */
+.mg-cam-circle{position:absolute;width:420px;height:420px;border-radius:50%;overflow:hidden;
+  border:3px solid var(--mg-edge);box-shadow:var(--mg-glow-edge),var(--mg-shadow);z-index:40}
+.mg-cam-circle > video,.mg-cam-circle > img{width:100%;height:100%;object-fit:cover}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TRANSITION LAYER — the light-leak. ⌁ REF-B 24.7–25.1s.
+   Put ONE of these on the top of the stack and animate .mg-leak-core.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mg-leak{position:absolute;inset:0;z-index:80;pointer-events:none;overflow:hidden}
+.mg-leak-core{position:absolute;left:-40%;top:-60%;width:180%;height:220%;opacity:0;
+  background:
+    radial-gradient(closest-side, rgba(255,255,255,.98) 0%, rgba(216,180,255,.85) 34%, transparent 72%),
+    radial-gradient(closest-side, var(--mg-orchid) 0%, transparent 66%);
+  filter:blur(26px);transform:rotate(-18deg)}

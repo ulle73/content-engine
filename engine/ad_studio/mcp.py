@@ -5,11 +5,14 @@ from mcp.types import ToolAnnotations
 
 from engine.mcp_db import database_tool
 
-from . import blueprints, service, skills
+from . import blueprints, library, service, skills
 
 FLOW = (
     "Ad Studio-flöde. Var proaktiv: föreslå hellre en komplett plan som användaren justerar än att ställa många frågor. "
-    "1) read_ad_skill: ad-studio (hur samtalet leds), golfkuponger-brand och relevant domänskill. "
+    "0) Börja aldrig från noll: sök i Content Library med search_content_library (mallar, effekter, övergångar, "
+    "textbehandlingar, karusellstilar, prompts) och föreslå 2–3 färdiga, snygga kombinationer att utgå från. "
+    "Stilen är fri; brand-skillen är ett utgångsläge, inte regler. "
+    "1) read_ad_skill: studio (bibliotekets arbetssätt), ad-studio (hur samtalet leds), golfkuponger-brand och relevant domänskill. "
     "2) start_ad_brief med användarens budskap. "
     "3) Max 3 frågor, bara det som verkligen saknas (next_question), alltid med färdiga svarsförslag. "
     "4) Föreslå tre olika vinklar och rekommendera en. "
@@ -50,6 +53,27 @@ def register(mcp, company_for, run_for, user_for, safe_call):
         company_for(company_ref)
         return safe_call(skills.read, name)
 
+    @mcp.tool(title="Search content library", annotations=read)
+    @database_tool
+    def search_content_library(company_ref: str, query: str = "", type: str = "", format: str = "",
+                               medium: str = "", kit: str = "", verified_only: bool = False,
+                               limit: int = 15) -> dict:
+        """Find ready-made, good-looking starting points before creating anything. Searches every template,
+        effect, transition, text treatment, carousel style, skill and prompt in the Content Library.
+        type: template/scene/effect/transition/text/caption/grade/background/carousel/skill/prompt/sound/tool.
+        format: 9:16/1:1/4:5/16:9. medium: video/carousel/image/audio/text. Verified items with previews rank first.
+        Propose 2-3 combinations (base template + effects + text + sound) and let the user pick."""
+        company_for(company_ref)
+        return library.search(query, type=type, format=format, medium=medium, kit=kit,
+                              verified_only=verified_only, limit=limit)
+
+    @mcp.tool(title="Get content library item", annotations=read)
+    @database_tool
+    def get_content_library_item(company_ref: str, item_id: str) -> dict:
+        """Full details for one Content Library item: how to use it, requirements, cost, preview and file path."""
+        company_for(company_ref)
+        return safe_call(library.get, item_id)
+
     @mcp.tool(title="Start ad brief", annotations=write, description="Start the guided ad flow. " + FLOW)
     @database_tool
     def start_ad_brief(company_ref: str, message: str = "", title: str = "") -> dict:
@@ -75,7 +99,7 @@ def register(mcp, company_for, run_for, user_for, safe_call):
         (awareness/consideration/conversion/retargeting), audience, offer, campaign, angle {title, hook, why_it_works},
         assets [{asset_id, role, origin library/upload/generate, note, generation_prompt}], engine {engine
         remotion/higgsfield/hybrid, remotion_template_id, estimated_cost_sek, cost_approved}, formats, duration_s,
-        scenes [{id, purpose hook/problem/solution/how/proof/offer/cta, duration_s, asset_id, on_screen_text <=8 words,
+        scenes [{id, purpose hook/problem/solution/how/proof/offer/cta, duration_s, asset_id, on_screen_text (short reads best; no hard limit),
         voiceover, motion, transition_in}], copy {primary_text, headline, cta_label, landing_url}, facts [{claim, source,
         fact_id}], forbid, variants. Facts get their verified status from the fact bank; you cannot verify. Only set
         cost_approved when the user confirmed the cost."""

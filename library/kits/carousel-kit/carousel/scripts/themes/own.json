@@ -1,0 +1,30 @@
+{
+  "_notes": [
+    "emphasis pair #FFFFFF vs #6E6E72 on #141416: dE 53.5 (achromatic, so CVD-invariant), contrast 18.4:1 and 3.62:1",
+    "muted #8C8C90 on #141416: 5.49:1",
+    "ordinal ramp is single-hue grey: monotone L*, adjacent dL* 13.8, 13.8, 14.0, 13.5, dark end 2.68:1",
+    "Why grey: the accent colour of this style is sampled per photo at render time, so the chart theme stays neutral (emphasis by brightness) and never fights the photo. Every mark carries a white direct label."
+  ],
+  "ink": "#FFFFFF",
+  "ink2": "#D2D2D5",
+  "axis": "#B8B8BC",
+  "accent": "#FFFFFF",
+  "muted": "#8C8C90",
+  "surface": "#141416",
+  "grid": "rgba(255,255,255,.14)",
+  "track": "rgba(255,255,255,.10)",
+  "track_line": "rgba(255,255,255,.16)",
+  "bar_ctx": "#6E6E72",
+  "baseline": "rgba(255,255,255,.30)",
+  "glow": "",
+  "glow_soft": "",
+  "area_op": ".16",
+  "h_scale": 0.86,
+  "ramp": [
+    "#5A5A5E",
+    "#7C7C80",
+    "#A0A0A4",
+    "#C6C6C9",
+    "#ECECEE"
+  ]
+}

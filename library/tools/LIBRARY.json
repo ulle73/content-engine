@@ -1,0 +1,41 @@
+{
+  "kit": "library-tools",
+  "title": "Bibliotekets verktyg",
+  "source": { "name": "Content Engine", "url": "", "license": "Repository LICENSE" },
+  "items": [
+    {
+      "id": "tools.find",
+      "name": "Sök i biblioteket",
+      "type": "tool",
+      "medium": "text",
+      "formats": ["any"],
+      "engine": "python",
+      "description": "Rangordnar mallar, effekter, skills och prompts efter sökord, typ, format och status.",
+      "tags": ["search", "library", "studio"],
+      "path": "library/tools/find.py",
+      "use": "python library/tools/find.py \"premium reel ljusläcka\" --format 9:16",
+      "requires": ["python"],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "tools.make-music",
+      "name": "Egen musik med ACE-Step (lokalt, gratis)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": ["any"],
+      "engine": "python",
+      "description": "Genererar ett originalspår från en stämningsbeskrivning på din egen dator, ca 4× realtid på CPU.",
+      "tags": ["music", "ace-step", "bgm", "original", "free"],
+      "path": "library/tools/make_music.py",
+      "use": "python library/tools/make_music.py 38 work/music/spår.wav \"uplifting premium acoustic pop\" --bpm 112",
+      "requires": ["ace-step", "uv"],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "notes": "ACE-Step följer inte alltid önskad BPM (bad om 112, fick 165) – mät alltid med `npx hyperframes beats`."
+    }
+  ]
+}

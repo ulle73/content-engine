@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Blocks — every animation, live</title>
+<style>
+:root{--coral:#D97757;--coral-deep:#BD5D3A;--red:#E03A2F;--cream:#F0EDE4;--cream-card:#EAE6DA;
+ --ink:#191817;--ink-soft:#6B6660;--on:#F7F3EF;
+ --shadow:0 20px 60px rgba(0,0,0,.10),0 4px 14px rgba(0,0,0,.05)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+ font:16px/1.55 -apple-system,BlinkMacSystemFont,"Inter",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:0 26px 110px}
+header{padding:56px 0 26px;border-bottom:3px solid var(--ink)}
+.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--coral-deep);font-weight:700}
+h1{font-size:clamp(34px,5vw,58px);line-height:1.03;margin:12px 0 14px;letter-spacing:-.03em;font-weight:800}
+.lede{font-size:18px;max-width:76ch;color:var(--ink-soft)} .lede strong{color:var(--ink)}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.86em;background:var(--cream-card);padding:1px 6px;border-radius:5px}
+.blk{margin-top:42px;background:#fff;border-radius:22px;padding:24px 26px;box-shadow:var(--shadow)}
+.bh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.bh h2{margin:0;font:700 27px ui-monospace,Menlo,monospace;letter-spacing:-.02em}
+.cnt{font-size:13px;color:var(--ink-soft)}
+.badge{font:800 10px -apple-system,sans-serif;letter-spacing:.12em;padding:4px 9px;border-radius:999px;
+ background:var(--coral);color:#fff}
+.b-retired{background:var(--red)}
+.why{margin:10px 0 18px;font-size:14.5px;color:var(--ink-soft);max-width:80ch}
+.vs{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.v{margin:0;background:var(--cream);border-radius:14px;overflow:hidden}
+.fh{position:relative;width:100%;overflow:hidden;background:var(--cream)}
+.fh iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none;
+ transform:scale(var(--s,.19))}
+.v figcaption{padding:10px 12px 12px;background:#fff;font-size:12px;line-height:1.4;color:var(--ink-soft)}
+.v figcaption a{display:block;margin-top:5px;font-size:11px;color:var(--coral-deep);text-decoration:none}
+.ms{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px}
+.m{margin:0;background:var(--cream);border-radius:14px;padding:10px;text-align:center}
+.m img{width:100%;height:78px;object-fit:contain;image-rendering:pixelated;display:block}
+.m figcaption{font-size:10px;color:var(--ink-soft);margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style></head><body><div class="wrap">
+<header>
+  <div class="eyebrow">Library · every animation</div>
+  <h1>The blocks, live.</h1>
+  <p class="lede">Everything animated in the library, old and new, <strong>running</strong> —
+  not screenshots of it. A still of an animated block is the most common complaint, and a stale
+  still also freezes whatever the plate looked like the day it was shot, which is how the retired
+  graph-paper grid stayed on screen for weeks after it was killed. These iframes always show the
+  block as it is <em>now</em>. Every block takes <code>?seek=&lt;s&gt;</code> and is rendered to
+  mp4 with <code>scripts/block-render.py</code> before it goes in a cut.</p>
+</header>
+<section class="blk">
+      <div class="bh"><h2>sessions-grid</h2><span class="badge b-new">NEW</span>
+        <span class="cnt">4 variants</span></div>
+      <p class="why">Real session windows. Use this whenever the line is about sessions — the SESSIONS are the UI and the mascot is only what tends them.</p>
+      <div class="vs"><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/sessions-grid.html?mode=babysit" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>babysit — 4 sessions, 3 stalled, mascot running between them
+            <a href="ui-blocks/sessions-grid.html?mode=babysit" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/sessions-grid.html?mode=parallel" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>parallel — all four running on their own
+            <a href="ui-blocks/sessions-grid.html?mode=parallel" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/sessions-grid.html?mode=approve" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>approve — a message arrives, Allow / Deny
+            <a href="ui-blocks/sessions-grid.html?mode=approve" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1000/880">
+            <iframe src="ui-blocks/sessions-grid.html?mode=babysit&amp;fit=half&amp;plate=none" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1000px;height:880px"></iframe>
+          </div>
+          <figcaption>babysit, coral half
+            <a href="ui-blocks/sessions-grid.html?mode=babysit&amp;fit=half&amp;plate=none" target="_blank">open ↗</a>
+          </figcaption></figure></div>
+    </section><section class="blk">
+      <div class="bh"><h2>page-highlight</h2><span class="badge b-new">NEW</span>
+        <span class="cnt">3 variants</span></div>
+      <p class="why">A real page as a true 9:16 frame with the marker on the real words. One mark at a time. Shoot the page with scripts/shoot-page-9x16.py.</p>
+      <div class="vs"><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/page-highlight.html?src=pages/example-page.png&amp;fit=full&amp;zoom=in" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>b-roll full — the page owns the frame, push into the mark
+            <a href="ui-blocks/page-highlight.html?src=pages/example-page.png&amp;fit=full&amp;zoom=in" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1000/880">
+            <iframe src="ui-blocks/page-highlight.html?src=pages/example-page.png&amp;fit=half&amp;zoom=out" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1000px;height:880px"></iframe>
+          </div>
+          <figcaption>split — marker band in the top half
+            <a href="ui-blocks/page-highlight.html?src=pages/example-page.png&amp;fit=half&amp;zoom=out" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1000/620">
+            <iframe src="ui-blocks/page-highlight.html?src=pages/example-page.png&amp;fit=head&amp;zoom=hold" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1000px;height:620px"></iframe>
+          </div>
+          <figcaption>transparent — a card above his head
+            <a href="ui-blocks/page-highlight.html?src=pages/example-page.png&amp;fit=head&amp;zoom=hold" target="_blank">open ↗</a>
+          </figcaption></figure></div>
+    </section><section class="blk">
+      <div class="bh"><h2>sessions-hub</h2>
+        <span class="cnt">3 variants</span></div>
+      <p class="why">Mascots as the endpoints of a wire. Good for machines and hand-offs — but when the line is about SESSIONS, use sessions-grid instead.</p>
+      <div class="vs"><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/sessions-hub.html?mode=talk" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>talk — one session messages another
+            <a href="ui-blocks/sessions-hub.html?mode=talk" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/sessions-hub.html?mode=hub" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>hub — one conducting mac mini / laptop / desktop
+            <a href="ui-blocks/sessions-hub.html?mode=hub" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/sessions-hub.html?mode=solo" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>solo — waiting on the first one
+            <a href="ui-blocks/sessions-hub.html?mode=solo" target="_blank">open ↗</a>
+          </figcaption></figure></div>
+    </section><section class="blk">
+      <div class="bh"><h2>ai-new-chat</h2>
+        <span class="cnt">5 variants</span></div>
+      <p class="why">Every assistant&#x27;s new-chat screen through the SAME three-phase camera move, so cutting between two reads as one system. The composer always comes with its lockup.</p>
+      <div class="vs"><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/ai-new-chat.html?brand=claude&amp;seek=5.2" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>claude
+            <a href="ui-blocks/ai-new-chat.html?brand=claude&amp;seek=5.2" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/ai-new-chat.html?brand=chatgpt&amp;seek=5.2" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>chatgpt
+            <a href="ui-blocks/ai-new-chat.html?brand=chatgpt&amp;seek=5.2" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/ai-new-chat.html?brand=gemini&amp;seek=5.2" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>gemini
+            <a href="ui-blocks/ai-new-chat.html?brand=gemini&amp;seek=5.2" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/ai-new-chat.html?brand=grok&amp;seek=5.2" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>grok
+            <a href="ui-blocks/ai-new-chat.html?brand=grok&amp;seek=5.2" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/ai-new-chat.html?brand=perplexity&amp;seek=5.2" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>perplexity
+            <a href="ui-blocks/ai-new-chat.html?brand=perplexity&amp;seek=5.2" target="_blank">open ↗</a>
+          </figcaption></figure></div>
+    </section><section class="blk">
+      <div class="bh"><h2>skills-beat</h2>
+        <span class="cnt">2 variants</span></div>
+      <p class="why">The skills surface — the slash-command menu.</p>
+      <div class="vs"><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/skills-beat.html?mode=slash&amp;seek=4.0" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>slash menu
+            <a href="ui-blocks/skills-beat.html?mode=slash&amp;seek=4.0" target="_blank">open ↗</a>
+          </figcaption></figure><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/skills-beat.html?seek=4.0" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>default
+            <a href="ui-blocks/skills-beat.html?seek=4.0" target="_blank">open ↗</a>
+          </figcaption></figure></div>
+    </section><section class="blk">
+      <div class="bh"><h2>skill-folder</h2>
+        <span class="cnt">1 variant</span></div>
+      <p class="why">Apple&#x27;s file fan: files lift out of the mouth on their own arcs, fan, hold, drop back.</p>
+      <div class="vs"><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/skill-folder.html?seek=3.0" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>the folder fan
+            <a href="ui-blocks/skill-folder.html?seek=3.0" target="_blank">open ↗</a>
+          </figcaption></figure></div>
+    </section><section class="blk">
+      <div class="bh"><h2>claude-new-chat</h2>
+        <span class="cnt">1 variant</span></div>
+      <p class="why">The Claude new-chat screen rebuilt as DOM, so the camera can move through it.</p>
+      <div class="vs"><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/claude-new-chat.html" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>default
+            <a href="ui-blocks/claude-new-chat.html" target="_blank">open ↗</a>
+          </figcaption></figure></div>
+    </section><section class="blk">
+      <div class="bh"><h2>article-highlight</h2><span class="badge b-retired">RETIRED</span>
+        <span class="cnt">1 variant</span></div>
+      <p class="why">SUPERSEDED by page-highlight.html — hardcoded screenshot, rects nudged by eye, browser chrome, and five marks at once. Kept only as the record.</p>
+      <div class="vs"><figure class="v">
+          <div class="fh" style="aspect-ratio:1080/1920">
+            <iframe src="ui-blocks/article-highlight.html" loading="lazy"
+                    scrolling="no" tabindex="-1" style="width:1080px;height:1920px"></iframe>
+          </div>
+          <figcaption>the original technique
+            <a href="ui-blocks/article-highlight.html" target="_blank">open ↗</a>
+          </figcaption></figure></div>
+    </section>
+<section class="blk">
+  <div class="bh"><h2>mascot (platshållare)</h2><span class="cnt">24 animations · outline cut</span></div>
+  <p class="why">The mascot is only ever the ACTOR — the thing tending, carrying, conducting or
+  reacting. It is never the session, the model, the app or the file. Use the outline cut: a cream
+  sticker border that survives any plate.</p>
+  <div class="ms"><figure class="m"><img src="mascot/outline/mascot-bubble.webp" loading="lazy" alt=""><figcaption>bubble</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-building.webp" loading="lazy" alt=""><figcaption>building</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-carrying.webp" loading="lazy" alt=""><figcaption>carrying</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-conducting.webp" loading="lazy" alt=""><figcaption>conducting</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-debugger.webp" loading="lazy" alt=""><figcaption>debugger</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-error.webp" loading="lazy" alt=""><figcaption>error</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-happy.webp" loading="lazy" alt=""><figcaption>happy</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-headphones-groove.webp" loading="lazy" alt=""><figcaption>headphones-groove</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-idle-reading.webp" loading="lazy" alt=""><figcaption>idle-reading</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-idle.webp" loading="lazy" alt=""><figcaption>idle</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-juggling.webp" loading="lazy" alt=""><figcaption>juggling</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-mini-alert.webp" loading="lazy" alt=""><figcaption>mini-alert</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-mini-crabwalk.webp" loading="lazy" alt=""><figcaption>mini-crabwalk</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-mini-enter.webp" loading="lazy" alt=""><figcaption>mini-enter</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-mini-happy.webp" loading="lazy" alt=""><figcaption>mini-happy</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-mini-idle.webp" loading="lazy" alt=""><figcaption>mini-idle</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-mini-peek.webp" loading="lazy" alt=""><figcaption>mini-peek</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-notification.webp" loading="lazy" alt=""><figcaption>notification</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-react-annoyed.webp" loading="lazy" alt=""><figcaption>react-annoyed</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-react-double-jump.webp" loading="lazy" alt=""><figcaption>react-double-jump</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-sleeping.webp" loading="lazy" alt=""><figcaption>sleeping</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-sweeping.webp" loading="lazy" alt=""><figcaption>sweeping</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-thinking.webp" loading="lazy" alt=""><figcaption>thinking</figcaption></figure><figure class="m"><img src="mascot/outline/mascot-typing.webp" loading="lazy" alt=""><figcaption>typing</figcaption></figure></div>
+</section>
+</div>
+<script>
+function fit(){document.querySelectorAll(".fh").forEach(function(h){
+  var f=h.querySelector("iframe"); if(!f) return;
+  f.style.setProperty("--s",(h.clientWidth/(parseFloat(f.style.width)||1080)).toFixed(4));});}
+addEventListener("resize",fit); addEventListener("load",fit); fit();
+setTimeout(fit,400); setTimeout(fit,1500);
+</script>
+</body></html>

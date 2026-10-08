@@ -1,0 +1,417 @@
+{
+ "_": "CONCEPT CATALOG \u2014 what to put on screen for what he says. Built 2026-08-10 after: 'if I talk about a session they want to see the UI... one mascot babysitting multiple UIs. Instead of babysitting a session you show a mascot sleeping \u2014 how does that make sense?' Counts are mined from the 22 shipped transcripts. Read this BEFORE choosing any asset. Rebuild the page with: python scripts/build-concept-catalog.py",
+ "rules": [
+  "A PRODUCT is shown as its real UI, animated. Never a mascot standing in for a product.",
+  "A MASCOT is only ever the actor \u2014 the thing tending, carrying, conducting or reacting. It is never the session, the model, the app or the file.",
+  "If he names a tool, that tool's own UI is on screen on the word.",
+  "Plural concepts get plural UI. 'sessions' is more than one window, not one window.",
+  "No small text \u2014 see reference/BLACKLIST.md #1. If the only asset is a text screenshot, build a block instead.",
+  "A page screenshot is shot FOR ITS SLOT: b-roll full = a true 9:16 frame; split = the marker band in the top half; transparent = a card above his head. Never one crop reused in all three."
+ ],
+ "concepts": [
+  {
+   "id": "session",
+   "say": [
+    "session",
+    "sessions",
+    "claude session",
+    "codex session",
+    "another session",
+    "each session",
+    "parallel",
+    "at the same time",
+    "multiple"
+   ],
+   "count": 12,
+   "show": "Real session windows \u2014 several of them. One mascot may tend them, but the SESSIONS are the UI.",
+   "never": "A mascot as the session. A single window when he says 'sessions'. A sleeping mascot for 'waiting'.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/sessions-grid.html?mode=babysit",
+     "label": "babysit \u2014 4 sessions, 3 stalled, mascot running between them (the PAIN)"
+    },
+    {
+     "kind": "block",
+     "src": "ui-blocks/sessions-grid.html?mode=parallel",
+     "label": "parallel \u2014 4 sessions all working, ticks landing on their own (the PAYOFF)"
+    },
+    {
+     "kind": "block",
+     "src": "ui-blocks/sessions-hub.html?mode=talk",
+     "label": "talk \u2014 one session messages another"
+    }
+   ]
+  },
+  {
+   "id": "permission",
+   "say": [
+    "approve",
+    "approved",
+    "permission",
+    "allow",
+    "deny",
+    "safe",
+    "safely",
+    "stray",
+    "without asking",
+    "consent"
+   ],
+   "count": 9,
+   "show": "The real permission prompt inside a session window \u2014 a request arriving, Allow / Deny, one of them lighting up.",
+   "never": "A padlock icon, a shield, an abstract gate.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/sessions-grid.html?mode=approve",
+     "label": "approve \u2014 a message arrives, Allow / Deny"
+    }
+   ]
+  },
+  {
+   "id": "computers",
+   "say": [
+    "computer",
+    "computers",
+    "machine",
+    "machines",
+    "mac",
+    "macos",
+    "linux",
+    "windows",
+    "laptop",
+    "desktop",
+    "mac mini"
+   ],
+   "count": 7,
+   "show": "Distinct machines, each with its own session on it. Platform names as cream chips on coral; the unsupported one outlined and dimmed.",
+   "never": "A generic cloud icon. A screenshot of a docs availability table.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/sessions-hub.html?mode=hub",
+     "label": "hub \u2014 one session conducting mac mini / laptop / desktop"
+    },
+    {
+     "kind": "note",
+     "src": "",
+     "label": "platform chips \u2014 .chip / .chip.off in the composition, cream on coral"
+    }
+   ]
+  },
+  {
+   "id": "claude-code",
+   "say": [
+    "claude code",
+    "claude",
+    "cloud code",
+    "anthropic"
+   ],
+   "count": 11,
+   "show": "The genuine Claude Code surface \u2014 the composer, or the pixel wordmark at full bleed.",
+   "never": "A serif stand-in for the wordmark. The wordmark on its shipped black plate (use the alpha cut). A BARE COMPOSER CROP \u2014 the composer always comes with the lockup above it: mark spins in, wordmark writes on, chips stagger. That is the \u00a711 'every assistant, same move' treatment, and it is what makes cutting between two assistants read as one system.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/ai-new-chat.html?brand=claude",
+     "label": "the real Claude composer, with the three-phase camera move"
+    },
+    {
+     "kind": "image",
+     "src": "brand/claude-code-wordmark-alpha.png",
+     "label": "the real pixel wordmark, plate keyed out"
+    }
+   ]
+  },
+  {
+   "id": "other-assistants",
+   "say": [
+    "chatgpt",
+    "openai",
+    "codex",
+    "gemini",
+    "grok",
+    "perplexity",
+    "cursor",
+    "copilot"
+   ],
+   "count": 16,
+   "show": "That assistant's OWN new-chat screen, through the same three-phase camera move \u2014 push in on the composer, pan the prompt, pull out as the lockup writes itself on. Never the composer alone.",
+   "never": "A logo on a plain card. A competitor's UI faked in your own style.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/ai-new-chat.html?brand=chatgpt",
+     "label": "ChatGPT composer"
+    },
+    {
+     "kind": "block",
+     "src": "ui-blocks/ai-new-chat.html?brand=gemini",
+     "label": "Gemini composer"
+    },
+    {
+     "kind": "block",
+     "src": "ui-blocks/ai-new-chat.html?brand=grok",
+     "label": "Grok composer"
+    },
+    {
+     "kind": "block",
+     "src": "ui-blocks/ai-new-chat.html?brand=perplexity",
+     "label": "Perplexity composer"
+    }
+   ]
+  },
+  {
+   "id": "prompt",
+   "say": [
+    "prompt",
+    "type",
+    "typing",
+    "ask",
+    "asked",
+    "tell",
+    "write",
+    "send"
+   ],
+   "count": 22,
+   "show": "A real composer with his actual words typing into it, camera pushed in on the caret.",
+   "never": "A typeset quote card.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/ai-new-chat.html?brand=claude",
+     "label": "composer, type-on + camera pan"
+    },
+    {
+     "kind": "mascot",
+     "src": "clawd/outline/clawd-typing.webp",
+     "label": "clawd-typing \u2014 only ALONGSIDE a UI, never instead of one"
+    }
+   ]
+  },
+  {
+   "id": "agent",
+   "say": [
+    "agent",
+    "agents",
+    "subagent",
+    "helper",
+    "helpers",
+    "team"
+   ],
+   "count": 22,
+   "show": "Mascots are legitimate here \u2014 an agent is an actor, not a product. Show several arriving, or one conducting.",
+   "never": "One mascot when he says a number greater than one.",
+   "assets": [
+    {
+     "kind": "mascot",
+     "src": "clawd/outline/clawd-conducting.webp",
+     "label": "conducting \u2014 one directing many"
+    },
+    {
+     "kind": "mascot",
+     "src": "clawd/outline/clawd-juggling.webp",
+     "label": "juggling \u2014 many at once"
+    },
+    {
+     "kind": "mascot",
+     "src": "clawd/outline/clawd-carrying.webp",
+     "label": "carrying \u2014 handing work over"
+    }
+   ]
+  },
+  {
+   "id": "skills",
+   "say": [
+    "skill",
+    "skills",
+    "slash",
+    "command",
+    "commands"
+   ],
+   "count": 8,
+   "show": "The real skills surface \u2014 the slash menu, or the folder fanning its files.",
+   "never": "A bulleted list of skill names.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/skills-beat.html?mode=slash",
+     "label": "the slash-command menu"
+    },
+    {
+     "kind": "block",
+     "src": "ui-blocks/skill-folder.html",
+     "label": "the folder fan \u2014 files lift out and arc"
+    }
+   ]
+  },
+  {
+   "id": "terminal",
+   "say": [
+    "terminal",
+    "cli",
+    "command line",
+    "run",
+    "runs",
+    "install",
+    "npm",
+    "shell"
+   ],
+   "count": 29,
+   "show": "A real terminal, with the command actually typing and output streaming.",
+   "never": "A static screenshot of a terminal.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/sessions-grid.html?mode=parallel",
+     "label": "session windows with live commands"
+    },
+    {
+     "kind": "image",
+     "src": "ui/terminal.png",
+     "label": "terminal crop \u2014 stills only as a last resort"
+    }
+   ]
+  },
+  {
+   "id": "repo",
+   "say": [
+    "github",
+    "repo",
+    "repository",
+    "open source",
+    "star",
+    "stars",
+    "fork"
+   ],
+   "count": 3,
+   "show": "The repo's own OG card \u2014 curl opengraph.githubassets.com/1/<owner>/<repo>.",
+   "never": "A GitHub card while the line is about anything else. This was the single worst note ever given.",
+   "assets": [
+    {
+     "kind": "image",
+     "src": "ui/gh-skills-og.png",
+     "label": "a real repo OG card"
+    },
+    {
+     "kind": "image",
+     "src": "ui/github-stars.png",
+     "label": "star count"
+    }
+   ]
+  },
+  {
+   "id": "model",
+   "say": [
+    "model",
+    "models",
+    "opus",
+    "sonnet",
+    "haiku",
+    "gpt",
+    "version"
+   ],
+   "count": 16,
+   "show": "The model picker inside a real composer, or the brand marks side by side.",
+   "never": "A typeset comparison table.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/ai-new-chat.html?brand=claude",
+     "label": "the model chip in the composer"
+    },
+    {
+     "kind": "image",
+     "src": "brand/claude.svg",
+     "label": "Claude mark"
+    },
+    {
+     "kind": "image",
+     "src": "brand/si-googlegemini.svg",
+     "label": "Gemini mark"
+    }
+   ]
+  },
+  {
+   "id": "free-price",
+   "say": [
+    "free",
+    "price",
+    "pricing",
+    "cost",
+    "costs",
+    "cheap",
+    "credits",
+    "limit",
+    "quota"
+   ],
+   "count": 25,
+   "show": "The real pricing surface if one exists at readable size; otherwise a designed number that counts up. NEEDS A BLOCK \u2014 none exists yet.",
+   "never": "A screenshot of a pricing page (small text).",
+   "assets": [
+    {
+     "kind": "gap",
+     "src": "",
+     "label": "GAP \u2014 build a price/limit block with a count-up and a big number"
+    }
+   ]
+  },
+  {
+   "id": "files",
+   "say": [
+    "file",
+    "files",
+    "folder",
+    "context",
+    "codebase",
+    "index",
+    "indexed"
+   ],
+   "count": 12,
+   "show": "The folder fan, or a file tree that builds itself.",
+   "never": "A screenshot of a file explorer.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/skill-folder.html",
+     "label": "the folder fan"
+    }
+   ]
+  },
+  {
+   "id": "claim-quote",
+   "say": [
+    "actually",
+    "apparently",
+    "they said",
+    "the docs say",
+    "turns out",
+    "only",
+    "not yet",
+    "supported",
+    "announced",
+    "according to"
+   ],
+   "count": 14,
+   "show": "The REAL page as a full 9:16 frame, shot at ~640 CSS px so its type scales ~1.7x UP. No browser chrome, no URL bar, no sticky site header \u2014 the frame is the CONTENT. The marker is opaque ink drawn across the real words (one bar per wrapped line), and the push zooms INTO the marker, clamped so the line never leaves the frame.",
+   "never": "Two separate highlights on screen \u2014 one sentence or paragraph, never a lone word, never two marks. A crop of a desktop page. A small section dropped into a box. A URL bar or browser dots. A rect nudged by eye. A translucent rounded selection box instead of ink. A zoom into the middle of the page while the highlight drifts out of shot.",
+   "assets": [
+    {
+     "kind": "block",
+     "src": "ui-blocks/page-highlight.html?src=pages/ccm-availability.png&fit=full&zoom=in",
+     "label": "b-roll full \u2014 9:16, the page owns the frame, slow push in"
+    },
+    {
+     "kind": "block",
+     "src": "ui-blocks/page-highlight.html?src=pages/ccm-availability.png&fit=half&zoom=out",
+     "label": "split \u2014 the marker band parked in the 1000x880 top half, pulling out"
+    },
+    {
+     "kind": "block",
+     "src": "ui-blocks/page-highlight.html?src=pages/ccm-availability.png&fit=head&zoom=hold",
+     "label": "transparent \u2014 a card above his head"
+    }
+   ]
+  }
+ ]
+}

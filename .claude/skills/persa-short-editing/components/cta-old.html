@@ -1,0 +1,71 @@
+<!--
+  cta-old — THE house CTA. Lifted verbatim from buzz / carousels / mcp, which are the three
+  cuts BLACKLIST #9 names as the source of truth. COPY THIS FILE. Do not re-type it from a
+  screenshot and do not "tidy" it.
+
+  ── WHY THIS FILE EXISTS (2026-08-18) ─────────────────────────────────────────────────────
+  Jad, on tp-0817b: "you put in an arrow that looks a bit weird in the CTA, it's not done
+  well." He was right, and the cause is that the arrow had been RE-TYPED rather than copied,
+  first on tp-0817 and then again on tp-0817b. Five things had drifted, and every one of them
+  is visible:
+
+    real                                    what shipped                     effect
+    ───────────────────────────────────────────────────────────────────────────────────────
+    shaft width:10px height:90px            width:6px height:150px           a hairline
+    border-radius:6px on the shaft          none                             hard, cheap ends
+    head left:50% + margin-left:-17px       left:-16px                       HEAD OFF-CENTRE
+    border-right + border-bottom, rot 45deg border-left + bottom, rot -45deg  V points wrong
+    tl.from(scaleY:0) origin 50% 0%         rise() — the whole thing slides   it never DRAWS
+
+  The third and fourth are what read as "weird": the head hangs to one side of the shaft and
+  the V is lopsided, so it looks like a tick, not an arrow. The fifth is why it feels dead —
+  the real one draws itself downward, pointing at the comment box.
+
+  ── MARKUP ────────────────────────────────────────────────────────────────────────────────
+  Half & half on the CREAM plate — never on a coral block, or the coral->cream keyword
+  gradient vanishes into the ground (see the cta-is-half-and-half note). HIM in the bottom
+  half. Captions are DROPPED for the whole CTA: the pill already says it.
+
+  <div class="clip ctapanel" id="cta" data-start="..." data-duration="..." data-track-index="9">
+    <div class="ctacard" id="cta_card"><img src="assets/brand/<mark>.png" alt="">
+      <span class="cword">product-name</span></div>
+    <div class="ctalines"><div class="l1" id="cta_l1">COMMENT</div>
+      <div class="l2" id="cta_l2">&ldquo;KEYWORD&rdquo;</div></div>
+    <div class="arrow" id="cta_ar"><i></i></div>
+  </div>
+
+  ── TIMELINE ──────────────────────────────────────────────────────────────────────────────
+  The keyword lands ON its transcript onset; the arrow DRAWS after it, never before.
+
+  rise("cta", CTA_IN);
+  tl.set("#cta_l1",{opacity:0},CTA_IN); tl.set("#cta_l2",{opacity:0},CTA_IN);
+  tl.set("#cta_ar",{opacity:0},CTA_IN);
+  tl.fromTo("#cta_card",{scale:.94,opacity:0},{scale:1,opacity:1,duration:.42,ease:E},CTA_IN+.10);
+  rise("cta_l1", <onset of "comment">);
+  tl.fromTo("#cta_l2",{scaleY:2.4,scaleX:.94,opacity:0},
+                      {scaleY:1,scaleX:1,opacity:1,duration:.30,ease:E}, <onset of KEYWORD>);
+  tl.set("#cta_ar",{opacity:1}, <onset of KEYWORD> + .60);
+  tl.from("#cta_ar i",{scaleY:0,opacity:0,duration:.42,ease:"power3.out"}, <onset> + .60);
+-->
+<style>
+  .ctapanel{position:absolute;left:0;top:118px;width:1080px;display:flex;
+    flex-direction:column;align-items:center;gap:34px}
+  .ctacard{display:flex;align-items:center;gap:26px;padding:26px 46px;
+    background:var(--cream-card);border-radius:var(--r-pill)}
+  .ctacard img{width:96px;height:96px;object-fit:contain}
+  .cword{font:500 46px var(--font-mono);color:var(--ink)}
+  .ctalines{text-align:center}
+  .l1{font:900 82px var(--font-heavy);color:var(--ink);letter-spacing:.02em}
+  .l2{font:400 150px "InstrumentSerif",serif;font-style:italic;line-height:1.05;
+    background:linear-gradient(90deg,var(--coral-deep),var(--coral));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ⭐ THE ARROW — verbatim from buzz/mcp/carousels. The head is centred on the shaft by
+     left:50% + margin-left:-17px (half of its 34px). Change nothing here. */
+  .arrow{height:100px;display:flex;justify-content:center}
+  .arrow i{display:block;width:10px;height:90px;background:var(--ink);border-radius:6px;
+    transform-origin:50% 0%;position:relative}
+  .arrow i::after{content:"";position:absolute;left:50%;bottom:-6px;width:34px;height:34px;
+    margin-left:-17px;border-right:10px solid var(--ink);border-bottom:10px solid var(--ink);
+    transform:rotate(45deg);border-radius:3px}
+</style>

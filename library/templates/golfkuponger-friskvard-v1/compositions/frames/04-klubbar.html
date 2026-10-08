@@ -1,0 +1,317 @@
+<template>
+  <style>
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500-italic.woff2") format('woff2');font-weight:500;font-style:italic;font-display:block;}
+  </style>
+
+  <style>
+    #root {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: 'Inter', sans-serif;
+      color: #F8F4EC;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- track 0 · full-bleed ground: photo cycle + scrim ---------- */
+    .f04-klubbar-ground {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #01170F;
+    }
+    .f04-klubbar-photo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    /* deep-green legibility scrim (frame.md photo-plate): top band for the pinned anchor,
+       bottom-left corner grounding the name-tag. Peak combined opacity stays <= 78%. */
+    .f04-klubbar-scrim {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg,
+          rgba(1, 23, 15, 0.70) 0%,
+          rgba(1, 23, 15, 0.60) 30%,
+          rgba(1, 23, 15, 0.46) 42%,
+          rgba(1, 23, 15, 0.16) 54%,
+          rgba(1, 23, 15, 0) 64%),
+        linear-gradient(90deg,
+          rgba(1, 23, 15, 0.22) 0%,
+          rgba(1, 23, 15, 0.08) 40%,
+          rgba(1, 23, 15, 0) 62%),
+        linear-gradient(to top right,
+          rgba(1, 23, 15, 0.62) 0%,
+          rgba(1, 23, 15, 0.24) 22%,
+          rgba(1, 23, 15, 0) 42%);
+    }
+
+    /* ---------- track 1 · the pinned anchor ---------- */
+    .f04-klubbar-anchor {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .f04-klubbar-fig {
+      position: absolute;
+      left: 7cqw;
+      top: 5.2cqw;
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 20cqw;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      font-feature-settings: "lnum" 1;
+      white-space: nowrap;
+      color: #F8F4EC;
+      text-shadow: 0 0 2.6cqw rgba(1, 23, 15, 0.32);
+    }
+    .f04-klubbar-ch {
+      display: inline-block;
+    }
+    .f04-klubbar-plus {
+      color: #D6A536;
+      font-weight: 600;
+      font-size: 0.72em;
+      vertical-align: 0.33em;
+      margin-left: 0.01em;
+    }
+    .f04-klubbar-title {
+      position: absolute;
+      left: 7cqw;
+      top: 27.6cqw;
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      font-weight: 500;
+      font-size: 6cqw;
+      line-height: 1.04;
+      letter-spacing: -0.01em;
+      color: #F8F4EC;
+      text-shadow: 0 0 2cqw rgba(1, 23, 15, 0.36);
+    }
+    .f04-klubbar-line {
+      display: block;
+      white-space: nowrap;
+    }
+    .f04-klubbar-w {
+      display: inline-block;
+    }
+    /* frame.md gold-rule — joins the pinned lockup on the final beat */
+    .f04-klubbar-rule {
+      position: absolute;
+      left: 7cqw;
+      top: 43.4cqw;
+      width: 12cqw;
+      height: 0.2cqw;
+      background: #D6A536;
+      transform-origin: 0% 50%;
+    }
+
+    /* ---------- track 2 · club name-tag (frame.md name-tag) ---------- */
+    .f04-klubbar-tagclip {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .f04-klubbar-tag {
+      position: absolute;
+      left: 7cqw;
+      top: 74.4cqw;
+      height: 6.6cqw;
+      display: inline-flex;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 0 2.5cqw 0 2.3cqw;
+      background: #01170F;
+      border-radius: 0 0.56cqw 0.56cqw 0;
+      white-space: nowrap;
+    }
+    .f04-klubbar-tagrule {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0.3cqw;
+      height: 100%;
+      background: #D6A536;
+      transform-origin: 50% 100%;
+    }
+    .f04-klubbar-tagtext {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 3cqw;
+      line-height: 1;
+      letter-spacing: 0.15em;
+      margin-right: -0.15em;
+      text-transform: uppercase;
+      color: #F8F4EC;
+      padding-top: 0.2cqw;
+    }
+  </style>
+
+  <div data-hf-id="hf-ft7a" id="root" data-composition-id="04-klubbar" data-width="1080" data-height="1080" data-duration="6.318">
+
+    <!-- track 0 — full-bleed ground: four club photos cycled on the beat, scrim on top -->
+    <div data-hf-id="hf-s88c" id="f04-klubbar-ground" class="clip f04-klubbar-ground" data-start="0" data-duration="6.318" data-track-index="0">
+      <img data-hf-id="hf-9kks" id="f04-klubbar-photo-1" class="f04-klubbar-photo" src="assets/klubb-bro-hof-slott.jpg" alt="" style="object-position: 60% 50%; transform-origin: 56% 70%;">
+      <img data-hf-id="hf-rqk3" id="f04-klubbar-photo-2" class="f04-klubbar-photo" src="assets/klubb-halmstad-gk.jpg" alt="" style="object-position: 58% 50%; transform-origin: 62% 62%;">
+      <img data-hf-id="hf-n0u8" id="f04-klubbar-photo-3" class="f04-klubbar-photo" src="assets/klubb-falsterbo-gk.jpg" alt="" style="object-position: 62% 50%; transform-origin: 72% 64%;">
+      <img data-hf-id="hf-cen9" id="f04-klubbar-photo-4" class="f04-klubbar-photo" src="assets/klubb-osteraker-gk.jpg" alt="" style="object-position: 0% 50%; transform-origin: 25% 62%;">
+      <div data-hf-id="hf-3ttg" id="f04-klubbar-scrim" class="f04-klubbar-scrim"></div>
+    </div>
+
+    <!-- track 1 — the pinned anchor: enters once, never moves again -->
+    <div data-hf-id="hf-o6xh" id="f04-klubbar-anchor" class="clip f04-klubbar-anchor" data-start="0" data-duration="6.318" data-track-index="1">
+      <div data-hf-id="hf-srh4" id="f04-klubbar-fig" class="f04-klubbar-fig"><span data-hf-id="hf-1mww" class="f04-klubbar-ch">3</span><span data-hf-id="hf-0fzt" class="f04-klubbar-ch">0</span><span data-hf-id="hf-0k3x" class="f04-klubbar-ch">0</span><span data-hf-id="hf-5prr" class="f04-klubbar-ch f04-klubbar-plus">+</span></div>
+      <div data-hf-id="hf-tra0" id="f04-klubbar-title" class="f04-klubbar-title">
+        <span data-hf-id="hf-90s8" class="f04-klubbar-line"><span data-hf-id="hf-naue" class="f04-klubbar-w">golfklubbar</span></span>
+        <span data-hf-id="hf-nmz4" class="f04-klubbar-line"><span data-hf-id="hf-5tzo" class="f04-klubbar-w">i</span> <span data-hf-id="hf-2971" class="f04-klubbar-w">hela</span> <span data-hf-id="hf-r9xu" class="f04-klubbar-w">Sverige</span></span>
+      </div>
+      <div data-hf-id="hf-1er2" id="f04-klubbar-rule" class="f04-klubbar-rule"></div>
+    </div>
+
+    <!-- track 2 — club name-tag: slides in once, text hard-cuts on each photo swap -->
+    <div data-hf-id="hf-h1dg" id="f04-klubbar-tagclip" class="clip f04-klubbar-tagclip" data-start="0" data-duration="6.318" data-track-index="2">
+      <div data-hf-id="hf-a5p8" id="f04-klubbar-tag" class="f04-klubbar-tag">
+        <div data-hf-id="hf-36ws" id="f04-klubbar-tagrule" class="f04-klubbar-tagrule"></div>
+        <span data-hf-id="hf-ku59" id="f04-klubbar-tagtext" class="f04-klubbar-tagtext">Bro Hof Slott</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var COMP_ID = "04-klubbar";
+      var root = document.querySelector('[data-composition-id="04-klubbar"]');
+      function byId(id) { return root.querySelector('[id="' + id + '"]'); }
+      function byClass(c) { return Array.prototype.slice.call(root.querySelectorAll('[class~="' + c + '"]')); }
+
+      // Music grid: 165 BPM -> one beat = 0.3636s. Swaps every 4 beats.
+      var BEAT = 60 / 165;
+      var DUR = 16 * BEAT;                                  // 5.818s
+      var SWAPS = [0, 4 * BEAT, 8 * BEAT, 12 * BEAT];       // 0 · 1.455 · 2.909 · 4.364
+      var CLUBS = ["Bro Hof Slott", "Halmstad GK", "Falsterbo GK", "Österåker GK"];
+
+      var photos = [byId("f04-klubbar-photo-1"), byId("f04-klubbar-photo-2"), byId("f04-klubbar-photo-3"), byId("f04-klubbar-photo-4")];
+      var chars = byClass("f04-klubbar-ch");
+      var words = byClass("f04-klubbar-w");
+      var rule = byId("f04-klubbar-rule");
+      var tag = byId("f04-klubbar-tag");
+      var tagRule = byId("f04-klubbar-tagrule");
+      var tagText = byId("f04-klubbar-tagtext");
+
+      var DISSOLVE = BEAT;      // ~0.36s cross-dissolve per swap
+      var PEAK_BLUR = 12;       // full-frame photo blur at the swap midpoint
+
+      var tl = gsap.timeline({ paused: true });
+
+      // ---------------- Photo cycle (scale-swap-transition, cross-dissolve flavour) ----------------
+      // Photo 1 — opening plate: soft focus-pull + 106% -> 100% settle under the root crossfade.
+      tl.fromTo(photos[0], { scale: 1.06 }, { scale: 1, duration: SWAPS[1], ease: "power3.out" }, 0);
+      tl.fromTo(photos[0], { filter: "blur(8px)" }, { filter: "blur(0px)", duration: 0.8, ease: "expo.out" }, 0);
+
+      for (var i = 1; i < photos.length; i++) {
+        var T = SWAPS[i];
+        var settle = (i < photos.length - 1 ? SWAPS[i + 1] : DUR - 0.06) - T;
+        var incoming = photos[i];
+        var outgoing = photos[i - 1];
+
+        // outgoing recedes out of focus underneath (incoming sits above it in z-order)
+        tl.fromTo(outgoing,
+          { filter: "blur(0px)" },
+          { filter: "blur(" + PEAK_BLUR + "px)", duration: DISSOLVE, ease: "power2.in", immediateRender: false },
+          T);
+
+        // incoming dissolves in over one beat, sharpening as it arrives
+        tl.fromTo(incoming, { opacity: 0 }, { opacity: 1, duration: DISSOLVE, ease: "power1.inOut" }, T);
+        tl.fromTo(incoming,
+          { filter: "blur(" + PEAK_BLUR + "px)" },
+          { filter: "blur(0px)", duration: 0.5, ease: "power3.out" },
+          T);
+        // ...and settles 106% -> 100% across its own 4-beat window
+        tl.fromTo(incoming, { scale: 1.06 }, { scale: 1, duration: settle, ease: "power3.out" }, T);
+      }
+
+      // ---------------- Scene 1 — the anchor lands, then PINS ----------------
+      // "300+" — blur-to-sharp, per glyph; gold "+" lands last.
+      tl.fromTo(chars,
+        { opacity: 0, y: 34, filter: "blur(12px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.0, ease: "power3.out", stagger: 0.07 },
+        0);
+
+      // "golfklubbar i hela Sverige" — one beat later, word by word.
+      tl.fromTo(words,
+        { opacity: 0, y: 18, filter: "blur(8px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out", stagger: 0.06 },
+        BEAT);
+
+      // Name-tag slides in on beat 2 (lower-left, above the caption band).
+      var TAG_IN = 2 * BEAT; // 0.727
+      tl.fromTo(tag,
+        { x: -22, opacity: 0, clipPath: "inset(0% 100% 0% 0%)" },
+        { x: 0, opacity: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "expo.out" },
+        TAG_IN);
+      tl.fromTo(tagRule, { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: "expo.out" }, TAG_IN);
+      tl.fromTo(tagText,
+        { opacity: 0, x: -10, filter: "blur(6px)" },
+        { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.55, ease: "power3.out" },
+        TAG_IN + 0.12);
+
+      // ---------------- Scene 2 — name-tag token swap (discrete-text-sequence) ----------------
+      var SEQUENCE = CLUBS.map(function (name, k) { return { t: SWAPS[k], text: name }; });
+      function textAt(time) {
+        for (var k = SEQUENCE.length - 1; k >= 0; k--) {
+          if (time >= SEQUENCE[k].t) return SEQUENCE[k].text;
+        }
+        return SEQUENCE[0].text;
+      }
+      var driver = { t: 0 };
+      tl.fromTo(driver, { t: 0 }, {
+        t: DUR,
+        duration: DUR,
+        ease: "none",
+        onUpdate: function () {
+          var s = textAt(driver.t);
+          if (tagText.textContent !== s) tagText.textContent = s;
+        }
+      }, 0);
+
+      // On each swap beat: the text hard-cuts (above) and settles a few px into place,
+      // while the gold left rule re-draws — a crisp tick on the beat, never a smear.
+      for (var j = 1; j < SWAPS.length; j++) {
+        tl.fromTo(tagText, { x: -8 }, { x: 0, duration: 0.5, ease: "expo.out", immediateRender: false }, SWAPS[j]);
+        tl.fromTo(tagRule, { scaleY: 0 }, { scaleY: 1, duration: 0.45, ease: "expo.out", immediateRender: false }, SWAPS[j]);
+      }
+
+      // ---------------- Resolve — a gold hairline quietly joins the pinned lockup ----------------
+      tl.fromTo(rule, { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: "expo.out" }, 13 * BEAT);
+
+      window.__timelines[COMP_ID] = tl;
+    })();
+  </script>
+</template>

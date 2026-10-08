@@ -1,0 +1,18 @@
+{
+  "_notes": [
+    "Sun-Faded Photo Poster: every colour comes from the photograph; faded gold is headline-only and may never touch a chart.",
+    "Charts are drawn with no panel, straight on the open ground, so the 'surface' is whatever field the photo gives (meadow lime #8E9726 is the reference).",
+    "Emphasis runs by INK DENSITY, not hue: full weathered ink #292B19 = the series that matters; the same ink at 36% = context. Identity survives CVD and greyscale because it is carried by lightness.",
+    "Validated (WCAG + CIELAB, own script; the dataviz validator was not installed): accent vs ground 4.54:1 meadow lime, 5.16:1 dry field, 6.01:1 ploughed earth, 3.09:1 deep grass. dE(accent, muted) 42.0 / 32.8 / 35.5 / 29.1.",
+    "Sky-deep blue #0E74AC was tried as the accent and rejected: 1.09-1.82:1 against grass, unreadable on dark fields.",
+    "Muted marks sit at ~1.5-1.8:1 against the ground (the sheet wants captions 'almost missed'); the relief is that every mark carries a direct label in full ink.",
+    "Ordinal ramp is the same ink at rising density (photo shadow, not an invented hue)."
+  ],
+  "ink": "#292B19", "ink2": "rgba(41,43,25,.74)", "axis": "rgba(41,43,25,.62)",
+  "accent": "#292B19", "muted": "rgba(41,43,25,.36)",
+  "surface": "#8E9726", "grid": "rgba(41,43,25,.16)",
+  "track": "rgba(41,43,25,.10)", "track_line": "rgba(41,43,25,.20)",
+  "bar_ctx": "rgba(41,43,25,.36)", "baseline": "rgba(41,43,25,.45)",
+  "glow": "", "glow_soft": "", "area_op": ".14", "h_scale": 0.6,
+  "ramp": ["rgba(41,43,25,.28)", "rgba(41,43,25,.46)", "rgba(41,43,25,.64)", "rgba(41,43,25,.82)", "#292B19"]
+}

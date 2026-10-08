@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1350" />
+    <title>Live Carousel 02: Easing</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /*@CHROME@*/
+
+      #small-top {
+        position: absolute;
+        left: 72px;
+        top: 168px;
+      }
+      .wordbox {
+        position: absolute;
+        left: 72px;
+        top: 256px;
+        width: 936px;
+        height: 220px;
+      }
+      .wordbox .big {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 936px;
+        justify-content: center;
+      }
+      #strike {
+        position: absolute;
+        left: 52px;
+        width: 976px;
+        height: 30px;
+        border-radius: 15px;
+        background: var(--orange);
+        box-shadow: 6px 8px 0 rgba(12, 18, 54, 0.35);
+        transform-origin: 0 50%;
+      }
+      #small-bot {
+        position: absolute;
+        left: 72px;
+        top: 512px;
+        font-size: 62px;
+      }
+      .lane-label {
+        position: absolute;
+        left: 72px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        font-family: var(--mono);
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        color: var(--cream);
+      }
+      .icon {
+        display: block;
+        width: 96px;
+        height: 64px;
+        border-radius: 10px;
+        background: rgba(12, 18, 54, 0.28);
+        border: 2px solid rgba(255, 243, 224, 0.35);
+        overflow: visible;
+      }
+      .tag {
+        position: absolute;
+        right: 72px;
+      }
+      .tag.alive {
+        background: var(--orange);
+        color: var(--ink);
+      }
+      .track {
+        position: absolute;
+        height: 3px;
+      }
+      #trackA {
+        left: 72px;
+        width: 936px;
+        background: repeating-linear-gradient(90deg, rgba(255, 243, 224, 0.75) 0 14px, transparent 14px 26px);
+      }
+      #trackB {
+        left: 0;
+        width: 1080px;
+        background: rgba(255, 243, 224, 0.75);
+      }
+      .tick {
+        position: absolute;
+        width: 4px;
+        height: 24px;
+        margin-left: -2px;
+        border-radius: 2px;
+        background: var(--cream);
+        opacity: 0;
+      }
+      .tick.b {
+        background: var(--orange);
+      }
+      .onion {
+        position: absolute;
+        width: 88px;
+        height: 88px;
+        margin: -44px 0 0 -44px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 243, 224, 0.55);
+        opacity: 0;
+      }
+      .onion.b {
+        border-color: rgba(255, 106, 31, 0.9);
+      }
+      .shadow {
+        position: absolute;
+        width: 96px;
+        height: 18px;
+        margin-left: -48px;
+        border-radius: 50%;
+        background: rgba(12, 18, 54, 0.38);
+      }
+      .robot .ball-stretch {
+        background: rgba(12, 18, 54, 0.25);
+        border: 4px solid var(--cream);
+        box-shadow: none;
+      }
+      .robot .ball-stretch::before,
+      .robot .ball-stretch::after {
+        content: "";
+        position: absolute;
+        background: var(--cream);
+        opacity: 0.8;
+      }
+      .robot .ball-stretch::before {
+        left: 50%;
+        top: 14px;
+        bottom: 14px;
+        width: 3px;
+        margin-left: -1.5px;
+      }
+      .robot .ball-stretch::after {
+        top: 50%;
+        left: 14px;
+        right: 14px;
+        height: 3px;
+        margin-top: -1.5px;
+      }
+      .callout {
+        position: absolute;
+        left: 72px;
+        top: 1114px;
+        font-family: var(--mono);
+        font-size: 25px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        color: var(--cream);
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="8" data-width="1080" data-height="1350">
+      <div id="scene" class="scene clip" data-start="0" data-duration="8" data-track-index="0">
+        <div id="world" class="world">
+          <canvas id="grid" class="grid" width="1080" height="1350"></canvas>
+          <div id="glow" class="glow"></div>
+
+          <div class="topbar">
+            <div class="tb-left"><span class="dot"></span><span>Rule 01 — Easing</span></div>
+            <div>02 / 04</div>
+          </div>
+          <div class="hairline"></div>
+
+          <div id="small-top" class="small">never move</div>
+          <div id="wordbox" class="wordbox">
+            <div id="w-linear" class="big" data-word="LINEAR." data-layout-allow-occlusion></div>
+          </div>
+          <div id="strike" data-layout-allow-occlusion></div>
+          <div id="small-bot" class="small">ease in. ease out. like real life.</div>
+
+          <!-- lane A: linear -->
+          <div class="lane-label" style="top: 640px">
+            <svg class="icon" viewBox="0 0 96 64">
+              <path d="M14 52 L82 12" fill="none" stroke="#FFF3E0" stroke-width="4" stroke-linecap="round" />
+              <circle id="dotA" cx="14" cy="52" r="6" fill="#FFF3E0" />
+            </svg>
+            <span>Linear</span>
+          </div>
+          <div id="tagA" class="tag pill line" style="top: 646px">Robot</div>
+          <div id="trackA" class="track" style="top: 838px"></div>
+          <div id="laneA" class="layer"></div>
+
+          <!-- lane B: ease in-out -->
+          <div class="lane-label" style="top: 884px">
+            <svg class="icon" viewBox="0 0 96 64">
+              <path d="M14 52 C 56 52, 40 12, 82 12" fill="none" stroke="#FF6A1F" stroke-width="4" stroke-linecap="round" />
+              <path d="M14 52 L 50 52 M 82 12 L 46 12" fill="none" stroke="#FFF3E0" stroke-width="2" opacity="0.7" />
+              <circle cx="50" cy="52" r="4.5" fill="none" stroke="#FFF3E0" stroke-width="2" />
+              <circle cx="46" cy="12" r="4.5" fill="none" stroke="#FFF3E0" stroke-width="2" />
+              <circle id="dotB" cx="14" cy="52" r="6" fill="#FF6A1F" />
+            </svg>
+            <span>Ease in-out</span>
+          </div>
+          <div id="tagB" class="tag pill alive" style="top: 890px">Alive</div>
+          <div id="trackB" class="track" style="top: 1062px"></div>
+          <div id="laneB" class="layer"></div>
+
+          <div id="callout" class="callout">SAME DISTANCE · SAME 1 SECOND · NEW SPACING</div>
+
+          <div id="fx" class="layer"></div>
+          <div id="balls" class="layer"></div>
+          <div id="ruler" class="ruler"></div>
+        </div>
+        <!--@GRAIN@-->
+      </div>
+      <audio id="mix" src="assets/audio/mix.wav" data-start="0" data-duration="8" data-track-index="2" data-volume="1"></audio>
+    </div>
+
+    <script>
+      //@ENGINE@
+    </script>
+    <script>
+      (function () {
+        const L = window.LC;
+        const DUR = 8;
+        const R = 44;
+        const root = document.getElementById("root");
+        const X0 = 150,
+          X1 = 930;
+        const YA = 838 - R,
+          YB = 1062 - R; // ball centres resting on the tracks
+        const RUNS = [
+          { t: 1.0, dir: 1 },
+          { t: 2.5, dir: -1 },
+          { t: 4.5, dir: 1 },
+        ];
+        const RUN_LEN = 1.0;
+
+        function build() {
+          const wEl = document.getElementById("w-linear");
+          const chars = L.buildWord(wEl);
+          const fit = L.fitWord(wEl, chars, 936, 236, 52);
+          const m = L.measureWord(chars, fit.F, root);
+          const capTop = Math.min(...m.map((g) => g.top));
+          const baseY = m[0].base;
+          const strike = document.getElementById("strike");
+          strike.style.top = (capTop + baseY) / 2 - 15 + "px";
+
+          // ---------- hero ball (lane B) path ----------
+          const pts = [
+            { t: 0, x: -70, y: 930 },
+            { t: 0.34, x: X0, y: YB, h: 60, contact: { q: 0.4 } },
+            { t: 0.62, x: X0, y: YB, h: 34, contact: { q: 0.16 } },
+            { t: 1.0, x: X0, y: YB },
+            { t: 2.0, x: X1, y: YB, ease: "inOut" },
+            { t: 2.5, x: X1, y: YB },
+            { t: 3.5, x: X0, y: YB, ease: "inOut" },
+            { t: 4.5, x: X0, y: YB },
+            { t: 5.5, x: X1, y: YB, ease: "inOut" },
+            { t: 6.5, x: X1, y: YB, contact: { q: 0.32 } },
+            { t: 7.25, x: 1320, y: 760, h: 90 },
+          ];
+          const pathB = L.makePath(pts);
+          // robot ball: linear moves, hard stops
+          const ptsA = [
+            { t: 0, x: X0, y: YA },
+            { t: 1.0, x: X0, y: YA },
+            { t: 2.0, x: X1, y: YA },
+            { t: 2.5, x: X1, y: YA },
+            { t: 3.5, x: X0, y: YA },
+            { t: 4.5, x: X0, y: YA },
+            { t: 5.5, x: X1, y: YA },
+            { t: 6.4, x: X1, y: YA },
+            { t: 7.4, x: X0, y: YA },
+          ];
+          const pathA = L.makePath(ptsA);
+
+          // ---------- spacing charts (ticks + onion rings every 2 frames) ----------
+          const laneA = document.getElementById("laneA");
+          const laneB = document.getElementById("laneB");
+          const marks = [];
+          RUNS.forEach((run, r) => {
+            for (let k = 0; k <= 15; k++) {
+              const s = k / 15;
+              const sa = run.dir > 0 ? s : 1 - s;
+              const sb = run.dir > 0 ? L.easeInOut(s) : 1 - L.easeInOut(s);
+              const tk = run.t + s * RUN_LEN;
+              [
+                [laneA, "", X0 + (X1 - X0) * sa, 838],
+                [laneB, " b", X0 + (X1 - X0) * sb, 1062],
+              ].forEach(([lane, cls, x, ty]) => {
+                const tick = document.createElement("div");
+                tick.className = "tick" + cls;
+                tick.style.left = x + "px";
+                tick.style.top = ty + 12 + "px";
+                lane.appendChild(tick);
+                const on = document.createElement("div");
+                on.className = "onion" + cls;
+                on.style.left = x + "px";
+                on.style.top = ty - R + "px";
+                lane.appendChild(on);
+                marks.push({ tick, on, tk, run: r });
+              });
+            }
+          });
+          const runEnd = (r) => (r + 1 < RUNS.length ? RUNS[r + 1].t - 0.05 : 7.2);
+
+          // ---------- balls + shadows ----------
+          const balls = document.getElementById("balls");
+          const shA = document.createElement("div");
+          shA.className = "shadow";
+          balls.appendChild(shA);
+          const shB = document.createElement("div");
+          shB.className = "shadow";
+          balls.appendChild(shB);
+          const ballA = L.makeBall(balls, "robot", R);
+          const ghostsB = [3, 2, 1].map((k) => ({ g: L.makeBall(balls, "ghost", R), k }));
+          const ballB = L.makeBall(balls, "", R);
+
+          const grid = L.makeGrid(document.getElementById("grid"), { color: "#FFF3E0", gap: 45 });
+          const waves = [
+            { t: 0.34, x: X0, y: 1062, a: 0.7 },
+            { t: 3.6, x: 540, y: (capTop + baseY) / 2, a: 0.55, v: 1800 },
+            { t: 6.5, x: X1, y: 1062, a: 0.5 },
+          ];
+          const ruler = L.makeRuler(document.getElementById("ruler"), {
+            frameStart: 180,
+            frames: 240,
+            width: 1080,
+            duration: DUR,
+            keys: [1.0, 2.0, 2.5, 3.5, 4.5, 5.5, 6.5],
+          });
+
+          const world = document.getElementById("world");
+          const glow = document.getElementById("glow");
+          const dotA = document.getElementById("dotA");
+          const dotB = document.getElementById("dotB");
+          const tagA = document.getElementById("tagA");
+          const tagB = document.getElementById("tagB");
+          const callout = document.getElementById("callout");
+
+          function runProg(t) {
+            for (const run of RUNS) if (t >= run.t && t <= run.t + RUN_LEN) return (t - run.t) / RUN_LEN;
+            return -1;
+          }
+
+          function render(t) {
+            // small camera bump on the strike + landing
+            let sx = 0,
+              sy = 0;
+            [
+              [0.34, 6],
+              [3.62, 9],
+              [6.5, 4],
+            ].forEach(([t0, amp]) => {
+              const dt = t - t0;
+              if (dt < 0 || dt > 0.5) return;
+              const e = Math.exp(-dt * 10) * amp;
+              sx += Math.sin(dt * 58 + t0) * e;
+              sy += Math.cos(dt * 47 + t0) * e;
+            });
+            world.style.transform = `translate(${sx.toFixed(2)}px, ${sy.toFixed(2)}px)`;
+
+            // ---------- word: LINEAR letters move like a robot (stepped, rigid) ----------
+            chars.forEach((c, i) => {
+              // a stiff, stepped nudge each time the robot ball starts a run
+              let y = 0;
+              RUNS.forEach((run) => {
+                const p = L.prog(t, run.t + i * 0.05, run.t + i * 0.05 + 0.2);
+                y += p > 0 && p < 1 ? -10 * Math.round(Math.sin(p * Math.PI) * 3) / 3 : 0;
+              });
+              // strike hit: letters dip as the marker passes
+              const passT = 3.5 + 0.06 + (i / chars.length) * 0.22;
+              const k = L.kick(t - passT, 2.6, 7);
+              c.el.style.transform = `translateY(${(y + 16 * k).toFixed(2)}px) scale(${(1 + 0.04 * k).toFixed(4)}, ${(1 - 0.07 * k).toFixed(4)})`;
+            });
+
+            // ---------- strike-through ----------
+            const sIn = L.easeOut(L.prog(t, 3.5, 3.78));
+            const sOut = L.easeIn(L.prog(t, 7.3, 7.6));
+            strike.style.transformOrigin = t < 7.3 ? "0 50%" : "100% 50%";
+            strike.style.transform = `rotate(-2.5deg) scaleX(${(t < 7.3 ? sIn : 1 - sOut).toFixed(4)})`;
+
+            // ---------- spacing marks ----------
+            for (const mk of marks) {
+              const dt = t - mk.tk;
+              const end = runEnd(mk.run);
+              if (dt < 0 || t > end + 0.3) {
+                mk.tick.style.opacity = 0;
+                mk.on.style.opacity = 0;
+                continue;
+              }
+              const fade = 1 - L.prog(t, end, end + 0.3);
+              const pop = L.settle(dt, 3, 9);
+              mk.tick.style.opacity = fade;
+              mk.tick.style.transform = `scaleY(${pop.toFixed(3)})`;
+              mk.on.style.opacity = (0.55 * fade).toFixed(3);
+              mk.on.style.transform = `scale(${(0.6 + 0.4 * Math.min(1, pop)).toFixed(3)})`;
+            }
+
+            // ---------- tags + callout ----------
+            const tagIn = (t0) => (t < 7.1 ? L.settle(t - t0, 2.6, 7) : 1 - L.easeIn(L.prog(t, 7.1, 7.35)));
+            const ta = tagIn(2.0),
+              tb = tagIn(2.08);
+            tagA.style.opacity = ta > 0.01 ? 1 : 0;
+            tagA.style.transform = `scale(${Math.max(0, ta).toFixed(3)})`;
+            tagB.style.opacity = tb > 0.01 ? 1 : 0;
+            tagB.style.transform = `scale(${Math.max(0, tb).toFixed(3)}) rotate(${(-4 * Math.min(1, tb)).toFixed(2)}deg)`;
+            const cIn = L.prog(t, 2.2, 2.6),
+              cOut = L.prog(t, 7.0, 7.4);
+            callout.style.opacity = (cIn * (1 - cOut)).toFixed(3);
+            callout.style.transform = `translateY(${((1 - L.easeOut(cIn)) * 16).toFixed(1)}px)`;
+
+            // ---------- curve icons ----------
+            const rp = runProg(t);
+            const s = rp < 0 ? (t < 1.0 ? 0 : 1) : rp;
+            dotA.setAttribute("cx", (14 + 68 * s).toFixed(2));
+            dotA.setAttribute("cy", (52 - 40 * s).toFixed(2));
+            // cubic bezier (14,52) (56,52) (40,12) (82,12): sample by parameter, close to ease-in-out
+            const u = s,
+              iu = 1 - u;
+            const bx = iu * iu * iu * 14 + 3 * iu * iu * u * 56 + 3 * iu * u * u * 40 + u * u * u * 82;
+            const by = iu * iu * iu * 52 + 3 * iu * iu * u * 52 + 3 * iu * u * u * 12 + u * u * u * 12;
+            dotB.setAttribute("cx", bx.toFixed(2));
+            dotB.setAttribute("cy", by.toFixed(2));
+
+            // ---------- balls ----------
+            const a = pathA.at(t);
+            // robot: hard stop jitter at the end of each move
+            let jit = 0;
+            [2.0, 3.5, 5.5, 7.4].forEach((te) => {
+              const dt = t - te;
+              if (dt >= 0 && dt < 0.25) jit += (Math.floor(dt * 30) % 2 ? 1 : -1) * 4 * (1 - dt / 0.25);
+            });
+            ballA.pos.style.transform = `translate(${(a.x - R + jit).toFixed(2)}px, ${(a.y - R).toFixed(2)}px)`;
+            shA.style.transform = `translate(${(a.x + jit).toFixed(2)}px, ${838 - 9}px)`;
+
+            const bs = L.ballState(pathB, t, R, { stretch: 0.3 });
+            const visB = t <= 7.25;
+            ballB.pos.style.opacity = visB ? 1 : 0;
+            L.applyBall(ballB, bs);
+            const hB = Math.max(0, YB - bs.y);
+            shB.style.opacity = visB ? L.clamp(1 - hB / 260).toFixed(3) : 0;
+            shB.style.transform = `translate(${bs.x.toFixed(2)}px, ${1062 - 9}px) scale(${(1 - Math.min(0.6, hB / 400)).toFixed(3)})`;
+            ghostsB.forEach(({ g, k }) => {
+              const tg = t - k * 0.05;
+              const gs = L.ballState(pathB, tg, R, { stretch: 0.3 });
+              const speed = Math.hypot(gs.vx, gs.vy);
+              g.pos.style.opacity = visB ? (L.clamp(speed / 1600) * (0.7 - k * 0.15)).toFixed(3) : 0;
+              L.applyBall(g, gs);
+            });
+
+            // glow follows the eased ball
+            glow.style.opacity = "0.55";
+            glow.style.transform = `translate(${(bs.x - 550).toFixed(1)}px, ${(bs.y - 550).toFixed(1)}px) scale(0.55)`;
+
+            grid(t, waves, 1);
+            ruler(t);
+          }
+
+          const tl = gsap.timeline({ paused: true });
+          const clock = { t: 0 };
+          tl.fromTo(clock, { t: 0 }, { t: DUR, duration: DUR, ease: "none", onUpdate: () => render(clock.t) }, 0);
+          render(0);
+          window.__timelines["main"] = tl;
+        }
+
+        document.fonts.load("900 100px Anybody");
+        document.fonts.load("500 26px 'JetBrains Mono'");
+        document.fonts.load("italic 420 76px Fraunces");
+        document.fonts.ready.then(build);
+      })();
+    </script>
+  </body>
+</html>

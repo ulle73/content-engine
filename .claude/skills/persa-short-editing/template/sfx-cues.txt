@@ -1,0 +1,54 @@
+# tp-0925b — persa sound pass. THIN: ping / swoosh / confirm / beep are BANNED and NOT replaced
+# (persa-sfx-ban-and-thin-pass). Gains carried from tp-0925 (VO -19.7 mean vs -18.9), then measured on silence.
+# Pre-rolls: magic-reveal 0.892.
+
+# ── swell on EVERY layout change
+0.00    swell            0.160
+4.60    swell            0.155
+6.40    swell            0.160
+8.10    swell            0.155
+17.30   swell            0.160
+20.70   swell            0.115
+26.40   swell            0.085
+30.00   swell            0.098
+34.90   swell            0.160
+39.90   swell            0.155
+46.10   swell            0.160
+50.50   swell            0.155
+52.85   swell            0.160
+54.85   swell            0.155
+56.90   swell            0.160
+62.50   swell            0.155
+64.50   swell            0.160
+67.30   swell            0.155
+69.30   swell            0.160
+73.30   swell            0.155
+78.40   swell            0.160
+84.40   swell            0.155
+90.50   swell            0.160
+
+# ── riser — crests on ONE SENTENCE (3.92), the hook's payoff
+0.72    riser            0.120
+
+# ── camera-shutter on a product NAME, per syllable, and the real mark landing
+0.16    camera-shutter   0.175   # Goo- (the Google G lands)
+0.36    camera-shutter   0.160   # -gle
+47.92   camera-shutter   0.175   # Gemini — the Gemini mark lands
+
+# ── magic-reveal — the reveal: the caller was Gemini. Lands on FLASH TTS 49.28
+48.39   magic-reveal     0.300
+
+# ── futuristic-click where the picture DOES the thing (3 in the whole video)
+53.52   futuristic-click 0.110   # FREE TTS typed into AI Studio's paid-tier gate
+62.56   futuristic-click 0.110   # 'Promo Narrator is ready'
+88.72   futuristic-click 0.110   # CONSENT FIRST on the consent recording
+
+# ── pop — things landing
+43.84   pop              0.076   # 30-45 MIN
+51.36   pop              0.180   # SEPT 23, 2026
+57.60   pop              0.170   # ONE SENTENCE
+74.40   pop              0.180   # 2,000+ VOICES
+76.40   pop              0.170   # 100+ LANGUAGES
+78.48   pop              0.180   # 2 SPEAKERS
+81.12   pop              0.170   # PODCAST
+90.60   pop              0.200   # the CTA landing

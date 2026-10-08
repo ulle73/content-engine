@@ -1,0 +1,245 @@
+/* NextPhase Studio — design tokens. Import this into EVERY scene. Never hardcode a hex or font. */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..900&family=Montserrat:wght@700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Anton&family=Poppins:wght@500;600;700;800&family=Permanent+Marker&family=Silkscreen:wght@400;700&display=swap');
+
+:root{
+  /* Brand (shared) */
+  --coral:#D97757; --coral-deep:#BD5D3A; --coral-soft:#E8A38A;
+  --red:#E03A2F;
+  --hl-yellow:#F7E23C;        /* the marker sweep — multiply blend, ~.62 alpha */              /* Parallax caption style — the important-line red */
+
+  /* SHORT — Claude paper + grid (the house plate since 2026-08-07; flat cream is
+     kept only for cards and for the rare beat that needs a dead-quiet ground) */
+  --cream:#F0EDE4; --cream-card:#EAE6DA; --paper:#EFEFEC;
+  --grid-minor:rgba(25,24,23,.075); --grid-major:rgba(25,24,23,.15);
+  --grid-minor-w:2px; --grid-major-w:5px;
+  --grid-minor-size:32px; --grid-major-size:160px;
+  --ink:#191817; --ink-soft:#6B6660;
+
+  /* LONG — dark dotted-grid */
+  --dark:#201512; --dark-2:#140D0B; --on:#F7F3EF; --on-soft:#B9A59C;
+  --dot:rgba(217,119,87,.16);
+
+  /* Terminal (both) */
+  --term-bg:#17140F; --term-prompt:#E0A15F; --term-text:#E7E2D7;
+
+  /* Type */
+  --font-serif:"Fraunces",Georgia,serif;      /* display TITLES */
+  --font-heavy:"Montserrat",sans-serif;        /* captions + big stats, weight 900 */
+  --font-ui:"Inter",sans-serif;                /* labels, body, UI mockups */
+  --font-mono:"JetBrains Mono",monospace;      /* terminals, data labels */
+
+
+  /* ── REFERENCE TYPE ROLES — torn down from the @artzenmedia reels, 2026-08-26 ──────
+     Three roles that did NOT exist before. They are display type, not caption styles:
+     there are still exactly THREE caption styles (c-par / c-ws / c-hl, BLACKLIST #15). */
+  --display-coral:#E12A2B;   /* hook + CTA payoff word. Sampled IDENTICALLY in both reels —
+                                this is his fixed brand red, not a per-video choice. */
+  --emph-white:#FFFFFF;      /* emphasis outline — neutral word */
+  --emph-amber:#D99A12;      /* emphasis outline — the pain word (core sampled #B28B00) */
+  --emph-coral:#E12A2B;      /* emphasis outline — the payoff word */
+  --annot-lime:#B9DA31;      /* a claim, typed into a UI's own negative space */
+  --annot-lime-soft:#C0DD5E; /* the same face used for a one-word reaction */
+  --emph-stroke:4px;         /* outline weight at 1080x1920 */
+  --emph-fill:rgba(255,255,255,.09);   /* NOT fully transparent: a whisper of fill, screened,
+                                          lifts the interior the way his does — and keeps
+                                          `hyperframes check` from failing text_not_painted */
+
+  /* The glow IS the technique: a wide soft bloom in the stroke's own hue, composited with
+     mix-blend-mode:screen so the picture behind shows through the counters. Without this the
+     word is just outlined text sitting on top of a photo. Filter lists, so the rgba stays here. */
+  --glow-white:drop-shadow(0 0 12px rgba(255,255,255,.95)) drop-shadow(0 0 46px rgba(255,255,255,.55));
+  --glow-amber:drop-shadow(0 0 12px rgba(217,154,18,.95))  drop-shadow(0 0 46px rgba(217,154,18,.55));
+  --glow-coral:drop-shadow(0 0 12px rgba(225,42,43,.95))   drop-shadow(0 0 46px rgba(225,42,43,.5));
+  --glow-lime:drop-shadow(0 0 10px rgba(185,218,49,.85))   drop-shadow(0 0 30px rgba(185,218,49,.45));
+
+  --font-display-heavy:"Anton",Impact,"Arial Narrow",sans-serif;  /* emphasis + hook payoff */
+  --font-marker:"Permanent Marker",cursive;                       /* the handwritten hook line */
+  --font-pixel:"Silkscreen",ui-monospace,monospace;               /* lime annotations */
+
+
+  /* ── Stirling PDF product language (tp-0920) — sampled from their own v2.14.3 UI ──
+     mark maroon from docs/stirling.svg; blue + wordmark red counted off the live frames. */
+  --st-brand:#8E3131;        /* their square app mark */
+  --st-pdf:#C56565;          /* the "PDF" half of their wordmark */
+  --st-blue:#3B82F6;         /* their primary action (the Automatic button) */
+  --st-blue-soft:#DEECF8;    /* their active tab */
+  --st-ink:#111827;
+  --st-mute:#6B7280;
+  --st-paper:#FFFFFF;
+  --st-canvas:#F9FAFB;       /* their app ground */
+  --st-line:#E5E7EB;
+  --st-green:#16A34A;
+  --st-adobe:#EC1C24;        /* Acrobat's own red — the pain, never the payoff */
+  --font-st:"Inter",-apple-system,sans-serif;
+
+  /* ── tp-0920c · Activepieces product language ────────────────────────────────────────
+     Sampled from their own assets: the mark's purple off logo-192.png (129,66,227), the
+     builder canvas off the /product/workflow-builder hero, Zapier's orange off their
+     brand mark. Never invented. */
+  --ap-purple:#8142E3;       /* their square app mark */
+  --ap-purple-soft:#F2ECFD;  /* their selected-step tint */
+  --ap-ink:#0F172A;
+  --ap-mute:#64748B;
+  --ap-paper:#FFFFFF;
+  --ap-canvas:#FBFCFE;       /* the builder canvas ground */
+  --ap-line:#E2E8F0;
+  --ap-dot:#DCE3EC;          /* the canvas dot grid */
+  --ap-green:#16A34A;
+  --zap-orange:#FF4F00;      /* Zapier's own orange — the pain, never the payoff */
+  --font-ap:"Inter",-apple-system,sans-serif;
+
+
+  /* Radius / shadow */
+  --r-card:22px; --r-sm:12px; --r-pill:999px;
+  --shadow-card:0 20px 60px rgba(0,0,0,.12),0 4px 14px rgba(0,0,0,.06);
+  --shadow-cam:0 -14px 40px rgba(0,0,0,.10);
+
+  /* Motion (cinematic, never linear) */
+  --ease-out:cubic-bezier(.16,1,.3,1);   /* primary entrance */
+  --ease-soft:cubic-bezier(.4,0,.2,1);
+  --ease-overshoot:cubic-bezier(.34,1.56,.64,1);
+  --dur-enter:600ms; --dur-exit:380ms; --dur-pop:180ms; --dur-draw:850ms;
+  --stagger:80ms;
+}
+
+/* Reusable backgrounds (apply to the scene root) */
+.bg-cream{background:var(--cream)}          /* flat — cards, and quiet beats only */
+/* WHITE — for a b-roll beat whose subject is a laptop or a product shot. The grid fights
+   a device's own edges and screen content; white leaves the object alone in the frame. */
+.bg-white{background:#FFFFFF}
+/* THE HOUSE PLATE. Graph paper: a fine minor grid with a heavier major line every
+   five squares. Pure CSS, no texture file, free at render. Apply to the scene root. */
+.bg-paper{background:var(--cream)}  /* grid retired 2026-08-10 */
+.bg-darkgrid{
+  background:
+    radial-gradient(80% 90% at 8% 0%, #4a2417 0%, transparent 55%),
+    radial-gradient(120% 120% at 100% 100%, #100a08 0%, transparent 60%),
+    linear-gradient(135deg,#2a1a13,#160f0c 70%);
+  position:relative;
+}
+.bg-darkgrid::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(var(--dot) 1.4px, transparent 1.6px);background-size:30px 30px;
+  mask-image:radial-gradient(120% 100% at 50% 40%, #000 40%, transparent 90%);}
+.bg-darkgrid::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 320px rgba(0,0,0,.55)}
+
+/* tp-0918 — Google Workspace's own UI palette, used ONLY on the plan-ladder beat (b10) */
+/* tp-0918b — OpenOutreach's own palette (openoutreach.app: terminal favicon #00ff41 on #050505,
+   site accent green, JetBrains Mono). Used ONLY inside the product animations. */
+:root{ --oo-black:#050505; --oo-term:#0B0D0B; --oo-neon:#00FF41; --oo-green:#15803D;
+       --oo-green-soft:#E9F7EE; --oo-line:#D6DAD6; --oo-ink:#111411; --oo-mute:#6B7280;
+       --oo-paid:#C2410C; --oo-paid-soft:#FDEBDD; --plate-white:#FFFFFF; --oo-no:#9CA3AF; }
+
+/* tp-0918c — Single Grain's own palette (singlegrain.com: orange #F27038, slate #2F343A, near-black #232020,
+   grey #929194; wordmark set in Poppins). Used ONLY inside the product animations. */
+:root{ --sg-orange:#F27038; --sg-orange-soft:#FDEBE1; --sg-ink:#232020; --sg-slate:#2F343A; --sg-grey:#929194;
+       --sg-line:#E3E2E4; --sg-paper:#FFFFFF; --sg-bg:#F6F5F3; --sg-green:#16A34A; --sg-green-soft:#E7F6EC;
+       --sg-red:#DC2626; --font-sg:"Poppins",sans-serif; }
+
+/* tp-0919b — Typebot's own palette, sampled from their builder recording + typebot.com (send blue #0042DA,
+   answer orange #FF8E21, canvas #EEF0F4, homepage black #0B0B0B + magenta glow). Used ONLY inside the product
+   animations. */
+:root{ --tb-blue:#0042DA; --tb-blue-soft:#E6EDFF; --tb-orange:#FF8E21; --tb-orange-soft:#FFF1E3;
+       --tb-canvas:#EEF0F4; --tb-paper:#FFFFFF; --tb-line:#E2E5EC; --tb-ink:#111827; --tb-mute:#6B7280;
+       --tb-bubble:#F3F4F6; --tb-dark:#0B0B0B; --tb-pink:#E271DE; --tb-plum:#BC468A; --tb-green:#16A34A;
+       --tb-red:#E5484D; --tb-red-soft:#FDECEC; --font-tb:"Inter",sans-serif; }
+
+/* ── tp-0921 · ChatGPT's own chrome + a neutral web-page language ─────────────────────────
+   The ChatGPT values are the ones already recorded in broll-library/ui-blocks/ai-new-chat.html
+   (paper #FFFFFF, ink #0D0D0D, muted #8F8F8F, line #E5E5E5, composer card #F4F4F4, r 30px) —
+   sampled off the real app, never invented. The --site-* set is deliberately NEUTRAL: the page
+   being audited is nobody's real website, so it carries no brand colour at all. */
+:root{
+  --gp-paper:#FFFFFF; --gp-ink:#0D0D0D; --gp-mute:#8F8F8F; --gp-line:#E5E5E5;
+  --gp-card:#F4F4F4; --gp-bubble:#F4F4F4; --gp-green:#10A37F;   /* OpenAI's own green */
+  --font-gp:"Inter",-apple-system,sans-serif;
+
+  --site-bg:#EEF0F3; --site-paper:#FFFFFF; --site-line:#E3E6EB; --site-block:#DFE3E9;
+  --site-ink:#111827; --site-mute:#6B7280; --site-good:#16A34A; --site-bad:#DC2626;
+  --site-bad-soft:#FDECEC; --site-good-soft:#E8F6EC;
+  --beam:rgba(16,163,127,.22);
+}
+
+/* ── tp-0921b · a NEUTRAL assistant surface + the three-word cast ──────────────────────────
+   He never names a vendor in this script, so nothing on screen carries one: the panel is a
+   plain white assistant surface with no wordmark and no flower. The only REAL marks in the
+   cut are Gmail / Google Calendar / Google Drive, and they appear on the exact words
+   "inbox", "calendar" and "drive". One accent only — coral marks whichever of the three
+   words is live, everything else is ink. */
+:root{
+  --ai-paper:#FFFFFF; --ai-ink:#0D0D0D; --ai-mute:#8F8F8F; --ai-line:#E5E5E5;
+  --ai-card:#F4F4F4; --ai-dim:#B9BDC4;
+  --three-live:#E12A2B;         /* == --display-coral. The live word, never more than one */
+  --three-rest:#111827;         /* the other two */
+}
+
+/* ── tp-0921c · the two website languages ─────────────────────────────────────────────────
+   The subject is websites, so the cut needs exactly two surfaces and they must not be
+   confusable. AWARD is the thing he is warning about: near-black, cold, heavy, cinematic.
+   BUSINESS is the thing he is recommending: white paper, one green action, nothing moving.
+   Neither is anyone's real brand — no vendor is named in this script, so no vendor colour
+   is used anywhere (same call as tp-0921b's unbranded assistant panel).
+   ⚠ THE MARKER ONLY WORKS ON A LIGHT GROUND (highlighter-needs-a-light-ground), so every
+   sweep in this cut lands on a --biz-* surface, never on an --aw-* one. */
+:root{
+  --aw-void:#0C0C0E; --aw-fog:#181A20; --aw-edge:#2A2E38;
+  --aw-chrome:#C9D2E0; --aw-glint:#F2F6FF;
+
+  --biz-paper:#FFFFFF; --biz-bg:#EEF0F3; --biz-line:#E3E6EB; --biz-block:#DFE3E9;
+  --biz-ink:#111827; --biz-mute:#6B7280; --biz-dim:#B9BDC4;
+  --biz-go:#16A34A; --biz-go-soft:#E8F6EC;
+  --biz-bad:#E12A2B;            /* == --display-coral — the one accent, the warning */
+  --font-biz:"Inter",-apple-system,sans-serif;
+}
+
+/* ── tp-0922b · Anthropic's own product language ──────────────────────────────────────────
+   Every value is the vendor's own, never invented:
+     --kw-bone   #F0EEE6  Anthropic/Claude's own off-white (the Claude app icon's cream)
+     --kw-coral  #D97757  Claude's own coral (simple-icons' recorded fill for Claude)
+     --kw-ink    #191919  Anthropic's own ink (simple-icons' recorded fill for Anthropic)
+   The pipeline board carries NEUTRAL stage labels — no CRM vendor's schema is reproduced. */
+:root{
+  --kw-bone:#F0EEE6; --kw-paper:#FFFFFF; --kw-line:#E3DED2; --kw-block:#EDE9DE;
+  --kw-ink:#191919; --kw-mute:#6B6660; --kw-dim:#B5AFA2;
+  --kw-coral:#D97757; --kw-coral-soft:#F8EBE4; --kw-coral-deep:#BD5D3A;
+  --kw-term:#1A1815; --kw-term-txt:#E7E2D7; --kw-term-dim:#8C857A;
+  --kw-go:#16A34A; --kw-go-soft:#E8F6EC;
+  --font-kw:"Inter",-apple-system,sans-serif;
+}
+
+/* ── tp-0922d · a NEUTRAL campaign-analytics language + the three real channel marks ──────
+   He never names the tool he runs campaigns in, so nothing on screen carries its name,
+   wordmark or chrome. The dashboard surface below is a plain light analytics panel — no
+   vendor. What IS real is the DATA: every figure on it was read off the screenshot he sent
+   (32.3K sent · 58.91% open · 1.92% reply · 79 opportunities · $395,000,000 · Mar 26 → Sep 22),
+   and the series colours are sampled from that same screenshot's chart and legend.
+   The only branded marks in the cut are Meta, TikTok and Google, each on the word that
+   names it, each used AS FETCHED in its own colours. */
+:root{
+  --lg-canvas:#F4F6F8; --lg-paper:#FFFFFF; --lg-line:#E6EAEF; --lg-block:#EDF0F4;
+  --lg-ink:#111827; --lg-mute:#6B7280; --lg-dim:#AEB6C2;
+  --lg-sent:#4F91F5;        /* the blue "Sent" band */
+  --lg-opens:#F0A22E;       /* "Total opens" */
+  --lg-uniq:#A3E635;        /* "Unique opens" */
+  --lg-reply:#34D399;       /* "Total replies" */
+  --lg-money:#16A34A;       /* the $ figure on the Opportunities card */
+  --lg-no:#E5484D; --lg-no-soft:#FDECEC;
+  --lg-go:#16A34A; --lg-go-soft:#E8F6EC;
+  --font-lg:"Inter",-apple-system,sans-serif;
+}
+
+/* ── Anthropic / Claude — ONLY inside tp-0923's Opus 5.5 panels. Sampled from anthropic.com's
+   own ivory page ground, ink and the Claude mark's clay (#D97757, the SVG's own fill). ── */
+:root{
+  --an-ivory:#F0EEE6; --an-paper:#FAF9F5; --an-ink:#141413; --an-mute:#6B6A63;
+  --an-line:#E3DFD3; --an-block:#E8E5DA; --an-clay:#D97757; --an-clay-deep:#B8552F; --an-dark:#1F1E1C;
+  --an-go:#2F7D4F; --an-go-soft:#E3EFE6;
+}
+
+/* ── tp-0923c · Opal surfaces. Each plate is SAMPLED off Google's own footage at the clip's
+   bottom edge, so the film and the plate below it are one surface (ui-owns-the-frame). ── */
+:root{
+  --op-white:#FCFFFC;   /* the "Bring your app ideas" film ground */
+  --op-grey:#EEF1EE;    /* the landing loop ground */
+  --op-canvas:#ECEFEC;  /* the editor canvas */
+  --op-sage:#ECF0DD;    /* the app-view ground behind the Share dialog */
+}

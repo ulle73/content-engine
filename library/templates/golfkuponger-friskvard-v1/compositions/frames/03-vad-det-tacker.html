@@ -1,0 +1,297 @@
+<template>
+  <style>
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Inter';src:url("assets/fonts/inter-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:block;}
+    @font-face{font-family:'Playfair Display';src:url("assets/fonts/playfair-500-italic.woff2") format('woff2');font-weight:500;font-style:italic;font-display:block;}
+  </style>
+
+  <style>
+    /* Frame root — styled by #root only (never a class on the composition root). */
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Size container: every length below is cqw/cqh of this 1080x1080 stage. */
+    #f03-vad-det-tacker-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      container-type: size;
+      font-family: 'Inter', sans-serif;
+      color: #F8F4EC;
+    }
+
+    /* ---- Full-bleed ground: photo plate + top scrim (one full-duration clip) ---- */
+    #f03-vad-det-tacker-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #01170F;
+    }
+    /* Photo rests 1.3x source px, top-aligned, so the green + flag sit low
+       (~65cqh, centred) under the chip grid instead of behind it. */
+    #f03-vad-det-tacker-photo {
+      position: absolute;
+      left: -50.63cqw;
+      top: 0;
+      width: 201.26cqw;
+      height: 113.27cqh;
+      transform-origin: 50% 54%;
+    }
+    #f03-vad-det-tacker-photo-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    /* green-deep scrim from the top ~45% — headline legibility only (<= 78%). */
+    #f03-vad-det-tacker-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(1, 23, 15, 0.78) 0%,
+        rgba(1, 23, 15, 0.72) 18%,
+        rgba(1, 23, 15, 0.56) 33%,
+        rgba(1, 23, 15, 0.26) 45%,
+        rgba(1, 23, 15, 0.08) 53%,
+        rgba(1, 23, 15, 0) 60%
+      );
+    }
+
+    /* ---- Copy block: label + headline, top-left inside the 7cqw safe area ---- */
+    #f03-vad-det-tacker-copy {
+      position: absolute;
+      left: 7cqw;
+      top: 10cqh;
+      width: 86cqw;
+    }
+    #f03-vad-det-tacker-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 1.8cqw;
+      height: 2.6cqw;
+    }
+    #f03-vad-det-tacker-rule {
+      flex: none;
+      width: 5cqw;
+      height: 2px;
+      background: #D6A536;
+      transform-origin: 0% 50%;
+    }
+    #f03-vad-det-tacker-label {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 2.2cqw;
+      line-height: 1;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #D6A536;
+      white-space: nowrap;
+    }
+    #f03-vad-det-tacker-headline {
+      margin-top: 3cqw;
+      font-family: 'Playfair Display', serif;
+      font-weight: 500;
+      font-size: 11cqw;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      color: #F8F4EC;
+      white-space: nowrap;
+    }
+    .f03-vad-det-tacker-line {
+      display: block;
+    }
+    .f03-vad-det-tacker-word {
+      display: inline-block;
+    }
+    #f03-vad-det-tacker-w4 {
+      font-style: italic;
+    }
+
+    /* ---- Chip grid: 2x2 solid green pills under the headline ---- */
+    #f03-vad-det-tacker-chips {
+      position: absolute;
+      left: 7cqw;
+      top: 45cqh;
+      display: grid;
+      grid-template-columns: 30cqw 30cqw;
+      column-gap: 1.8cqw;
+      row-gap: 1.8cqw;
+    }
+    .f03-vad-det-tacker-chip {
+      display: flex;
+      align-items: center;
+      gap: 1.5cqw;
+      height: 8cqw;
+      padding: 0 2.6cqw;
+      background: #073C2B;
+      border: 2px solid rgba(248, 244, 236, 0.16);
+      border-radius: 6px;
+    }
+    .f03-vad-det-tacker-check {
+      flex: none;
+      width: 2.9cqw;
+      height: 2.9cqw;
+      overflow: visible;
+    }
+    .f03-vad-det-tacker-check path {
+      fill: none;
+      stroke: #D6A536;
+      stroke-width: 2.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .f03-vad-det-tacker-chip-label {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 3.3cqw;
+      line-height: 1;
+      letter-spacing: 0.005em;
+      color: #F8F4EC;
+      white-space: nowrap;
+    }
+  </style>
+
+  <div data-hf-id="hf-p5lc" id="root" data-composition-id="03-vad-det-tacker" data-width="1080" data-height="1080" data-duration="4.864">
+    <div data-hf-id="hf-sqae" id="f03-vad-det-tacker-stage">
+      <!-- full-bleed ground: one full-duration clip on the lowest track -->
+      <div data-hf-id="hf-3d92" id="f03-vad-det-tacker-bg" class="clip" data-start="0" data-duration="4.864" data-track-index="0">
+        <div data-hf-id="hf-zjug" id="f03-vad-det-tacker-photo">
+          <img data-hf-studio-original-inline-translate="" style="translate: 11.414px -19.828px" data-hf-id="hf-y16e" id="f03-vad-det-tacker-photo-img" src="assets/hero-skogsbana.jpg" alt="">
+        </div>
+        <div data-hf-id="hf-6qxy" id="f03-vad-det-tacker-scrim"></div>
+      </div>
+
+      <div data-hf-id="hf-0atf" id="f03-vad-det-tacker-copy">
+        <div data-hf-id="hf-c279" id="f03-vad-det-tacker-eyebrow">
+          <div data-hf-id="hf-ey52" id="f03-vad-det-tacker-rule"></div>
+          <div data-hf-id="hf-xi39" id="f03-vad-det-tacker-label">FRISKVÅRDSBIDRAGET GÄLLER</div>
+        </div>
+        <div data-hf-id="hf-rst0" id="f03-vad-det-tacker-headline">
+          <span data-hf-id="hf-4ih6" id="f03-vad-det-tacker-line1" class="f03-vad-det-tacker-line"><span data-hf-id="hf-ciou" id="f03-vad-det-tacker-w1" class="f03-vad-det-tacker-word">Använd</span> <span data-hf-id="hf-2tgf" id="f03-vad-det-tacker-w2" class="f03-vad-det-tacker-word">det</span></span>
+          <span data-hf-id="hf-0kd5" id="f03-vad-det-tacker-line2" class="f03-vad-det-tacker-line"><span data-hf-id="hf-jqoo" id="f03-vad-det-tacker-w3" class="f03-vad-det-tacker-word">på</span> <span data-hf-id="hf-6x5c" id="f03-vad-det-tacker-w4" class="f03-vad-det-tacker-word">golf</span></span>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-1kj9" id="f03-vad-det-tacker-chips">
+        <div data-hf-id="hf-0d66" id="f03-vad-det-tacker-chip-1" class="f03-vad-det-tacker-chip">
+          <svg data-hf-id="hf-c60y" class="f03-vad-det-tacker-check" viewBox="0 0 24 24" aria-hidden="true"><path data-hf-id="hf-dym6" id="f03-vad-det-tacker-check-1" d="M4.5 12.8 L9.6 17.6 L19.5 6.8" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="1.1" /></svg>
+          <span data-hf-id="hf-33tw" id="f03-vad-det-tacker-chip-label-1" class="f03-vad-det-tacker-chip-label">Greenfee</span>
+        </div>
+        <div data-hf-id="hf-wf25" id="f03-vad-det-tacker-chip-2" class="f03-vad-det-tacker-chip">
+          <svg data-hf-id="hf-5asm" class="f03-vad-det-tacker-check" viewBox="0 0 24 24" aria-hidden="true"><path data-hf-id="hf-ayvp" id="f03-vad-det-tacker-check-2" d="M4.5 12.8 L9.6 17.6 L19.5 6.8" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="1.1" /></svg>
+          <span data-hf-id="hf-uh6j" id="f03-vad-det-tacker-chip-label-2" class="f03-vad-det-tacker-chip-label">Range</span>
+        </div>
+        <div data-hf-id="hf-vnec" id="f03-vad-det-tacker-chip-3" class="f03-vad-det-tacker-chip">
+          <svg data-hf-id="hf-5p3n" class="f03-vad-det-tacker-check" viewBox="0 0 24 24" aria-hidden="true"><path data-hf-id="hf-ef3o" id="f03-vad-det-tacker-check-3" d="M4.5 12.8 L9.6 17.6 L19.5 6.8" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="1.1" /></svg>
+          <span data-hf-id="hf-anuc" id="f03-vad-det-tacker-chip-label-3" class="f03-vad-det-tacker-chip-label">Lektioner</span>
+        </div>
+        <div data-hf-id="hf-j4vv" id="f03-vad-det-tacker-chip-4" class="f03-vad-det-tacker-chip">
+          <svg data-hf-id="hf-63eo" class="f03-vad-det-tacker-check" viewBox="0 0 24 24" aria-hidden="true"><path data-hf-id="hf-mn1n" id="f03-vad-det-tacker-check-4" d="M4.5 12.8 L9.6 17.6 L19.5 6.8" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="1.1" /></svg>
+          <span data-hf-id="hf-iq9m" id="f03-vad-det-tacker-chip-label-4" class="f03-vad-det-tacker-chip-label">Simulator</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      // Music grid: 165 BPM -> one beat = 60/165 s (0.3636s). Every cue sits on it.
+      var BEAT = 60 / 165;
+
+      var tl = gsap.timeline({ paused: true });
+
+      // ---- Scene 1 (0.000-1.091s): photo pull-back settle + label/headline ----
+      // Photo: slightly oversized -> at rest by 2.0s (front-half pull-back), then still.
+      tl.fromTo(
+        "#f03-vad-det-tacker-photo",
+        { scale: 1.1 },
+        { scale: 1, duration: 2.0, ease: "power2.out" },
+        0
+      );
+
+      // Gold hairline draws, gold label rises blur-to-sharp (half-beat in).
+      tl.fromTo(
+        "#f03-vad-det-tacker-rule",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.85, ease: "expo.out" },
+        BEAT * 0.5
+      );
+      tl.fromTo(
+        "#f03-vad-det-tacker-label",
+        { opacity: 0, y: 14, filter: "blur(6px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" },
+        BEAT * 0.5
+      );
+
+      // Headline: soft rise + blur-to-sharp per word, sixteenth-note cascade from beat 1.
+      var WORDS = [
+        "#f03-vad-det-tacker-w1",
+        "#f03-vad-det-tacker-w2",
+        "#f03-vad-det-tacker-w3",
+        "#f03-vad-det-tacker-w4"
+      ];
+      WORDS.forEach(function (sel, i) {
+        tl.fromTo(
+          sel,
+          { opacity: 0, y: 44, filter: "blur(12px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.0, ease: "power3.out" },
+          BEAT + i * (BEAT / 4)
+        );
+      });
+
+      // ---- Scene 2 (1.091-2.182s): four chips assemble, one per beat ----
+      // dynamic-content-sequencing: the item TIMELINE is pre-computed once at build
+      // (beats 3,4,5,6 -> 1.091 / 1.455 / 1.818 / 2.182s, the click-soft SFX cues);
+      // items accumulate (co-resident), so each entry is an entrance, never a swap.
+      var CHIPS = [
+        { chip: "#f03-vad-det-tacker-chip-1", check: "#f03-vad-det-tacker-check-1", beat: 3 },
+        { chip: "#f03-vad-det-tacker-chip-2", check: "#f03-vad-det-tacker-check-2", beat: 4 },
+        { chip: "#f03-vad-det-tacker-chip-3", check: "#f03-vad-det-tacker-check-3", beat: 5 },
+        { chip: "#f03-vad-det-tacker-chip-4", check: "#f03-vad-det-tacker-check-4", beat: 6 }
+      ].map(function (entry) {
+        return { chip: entry.chip, check: entry.check, start: entry.beat * BEAT };
+      });
+
+      CHIPS.forEach(function (entry) {
+        // short rise + fade, no overshoot — the fade is quick so the chip reads solid
+        // on the click; the rise settles a little longer underneath it.
+        tl.fromTo(
+          entry.chip,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.24, ease: "power2.out" },
+          entry.start
+        );
+        tl.fromTo(
+          entry.chip,
+          { y: 26 },
+          { y: 0, duration: 0.65, ease: "expo.out" },
+          entry.start
+        );
+        // gold check draws in on the off-beat after its chip lands
+        tl.fromTo(
+          entry.check,
+          { strokeDashoffset: 1.1 },
+          { strokeDashoffset: 0, duration: 0.42, ease: "power2.out" },
+          entry.start + BEAT * 0.5
+        );
+      });
+
+      // ---- Scene 3 (2.182-4.364s): hold the full read still; photo at rest ----
+      // (no exit — the root transition is the exit)
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["03-vad-det-tacker"] = tl;
+    })();
+  </script>
+</template>

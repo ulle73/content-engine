@@ -1,0 +1,1003 @@
+{
+ "kit": "hf-skeletons",
+ "title": "HyperFrames skelettmallar, mönster och shaders (Claude Design template-first)",
+ "source": {
+  "name": "HyperFrames (HeyGen)",
+  "url": "https://github.com/heygen-com/hyperframes",
+  "license": "Apache-2.0"
+ },
+ "items": [
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.skeleton.a-social-reel.mp4",
+    "still": "library/previews/hf.skeleton.a-social-reel.jpg"
+   },
+   "notes": "Lint 0 fel (varningar om sub-kompositioner förväntade). Ingen autoAlpha på clips (lint i 0.8.x); sammanhängande shaderkedja.",
+   "id": "hf-skeletons.template.a-social-reel",
+   "name": "Skelett A – social reel 9:16 (15 s)",
+   "type": "template",
+   "formats": [
+    "9:16"
+   ],
+   "description": "6 scener, hårda klipp + en cinematic-zoom-shader vid hero-avslöjandet; teckenstagger, räknare, stapelfyllning, omloppsbana, CTA.",
+   "tags": [
+    "skeleton",
+    "claude-design",
+    "template-first",
+    "hypershader",
+    "promo"
+   ],
+   "path": "library/templates/hyperframes-skeletons/a-social-reel/index.html",
+   "use": "Kopiera mappen till work/<projekt>/, fyll :root + scener, kör npx hyperframes lint och render (se prompts/hyperframes/claude-design-template-first.md)"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.skeleton.b-launch-teaser.mp4",
+    "still": "library/previews/hf.skeleton.b-launch-teaser.jpg"
+   },
+   "notes": "Lint 0 fel (varningar om sub-kompositioner förväntade). Ingen autoAlpha på clips (lint i 0.8.x); sammanhängande shaderkedja.",
+   "id": "hf-skeletons.template.b-launch-teaser",
+   "name": "Skelett B – lanseringsteaser 16:9 (25 s)",
+   "type": "template",
+   "formats": [
+    "16:9"
+   ],
+   "description": "8 scener: tre hårda klipp, sedan shaderkedja cinematic-zoom → light-leak → crossfade → cross-warp-morph till CTA.",
+   "tags": [
+    "skeleton",
+    "claude-design",
+    "template-first",
+    "hypershader",
+    "promo"
+   ],
+   "path": "library/templates/hyperframes-skeletons/b-launch-teaser/index.html",
+   "use": "Kopiera mappen till work/<projekt>/, fyll :root + scener, kör npx hyperframes lint och render (se prompts/hyperframes/claude-design-template-first.md)"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.skeleton.c-product-explainer.mp4",
+    "still": "library/previews/hf.skeleton.c-product-explainer.jpg"
+   },
+   "notes": "Lint 0 fel (varningar om sub-kompositioner förväntade). Ingen autoAlpha på clips (lint i 0.8.x); sammanhängande shaderkedja.",
+   "id": "hf-skeletons.template.c-product-explainer",
+   "name": "Skelett C – produktexplainer 16:9 (45 s)",
+   "type": "template",
+   "formats": [
+    "16:9"
+   ],
+   "description": "12 scener: problem, stat, produkt-hero, tre steg, resultat, citat, pris, CTA; sdf-iris, whip-pan och flash-through-white.",
+   "tags": [
+    "skeleton",
+    "claude-design",
+    "template-first",
+    "hypershader",
+    "promo"
+   ],
+   "path": "library/templates/hyperframes-skeletons/c-product-explainer/index.html",
+   "use": "Kopiera mappen till work/<projekt>/, fyll :root + scener, kör npx hyperframes lint och render (se prompts/hyperframes/claude-design-template-first.md)"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.skeleton.d-cinematic-title.mp4",
+    "still": "library/previews/hf.skeleton.d-cinematic-title.jpg"
+   },
+   "notes": "Lint 0 fel (varningar om sub-kompositioner förväntade). Ingen autoAlpha på clips (lint i 0.8.x); sammanhängande shaderkedja.",
+   "id": "hf-skeletons.template.d-cinematic-title",
+   "name": "Skelett D – filmisk titel 16:9 (60 s)",
+   "type": "template",
+   "formats": [
+    "16:9"
+   ],
+   "description": "7 långa scener med Ken Burns, damm och vågparallax; sex återhållsamma shaders (cross-warp-morph, thermal-distortion, light-leak).",
+   "tags": [
+    "skeleton",
+    "claude-design",
+    "template-first",
+    "hypershader",
+    "promo"
+   ],
+   "path": "library/templates/hyperframes-skeletons/d-cinematic-title/index.html",
+   "use": "Kopiera mappen till work/<projekt>/, fyll :root + scener, kör npx hyperframes lint och render (se prompts/hyperframes/claude-design-template-first.md)"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.skeleton.pattern-gallery.mp4",
+    "still": "library/previews/hf.skeleton.pattern-gallery.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.template.pattern-gallery",
+   "name": "Mönstergalleri – 11 animationsmönster",
+   "type": "template",
+   "formats": [
+    "1:1"
+   ],
+   "description": "Demo-komposition med ett mönster per scen (3 s): räknare, SVG-streck, teckenstagger, andningsflyt, staplar, omloppsbana, highlight, korn, Ken Burns, glödpuls, easing.",
+   "tags": [
+    "patterns",
+    "gallery",
+    "gsap",
+    "reference"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Öppna med npx hyperframes preview; kopiera scenens HTML/CSS och tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.skeleton.shader-gallery.mp4",
+    "still": "library/previews/hf.skeleton.shader-gallery.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.template.shader-gallery",
+   "name": "Shadergalleri – alla 14 HyperShader-övergångar",
+   "type": "template",
+   "formats": [
+    "1:1"
+   ],
+   "description": "15 färgscener med alla 14 shader-övergångar i följd (0,8 s vardera); scenen visar namnet på shadern som förde in den.",
+   "tags": [
+    "shader",
+    "transitions",
+    "gallery",
+    "hypershader",
+    "webgl"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "Jämför övergångar; kopiera HyperShader.init-blocket"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.counter.mp4",
+    "still": "library/previews/hf.pattern.counter.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.counter",
+   "name": "Räknare (counter)",
+   "type": "text",
+   "formats": [
+    "any"
+   ],
+   "description": "Tal som räknar upp med onUpdate – priser, statistik, KPI.",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "counter",
+    "count-up",
+    "stat"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'Räknare (counter)' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.svg-stroke-draw.mp4",
+    "still": "library/previews/hf.pattern.svg-stroke-draw.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.svg-stroke-draw",
+   "name": "SVG-streck som ritas",
+   "type": "effect",
+   "formats": [
+    "any"
+   ],
+   "description": "Linje/kurva/logga ritas via strokeDashoffset → 0, med punkt som poppar i slutet.",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "svg",
+    "line-draw",
+    "stroke"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'SVG-streck som ritas' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.character-stagger.mp4",
+    "still": "library/previews/hf.pattern.character-stagger.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.character-stagger",
+   "name": "Teckenstagger",
+   "type": "text",
+   "formats": [
+    "any"
+   ],
+   "description": "Rubrik där varje tecken glider upp i följd (stagger 0,08 s).",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "kinetic-type",
+    "stagger",
+    "headline"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'Teckenstagger' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.breathing-float.mp4",
+    "still": "library/previews/hf.pattern.breathing-float.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.breathing-float",
+   "name": "Andningsflyt",
+   "type": "effect",
+   "formats": [
+    "any"
+   ],
+   "description": "Logga/knapp som svävar mjukt (yoyo sine) så att inget står still.",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "float",
+    "idle",
+    "logo"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'Andningsflyt' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.bar-chart-fill.mp4",
+    "still": "library/previews/hf.pattern.bar-chart-fill.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.bar-chart-fill",
+   "name": "Stapelfyllning",
+   "type": "effect",
+   "formats": [
+    "any"
+   ],
+   "description": "Staplar växer från botten i följd med expo.out, sista pulserar.",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "chart",
+    "bars",
+    "data"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'Stapelfyllning' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.orbit-rotation.mp4",
+    "still": "library/previews/hf.pattern.orbit-rotation.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.orbit-rotation",
+   "name": "Omloppsbana",
+   "type": "effect",
+   "formats": [
+    "any"
+   ],
+   "description": "Prickar som cirklar i banor kring ett centrum.",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "orbit",
+    "rotation",
+    "ambient"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'Omloppsbana' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.highlight-sweep.mp4",
+    "still": "library/previews/hf.pattern.highlight-sweep.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.highlight-sweep",
+   "name": "Highlight-svep",
+   "type": "text",
+   "formats": [
+    "any"
+   ],
+   "description": "Markeringsfärg sveper in under nyckelord (background-size).",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "highlight",
+    "marker",
+    "emphasis"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'Highlight-svep' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.css-grain.mp4",
+    "still": "library/previews/hf.pattern.css-grain.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.css-grain",
+   "name": "CSS-korn",
+   "type": "effect",
+   "formats": [
+    "any"
+   ],
+   "description": "Radial-gradient-filmkorn (shader-säkert) som lever stegvis över en scen.",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "grain",
+    "film",
+    "texture",
+    "analog"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'CSS-korn' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.ken-burns.mp4",
+    "still": "library/previews/hf.pattern.ken-burns.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.ken-burns",
+   "name": "Ken Burns",
+   "type": "effect",
+   "formats": [
+    "any"
+   ],
+   "description": "Långsam zoom/panorering som får stillbilder att leva.",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "ken-burns",
+    "zoom",
+    "camera"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'Ken Burns' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.glow-pulse.mp4",
+    "still": "library/previews/hf.pattern.glow-pulse.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.glow-pulse",
+   "name": "Glödpuls",
+   "type": "background",
+   "formats": [
+    "any"
+   ],
+   "description": "Radial bakgrundsglöd som pulserar bakom innehållet.",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "glow",
+    "background",
+    "pulse"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'Glödpuls' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.pattern.ease-palette.mp4",
+    "still": "library/previews/hf.pattern.ease-palette.jpg"
+   },
+   "notes": "",
+   "id": "hf-skeletons.pattern.ease-palette",
+   "name": "Easing-palett",
+   "type": "effect",
+   "formats": [
+    "any"
+   ],
+   "description": "Samma rörelse med sex eases: smooth, snappy, bouncy, dramatic, dreamy, mechanical.",
+   "tags": [
+    "pattern",
+    "claude-design",
+    "easing",
+    "reference",
+    "gsap"
+   ],
+   "path": "library/templates/hyperframes-skeletons/pattern-gallery/index.html",
+   "use": "Scen 'Easing-palett' i pattern-gallery/index.html – kopiera HTML + tweens"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.domain-warp.mp4",
+    "still": "library/previews/hf.shader.domain-warp.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.domain-warp",
+   "name": "Shader-övergång: domain-warp",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Organisk brusvridning med glödande kant (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "domain-warp"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"domain-warp\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.ridged-burn.mp4",
+    "still": "library/previews/hf.shader.ridged-burn.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.ridged-burn",
+   "name": "Shader-övergång: ridged-burn",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Brinnande brus med gnistor och värme (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "ridged-burn"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"ridged-burn\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.whip-pan.mp4",
+    "still": "library/previews/hf.shader.whip-pan.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.whip-pan",
+   "name": "Shader-övergång: whip-pan",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Horisontell rörelseoskärpa som en snabb kamerapan (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "whip-pan"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"whip-pan\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.sdf-iris.mp4",
+    "still": "library/previews/hf.shader.sdf-iris.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.sdf-iris",
+   "name": "Shader-övergång: sdf-iris",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Cirkulär iris-wipe med glödande ring (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "sdf-iris"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"sdf-iris\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.ripple-waves.mp4",
+    "still": "library/previews/hf.shader.ripple-waves.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.ripple-waves",
+   "name": "Shader-övergång: ripple-waves",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Koncentriska krusningar från mitten (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "ripple-waves"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"ripple-waves\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.gravitational-lens.mp4",
+    "still": "library/previews/hf.shader.gravitational-lens.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.gravitational-lens",
+   "name": "Shader-övergång: gravitational-lens",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Gravitationsbrunn med kromatisk aberration (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "gravitational-lens"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"gravitational-lens\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.cinematic-zoom.mp4",
+    "still": "library/previews/hf.shader.cinematic-zoom.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.cinematic-zoom",
+   "name": "Shader-övergång: cinematic-zoom",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Radiell zoomoskärpa med färgkant (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "cinematic-zoom"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"cinematic-zoom\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.chromatic-split.mp4",
+    "still": "library/previews/hf.shader.chromatic-split.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.chromatic-split",
+   "name": "Shader-övergång: chromatic-split",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "RGB-kanaler som separeras från mitten (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "chromatic-split"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"chromatic-split\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.swirl-vortex.mp4",
+    "still": "library/previews/hf.shader.swirl-vortex.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.swirl-vortex",
+   "name": "Shader-övergång: swirl-vortex",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Spiralvirvel med brusvridning (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "swirl-vortex"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"swirl-vortex\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.thermal-distortion.mp4",
+    "still": "library/previews/hf.shader.thermal-distortion.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.thermal-distortion",
+   "name": "Shader-övergång: thermal-distortion",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Värmeflimmer som stiger nerifrån (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "thermal-distortion"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"thermal-distortion\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.flash-through-white.mp4",
+    "still": "library/previews/hf.shader.flash-through-white.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.flash-through-white",
+   "name": "Shader-övergång: flash-through-white",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Blixt till vitt, sedan nästa scen (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "flash-through-white"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"flash-through-white\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.cross-warp-morph.mp4",
+    "still": "library/previews/hf.shader.cross-warp-morph.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.cross-warp-morph",
+   "name": "Shader-övergång: cross-warp-morph",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Brusstyrd morf där scenerna flyter ihop (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "cross-warp-morph"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"cross-warp-morph\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.light-leak.mp4",
+    "still": "library/previews/hf.shader.light-leak.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.light-leak",
+   "name": "Shader-övergång: light-leak",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Varm filmisk ljusläcka med linsflare (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "light-leak"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"light-leak\", duration:0.5 }] }) – se skelett A–D"
+  },
+  {
+   "engine": "hyperframes",
+   "medium": "video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/hf.shader.glitch.mp4",
+    "still": "library/previews/hf.shader.glitch.jpg"
+   },
+   "notes": "Paket @hyperframes/shader-transitions (MIT) via CDN.",
+   "id": "hf-skeletons.shader.glitch",
+   "name": "Shader-övergång: glitch",
+   "type": "transition",
+   "formats": [
+    "any"
+   ],
+   "description": "Digital glitch med blockförskjutning och scanlines (HyperShader, WebGL).",
+   "tags": [
+    "shader",
+    "transition",
+    "hypershader",
+    "webgl",
+    "glitch"
+   ],
+   "path": "library/templates/hyperframes-skeletons/shader-gallery/index.html",
+   "use": "HyperShader.init({ scenes:[…], transitions:[{ time, shader:\"glitch\", duration:0.5 }] }) – se skelett A–D"
+  }
+ ]
+}

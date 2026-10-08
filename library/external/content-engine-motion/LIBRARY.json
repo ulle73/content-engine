@@ -1,0 +1,3402 @@
+{
+  "kit": "content-engine-motion",
+  "title": "content-engine Motion Engine-katalog (Remotion)",
+  "source": {
+    "name": "content-engine (egen Motion Engine)",
+    "url": "",
+    "license": "Repository LICENSE (egen implementation)"
+  },
+  "items": [
+    {
+      "id": "ext.content-engine-motion.text.kinetic-words",
+      "name": "Kinetiska ord",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ord tar plats ett i taget med rytmisk skalning.",
+      "tags": [
+        "kinetic-words",
+        "text",
+        "kinetiska ord",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.line-reveal",
+      "name": "Radvis avslöjande",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Rader glider fram bakom en gemensam mask.",
+      "tags": [
+        "line-reveal",
+        "text",
+        "radvis avslöjande",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.letter-cascade",
+      "name": "Bokstavskaskad",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Bokstäver landar med förskjuten timing.",
+      "tags": [
+        "letter-cascade",
+        "text",
+        "bokstavskaskad",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.typewriter",
+      "name": "Skrivmaskin",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Text skrivs fram tecken för tecken med markör.",
+      "tags": [
+        "typewriter",
+        "text",
+        "skrivmaskin",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.tracking",
+      "name": "Bokstavsavstånd",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Gles typografi samlas till en tydlig rubrik.",
+      "tags": [
+        "tracking",
+        "text",
+        "bokstavsavstånd",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.blur-reveal",
+      "name": "Fokus",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Text går från oskarp till skarp.",
+      "tags": [
+        "blur-reveal",
+        "text",
+        "fokus",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.mask-rise",
+      "name": "Maskerad uppgång",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Rubrik reser sig bakom en skarp baslinje.",
+      "tags": [
+        "mask-rise",
+        "text",
+        "maskerad uppgång",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.brush-write",
+      "name": "Penseldrag",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Organiska penselband avslöjar text.",
+      "tags": [
+        "brush-write",
+        "text",
+        "penseldrag",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.outline-fill",
+      "name": "Kontur till fyllning",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Konturtypografi fylls stegvis med färg.",
+      "tags": [
+        "outline-fill",
+        "text",
+        "kontur till fyllning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.word-highlight",
+      "name": "Markerade ord",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En markör följer rubrikens ord.",
+      "tags": [
+        "word-highlight",
+        "text",
+        "markerade ord",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.split-flap",
+      "name": "Bläddrande rubrik",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Tvådelade bokstavspaneler vänder fram budskapet.",
+      "tags": [
+        "split-flap",
+        "text",
+        "bläddrande rubrik",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.text.number-emphasis",
+      "name": "Siffra i fokus",
+      "type": "text",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En stor siffra förankrar en kort rubrik.",
+      "tags": [
+        "number-emphasis",
+        "text",
+        "siffra i fokus",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/text.tsx",
+      "use": "Scen-`component` i en MotionSpec (engine/motion/schema.py), t.ex. via mallen custom-storyboard eller MCP update_motion_project; props.headline krävs.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=text, category=text. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.counter",
+      "name": "Räknare",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Heltal räknas upp med lugn inbromsning.",
+      "tags": [
+        "counter",
+        "data",
+        "räknare",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.currency",
+      "name": "Belopp",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Valutabelopp med svensk tusentalsgruppering.",
+      "tags": [
+        "currency",
+        "data",
+        "belopp",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.percentage",
+      "name": "Procent",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Procenttal kombinerat med en cirkulär indikator.",
+      "tags": [
+        "percentage",
+        "data",
+        "procent",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.ranking",
+      "name": "Topplista",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Rangordnade rader presenteras i ordning.",
+      "tags": [
+        "ranking",
+        "data",
+        "topplista",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.bars",
+      "name": "Stapeldiagram",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Jämförbara värden växer från samma nollpunkt.",
+      "tags": [
+        "bars",
+        "data",
+        "stapeldiagram",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.comparison",
+      "name": "Jämförelse",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Två värden visas sida vid sida.",
+      "tags": [
+        "comparison",
+        "data",
+        "jämförelse",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.donut",
+      "name": "Fördelning",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Andelar blir ett tydligt ringdiagram.",
+      "tags": [
+        "donut",
+        "data",
+        "fördelning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.timeline",
+      "name": "Tidslinje",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Milstolpar framträder längs en sammanhängande linje.",
+      "tags": [
+        "timeline",
+        "data",
+        "tidslinje",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.stat-wall",
+      "name": "Nyckeltalsvägg",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Flera nyckeltal presenteras med konsekvent hierarki.",
+      "tags": [
+        "stat-wall",
+        "data",
+        "nyckeltalsvägg",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.data.sparkline",
+      "name": "Trendlinje",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En obruten linje visar en serie värden.",
+      "tags": [
+        "sparkline",
+        "data",
+        "trendlinje",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Datascen som `component` i MotionSpec; värden i props.value/items – bara verifierade siffror.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=data, category=data. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.footage",
+      "name": "Ditt material",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Hela bilden eller klippet, utan beskärning, filter eller klippljud.",
+      "tags": [
+        "footage",
+        "scene",
+        "ditt material",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.hero",
+      "name": "Titel",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Stor rubrik med liten inledning och tydlig hierarki.",
+      "tags": [
+        "hero",
+        "scene",
+        "titel",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.quote",
+      "name": "Citat",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ett citat med tydligt avsändarnamn.",
+      "tags": [
+        "quote",
+        "scene",
+        "citat",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.product",
+      "name": "Produkt",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En verklig produktbild med kort förklaring.",
+      "tags": [
+        "product",
+        "scene",
+        "produkt",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.offer",
+      "name": "Erbjudande",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ett belopp eller erbjudande och en tydlig uppmaning.",
+      "tags": [
+        "offer",
+        "scene",
+        "erbjudande",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.list",
+      "name": "Lista",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En lättläst lista med stegvis fokus.",
+      "tags": [
+        "list",
+        "scene",
+        "lista",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.logo-sting",
+      "name": "Logotypintro",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Den riktiga logotypen landar med en diskret accent.",
+      "tags": [
+        "logo-sting",
+        "scene",
+        "logotypintro",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.end-card",
+      "name": "Slutbild",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Logotyp, slutbudskap och en tydlig uppmaning.",
+      "tags": [
+        "end-card",
+        "scene",
+        "slutbild",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.cta",
+      "name": "Uppmaning",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ett koncentrerat budskap med tydlig nästa handling.",
+      "tags": [
+        "cta",
+        "scene",
+        "uppmaning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.recap",
+      "name": "Sammanfattning",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Flera tidigare nyckeltal samlas till en helhetsbild.",
+      "tags": [
+        "recap",
+        "scene",
+        "sammanfattning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.countdown",
+      "name": "Nedräkning",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En stor siffra räknar ned till ett budskap.",
+      "tags": [
+        "countdown",
+        "scene",
+        "nedräkning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.before-after",
+      "name": "Före och efter",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Två verkliga bilder jämförs med en rörlig delning.",
+      "tags": [
+        "before-after",
+        "scene",
+        "före och efter",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.announcement",
+      "name": "Nyhet",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ett tydligt nyhetsband med rubrik och beskrivning.",
+      "tags": [
+        "announcement",
+        "scene",
+        "nyhet",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.testimonial",
+      "name": "Kundberättelse",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Citat, avsändare och valfri porträttbild.",
+      "tags": [
+        "testimonial",
+        "scene",
+        "kundberättelse",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.device",
+      "name": "Appvisning",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En riktig skärmbild visas i en neutral mobilram.",
+      "tags": [
+        "device",
+        "scene",
+        "appvisning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.spotlight",
+      "name": "Anläggning i fokus",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Stor verklig bild med plats och presentation.",
+      "tags": [
+        "spotlight",
+        "scene",
+        "anläggning i fokus",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.steps",
+      "name": "Så fungerar det",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Tre numrerade steg med gemensam visuell tråd.",
+      "tags": [
+        "steps",
+        "scene",
+        "så fungerar det",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.split-media",
+      "name": "Delad bild och text",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En bildyta och en separat redaktionell texthalva.",
+      "tags": [
+        "split-media",
+        "scene",
+        "delad bild och text",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.mosaic",
+      "name": "Bildmosaik",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Två bilder med förskjuten inramning och rubrik.",
+      "tags": [
+        "mosaic",
+        "scene",
+        "bildmosaik",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.lottie-mark",
+      "name": "Vektormärke",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ett registrerat Lottie-märke ritas upp bildruta för bildruta.",
+      "tags": [
+        "lottie-mark",
+        "scene",
+        "vektormärke",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/lottie.ts",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.scene.perspective-stack",
+      "name": "Perspektiv",
+      "type": "scene",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Texter eller bilder ordnas med kontrollerat CSS-perspektiv.",
+      "tags": [
+        "perspective-stack",
+        "scene",
+        "perspektiv",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Scen-`component` i MotionSpec (Motion Engine: Media → Motion eller utkast → Skapa motionvideo; MCP create/update_motion_project).",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=scene, category=scene. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.cut",
+      "name": "Klipp",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Direkt byte utan överlagring.",
+      "tags": [
+        "cut",
+        "transition",
+        "klipp",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.fade",
+      "name": "Övertoning",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Mjuk övertoning mellan två scener.",
+      "tags": [
+        "fade",
+        "transition",
+        "övertoning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.wipe",
+      "name": "Svep",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Nästa scen avslöjas med en horisontell mask.",
+      "tags": [
+        "wipe",
+        "transition",
+        "svep",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.push",
+      "name": "Skjut",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Båda scenerna förflyttas tillsammans.",
+      "tags": [
+        "push",
+        "transition",
+        "skjut",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.whip",
+      "name": "Snärt",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Snabb sidrörelse med kort rörelseoskärpa.",
+      "tags": [
+        "whip",
+        "transition",
+        "snärt",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.zoom",
+      "name": "Zoom igenom",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En scen närmar sig medan nästa tar över.",
+      "tags": [
+        "zoom",
+        "transition",
+        "zoom igenom",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.iris",
+      "name": "Iris",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En cirkulär öppning avslöjar nästa scen.",
+      "tags": [
+        "iris",
+        "transition",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.diagonal",
+      "name": "Diagonal",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En diagonal mask skär över bildytan.",
+      "tags": [
+        "diagonal",
+        "transition",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.blinds",
+      "name": "Lameller",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Vertikala fält öppnas i turordning.",
+      "tags": [
+        "blinds",
+        "transition",
+        "lameller",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.split",
+      "name": "Delning",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Två halvor öppnas från mitten.",
+      "tags": [
+        "split",
+        "transition",
+        "delning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.brush",
+      "name": "Penselsvep",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Oregelbundna band avslöjar nästa scen.",
+      "tags": [
+        "brush",
+        "transition",
+        "penselsvep",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.blur",
+      "name": "Oskärpa",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Scener byts vid en kort fokuserad oskärpa.",
+      "tags": [
+        "blur",
+        "transition",
+        "oskärpa",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.transition.flash",
+      "name": "Ljusblixt",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En enda kort ljusövergång, utan stroboskop.",
+      "tags": [
+        "flash",
+        "transition",
+        "ljusblixt",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/transitions.ts",
+      "use": "Scenens `transition` (+ transition_frames ≥ 1) i MotionSpec; första scenen är alltid cut.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=transition, category=transition. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.solid",
+      "name": "Enfärgat",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En lugn yta från valt varumärke.",
+      "tags": [
+        "solid",
+        "background",
+        "enfärgat",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.radial",
+      "name": "Radialt ljus",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Mjukt ljus med långsam förflyttning.",
+      "tags": [
+        "radial",
+        "background",
+        "radialt ljus",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.mesh",
+      "name": "Färgfält",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Två breda färgfält rör sig lugnt.",
+      "tags": [
+        "mesh",
+        "background",
+        "färgfält",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.grid",
+      "name": "Rutnät",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Tunnt rutnät med förskjutning.",
+      "tags": [
+        "grid",
+        "background",
+        "rutnät",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.orbits",
+      "name": "Banor",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Koncentriska linjer roterar runt en gemensam punkt.",
+      "tags": [
+        "orbits",
+        "background",
+        "banor",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.particles",
+      "name": "Partiklar",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Glesa deterministiska partiklar driver över ytan.",
+      "tags": [
+        "particles",
+        "background",
+        "partiklar",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.rays",
+      "name": "Strålar",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Breda strålar rör sig bakom innehållet.",
+      "tags": [
+        "rays",
+        "background",
+        "strålar",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.waves",
+      "name": "Vågor",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Lager av SVG-kurvor skapar lugn rörelse.",
+      "tags": [
+        "waves",
+        "background",
+        "vågor",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.topography",
+      "name": "Höjdkurvor",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Linjer inspirerade av en banas topografi.",
+      "tags": [
+        "topography",
+        "background",
+        "höjdkurvor",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.background.checker",
+      "name": "Schackmönster",
+      "type": "background",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ett diskret grafiskt rutmönster förskjuts.",
+      "tags": [
+        "checker",
+        "background",
+        "schackmönster",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/backgrounds.tsx",
+      "use": "Scenens `background` i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=background, category=background. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.grain",
+      "name": "Korn",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Lätt deterministisk filmstruktur.",
+      "tags": [
+        "grain",
+        "effect",
+        "korn",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/effects.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.vignette",
+      "name": "Vinjett",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Diskret mörkare kanter koncentrerar blicken.",
+      "tags": [
+        "vignette",
+        "effect",
+        "vinjett",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/effects.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.glow",
+      "name": "Glöd",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ett mjukt accentljus bakom fokusobjektet.",
+      "tags": [
+        "glow",
+        "effect",
+        "glöd",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/effects.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.shadow",
+      "name": "Djup",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Innehållet får en kontrollerad skugga.",
+      "tags": [
+        "shadow",
+        "effect",
+        "djup",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/effects.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.parallax",
+      "name": "Parallax",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Innehåll och bakgrund rör sig i olika tempo.",
+      "tags": [
+        "parallax",
+        "effect",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/effects.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.glitch",
+      "name": "Grafisk förskjutning",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En kort förskjutning vid introduktionen.",
+      "tags": [
+        "glitch",
+        "effect",
+        "grafisk förskjutning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/effects.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.scanline",
+      "name": "Skanningslinje",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En tunn ljuslinje passerar en gång.",
+      "tags": [
+        "scanline",
+        "effect",
+        "skanningslinje",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/effects.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.duotone",
+      "name": "Tvåton",
+      "type": "grade",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Media färgas med varumärkets två toner.",
+      "tags": [
+        "duotone",
+        "effect",
+        "tvåton",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/scenes.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.frame",
+      "name": "Inramning",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En tunn ram ritas runt innehållet.",
+      "tags": [
+        "frame",
+        "effect",
+        "inramning",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/effects.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.effect.svg-path",
+      "name": "Ritad bana",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En SVG-bana ritas med synkroniserad markör.",
+      "tags": [
+        "svg-path",
+        "effect",
+        "ritad bana",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/src/effects.tsx",
+      "use": "Lägg i scenens `effects` (max 3) i MotionSpec.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=effect, category=effect. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.audio.tick",
+      "name": "Räknartick",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Kort, mjukt tick med begränsad frekvens.",
+      "tags": [
+        "tick",
+        "audio",
+        "räknartick",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/audio-assets.mjs",
+      "use": "Ljudcue i scenens `sfx` ({kind, frame, gain}); bed/pulse även som audio.music.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=audio, category=audio. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.audio.impact",
+      "name": "Impact",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Kort basbetoning för ett viktigt avslöjande.",
+      "tags": [
+        "impact",
+        "audio",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/audio-assets.mjs",
+      "use": "Ljudcue i scenens `sfx` ({kind, frame, gain}); bed/pulse även som audio.music.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=audio, category=audio. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.audio.whoosh",
+      "name": "Svepljud",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Kort filtrerat brus följer en övergång.",
+      "tags": [
+        "whoosh",
+        "audio",
+        "svepljud",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/audio-assets.mjs",
+      "use": "Ljudcue i scenens `sfx` ({kind, frame, gain}); bed/pulse även som audio.music.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=audio, category=audio. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.audio.rise",
+      "name": "Stegring",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En mjuk uppåtgående ton bygger förväntan.",
+      "tags": [
+        "rise",
+        "audio",
+        "stegring",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/audio-assets.mjs",
+      "use": "Ljudcue i scenens `sfx` ({kind, frame, gain}); bed/pulse även som audio.music.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=audio, category=audio. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.audio.sting",
+      "name": "Logotypljud",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Tre korta toner för en avslutande logotyp.",
+      "tags": [
+        "sting",
+        "audio",
+        "logotypljud",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/audio-assets.mjs",
+      "use": "Ljudcue i scenens `sfx` ({kind, frame, gain}); bed/pulse även som audio.music.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=audio, category=audio. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.audio.pluck",
+      "name": "Plock",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En varm plockton markerar ett steg.",
+      "tags": [
+        "pluck",
+        "audio",
+        "plock",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/audio-assets.mjs",
+      "use": "Ljudcue i scenens `sfx` ({kind, frame, gain}); bed/pulse även som audio.music.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=audio, category=audio. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.audio.pulse",
+      "name": "Puls",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En dämpad rytmisk puls.",
+      "tags": [
+        "pulse",
+        "audio",
+        "puls",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/audio-assets.mjs",
+      "use": "Ljudcue i scenens `sfx` ({kind, frame, gain}); bed/pulse även som audio.music.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=audio, category=audio. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.audio.chime",
+      "name": "Klockton",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "En ljus, långsamt avklingande ton.",
+      "tags": [
+        "chime",
+        "audio",
+        "klockton",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/audio-assets.mjs",
+      "use": "Ljudcue i scenens `sfx` ({kind, frame, gain}); bed/pulse även som audio.music.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=audio, category=audio. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.audio.bed",
+      "name": "Musikbädd",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Egen genererad diskret tonbädd utan externt ljudmaterial.",
+      "tags": [
+        "bed",
+        "audio",
+        "musikbädd",
+        "motion-engine"
+      ],
+      "path": "motion-renderer/audio-assets.mjs",
+      "use": "Ljudcue i scenens `sfx` ({kind, frame, gain}); bed/pulse även som audio.music.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=audio, category=audio. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.sequence-film",
+      "name": "Färdig sekvens",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Sätt ihop egna bilder eller granskade klipp till en film.",
+      "tags": [
+        "sequence-film",
+        "sequence",
+        "färdig sekvens",
+        "footage",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `sequence-film` (Media → Motion, eller utkast → Skapa motionvideo), fyll i scenerna, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='sequence-film') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=sequence; scener: footage → end-card; ~8 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.monthly-wrapped",
+      "name": "Monthly Wrapped",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "September, månadens siffror och ett starkt avslut.",
+      "tags": [
+        "monthly-wrapped",
+        "data",
+        "monthly wrapped",
+        "hero",
+        "counter",
+        "currency",
+        "ranking",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `monthly-wrapped` (Media → Motion, eller utkast → Skapa motionvideo), fyll i month, count, total, area, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='monthly-wrapped') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=data; scener: hero → counter → currency → ranking → end-card; ~24 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.kpi-recap",
+      "name": "KPI Recap",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Sammanfatta flera nyckeltal i en video.",
+      "tags": [
+        "kpi-recap",
+        "data",
+        "kpi recap",
+        "hero",
+        "stat-wall",
+        "bars",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `kpi-recap` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, items, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='kpi-recap') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=data; scener: hero → stat-wall → bars → cta; ~16 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.product-offer",
+      "name": "Produkt och erbjudande",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Visa produkten, värdet och nästa steg.",
+      "tags": [
+        "product-offer",
+        "ads",
+        "produkt och erbjudande",
+        "product",
+        "offer",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `product-offer` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, body, cta, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='product-offer') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=ads; scener: product → offer → cta; ~12 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.facility-spotlight",
+      "name": "Golfklubb i fokus",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Presentera en klubb eller anläggning med egna bilder.",
+      "tags": [
+        "facility-spotlight",
+        "golf",
+        "golfklubb i fokus",
+        "spotlight",
+        "split-media",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `facility-spotlight` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, body, asset_id, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='facility-spotlight') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=golf; scener: spotlight → split-media → cta; ~12 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.friskvard-explainer",
+      "name": "Så fungerar friskvård",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Förklara ett enkelt flöde i tre steg.",
+      "tags": [
+        "friskvard-explainer",
+        "golf",
+        "så fungerar friskvård",
+        "hero",
+        "steps",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `friskvard-explainer` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, items, cta, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='friskvard-explainer') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=golf; scener: hero → steps → cta; ~12 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.friskvard-portal-ad",
+      "name": "Friskvård · förmånsportal",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "15 sekunder med banhook, portal, köp, app och 300+ klubbar.",
+      "tags": [
+        "friskvard-portal-ad",
+        "ads",
+        "friskvård · förmånsportal",
+        "footage",
+        "device",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `friskvard-portal-ad` (Media → Motion, eller utkast → Skapa motionvideo), fyll i hook_asset_id, portal_asset_id, purchase_asset_id, app_asset_id, proof_asset_id, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='friskvard-portal-ad') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=ads; scener: footage → device → device → device → footage → end-card; ~15 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.friskvard-direct-ad",
+      "name": "Friskvård · direktköp",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "14 sekunder för golfare utan förmånsportal: webb, kvitto och 300+ klubbar.",
+      "tags": [
+        "friskvard-direct-ad",
+        "ads",
+        "friskvård · direktköp",
+        "footage",
+        "device",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `friskvard-direct-ad` (Media → Motion, eller utkast → Skapa motionvideo), fyll i hook_asset_id, website_asset_id, receipt_asset_id, montage_asset_id, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='friskvard-direct-ad') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=ads; scener: footage → device → device → footage → end-card; ~14 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.gift-card-promo",
+      "name": "Ge bort golf",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Presentera ett riktigt presentkort med ett personligt budskap.",
+      "tags": [
+        "gift-card-promo",
+        "promo",
+        "ge bort golf",
+        "product",
+        "quote",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `gift-card-promo` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, body, cta, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='gift-card-promo') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=promo; scener: product → quote → cta; ~12 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.new-partner",
+      "name": "Ny partner",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Välkomna en ny ansluten anläggning.",
+      "tags": [
+        "new-partner",
+        "golf",
+        "ny partner",
+        "announcement",
+        "spotlight",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `new-partner` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, body, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='new-partner') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=golf; scener: announcement → spotlight → end-card; ~12 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.product-launch",
+      "name": "Produktlansering",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Från nyhet till produkt och handling.",
+      "tags": [
+        "product-launch",
+        "product",
+        "produktlansering",
+        "announcement",
+        "perspective-stack",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `product-launch` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, body, cta, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='product-launch') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=product; scener: announcement → product → perspective-stack → cta; ~16 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.feature-announcement",
+      "name": "Ny funktion",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Visa en funktion med riktig skärmbild.",
+      "tags": [
+        "feature-announcement",
+        "product",
+        "ny funktion",
+        "kinetic-words",
+        "device",
+        "steps",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `feature-announcement` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, body, asset_id, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='feature-announcement') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=product; scener: kinetic-words → device → steps → cta; ~16 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.social-promo",
+      "name": "Social kampanj",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ett kort budskap med tydlig rytm.",
+      "tags": [
+        "social-promo",
+        "social",
+        "social kampanj",
+        "kinetic-words",
+        "offer",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `social-promo` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, body, cta, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='social-promo') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=social; scener: kinetic-words → offer → cta; ~12 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.kinetic-text",
+      "name": "Kinetisk text",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Låt orden vara huvudpersonen.",
+      "tags": [
+        "kinetic-text",
+        "typography",
+        "kinetisk text",
+        "kinetic-words",
+        "typewriter",
+        "word-highlight",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `kinetic-text` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, body, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='kinetic-text') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=typography; scener: kinetic-words → typewriter → word-highlight → end-card; ~16 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.quote-testimonial",
+      "name": "Citat och omdöme",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Lyft en verklig kundröst.",
+      "tags": [
+        "quote-testimonial",
+        "social",
+        "citat och omdöme",
+        "testimonial",
+        "quote",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `quote-testimonial` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, attribution, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='quote-testimonial') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=social; scener: testimonial → quote → end-card; ~12 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.top-three",
+      "name": "Topp 3",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Presentera en verifierad rangordning.",
+      "tags": [
+        "top-three",
+        "data",
+        "topp 3",
+        "hero",
+        "ranking",
+        "recap",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `top-three` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, items, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='top-three') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=data; scener: hero → ranking → recap → cta; ~16 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.before-after-story",
+      "name": "Före och efter",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Visa skillnaden med två verkliga bilder.",
+      "tags": [
+        "before-after-story",
+        "product",
+        "före och efter",
+        "hero",
+        "before-after",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `before-after-story` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, asset_id, secondary_asset_id, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='before-after-story') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=product; scener: hero → before-after → cta; ~12 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.logo-end-card",
+      "name": "Logotyp och avslut",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Ett koncentrerat intro eller avslut.",
+      "tags": [
+        "logo-end-card",
+        "end-cards",
+        "logotyp och avslut",
+        "logo-sting",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `logo-end-card` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, cta, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='logo-end-card') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=end-cards; scener: logo-sting → end-card; ~8 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.custom-storyboard",
+      "name": "Egen storyboard",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "Börja med scener och bygg en egen berättelse.",
+      "tags": [
+        "custom-storyboard",
+        "social",
+        "egen storyboard",
+        "hero",
+        "cta",
+        "motion-engine"
+      ],
+      "path": "engine/motion/planner.py",
+      "use": "Motion Engine: välj mallen `custom-storyboard` (Media → Motion, eller utkast → Skapa motionvideo), fyll i headline, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='custom-storyboard') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=social; scener: hero → cta; ~8 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.golf-fracka",
+      "name": "Golf · rolig och fräck",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "12 s, högt tempo: kaxig hook, vändning på riktig bild, punchline, bevis och slutkort.",
+      "tags": [
+        "golf-fracka",
+        "ads",
+        "golf · rolig och fräck",
+        "fräck",
+        "snabb",
+        "split-flap",
+        "footage",
+        "word-highlight",
+        "spotlight",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/ad_templates.py",
+      "use": "Motion Engine: välj mallen `golf-fracka` (Media → Motion, eller utkast → Skapa motionvideo), fyll i hook_text, twist_asset_id, twist_text, punch_text, proof_asset_id, proof_text, end_text, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='golf-fracka') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=ads; scener: split-flap → footage → word-highlight → spotlight → end-card; ~12 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.golf-sista-chansen",
+      "name": "Golf · sista chansen",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "10 s med nedräkning 3–2–1: brådska, problemet, lösningen på riktig bild, slutkort.",
+      "tags": [
+        "golf-sista-chansen",
+        "ads",
+        "golf · sista chansen",
+        "brådskande",
+        "snabb",
+        "countdown",
+        "mask-rise",
+        "footage",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/ad_templates.py",
+      "use": "Motion Engine: välj mallen `golf-sista-chansen` (Media → Motion, eller utkast → Skapa motionvideo), fyll i hook_text, problem_text, solution_asset_id, solution_text, end_text, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='golf-sista-chansen') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=ads; scener: countdown → mask-rise → footage → end-card; ~10 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.content-engine-motion.template.golf-premium",
+      "name": "Golf · lugn premium",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "remotion",
+      "description": "15 s, lugnt tempo: banbild, ett skarpt påstående, detaljbild och långt slutkort.",
+      "tags": [
+        "golf-premium",
+        "ads",
+        "golf · lugn premium",
+        "lugn premium",
+        "lugn",
+        "footage",
+        "blur-reveal",
+        "spotlight",
+        "end-card",
+        "motion-engine"
+      ],
+      "path": "engine/motion/ad_templates.py",
+      "use": "Motion Engine: välj mallen `golf-premium` (Media → Motion, eller utkast → Skapa motionvideo), fyll i hook_asset_id, hook_text, statement_text, detail_asset_id, detail_text, end_text, förhandsvisa, godkänn, skapa färdig video. MCP: create_motion_project(template_id='golf-premium') → render_motion_project → approve_motion_preview.",
+      "requires": [
+        "motion-renderer",
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "catalog.json kind=template, category=ads; scener: footage → blur-reveal → spotlight → end-card; ~15 s. Remotion-licens: se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    }
+  ]
+}

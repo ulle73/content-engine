@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1350" />
+    <title>Live Carousel photo slide</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /*@CHROME@*/
+    </style>
+  </head>
+  <body>
+    <!--
+      Photo-mode slide. Frame 0 is the user's original image, untouched. Every effect either sits on top
+      of it or re-paints pixels that match it, and everything returns to rest before the loop point.
+      Timing lives in carousel.json -> cues.<slide> (shared with audio/make_audio.py so sound and
+      picture stay in sync). Add slide-specific moments in render(t) below.
+    -->
+    <div id="root" data-composition-id="main" data-start="0" data-duration="@DUR@" data-width="1080" data-height="1350">
+      <div id="scene" class="scene clip" data-start="0" data-duration="@DUR@" data-track-index="0">
+        <div id="stage" class="stage">
+          <img class="full" src="assets/bg.jpg" alt="" />
+          <canvas id="sky" class="full" width="2160" height="2700" data-layout-allow-overflow></canvas>
+          <div id="leakLayer" class="layer"></div>
+          <div id="ext" class="layer"></div>
+          <div id="faceLayer" class="layer"></div>
+          <div id="accentLayer" class="layer"></div>
+          <div id="shineLayer" class="layer"></div>
+          <div id="subjectLayer" class="layer"></div>
+          <div id="fx" class="layer"></div>
+        </div>
+        <div class="vignette" id="vig"></div>
+        <!--@GRAIN@-->
+      </div>
+      <audio id="mix" src="assets/audio/mix.wav" data-start="0" data-duration="@DUR@" data-track-index="2" data-volume="1"></audio>
+    </div>
+
+    <script>
+      //@ENGINE@
+    </script>
+    <script>
+      //@PHOTO@
+    </script>
+    <script>
+      (function () {
+        const L = window.LC;
+        const PH = window.PH;
+        const GEO = /*@GEO@*/ {};
+        const CUES = /*@CUES@*/ {};
+        const DUR = CUES.dur || 6;
+        const HITS = CUES.hits || [2.0]; // impacts: camera kick, flare, rings, sparks (keep <= DUR - 0.8)
+        const SHINES = CUES.shine || []; // light sweeps across the detected text
+        const SKY = CUES.sky === undefined ? 0.012 : CUES.sky; // cinemagraph drift (0 = off)
+        const MOTES = CUES.motes === undefined ? 16 : CUES.motes;
+        const EXTRUDE = !!CUES.extrude && !!GEO.headline; // 3D extrusion behind the headline
+        const PAL = GEO.palette || {};
+        const A1 = PAL.accent || "#ff6a1f";
+        const A2 = PAL.accent2 || A1;
+        document.documentElement.style.setProperty("--fx-a", "#ffffff");
+        document.documentElement.style.setProperty("--fx-b", A2);
+        const HB = GEO.headline || [140, 200, 940, 520];
+        const HIT_AT = CUES.hitAt || [(HB[0] + HB[2]) / 2, HB[3] + 40];
+
+        const darker = (hex, k) => {
+          const n = parseInt(hex.slice(1), 16);
+          const c = (s) => Math.round(((n >> s) & 255) * k).toString(16).padStart(2, "0");
+          return `#${c(16)}${c(8)}${c(0)}`;
+        };
+
+        Promise.all([PH.loadImg("assets/bg.jpg"), PH.loadImg("assets/clean.jpg"), PH.loadImg("assets/flow.png")]).then(([bg, clean, flow]) => {
+          const sky = SKY > 0 ? PH.cinemagraph(document.getElementById("sky"), { bg, clean, flow }, { period: DUR, amp: SKY }) : null;
+          const stage = document.getElementById("stage");
+          const cam = PH.camera(stage, DUR, HITS.map((t, i) => [t, i === 0 ? 14 : 8]), { push: CUES.push === undefined ? 0.022 : CUES.push });
+          const leak = PH.leak(document.getElementById("leakLayer"), A1 + "55", DUR);
+
+          let ext = null;
+          if (EXTRUDE) {
+            ext = PH.extrusion(document.getElementById("ext"), "assets/head.png", 12, { front: [A1, A2], back: [darker(A1, 0.35), darker(A2, 0.35)] });
+            PH.masked(document.getElementById("faceLayer"), "assets/head.png", GEO.headline_color || "#ffffff");
+            // brush words / stickers that sat on top of the headline go back on top, in their original pixels
+            if (GEO.headline_accent) PH.masked(document.getElementById("accentLayer"), "assets/accent.png", "url(assets/bg.jpg) 0 0 / 100% 100% no-repeat");
+          }
+          const shine = PH.shine(document.getElementById("shineLayer"), "assets/text.png");
+          let subject = null;
+          if (GEO.subject) {
+            subject = document.createElement("img");
+            subject.className = "full";
+            subject.src = "assets/subject.png";
+            subject.alt = "";
+            subject.style.transformOrigin = "50% 100%";
+            document.getElementById("subjectLayer").appendChild(subject);
+          }
+          const fx = document.getElementById("fx");
+          const motes = PH.motes(fx, MOTES, 11, {
+            colors: ["#ffffff", A2],
+            glow: "rgba(255,255,255,0.35)",
+            x0: 40, x1: 1040, y0: 160, y1: 1200,
+            vx: [-14, 22], vy: [-30, -8],
+            size: [0.5, 1.3],
+            period: DUR / 2,
+            twinkle: 2,
+            alpha: 0.75,
+          });
+          const flares = HITS.map(() => PH.flare(fx, HIT_AT[0], HIT_AT[1]));
+          const ringsA = HITS.map(() => PH.ring(fx, ""));
+          const ringsB = HITS.map(() => PH.ring(fx, "warm"));
+          const sparks = HITS.map((_, i) => L.makeBurst(fx, 26, 21 + i * 17));
+          const vig = document.getElementById("vig");
+          const H0 = HITS[0];
+
+          function render(t) {
+            // env is 0 at frame 0 and at the loop point, so frame 0 is exactly the user's image
+            const env = 0.5 * (1 - Math.cos((Math.PI * 2 * t) / DUR));
+            cam(t);
+            if (sky) sky(t);
+            leak(t, 0.55 * env);
+
+            // headline extrusion: pops on the first hit, breathes on the beat, gone before the loop point
+            if (ext) {
+              const settleIn = t < H0 ? 0 : L.settle(t - H0, 1.9, 6.2);
+              const out = 1 - L.easeInOut(L.prog(t, DUR - 1.1, DUR - 0.4));
+              const breathe = t > H0 + 0.4 ? 3.5 * Math.abs(Math.sin((Math.PI * (t - H0)) / 0.5)) * L.prog(t, H0 + 0.4, H0 + 0.8) : 0;
+              ext(Math.max(0, (18 * settleIn + breathe) * out));
+            }
+
+            // light sweeps across every detected line of text
+            let sp = -1;
+            for (const s0 of SHINES) if (t >= s0 && t <= s0 + 0.5) sp = L.prog(t, s0, s0 + 0.5);
+            shine(sp);
+
+            if (subject) {
+              const par = 0.014 * (1 - Math.cos((Math.PI * 2 * t) / DUR)) * 0.5;
+              subject.style.transform = `scale(${(1 + par + 0.02 * PH.pop(t, H0, 30, 5)).toFixed(5)})`;
+            }
+
+            HITS.forEach((h, i) => {
+              flares[i](t, h);
+              ringsA[i](t, h, HIT_AT[0], HIT_AT[1], 7.5, 0.75);
+              ringsB[i](t, h + 0.05, HIT_AT[0], HIT_AT[1], 5.5, 0.6);
+              sparks[i](t, h, HIT_AT[0], HIT_AT[1] - 20, 1.1);
+            });
+            motes(t, Math.min(1, env * 1.8));
+            vig.style.opacity = (0.9 * env).toFixed(3);
+
+            // ---- slide-specific moments go here (count-ups, pills, a cursor, a ball...) ----
+          }
+
+          const tl = gsap.timeline({ paused: true });
+          const clock = { t: 0 };
+          tl.fromTo(clock, { t: 0 }, { t: DUR, duration: DUR, ease: "none", onUpdate: () => render(clock.t) }, 0);
+          render(0);
+          window.__timelines["main"] = tl;
+        });
+      })();
+    </script>
+  </body>
+</html>

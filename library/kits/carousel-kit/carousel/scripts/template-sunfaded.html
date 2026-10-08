@@ -1,0 +1,531 @@
+<!doctype html>
+<!--
+  SUN-FADED PHOTO POSTER — carousel slide template (1080x1350, 4:5).
+
+  The sheet's rules, enforced here:
+    - EVERY COLOUR IS PULLED FROM THE PHOTOGRAPH. NOTHING IS INVENTED.
+      Captions, the credit and the hairlines sample the pixels they sit on (JS below).
+    - FADED GOLD (#D5C377) IS THE HEADLINE COLOUR AND APPEARS NOWHERE ELSE.
+      It exists once in this file: .headline { color }.
+    - THE HEADLINE ALWAYS SITS BEHIND THE SUBJECT, PARTLY HIDDEN BY IT.
+      Stack: photo -> gold headline -> subject layer. The subject layer is the Vision
+      cutout (slide.subject_file, made by cutout.py) or, if there is none, a sky-key
+      built here on a canvas: everything that is not sky covers the headline.
+    - ONE GOLD HEADLINE PER SLIDE. Never two, never another colour.
+    - THE PHOTOGRAPH IS FULL-BLEED. No borders, no panels, no crops inside the slide.
+      Data is drawn straight onto the open ground, blended, with no card behind it.
+    - CAPTIONS ARE MEANT TO BE ALMOST MISSED: low contrast, blended, never outlined
+      or shadowed.
+    - SERIF FOR HEADLINE AND CREDIT, LIGHT SANS FOR CAPTIONS. NO THIRD FACE.
+    - SKY TOP THIRD, SUBJECT MIDDLE, OPEN GROUND BOTTOM THIRD.
+    - SAME GRAIN AND SUN-BLEACHED GRADE ACROSS THE FULL FRAME, ON EVERY SLIDE.
+
+  Placeholders are filled by carousel_render.py. Per-slide knobs are read from
+  the slide JSON (see knowledge/style-sunfaded.md).
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --serif:'DM Serif Display', 'Times New Roman', serif;
+    --sans:'Jost', 'Helvetica Neue', Arial, sans-serif;
+    --cap:rgba(41,43,25,.72);          /* replaced per slide by the sampled caption colour */
+    --credit:rgba(20,40,60,.85);       /* replaced per slide by the sampled sky colour */
+    --rule:rgba(250,246,232,.5);
+    --rule1:150px; --rule2:860px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1350px;background:#8E9726}
+  .stage{position:relative;width:1080px;height:1350px;overflow:hidden;background:#5A5F19}
+
+  /* ---------- the photograph: full-bleed, sun-bleached grade ---------- */
+  .photo,.subject{position:absolute;inset:0;width:1080px;height:1350px;object-fit:cover;
+         object-position:var(--pos,50% 50%);
+         filter:saturate(.78) contrast(.93) brightness(1.05) sepia(.10)}
+  .photo{z-index:1}
+  .headline{z-index:3}
+  .subject{z-index:4;pointer-events:none}
+  canvas.subject{object-fit:fill}
+  /* the sun: a warm bleach from the top, and a haze that lifts the blacks */
+  .bleach{position:absolute;inset:0;z-index:5;pointer-events:none;
+         background:
+           radial-gradient(120% 70% at 30% -10%, rgba(255,247,222,.30), rgba(255,247,222,0) 60%),
+           linear-gradient(180deg, rgba(246,236,205,.10), rgba(246,236,205,0) 45%, rgba(90,95,25,.10));
+         mix-blend-mode:screen}
+  .haze{position:absolute;inset:0;z-index:5;pointer-events:none;background:rgba(213,205,180,.08)}
+
+  /* ---------- the ground haze: shallow depth of field + sun bleach over the lower band.
+     Feathered, edgeless, part of the grade - not a panel. It calms texture so captions and
+     data (darkened from the ground they sit on) stay readable. ---------- */
+  .ground{position:absolute;left:-40px;right:-40px;bottom:-40px;z-index:5;pointer-events:none;
+          top:var(--ground-top,800px);
+          background:var(--veil, rgba(200,190,160,.26));
+          -webkit-backdrop-filter:blur(var(--gblur,28px)) saturate(.62) brightness(1.08) contrast(.72);
+          backdrop-filter:blur(var(--gblur,28px)) saturate(.62) brightness(1.08) contrast(.72);
+          -webkit-mask-image:linear-gradient(180deg, transparent 0, rgba(0,0,0,.35) 90px, rgba(0,0,0,.8) 190px, #000 290px);
+          mask-image:linear-gradient(180deg, transparent 0, rgba(0,0,0,.35) 90px, rgba(0,0,0,.8) 190px, #000 290px)}
+
+  /* ---------- credit (serif) + hairlines ---------- */
+  .credit{position:absolute;left:0;right:0;top:calc(var(--rule1) - 58px);z-index:6;
+          display:flex;justify-content:center;align-items:center;gap:16px;
+          font-family:var(--serif);font-size:25px;letter-spacing:.06em;text-transform:uppercase;
+          color:var(--credit)}
+  .credit .logo{display:block;height:26px;width:auto}
+  .credit .bar{width:1px;height:20px;background:var(--credit);opacity:.6}
+  .rule{position:absolute;left:0;right:0;height:1.5px;z-index:6;background:var(--rule)}
+  .rule.r1{top:var(--rule1)} .rule.r2{top:var(--rule2)}
+
+  /* ---------- the gold headline: behind the subject ---------- */
+  .headline{position:absolute;left:0;top:300px;width:max-content;white-space:nowrap;
+            font-family:var(--serif);font-weight:400;font-size:220px;line-height:.86;
+            letter-spacing:-.005em;text-transform:uppercase;color:#D5C377}
+  .headline.two{white-space:pre;text-align:center}
+
+  /* ---------- caption: light sans, almost missed ---------- */
+  .caption{position:absolute;left:110px;right:110px;z-index:6;text-align:center;
+           font-family:var(--sans);font-weight:300;font-size:29px;line-height:1.28;
+           letter-spacing:.07em;text-transform:uppercase;color:var(--cap)}
+  .caption em{font-style:normal;font-weight:400}
+  .caption .attr{font-size:17px;letter-spacing:.2em;font-weight:400;margin-top:14px;opacity:.85}
+  .kicker{position:absolute;left:0;right:0;z-index:6;text-align:center;
+          font-family:var(--sans);font-weight:400;font-size:18px;letter-spacing:.34em;
+          text-transform:uppercase;color:var(--kick,var(--cap))}
+
+  /* ---------- proof, drawn straight on the ground: no panel, blended ---------- */
+  .content{position:absolute;left:96px;right:96px;z-index:6;color:var(--cap);
+           mix-blend-mode:multiply}
+  .content .card{background:none;padding:0;box-shadow:none}
+  .content .ctitle{font-family:var(--sans);font-weight:400;font-size:18px;letter-spacing:.2em;
+           text-transform:uppercase;text-align:center;margin-bottom:10px;opacity:.9}
+  .content .cnote{font-family:var(--sans);font-weight:300;font-size:17px;letter-spacing:.04em;
+           text-align:center;margin-top:6px;opacity:.85}
+  .content .chart{display:block;width:100%;height:auto;overflow:visible}
+  .content .chart text{font-family:var(--sans)!important}
+  .content .legend{display:flex;justify-content:center;gap:26px;margin-top:6px}
+  .content .lk{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-size:17px}
+  /* bars */
+  .content .bars{display:flex;flex-direction:column;gap:12px}
+  .content .bar-row{display:grid;grid-template-columns:170px 1fr 80px;gap:18px;align-items:center}
+  .content .bar-lab{font-family:var(--sans);font-weight:400;font-size:22px;letter-spacing:.06em;text-transform:uppercase}
+  .content .bar-track{height:10px;background:rgba(41,43,25,.10)}
+  .content .bar-fill{height:100%;background:rgba(41,43,25,.36)}
+  .content .bar-fill.hi{background:#292B19}
+  .content .bar-val{font-family:var(--sans);font-weight:400;font-size:24px;text-align:right;
+           font-variant-numeric:tabular-nums}
+  /* stats */
+  .content .stats{display:flex;justify-content:center;gap:56px}
+  .content .stat{text-align:center}
+  .content .stat .v{font-family:var(--sans);font-weight:300;font-size:64px;line-height:1;letter-spacing:-.01em}
+  .content .stat .l{font-family:var(--sans);font-weight:400;font-size:16px;letter-spacing:.22em;
+           text-transform:uppercase;margin-top:8px}
+  .content .stat .d{font-family:var(--sans);font-weight:300;font-size:16px;margin-top:4px;opacity:.85}
+  .content .spark{display:block;margin:8px auto 0}
+  /* dial: the lit segment is full ink + underline; the rest fall back */
+  .content .dial{display:flex;justify-content:center;gap:0}
+  .content .seg{flex:1;text-align:center;font-family:var(--sans);font-weight:400;font-size:24px;
+           letter-spacing:.12em;text-transform:uppercase;padding:10px 0 12px;opacity:.42;
+           border-bottom:1.5px solid transparent}
+  .content .seg.on{opacity:1;border-bottom-color:currentColor}
+  .content .dial-cap{display:flex;justify-content:space-between;font-family:var(--sans);font-weight:300;
+           font-size:17px;letter-spacing:.04em;margin-top:10px}
+  /* chips: plain words with dot separators — a pill would be a panel */
+  .content .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 0;
+           font-family:var(--sans);font-weight:400;font-size:24px;letter-spacing:.1em;text-transform:uppercase}
+  .content .chip + .chip::before{content:'·';padding:0 18px;opacity:.6}
+  /* a real screenshot: no frame, no border — printed into the ground */
+  /* a pasted screenshot is evidence: it must read true, so it is never blended into the ground */
+  .content.has-shot{mix-blend-mode:normal}
+  .content .shot{margin:0}
+  .content .shot img{display:block;width:100%;max-height:300px;object-fit:cover;object-position:top;
+           filter:saturate(.8) sepia(.12) contrast(.95)}
+  .content .shot .cap{display:flex;justify-content:space-between;margin-top:8px;font-family:var(--sans);
+           font-weight:300;font-size:16px;letter-spacing:.06em;text-transform:uppercase}
+  .content .heroimg{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .content .heroimg img{max-height:300px;max-width:80%;object-fit:contain}
+  .content .heroimg .hcap{font-family:var(--sans);font-size:18px;letter-spacing:.14em;text-transform:uppercase}
+
+  /* ---------- call to action: said as a caption, never a button ---------- */
+  .cta{position:absolute;left:0;right:0;z-index:6;text-align:center;color:var(--cap);
+       font-family:var(--sans);text-transform:uppercase}
+  .cta .p{font-weight:400;font-size:30px;letter-spacing:.16em}
+  .cta .p span{font-weight:300;opacity:.7}
+  .cta .m{font-weight:300;font-size:19px;letter-spacing:.08em;margin-top:10px;opacity:.85}
+
+  /* ---------- foot: series, folio, photo credit — the quietest line on the slide ---------- */
+  .foot{position:absolute;left:60px;right:60px;bottom:30px;z-index:6;display:flex;
+        justify-content:space-between;align-items:baseline;gap:20px;
+        font-family:var(--sans);font-weight:300;font-size:15px;letter-spacing:.12em;
+        text-transform:uppercase;color:var(--foot,var(--cap));opacity:.92}
+  .foot .mid{text-align:center;flex:1}
+
+  .mascot{position:absolute;z-index:6}
+  .mascot.br{right:40px;bottom:60px}.mascot.bl{left:40px;bottom:60px}.mascot.right{right:40px;top:50%}
+
+  /* ---------- grain over the whole frame, same on every slide ---------- */
+  .grain{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.22;
+         background-image:var(--grain);background-size:260px 260px;mix-blend-mode:overlay}
+  .speck{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.10;
+         background-image:var(--speck);background-size:200px 200px;mix-blend-mode:multiply}
+
+  [data-optional].empty{display:none}
+  .unused{display:none}
+</style>
+</head>
+<body>
+  <div class="stage __STAGECLASS__" id="stage">
+    <img class="photo" id="ph" alt="">
+    <div class="headline" id="hl">__HEADLINE__</div>
+    <img class="subject" id="sub" alt="">
+
+    <div class="ground" id="ground"></div>
+    <div class="bleach"></div>
+    <div class="haze"></div>
+
+    <div class="credit" id="credit"><span id="ctext">Design by __HANDLE__</span></div>
+    <div class="rule r1"></div>
+    <div class="rule r2"></div>
+
+    <div class="kicker" id="kick" data-optional>__KICKER__</div>
+    <div class="caption" id="cap" data-optional>__SUBTITLE__</div>
+    <div class="content" id="content" data-optional>__CONTENT__</div>
+    <div class="cta" id="cta" data-optional><div class="p" data-optional>__CTA_PILL__ <span>__CTA_SOFT__</span></div><div class="m" data-optional>__MICROCOPY__</div></div>
+
+    <div class="foot" id="foot">
+      <span>__TAGLINE__</span>
+      <span class="mid">__META3__</span>
+      <span>__INDEX__ / __TOTAL__</span>
+    </div>
+
+    __MASCOT__
+    <div class="unused">__HERO_WORD__ __TOPIC_TAG__ __BRAND_LABEL__ __META1__ __META2__</div>
+    <div class="grain"></div>
+    <div class="speck"></div>
+  </div>
+
+  <script>
+  (function(){
+    var S = __SLIDE_JSON__, P = __PLAN_JSON__;
+    var PHOTO = "__BG__", SUBJECT = "__SUBJECT__", LOGO = "__LOGO__";
+    var stage = document.getElementById('stage');
+    var W = 1080, H = 1350;
+    function num(v, d){ v = parseFloat(v); return isNaN(v) ? d : v; }
+    function px(v, d){ v = num(v, d); return v <= 1 ? Math.round(v * H) : v; }   // 0-1 = fraction of height
+
+    // per-slide knobs
+    var r1 = px(S.rule1, 150), r2 = px(S.rule2, 860);
+    stage.style.setProperty('--rule1', r1 + 'px');
+    stage.style.setProperty('--rule2', r2 + 'px');
+    if (S.photo_pos) stage.style.setProperty('--pos', S.photo_pos);
+    var gb = num(S.ground_blur, 28);
+    if (gb <= 0) document.getElementById('ground').style.display = 'none';
+    stage.style.setProperty('--gblur', gb + 'px');
+    stage.style.setProperty('--ground-top', px(S.ground_top, r2 - 190) + 'px');
+
+    // hide optional blocks that ended up empty
+    document.querySelectorAll('[data-optional]').forEach(function(el){
+      if (!el.textContent.trim() && !el.querySelector('img,svg')) el.classList.add('empty');
+    });
+
+    // grain + specks, seeded per slide
+    var seed = (parseInt("__INDEX__", 10) || 1) * 7919 + 101;
+    function rnd(){ seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+    function noise(size, density, rMin, rMax, colour, aMax){
+      var c = document.createElement('canvas'); c.width = c.height = size;
+      var x = c.getContext('2d');
+      for (var i = 0; i < size * size * density; i++){
+        x.fillStyle = colour + (aMax * (0.2 + rnd() * 0.8)).toFixed(3) + ')';
+        x.beginPath(); x.arc(rnd() * size, rnd() * size, rMin + rnd() * (rMax - rMin), 0, 6.2832); x.fill();
+      }
+      return 'url(' + c.toDataURL() + ')';
+    }
+    stage.style.setProperty('--grain', noise(260, .5, .3, .9, 'rgba(128,128,128,', .9));
+    stage.style.setProperty('--speck', noise(200, .08, .2, .8, 'rgba(41,43,25,', .6));
+
+    // logo: a one-colour mark, painted later in the credit's own (sampled) colour
+    var logoImg = null;
+    if (LOGO){ logoImg = new Image(); logoImg.src = LOGO; }
+    function paintLogo(colour){
+      if (!logoImg || !logoImg.naturalWidth) return;
+      var n = 256, k = n / Math.max(logoImg.naturalWidth, logoImg.naturalHeight);
+      var w = Math.round(logoImg.naturalWidth * k), h = Math.round(logoImg.naturalHeight * k);
+      var c = document.createElement('canvas'); c.width = w; c.height = h;
+      var x = c.getContext('2d'); x.drawImage(logoImg, 0, 0, w, h);
+      var d = x.getImageData(0, 0, w, h), p = d.data, opaque = 0;
+      for (var i = 3; i < p.length; i += 4) if (p[i] > 200) opaque++;
+      // a badge logo (opaque plate, light strokes - e.g. the Instagram glyph) keeps its
+      // light strokes; an ordinary transparent logo keeps its own alpha
+      var badge = opaque > 0.6 * w * h;
+      var m = colour.match(/[\d.]+/g).map(Number);
+      for (var j = 0; j < p.length; j += 4){
+        var a = p[j+3] / 255;
+        if (badge){   // keep only the white strokes: light AND unsaturated
+          var mxc = Math.max(p[j], p[j+1], p[j+2]), mnc = Math.min(p[j], p[j+1], p[j+2]);
+          var sat = mxc ? (mxc - mnc) / mxc : 0, l = mxc / 255;
+          a *= Math.max(0, Math.min(1, (l - 0.70) / 0.2)) * Math.max(0, Math.min(1, (0.35 - sat) / 0.2));
+        }
+        p[j] = m[0]; p[j+1] = m[1]; p[j+2] = m[2]; p[j+3] = Math.round(a * 255 * (m[3] === undefined ? 1 : m[3]));
+      }
+      x.putImageData(d, 0, 0);
+      var cr = document.getElementById('credit');
+      var bar = document.createElement('span'); bar.className = 'bar';
+      c.className = 'logo'; c.style.width = Math.round(26 * w / h) + 'px';
+      cr.appendChild(bar); cr.appendChild(c);
+    }
+    if (S.credit_text) document.getElementById('ctext').textContent = S.credit_text;
+
+    var ph = document.getElementById('ph'), sub = document.getElementById('sub');
+    function loaded(img){ return img.decode ? img.decode().catch(function(){}) : Promise.resolve(); }
+    if (PHOTO) ph.src = PHOTO;
+    var mode = S.subject_mode || (SUBJECT ? 'vision' : 'sky');
+    if (mode === 'vision' && SUBJECT) sub.src = SUBJECT; else sub.style.display = 'none';
+
+    // draw the photo exactly as object-fit:cover draws it, into a canvas of w x h
+    function coverCanvas(img, w, h){
+      var c = document.createElement('canvas'); c.width = w; c.height = h;
+      var x = c.getContext('2d');
+      var iw = img.naturalWidth, ih = img.naturalHeight, k = Math.max(w / iw, h / ih);
+      var dw = iw * k, dh = ih * k;
+      var pos = (S.photo_pos || '50% 50%').split(/\s+/).map(function(t){ return parseFloat(t) / 100; });
+      x.drawImage(img, (w - dw) * (isNaN(pos[0]) ? .5 : pos[0]), (h - dh) * (isNaN(pos[1]) ? .5 : pos[1]), dw, dh);
+      return c;
+    }
+
+    // "captions take their colour from whatever they sit on, darkened and dropped in opacity"
+    function sample(ctx, x, y, w, h){
+      x = Math.max(0, x|0); y = Math.max(0, y|0);
+      var d = ctx.getImageData(x, y, Math.max(1, w|0), Math.max(1, h|0)).data, r = 0, g = 0, b = 0, n = 0;
+      for (var i = 0; i < d.length; i += 16){ r += d[i]; g += d[i+1]; b += d[i+2]; n++; }
+      return [r / n, g / n, b / n];
+    }
+    function lum(c){ return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255; }
+    function darkened(c, k, a){
+      // pull toward the photo's own shadow (weathered ink) rather than neutral black
+      var ink = [41, 43, 25];
+      return 'rgba(' + c.map(function(v, i){ return Math.round(v * k + ink[i] * (1 - k)); }).join(',') + ',' + a + ')';
+    }
+
+    // sky-key occluder: everything that is not sky covers the headline.
+    // The raw per-pixel key is noisy at the horizon (hazy hills half-read as sky), so the
+    // mask is cleaned before use: morphological close, keep only foreground connected to
+    // the bottom of the frame, drop tiny islands, fill small sky holes, feather ~1.5px.
+    function skyMask(img){
+      var w = 540, h = 675, N = w * h, src = coverCanvas(img, w, h);
+      var p = src.getContext('2d').getImageData(0, 0, w, h).data, fg = new Uint8Array(N);
+      for (var i = 0, j = 0; j < N; i += 4, j++){
+        var r = p[i] / 255, g = p[i+1] / 255, b = p[i+2] / 255;
+        var mxv = Math.max(r, g, b), mnv = Math.min(r, g, b), l = 0.2126*r + 0.7152*g + 0.0722*b;
+        var sat = mxv ? (mxv - mnv) / mxv : 0;
+        var blue = b > r + 0.04 && b >= g - 0.02 && l > 0.30;       // blue sky
+        var cloud = l > 0.70 && sat < 0.22;                            // white / hazy sky
+        fg[j] = (blue || cloud) ? 0 : 1;
+      }
+      function morph(a, rad, dilate){          // separable box dilate / erode
+        var t = new Uint8Array(N), o = new Uint8Array(N), x, y, k, v;
+        for (y = 0; y < h; y++) for (x = 0; x < w; x++){
+          v = dilate ? 0 : 1;
+          for (k = -rad; k <= rad; k++){ var xx = Math.min(w - 1, Math.max(0, x + k)), q = a[y*w + xx];
+            if (dilate ? q : !q){ v = dilate ? 1 : 0; break; } }
+          t[y*w + x] = v;
+        }
+        for (x = 0; x < w; x++) for (y = 0; y < h; y++){
+          v = dilate ? 0 : 1;
+          for (k = -rad; k <= rad; k++){ var yy = Math.min(h - 1, Math.max(0, y + k)), q2 = t[yy*w + x];
+            if (dilate ? q2 : !q2){ v = dilate ? 1 : 0; break; } }
+          o[y*w + x] = v;
+        }
+        return o;
+      }
+      fg = morph(morph(fg, 3, true), 3, false);                          // close: seal speckle
+      // connected components (4-neighbour) of value `val`; keep() decides survivors
+      function components(val, keep){
+        var lab = new Int32Array(N).fill(-1), stack = new Int32Array(N), out = new Uint8Array(N);
+        for (var s0 = 0; s0 < N; s0++){
+          if (fg[s0] !== val || lab[s0] !== -1) continue;
+          var sp = 0, area = 0, top = false, bottom = false, members = [];
+          stack[sp++] = s0; lab[s0] = s0;
+          while (sp){
+            var c = stack[--sp], cx0 = c % w, cy0 = (c / w) | 0; area++; members.push(c);
+            if (cy0 === 0) top = true; if (cy0 === h - 1) bottom = true;
+            var nb = [cx0 > 0 ? c - 1 : -1, cx0 < w - 1 ? c + 1 : -1, cy0 > 0 ? c - w : -1, cy0 < h - 1 ? c + w : -1];
+            for (var n = 0; n < 4; n++){ var e = nb[n]; if (e >= 0 && fg[e] === val && lab[e] === -1){ lab[e] = s0; stack[sp++] = e; } }
+          }
+          if (keep(area, top, bottom)) for (var m = 0; m < members.length; m++) out[members[m]] = 1;
+        }
+        return out;
+      }
+      var minArea = N * 0.004;
+      var keepFg = components(1, function(a, t, b){ return b && a >= minArea; });   // grounded, not tiny
+      for (var z = 0; z < N; z++) fg[z] = keepFg[z];
+      var smallHoles = components(0, function(a, t){ return !t && a < minArea; });  // sky specks inside land
+      for (z = 0; z < N; z++) if (smallHoles[z]) fg[z] = 1;
+      var m = document.createElement('canvas'); m.width = w; m.height = h;
+      var mx = m.getContext('2d'), md = mx.createImageData(w, h), q = md.data;
+      for (z = 0; z < N; z++) q[z*4 + 3] = fg[z] ? 255 : 0;
+      mx.putImageData(md, 0, 0);
+      var out = document.createElement('canvas'); out.width = W; out.height = H;
+      var ox = out.getContext('2d');
+      ox.filter = 'blur(1.5px)';                    // feather
+      ox.drawImage(m, 0, 0, W, H);
+      ox.filter = 'none';
+      return out;                                   // alpha = occluder mask
+    }
+    function skyKey(img){
+      var out = skyMask(img), ox = out.getContext('2d');
+      ox.globalCompositeOperation = 'source-in';
+      ox.drawImage(coverCanvas(img, W, H), 0, 0);  // photo, only where the mask is
+      out.className = 'subject'; out.id = 'occ';
+      stage.insertBefore(out, sub.nextSibling);
+      return out;
+    }
+
+    // ---- numbers must never lose a character to the subject ----
+    // A hidden digit, '.', ',', '%', '-' or '$' changes the value. For a numeric headline,
+    // draw its glyphs into a mask and measure how much of EACH character the occluder covers.
+    function glyphCoverage(hl, occ, size){
+      var t = hl.textContent;
+      if (!occ || /\n/.test(t)) return null;
+      var k = 0.5, mw = Math.round(W * k), mh = Math.round(H * k);
+      var oc = document.createElement('canvas'); oc.width = mw; oc.height = mh;
+      var ox = oc.getContext('2d'); ox.drawImage(occ, 0, 0, mw, mh);
+      var oa = ox.getImageData(0, 0, mw, mh).data;
+      var probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      hl.appendChild(probe); var baseInEl = probe.offsetTop; hl.removeChild(probe);
+      var gc = document.createElement('canvas'); gc.width = mw; gc.height = mh;
+      var gx = gc.getContext('2d');
+      gx.font = '400 ' + (size * k) + 'px "DM Serif Display"';
+      gx.letterSpacing = (-0.005 * size * k) + 'px';
+      gx.fillText(t.toUpperCase(), hl.offsetLeft * k, (hl.offsetTop + baseInEl) * k);
+      var ga = gx.getImageData(0, 0, mw, mh).data;
+      var node = hl.firstChild, sr = stage.getBoundingClientRect(), res = [];
+      for (var i = 0; i < t.length; i++){
+        if (!/[0-9.,%$\-−]/.test(t[i])) continue;
+        var rg = document.createRange(); rg.setStart(node, i); rg.setEnd(node, i + 1);
+        var rc = rg.getBoundingClientRect();
+        var x0 = Math.max(0, Math.floor((rc.left - sr.left) * k)), x1 = Math.min(mw, Math.ceil((rc.right - sr.left) * k));
+        var ink = 0, hid = 0;
+        for (var y = 0; y < mh; y++) for (var x = x0; x < x1; x++){
+          var a = ga[(y*mw + x)*4 + 3]; if (a < 128) continue;
+          ink++; if (oa[(y*mw + x)*4 + 3] > 128) hid++;
+        }
+        if (ink) res.push({ch: t[i], cover: hid / ink});
+      }
+      return res;
+    }
+    function occluderCanvas(){
+      var occ = document.getElementById('occ');
+      if (occ) return occ;
+      if (sub.style.display !== 'none' && sub.naturalWidth) return coverCanvas(sub, W, H);
+      return null;
+    }
+
+    Promise.all([document.fonts.ready, loaded(ph), mode === 'vision' ? loaded(sub) : Promise.resolve(),
+                 logoImg ? loaded(logoImg) : Promise.resolve()]).then(function(){
+      // ---- headline: fit to the plate, place it behind the subject ----
+      var hl = document.getElementById('hl');
+      var text = hl.textContent.trim();
+      if (text.indexOf('\\n') >= 0 || text.indexOf('\n') >= 0){
+        hl.textContent = text.replace(/\\n/g, '\n'); hl.classList.add('two');
+      }
+      var target = W * num(S.head_width, 0.88), size = 220;  // size is reused by the numeric guard
+      for (var i = 0; i < 24; i++){
+        var w = hl.getBoundingClientRect().width; if (!w) break;
+        var r = target / w; if (Math.abs(r - 1) < .004) break;
+        size = Math.min(num(S.head_max, 420), size * r); hl.style.fontSize = size + 'px';
+        if (size >= num(S.head_max, 420)) break;
+      }
+      hl.style.left = Math.round((W - hl.getBoundingClientRect().width) / 2) + 'px';
+      hl.style.top = px(S.head_top, 300) + 'px';
+
+      // ---- colours from the photograph ----
+      var cv = ph.naturalWidth ? coverCanvas(ph, W, H) : null, cx = cv && cv.getContext('2d');
+      if (cx){
+        var sky = sample(cx, 260, r1 - 70, 560, 60);
+        document.documentElement.style.setProperty('--credit', darkened(sky, lum(sky) > .55 ? .34 : .22, .86));
+        stage.style.setProperty('--credit', darkened(sky, lum(sky) > .55 ? .34 : .22, .86));
+        paintLogo(darkened(sky, lum(sky) > .55 ? .34 : .22, .86));
+        var lightSky = sky.map(function(v){ return Math.round(v + (255 - v) * .55); });
+        stage.style.setProperty('--rule', 'rgba(' + lightSky.join(',') + ',.55)');
+        var capBox = document.getElementById('cap');
+        var gy = r2 + 20;
+        var ground = sample(cx, 140, gy, 800, 200);
+        if (num(S.ground_blur, 28) > 0){  // the haze: a veil of the ground's own colour, lifted
+          var veil = ground.map(function(v){ return Math.round(Math.min(255, v * 1.10 + 14)); });
+          stage.style.setProperty('--veil', 'rgba(' + veil.join(',') + ',.30)');
+          ground = ground.map(function(v, i){ return (Math.min(255, (v - 128) * .72 + 128) * 1.08) * .7 + veil[i] * .3; });
+        }
+        var k = lum(ground) > .5 ? .30 : lum(ground) > .32 ? .22 : .5;
+        var capCol = lum(ground) < .22
+          ? 'rgba(' + ground.map(function(v){ return Math.round(v + (255 - v) * .62); }).join(',') + ',.70)'  // on a dark field, lift instead
+          : darkened(ground, k, num(S.caption_alpha, .84));
+        stage.style.setProperty('--cap', capCol);
+        var footG = sample(cx, 60, H - 60, 960, 40);
+        stage.style.setProperty('--foot', lum(footG) < .22
+          ? 'rgba(' + footG.map(function(v){ return Math.round(v + (255 - v) * .6); }).join(',') + ',.7)'
+          : darkened(footG, .3, .84));
+      }
+
+      // ---- the occluder ----
+      if (mode === 'sky' && ph.naturalWidth) skyKey(ph);
+
+      // ---- numeric headline: raise it until no character is more than 15% hidden ----
+      if (/[0-9]/.test(hl.textContent) && num(S.numeric_guard, 1)){
+        var occ = occluderCanvas(), limitCov = num(S.max_cover, .15), top = hl.offsetTop, floor = r1 + 12;
+        // digits may lose a sliver (<= max_cover); punctuation is small enough that any bite
+        // risks a misread ('0.50%' -> '0 50%'), so '.', ',', '%', '-', '$' get max_cover_punct
+        var limitPunct = num(S.max_cover_punct, .02);
+        var cov = glyphCoverage(hl, occ, size), worst = function(c){
+          return c ? c.reduce(function(m, g){ return Math.max(m, g.cover / (/[0-9]/.test(g.ch) ? limitCov : limitPunct)); }, 0) * limitCov : 0; };
+        while (cov && worst(cov) > limitCov && top > floor){
+          top = Math.max(floor, top - 8); hl.style.top = top + 'px'; cov = glyphCoverage(hl, occ, size);
+        }
+        document.body.dataset.numericCover = JSON.stringify(cov);
+        if (cov && worst(cov) > limitCov){
+          // could not clear it: the value wins over the layering - drop the occluder, and say so
+          document.body.dataset.occlusionWarning = 'numeric headline still ' + 'covered beyond the limit; occluder removed';
+          console.warn('[sunfaded] ' + document.body.dataset.occlusionWarning);
+          if (document.getElementById('occ')) document.getElementById('occ').style.display = 'none';
+          sub.style.display = 'none';
+        }
+      }
+
+      // ---- lower third, top-down from the second hairline ----
+      var y = r2 + num(S.caption_gap, 34);
+      var kick = document.getElementById('kick');
+      if (!kick.classList.contains('empty')){ kick.style.top = (r1 + 18) + 'px'; }
+      var cap = document.getElementById('cap');
+      if (S.attribution && !cap.classList.contains('empty')){
+        var at = document.createElement('div'); at.className = 'attr'; at.textContent = S.attribution;
+        cap.appendChild(at);
+      }
+      if (!cap.classList.contains('empty')){ cap.style.top = y + 'px'; y += cap.offsetHeight + num(S.content_gap, 26); }
+      var content = document.getElementById('content');
+      if (content.querySelector('.shot, .heroimg')) content.classList.add('has-shot');
+      if (!content.classList.contains('empty')){
+        content.style.top = (S.content_top ? px(S.content_top) : y) + 'px';
+        y = content.offsetTop + content.offsetHeight + 22;
+      }
+      var cta = document.getElementById('cta');
+      if (!cta.classList.contains('empty')){ cta.style.top = (S.cta_top ? px(S.cta_top) : y) + 'px'; }
+
+      // keep the lower third clear of the foot line: if the stack overflows, lift the
+      // whole block - hairline, haze, caption, proof and call to action - together
+      var blocks = [cap, content, cta].filter(function(el){ return !el.classList.contains('empty'); });
+      var bottom = blocks.reduce(function(m, el){ return Math.max(m, el.offsetTop + el.offsetHeight); }, 0);
+      var limit = H - num(S.foot_clear, 84);
+      if (bottom > limit){
+        var lift = bottom - limit;
+        blocks.forEach(function(el){ el.style.top = (el.offsetTop - lift) + 'px'; });
+        r2 -= lift; stage.style.setProperty('--rule2', r2 + 'px');
+        if (!S.ground_top) stage.style.setProperty('--ground-top', (r2 - 190) + 'px');
+      }
+      document.body.dataset.ready = '1';
+    });
+  })();
+  </script>
+</body>
+</html>

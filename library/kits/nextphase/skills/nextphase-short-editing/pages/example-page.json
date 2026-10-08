@@ -1,0 +1,21 @@
+{
+ "url": "local:example-page.html (platshållare)",
+ "css_width": 640,
+ "scale_into_frame": 1.6875,
+ "rects": [
+  {
+   "phrase": "du får fler rundor för samma insats under hela säsongen",
+   "left": 41.01,
+   "top": 54.22,
+   "width": 54.41,
+   "height": 1.76
+  },
+  {
+   "phrase": "du får fler rundor för samma insats under hela säsongen",
+   "left": 4.06,
+   "top": 56.61,
+   "width": 10.84,
+   "height": 1.76
+  }
+ ]
+}

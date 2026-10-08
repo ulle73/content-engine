@@ -1,0 +1,215 @@
+/* ZAK — design tokens.
+   Import this into EVERY scene. Never hardcode a hex, a font or a duration.
+   Never mix these with nextphase-long-editing, motiongraphics, persa or vibecode.
+
+   Everything in section 1-6 marked MEASURED was read off the reference reel
+   pixel by pixel, not chosen. The raw readings and the method live in
+   reference/reference-log.md. If you change one, you are changing the style.
+
+   TWO CANVASES. The style was MEASURED at 1080x1920 (a 9:16 reel) and `:root`
+   below carries those numbers. 1920x1080 is the DEFAULT for this studio, and
+   `.zk-16x9` overrides the eight tokens that do not transfer. The 16:9 window
+   is DERIVED, not measured — reference/layouts.md 16:9 explains each choice and
+   what it was traded against. Put class="zk-frame zk-16x9" on the root.
+
+   CSS comments do not nest. Never write a closing marker inside a block. */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@600;700;800&display=swap');
+
+:root{
+
+  /* == 1 - THE GROUND ==================================================
+     MEASURED. Not near-black, not #0A0A0A, not a gradient, not a texture.
+     Sampled at seven points across 120 frames: 0,0,0 every time. The whole
+     style rests on the window being the only lit thing in the frame.      */
+  --zk-ground:       #000000;
+  --zk-ink:          #FFFFFF;   /* title AND caption. There is no third colour. */
+
+  /* == 2 - THE WINDOW ==================================================
+     MEASURED at 1080x1920. A SQUARE, inset on all four sides, with equal
+     black air above and below: 476 + 968 + 476 = 1920 exactly, and
+     56 + 968 + 56 = 1080 exactly. The symmetry is the whole gag; a window
+     that is 8px off-centre reads as a mistake rather than a frame.         */
+  --zk-win-w:        89.63%;    /* 968 / 1080 -> side margin 56px each side  */
+  --zk-win-h:        50.42%;    /* 968 / 1920                                */
+  --zk-win-y:        24.79%;    /* 476 / 1920 - equal air top and bottom     */
+  --zk-radius:       6.48cqw;   /* 70px @1080w. Arc-fitted over 23 rows.     */
+
+  /* == 3 - THE TITLE LINE ==============================================
+     MEASURED. One serif line living in the black air ABOVE the window.
+     Set once, holds for the entire runtime, never animates, never moves.
+     Sits LOW in that air - 72px above the window, ~360px of empty black
+     above it. Pushing it to the vertical centre of the air breaks it.      */
+  --zk-title-size:   2.92cqh;   /* 56px @1920h. Playfair fitted to 878px wide */
+  --zk-title-track:  0em;       /* measured +0.003em - i.e. none             */
+  --zk-title-weight: 400;
+  --zk-title-gap:    3.44cqh;   /* 66px @1920h. Calibrated so the RENDER lands  */
+
+  /* == 4 - THE CAPTION =================================================
+     MEASURED. White, bold, brutally tight, NO shadow and NO stroke, sitting
+     directly on the footage INSIDE the window. Fixed position for the whole
+     video. 2-4 words at a time, replaced on a single frame.
+
+     The tracking is not a taste call - at default spacing the measured
+     string is 104px too wide. It is set that tight in the reference.       */
+  --zk-cap-size:     3.28cqh;   /* 63px @1920h - x-height 36px, baseline 1042 */
+  --zk-cap-track:    -.065em;   /* solved in-browser against the 624px string */
+  --zk-cap-weight:   700;
+  --zk-cap-y:        53.02%;    /* optical centre 1018 / 1920. Fixed per shot */
+  --zk-cap-max:      82%;       /* of window width, before it must re-chunk  */
+
+  /* == 5 - THE PLATE ===================================================
+     MEASURED off one reel in one room, so treat these as the target range
+     rather than a calibrated curve - reference/look.md is explicit about
+     what is the grade and what is that creator's lamp.
+
+     ⚠ These are readings of THAT ROOM, not a transform. --zk-plate-warmth and
+     the saturation are that creator's lamp and cap; chasing them on footage
+     that is already warm doubles the cast and goes muddy. Take the EXPOSURE
+     (luma / floor / ceiling), leave the colour alone. look.md 2.
+
+     Low-key and warm. Nothing near white, nothing near black, and crucially
+     the band behind the caption sat at luma 126 for all 120 sampled frames.
+     That number is load-bearing: the caption has no shadow, so the plate is
+     the only thing making it readable. scripts/check-contrast.py gates it.  */
+  --zk-plate-luma:      90;     /* mean luma inside the window, 0-255        */
+  --zk-plate-floor:     24;     /* 1st percentile - blacks are LIFTED        */
+  --zk-plate-ceil:     151;     /* 99th percentile - highlights never bloom  */
+  --zk-plate-warmth:   -53;     /* B-R in the mids. Warm, and much warmer    */
+  --zk-cap-band-luma:  126;     /* target luma behind the caption            */
+  --zk-cap-band-max:   150;     /* above this, white type stops reading      */
+
+  /* In-browser PREVIEW of that grade, for authoring only. It is NOT the
+     deliverable and it is not colour-accurate. Ship the ffmpeg chain in
+     scripts/zak-plate.sh.                                                  */
+  --zk-plate-preview: saturate(1.05) contrast(.94) brightness(.92)
+                      sepia(.16) hue-rotate(-12deg);
+
+  /* == 6 - MOTION ======================================================
+     MEASURED, and it is almost all zeroes. This is the stillest of the five
+     house styles. Over 40s: the window never moved, never scaled; a static
+     background edge sat at 0px drift across every sampled frame; there was
+     no push-in, no parallax, no transition of any kind.
+
+     The cut IS the transition. If a cut needs help, the help is a sound.    */
+  --zk-dur-caption:  0s;        /* HARD CUT. Zero frames. Never negotiable.  */
+  --zk-dur-swap:     0s;        /* window contents hard-cut too              */
+  --zk-drift:        0s;        /* there is no drift. Deliberately.          */
+  --zk-dur-bleed:    .20s;      /* the ONE move: window -> full bleed, 6f    */
+  --zk-ease-bleed:   cubic-bezier(.16,1,.3,1);
+
+  /* Caption cadence, measured over 53 changes in 39.9s = 80/min.           */
+  --zk-hold-mean:    .733s;     /* 22 frames @30fps                          */
+  --zk-hold-min:     .233s;     /* 7 frames - the floor. Never go under.     */
+  --zk-hold-max:    1.467s;     /* 44 frames - the ceiling                   */
+
+  /* == 7 - TYPE FACES ==================================================
+     Two. That is the entire type system. See reference/typography.md for
+     the identification work and the licensed originals these substitute.   */
+  --zk-font-title:   "Playfair Display", "Didot", "Bodoni 72", Georgia, serif;
+  --zk-font-caption: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* == 16:9 OVERRIDES ====================================================
+   Eight values, and only these eight, differ in a 1920x1080 frame.
+   Every one of them is DERIVED. Read reference/layouts.md 16:9 for the
+   reasoning; the short version:
+
+   1 - THE WINDOW STOPS BEING SQUARE. A 9:16 frame can spend 55% of its area
+       on black because a phone is held at arm's length. A 16:9 video watched
+       across a room cannot. The window becomes a 2.35:1 scope letterbox:
+       1720x732 with 174px of black above and below and the SAME 5.19% side
+       margin as the reference. This is a reframe of the source, not a scale.
+   2 - RADIUS HOLDS ITS ABSOLUTE SIZE. 6.48cqw would be 124px on a 1920-wide
+       frame and the window would read as a pill. 3.65cqw keeps it at 70px.
+   3/4 - TYPE DOES NOT SCALE DOWN WITH THE FRAME, for the same arm's-length
+       reason. 2.92cqh would put the title at 31px and the caption at 38px on
+       a 1080-tall frame, which dies in compression. Both are set to their
+       readable equivalents instead.
+   5 - CAPTION Y is re-derived against the WINDOW, not the frame: it sat at
+       56.0% of window height in the reference, which lands at 54.1% here.
+   6 - CAPTION SIZE could not be derived, only chosen, because the window
+       changed ASPECT and the two candidate rules disagree by 3x. Matching the
+       caption's height against the window gives 48px and reads as a subtitle
+       on someone else's video. Matching its WIDTH fill (the reference line
+       spans 64% of the window) gives ~150px and swallows a 732-tall window.
+       80px was picked by rendering all three against a real plate and holding
+       them next to the reference - it carries the same presence. If you change
+       one token in this block, expect it to be this one; change it by looking,
+       not by arithmetic. */
+.zk-16x9{
+  --zk-win-w:        89.58%;    /* 1720 / 1920 - side margin 100px          */
+  --zk-win-h:        67.78%;    /*  732 / 1080                              */
+  --zk-win-y:        16.11%;    /*  174 / 1080 - still equal top and bottom */
+  --zk-radius:       3.65cqw;   /* 70px @1920w - same absolute radius       */
+  --zk-title-size:   4.26cqh;   /* 46px @1080h - readability, not ratio     */
+  --zk-title-gap:    1.94cqh;   /* 21px - same 15% of the air as measured   */
+  --zk-cap-size:     7.40cqh;   /* 80px @1080h - chosen by eye, see below   */
+  --zk-cap-y:        54.07%;    /* 584/1080. A STARTING POINT in 16:9 - set  */
+                                /* it per shot, below the chin. layouts.md 6 */
+}
+
+/* == THE FRAME ==========================================================
+   EVERY zak composition root carries this. It paints the ground and it
+   establishes the size container every cqh/cqw token resolves against.
+   Without it all type collapses to a fraction of its size and the layout
+   still looks plausible, which is why it is the first thing to check. */
+.zk-frame{
+  container-type:size; position:relative; overflow:hidden;
+  width:100%; height:100%;
+  background:var(--zk-ground);
+}
+
+/* == THE WINDOW =========================================================
+   One per scene. Centred horizontally, its own height and y from tokens.
+   No border, no glow, no outer shadow - there is nothing behind it to cast
+   onto. A drop shadow on pure black is invisible work. */
+.zk-window{
+  position:absolute; left:50%; transform:translateX(-50%);
+  width:var(--zk-win-w); height:var(--zk-win-h); top:var(--zk-win-y);
+  border-radius:var(--zk-radius); overflow:hidden;
+  background:var(--zk-ground);
+}
+.zk-plate{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.zk-plate--preview{ filter:var(--zk-plate-preview); }
+
+/* Two panes inside one window. The outer radius is the only radius; the
+   inner seam is a hard 2px of ground, never a rounded gap. */
+.zk-window--split{ display:flex; gap:2px; background:var(--zk-ground); }
+.zk-pane{ position:relative; flex:1; overflow:hidden; }
+
+/* == THE TITLE LINE =====================================================
+   In the air ABOVE the window, bottom-aligned to a fixed gap from it.
+   Sentence case, and it ends in a colon in the reference. Set it once. */
+.zk-title{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:calc(100% - var(--zk-win-y) + var(--zk-title-gap));
+  font-family:var(--zk-font-title); font-weight:var(--zk-title-weight);
+  font-size:var(--zk-title-size); letter-spacing:var(--zk-title-track);
+  color:var(--zk-ink); white-space:nowrap; line-height:1;
+}
+
+/* == THE CAPTION ========================================================
+   Inside the window, on the footage. No shadow. No stroke. No box.
+
+   That is measured, not an omission: pixels 2-3px outside the glyphs were
+   BRIGHTER than pixels 8px out, so there is no halo at all. It works only
+   because the plate under it is dark. Adding a shadow to rescue a bright
+   plate is fixing the wrong layer - fix the plate, or move the shot. */
+.zk-caption{
+  position:absolute; left:50%; top:var(--zk-cap-y);
+  transform:translate(-50%,-50%);
+  max-width:var(--zk-cap-max);
+  font-family:var(--zk-font-caption); font-weight:var(--zk-cap-weight);
+  font-size:var(--zk-cap-size); letter-spacing:var(--zk-cap-track);
+  color:var(--zk-ink); white-space:nowrap; line-height:1;
+  text-align:center;
+}
+
+/* == THE ONE MOVE =======================================================
+   The window opening to full bleed for a punctuation beat. Six frames.
+   Use it once or twice in a whole video - it is loud precisely because
+   nothing else in the style moves. */
+.zk-window--bleed{
+  width:100%; height:100%; top:0; border-radius:0;
+}

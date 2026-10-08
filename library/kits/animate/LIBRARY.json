@@ -1,0 +1,1321 @@
+{
+  "kit": "animate",
+  "title": "Animate – procedurell animation i valfri stil (cth9191)",
+  "source": {
+    "name": "cth9191/animate (Claude Code-plugin v0.4.0, commit 7e5eb56)",
+    "url": "https://github.com/cth9191/animate",
+    "license": "MIT – se library/kits/animate/NOTICE"
+  },
+  "items": [
+    {
+      "id": "animate.skill.animate",
+      "name": "Animate – procedurella animationsvideor i kod",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Gör korta animerade videor helt i kod: en <canvas> ritad och tonsatt procedurellt, deterministisk bildruta för bildruta, renderad till MP4 med Chrome + ffmpeg. Förklarare, historier, små berättelser och produktfilmer i sju inbyggda stilar (klippt papper, tuschkors, riso, skissbok, matte, pixel, isometrisk) eller en ny stil matchad från dina referenser. Intervju → storykoll → lookkoll → storyboard → bygg → mätt granskning (klipp på beatgridden, textkoll, ljudnivå, döda partier). Syntetiserat soundtrack, egen musik med beat-mappning, voice-over, riktiga skärmdumpar och alla format från samma pjäs.",
+      "tags": [
+        "animation",
+        "canvas",
+        "explainer",
+        "förklarare",
+        "storyboard",
+        "procedurell",
+        "motion-graphics",
+        "kod",
+        "chrome",
+        "deterministisk",
+        "flera-format"
+      ],
+      "path": ".claude/skills/animate/SKILL.md",
+      "use": "Skill /animate \"<ämne> <stil>\" (t.ex. /animate en 45s historia om cykeln, cut paper). Verktyg körs från repo-roten: node .claude/skills/animate/tools/<verktyg>.mjs work/animate/pieces/<namn>. Förstagångs-setup: powershell -ExecutionPolicy Bypass -File .claude/skills/animate/setup.ps1",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.skill.animate.mp4",
+        "still": "library/previews/animate.skill.animate.jpg"
+      },
+      "notes": "Verifierat på Windows: alla 7 stilars demos + isometric-dark, båda mallarna (startmallen i alla 4 format), 60s-exemplet history-of-ai, musik-, voice- och skärmdumpstester – byggda, exporterade och granskade med skillens egna verktyg. Playwright installeras lokalt i work/animate/node_modules och kör systemets Chrome (tools/pw.mjs). Förhandsvisningen är en stilrulle (1,5 s ur varje stildemo); stillbilden är intervjuns stilgalleri."
+    },
+    {
+      "id": "animate.style.cut-paper",
+      "name": "Klippt papper (cut paper)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Collage av rivet papper: ojämna rivkanter, mjuka skuggor, papperskorn och krita i fyllningarna, mönster (ränder, prickar, gingham, träådring), helfärgade världar och figurer med enkla ansikten. Lekfullt, varmt och fullt av småliv (sovande katt, ånga ur muggen, blommor som poppar upp). Rör sig på 2:or. Hjälten är ”gnistan”, en orange stjärna som får en stråle per era. Demo: natt → morgon där månen formförvandlas till solen.",
+      "tags": [
+        "klippt-papper",
+        "collage",
+        "papper",
+        "lekfull",
+        "varm",
+        "barnbok",
+        "handgjord",
+        "berättelse",
+        "historia",
+        "mysig"
+      ],
+      "path": ".claude/skills/animate/styles/cut-paper/STYLE.md",
+      "use": "Kopiera .claude/skills/animate/styles/cut-paper/demo/ (piece.json + src/) eller templates/piece/ till work/animate/pieces/<namn>/, bygg med build.mjs, exportera med export.mjs --share.",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.style.cut-paper.mp4",
+        "still": "library/previews/animate.style.cut-paper.jpg"
+      },
+      "notes": "Demo 8 s, 192 bilder: export 24 s (46 ms/bild, 4 parallella sidor), review PASS (morph på griden, story arc 2/2, text, -14,5 LUFS). Kitet ritar med W/H och klarar alla format; flerformat verifierat via startmallen (templates/piece) som är i denna stil."
+    },
+    {
+      "id": "animate.style.crosshatch",
+      "name": "Tuschkors (crosshatch ink)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Skissig tuschlinje som ”kokar” (darrar) på 2:or, korsskraffering, färgpenna och stipple inuti formerna, papperskorn. Varmt krämpapper och trä på dagen; marinblå ”inuti datorn”-världar med periwinkle-linjer och lysande accenter. Perfekt för tekniska förklarare om kod, terminaler och AI-agenter – verktygsbubblor som Read(notes.md) gör agentsteg läsbara. Demo: morgon vid skrivbordet → inuti maskinen där grep och tester körs.",
+      "tags": [
+        "tusch",
+        "skraffering",
+        "handritad",
+        "kokande-linje",
+        "teknik",
+        "kod",
+        "terminal",
+        "förklarare",
+        "mörk-och-ljus",
+        "redaktionell"
+      ],
+      "path": ".claude/skills/animate/styles/crosshatch/STYLE.md",
+      "use": "Kopiera styles/crosshatch/demo/ till work/animate/pieces/<namn>/ och bygg vidare; stilen är också startpunkt för nya stilar (new-style.md).",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.style.crosshatch.mp4",
+        "still": "library/previews/animate.style.crosshatch.jpg"
+      },
+      "notes": "Demo 6 s: export 17 s, review PASS (text, story arc 2/2; högsta ljudtoppen ligger dock i första akten – demots tonsättning, inte en Windows-fråga). Hjälten (terrakottaboll #d97757 med vit asterisk) påminner om Claudes logga – byt hjälte innan publicering i kommersiellt syfte."
+    },
+    {
+      "id": "animate.style.riso",
+      "name": "Riso-tryck (risograph)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Ett trefärgs risografttryck på krämpapper: rastrerade punkter i egna vinklar (teal 15°, rosa 75°, gul 45°), övertryck i stället för blandade färger, lätt feltryck och bläckbortfall som gnistrar i mörkren. Platt, klart, lite slitet – fanzine/affisch-känsla. Ingen svart eller vit färg, allt ”trycks”. Demo: gryning på ett hustak där solen blir en apelsin i en marknadslåda.",
+      "tags": [
+        "riso",
+        "risograf",
+        "raster",
+        "halvton",
+        "tryck",
+        "fanzine",
+        "retro",
+        "färgstark",
+        "affisch",
+        "redaktionell"
+      ],
+      "path": ".claude/skills/animate/styles/riso/STYLE.md",
+      "use": "Kopiera styles/riso/demo/ till work/animate/pieces/<namn>/; färger anges som toner per platta (inkRGB/tonesOf i kit.js).",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.style.riso.mp4",
+        "still": "library/previews/animate.style.riso.jpg"
+      },
+      "notes": "Demo 6 s: export 35 s (tyngst av stilarna, ~109 ms/bild), review PASS (1 WARN: skylten ”3 for 1” i mobilens UI-zon 5,5–5,75 s). Rastret komprimeras dåligt: förhandsvisningen kodad med CRF 31 för att hålla < 2 MB."
+    },
+    {
+      "id": "animate.style.sketchbook",
+      "name": "Skissbok (graphite sketchbook)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Grafit och en enda accentfärg på en varm skissbokssida med prickrutnät, spiralrygg, kaffering och suddade spöklinjer. Allt blyertsas först, tuschas sedan och färgläggs med en snabb klotterfyllning; handtextning på sidan berättar och viktiga ord markeras med överstrykningspenna. Kameran glider över sidan i stället för att klippa. Demo: en idé skissas som en glödlampa som blir solen över en kulle.",
+      "tags": [
+        "skissbok",
+        "blyerts",
+        "grafit",
+        "handtextning",
+        "anteckningar",
+        "idé",
+        "mjuk",
+        "redaktionell",
+        "doodle",
+        "lärande"
+      ],
+      "path": ".claude/skills/animate/styles/sketchbook/STYLE.md",
+      "use": "Kopiera styles/sketchbook/demo/ till work/animate/pieces/<namn>/.",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.style.sketchbook.mp4",
+        "still": "library/previews/animate.style.sketchbook.jpg"
+      },
+      "notes": "Demo 6 s: export 22 s, review PASS (text, story arc 2/2, -14,7 LUFS). Handstilen kommer från Windows-typsnittet Ink Free (fallback Segoe Print). Hjälten (terrakottaboll med asterisk) påminner om Claudes logga – byt den för kommersiell publicering."
+    },
+    {
+      "id": "animate.style.math",
+      "name": "Matte (manim-stil)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "En manim-inspirerad matteförklarare: nästan svart scen, serifftypografi som skrivs fram, axlar och grafer som ritas med svep, ekvationer som transformeras, en spårpunkt med levande decimalavläsning och en liten π-figur med ögon som tittar på. Mjuk easing på 1:or, ingen textur. Färgkodning bär budskapet – varje storhet har en färg överallt. Demo: Pythagoras sats som blir enhetscirkeln.",
+      "tags": [
+        "matte",
+        "manim",
+        "ekvationer",
+        "grafer",
+        "vetenskap",
+        "utbildning",
+        "mörk",
+        "ren",
+        "färgkodad",
+        "förklarare"
+      ],
+      "path": ".claude/skills/animate/styles/math/STYLE.md",
+      "use": "Kopiera styles/math/demo/ till work/animate/pieces/<namn>/. Stilen går på 1:or och tål --blur 4 (rörelseoskärpa) vid export.",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.style.math.mp4",
+        "still": "library/previews/animate.style.math.jpg"
+      },
+      "notes": "Demo 6 s: export 9 s (15 ms/bild, snabbast), review PASS (2 WARN: siffror kort i UI-zonen under morfen). Bara sann matte på skärmen – stilen lovar stringens."
+    },
+    {
+      "id": "animate.style.pixel",
+      "name": "Pixel art (låg upplösning per era)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Pixelgrafik ritad i äkta låg upplösning (90×160, 180×320 …) och uppskalad nearest-neighbour: hårda fyrkantiga pixlar, Bayer-dithering i stället för gradienter, inbyggt 5×7-bitmapstypsnitt, sprites ur strängar och skärmeffekter (LCD-raster för handhållet, scanlines för arkad). Upplösningen kan berätta tid – tidiga eror är grövre. Demo: Game Boy-grön skog där månen blir ett mynt i en 16-färgs arkadstad.",
+      "tags": [
+        "pixel",
+        "8-bit",
+        "retro",
+        "spel",
+        "arkad",
+        "game-boy",
+        "nostalgi",
+        "datorhistoria",
+        "dithering",
+        "lekfull"
+      ],
+      "path": ".claude/skills/animate/styles/pixel/STYLE.md",
+      "use": "Kopiera styles/pixel/demo/ till work/animate/pieces/<namn>/; ange ERA_RES per era i src/bridges.js.",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.style.pixel.mp4",
+        "still": "library/previews/animate.style.pixel.jpg"
+      },
+      "notes": "Demo 6 s: export 13 s, bild och text PASS. Story arc FAIL i demots egen tonsättning (högsta ljudet 2,5 s i första akten, -16,4 LUFS) – uppströms, inte Windows; justera score.js i egna pjäser."
+    },
+    {
+      "id": "animate.style.isometric",
+      "name": "Isometrisk linjekonst (ljus)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Lugn, exakt produktillustration i 2:1-isometri på vit grund, bara konstanta hårlinjer: grå konturer, ljusare inre linjer, vita ytor som döljer det bakomliggande, rundade plattor med tjocklek, rutnät av tangenter/ventiler/portar och en enda mörk accent per bild. Rör sig på 1:or med fjädrande sättningar. Perfekt för produkter, enheter, servrar och infrastruktur. Demo: en kubrobot på en laptop som skeppar till ett serverrack.",
+      "tags": [
+        "isometrisk",
+        "linjekonst",
+        "minimal",
+        "produkt",
+        "tech",
+        "saas",
+        "infrastruktur",
+        "ren",
+        "vit",
+        "premium"
+      ],
+      "path": ".claude/skills/animate/styles/isometric/STYLE.md",
+      "use": "Kopiera styles/isometric/demo/ till work/animate/pieces/<namn>/. Tål --blur 4.",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.style.isometric.mp4",
+        "still": "library/previews/animate.style.isometric.jpg"
+      },
+      "notes": "Demo 6 s: export 9 s, review PASS (text, story arc 2/2). Demot visar terminaltexten ”$ claude” – byt text i egna pjäser."
+    },
+    {
+      "id": "animate.style.isometric-dark",
+      "name": "Isometrisk linjekonst (mörk grund)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Samma isometriska hårlinjestil på en nästan svart grund: ljusa linjer, mörka ytor, en ljus accent. Teknisk, nattlig, premium – för dev-verktyg, serverhallar och mörka varumärken. Variant som slås på med en liten del (dark.js: const ISO_DARK = true) före stilen i piece.json \"build\".",
+      "tags": [
+        "isometrisk",
+        "mörk",
+        "dark-mode",
+        "linjekonst",
+        "tech",
+        "dev",
+        "premium",
+        "minimal",
+        "natt"
+      ],
+      "path": ".claude/skills/animate/styles/isometric/demo-dark/piece.json",
+      "use": "Kopiera styles/isometric/demo/ + demo-dark/ (behåll relativa sökvägar ../demo/src/…) till work/animate/pieces/, eller lägg dark.js först i den egna pjäsens \"build\"-lista.",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.style.isometric-dark.mp4",
+        "still": "library/previews/animate.style.isometric-dark.jpg"
+      },
+      "notes": "Demo 6 s: export 11 s, review PASS."
+    },
+    {
+      "id": "animate.template.starter-piece",
+      "name": "Startpjäs med morph (alla fyra format)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "8 sekunders startmall i klippt papper: två eror (natt → morgon) förenade av en formmorf (månen blir solen), hjälte, årstagg, bildtext och småliv. Huvudet läser ?format= och scenerna placeras med LX/LY/UNIT, så samma pjäs lägger om sig för 9:16, 1:1, 4:5 och 16:9 i stället för att beskäras. Läser också BEATS från en egen musiklåt (onBeat).",
+      "tags": [
+        "startmall",
+        "flera-format",
+        "morph",
+        "klippt-papper",
+        "mall",
+        "9:16",
+        "16:9",
+        "fyrkantig",
+        "responsiv"
+      ],
+      "path": ".claude/skills/animate/templates/piece/piece.json",
+      "use": "cp -r .claude/skills/animate/templates/piece work/animate/pieces/<namn>; sätt \"formats\" i piece.json; node .claude/skills/animate/tools/export.mjs work/animate/pieces/<namn> --formats 9:16,1:1,4:5,16:9 --share",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.template.starter-piece.mp4",
+        "still": "library/previews/animate.template.starter-piece.jpg"
+      },
+      "notes": "Exporterad i alla fyra format på 72 s totalt (192 bilder/format, 7–10 s bildrendering per format) och granskad per format (review --format; text PASS i alla). Stillbilden visar samma ögonblick i 9:16, 1:1, 4:5 och 16:9."
+    },
+    {
+      "id": "animate.template.beat-cut",
+      "name": "Beat-cut-startmall (hårda klipp på beatet)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "html-playwright",
+      "description": "6 sekunders mall för pjäser som klipper hårt på beatet: hållna bilder på 8-delar vid 120 BPM, en rusning av 16-delar på udda bildrutor, en era per bild, kameraramar per bild och en hållen payoff med årets högsta ljudträff. Grunden för uppdrag-, katalog- och fast-hjälte-format (F3/F4/F5/F7).",
+      "tags": [
+        "beat-cut",
+        "hårda-klipp",
+        "rytm",
+        "120bpm",
+        "rusning",
+        "mall",
+        "energisk",
+        "social",
+        "klippt-papper"
+      ],
+      "path": ".claude/skills/animate/templates/beat-cut/piece.json",
+      "use": "cp -r .claude/skills/animate/templates/beat-cut work/animate/pieces/<namn>; bygg och exportera.",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.template.beat-cut.mp4",
+        "still": "library/previews/animate.template.beat-cut.jpg"
+      },
+      "notes": "Export 18 s; review: alla 8 klipp på griden (inkl. 16-delsrusningen på bildruta 60/63/66/69), story arc 4/4, högsta ljudet 3,0 s i payoff-akten, -15,0 LUFS. Mallen är skriven för 9:16."
+    },
+    {
+      "id": "animate.example.history-of-ai",
+      "name": "Exempel: En kort historia om AI (60 s, klippt papper)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "html-playwright",
+      "description": "Komplett 60-sekunderspjäs i klippt papper: 15 eror från Turings ”Can machines think?” (1950) till 2025, där gnistan får en stråle per era, med formmorfer, en snabb zoom-bump-sektion, en tystnad före payoff och ett syntetiserat soundtrack. Det fullständiga arbetsexemplet med brief, källor och storyboard – titta här när du är osäker på hur något hänger ihop.",
+      "tags": [
+        "exempel",
+        "historia",
+        "ai",
+        "tidslinje",
+        "klippt-papper",
+        "60s",
+        "storyboard",
+        "morph",
+        "förklarare"
+      ],
+      "path": ".claude/skills/animate/examples/history-of-ai/brief.md",
+      "use": "cp -r .claude/skills/animate/examples/history-of-ai work/animate/pieces/; node .claude/skills/animate/tools/build.mjs work/animate/pieces/history-of-ai; export.mjs … --share",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.example.history-of-ai.mp4",
+        "still": "library/previews/animate.example.history-of-ai.jpg"
+      },
+      "notes": "60 s, 1440 bilder: bildrendering 94,9 s (66 ms/bild), hela exporten 253 s (ljud 23 s, stems 69 s, x264 CRF 14 slow-mux + share), review 53 s. Review: 13 morfer på 8-delsgridden, 1 hårt klipp, story arc 4/4, ankare 52/52 bilder (100 %) i 41–44 s, text PASS (chattbubbelstormen 46–51 s undantagen via textIgnore), högsta ljudet 46,0 s efter 2,0 s tystnad, -15,0 LUFS. Innehåller varumärkesnamn (ChatGPT, Claude Code, Deep Blue, AlphaGo) och i 2025-eran blir gnistan en Claude-liknande asterisk – internt exempel, publicera inte vidare. Förhandsvisningen är 480 px bred, CRF 32 för att hålla < 2 MB."
+    },
+    {
+      "id": "animate.tool.new-style",
+      "name": "Ny stil från referenser (mät → matcha → spara)",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Proceduren för att göra en egen stil av användarens referenser (video, stillbilder, en webbsida): mät palett, linjevikt, textur, rörelse och klipprytm (measure/refs.mjs, measure/shotlog.py), rita 1–2 matchade bilder och jämför sida vid sida med 10 %-rutnät och palettsiffror (compare.mjs), en avstämning, spara sedan stilen som library/kits/animate/styles/<namn>/ så att alla senare pjäser kan använda den. Referensmedia stannar lokalt i work/animate/references/.",
+      "tags": [
+        "egen-stil",
+        "referenser",
+        "stilmatchning",
+        "palett",
+        "mätning",
+        "jämförelse",
+        "varumärke",
+        "look"
+      ],
+      "path": ".claude/skills/animate/new-style.md",
+      "use": "Säg ”/animate … i stilen av dessa referenser: <filer/länk>” eller följ new-style.md. Jämför: node .claude/skills/animate/tools/compare.mjs work/animate/references/<look>/a.png work/animate/pieces/<namn> 1.5 work/animate/references/<look>/cmp-1.png --auto-trim",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": null,
+        "still": "library/previews/animate.tool.new-style.jpg"
+      },
+      "notes": "Verktygen körda på Windows: refs.mjs (trim + palett + accenter) och compare.mjs (--auto-trim, rutnät, palettsiffror) med isometric-stilens egen sample.png som ”referens” mot isometric-demot (stillbilden). shotlog.py kräver numpy (library/.venv). Hela proceduren med en riktig ny look kräver användarens referenser och en avstämning – inte körd."
+    },
+    {
+      "id": "animate.prompt.format-f1-machine",
+      "name": "Berättelseformat F1: Maskin (token genom stationer)",
+      "type": "prompt",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Ett objekt (en kula, en prompt) färdas genom N stationer där varje gör en bokstavlig sak med det; ett stort ark, kameran håller på en station och panorerar mjukt (~1 s) till nästa, utzoomning av hela layouten på slutet som visar att den betyder något. Jämna stationer på 7–9 s eller talstyrda 2–7 s. Passar en agent-loop (prompten är kulan; Read, Grep, Edit, tester är stationer).",
+      "tags": [
+        "berättelseformat",
+        "maskin",
+        "stationer",
+        "följekamera",
+        "process",
+        "agent",
+        "förklarare"
+      ],
+      "path": ".claude/skills/animate/grammar/FORMATS.md",
+      "use": "Välj i storykollen (SKILL.md steg 1); formatet styr scenbyten och klocka.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Studerat men inte byggt med kitet enligt upphovspersonen; ingen rendering här."
+    },
+    {
+      "id": "animate.prompt.format-f2-chronology",
+      "name": "Berättelseformat F2: Kronologi med morfkedja",
+      "type": "prompt",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Kronologi med synlig klocka (årtagg/räknare). Erorna förenas av formmorfer – en form bär över till nästa scen (solen blir ett öga) – och bortritningar, inte klipp. Scener ~1,5–4 s; under 30 s högst 3 morfer. Vändning: tystnad på en hållen bild, sedan en smäll. Slutet återvänder till första bilden, förändrad. Passar varje historia.",
+      "tags": [
+        "berättelseformat",
+        "kronologi",
+        "tidslinje",
+        "morph",
+        "historia",
+        "årtal",
+        "bevisat"
+      ],
+      "path": ".claude/skills/animate/grammar/FORMATS.md",
+      "use": "Välj i storykollen; starta från en stils demo/ (alla är morfkedjor) eller templates/piece/.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.prompt.format-f2-chronology.mp4",
+        "still": "library/previews/animate.prompt.format-f2-chronology.jpg"
+      },
+      "notes": "Renderat och granskat i examples/history-of-ai (60 s, 15 eror, 13 morfer, ett hårt klipp på payoff) och i alla stildemos (2 eror, 1 morf). Förhandsvisningen: 1986 → 1997, där ett papperskort sluter sig och blir schackbrädet."
+    },
+    {
+      "id": "animate.prompt.format-f3-catalogue",
+      "name": "Berättelseformat F3: Fråga → katalog",
+      "type": "prompt",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "En fråga ställs; svaret är en katalog, ett objekt per beat (egna färgkort, etikett i nedre tredjedelen), samlat i en bild, och svaret går tillbaka. Beat-cut på 120 BPM: kort 0,5 s × ~8, ett hållet 1 s, sedan 0,25 s × 4 och en ~2 s samling. Slutvändning: svaret var den som frågade.",
+      "tags": [
+        "berättelseformat",
+        "katalog",
+        "lista",
+        "beat-cut",
+        "120bpm",
+        "topplista",
+        "social"
+      ],
+      "path": ".claude/skills/animate/grammar/FORMATS.md",
+      "use": "Välj i storykollen; bygg från templates/beat-cut/.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Studerat, inte byggt med kitet uppströms; ingen pjäs i formatet renderad här (beat-cut-mekaniken är verifierad via templates/beat-cut)."
+    },
+    {
+      "id": "animate.prompt.format-f4-mission",
+      "name": "Berättelseformat F4: Uppdrag (mål + hjälpare)",
+      "type": "prompt",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Någon vill något och kan inte; hjälparen löser det ett problem i taget. Flash-forward till målet uppnått, sedan tillbakaspolning. Beat-cut, vid ↔ nära, en återkommande rekvisita som markerar tid (en väggklocka). Vinjetter 3–4 s → en rusning 4 × 0,5 s → broms → deadline i tystnad → payoff hållen ~2 s. Hjälparen visar sin plan (streckad skiss) innan den gör det på riktigt. review.mjs har egna F4-kontroller.",
+      "tags": [
+        "berättelseformat",
+        "uppdrag",
+        "hjälpare",
+        "deadline",
+        "beat-cut",
+        "flash-forward",
+        "bevisat"
+      ],
+      "path": ".claude/skills/animate/grammar/FORMATS.md",
+      "use": "Välj i storykollen; bygg från templates/beat-cut/, sätt TIMELINE.format = 'F4' för formatkontrollerna.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Bevisat uppströms (en 32 s Claude Code-deadline-historia) men ingen F4-pjäs finns i repot; inte renderat här."
+    },
+    {
+      "id": "animate.prompt.format-f5-fixed-hero",
+      "name": "Berättelseformat F5: Fast hjälte, världen byts",
+      "type": "prompt",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Kronologi eller resa där hjälten byter världar men står kvar: i den snabbaste sektionen håller hjälten exakt sin skärmposition medan världen klipps runt den (iris- och matchpositionslänkar). 120 BPM med accelererande klipptakt (beat → 8-del → 16-del). review.mjs mäter ankaret (TIMELINE.anchor).",
+      "tags": [
+        "berättelseformat",
+        "hjälte",
+        "resa",
+        "matchklipp",
+        "ankare",
+        "acceleration",
+        "bevisat"
+      ],
+      "path": ".claude/skills/animate/grammar/FORMATS.md",
+      "use": "Välj i storykollen; se examples/history-of-ai (TIMELINE.format 'F5', anchor 41–44 s).",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Bevisat uppströms (flera korta förklarare) men ingen F5-pjäs med hårda klipp finns i repot. Ankarkontrollen (hjälten håller skärmpositionen) är körd och PASS i history-of-ai 41–44 s (52/52 bilder) och beat-cut-mekaniken i templates/beat-cut – men inte formatet som helhet."
+    },
+    {
+      "id": "animate.prompt.format-f6-process-loop",
+      "name": "Berättelseformat F6: Processloop (resultat → tomt → stegen → resultat)",
+      "type": "prompt",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Det verkliga sättet att göra något i rätt ordning, i en låst bild: öppna på det färdiga, lös upp till tomt, bygg upp igen. Snabba tidiga steg (~1,3 s), långa nästan stilla hållningar sent; en crescendo som ljusnar när detaljerna blir finare, högsta tonen på den enda avslöjningen. Sista bilden pixelidentisk med den första.",
+      "tags": [
+        "berättelseformat",
+        "process",
+        "loop",
+        "bygge",
+        "låst-kamera",
+        "avslöjande",
+        "satisfying"
+      ],
+      "path": ".claude/skills/animate/grammar/FORMATS.md",
+      "use": "Välj i storykollen.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Studerat, inte byggt med kitet; ingen rendering här."
+    },
+    {
+      "id": "animate.prompt.format-f7-variation-reel",
+      "name": "Berättelseformat F7: Variationsrulle (ett motiv, N tekniker)",
+      "type": "prompt",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Samma armatur/silhuett ritad om på N sätt, en per sekund: hållna stillbilder, hårda matchpositionsklipp på exakt 1,00 s, silhuetten rör sig aldrig, en attack på varje klipp och bågen i musikens svällning. Stark som varumärkes- eller stilrulle, svag för att förklara.",
+      "tags": [
+        "berättelseformat",
+        "variation",
+        "stilrulle",
+        "varumärke",
+        "matchklipp",
+        "1-sekund",
+        "showreel"
+      ],
+      "path": ".claude/skills/animate/grammar/FORMATS.md",
+      "use": "Välj i storykollen; bygg från templates/beat-cut/.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Studerat, inte byggt med kitet; ingen rendering här."
+    },
+    {
+      "id": "animate.prompt.format-f8-trailer",
+      "name": "Berättelseformat F8: Trailer (påstående → bevis)",
+      "type": "prompt",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Ett handskrivet påståendekort, sedan bilder som bevisar det; en kall öppning som krok, ett klimax, en vinstskärm och titeln två gånger. Täta beskärningar (median ~1,3 s), korten 1,2–2,5 s som de lugna slagen. Passar lanseringar (”nu kan den …” → bevis). Provisoriskt – ett studerat exempel.",
+      "tags": [
+        "berättelseformat",
+        "trailer",
+        "lansering",
+        "påstående",
+        "bevis",
+        "krok",
+        "produkt"
+      ],
+      "path": ".claude/skills/animate/grammar/FORMATS.md",
+      "use": "Välj i storykollen; kombinera gärna med riktiga skärmdumpar (capture.mjs).",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Provisoriskt uppströms (en studerad förlaga); ingen rendering här."
+    },
+    {
+      "id": "animate.prompt.story-grammar",
+      "name": "Berättelsegrammatik, bildchecklista och hantverksregler",
+      "type": "prompt",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Regler destillerade ur uppmätta kortfilmer: berätta en sann process; en konstant ögat kan hålla; en färg betyder en sak; tystnad före payoff och högst på payoff; slutet är början, förändrad; en sägbar ”device”. Plus vad en enskild nyckelbild behöver (FRAME.md: mediet syns i mobilstorlek, idén spelas ut i stället för att etiketteras, småliv, skalvariation, mobilsäkra zoner) och craft.md:s regler för rörelse, timing och ljud. Förinställningar och tips – användaren kan köra över alla.",
+      "tags": [
+        "berättande",
+        "storytelling",
+        "regler",
+        "checklista",
+        "hantverk",
+        "ljud",
+        "timing",
+        "nyckelbild"
+      ],
+      "path": ".claude/skills/animate/grammar/STORY.md",
+      "use": "Läs STORY.md, FRAME.md och craft.md före storykoll och storyboard. Riktlinjer, inte spärrar.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ren textreferens (inget att rendera i sig); demos och exemplet som följer reglerna är verifierade."
+    },
+    {
+      "id": "animate.transition.shape-morph",
+      "name": "Formmorf-övergång (shape-morph bridge)",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Den gamla världen sluter sig kring ett objekt genom ett fönster format som objektet (stilen ritar fönstret: rivet hål i papper, tuschad iris, tryckt cirkel, pixelram), objektet blandas till sin motsvarighet på blankt papper och den nya världen öppnar sig ur den. Kostar 1,2 s (kan kortas med d: 0,4). Formerna samplas om per vinkel – likartade proportioner morfar rent (månen → solen, solen → apelsinen, lampan → solen).",
+      "tags": [
+        "övergång",
+        "morph",
+        "formmorf",
+        "match-cut",
+        "iris",
+        "berättande",
+        "mjuk",
+        "kronologi"
+      ],
+      "path": ".claude/skills/animate/kit/morph.js",
+      "use": "I src/bridges.js: BRIDGES = [{ tc, A: () => ({ P, c }), B: () => ({ P, c }) }]; tc på 8-delsgridden. Se templates/piece/src/bridges.js.",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.transition.shape-morph.mp4",
+        "still": "library/previews/animate.transition.shape-morph.jpg"
+      },
+      "notes": "Varje stildemo har en morf; review.mjs: MORPHS på 8-delsgridden PASS i alla 8 demos. Förhandsvisningen klipper morfen ur sex stilar (klippt papper, riso, skissbok, matte, pixel, tuschkors)."
+    },
+    {
+      "id": "animate.effect.springs",
+      "name": "Fjädrar (closed-form springs)",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Rörelse som känns dyr: springMove(t0, a, b, SPRING.snappy|smooth|heavy|playful) flyttar ett värde med en liten översväng och sättning; springTrack([[t, v], …]) följer ett värde genom många mål utan hopp. Sluten form, så varje bildruta kan ritas fristående och deterministiskt. Stilar på 2:or stegar dem varannan bild.",
+      "tags": [
+        "fjäder",
+        "spring",
+        "easing",
+        "översväng",
+        "ui",
+        "kort",
+        "rörelse",
+        "premium"
+      ],
+      "path": ".claude/skills/animate/kit/core.js",
+      "use": "I en scen: const y = springMove(TIMELINE.cues.card, H + 200, LY(0.36), SPRING.playful); ctx.translate(x, y) …",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.effect.springs.mp4",
+        "still": "library/previews/animate.effect.springs.jpg"
+      },
+      "notes": "Ingen uppströmsdemo använder fjädrarna, så de testades i en egen testpjäs (work/animate/pieces/product-test): ett skärmdumpskort fjädrar in (playful) och lutar (heavy). tile.mjs: deterministic true. Stillbilden visar bild 120–138 med översvängen."
+    },
+    {
+      "id": "animate.effect.camera",
+      "name": "Kameror: push-in, zoom-bumps, världspunkt → skärmpunkt",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "camOf({ z, p, to }) lägger en punkt i världen på en punkt på skärmen vid zoom z (i stället för att ”zooma kring en punkt” som tappar motivet under bildtexten); push(t, a, b, cam) gör mjuka inzoomningar med valfri utzoomning; bump(t, t0, [x, y]) ger rytmiska zoomstötar på beatet centrerade på hjälten. Bildtexter ritas efter kameran (DEFER) och förblir i skärmstorlek.",
+      "tags": [
+        "kamera",
+        "push-in",
+        "zoom",
+        "bump",
+        "rytm",
+        "ken-burns",
+        "fokus",
+        "rörelse"
+      ],
+      "path": ".claude/skills/animate/kit/morph.js",
+      "use": "I src/bridges.js: function pieceCam(era, t) { return era === 1 ? push(t, 4.4, 5.6, { z: 1.1, p: [x, y], to: [x2, y2] }) : null; }",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.effect.camera.mp4",
+        "still": "library/previews/animate.effect.camera.jpg"
+      },
+      "notes": "Verifierat i history-of-ai: push-ins (1958, 1997, 2012) och zoom-bumps var 0,5 s centrerade på gnistan i 41–44 s (stillbilden: bild 984–1056), samt riso-, sketchbook-, crosshatch- och isometric-demos. Ankarkontroll PASS 100 %."
+    },
+    {
+      "id": "animate.effect.boil-line",
+      "name": "Kokande handritad linje (boil on 2s)",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Den handritade linjen som lever även när inget rör sig: wobble/ink/paint seedas om varje ”boil”-steg (B = floor(F/2)) så att konturerna darrar på 2:or som tecknad film, med skraffering, färgpenna, stipple och papperskorn klippta inuti formerna. Deterministisk via RNG-nycklar – samma bild varje gång.",
+      "tags": [
+        "boil",
+        "kokande-linje",
+        "handritad",
+        "på-2:or",
+        "tecknat",
+        "skraffering",
+        "tusch",
+        "levande"
+      ],
+      "path": ".claude/skills/animate/kit/core.js",
+      "use": "ink(points, { w, color, key, frac }) / paint(points, { fill, tex: [hatch, pencil …] }) i en scen; frac skriver fram linjen.",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.effect.boil-line.mp4",
+        "still": "library/previews/animate.effect.boil-line.jpg"
+      },
+      "notes": "Synligt i crosshatch-, sketchbook- och cut-paper-demos; stillbilden visar samma utsnitt vid tre boil-steg (bild 40/42/44 i crosshatch). tile.mjs deterministic true."
+    },
+    {
+      "id": "animate.effect.motion-blur",
+      "name": "Rörelseoskärpa (--blur, 180°-slutare)",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "export.mjs --blur 4 renderar 4 delbilder över halva bildintervallet och medelvärdesbildar dem (en 180°-slutare) – mjukare snabba rörelser för stilar på 1:or (matte, isometrisk). Handritade stilar på 2:or är skarpa med flit (exporten varnar).",
+      "tags": [
+        "motion-blur",
+        "rörelseoskärpa",
+        "slutare",
+        "mjuk",
+        "1:or",
+        "premium",
+        "export"
+      ],
+      "path": ".claude/skills/animate/tools/export.mjs",
+      "use": "node .claude/skills/animate/tools/export.mjs work/animate/pieces/<namn> --share --blur 4",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.effect.motion-blur.mp4",
+        "still": "library/previews/animate.effect.motion-blur.jpg"
+      },
+      "notes": "Matte-demot exporterat med --blur 4: 19 s (bildrendering 13,8 s mot 2,1 s utan). Med bara 4 delbilder syns mycket snabba kanter (morf-fönstret) som 3–4 trappsteg i stället för en slät strimma; höj till --blur 8 för snabba rörelser."
+    },
+    {
+      "id": "animate.effect.product-screenshot",
+      "name": "Animera riktiga produktskärmdumpar",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Visa den riktiga produkten i stilen: capture.mjs skärmdumpar användarens egen sajt (sida, sektion, logga; --selector, --full, --dark, --hide för cookie-banners), build.mjs bäddar in allt i <pjäs>/assets/ i den enda index.html-filen och drawAsset() ritar den inne i stilens egen inramning (rivet papperskort, tuschad ram, tryckt kort) – beskär, zooma in, avslöja, peka med hjälten. Aldrig en påhittad skärm som låtsas vara produkten.",
+      "tags": [
+        "produkt",
+        "skärmdump",
+        "saas",
+        "app",
+        "lansering",
+        "ui",
+        "demo",
+        "riktig-produkt",
+        "varumärke"
+      ],
+      "path": ".claude/skills/animate/tools/capture.mjs",
+      "use": "node .claude/skills/animate/tools/capture.mjs <url> work/animate/pieces/<namn>/assets/home.png [--selector \"header img\"]; i scenen: drawAsset('home.png', x, y, w, h, { fit: 'cover', r: 6 })",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.effect.product-screenshot.mp4",
+        "still": "library/previews/animate.effect.product-screenshot.jpg"
+      },
+      "notes": "Testat med en lokal påhittad testsida (work/animate/product-page, file://-URL) – fånga, bädda in (build: 1 asset), rita på ett rivet papperskort med fjäder och kamera-push; export 26 s, review PASS. Skärmdumpa bara sajter användaren äger eller får visa."
+    },
+    {
+      "id": "animate.tool.beats",
+      "name": "Beat-mappning av egen musik (beats.mjs)",
+      "type": "tool",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Kartlägger en låt användaren äger eller licensierat (WAV/MP3/M4A) utan beroenden: ffmpeg-avkodning → spektralflödes-onsets → tempo via autokorrelation (prior kring 120 BPM) → beatfas och takter → starkaste träffar, högsta 100 ms och tysta partier. Bygget injicerar BEATS; onBeat(t) snäpper klipp, morfer och cues till låtens grid, och exporten byter ut det syntetiska musikspåret mot låten (+ ljudeffekterna) och normaliserar till -14 LUFS.",
+      "tags": [
+        "beat",
+        "bpm",
+        "musik",
+        "egen-låt",
+        "klipp-på-beatet",
+        "rytm",
+        "onsets",
+        "drop",
+        "synk"
+      ],
+      "path": ".claude/skills/animate/tools/beats.mjs",
+      "use": "node .claude/skills/animate/tools/beats.mjs work/animate/pieces/<namn>/audio/track.wav work/animate/pieces/<namn> --start 12 --dur 30 [--bpm 128]; piece.json: \"music\": { \"file\": \"audio/track.wav\", \"start\": 12 }",
+      "requires": [
+        "node",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.tool.beats.mp4",
+        "still": "library/previews/animate.tool.beats.jpg"
+      },
+      "notes": "Testat med ett syntetiskt 128 BPM-trumspår (ffmpeg aevalsrc, work/animate/pieces/music-test): utan --bpm 126,8 BPM, med --bpm 128 127,74 BPM och första slaget 0,453 s (verkligt 0,469 s); träffarna låg på kickarna. En första version av testspåret med dominanta hi-hats låste fasen på offbeats – kontrollera alltid gridden mot en lyssning (verktyget skriver ut alternativa tempon). Exporten bytte musikbussen mot låten + sfx-stem, -14,9 LUFS; morfen hamnade på låtens 8-delsgrid (3,9758 s). Story arc FAIL i testet beror på att testspåret är platt."
+    },
+    {
+      "id": "animate.sound.synth-loudness",
+      "name": "Syntetiserat soundtrack + loudness-steg",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "html-playwright",
+      "description": "Musiken skrivs i kod (src/score.js) med kitets syntar – pluck, pad, drone, bas, sub, noiseHit, sweep, riser, chime, blip – och renderas i en OfflineAudioContext till audio.wav plus stems (music/sfx). Ett loudness-steg för mobil: RMS-normalisering till -17 dBFS och look-ahead-limiter på -1 dBFS; exporten landar runt -14/-15 LUFS. Recept för payoff: kort ackordstöt + sub på träffen, platt ackord efter, tystnad före.",
+      "tags": [
+        "ljud",
+        "syntes",
+        "soundtrack",
+        "webaudio",
+        "loudness",
+        "lufs",
+        "mix",
+        "stems",
+        "gratis-musik"
+      ],
+      "path": ".claude/skills/animate/kit/score-head.js",
+      "use": "Skriv src/score.js i pjäsen; iterera mixen med export.mjs --only-audio (renderar om ljudet och muxar in det).",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.template.beat-cut.mp4",
+        "still": "library/previews/animate.sound.synth-loudness.jpg"
+      },
+      "notes": "Uppmätt, inte lyssnat: alla demos/mallar gav -14,3 till -16,4 LUFS integrerat, true peak ≤ -1,0 dBFS. Beat-cut-mallen: högsta 100 ms-fönstret på payoff (3,0 s) med story arc 4/4. Stillbilden är vågformen med träffen markerad. Lyssna själv innan publicering."
+    },
+    {
+      "id": "animate.sound.voice-over",
+      "name": "Voice-over: rösten som klocka (egen inspelning, gratis)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Manus i voice/script.json, en ljudfil per rad (egen inspelning eller en scratch-röst via Windows SAPI för timing), voice.mjs lägger raderna med pauser till voice.wav och tidsätter varje ord (faster-whisper lokalt om installerat, annars uppskattat) i voice.json som bygget injicerar som VOICE. Exporten mixar rösten över musiken (musiken duckad under talet) till -14 LUFS. Svenska: --lang sv.",
+      "tags": [
+        "voice-over",
+        "speaker",
+        "berättarröst",
+        "manus",
+        "ordtiming",
+        "whisper",
+        "svenska",
+        "egen-röst",
+        "duckning"
+      ],
+      "path": ".claude/skills/animate/tools/voice.mjs",
+      "use": "node .claude/skills/animate/tools/voice.mjs work/animate/pieces/<namn> [--scratch] [--lang sv]; piece.json: \"voice\": { \"file\": \"voice/voice.wav\", \"music\": -12 }",
+      "requires": [
+        "node",
+        "ffmpeg",
+        "python:faster-whisper (valfritt)"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": "library/previews/animate.sound.voice-over.mp4",
+        "still": "library/previews/animate.sound.voice-over.jpg"
+      },
+      "notes": "Testat med scratch-röst (Windows SAPI via PowerShell, 2 rader) på startmallen: voice.wav + voice.json, export med duckning (-15,0 LUFS), review PASS. faster-whisper är inte installerat i library/.venv (setup.ps1 -Whisper), så ordtider uppskattades. Startmallens huvud har inga VL()/VW()-hjälpare – bildklipp på ord kräver att huvudet skrivs enligt SKILL.md → Voice-over. Scratch-rösten ska aldrig levereras."
+    },
+    {
+      "id": "animate.sound.elevenlabs-voice",
+      "name": "ElevenLabs-röst (betald connector)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Valfri betald röstkälla för voice-overn: ElevenLabs-connectorn i Claude (OAuth, ingen API-nyckel) – hitta 2–3 berättare, en provrad var, låt användaren välja, generera sedan varje rad en gång och spara tagningarna i voice/. Ca 1 kredit per tecken; säg totalen innan körningen. Gratisvägen är egen inspelning eller ingen röst.",
+      "tags": [
+        "elevenlabs",
+        "tts",
+        "röst",
+        "voice-over",
+        "betald",
+        "connector"
+      ],
+      "path": ".claude/skills/animate/SKILL.md",
+      "use": "Bara om användaren har connectorn och godkänner kostnaden; se SKILL.md → Voice-over steg 3.",
+      "requires": [
+        "api:elevenlabs"
+      ],
+      "cost": "paid",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Betald tjänst – inte testad. Mixningen av tagningarna är densamma som för egen inspelning (verifierad i animate.sound.voice-over)."
+    },
+    {
+      "id": "animate.tool.review",
+      "name": "Mätt granskning (review, textcheck, tile, framehash)",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "”Klart” är mätt, inte tyckt: review.mjs gör kontaktark per bild (var 0,25 s, mobilens UI-zoner i rött) och mobilark (1 bild/s i 360 px), kontrollerar att klipp och morfer ligger på beatgridden, story-arc (tystnad, högst på payoff), ankare, döda partier > 3 s, text som skärs av/överlappar/hamnar under mobilens UI (textcheck.mjs spårar varje fillText) och ljud (LUFS, true peak, högsta 100 ms, tystnaden före). tile.mjs ger testrutor + determinismkontroll; framehash.mjs bevisar att en kitändring lämnade en pjäs pixelidentisk.",
+      "tags": [
+        "granskning",
+        "qa",
+        "kontaktark",
+        "kvalitetskontroll",
+        "beatgrid",
+        "text",
+        "loudness",
+        "determinism",
+        "mobil"
+      ],
+      "path": ".claude/skills/animate/tools/review.mjs",
+      "use": "node .claude/skills/animate/tools/review.mjs work/animate/pieces/<namn> [--format 16:9]; titta på review/*.jpg",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": null,
+        "still": "library/previews/animate.tool.review.jpg"
+      },
+      "notes": "Körd på alla demos, mallar, testpjäser och history-of-ai (2–11 s per 6–8 s-pjäs). drawtext med C\\:/Windows/Fonts/consolab.ttf fungerar som upstream skrev det. Windows-fix: kontaktark för icke-huvudformat läser nu formatets egna frames-<b>x<h>/. framehash: 5/5 bilder identiska mellan två byggen; textcheck fristående OK."
+    },
+    {
+      "id": "animate.tool.storyboard",
+      "name": "Storyboard-steget (en nyckelbild per beat)",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "9:16",
+        "1:1",
+        "4:5",
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Varje beat ritat som nyckelbild i den godkända looken med titel, ljud och övergången till nästa (TIMELINE.board, renderad av kit/board.js). Användaren ger tumme upp/ner per panelnummer innan något animeras – panelerna är videons egna scenfunktioner, så inget ritas om senare. still.mjs ger 2–4 stilbilder sida vid sida för lookkollen.",
+      "tags": [
+        "storyboard",
+        "nyckelbilder",
+        "avstämning",
+        "planering",
+        "paneler",
+        "lookkoll",
+        "förproduktion"
+      ],
+      "path": ".claude/skills/animate/tools/storyboard.mjs",
+      "use": "node .claude/skills/animate/tools/storyboard.mjs work/animate/pieces/<namn> [out.png] [panelnummer…]; node .claude/skills/animate/tools/still.mjs work/animate/pieces/<namn> 2.25,9.75 look.png --scale 0.5",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": null,
+        "still": "library/previews/animate.tool.storyboard.jpg"
+      },
+      "notes": "Storyboarden för history-of-ai (15 paneler, 1980×2550 px) renderad på 1,2 s; även riso-demots board (0,5 s). Stillbilden är history-of-ai-boarden."
+    },
+    {
+      "id": "animate.tool.style-gallery",
+      "name": "Stilgalleri för intervjun",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "any"
+      ],
+      "engine": "html-playwright",
+      "description": "Lägger alla stilars sample.png sida vid sida med namn och en sista ”din look”-ruta – frågan ”vilken av dessa, eller visa mig en referens?” i intervjun (~3 s). Tar med användarens sparade stilar från library/kits/animate/styles/.",
+      "tags": [
+        "galleri",
+        "stilval",
+        "intervju",
+        "översikt",
+        "moodboard"
+      ],
+      "path": ".claude/skills/animate/tools/gallery.mjs",
+      "use": "node .claude/skills/animate/tools/gallery.mjs work/animate/styles.png",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "video": null,
+        "still": "library/previews/animate.skill.animate.jpg"
+      },
+      "notes": "Körd på Windows (Segoe UI-typsnitt), 8 rutor: 7 stilar + custom."
+    }
+  ]
+}

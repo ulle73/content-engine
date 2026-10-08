@@ -1,0 +1,68 @@
+{
+  "id": "house",
+  "name": "House — cream plate",
+  "since": "2026-07-28",
+  "default": true,
+  "one_line": "Flat cream plate, matted pop-out in the lower half, graphics in the top zone. The FRAME changes every beat.",
+  "use_when": "The default. Every short unless Jad names the other style.",
+
+  "ground": {
+    "plate": "flat --cream #F0EDE4",
+    "white_exception": "a captured device is the only reason to use #FFFFFF",
+    "media_sits": "in the top zone ON the plate — no card, no border, no shadow, no inset"
+  },
+
+  "camera": {
+    "treatment": "matted pop-out, lower half",
+    "matte_required": true,
+    "matte_pipeline": ["scripts/rvm-matte.py (ONE pass, whole take)",
+                       "scripts/find-cut-line.py (mid-head, measured — never hardcoded)"],
+    "seam_invariant": "RECT_Y - CROP_Y == PERSON_Y",
+    "framing": "ONE framing for the whole video. Two framings gets the cut rejected.",
+    "never_scale_him": true,
+    "slide_down_to_make_room": true
+  },
+
+  "rotation": {
+    "treatments": ["transparent (pop-out on cream)", "full face (raw take)",
+                   "split (media top, card bottom)", "b-roll full (media owns the frame)"],
+    "rule": "a change of CAMERA TREATMENT, not of graphic",
+    "never_two_neighbours_alike": true,
+    "max_hold_seconds": 8,
+    "measured_cadence": "tp-0821 — 17 changes in 64.9s, one every 3.8s"
+  },
+
+  "captions": {
+    "styles": ["c-par", "c-ws", "c-hl"],
+    "count": 3,
+    "note": "c-chrome was DELETED 2026-08-20 and is never coming back (BLACKLIST #15)",
+    "bands": {
+      "pop_out_seam": [820, 894],
+      "full_face": 1400,
+      "b_roll": 1620
+    },
+    "never_on_his_body": true,
+    "never_over_broll_media": true
+  },
+
+  "display_type": {
+    "roles": [],
+    "note": "there is no display type in this style — captions and the CTA pill are the only text"
+  },
+
+  "palette": {
+    "coral": "--coral #D97757",
+    "ink": "--ink #191817",
+    "highlighter": "--hl-yellow #F7E23C, multiply, ~0.34 opacity / +2 dB — texture, not an event"
+  },
+
+  "density_comes_from": "layout change + designed scenes + the registry animations",
+
+  "blacklist_rules_that_apply": "ALL of reference/BLACKLIST.md",
+
+  "signature_moves": [
+    "the yellow-highlighter sweep on a real page shot",
+    "the four-frame rotation",
+    "the old CTA from buzz — logo chip, mono product name, COMMENT/KEYWORD in Instrument Serif italic, ink arrow"
+  ]
+}

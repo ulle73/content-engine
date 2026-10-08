@@ -1,0 +1,53 @@
+<!-- BRICK: chapter-card (16:9) — ~2s, at EVERY chapter boundary.
+     The dot-grid BG wipes across on a coral leading edge (--dur-chapter, 600ms),
+     then kicker -> title -> the rule draws. Always carries a riser tail or a
+     magic-reveal; a silent chapter card is a silent cut, which is banned.
+
+     The progress rail (chapter N of M) advances here. It grows with scaleX,
+     transform-origin:left — NEVER width. -->
+
+<div id="ch" class="clip bg-darkgrid" data-start="0" data-duration="2.10" data-track-index="8">
+  <div class="chwipe"></div>
+  <div class="chinner">
+    <div class="kicker" id="chkick">Chapter 02</div>
+    <div class="title"  id="chtitle">What it actually does<br>when you turn it on</div>
+    <div class="chrule" id="chrule"></div>
+  </div>
+  <div class="rail" id="chrail"></div>
+</div>
+
+<style>
+  #ch{position:absolute;inset:0;z-index:45}
+  .chwipe{position:absolute;inset:0;background:var(--dark);z-index:1;
+    transform:scaleX(0);transform-origin:left center;
+    box-shadow:8px 0 0 0 var(--coral)}      /* the coral leading edge */
+  .chinner{position:absolute;left:var(--pad);top:400px;z-index:2}
+  .chinner .kicker{margin-bottom:22px}
+  .chinner .title{max-width:1300px}
+  .chrule{height:4px;width:520px;background:var(--coral);margin-top:38px;
+    transform:scaleX(0);transform-origin:left center}
+</style>
+
+<script>
+// ---- set these -------------------------------------------------------------
+const IN = 0.0;                      // segment start
+const N = 2, TOTAL = 6;              // chapter N of TOTAL, for the rail
+// -----------------------------------------------------------------------------
+
+// 1 · the grid wipes across on a coral edge
+tl.fromTo("#ch .chwipe", {scaleX:0}, {scaleX:1, duration:.60, ease:"power3.inOut"}, IN);
+// 2 · kicker, then title, then the rule draws
+tl.fromTo("#chkick",  {opacity:0, y:18}, {opacity:1, y:0, duration:.42, ease:"power3.out"}, IN+0.42);
+tl.fromTo("#chtitle", {opacity:0, y:26}, {opacity:1, y:0, duration:.52, ease:"power3.out"}, IN+0.54);
+tl.fromTo("#chrule",  {scaleX:0}, {scaleX:1, duration:.55, ease:"power3.out"}, IN+0.78);
+// 3 · the progress rail advances to N/TOTAL
+tl.fromTo("#chrail", {scaleX:(N-1)/TOTAL}, {scaleX:N/TOTAL, duration:.7, ease:"power2.out"}, IN+0.42);
+// 4 · out — the card lifts, the segment's first real beat takes over
+tl.to("#ch .chinner", {opacity:0, y:-20, duration:.34, ease:"power2.in"}, IN+1.76);
+tl.to("#ch .chwipe",  {opacity:0, duration:.34, ease:"power2.in"}, IN+1.76);
+</script>
+
+<!-- SFX:  IN-1.2   riser         0.09   # crests on the wipe
+          IN+0.42  magic-reveal  0.11   # or confirm, on the title
+          IN+0.78  swoosh        0.09   # the rule
+     MUSIC BED: a 400ms dip under the wipe (mix-bgm.sh --drops), then back. -->

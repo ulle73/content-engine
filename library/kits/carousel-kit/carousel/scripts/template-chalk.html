@@ -1,0 +1,426 @@
+<!doctype html>
+<!--
+  CHALK-ON-GROUND EDITORIAL — carousel slide template (1080x1350, 4:5).
+  Spec: carousel/knowledge/style-chalk.md · sheet: carousel/assets/styles/chalk.jpg
+
+  The sheet's rules, enforced here:
+    - ALL LETTERING IS CHALK WHITE. The only type colour token is --chalk (with opacity).
+    - ONE ACCENT WORD PER SLIDE MAY BREAK TO HIGHLIGHT YELLOW, AND ONLY AS AN OUTLINE.
+      --yellow is used in exactly one rule: `.hl .accent` (text-stroke, transparent fill).
+    - MUTED RED APPEARS ONLY IN THE FOOTER LOCKUP. --red is used in `.lockup .for` only.
+    - THE GREENS ARE WHATEVER THE GROUND GIVES. No green is ever painted on a surface;
+      shadow green is used only for the darkening wash / vignette.
+    - EVERY SLIDE DARKENS SHARPLY — heavy vignette on every slide.
+  Lettering lies ON the ground, seen from overhead: the block is rotated + tilted in 3D.
+
+  Placeholders are filled by carousel_render.py; chalk knobs are read from __SLIDE_JSON__.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@300;400;900&family=Oswald:wght@400;500;600&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --chalk:#F5F5EF; --yellow:#FCFC8C; --moss:#93942B; --field:#5C6216;
+    --shadow:#141E08; --red:#C4584A;
+    --caps:'Londrina Solid','Arial Black',sans-serif;
+    --label:'Oswald','Arial Narrow',sans-serif;
+    --script:'Yellowtail','Brush Script MT',cursive;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1350px;background:var(--shadow)}
+  .stage{position:relative;width:1080px;height:1350px;overflow:hidden;background:var(--shadow);
+         color:var(--chalk);font-family:var(--label)}
+
+  /* ---------- the ground: one overhead photograph, full bleed ---------- */
+  .photo{position:absolute;inset:0;z-index:1;overflow:hidden}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block;object-position:var(--focus,50% 50%);
+             transform:scale(var(--zoom,1.04)) rotate(var(--rot,0deg));transform-origin:var(--focus,50% 50%);
+             /* late-afternoon grade: a touch warmer, deeper, a little less saturated */
+             filter:saturate(.86) contrast(1.12) brightness(.74) sepia(.12)}
+  /* overall darkening so chalk always wins, heavier at the top and the lockup */
+  .wash{position:absolute;inset:0;z-index:2;pointer-events:none;
+        background:linear-gradient(180deg, rgba(20,30,8,.55) 0%, rgba(20,30,8,.12) 30%,
+                                            rgba(20,30,8,.10) 62%, rgba(20,30,8,.62) 100%)}
+  /* a soft shadow pool under the proof — a darkening of the ground, not a panel */
+  .pool{position:absolute;z-index:32;pointer-events:none;border-radius:50%;
+        background:radial-gradient(closest-side, rgba(12,18,4,.9), rgba(12,18,4,.78) 55%, rgba(12,18,4,.34) 82%, rgba(12,18,4,0));
+        display:none}
+  /* EVERY SLIDE DARKENS SHARPLY */
+  .vignette{position:absolute;inset:0;z-index:30;pointer-events:none;
+        background:radial-gradient(ellipse 78% 66% at 50% 46%, rgba(20,30,8,0) 38%,
+                   rgba(20,30,8,.55) 72%, rgba(20,30,8,.93) 100%)}
+  .grain{position:absolute;inset:0;z-index:31;pointer-events:none;opacity:.10;mix-blend-mode:overlay;
+         background-image:var(--grain);background-size:260px 260px}
+
+  /* ---------- lettering lying on the ground ---------- */
+  .ground{position:absolute;left:0;right:0;z-index:33;transform-style:flat;
+          display:flex;justify-content:center;pointer-events:none}
+  .block{position:relative}
+  .handle{font-family:var(--label);font-weight:600;font-size:25px;letter-spacing:.1em;filter:url(#chalk-fine);
+          text-transform:uppercase;color:var(--chalk);opacity:.92;margin:0 0 12px 8px}
+  .hl{font-family:var(--caps);font-weight:900;color:var(--chalk);text-transform:uppercase;line-height:.84}
+  .hl .ln{display:block;white-space:nowrap;width:max-content}
+  .hl .ch{display:inline-block;transform-origin:50% 70%}
+  .hl .sp{display:inline-block;width:.24em}
+  /* the ONE accent word: highlight yellow, outline only */
+  .hl .accent .ch{color:transparent;-webkit-text-stroke:.042em var(--yellow);paint-order:stroke}
+  .logo{position:absolute;display:block}
+
+  /* ---------- small furniture ---------- */
+  .folio{position:absolute;right:56px;top:46px;z-index:32;font-family:var(--label);font-weight:500;
+         font-size:19px;letter-spacing:.2em;color:var(--chalk);opacity:.78}
+  .credit{position:absolute;right:30px;bottom:22px;z-index:32;font-family:var(--label);font-size:13px;
+          letter-spacing:.06em;color:var(--chalk);opacity:.5;max-width:420px;text-align:right}
+
+  /* ---------- the proof column, drawn on the ground ---------- */
+  .col{position:absolute;left:72px;right:72px;z-index:33;display:flex;flex-direction:column;gap:22px}
+  .kicker{font-family:var(--label);font-weight:600;font-size:23px;letter-spacing:.24em;text-transform:uppercase;
+          color:var(--chalk);opacity:1;filter:url(#chalk-fine)}
+  .subtitle{font-family:var(--caps);font-weight:400;font-size:38px;line-height:1.14;color:var(--chalk);
+            filter:url(#chalk-fine);max-width:30ch}
+  .content{filter:url(#chalk-fine)}
+  /* proof type sits on bright grass: a tight dark contact shadow keeps it as bright as the headline */
+  .col .card, .col .kicker, .col .subtitle, .col .chips, .col .cta, .col .stats, .col .bars, .col .dial-cap{
+    text-shadow:0 0 2px rgba(10,14,4,.85), 0 2px 10px rgba(10,14,4,.75)}
+  .content .shot,.content .heroimg{filter:none}
+
+  /* chart / data cards: no surface at all — chalk straight on the grass */
+  .card{background:none;padding:0;color:var(--chalk)}
+  .card .ctitle{font-family:var(--label);font-weight:600;font-size:23px;letter-spacing:.2em;text-transform:uppercase;
+                color:var(--chalk);opacity:1;margin-bottom:16px;padding-bottom:10px;
+                border-bottom:3px solid rgba(245,245,239,.55)}
+  .card .cnote{font-family:var(--label);font-size:22px;color:var(--chalk);opacity:.95;margin-top:12px;line-height:1.35}
+  .chart{display:block;width:100%;height:auto;overflow:visible}
+  .chart text{font-family:'Oswald','Arial Narrow',sans-serif !important}
+  /* chalk is drawn with a thick stick: bolder marks and larger labels than the glass styles
+     (matched on the values carousel_charts emits, so the shared chart code stays untouched) */
+  .chart path[fill="none"]{stroke-width:5.5px}
+  .chart line[stroke-width="2"]{stroke-width:4px}
+  .chart circle[r="5.5"]{r:10px} .chart circle[r="7"]{r:11px} .chart circle[r="8.5"]{r:13px}
+  .chart text[font-size="18"]{font-size:23px} .chart text[font-size="19"]{font-size:24px}
+  .chart text[font-size="21"]{font-size:25px} .chart text[font-size="22"]{font-size:27px}
+  .chart text[font-size="24"]{font-size:29px} .chart text[font-size="25"]{font-size:31px}
+  .chart text[font-size="27"]{font-size:34px} .chart text[font-size="44"]{font-size:58px}
+  .lk{font-size:22px !important;opacity:1 !important}
+  .legend{display:flex;flex-wrap:wrap;gap:24px;margin-top:12px}
+  .lk{display:inline-flex;align-items:center;gap:9px;font-family:var(--label);font-size:19px;color:var(--chalk);opacity:.85}
+  .spark{display:block;margin-top:10px}
+
+  /* bars — the lit bar is packed chalk, the context bars are loose hatching */
+  .bars{display:flex;flex-direction:column;gap:18px}
+  .bar-row{display:flex;align-items:center;gap:18px}
+  .bar-lab{width:190px;flex:none;font-family:var(--caps);font-weight:400;font-size:32px;color:var(--chalk)}
+  .bar-track{flex:1;height:34px;border:3px solid rgba(245,245,239,.38);border-radius:3px;overflow:hidden}
+  .bar-fill{height:100%;background:repeating-linear-gradient(-58deg, rgba(245,245,239,.62) 0 5px, transparent 5px 12px)}
+  .bar-fill.hi{background:var(--chalk)}
+  .bar-val{width:110px;flex:none;text-align:right;font-family:var(--caps);font-weight:900;font-size:40px;color:var(--chalk)}
+  .bar-val:not(.hi){opacity:.88}
+
+  /* stats — big chalk numbers */
+  .stats{display:flex;gap:34px}
+  .stat{flex:1}
+  .stat .v{font-family:var(--caps);font-weight:900;font-size:120px;line-height:.9;color:var(--chalk)}
+  .stat:not(:first-child) .v{opacity:.86}
+  .stat .l{font-family:var(--label);font-weight:600;font-size:23px;letter-spacing:.16em;text-transform:uppercase;
+           color:var(--chalk);opacity:1;margin-top:10px}
+  .stat .d{font-family:var(--label);font-size:20px;color:var(--chalk);opacity:.9;margin-top:6px}
+
+  /* dial — the chosen segment gets circled in chalk, as you would on the ground */
+  .dial{display:flex;gap:10px}
+  .seg{flex:1;position:relative;text-align:center;padding:18px 6px;font-family:var(--caps);font-weight:400;
+       font-size:38px;color:var(--chalk);opacity:.9;border-bottom:3px solid rgba(245,245,239,.6)}
+  .seg.on{opacity:1;font-weight:900;border-bottom-color:transparent}
+  .seg.on::after{content:'';position:absolute;left:-4%;right:-4%;top:-6%;bottom:-10%;border:5px solid var(--chalk);
+                 border-radius:50%;transform:rotate(-3deg)}
+  .dial-cap{display:flex;justify-content:space-between;font-family:var(--label);font-size:22px;color:var(--chalk);
+            opacity:.95;margin-top:16px;letter-spacing:.03em}
+
+  /* chips — words boxed in chalk */
+  .chips{display:flex;gap:14px;flex-wrap:wrap}
+  .chip{font-family:var(--caps);font-weight:400;font-size:34px;color:var(--chalk);padding:8px 20px 10px;
+        border:3px solid rgba(245,245,239,.85);border-radius:6px}
+  .chip:nth-child(2n){transform:rotate(-1.5deg)} .chip:nth-child(3n){transform:rotate(1.2deg)}
+
+  /* a real screenshot is a print lying on the grass */
+  .shot{align-self:center;background:#EDEDE6;padding:14px 14px 12px;max-width:92%;
+        transform:rotate(var(--print-rot,-2.4deg));
+        box-shadow:0 3px 4px rgba(10,14,4,.55), 0 26px 50px rgba(10,14,4,.6)}
+  .shot img{display:block;width:100%;max-height:430px;object-fit:cover;object-position:top}
+  .shot .cap{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-top:10px;font-family:var(--label)}
+  .shot .cap .t{font-weight:600;font-size:18px;color:#141E08}
+  .shot .cap .s{font-size:15px;color:rgba(20,30,8,.62);white-space:nowrap}
+
+  /* hero cutout lying on the grass */
+  .heroimg{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .heroimg img{max-height:460px;max-width:88%;object-fit:contain;filter:drop-shadow(0 22px 26px rgba(10,14,4,.7))}
+  .heroimg .hcap{font-family:var(--caps);font-weight:400;font-size:32px;color:var(--chalk);filter:url(#chalk-fine)}
+
+  /* call to action — a chalk box drawn around the ask */
+  .cta{align-self:center;display:flex;flex-direction:column;align-items:center;gap:10px;filter:url(#chalk-fine)}
+  .cta .btn{font-family:var(--caps);font-weight:900;font-size:50px;text-transform:uppercase;color:var(--chalk);
+            padding:12px 34px 14px;border:5px solid var(--chalk);border-radius:12px;transform:rotate(-1.5deg)}
+  .cta .btn .soft{font-weight:400;opacity:.7;margin-left:.3em}
+  .cta .micro{font-family:var(--label);font-size:23px;letter-spacing:.06em;color:var(--chalk);opacity:.95}
+
+  /* ---------- the footer lockup (the ONLY place muted red exists) ---------- */
+  .lockup{position:absolute;left:0;right:0;bottom:50px;z-index:32;text-align:center;filter:url(#chalk-fine)}
+  .lockup .from{font-family:var(--label);font-weight:500;font-size:24px;letter-spacing:.14em;color:var(--chalk);
+                margin-bottom:-4px}
+  .lockup .row{display:flex;justify-content:center;align-items:baseline;gap:16px}
+  .lockup .scr{font-family:var(--script);font-size:66px;color:var(--chalk);line-height:1}
+  .lockup .for{font-family:var(--label);font-weight:500;font-size:26px;letter-spacing:.1em;color:var(--red)}
+
+  .mascot{position:absolute;z-index:14;filter:drop-shadow(0 18px 22px rgba(10,14,4,.7))}
+  .mascot.br{right:40px;bottom:170px}.mascot.bl{left:40px;bottom:170px}.mascot.right{right:30px;top:520px}
+
+  [data-optional].empty{display:none}
+  .unused{display:none}
+</style>
+</head>
+<body>
+  <div class="stage __STAGECLASS__" id="stage">
+    <div class="photo"><img id="ph" alt=""></div>
+    <div class="wash"></div>
+    <div class="pool" id="pool"></div>
+
+    <div class="ground" id="ground">
+      <div class="block" id="block">
+        <div class="handle" id="handle">__HANDLE__</div>
+        <div class="hl" id="hl" style="filter:url(#chalk)"></div>
+        <img class="logo" id="logo" alt="">
+      </div>
+    </div>
+
+    <div class="folio">__INDEX__ / __TOTAL__</div>
+
+    <div class="col" id="col">
+      <div class="kicker" data-optional>__KICKER__</div>
+      <div class="subtitle" data-optional>__SUBTITLE__</div>
+      <div class="content" data-optional>__CONTENT__</div>
+      <div class="cta" id="cta" data-optional>
+        <div class="btn" id="btn">__CTA_PILL__<span class="soft">__CTA_SOFT__</span></div>
+        <div class="micro" data-optional>__MICROCOPY__</div>
+      </div>
+    </div>
+    __MASCOT__
+
+    <div class="lockup" id="lockup"></div>
+    <div class="credit" data-optional>__META3__</div>
+
+    <div class="vignette"></div>
+    <div class="grain"></div>
+
+    <!-- kept so every renderer placeholder is consumed; this style does not show them -->
+    <div class="unused">__HEADLINE__|__HERO_WORD__|__TOPIC_TAG__|__TAGLINE__|__BRAND_LABEL__|__META1__|__META2__</div>
+
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <!-- chalk: grass shows through the dust, edges break up -->
+        <filter id="chalk" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="n"/>
+          <feColorMatrix in="n" type="matrix" result="holes"
+            values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  4.2 0 0 0 -0.75"/>
+          <feComposite in="SourceGraphic" in2="holes" operator="in" result="dust"/>
+          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="warp"/>
+          <feDisplacementMap in="dust" in2="warp" scale="6" xChannelSelector="R" yChannelSelector="G" result="rough"/>
+          <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="1" seed="11" result="big"/>
+          <feColorMatrix in="big" type="matrix" result="patch"
+            values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.1 0 0 0 0.42"/>
+          <feComposite in="rough" in2="patch" operator="in"/>
+        </filter>
+        <!-- lighter version for small type and charts, so thin strokes survive -->
+        <filter id="chalk-fine" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="5" result="n"/>
+          <feColorMatrix in="n" type="matrix" result="holes"
+            values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  4 0 0 0 0.35"/>
+          <feComposite in="SourceGraphic" in2="holes" operator="in" result="dust"/>
+          <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" seed="9" result="warp"/>
+          <feDisplacementMap in="dust" in2="warp" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <!-- logo in chalk: keep only the logo's near-white shapes, redraw them as chalk -->
+        <filter id="logo-white" color-interpolation-filters="sRGB">
+          <feColorMatrix type="matrix" result="w"
+            values="0 0 0 0 0.96  0 0 0 0 0.96  0 0 0 0 0.94  1.4 1.4 1.4 0 -3.2"/>
+          <feComponentTransfer in="w" result="wk"><feFuncA type="linear" slope="3" intercept="-0.4"/></feComponentTransfer>
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n"/>
+          <feColorMatrix in="n" type="matrix" result="holes"
+            values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -0.8"/>
+          <feComposite in="wk" in2="holes" operator="in"/>
+        </filter>
+        <!-- logo as a solid chalk silhouette (for marks with no white shapes) -->
+        <filter id="logo-sil" color-interpolation-filters="sRGB">
+          <feColorMatrix type="matrix" result="s"
+            values="0 0 0 0 0.96  0 0 0 0 0.96  0 0 0 0 0.94  0 0 0 1 0"/>
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n"/>
+          <feColorMatrix in="n" type="matrix" result="holes"
+            values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -0.8"/>
+          <feComposite in="s" in2="holes" operator="in"/>
+        </filter>
+      </defs>
+    </svg>
+  </div>
+
+  <script>
+  (function(){
+    var S = __SLIDE_JSON__, P = __PLAN_JSON__;
+    var stage = document.getElementById('stage');
+    var idx = parseInt("__INDEX__", 10) || 1;
+
+    // ---------- photo ----------
+    var PHOTO = "__BG__";
+    if (PHOTO) document.getElementById('ph').src = PHOTO;
+    if (S.bg_focus) stage.style.setProperty('--focus', S.bg_focus);
+    if (S.bg_zoom) stage.style.setProperty('--zoom', S.bg_zoom);
+    if (S.bg_rot != null) stage.style.setProperty('--rot', S.bg_rot + 'deg');
+
+    // hide empty optional blocks
+    document.querySelectorAll('[data-optional]').forEach(function(el){
+      if(!el.textContent.trim() && !el.querySelector('img') && !el.querySelector('svg')) el.classList.add('empty');
+    });
+    if (!"__CTA_PILL__".trim()) document.getElementById('cta').classList.add('empty');
+    if (!"__HANDLE__".trim()) document.getElementById('handle').style.display = 'none';
+
+    // ---------- seeded jitter ----------
+    var seed = (S.seed != null ? S.seed : idx) * 7919 + 104729;
+    function rnd(){ seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+    function rr(a, b){ return a + (b - a) * rnd(); }
+
+    // grain (subtle, the photo already has texture)
+    (function(){
+      var c = document.createElement('canvas'); c.width = c.height = 260;
+      var x = c.getContext('2d'), d = x.createImageData(260, 260);
+      for (var i = 0; i < d.data.length; i += 4){ var v = 128 + (rnd() - .5) * 120;
+        d.data[i] = d.data[i+1] = d.data[i+2] = v; d.data[i+3] = 255; }
+      x.putImageData(d, 0, 0);
+      stage.style.setProperty('--grain', 'url(' + c.toDataURL() + ')');
+    })();
+
+    // ---------- the lettering ----------
+    var lines = S.lines && S.lines.length ? S.lines.slice()
+              : String(S.headline || '').split(/\s*\/\s*|\n/).filter(Boolean);
+    var accent = String(S.hero_word || '').trim().toUpperCase();
+    var accentPlaced = false;
+    if (accent && !lines.some(function(l){ return (' ' + l.toUpperCase() + ' ').indexOf(' ' + accent + ' ') >= 0; }))
+      lines.push(S.hero_word);                    // accent not in the lines: it gets its own line
+
+    var hl = document.getElementById('hl');
+    lines.forEach(function(line){
+      var ln = document.createElement('span'); ln.className = 'ln';
+      var words = String(line).split(/\s+/);
+      words.forEach(function(w, wi){
+        var wrap = document.createElement('span');
+        wrap.style.display = 'inline-block';
+        if (!accentPlaced && accent && w.toUpperCase().replace(/[^A-Z0-9%$.]/g,'') === accent.replace(/[^A-Z0-9%$.]/g,'')){
+          wrap.className = 'accent'; accentPlaced = true;
+        }
+        Array.from(w).forEach(function(chr){
+          var c = document.createElement('span'); c.className = 'ch'; c.textContent = chr;
+          var small = rnd() < .16 ? rr(.74, .84) : rr(.9, 1.07);        // the odd undersized letter
+          c.style.transform = 'translateY(' + rr(-.035, .045).toFixed(3) + 'em) rotate(' + rr(-5, 5).toFixed(1) +
+                              'deg) scale(' + small.toFixed(3) + ')';
+          c.style.marginRight = rr(-.035, .01).toFixed(3) + 'em';
+          wrap.appendChild(c);
+        });
+        ln.appendChild(wrap);
+        if (wi < words.length - 1){ var sp = document.createElement('span'); sp.className = 'sp'; ln.appendChild(sp); }
+      });
+      hl.appendChild(ln);
+    });
+
+    // ---------- lockup ----------
+    var L = S.lockup || P.lockup || ['FROM A', 'Creator', 'FOR A', 'Creator'];
+    document.getElementById('lockup').innerHTML =
+      '<div class="from">' + L[0] + '</div><div class="row"><span class="scr">' + L[1] +
+      '</span><span class="for">' + L[2] + '</span><span class="scr">' + L[3] + '</span></div>';
+
+    document.fonts.ready.then(function(){
+      var targetW = S.head_width || 960;
+      var lns = Array.from(hl.children), base = 100;
+      var col = document.getElementById('col'), block = document.getElementById('block');
+      var ground = document.getElementById('ground'), sb = stage.getBoundingClientRect();
+      var lockTop = document.getElementById('lockup').getBoundingClientRect().top - sb.top;
+      var lockGap = S.lock_gap || 36;
+      var margins = lns.map(function(ln, i){ return (i % 2 ? rr(10, 60) : rr(-10, 24)).toFixed(0) + 'px'; });
+      var hlBottom = 0;
+
+      // one pass: fit the lettering to maxH, lay it on the ground, place the logo, return the space left
+      function layout(maxH){
+        // fit: longest line ~ targetW; short lines grow but are capped; total height capped
+        lns.forEach(function(ln){ ln.style.fontSize = base + 'px'; });
+        var widths = lns.map(function(ln){ return ln.getBoundingClientRect().width || 1; });
+        var sizes = widths.map(function(w){ return Math.min(base * targetW / w, base * targetW / Math.max.apply(null, widths) * 1.5); });
+        if (S.head_size) sizes = sizes.map(function(){ return S.head_size; });
+        var total = sizes.reduce(function(a, s){ return a + s * .84; }, 0);
+        var k = Math.min(1, maxH / total);
+        lns.forEach(function(ln, i){ ln.style.fontSize = (sizes[i] * k).toFixed(1) + 'px'; ln.style.marginLeft = margins[i]; });
+
+        // lay the block on the ground: rotate + tilt, alternate direction across the set
+        var tilt = S.tilt != null ? S.tilt : (idx % 2 ? -7 : 6);
+        var pitch = S.pitch != null ? S.pitch : 16;
+        ground.style.top = (S.head_top != null ? S.head_top : 150) + 'px';
+        block.style.transformOrigin = '50% 0';
+        block.style.transform = 'perspective(1600px) rotateX(' + pitch + 'deg) rotate(' + tilt + 'deg)';
+
+        // logo, drawn on the ground next to the lettering (block's own untransformed space)
+        var LOGO = "__LOGO__", logo = document.getElementById('logo');
+        if (LOGO && S.show_logo !== false){
+          logo.src = LOGO;
+          var mode = S.logo_mode || 'chalk';
+          logo.style.filter = mode === 'color' ? 'drop-shadow(0 10px 14px rgba(10,14,4,.6))'
+                            : mode === 'silhouette' ? 'url(#logo-sil)' : 'url(#logo-white)';
+          var size = S.logo_size || 150, pos = S.logo_pos || 'top-right', bw = block.offsetWidth;
+          logo.style.width = size + 'px';
+          if (pos === 'top-right'){ logo.style.left = (bw - size) + 'px'; logo.style.top = (-size + 10) + 'px'; }
+          else if (pos === 'right'){ logo.style.left = (bw + 18) + 'px'; logo.style.top = '6px'; }
+          else if (pos === 'left'){ logo.style.left = (-size - 18) + 'px'; logo.style.top = '6px'; }
+          else if (typeof pos === 'object'){ logo.style.left = pos.x + 'px'; logo.style.top = pos.y + 'px'; }
+        }
+
+        // the proof column starts just under the lettering (measured after the 3D transform)
+        var gb = block.getBoundingClientRect();
+        hlBottom = Math.max(hl.getBoundingClientRect().bottom, gb.bottom) - sb.top;
+        var top = S.content_top != null ? S.content_top : Math.round(hlBottom + (S.content_gap || 30));
+        col.style.top = top + 'px'; col.style.bottom = 'auto';
+        return (lockTop - lockGap - top) - col.offsetHeight;      // < 0 means the proof does not fit
+      }
+
+      // a tall proof (a chart, a print) shrinks the lettering until both fit
+      var maxH = S.head_max_h || 540, spare = layout(maxH);
+      for (var tries = 0; spare < 0 && maxH > 230 && tries < 6; tries++){
+        maxH = Math.max(230, maxH + spare - 12);
+        spare = layout(maxH);
+      }
+      // then the proof sits centred in the ground between the lettering and the lockup
+      col.style.bottom = Math.round(1350 - lockTop + lockGap) + 'px';
+      col.style.justifyContent = S.content_align || 'center';
+      stage.dataset.hlBottom = Math.round(hlBottom);
+      var gb = block.getBoundingClientRect();
+      stage.dataset.hlTop = Math.round(Math.min(hl.getBoundingClientRect().top, gb.top) - sb.top);
+
+      // shadow pool under the proof
+      // measure the real ink of the column (its children), not its stretched box
+      var kids = Array.from(col.children).filter(function(k){ return !k.classList.contains('empty'); });
+      var cr = kids.reduce(function(a, k){ var r = k.getBoundingClientRect();
+        return a ? {left:Math.min(a.left,r.left), top:Math.min(a.top,r.top), right:Math.max(a.right,r.right), bottom:Math.max(a.bottom,r.bottom)} : r; }, null)
+        || {left:0, top:0, right:0, bottom:0};
+      cr = {left:cr.left, top:cr.top, width:cr.right-cr.left, height:cr.bottom-cr.top, bottom:cr.bottom};
+      if (cr.height > 20){
+        var pool = document.getElementById('pool');
+        pool.style.display = 'block';
+        pool.style.left = (cr.left - sb.left - 220) + 'px';
+        pool.style.top = (cr.top - sb.top - 130) + 'px';
+        pool.style.width = (cr.width + 440) + 'px';
+        pool.style.height = (cr.height + 260) + 'px';
+      }
+      stage.dataset.colBottom = Math.round(cr.bottom - sb.top);
+      stage.dataset.lockTop = Math.round(lockTop);
+      stage.dataset.colTop = Math.round(cr.top - sb.top);
+      window.__chalkReady = true;
+    });
+  })();
+  </script>
+</body>
+</html>

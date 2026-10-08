@@ -1,0 +1,7 @@
+# build products of saved styles' demos (styles/<name>/demo): keep only the sources, sample.png and STYLE.md
+styles/**/index.html
+**/frames/
+**/frames-*/
+**/renders/
+**/review/
+**/review-*/

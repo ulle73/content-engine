@@ -1,0 +1,250 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════════════
+     TIER BOARD — the spine of the `tierlist` style.  1080×1920.
+     Added 2026-08-27.  Spec and reasoning: reference/TIER-BOARD.md
+
+     COPY this whole file into the video's index.html. Do not re-type it — the geometry is
+     measured, not invented, and a re-typed board is how the CTA arrow drifted (BLACKLIST #9's
+     whole reason for existing).
+
+     THE ONE THING TO UNDERSTAND: the board is not a graphic that comes and goes. It is on
+     screen from the first second to the last, and the video's density comes from CARDS
+     LANDING ON THE BEAT, not from the frame changing. That is the whole style.
+
+     LAYOUT AT 1080×1920 ────────────────────────────────────────────────────────────────
+       void            0    → 984    #0B0B0B         the ground, top half
+       rows region     84   → 884    height 800      N rows, rowH = 800 / N
+       label column    0    → 210                    the colour chip + its letter
+       content column  210  → 1080   width 870       up to FIVE cards
+       caption band    884  → 984    height 100      one word, centred, never moves
+       SEAM            984                           hard edge, no feather, no gradient
+       camera          984  → 1920   1080 × 936      full width, uncut, NO MATTE
+     ─────────────────────────────────────────────────────────────────────────────────────
+     rowH is 160 at N=5 (the canonical board) and 133.33 at N=6. The rows region and the
+     seam do NOT move when N changes — that is why they are the fixed numbers.
+═══════════════════════════════════════════════════════════════════════════════════════ -->
+
+<style>
+/* ── the ground ─────────────────────────────────────────────────────────────────────
+   Black, and flat. Do not put a gradient, a grain or a vignette behind the board: the
+   row colours are already six saturated hues sitting next to each other and anything
+   under them turns the whole top half into mud.                                       */
+.tb-void{position:absolute;left:0;top:0;width:1080px;height:984px;background:var(--tier-void)}
+
+/* ── the rows ──────────────────────────────────────────────────────────────────────── */
+.tb{position:absolute;left:0;top:84px;width:1080px;height:800px;
+    display:flex;flex-direction:column}
+.tb-row{position:relative;flex:1 1 0;display:flex;align-items:stretch;
+    border-bottom:2px solid var(--tier-rule)}
+.tb-row:last-child{border-bottom:0}
+
+/* the colour chip. 210px wide, flush to the frame's left edge — it bleeds off, it is not
+   inset. An inset chip reads as a card and this is a table, not a card. */
+.tb-lab{flex:0 0 210px;display:flex;align-items:center;justify-content:center;
+    border-right:2px solid var(--tier-rule);
+    font:700 62px var(--font-ui);color:var(--tier-label-ink);
+    letter-spacing:.01em;line-height:1}
+.tb-slots{flex:1 1 auto;position:relative;background:var(--tier-row)}
+
+.tb-s .tb-lab{background:var(--tier-s)}
+.tb-a .tb-lab{background:var(--tier-a)}
+.tb-b .tb-lab{background:var(--tier-b)}
+.tb-c .tb-lab{background:var(--tier-c)}
+.tb-d .tb-lab{background:var(--tier-d)}
+.tb-e .tb-lab{background:var(--tier-e)}
+.tb-f .tb-lab{background:var(--tier-f)}
+
+/* ── a placed item ──────────────────────────────────────────────────────────────────
+   140×140 white card, radius 18, absolutely positioned in the ROOT (not inside .tb-row)
+   so one element can fly from the centre of the board to its slot without the row's
+   overflow clipping it. left/top come from tierSlot() below and go in a style attribute.
+
+   The asset inside is the product's REAL SQUARE APP MARK, at 116px, object-fit:contain.
+   Not a wordmark if a square mark exists — a wordmark is type, and the card already sits
+   next to a caption saying the name (the same reasoning as TYPE-ROLES role 3).
+   The reference reel sets a 6px-cap wordmark ABOVE the mark inside the card. We drop it:
+   at 1080×1920 that is 14px type, which is BLACKLIST #1 outright.                       */
+.tb-card{position:absolute;width:140px;height:140px;border-radius:18px;
+    background:var(--tier-card);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 18px rgba(0,0,0,.45);
+    will-change:transform,opacity}
+.tb-card img{width:116px;height:116px;object-fit:contain;display:block}
+
+/* ⭐ A MARK THAT CARRIES ITS OWN OPAQUE BACKGROUND FILLS THE TILE — add `bleed`.
+   Found on tp-0827d, by looking at the approval sheet: Codex, Fathom and Grok all ship as a
+   dark rounded square, and inset at 116px on a white plate every one of them read as a CARD
+   INSIDE A CARD — which is exactly what BLACKLIST #2b is about. Full-bleed, they read as app
+   tiles, which is what a tier list is made of.
+   Test it, do not eyeball it: if the four corner pixels are opaque, it bleeds.
+     im=Image.open(f).convert('RGBA'); [im.getpixel(p)[3]>250 for p in corners]              */
+.tb-card.bleed{overflow:hidden;background:transparent}
+.tb-card.bleed img{width:140px;height:140px;object-fit:cover;border-radius:18px}
+/* the escape hatch, and the ONLY one: a product with no square mark. The wordmark fills
+   the card's full inner width so its cap height still clears ~26px. If it cannot, the
+   product does not go on the board — say the name in the caption and move on. */
+.tb-card.wm img{width:116px;height:auto;max-height:116px}
+
+/* The scrim that dims the board while a card is being PRESENTED.
+   TWO THINGS HERE WERE FOUND BY `hyperframes check`, not by reasoning:
+
+   1. It starts at x=210 — the CONTENT COLUMN ONLY. It does not cover the label chips.
+      A scrim over the whole board dims the S/A/B/C/D letters too, and the layout gate
+      calls that `text_occluded` while the contrast gate drops #lab-s to 2.33:1 against
+      its own chip. It is also better as design: the tier letters stay legible while the
+      card is in the air, so you can read where it is about to land.
+   2. `opacity:0` lives HERE, in the CSS — not in a `tl.set(..., 0)`. Several fromTo
+      tweens act on this property and a fromTo immediate-renders its from-state at build
+      time, so it needs an initial state; but a zero-duration set AT 0 does not render
+      while the playhead sits exactly at 0, so frame 0 would paint the scrim at .62.
+      (`gsap_timeline_set_initial_hide`.)
+
+   It never covers the caption band and never covers the camera.                        */
+.tb-scrim{position:absolute;left:210px;top:84px;width:870px;height:800px;
+    background:rgba(4,4,4,.62);opacity:0;will-change:opacity}
+
+/* ── the caption band ───────────────────────────────────────────────────────────────
+   c-ws, unchanged, in WHITE because the ground is black. ONE band, and it never moves —
+   not for a present, not for a move, not for the CTA. 96px type centred in the 100px gap
+   between the last row and the seam. It is on black, so BLACKLIST #12 (never on his body,
+   never over the media) stays in force here — unlike persa, which suspends it.          */
+.cap.tb-band{top:884px;height:100px;line-height:100px;color:#FFFFFF}
+
+/* ── the camera ─────────────────────────────────────────────────────────────────────
+   Hard bottom half. Full width, no card, no radius, no border, NO MATTE. This is the one
+   style in the skill that does not run rvm-matte at all.
+   object-fit:cover on a 1080×936 box of a 1080×1920 source crops the middle. MEASURE
+   object-position per take — do not guess it, and do not leave this value:
+
+       objectY = (headTopInSource - 110) / (1920 - 936)
+
+   110px is how far below the box's top edge his head should sit. On tp-0821 head top is
+   at source y=723, giving 62.3%. A guessed 32% put him halfway down the box with 135px of
+   ceiling above his head and every gate still passed — see TIER-BOARD.md §6 for the
+   one-liner that measures headTopInSource. */
+.tb-cam{position:absolute;left:0;top:984px;width:1080px;height:936px;
+    object-fit:cover;object-position:50% 62.3%}
+</style>
+
+<!-- ── the board. ONE clip, data-start 0, data-duration = the whole video. ──────────
+     data-track-index 1 — under everything. The cards sit on 20+, the caption on 30+. -->
+<div class="clip tb-void" id="tbvoid" data-start="0" data-duration="__DUR__" data-track-index="1"></div>
+<div class="clip tb" id="tbrows" data-start="0" data-duration="__DUR__" data-track-index="2">
+  <div class="tb-row tb-s"><div class="tb-lab" id="lab-s">S</div><div class="tb-slots"></div></div>
+  <div class="tb-row tb-a"><div class="tb-lab" id="lab-a">A</div><div class="tb-slots"></div></div>
+  <div class="tb-row tb-b"><div class="tb-lab" id="lab-b">B</div><div class="tb-slots"></div></div>
+  <div class="tb-row tb-c"><div class="tb-lab" id="lab-c">C</div><div class="tb-slots"></div></div>
+  <div class="tb-row tb-d"><div class="tb-lab" id="lab-d">D</div><div class="tb-slots"></div></div>
+</div>
+
+<!-- ── the cards. One clip each. data-start = the frame the card is PRESENTED, and the
+     duration runs to the END OF THE VIDEO: a placed card never leaves the board. -->
+<!--
+<img … >  no — a card is a div wrapping the mark, so the white plate survives a transparent PNG:
+<div class="clip tb-card" id="k_claude" style="left:226px;top:94px"
+     data-start="3.2" data-duration="__TO_END__" data-track-index="21">
+  <img src="assets/brand/claude.svg" alt=""></div>
+-->
+
+<script>
+/* ═══ THE SLOT MATH — never hardcode a left/top, call this ══════════════════════════
+   tierSlot(row, col, N) → {left, top} for the card's style attribute.
+   row and col are 0-based. col 0..4 — a sixth card in a row overflows the 870px content
+   column and check-density will not catch it, so the board caps at FIVE per row.        */
+const TB = {top:84, h:800, labelW:210, pad:16, card:140, pitch:150};
+function tierSlot(row, col, N){
+  N = N || 5;
+  const rowH = TB.h / N;
+  return { left: TB.labelW + TB.pad + col * TB.pitch,
+           top:  Math.round(TB.top + row * rowH + (rowH - TB.card) / 2) };
+}
+
+/* ═══ THE TWO-PHASE PLACEMENT — the signature move of this style ════════════════════
+   PRESENT, then PLACE. Never one without the other.
+
+     PRESENT  the card appears at the CENTRE of the board at 380px, on the word that
+              names the product. Big enough to actually read the mark. The rows dim.
+     PLACE    ~1.1s later, on the word that names the TIER ("S tier", "that's an A"),
+              it flies to its slot and shrinks to 140. The rows come back. The row's
+              letter pulses once.
+
+   Presenting and placing in one motion is the mistake to avoid: the card is only ever
+   140px, the viewer never sees what it is, and the whole beat reads as a logo twitching
+   in a corner. The pause between the two phases IS the beat.
+
+   Every tween is a fromTo with an explicit from-state — tl.to() is not seek-safe and the
+   render path seeks (HOW-WE-EDIT §1).
+
+   SOUND, and it is not optional (BLACKLIST #8 — no silent layout change):
+     present → swoosh.wav        place → pop.wav        an S-tier place → + confirm.wav
+*/
+const TB_CENTRE = {x:540, y:TB.top + TB.h/2};   /* 540, 484 */
+const TB_BIG = 380 / TB.card;                    /* 2.714 */
+const tbHome = e => ({left:parseFloat(e.style.left), top:parseFloat(e.style.top)});
+
+/* A card's style left/top is its FINAL RESTING SLOT — where it sits when the video ends.
+   GSAP x/y are offsets from that, so a card that gets re-ranked later still has exactly one
+   home and every motion is expressed as an offset back to it. Pass opts.slot when the card
+   first lands somewhere OTHER than its final slot (i.e. it is going to be moved later).      */
+function tierPresent(tl, id, tPresent, tPlace, opts){
+  const e = document.getElementById(id); if(!e) return;
+  opts = opts || {};
+  const home = tbHome(e);
+  const land = opts.slot || home;
+  const cx = TB_CENTRE.x - (home.left + TB.card/2);   /* offset to the board's centre */
+  const cy = TB_CENTRE.y - (home.top  + TB.card/2);
+  const ox = land.left - home.left;                    /* offset to where it lands NOW */
+  const oy = land.top  - home.top;
+
+  /* phase 1 — arrive at the centre, big */
+  tl.fromTo(e, {x:cx, y:cy, scale:TB_BIG*0.62, opacity:0},
+               {x:cx, y:cy, scale:TB_BIG, opacity:1, duration:.30, ease:"back.out(1.7)"}, tPresent);
+  /* phase 2 — fly to the slot */
+  tl.fromTo(e, {x:cx, y:cy, scale:TB_BIG, opacity:1},
+               {x:ox, y:oy, scale:1, opacity:1, duration:.46, ease:"power3.inOut"}, tPlace);
+
+  const s = opts.scrim && document.getElementById(opts.scrim);
+  if(s){
+    tl.fromTo(s, {opacity:0}, {opacity:1, duration:.24, ease:"power2.out"}, tPresent);
+    tl.fromTo(s, {opacity:1}, {opacity:0, duration:.30, ease:"power2.out"}, tPlace);
+  }
+  if(opts.label) tierPulse(tl, opts.label, tPlace + .40);
+}
+
+/* ═══ THE RE-RANK — the move only this style can make ═══════════════════════════════
+   A card already on the board slides to a different row. This is the payoff beat of a
+   tier list and it is worth building the script around: "…actually, no." card moves.
+   Give it vinyl-rewind.mp3 on the lift and pop.wav on the land.
+   `from` is the slot it is sitting in RIGHT NOW — tierSlot(row, col). The element's style
+   left/top is already its final slot, so the tween just returns it home.                   */
+function tierMove(tl, id, t, from, opts){
+  const e = document.getElementById(id); if(!e) return;
+  opts = opts || {};
+  const home = tbHome(e);
+  const ox = from.left - home.left, oy = from.top - home.top;
+  tl.fromTo(e, {x:ox, y:oy}, {x:0, y:0, duration:.52, ease:"power3.inOut"}, t);
+  tl.fromTo(e, {scale:1}, {scale:1.14, duration:.26, ease:"power2.out", yoyo:true, repeat:1}, t);
+  if(opts.label) tierPulse(tl, opts.label, t + .46);
+}
+
+/* ═══ THE SPOTLIGHT — for a take with LONG explanations ════════════════════════════
+   Optional, and only needed when he talks for more than ~5s between placements. tp-0827d
+   ranks nine tools in 86.8s and spends 5-13s on each, so between placements the board is a
+   static scoreboard and nothing tells you which of nine cards the words belong to. The card
+   under discussion stays lifted until the next one is presented.
+
+   It is a STATE MARKER, NOT DENSITY. It does not fill the gap and it does not make the
+   density gate pass — do not reach for it to fix a slack cut. If the explanations are long
+   the honest fix is a tighter script.                                                       */
+function tierSpot(tl, id, on, off){
+  const e = document.getElementById(id); if(!e) return;
+  tl.fromTo(e, {scale:1,    y:0},  {scale:1.10, y:-6, duration:.34, ease:"power3.out"}, on);
+  tl.fromTo(e, {scale:1.10, y:-6}, {scale:1,    y:0,  duration:.30, ease:"power3.out"}, off);
+}
+
+/* the row letter flashes white for 200ms when something lands in it. The only motion the
+   board itself ever makes — the rows do not slide, breathe, or re-order. */
+function tierPulse(tl, labId, t){
+  const e = document.getElementById(labId); if(!e) return;
+  tl.fromTo(e, {scale:1}, {scale:1.16, duration:.14, ease:"power2.out", yoyo:true, repeat:1}, t);
+}
+</script>

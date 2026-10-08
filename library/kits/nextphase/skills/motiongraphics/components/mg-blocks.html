@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MOTIONGRAPHICS — style kit (16:9)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="../assets/tokens.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#07060B;color:var(--mg-on-soft);font-family:var(--mg-font-ui);
+    padding:40px 0 120px;overflow-x:hidden}
+  h1{font:900 italic 40px var(--mg-font-slam);color:var(--mg-on);text-align:center;
+    letter-spacing:-.02em;text-transform:uppercase;text-shadow:var(--mg-glow-text)}
+  .sub{text-align:center;font:400 13px var(--mg-font-mono);margin:8px 0 26px;color:var(--mg-on-dim)}
+  .bar{display:flex;gap:10px;justify-content:center;margin-bottom:34px}
+  .bar button{background:var(--mg-panel);color:var(--mg-on);border:1px solid var(--mg-edge-soft);
+    border-radius:999px;padding:9px 22px;font:600 13px var(--mg-font-ui);cursor:pointer}
+  .bar button:hover{border-color:var(--mg-edge);box-shadow:var(--mg-glow-edge)}
+  .row{max-width:1180px;margin:0 auto 56px;padding:0 24px}
+  .row h2{font:500 13px var(--mg-font-mono);letter-spacing:.16em;text-transform:uppercase;
+    color:var(--mg-violet-hi);margin-bottom:6px}
+  .row p{font-size:13px;line-height:1.6;margin-bottom:14px;max-width:920px;color:var(--mg-on-dim)}
+  .row p code{color:var(--mg-on-soft);font-family:var(--mg-font-mono);font-size:12px}
+  /* a true 1920x1080 stage, scaled to fit the page */
+  .frame{width:1120px;height:630px;position:relative;overflow:hidden;border-radius:10px;
+    box-shadow:0 20px 60px rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.06)}
+  .stage{width:1920px;height:1080px;position:absolute;top:0;left:0;overflow:hidden;
+    transform:scale(0.58333);transform-origin:top left}
+  /* placeholders standing in for real footage / real media */
+  .ph-face{position:absolute;inset:0;background:
+    radial-gradient(58% 74% at 62% 40%, #3a2d26 0%, #14100e 74%);}
+  .ph-face::after{content:"camera — recording-tight.mp4";position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font:500 26px var(--mg-font-mono);color:rgba(255,255,255,.16)}
+  .ph-media{width:100%;height:100%;background:linear-gradient(140deg,#241a33,#120c1c);
+    display:flex;align-items:center;justify-content:center;text-align:center;padding:26px;
+    font:500 22px var(--mg-font-mono);color:rgba(255,255,255,.32)}
+  /* safe-zone guides */
+  .guides{position:absolute;inset:0;z-index:95;pointer-events:none;display:none}
+  body.g .guides{display:block}
+  .guides i{position:absolute;border:2px dashed rgba(169,156,245,.6)}
+  .g-safe{left:96px;top:54px;right:96px;bottom:54px}
+  .g-cam{left:1364px;top:738px;width:500px;height:282px}
+  .g-pts{left:96px;top:300px;width:704px;height:560px}
+</style>
+</head>
+<body>
+
+<h1>Motiongraphics style kit</h1>
+<div class="sub">1920 × 1080 · 30fps · every brick uses tokens.css only · durations are the measured ones</div>
+<div class="bar">
+  <button onclick="document.body.classList.toggle('g')">safe-zone guides</button>
+  <button onclick="playAll()">▶ replay all motion</button>
+  <button onclick="freeze()">⏸ freeze at settled state</button>
+</div>
+
+<!-- ═════════════════════════════════════════════════ 1 · SLAM CARD ═══ -->
+<div class="row">
+  <h2>Scene 7 · Slam Card</h2>
+  <p>⌁ REF-B 0:25 / 0:46. One slam headline in a magenta bar that <code>scaleX</code>-wipes open from
+     the left (<code>--mg-dur-wipe</code>, 12f), one hero media in a rimmed <code>.mg-media</code> card
+     that grows slowly the whole hold, and a late-arriving conic ring
+     (<code>--mg-dur-ring</code>, starting ~0.5s after settle). Reached through a light leak, never a cut.</p>
+  <div class="frame"><div class="stage mg-bg-bloom" id="s1">
+    <div style="position:absolute;left:0;right:0;top:150px;text-align:center">
+      <div class="mg-slam" style="display:inline-flex;gap:.28em;align-items:baseline">
+        <span class="w">THE</span><span class="w">FINAL</span>
+        <span class="mg-hl w"><span class="hlw">RESULT</span></span>
+      </div>
+    </div>
+    <div class="mg-media phone growcard" style="position:absolute;left:810px;top:330px;width:300px;height:600px">
+      <div class="ph-media">hero media<br>real render / screenshot</div>
+    </div>
+    <div class="ring" style="position:absolute;left:1420px;top:790px;width:170px;height:170px;
+        border-radius:50%;background:conic-gradient(var(--mg-magenta-hi) 0deg,var(--mg-magenta-hi) 0deg,rgba(255,255,255,.07) 0deg);
+        filter:drop-shadow(0 0 18px rgba(192,84,228,.75))">
+      <div style="position:absolute;inset:11px;border-radius:50%;background:var(--mg-base);
+        display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <span style="font:900 italic 52px var(--mg-font-slam);color:var(--mg-on)">60</span>
+        <span class="mg-kicker" style="font-size:13px">seconds</span>
+      </div>
+    </div>
+    <div class="mg-vignette"></div><div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<!-- ═════════════════════════════════════════ 2 · DIAGRAM TAKEOVER ═══ -->
+<div class="row">
+  <h2>Scene 6 · Diagram Takeover — the centrepiece</h2>
+  <p>⌁ REF-A 0:28–0:58. Hard cut to the empty gear field, held ~4 frames. The section title builds one
+     word at a time (<code>--mg-dur-word</code> 8f, onsets <code>--mg-dur-cadence</code> 7f apart) while the
+     line re-centres and lands <strong>large</strong>. The camera then <strong>pulls back continuously
+     for the whole scene</strong> — one unbroken zoom-out, not discrete re-fit steps. Documents arrive one
+     at a time, <strong>grey first then colouring in</strong>; connectors draw <em>after</em> their
+     destination pill; the loop in panel 3 draws itself.</p>
+  <div class="frame"><div class="stage mg-bg-field" id="s2">
+    <!-- ⌁ REF-A: large, FILLED cog silhouettes, only a shade lighter than the field,
+         rotating slowly. They are texture, not illustration — if you can read them
+         as gears at a glance they are too bright. Paths generated below. -->
+    <svg class="cogs" style="position:absolute;inset:0" width="1920" height="1080">
+      <g fill="rgba(132,60,240,.30)">
+        <path class="cog" data-cx="210"  data-cy="880" data-r="330" data-teeth="14"/>
+        <path class="cog" data-cx="1700" data-cy="200" data-r="380" data-teeth="16"/>
+        <path class="cog" data-cx="1080" data-cy="1010" data-r="240" data-teeth="12"/>
+        <path class="cog" data-cx="740"  data-cy="120" data-r="200" data-teeth="11"/>
+      </g>
+    </svg>
+    <div class="fit" style="position:absolute;left:0;right:0;top:70px;transform-origin:50% 20%">
+      <div class="mg-section" style="margin-bottom:30px">
+        <span class="w">CONTENT</span><span class="w">GROWTH</span><span class="w">SYSTEM</span>
+      </div>
+      <!-- panel 1 -->
+      <div class="mg-panel pnl" style="width:1320px;height:224px;margin:0 auto 26px;padding:62px 40px 0">
+        <div class="title">Content Strategy &amp; Positioning</div>
+        <div style="display:flex;justify-content:space-around;align-items:flex-start" id="docs">
+          <div class="doc"><span>Niche Interviewer</span></div>
+          <div class="doc"><span>Positioning Builder</span></div>
+          <div class="doc"><span>Bullseye Builder</span></div>
+          <div class="doc"><span>Topic Scanner</span></div>
+          <div class="doc"><span>Format Finder</span></div>
+        </div>
+      </div>
+      <!-- panel 2 -->
+      <div class="mg-panel pnl" style="width:1320px;height:224px;margin:0 auto 26px;padding:62px 44px 0;position:relative">
+        <div class="title">Video Workflow</div>
+        <!-- connectors are GENERATED from the real pill geometry, edge to edge —
+             see wireFlow() below. Hand-placed coordinates drift the moment a
+             label changes length, and a connector that misses its pill is the
+             single most obvious tell that a diagram was faked. -->
+        <svg class="wires" style="position:absolute;inset:0;pointer-events:none;overflow:visible"
+             width="1320" height="224">
+          <g fill="none" stroke="var(--mg-edge)" stroke-width="2" stroke-linecap="round"
+             style="filter:drop-shadow(0 0 6px rgba(169,156,245,.9))"></g>
+        </svg>
+        <div style="position:relative">
+          <span class="mg-pill nd" style="position:absolute;left:40px;top:74px">Topics</span>
+          <span class="mg-pill nd" style="position:absolute;left:262px;top:126px">Research</span>
+          <span class="mg-pill nd" style="position:absolute;left:530px;top:74px">Formats</span>
+          <span class="mg-pill nd" style="position:absolute;left:770px;top:126px">Hooks</span>
+          <span class="mg-pill nd" style="position:absolute;left:1010px;top:74px">Scripts</span>
+        </div>
+      </div>
+      <!-- panel 3 · the loop — a THICK violet ring that draws itself -->
+      <div class="mg-panel pnl" style="width:1320px;height:224px;margin:0 auto;padding:0">
+        <svg class="loop" style="position:absolute;inset:0" width="1320" height="224">
+          <ellipse class="ring" cx="660" cy="116" rx="168" ry="70" fill="none"
+            stroke="#5B21A8" stroke-width="34" stroke-linecap="round"
+            style="filter:drop-shadow(0 0 22px rgba(91,33,168,.9))"/>
+        </svg>
+        <div class="title" style="top:64px">The Learning Loop</div>
+        <div class="coach" style="position:absolute;left:0;right:0;top:106px;
+             display:flex;flex-direction:column;align-items:center;gap:6px">
+          <div class="ico" style="width:52px;height:64px"></div>
+          <span style="font:500 17px var(--mg-font-ui);color:var(--mg-on)">The Content Coach</span>
+        </div>
+      </div>
+    </div>
+    <div class="mg-vignette"></div><div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<!-- ═════════════════════════════════════════════ 3 · OBJECT STAGE ═══ -->
+<div class="row">
+  <h2>Scene 9 · Object Stage — a TWO-ACT scene</h2>
+  <p>⌁ REF-B 0:35–0:45. Act 1: a rim-lit <code>.mg-figure</code> anchors the frame while
+     <strong>translucent</strong> <code>.mg-tile-glass</code> tiles arrive one at a time at scattered
+     positions and different scales — depth, not a row — with the camera pulling back throughout.
+     Act 2: the figure clears in 3 frames, three <strong>solid</strong> <code>.mg-tile</code>s take
+     the stage, and the camera <strong>dives along the row</strong> (push-in + lateral track) to land
+     on the third before pulling back. The two tile treatments are rim-lit from opposite directions
+     because the key light moves — don't merge them.</p>
+  <div class="frame"><div class="stage mg-bg-bloom" id="s3">
+
+    <div class="rig" style="position:absolute;inset:0;transform-origin:50% 46%">
+      <div class="mg-figure" style="left:810px;top:250px;width:300px">
+        <div class="head"><i class="eye"></i><i class="eye"></i></div>
+        <div class="torso"></div>
+      </div>
+      <div class="mg-tile-glass gt" style="position:absolute;left:250px;top:430px;width:230px" data-d=".82">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="7.4" r="3.9"/>
+          <path d="M4.6 20.5c0-4 3.3-6.6 7.4-6.6s7.4 2.6 7.4 6.6z"/></svg>
+        <span>Business<br>owner</span>
+      </div>
+      <div class="mg-tile-glass gt" style="position:absolute;left:1440px;top:462px;width:236px" data-d=".86">
+        <svg viewBox="0 0 24 24"><path d="M3 8.6l5-2.8 5 2.8-5 2.8z"/>
+          <path d="M11 13.2l5-2.8 5 2.8-5 2.8z"/><path d="M6 15.4l5-2.8 5 2.8-5 2.8z"/></svg>
+        <span>New<br>Product</span>
+      </div>
+      <div class="mg-tile-glass gt" style="position:absolute;left:1188px;top:110px;width:206px" data-d=".70">
+        <svg viewBox="0 0 24 24"><path d="M3.4 7.2h17.2l-1.1 3.1H4.5z"/>
+          <path d="M5.2 11.4h13.6v8.4H5.2z"/></svg>
+        <span>Store<br>Management</span>
+      </div>
+    </div>
+
+    <div class="dive" style="position:absolute;inset:0;display:flex;align-items:center;
+         justify-content:center;gap:90px;transform-origin:50% 50%">
+      <div class="mg-tile tl" style="width:340px;height:380px">
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="var(--mg-orchid)"
+             stroke="var(--mg-violet-ink)" stroke-width="1.2">
+          <circle cx="9" cy="7" r="3.4"/><path d="M2.6 20c0-3.6 2.9-6 6.4-6s6.4 2.4 6.4 6z"/>
+          <circle cx="17.5" cy="9" r="2.6" opacity=".7"/>
+        </svg><div class="label">Photographer<br>#1</div>
+      </div>
+      <div class="mg-tile tl" style="width:340px;height:380px">
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="var(--mg-orchid)"
+             stroke="var(--mg-violet-ink)" stroke-width="1.2">
+          <rect x="3" y="9" width="11" height="7" rx="2"/><path d="M14 10l7-3v11l-7-3z"/>
+        </svg><div class="label">The lighting<br>#2</div>
+      </div>
+      <div class="mg-tile tl" style="width:340px;height:380px">
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="var(--mg-orchid)"
+             stroke="var(--mg-violet-ink)" stroke-width="1.2">
+          <path d="M4 7h3l2-2h6l2 2h3v12H4z"/><circle cx="12" cy="13" r="4" fill="var(--mg-violet-ink)"/>
+        </svg><div class="label">Shooting<br>#3</div>
+      </div>
+    </div>
+
+    <div class="mg-vignette"></div><div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ 4 · POINT STACK ═══ -->
+<div class="row">
+  <h2>Scene 3 · Face + Point Stack — the one text-only support beat</h2>
+  <p>⌁ REF-A 1:36. A violet headline builds word by word, then white bullets stagger in, each entering
+     <code>blur(10px) → 0</code>. Lives in the <strong>left third</strong>; the speaker keeps the right.
+     Exits as a whole stack, blurring out together. Three or four bullets, maximum.</p>
+  <div class="frame"><div class="stage" id="s4">
+    <div class="ph-face"></div>
+    <div class="stk" style="position:absolute;left:96px;top:320px;width:700px">
+      <div class="mg-point-head" style="margin-bottom:34px">
+        <span class="w">Brand one</span> <span class="w">is</span> <span class="w">just</span> <span class="w">guessing</span>
+      </div>
+      <div class="mg-point ln" style="margin-bottom:26px">It has no context on you</div>
+      <div class="mg-point ln" style="margin-bottom:26px">It doesn't know what videos are working</div>
+      <div class="mg-point ln">It doesn't know how the competitors are posting</div>
+    </div>
+    <div class="mg-vignette"></div><div class="guides"><i class="g-safe"></i><i class="g-pts"></i></div>
+  </div></div>
+</div>
+
+<!-- ════════════════════════════════ 5 · STAT CARD + SCREEN STAGE ════ -->
+<div class="row">
+  <h2>Scene 4 · Face + Stat Card &nbsp;·&nbsp; and the count-up rule</h2>
+  <p>⌁ REF-A 0:20. A glass card beside the speaker's gesturing hand, sliding in from that side. The number
+     <strong>counts up after the card lands</strong> — the late-second-beat rule. Real, verified numbers only.</p>
+  <div class="frame"><div class="stage" id="s5">
+    <div class="ph-face"></div>
+    <div class="statcard" style="position:absolute;left:1080px;top:230px;width:600px;padding:30px 34px;
+      background:linear-gradient(150deg,rgba(132,60,240,.55),rgba(48,12,108,.55));
+      border:var(--mg-stroke) solid var(--mg-edge);border-radius:var(--mg-r-card);
+      box-shadow:var(--mg-glow-edge),var(--mg-shadow);backdrop-filter:blur(14px);
+      display:flex;align-items:center;gap:26px">
+      <div style="width:96px;height:96px;border-radius:50%;flex:0 0 auto;
+        background:linear-gradient(150deg,#3a2d26,#14100e);border:2px solid var(--mg-rim)"></div>
+      <div>
+        <div style="font:600 26px var(--mg-font-ui);color:var(--mg-on-soft);margin-bottom:4px">
+          @yourhandle <span style="color:var(--mg-violet-hi)">✓</span></div>
+        <div style="display:flex;align-items:baseline;gap:12px">
+          <span class="num" style="font:900 italic 72px var(--mg-font-slam);color:var(--mg-on);
+            font-variant-numeric:tabular-nums;text-shadow:var(--mg-glow-text)">0</span>
+          <span style="font:500 26px var(--mg-font-ui);color:var(--mg-on-soft)">views</span>
+        </div>
+      </div>
+    </div>
+    <div class="mg-vignette"></div><div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<div class="row">
+  <h2>Scene 8 · Screen Stage</h2>
+  <p>⌁ REF-A 1:17 / 2:10. Real recording as a <strong>rimmed card on the rail stage</strong> — never
+     full-bleed. It enters small and blurred from below, settles, then the camera punches in on the region
+     where the cursor is working. Callouts are small labels and thin arrows only; captions off during demos.</p>
+  <div class="frame"><div class="stage mg-bg-rails" id="s6">
+    <div class="scr mg-media" style="position:absolute;left:210px;top:120px;width:1500px;height:840px">
+      <div class="ph-media">screen.mp4 — 1920×1080, 30fps CFR</div>
+    </div>
+    <div class="mg-cam-bubble"><div class="ph-face"></div></div>
+    <div class="mg-vignette"></div><div class="guides"><i class="g-safe"></i><i class="g-cam"></i></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════ 6 · PERSONA CIRCLE + LOCKUP ══════ -->
+<div class="row">
+  <h2>Scene 10 · Persona Circle</h2>
+  <p>⌁ REF-A 2:40. The camera masked into a circle with a glowing ring on the ribbon stage. A quote types
+     in beside it line by line, clears, then the circle re-centres and scales down and a name types in below.</p>
+  <div class="frame"><div class="stage mg-bg-ribbon" id="s7">
+    <div class="circ" style="position:absolute;left:420px;top:330px">
+      <div class="mg-cam-circle" style="position:relative"><div class="ph-face"></div></div>
+    </div>
+    <div class="quote" style="position:absolute;left:930px;top:430px;width:640px">
+      <div class="ln" style="font:600 34px/1.4 var(--mg-font-ui);color:var(--mg-on);
+        text-shadow:0 2px 14px rgba(0,0,0,.8)">Replace this with a real quote<br>from a real person you are<br>actually talking about</div>
+    </div>
+    <div class="mg-vignette"></div><div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<div class="row">
+  <h2>Scene 5 · Brand Lockup &nbsp;·&nbsp; and the accumulating caption</h2>
+  <p>⌁ REF-A 1:52 — real brand marks, blur-in, then <strong>held 10–15s</strong>, far longer than any other
+     graphic. Below it, ⌁ REF-B's caption: already-said words bold white, the newest word lighter, and a key
+     word taking a magenta box <strong>on its own onset</strong>. Caption on/off is a per-video switch.</p>
+  <div class="frame"><div class="stage" id="s8">
+    <div class="ph-face"></div>
+    <div class="lock" style="position:absolute;left:96px;bottom:190px;display:flex;align-items:center;gap:26px">
+      <svg width="58" height="58" viewBox="0 0 24 24" fill="var(--mg-coral)"><g>
+        <path d="M12 1v22M1 12h22M4.2 4.2l15.6 15.6M19.8 4.2L4.2 19.8" stroke="var(--mg-coral)" stroke-width="2.6"/>
+      </g></svg>
+      <span style="font:400 56px var(--mg-font-display);color:var(--mg-on)">Brand one</span>
+      <span style="font:400 40px var(--mg-font-ui);color:var(--mg-on-dim)">+</span>
+      <span style="width:44px;height:44px;background:var(--mg-on);border-radius:8px;display:inline-block"></span>
+      <span style="font:600 46px var(--mg-font-ui);color:var(--mg-on)">Brand two</span>
+    </div>
+    <div class="cap" style="position:absolute;left:0;right:0;top:900px;text-align:center;
+      font:700 italic var(--mg-t-cap) var(--mg-font-slam);color:var(--mg-on);
+      text-shadow:0 3px 18px rgba(0,0,0,.9)">
+      <span class="cw">A lot of people</span> <span class="cw">don't</span>
+      <span class="cw mg-hl"><span class="hlw">actually know</span></span>
+    </div>
+    <div class="mg-vignette"></div><div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ 7 · LIGHT LEAK ═══ -->
+<div class="row">
+  <h2>The light leak — the signature transition</h2>
+  <p>⌁ REF-B 24.7–25.1s. <strong>12 frames total: bloom 5f → white-out 3f → reveal 4f.</strong> The incoming
+     scene is composited <em>underneath</em> the leak from the first frame — this is a wash over a cut, not a
+     dissolve. Always sounded: <code>swoosh</code> on the bloom with a <code>riser</code> cresting on the
+     white-out.</p>
+  <div class="frame"><div class="stage mg-bg-bloom" id="s9">
+    <div class="incoming" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+      <div class="mg-slam">NEXT SCENE</div>
+    </div>
+    <div class="outgoing" style="position:absolute;inset:0"><div class="ph-face"></div></div>
+    <div class="mg-leak"><div class="mg-leak-core"></div></div>
+    <div class="mg-vignette"></div>
+  </div></div>
+</div>
+
+<style>
+  /* doc icon — a coral-asterisk page mark, drawn as SVG.
+     NEVER a character glyph here: ✳ and friends are dingbats that some platforms
+     render as colour emoji, which breaks the house rule and the look. */
+  .doc{display:flex;flex-direction:column;align-items:center;gap:12px;width:200px}
+  .doc .ico{width:76px;height:94px;border-radius:8px;background:#F4F2EE;position:relative;
+    box-shadow:0 8px 22px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
+  .doc span{font:500 18px/1.25 var(--mg-font-ui);color:var(--mg-on);text-align:center}
+</style>
+
+<script>
+/* ── designed marks, drawn not typed ─────────────────────────────────────────
+   Two generators so the kit never reaches for a character glyph. Both are the
+   shapes this style actually uses; copy them into a composition as-is. */
+
+/* the coral asterisk page mark (⌁ REF-A's doc icons) */
+const ASTERISK = n => {
+  let p = '';
+  for (let i = 0; i < n; i++){
+    const a = (i / n) * Math.PI * 2 - Math.PI/2;
+    p += `<line x1="${12 + Math.cos(a)*2.2}" y1="${12 + Math.sin(a)*2.2}"
+                x2="${12 + Math.cos(a)*10}"  y2="${12 + Math.sin(a)*10}"/>`;
+  }
+  return `<svg width="46" height="46" viewBox="0 0 24 24" stroke="var(--mg-coral)"
+            stroke-width="2.6" stroke-linecap="round">${p}</svg>`;
+};
+document.querySelectorAll('.doc').forEach(d=>{
+  const i=document.createElement('div'); i.className='ico'; i.innerHTML=ASTERISK(8);
+  d.prepend(i);
+});
+document.querySelectorAll('.coach .ico').forEach(i=>{ i.innerHTML=ASTERISK(8); });
+
+/* a filled cog silhouette — r, tooth count, and a hub hole */
+function gearPath(cx,cy,r,teeth){
+  const inner=r*.80, hub=r*.34, step=Math.PI/teeth, w=step*.34;
+  let d='';
+  for(let i=0;i<teeth;i++){
+    const a=i*2*step;
+    const pts=[[inner,a-step+w],[r,a-w],[r,a+w],[inner,a+step-w]];
+    pts.forEach(([rad,ang],k)=>{
+      const x=cx+Math.cos(ang)*rad, y=cy+Math.sin(ang)*rad;
+      d += (i===0&&k===0?'M':'L') + x.toFixed(1) + ' ' + y.toFixed(1);
+    });
+  }
+  d+='Z';
+  // hub hole, wound the opposite way so evenodd cuts it out
+  d+=`M${cx+hub} ${cy}A${hub} ${hub} 0 1 0 ${cx-hub} ${cy}A${hub} ${hub} 0 1 0 ${cx+hub} ${cy}Z`;
+  return d;
+}
+document.querySelectorAll('.cog').forEach(c=>{
+  const cx=+c.dataset.cx, cy=+c.dataset.cy;
+  c.setAttribute('d', gearPath(cx,cy,+c.dataset.r,+c.dataset.teeth));
+  c.setAttribute('fill-rule','evenodd');
+  c.dataset.origin = `${cx} ${cy}`;
+});
+
+/* ── wire a flow: bezier from each pill's RIGHT edge to the next pill's LEFT edge.
+   Horizontal control handles give the smooth S the reference uses. Call it after
+   layout; re-call it if any label changes. */
+/* NB: use offsetLeft/offsetTop, NOT getBoundingClientRect. The stage carries a
+   CSS scale() for the page preview, so client rects come back in scaled screen
+   pixels while the SVG's own coordinate system is unscaled — mixing them draws
+   connectors at ~58% length in the wrong place. Offsets ignore transforms. */
+function offsetIn(el, root){
+  let x = 0, y = 0, n = el;
+  while (n && n !== root){ x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+  return {x, y, w: el.offsetWidth, h: el.offsetHeight};
+}
+function wireFlow(svg, pills){
+  const g = svg.querySelector('g'), root = svg.offsetParent || svg.parentElement;
+  g.innerHTML = '';
+  for (let i = 0; i < pills.length - 1; i++){
+    const a = offsetIn(pills[i], root), b = offsetIn(pills[i+1], root);
+    const x1 = a.x + a.w, y1 = a.y + a.h/2;      // right edge of this pill
+    const x2 = b.x,       y2 = b.y + b.h/2;      // left edge of the next
+    const h  = Math.max((x2 - x1) * 0.55, 26);   // horizontal handles → the smooth S
+    const p  = document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d', `M${x1} ${y1} C ${x1+h} ${y1}, ${x2-h} ${y2}, ${x2} ${y2}`);
+    p.setAttribute('class','cx');
+    g.appendChild(p);
+  }
+}
+{
+  const p2 = document.querySelectorAll('#s2 .pnl')[1];
+  wireFlow(p2.querySelector('.wires'), [...p2.querySelectorAll('.nd')]);
+}
+
+const F = 1/30;                        // one frame at 30fps
+const D = { word:.267, cadence:.233, wipe:.400, leak:.400, pop:.180,
+            ring:.600, refit:.500, exit:.100, stagger:.090 };
+const EOUT='power3.out', ESLAM='back.out(1.7)';
+
+function q(root,sel){return gsap.utils.toArray(root.querySelectorAll(sel));}
+
+/* the word-build: each word fades over D.word, onsets D.cadence apart,
+   and the LINE RE-CENTRES continuously as it grows — that is the tell. */
+function wordBuild(tl, line, at=0){
+  const ws = q(line,'.w'); if(!ws.length) return;
+  gsap.set(ws,{opacity:0});
+  ws.forEach((w,i)=> tl.to(w,{opacity:1,duration:D.word,ease:'power2.out'}, at + i*D.cadence));
+  const grow = line.scrollWidth;
+  tl.fromTo(line,{x:grow*0.22},{x:0,duration:ws.length*D.cadence+D.word,ease:'none'}, at);
+}
+
+/* ── 1 · slam card ── */
+function s1(){
+  const r=document.getElementById('s1'), tl=gsap.timeline();
+  const bar=r.querySelector('.mg-hl');
+  gsap.set(r.querySelectorAll('.w'),{opacity:0});
+  gsap.set(bar.querySelector('.hlw'),{opacity:0});
+  gsap.set(r.querySelector('.growcard'),{y:60,scale:.92,opacity:0,filter:'blur(14px)'});
+  gsap.set(r.querySelector('.ring'),{opacity:0});
+  tl.to(r.querySelector('.growcard'),{y:0,scale:1,opacity:1,filter:'blur(0px)',duration:.55,ease:EOUT},0)
+    .to(r.querySelectorAll('.w')[0],{opacity:1,duration:D.word},.25)
+    .to(r.querySelectorAll('.w')[1],{opacity:1,duration:D.word},.25+D.cadence)
+    // the bar wipes open from the left, leading edge brightest
+    .fromTo(bar,{'--x':0},{duration:D.wipe,ease:EOUT,
+      onUpdate(){bar.style.setProperty('--x',this.progress());},
+      onStart(){gsap.set(bar,{opacity:1});}},.25+2*D.cadence)
+    .to(bar.querySelector('.hlw'),{opacity:1,duration:.2},'>-0.12')
+    // the media card grows slowly for its whole life — nothing is ever still
+    .to(r.querySelector('.growcard'),{scale:1.06,duration:5,ease:'none'},0)
+    // the ring arrives LATE, on its own beat
+    .to(r.querySelector('.ring'),{opacity:1,duration:.2},1.6)
+    .to({v:0},{v:290,duration:D.ring,ease:EOUT,onUpdate(){
+      const d=this.targets()[0].v, el=r.querySelector('.ring');
+      el.style.background=`conic-gradient(var(--mg-magenta-hi) 0deg,var(--mg-magenta-hi) ${d}deg,rgba(255,255,255,.07) ${d}deg)`;
+    }},1.7);
+  return tl;
+}
+/* the bar's scaleX is driven through a CSS var so ::before can carry the gradient */
+const styleEl=document.createElement('style');
+styleEl.textContent='.mg-hl::before{transform:scaleX(var(--x,1))}';
+document.head.appendChild(styleEl);
+
+/* ── 2 · diagram takeover ── */
+function s2(){
+  const r=document.getElementById('s2'), tl=gsap.timeline();
+  const fit=r.querySelector('.fit'), pnls=q(r,'.pnl'), docs=q(r,'.doc'),
+        nds=q(r,'.nd'), cxs=q(r,'.cx'), ring=r.querySelector('.ring'),
+        coach=r.querySelector('.coach');
+  gsap.set(pnls,{opacity:0,scale:.97});
+  gsap.set(docs,{opacity:0,y:12,filter:'grayscale(1) brightness(1.5)'});
+  gsap.set(nds,{opacity:0,y:14}); gsap.set(coach,{opacity:0});
+  cxs.forEach(p=>{const L=p.getTotalLength();gsap.set(p,{strokeDasharray:L,strokeDashoffset:L});});
+  const RL=ring.getTotalLength(); gsap.set(ring,{strokeDasharray:RL,strokeDashoffset:RL});
+  q(r,'.cog').forEach((c,i)=>gsap.to(c,{rotation:360,duration:40+i*9,repeat:-1,ease:'none',
+    svgOrigin:c.dataset.origin}));
+
+  // ⌁ THE camera move: ONE unbroken pull-back across the whole 30s. The title
+  // lands large; everything shrinks as panels arrive. Discrete re-fit steps
+  // read as a layout reflowing, not as a camera.
+  gsap.set(fit,{scale:1.55,y:150});
+  tl.to(fit,{scale:.82,y:0,duration:11,ease:'none'},0);
+
+  wordBuild(tl, r.querySelector('.mg-section'), 4*F);   // ground holds empty ~4f
+
+  tl.to(pnls[0],{opacity:1,scale:1,duration:.45,ease:EOUT},1.2)
+    // each document lands grey, then colours in
+    .to(docs,{opacity:1,y:0,duration:.3,stagger:.34,ease:EOUT},1.5)
+    .to(docs,{filter:'grayscale(0) brightness(1)',duration:.34,stagger:.34,ease:'none'},1.72)
+    .to(pnls[1],{opacity:1,scale:1,duration:.45,ease:EOUT},4.2)
+    .to(nds,{opacity:1,y:0,duration:.3,stagger:D.stagger,ease:EOUT},4.45)
+    .to(cxs,{strokeDashoffset:0,duration:.35,stagger:D.stagger,ease:EOUT},4.75)
+    .to(pnls[2],{opacity:1,scale:1,duration:.45,ease:EOUT},7.0)
+    .to(ring,{strokeDashoffset:0,duration:1.6,ease:'power1.inOut'},7.3)
+    .to(coach,{opacity:1,duration:.4,ease:EOUT},8.5)
+    .addLabel('settled',9.6);
+  return tl;
+}
+
+/* ── 3 · object stage ── */
+function s3(){
+  const r=document.getElementById('s3'), tl=gsap.timeline();
+  const rig=r.querySelector('.rig'), fig=r.querySelector('.mg-figure'),
+        gts=q(r,'.gt'), dive=r.querySelector('.dive'), tls=q(r,'.tl');
+
+  // each floating tile keeps its OWN scale, so they read at different distances
+  gts.forEach(g=>gsap.set(g,{scale:+g.dataset.d,opacity:0,transformOrigin:'50% 50%'}));
+  gsap.set(fig,{opacity:0,scale:.9,transformOrigin:'50% 40%'});
+  gsap.set(rig,{scale:1.28,x:60,y:20,opacity:1});
+  gsap.set(dive,{opacity:0,scale:1,x:0});
+  gsap.set(tls,{opacity:0,scale:.86});
+
+  // ACT 1 — the camera pulls back for the WHOLE act, underneath everything else
+  tl.to(fig,{opacity:1,scale:1,duration:.6,ease:EOUT},0)
+    .to(rig,{scale:.84,x:-20,y:0,duration:7.2,ease:'none'},0);
+  gts.forEach((g,i)=>{
+    const at=1.15+i*1.22, d=+g.dataset.d;
+    tl.to(g,{opacity:1,duration:.34,ease:EOUT},at)
+      .from(g,{scale:d*.7,duration:.44,ease:ESLAM},at);
+  });
+  tl.addLabel('settled',4.6)
+    .to(rig,{opacity:0,y:-120,duration:.28,ease:'power2.in'},7.0);
+
+  // ACT 2 — the dive TRACKS LATERALLY as it pushes in, landing on tile 3
+  const S=3.4, TX=-430*S;
+  tl.to(dive,{opacity:1,duration:.2},7.15)
+    .to(tls,{opacity:1,scale:1,duration:D.pop,stagger:D.stagger,ease:ESLAM},7.2)
+    .to(dive,{scale:S,x:TX,duration:2.4,ease:'power2.inOut'},8.2)
+    .to(dive,{scale:1,x:0,duration:1.0,ease:'power2.inOut'},11.0);
+  return tl;
+}
+
+/* ── 4 · point stack ── */
+function s4(){
+  const r=document.getElementById('s4'), tl=gsap.timeline(), lns=q(r,'.ln');
+  gsap.set(lns,{opacity:0,y:10,filter:'blur(10px)'});
+  wordBuild(tl, r.querySelector('.mg-point-head'), 0);
+  tl.to(lns,{opacity:1,y:0,filter:'blur(0px)',duration:.4,stagger:D.stagger,ease:EOUT},1.1)
+    .addLabel('settled', 2.0)
+    // the whole stack leaves together, blurring out — and it leaves FAST
+    .to(r.querySelector('.stk'),{opacity:0,filter:'blur(12px)',duration:.35,ease:'power2.in'},5.2);
+  return tl;
+}
+
+/* ── 5 · stat card ── */
+function s5(){
+  const r=document.getElementById('s5'), tl=gsap.timeline(), n=r.querySelector('.num');
+  gsap.set(r.querySelector('.statcard'),{opacity:0,x:70,scale:.94});
+  tl.to(r.querySelector('.statcard'),{opacity:1,x:0,scale:1,duration:.5,ease:EOUT},0)
+    // the number counts AFTER the card lands
+    .to({v:0},{v:1000,duration:1.1,ease:'power2.out',onUpdate(){
+      const v=this.targets()[0].v;
+      n.textContent = v<1000 ? Math.round(v)+'M+' : '1B+';
+    }},.65);
+  return tl;
+}
+
+/* ── 6 · screen stage ── */
+function s6(){
+  const r=document.getElementById('s6'), tl=gsap.timeline(), scr=r.querySelector('.scr');
+  gsap.set(scr,{opacity:0,y:80,scale:.9,filter:'blur(14px)'});
+  tl.to(scr,{opacity:1,y:0,scale:1,filter:'blur(0px)',duration:.55,ease:EOUT},0)
+    // then a punch-in toward where the cursor is working — never a random zoom
+    .to(scr,{scale:1.35,x:-180,y:-90,duration:1.2,ease:'power2.inOut'},1.6);
+  return tl;
+}
+
+/* ── 7 · persona circle ── */
+function s7(){
+  const r=document.getElementById('s7'), tl=gsap.timeline();
+  gsap.set(r.querySelector('.circ'),{opacity:0,scale:.9});
+  gsap.set(r.querySelector('.quote'),{opacity:0,x:30,filter:'blur(10px)'});
+  tl.to(r.querySelector('.circ'),{opacity:1,scale:1,duration:.5,ease:EOUT},0)
+    .to(r.querySelector('.quote'),{opacity:1,x:0,filter:'blur(0px)',duration:.45,ease:EOUT},.4)
+    .addLabel('settled', 1.2)
+    .to(r.querySelector('.quote'),{opacity:0,duration:.3,ease:'power2.in'},3.4)
+    // the circle re-centres and scales down for the name beat
+    .to(r.querySelector('.circ'),{x:330,scale:.8,duration:.6,ease:EOUT},3.5);
+  return tl;
+}
+
+/* ── 8 · lockup + accumulating caption ── */
+function s8(){
+  const r=document.getElementById('s8'), tl=gsap.timeline();
+  const cws=q(r,'.cw'), bar=r.querySelector('.cap .mg-hl');
+  gsap.set(r.querySelector('.lock'),{opacity:0,filter:'blur(12px)'});
+  gsap.set(cws,{opacity:0}); gsap.set(bar.querySelector('.hlw'),{opacity:0});
+  gsap.set(bar,{'--x':0});
+  tl.to(r.querySelector('.lock'),{opacity:1,filter:'blur(0px)',duration:.6,ease:EOUT},0)
+    .to(cws[0],{opacity:1,duration:D.word},.6)
+    .to(cws[1],{opacity:1,duration:D.word},.6+D.cadence)
+    .to(cws[2],{opacity:1,duration:D.word},.6+2*D.cadence)
+    // the key word takes its magenta box ON ITS OWN ONSET
+    .to({p:0},{p:1,duration:D.wipe,ease:EOUT,
+      onUpdate(){bar.style.setProperty('--x',this.targets()[0].p);}},.6+2*D.cadence)
+    .to(bar.querySelector('.hlw'),{opacity:1,duration:.2},'>-0.14');
+  return tl;
+}
+
+/* ── 9 · the light leak: bloom 5f → white-out 3f → reveal 4f ── */
+function s9(){
+  const r=document.getElementById('s9'), tl=gsap.timeline({repeat:-1,repeatDelay:1.4});
+  const core=r.querySelector('.mg-leak-core'), out=r.querySelector('.outgoing');
+  gsap.set(out,{opacity:1}); gsap.set(core,{opacity:0,x:600,scale:1});
+  tl.to(core,{opacity:.55,x:0,duration:5*F,ease:'power1.in'},.8)          // bloom
+    .to(core,{opacity:1,scale:1.3,duration:3*F,ease:'none'})              // white-out
+    .set(out,{opacity:0})                                                 // the CUT, hidden inside it
+    .to(core,{opacity:0,scale:1.5,duration:4*F,ease:'power2.out'})        // reveal
+    .set(out,{opacity:1,delay:1.2});
+  return tl;
+}
+
+const ALL=[s1,s2,s3,s4,s5,s6,s7,s8,s9];
+let running=[];
+function playAll(){ running.forEach(t=>t.kill()); running = ALL.map(f=>f()); }
+/* freeze every timeline at its settled state — for screenshotting the kit, and for
+   checking a composition's END frame against the reference stills. */
+function freeze(){
+  playAll();
+  running.forEach(t=>{
+    t.pause();
+    // seek to the SETTLED state, not the end — a timeline whose last act is an
+    // exit would otherwise freeze on an empty stage.
+    if (t.labels && 'settled' in t.labels) t.time(t.labels.settled); else t.progress(1);
+  });
+}
+playAll();
+if (location.search.includes('still')) freeze();
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><title>every block, every documented mode</title>
+<style>
+  :root{--cream:#F0EDE4;--ink:#191817;--coral:#D97757;--soft:#6B6660;--card:#EAE6DA}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--cream);color:var(--ink);padding:44px 38px 120px;
+       font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  h1{font-size:32px;letter-spacing:-.02em;margin-bottom:6px}
+  .sub{color:var(--soft);max-width:920px}
+  .warn{background:#fff3cd;border-left:5px solid var(--coral);padding:14px 18px;
+        margin:22px 0 30px;max-width:1000px;border-radius:0 8px 8px 0}
+  .beat{margin:40px 0 0;padding-top:24px;border-top:2px solid rgba(0,0,0,.10)}
+  .tag{display:inline-block;background:var(--ink);color:var(--cream);font-size:12px;
+       font-weight:700;letter-spacing:.09em;padding:5px 11px;border-radius:4px;
+       text-transform:uppercase}
+  .line{font-size:21px;margin:11px 0 3px;max-width:1000px}
+  .at{color:var(--soft);font-size:14px;font-variant-numeric:tabular-nums}
+  .row{display:flex;gap:24px;flex-wrap:wrap;margin-top:18px}
+  .opt{width:300px}
+  .opt h3{font-size:15px;margin-bottom:3px}
+  .opt code{font-size:11px;color:var(--soft);word-break:break-all;display:block;margin-bottom:8px}
+  .frame{width:300px;overflow:hidden;background:#000;position:relative}
+  .frame iframe{border:0;transform-origin:0 0;position:absolute;top:0;left:0}
+  .frame.img{background:var(--card);display:flex;align-items:center}
+  .frame.img img{width:100%;display:block}
+  .why{font-size:14px;color:var(--soft);margin-top:8px}
+</style></head><body>
+<h1>every block, every documented mode</h1>
+<p class="sub">The real product UIs we already own, running live.</p>
+<div class="warn">This is the whole library, live. Open it BEFORE deciding a video needs anything fetched from the web.</div>
+<div class="beat"><span class="tag">ai-new-chat</span><div class="row">
+      <div class="opt">
+        <h3>brand=claude</h3>
+        <code>./ui-blocks/ai-new-chat.html?brand=claude</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/ai-new-chat.html?brand=claude" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>brand=chatgpt</h3>
+        <code>./ui-blocks/ai-new-chat.html?brand=chatgpt</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/ai-new-chat.html?brand=chatgpt" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>brand=gemini</h3>
+        <code>./ui-blocks/ai-new-chat.html?brand=gemini</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/ai-new-chat.html?brand=gemini" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>brand=grok</h3>
+        <code>./ui-blocks/ai-new-chat.html?brand=grok</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/ai-new-chat.html?brand=grok" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>brand=perplexity</h3>
+        <code>./ui-blocks/ai-new-chat.html?brand=perplexity</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/ai-new-chat.html?brand=perplexity" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div></div></div><div class="beat"><span class="tag">article-highlight</span><div class="row">
+      <div class="opt">
+        <h3>default</h3>
+        <code>./ui-blocks/article-highlight.html</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/article-highlight.html" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div></div></div><div class="beat"><span class="tag">claude-new-chat</span><div class="row">
+      <div class="opt">
+        <h3>default</h3>
+        <code>./ui-blocks/claude-new-chat.html</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/claude-new-chat.html" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div></div></div><div class="beat"><span class="tag">inbound-policy</span><div class="row">
+      <div class="opt">
+        <h3>default</h3>
+        <code>./ui-blocks/inbound-policy.html</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/inbound-policy.html" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div></div></div><div class="beat"><span class="tag">page-highlight</span><div class="row">
+      <div class="opt">
+        <h3>default</h3>
+        <code>./ui-blocks/page-highlight.html</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/page-highlight.html" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div></div></div><div class="beat"><span class="tag">sessions-grid</span><div class="row">
+      <div class="opt">
+        <h3>babysit</h3>
+        <code>./ui-blocks/sessions-grid.html?mode=babysit</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/sessions-grid.html?mode=babysit" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>parallel</h3>
+        <code>./ui-blocks/sessions-grid.html?mode=parallel</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/sessions-grid.html?mode=parallel" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>approve</h3>
+        <code>./ui-blocks/sessions-grid.html?mode=approve</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/sessions-grid.html?mode=approve" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>relay</h3>
+        <code>./ui-blocks/sessions-grid.html?mode=relay</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/sessions-grid.html?mode=relay" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>talk</h3>
+        <code>./ui-blocks/sessions-grid.html?mode=talk</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/sessions-grid.html?mode=talk" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div></div></div><div class="beat"><span class="tag">sessions-hub</span><div class="row">
+      <div class="opt">
+        <h3>solo</h3>
+        <code>./ui-blocks/sessions-hub.html?mode=solo</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/sessions-hub.html?mode=solo" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>talk</h3>
+        <code>./ui-blocks/sessions-hub.html?mode=talk</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/sessions-hub.html?mode=talk" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>hub</h3>
+        <code>./ui-blocks/sessions-hub.html?mode=hub</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/sessions-hub.html?mode=hub" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div></div></div><div class="beat"><span class="tag">skill-folder</span><div class="row">
+      <div class="opt">
+        <h3>default</h3>
+        <code>./ui-blocks/skill-folder.html</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/skill-folder.html" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div></div></div><div class="beat"><span class="tag">skills-beat</span><div class="row">
+      <div class="opt">
+        <h3>slash</h3>
+        <code>./ui-blocks/skills-beat.html?mode=slash</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/skills-beat.html?mode=slash" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>repo</h3>
+        <code>./ui-blocks/skills-beat.html?mode=repo</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/skills-beat.html?mode=repo" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div>
+      <div class="opt">
+        <h3>tree</h3>
+        <code>./ui-blocks/skills-beat.html?mode=tree</code>
+        <div class="frame" style="height:534px"><iframe src="./ui-blocks/skills-beat.html?mode=tree" loading="lazy" style="width:1080px;height:1920px;transform:scale(0.278)"></iframe></div>
+        <p class="why"></p>
+      </div></div></div>
+</body></html>

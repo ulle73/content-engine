@@ -1,0 +1,315 @@
+<!doctype html>
+<!--
+  ARCHIVAL SWISS POSTER — carousel slide template (1080x1350, 4:5).
+
+  The sheet's rules, enforced here:
+    - BRICK RED IS STRUCTURE. It only ever appears as full-width blocks and bars.
+      It is never used as type.
+    - ALL TYPE IS BONE WHITE. Hierarchy comes from weight and opacity, not colour.
+    - THE PHOTOGRAPH SUPPLIES EVERY OTHER COLOUR — so each slide carries its own
+      photograph, and the only tinting applied is the archival bleach.
+    - THE HEADLINE IS ALWAYS TOO BIG FOR THE FRAME AND ALWAYS CLIPPED.
+    - ONE HARD HORIZONTAL SEAM PER SLIDE — colour block above, photograph below.
+      TYPE CROSSES THE SEAM. NOTHING ELSE DOES.
+    - METADATA IS DECORATIVE STRUCTURE: label semibold, value lighter, always paired.
+    - EVERY SLIDE CARRIES PAPER GRAIN AND PRINT NOISE ACROSS THE FULL FRAME.
+
+  Placeholders are filled by carousel_render.py.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Narrow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brick:#9C2B22; --bone:#E8E4DC; --asphalt:#6E6B66;
+    --smog:#C9C2B6; --ink:#1E1B18; --oxide:#B24A32;
+    --grot:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --narrow:'Archivo Narrow','Helvetica Neue',Arial,sans-serif;
+    --pad:52px;
+    --seam:560px;              /* where the colour block ends and the photo begins */
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1350px;background:var(--bone)}
+  .stage{position:relative;width:1080px;height:1350px;overflow:hidden;
+         font-family:var(--grot);background:var(--bone);color:var(--bone)}
+
+  /* ---------- paper base ---------- */
+  .paper{position:absolute;inset:0;background:var(--bone)}
+
+  /* ---------- 1. top metadata band (on paper, ink type) ---------- */
+  .band{position:absolute;left:var(--pad);right:var(--pad);top:34px;z-index:6;color:var(--ink)}
+  .barcode{height:34px;width:210px;margin:0 auto 18px;display:block}
+  .rule{height:1.5px;background:var(--ink);opacity:.85}
+  .meta{display:flex;align-items:stretch;padding:11px 0}
+  .meta .cell{flex:1;padding-right:20px;border-right:1.5px solid rgba(30,27,24,.55)}
+  .meta .cell:last-child{border-right:none;padding-right:0}
+  .meta .cell:not(:first-child){padding-left:22px}
+  .meta .k{font-family:var(--narrow);font-weight:700;font-size:17px;letter-spacing:.14em;
+           text-transform:uppercase;color:var(--ink)}
+  .meta .v{font-family:var(--narrow);font-weight:400;font-size:17px;letter-spacing:.06em;
+           color:rgba(30,27,24,.72);margin-top:3px;white-space:nowrap;overflow:hidden;
+           text-overflow:ellipsis}
+
+  /* ---------- 2. the colour block (structure — never type) ---------- */
+  .block{position:absolute;left:0;right:0;top:196px;height:calc(var(--seam) - 196px);
+         background:var(--brick);z-index:2}
+  /* a second structural bar, thin, sitting on the seam */
+  .seamline{position:absolute;left:0;right:0;top:var(--seam);height:0;z-index:5}
+
+  /* ---------- 3. the photograph, below the seam ---------- */
+  .photo{position:absolute;left:0;right:0;top:var(--seam);bottom:118px;overflow:hidden;
+         background:var(--ink);z-index:2}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block;
+             /* the archival bleach: sun-faded, warm, low-saturation, contrasty */
+             filter:grayscale(.62) sepia(.30) contrast(1.16) brightness(1.01) saturate(.92)}
+  /* smog haze wash so every photo lands in the same tonal world */
+  .photo::after{content:'';position:absolute;inset:0;
+         background:linear-gradient(180deg, rgba(201,194,182,.10), rgba(30,27,24,.22)),
+                    radial-gradient(120% 90% at 50% 0%, rgba(232,228,220,.22), rgba(232,228,220,0) 60%)}
+
+  /* ---------- 4. the headline — too big for the frame, clipped, crossing the seam ---------- */
+  .headline{position:absolute;left:-26px;right:-26px;top:var(--head-top,252px);z-index:7;
+            font-family:var(--grot);font-weight:900;color:var(--bone);
+            font-size:var(--head-size,300px);line-height:.78;letter-spacing:-.045em;
+            text-transform:lowercase;white-space:nowrap;width:max-content;
+            transform:scaleY(1.06);transform-origin:left top}
+  .headline.two{white-space:normal}
+  /* the kicker rides above the headline, inside the block */
+  .kicker{position:absolute;left:var(--pad);top:214px;z-index:7;
+          font-family:var(--narrow);font-weight:700;font-size:19px;letter-spacing:.30em;
+          text-transform:uppercase;color:rgba(232,228,220,.88)}
+
+  /* ---------- 5. deck / standfirst, sits inside the block under the headline ---------- */
+  .deck{position:absolute;left:var(--pad);right:var(--pad);top:var(--deck-top,470px);z-index:7;
+        font-family:var(--narrow);font-weight:400;font-size:29px;line-height:1.30;
+        color:var(--bone);max-width:23ch}
+  /* below the seam the deck sits on its own ink block so it stays readable on any photo */
+  .deck.onphoto{background:var(--ink);padding:20px 24px;max-width:25ch;
+        box-shadow:0 16px 40px rgba(30,27,24,.5)}
+
+  /* ---------- 6. data panel — deep ink over the photograph ---------- */
+  .content{position:absolute;left:var(--pad);right:var(--pad);bottom:150px;z-index:8}
+  .stage.hero .content{bottom:auto;top:640px}
+  .card{background:var(--ink);padding:26px 30px 24px;color:var(--bone);
+        box-shadow:0 20px 50px rgba(30,27,24,.45)}
+  .card .ctitle{font-family:var(--narrow);font-weight:700;font-size:18px;letter-spacing:.18em;
+                text-transform:uppercase;color:var(--smog);margin-bottom:18px;
+                padding-bottom:12px;border-bottom:1.5px solid rgba(232,228,220,.28)}
+  .card .cnote{font-family:var(--narrow);font-weight:400;font-size:17px;color:var(--smog);
+               margin-top:10px;line-height:1.4}
+
+  /* charts */
+  .chart{display:block;width:100%;height:auto;overflow:visible}
+  .legend{display:flex;flex-wrap:wrap;gap:22px;margin-top:14px}
+  .lk{display:inline-flex;align-items:center;gap:9px;font-family:var(--narrow);
+      font-size:19px;color:var(--smog)}
+  .spark{display:block;margin-top:12px}
+
+  /* bars — brick red is structure, so the fill is red and the numbers stay bone white */
+  .bars{display:flex;flex-direction:column;gap:16px}
+  .bar-row{display:flex;align-items:center;gap:18px}
+  .bar-lab{width:196px;flex:none;font-family:var(--narrow);font-size:23px;color:var(--bone)}
+  .bar-track{flex:1;height:28px;background:rgba(232,228,220,.10);overflow:hidden}
+  .bar-fill{height:100%;background:var(--asphalt)}
+  .bar-fill.hi{background:var(--brick)}
+  .bar-val{width:112px;flex:none;text-align:right;font-weight:700;font-size:26px;color:var(--bone);
+           font-variant-numeric:tabular-nums}
+
+  /* stats */
+  .stats{display:flex;gap:30px}
+  .stat{flex:1}
+  .stat .v{font-family:var(--grot);font-weight:800;font-size:64px;line-height:.94;color:var(--bone);
+           letter-spacing:-.03em}
+  .stat .l{font-family:var(--narrow);font-weight:700;font-size:18px;letter-spacing:.14em;
+           text-transform:uppercase;color:var(--smog);margin-top:10px}
+  .stat .d{font-family:var(--narrow);font-size:17px;color:var(--smog);margin-top:6px}
+
+  /* dial */
+  .dial{display:flex;border:1.5px solid rgba(232,228,220,.5)}
+  .seg{flex:1;text-align:center;padding:15px 0;font-family:var(--narrow);font-weight:600;
+       font-size:22px;color:rgba(232,228,220,.7);border-right:1.5px solid rgba(232,228,220,.28)}
+  .seg:last-child{border-right:none}
+  .seg.on{background:var(--brick);color:var(--bone)}
+  .dial-cap{display:flex;justify-content:space-between;font-family:var(--narrow);font-size:18px;
+            color:var(--smog);margin-top:12px}
+
+  /* chips */
+  .chips{display:flex;gap:12px;flex-wrap:wrap}
+  .chip{background:var(--brick);color:var(--bone);font-family:var(--narrow);font-weight:600;
+        font-size:20px;padding:10px 20px;letter-spacing:.06em;text-transform:uppercase}
+
+  /* a framed screenshot sits on the paper as a pasted-in print */
+  .shot{background:var(--bone);padding:12px 12px 10px;box-shadow:0 18px 44px rgba(30,27,24,.5)}
+  .shot img{display:block;width:100%;max-height:560px;object-fit:cover;object-position:top}
+  .shot .cap{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-top:10px;
+             font-family:var(--narrow)}
+  .shot .cap .t{font-weight:700;font-size:20px;color:var(--ink)}
+  .shot .cap .s{font-size:17px;color:rgba(30,27,24,.6);white-space:nowrap}
+
+  /* hero cutout */
+  .heroimg{display:flex;flex-direction:column;align-items:center;gap:16px}
+  .heroimg img{max-height:520px;max-width:92%;object-fit:contain}
+  .heroimg .hcap{background:var(--ink);color:var(--bone);font-family:var(--narrow);font-weight:600;
+                 font-size:24px;padding:12px 24px}
+
+  /* ---------- 7. bottom metadata band ---------- */
+  .footband{position:absolute;left:var(--pad);right:var(--pad);bottom:34px;z-index:6;color:var(--ink)}
+
+  /* ---------- 8. paper grain + print noise across the FULL frame ---------- */
+  .grain{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.13;
+         background-image:var(--grain);background-size:300px 300px;mix-blend-mode:multiply}
+  .noise{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:.07;
+         background-image:var(--noise);background-size:170px 170px;mix-blend-mode:screen}
+  /* plate edge: a subtle ink vignette so it reads as printed, not screen-native */
+  .plate{position:absolute;inset:0;z-index:11;pointer-events:none;
+         box-shadow:inset 0 0 120px rgba(30,27,24,.16)}
+  /* registration crosshairs, as on the sheet */
+  .reg{position:absolute;z-index:12;width:20px;height:20px;opacity:.5}
+  .reg.tl{left:16px;top:16px} .reg.tr{right:16px;top:16px}
+  .reg.bl{left:16px;bottom:16px} .reg.br{right:16px;bottom:16px}
+
+  [data-optional].empty{display:none}
+
+  /* the seam moves slide to slide so the set never reads as one repeated layout */
+  .stage{--seam:__SEAM__px}
+</style>
+</head>
+<body>
+  <div class="stage __STAGECLASS__">
+    <div class="paper"></div>
+
+    <!-- one hard seam: colour block above -->
+    <div class="block"></div>
+
+    <!-- photograph below -->
+    <div class="photo"><img id="ph" alt=""></div>
+
+    <!-- top metadata -->
+    <div class="band">
+      <svg class="barcode" id="bc" viewBox="0 0 210 34" aria-hidden="true"></svg>
+      <div class="rule"></div>
+      <div class="meta">
+        <div class="cell"><div class="k">Location</div><div class="v">__META1__</div></div>
+        <div class="cell"><div class="k">Date</div><div class="v">__META2__</div></div>
+        <div class="cell"><div class="k">Archive</div><div class="v">__META3__</div></div>
+      </div>
+      <div class="rule"></div>
+    </div>
+
+    <!-- type crosses the seam; nothing else does -->
+    <div class="kicker" data-optional>__KICKER__</div>
+    <div class="headline" id="hl" data-optional>__HEADLINE__</div>
+    <div class="deck" data-optional>__SUBTITLE__</div>
+
+    <div class="content" data-optional>__CONTENT__</div>
+
+    <!-- bottom metadata -->
+    <div class="footband">
+      <div class="rule"></div>
+      <div class="meta">
+        <div class="cell"><div class="k">Designer</div><div class="v">__HANDLE__</div></div>
+        <div class="cell"><div class="k">Series</div><div class="v">__TAGLINE__</div></div>
+        <div class="cell"><div class="k">Format</div><div class="v">__BRAND_LABEL__</div></div>
+      </div>
+      <div class="rule"></div>
+    </div>
+
+    <div class="grain"></div>
+    <div class="noise"></div>
+    <div class="plate"></div>
+    <svg class="reg tl" viewBox="0 0 20 20"><g stroke="#1E1B18" stroke-width="1"><line x1="10" y1="0" x2="10" y2="20"/><line x1="0" y1="10" x2="20" y2="10"/><circle cx="10" cy="10" r="6" fill="none"/></g></svg>
+    <svg class="reg tr" viewBox="0 0 20 20"><g stroke="#1E1B18" stroke-width="1"><line x1="10" y1="0" x2="10" y2="20"/><line x1="0" y1="10" x2="20" y2="10"/><circle cx="10" cy="10" r="6" fill="none"/></g></svg>
+    <svg class="reg bl" viewBox="0 0 20 20"><g stroke="#1E1B18" stroke-width="1"><line x1="10" y1="0" x2="10" y2="20"/><line x1="0" y1="10" x2="20" y2="10"/><circle cx="10" cy="10" r="6" fill="none"/></g></svg>
+    <svg class="reg br" viewBox="0 0 20 20"><g stroke="#1E1B18" stroke-width="1"><line x1="10" y1="0" x2="10" y2="20"/><line x1="0" y1="10" x2="20" y2="10"/><circle cx="10" cy="10" r="6" fill="none"/></g></svg>
+  </div>
+
+  <script>
+  (function(){
+    var PHOTO = "__BG__";
+    if (PHOTO) document.getElementById('ph').src = PHOTO;
+
+    // hide any optional block that ended up empty
+    document.querySelectorAll('[data-optional]').forEach(function(el){
+      if(!el.textContent.trim() && !el.querySelector('img') && !el.querySelector('svg'))
+        el.classList.add('empty');
+    });
+
+    /* ---- deterministic paper grain + print noise, drawn once per slide ---- */
+    var seed = (parseInt("__INDEX__", 10) || 1) * 9781 + 12345;
+    function rnd(){ seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+
+    function noiseURL(size, dotMin, dotMax, alpha, colour){
+      var c = document.createElement('canvas'); c.width = c.height = size;
+      var x = c.getContext('2d');
+      for (var i = 0; i < size * size * 0.10; i++){
+        x.fillStyle = colour + (alpha * (0.25 + rnd() * 0.75)).toFixed(3) + ')';
+        x.beginPath();
+        x.arc(rnd() * size, rnd() * size, dotMin + rnd() * (dotMax - dotMin), 0, 6.2832);
+        x.fill();
+      }
+      return 'url(' + c.toDataURL() + ')';
+    }
+    // paper grain: dark specks, multiplied over everything
+    document.documentElement.style.setProperty('--grain', noiseURL(300, 0.25, 0.95, 0.42, 'rgba(30,27,24,'));
+    // print noise: light specks, screened back in
+    document.documentElement.style.setProperty('--noise', noiseURL(170, 0.2, 0.7, 0.4, 'rgba(232,228,220,'));
+
+    /* ---- barcode (decorative structure, per the sheet) ---- */
+    (function(){
+      var svg = document.getElementById('bc'), x = 2, out = '';
+      while (x < 206){
+        var w = 1 + Math.round(rnd() * 3);
+        if (rnd() > 0.32) out += '<rect x="' + x + '" y="0" width="' + w + '" height="34" fill="#1E1B18"/>';
+        x += w + 1 + Math.round(rnd() * 2);
+      }
+      svg.innerHTML = out;
+    })();
+
+    /* ---- the headline is ALWAYS too big for the frame and always clipped ----
+       Grow the type until the line is wider than the plate, so it runs off both
+       edges. Then park it so it straddles the seam: colour block above,
+       photograph below, type crossing. */
+    document.fonts.ready.then(function(){
+      var hl = document.getElementById('hl');
+      if (!hl || hl.classList.contains('empty')) return;
+      var stage = hl.parentElement;
+      var plate = 1080, over = parseFloat("__HEAD_OVERFLOW__" || "1.12") || 1.12;
+      var size = 300;
+      hl.style.fontSize = size + 'px';
+      // binary-ish fit: scale so the rendered width is `over` x the plate width
+      for (var i = 0; i < 26; i++){
+        var w = hl.scrollWidth;
+        if (!w) break;
+        var target = plate * over;
+        var ratio = target / w;
+        if (Math.abs(ratio - 1) < 0.012) break;
+        size = Math.max(90, Math.min(560, size * ratio));
+        hl.style.fontSize = size + 'px';
+      }
+      // centre the overflow so it clips evenly on both sides
+      var wNow = hl.scrollWidth;
+      hl.style.left = Math.round((plate - wNow) / 2) + 'px';
+      hl.style.right = 'auto';
+
+      // straddle the seam: sit the baseline just past it
+      var seam = parseFloat(getComputedStyle(stage)
+                    .getPropertyValue('--seam')) || 560;
+      var cross = parseFloat("__HEAD_CROSS__" || "0.30") || 0.30;   // share of the cap-height below the seam
+      var h = hl.offsetHeight;
+      hl.style.top = Math.round(seam - h * (1 - cross)) + 'px';
+
+      // the deck starts below the headline, still inside the block if there's room
+      var deck = document.querySelector('.deck');
+      if (deck && !deck.classList.contains('empty')){
+        var below = seam + h * cross + 26;
+        deck.style.top = Math.round(below) + 'px';
+        deck.classList.add('onphoto');
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

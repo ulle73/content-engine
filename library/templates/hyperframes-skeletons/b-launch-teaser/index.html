@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!-- Skeleton B — Launch Teaser (1920x1080, 25 s, 8 scener). Källa: HyperFrames docs/guides/claude-design-hyperframes.md §7 (Apache-2.0). -->
+    <!-- Ändring mot guiden: shader-ankarna är EN sammanhängande kedja [s4..s8] (guidens [s4,s5,s7,s8] gav en
+         s5→s7-övergång ovanpå s6). s6→s7 är en kort CSS-crossfade (shader utelämnad) i stället för en shader. -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/core/dist/hyperframe.runtime.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- FILL: Google Fonts-länk -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;800&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* === FILL: Din varumärkesidentitet === */
+        --bg: #0e0b08;
+        --ink: #f6efe6;
+        --accent: #ff6a2b;
+        --muted: #a39789;
+        --accent-dim: #5a2410;
+        --font-display: "Unbounded", sans-serif;
+        --font-data: "IBM Plex Mono", monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      .scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        padding: 100px 160px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 24px;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1;
+      }
+      .clip {
+      }
+
+      .display {
+        font-family: var(--font-display);
+        font-weight: 800;
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+      }
+      .body-text {
+        font-family: var(--font-display);
+        font-weight: 300;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+      .data-text {
+        font-family: var(--font-data);
+        font-weight: 400;
+        font-variant-numeric: tabular-nums;
+      }
+      .kicker {
+        font-family: var(--font-data);
+        font-size: 24px;
+        letter-spacing: 0.36em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        opacity: 0.18;
+        background-image:
+          radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.2px),
+          radial-gradient(rgba(0, 0, 0, 0.18) 1px, transparent 1.2px);
+        background-size:
+          3px 3px,
+          5px 5px;
+        background-position:
+          0 0,
+          1px 2px;
+        mix-blend-mode: overlay;
+      }
+
+      .vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 49;
+        background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+      }
+      .glow {
+        position: absolute;
+        width: 1400px;
+        height: 1400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 106, 43, 0.45) 0%, rgba(255, 106, 43, 0) 62%);
+        opacity: 0.35;
+        z-index: 0;
+      }
+
+      /* === FILL: Scenspecifika stilar nedan === */
+      #s1-title {
+        font-size: 128px;
+        max-width: 1500px;
+      }
+      #s1-title .w {
+        display: inline-block;
+      }
+      #s1-rule {
+        width: 900px;
+        height: 40px;
+      }
+      #s2 .scene-content {
+        gap: 4px;
+      }
+      .stack {
+        font-size: 150px;
+      }
+      #s2-w3 {
+        color: var(--accent);
+        background: linear-gradient(var(--ink), var(--ink)) no-repeat 0 92% / 0% 10%;
+      }
+      #s3-stat {
+        font-size: 230px;
+        line-height: 1;
+      }
+      #s3-sub {
+        font-size: 48px;
+      }
+      .ring {
+        position: absolute;
+        right: 220px;
+        top: 290px;
+        width: 500px;
+        height: 500px;
+      }
+      .ring-track {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid rgba(246, 239, 230, 0.12);
+      }
+      .ring-dot {
+        position: absolute;
+        left: 236px;
+        top: -14px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #ff6a2b;
+        box-shadow: 0 0 40px #ff6a2b;
+      }
+      #s4-grid {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+      #s4-title {
+        font-size: 140px;
+      }
+      #s5 .scene-content {
+        align-items: center;
+        text-align: center;
+      }
+      #s5-word {
+        font-size: 300px;
+        letter-spacing: -0.04em;
+      }
+      #s5-word .char {
+        display: inline-block;
+      }
+      #s5-word .num {
+        color: var(--accent);
+      }
+      #s5-tag {
+        font-size: 44px;
+      }
+      .bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 40px;
+        height: 420px;
+      }
+      .bar {
+        width: 150px;
+        border-radius: 14px 14px 0 0;
+        background: linear-gradient(to top, #5a2410, #ff6a2b);
+      }
+      .bar.b1 {
+        height: 30%;
+        opacity: 0.5;
+      }
+      .bar.b2 {
+        height: 46%;
+        opacity: 0.65;
+      }
+      .bar.b3 {
+        height: 70%;
+        opacity: 0.82;
+      }
+      .bar.b4 {
+        height: 100%;
+      }
+      #s6 .scene-content {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+      #s6-stat {
+        font-size: 200px;
+      }
+      #s6-sub {
+        font-size: 44px;
+        max-width: 640px;
+      }
+      #s7 .scene-content {
+        align-items: center;
+        text-align: center;
+      }
+      #s7-date {
+        font-size: 170px;
+      }
+      #s7-date .char {
+        display: inline-block;
+      }
+      #s7-sub {
+        font-size: 46px;
+      }
+      #s7-hl {
+        background: linear-gradient(#ff6a2b, #ff6a2b) no-repeat 0 90% / 0% 22%;
+        padding: 0 10px;
+      }
+      #s8 .scene-content {
+        align-items: center;
+        text-align: center;
+      }
+      #s8-title {
+        font-size: 150px;
+      }
+      #s8-cta {
+        margin-top: 30px;
+        padding: 30px 80px;
+        border-radius: 999px;
+        background: #ff6a2b;
+        color: #0e0b08;
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 52px;
+      }
+      #s8-url {
+        font-size: 32px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="main"
+      data-composition-id="main"
+      data-width="1920"
+      data-height="1080"
+      data-start="0"
+      data-duration="25"
+    >
+      <!-- SCEN 1 — synlig från t=0 -->
+      <div class="scene clip" id="s1" data-start="0" data-duration="3" data-track-index="0">
+        <div class="glow" id="s1-glow" style="left: 900px; top: -300px"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: hook -->
+          <div class="kicker" id="s1-kicker">LUMA · Lansering</div>
+          <h1 class="display" id="s1-title">
+            <span class="w">Det</span> <span class="w">här</span> <span class="w">är</span> <span class="w">inte</span> <span class="w">en</span> <span class="w">uppdatering.</span>
+          </h1>
+          <svg id="s1-rule" viewBox="0 0 900 40">
+            <path id="s1-line" d="M 4 26 Q 450 4 896 22" stroke="#ff6a2b" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="920" stroke-dashoffset="920" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- s2–s3: hårda klipp, runtime-styrda -->
+      <div class="scene clip" id="s2" data-start="3" data-duration="3" data-track-index="0">
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: kontext -->
+          <div class="display stack" id="s2-w1">Snabbare.</div>
+          <div class="display stack" id="s2-w2">Lugnare.</div>
+          <div class="display stack" id="s2-w3">Smartare.</div>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s3" data-start="6" data-duration="3" data-track-index="0">
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="ring"><div class="ring-track"></div><div class="ring-dot" id="s3-dot"></div></div>
+        <div class="scene-content">
+          <!-- FILL: bygg -->
+          <div class="kicker">Hittills i år</div>
+          <div class="display data-text" id="s3-stat">0</div>
+          <p class="body-text" id="s3-sub">uppgifter som sköter sig själva</p>
+        </div>
+      </div>
+
+      <!-- s4–s8: EN shader-kedja (HyperShader styr opacity) -->
+      <div class="scene clip" id="s4" data-start="9" data-duration="3.5" data-track-index="0" style="opacity:0;">
+        <svg id="s4-grid" viewBox="0 0 1920 1080">
+          <path class="gl" d="M 0 270 L 1920 270" stroke="#3a2a1e" stroke-width="2" stroke-dasharray="1920" stroke-dashoffset="1920" />
+          <path class="gl" d="M 0 540 L 1920 540" stroke="#3a2a1e" stroke-width="2" stroke-dasharray="1920" stroke-dashoffset="1920" />
+          <path class="gl" d="M 0 810 L 1920 810" stroke="#3a2a1e" stroke-width="2" stroke-dasharray="1920" stroke-dashoffset="1920" />
+          <path class="gl" d="M 480 0 L 480 1080" stroke="#3a2a1e" stroke-width="2" stroke-dasharray="1080" stroke-dashoffset="1080" />
+          <path class="gl" d="M 960 0 L 960 1080" stroke="#3a2a1e" stroke-width="2" stroke-dasharray="1080" stroke-dashoffset="1080" />
+          <path class="gl" d="M 1440 0 L 1440 1080" stroke="#3a2a1e" stroke-width="2" stroke-dasharray="1080" stroke-dashoffset="1080" />
+        </svg>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: uppbyggnad före hero -->
+          <div class="kicker" id="s4-kicker">Två år i labbet</div>
+          <h2 class="display" id="s4-title">Vi byggde om<br />allt.</h2>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s5" data-start="12.5" data-duration="3" data-track-index="0" style="opacity:0;">
+        <div class="glow" id="s5-glow" style="left: 260px; top: -160px"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: hero / nyckelfunktion -->
+          <h1 class="display" id="s5-word">
+            <span class="char">L</span><span class="char">U</span><span class="char">M</span><span class="char">A</span>&nbsp;<span class="char num">2</span>
+          </h1>
+          <p class="body-text" id="s5-tag">Din vardag, på autopilot.</p>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s6" data-start="15.5" data-duration="3" data-track-index="0" style="opacity:0;">
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: bevis / socialt bevis -->
+          <div>
+            <div class="display data-text" id="s6-stat">0,0</div>
+            <p class="body-text" id="s6-sub">snittbetyg från 12 000 betatestare</p>
+          </div>
+          <div class="bars">
+            <div class="bar b1" id="bar1"></div>
+            <div class="bar b2" id="bar2"></div>
+            <div class="bar b3" id="bar3"></div>
+            <div class="bar b4" id="bar4"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s7" data-start="18.5" data-duration="3" data-track-index="0" style="opacity:0;">
+        <div class="glow" id="s7-glow" style="left: 260px; top: -160px"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: bygg mot avslut -->
+          <div class="kicker">Släpps</div>
+          <div class="display" id="s7-date">
+            <span class="char">1</span><span class="char">4</span>&nbsp;<span class="char">n</span><span class="char">o</span><span class="char">v</span>
+          </div>
+          <p class="body-text" id="s7-sub">Först ut: <span id="s7-hl">alla som förbokar</span></p>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s8" data-start="21.5" data-duration="3.5" data-track-index="0" style="opacity:0;">
+        <div class="glow" id="s8-glow" style="left: 260px; top: -160px"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: CTA / avslut -->
+          <h2 class="display" id="s8-title">Förboka LUMA 2</h2>
+          <div id="s8-cta">luma.example/2</div>
+          <div class="data-text" id="s8-url">Gratis att förboka · Avsluta när du vill</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // --- Scensynlighet ---
+      // s1–s3: ramverket visar/döljer .clip-element utifrån data-start/data-duration (ingen autoAlpha på clips i 0.8.x).
+      // s4–s8: shader-ankare. Första ankaret i kedjan måste visas explicit:
+      tl.set("#s4", { opacity: 1 }, 9.0);
+
+      // === SCEN 1 (0–3 s) — hook: ordstagger + SVG-streck + glöd ===
+      tl.from("#s1-kicker", { y: 24, autoAlpha: 0, duration: 0.4, ease: "power2.out" }, 0.15);
+      tl.from("#s1-title .w", { y: 70, autoAlpha: 0, duration: 0.55, ease: "power4.out", stagger: { each: 0.09, from: "start" } }, 0.3);
+      tl.to("#s1-line", { strokeDashoffset: 0, duration: 0.9, ease: "expo.out" }, 1.15);
+      tl.to("#s1-glow", { opacity: 0.7, scale: 1.1, duration: 1.3, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.1);
+
+      // === SCEN 2 (3–6 s) — hårt klipp: ordstapel + highlight-svep ===
+      tl.from("#s2-w1", { x: -120, autoAlpha: 0, duration: 0.4, ease: "expo.out" }, 3.12);
+      tl.from("#s2-w2", { x: -120, autoAlpha: 0, duration: 0.4, ease: "expo.out" }, 3.42);
+      tl.from("#s2-w3", { x: -120, autoAlpha: 0, duration: 0.4, ease: "back.out(1.6)" }, 3.72);
+      tl.to("#s2-w3", { backgroundSize: "100% 10%", duration: 0.6, ease: "power2.out" }, 4.25);
+      tl.to("#s2 .scene-content", { x: 30, duration: 2.6, ease: "none" }, 3.2);
+
+      // === SCEN 3 (6–9 s) — hårt klipp: räknare + omloppsbana ===
+      var c3 = { v: 0 };
+      tl.from("#s3-stat", { y: 40, autoAlpha: 0, duration: 0.4, ease: "power3.out" }, 6.12);
+      tl.to(
+        c3,
+        {
+          v: 1200000,
+          duration: 1.8,
+          ease: "power2.out",
+          onUpdate: function () {
+            document.getElementById("s3-stat").textContent = Math.round(c3.v).toLocaleString("sv-SE");
+          },
+        },
+        6.15,
+      );
+      tl.from("#s3-sub", { y: 20, autoAlpha: 0, duration: 0.45, ease: "power2.out" }, 6.6);
+      tl.to("#s3-dot", { rotation: 360, duration: 2.7, ease: "none", transformOrigin: "14px 264px" }, 6.2);
+
+      // === SCEN 4 (9–12.5 s) — SHADER-ANKARE, inga exit-tweens ===
+      tl.to("#s4-grid .gl", { strokeDashoffset: 0, duration: 1.2, ease: "power2.inOut", stagger: { each: 0.08, from: "start" } }, 9.1);
+      tl.from("#s4-kicker", { autoAlpha: 0, duration: 0.4, ease: "sine.inOut" }, 9.2);
+      tl.from("#s4-title", { y: 60, autoAlpha: 0, duration: 0.6, ease: "power3.out" }, 9.35);
+      tl.to("#s4 .scene-content", { scale: 1.04, duration: 3.0, ease: "none" }, 9.4);
+
+      // === SCEN 5 (12.5–15.5 s) — hero (cinematic-zoom in) ===
+      tl.from("#s5-word .char", { y: 120, autoAlpha: 0, duration: 0.5, ease: "power4.out", stagger: { each: 0.07, from: "center" } }, 12.6);
+      tl.from("#s5-tag", { y: 24, autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 13.2);
+      tl.to("#s5-word", { y: -10, duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: 1 }, 13.3);
+      tl.to("#s5-glow", { opacity: 0.75, duration: 1.0, ease: "sine.inOut", yoyo: true, repeat: 1 }, 12.7);
+
+      // === SCEN 6 (15.5–18.5 s) — bevis (light-leak in) ===
+      var c6 = { v: 0 };
+      tl.from("#s6-stat", { x: -60, autoAlpha: 0, duration: 0.45, ease: "expo.out" }, 15.65);
+      tl.to(
+        c6,
+        {
+          v: 4.8,
+          duration: 1.4,
+          ease: "power2.out",
+          onUpdate: function () {
+            document.getElementById("s6-stat").textContent = c6.v.toFixed(1).replace(".", ",") + " ★";
+          },
+        },
+        15.7,
+      );
+      tl.from("#s6-sub", { y: 20, autoAlpha: 0, duration: 0.45, ease: "power2.out" }, 16.0);
+      ["#bar1", "#bar2", "#bar3", "#bar4"].forEach(function (sel, i) {
+        tl.from(sel, { scaleY: 0, transformOrigin: "bottom", duration: 0.6, ease: "expo.out" }, 15.8 + i * 0.15);
+      });
+
+      // === SCEN 7 (18.5–21.5 s) — bygg mot avslut (kort crossfade in) ===
+      tl.from("#s7-date .char", { y: 80, autoAlpha: 0, duration: 0.45, ease: "back.out(1.6)", stagger: { each: 0.08, from: "start" } }, 18.65);
+      tl.from("#s7-sub", { y: 20, autoAlpha: 0, duration: 0.45, ease: "power2.out" }, 19.2);
+      tl.to("#s7-hl", { backgroundSize: "100% 22%", duration: 0.6, ease: "power2.out" }, 19.7);
+      tl.to("#s7-glow", { opacity: 0.7, duration: 1.0, ease: "sine.inOut", yoyo: true, repeat: 1 }, 18.7);
+
+      // === SCEN 8 (21.5–25 s) — CTA (cross-warp-morph in). Sista scenen, exit OK ===
+      tl.from("#s8-title", { y: 60, autoAlpha: 0, duration: 0.5, ease: "power3.out" }, 21.65);
+      tl.from("#s8-cta", { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: "back.out(1.6)" }, 22.0);
+      tl.from("#s8-url", { autoAlpha: 0, duration: 0.5, ease: "sine.inOut" }, 22.4);
+      tl.to("#s8-cta", { y: -8, duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: 1 }, 22.6);
+      tl.to("#s8-glow", { opacity: 0.7, duration: 1.0, ease: "sine.inOut", yoyo: true, repeat: 1 }, 21.7);
+      tl.to("#s8 .scene-content", { autoAlpha: 0, duration: 0.35, ease: "power2.in" }, 24.6);
+
+      // --- Övergångar: EN sammanhängande ankarkedja (scenes.length === transitions.length + 1) ---
+      // s4→s5 hero-avslöjande, s5→s6 energiskifte, s6→s7 snabb crossfade (shader utelämnad), s7→s8 CTA-landning.
+      window.HyperShader.init({
+        bgColor: getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#0e0b08",
+        accentColor: "#ff6a2b",
+        scenes: ["s4", "s5", "s6", "s7", "s8"],
+        timeline: tl,
+        transitions: [
+          { time: 12.25, shader: "cinematic-zoom", duration: 0.5 },
+          { time: 15.25, shader: "light-leak", duration: 0.5 },
+          { time: 18.35, duration: 0.3 },
+          { time: 21.25, shader: "cross-warp-morph", duration: 0.5 },
+        ],
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

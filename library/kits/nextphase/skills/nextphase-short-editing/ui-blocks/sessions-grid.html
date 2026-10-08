@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>sessions-grid</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/*  sessions-grid — what a SESSION actually looks like: the real Claude Code UI, several of
+    them, working. Built 2026-08-10 after Jad's note:
+
+      "if I talk about a session they want to see the UI... a bunch of small UIs and the
+       mascot, one mascot is babysitting multiple UIs... instead of babysitting a session
+       you show a mascot sleeping — how does that make sense?"
+
+    sessions-hub uses mascots AS the sessions. This block does the opposite: the SESSIONS are
+    real terminal windows and the mascot is only the thing tending them. Use this whenever the
+    line is about sessions, parallel work, or a permission prompt.
+
+      ?mode=babysit   4 sessions, 3 stalled waiting, the mascot runs between them  (the PAIN)
+      ?mode=parallel  4 sessions, all working, ticks landing on their own          (the PAYOFF)
+      ?mode=approve   one session, a message arrives, Allow / Deny                 (the GUARD)
+      ?mode=relay     two real sessions: the first finishes, a message crosses to the second,
+                      the second picks the work up                                (the MECHANISM)
+                      Use this — NOT sessions-hub ?mode=talk — whenever the line is "one session
+                      tells another". sessions-hub draws mascots AS the sessions, and that was
+                      rejected: a mascot is only ever the actor. See HOW-WE-EDIT §9b.
+
+      ?fit=half   re-laid for the 1000x880 coral half   ?plate=none   transparent ground
+      ?fit=head   re-laid for the 1000x420 slot ABOVE HIS HEAD on the transparent layout:
+                  the 2x2 grid becomes a single ROW of four, so the "3 waiting / 1 running"
+                  reads left-to-right as a QUEUE. A re-layout, never a scaled-down grid —
+                  a shrunk block reads as a screenshot (HOW-WE-EDIT §3).
+      ?seek=<s>   hold one instant, for scripts/block-render.py
+
+    Type is deliberately LARGE — 26px+ inside a window that is ~470px wide in a 1080 frame.
+    See reference/BLACKLIST.md #1: nothing small enough to squint at.                        */
+:root{
+  --T:6s; --ease:cubic-bezier(.16,1,.3,1);
+  --cream:#F0EDE4; --coral:#D97757; --coral-deep:#BD5D3A; --ink:#191817; --soft:#6B6660;
+  --term:#17140F; --term-2:#221C16; --prompt:#E0A15F; --text:#E7E2D7; --ok:#6FBF73;
+  --mono:"JetBrains Mono",monospace; --ui:"Inter",-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{background:var(--cream);font-family:var(--mono)}
+body.half{width:1000px;height:880px}
+body.head{width:1000px;height:420px}
+body.bare{background:transparent}
+#stage{position:absolute;inset:0}
+
+/* ---------- a session window ---------- */
+.win{position:absolute;width:470px;height:430px;border-radius:22px;overflow:hidden;
+  background:var(--term);box-shadow:0 22px 54px rgba(25,24,23,.28)}
+body.half .win{width:430px;height:360px;border-radius:18px}
+.bar{height:64px;background:var(--term-2);display:flex;align-items:center;gap:12px;padding:0 22px}
+body.half .bar{height:52px;padding:0 16px}
+.dot{width:16px;height:16px;border-radius:50%;background:#4A423A}
+.dot.r{background:#D9584F}.dot.y{background:#D9A24F}.dot.g{background:#6FBF73}
+.name{margin-left:10px;font:700 26px var(--mono);color:#9A9188;letter-spacing:-.01em}
+body.half .name{font-size:21px}
+.body{padding:24px 22px;display:flex;flex-direction:column;gap:16px}
+body.half .body{padding:18px 16px;gap:12px}
+.ln{display:flex;align-items:center;gap:12px}
+.ln b{font:700 27px var(--mono);color:var(--prompt)}          /* the caret */
+.ln em{font:500 27px var(--mono);color:var(--text);font-style:normal}
+body.half .ln b,body.half .ln em{font-size:22px}
+.rail{height:14px;border-radius:7px;background:#3A322B}
+.rail.a{width:74%}.rail.b{width:52%}.rail.c{width:63%}
+.rail.on{background:var(--ok)}
+
+/* the status pill — the whole point of the shot */
+.st{position:absolute;right:20px;bottom:18px;height:52px;padding:0 20px;border-radius:26px;
+  display:flex;align-items:center;gap:12px;font:700 24px var(--ui);letter-spacing:.02em}
+body.half .st{height:44px;font-size:20px;right:14px;bottom:12px}
+.st.wait{background:#3A322B;color:#C9BFB4}
+.st.work{background:var(--coral);color:#fff}
+.st.done{background:var(--ok);color:#0E2A10}
+.spin{width:22px;height:22px;border-radius:50%;border:4px solid rgba(255,255,255,.35);
+  border-top-color:#fff;animation:spin 1s linear infinite}
+.tick{width:24px;height:13px;border-left:5px solid currentColor;border-bottom:5px solid currentColor;
+  transform:rotate(-45deg) translate(2px,-3px)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* the mascot that tends them */
+.masc{position:absolute;width:210px;image-rendering:pixelated}
+body.half .masc{width:170px}
+.masc img{width:100%;display:block}
+
+/* ---------- approve mode ---------- */
+.big{position:absolute;left:70px;top:530px;width:940px;height:860px;border-radius:28px;
+  overflow:hidden;background:var(--term);box-shadow:0 26px 64px rgba(25,24,23,.30)}
+body.half .big{left:40px;top:70px;width:920px;height:740px}
+.big .bar{height:74px}
+.msg{margin:26px 24px;padding:22px 24px;border-radius:18px;background:#2A2119;
+  border-left:8px solid var(--coral);opacity:0;transform:translateX(60px);
+  animation:msgIn var(--T) var(--ease) infinite both}
+.msg .from{font:700 24px var(--ui);color:var(--prompt);margin-bottom:10px}
+.msg .txt{font:500 30px var(--mono);color:var(--text);line-height:1.35}
+.ask{margin:0 24px;padding:26px 24px;border-radius:18px;background:#221C16;
+  opacity:0;animation:askIn var(--T) var(--ease) infinite both}
+.ask h4{font:800 34px var(--ui);color:#fff;margin-bottom:20px}
+.btns{display:flex;gap:16px}
+.btn{flex:1;height:78px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font:800 30px var(--ui)}
+.btn.allow{background:var(--ok);color:#0E2A10}
+.btn.deny{background:#3A322B;color:#C9BFB4}
+.btn.allow{animation:pick var(--T) var(--ease) infinite both}
+
+@keyframes msgIn{0%,8%{opacity:0;transform:translateX(60px)}
+  16%,100%{opacity:1;transform:translateX(0)}}
+@keyframes askIn{0%,26%{opacity:0;transform:translateY(26px)}
+  36%,100%{opacity:1;transform:translateY(0)}}
+@keyframes pick{0%,62%{transform:scale(1);filter:brightness(1)}
+  70%{transform:scale(1.06);filter:brightness(1.25)}
+  78%,100%{transform:scale(1);filter:brightness(1)}}
+
+/* ---------- machines mode: the same handoff, across DISTINCT computers ---------- */
+/* concepts.json `computers`: "Distinct machines, each with its own session on it." The machine
+   name lives in the window's own title bar, because that is where a real session shows it.
+   sessions-hub ?mode=hub draws a mascot labelled "your session" — that is the rejected
+   pattern, so it is not used for this line. */
+.mw{position:absolute;top:700px;width:320px;height:520px;border-radius:22px;overflow:hidden;
+  background:var(--term);box-shadow:0 20px 46px rgba(25,24,23,.28)}
+.mw.m1{left:20px}   .mw.m2{left:380px}  .mw.m3{left:740px}
+body.half .mw{top:240px;width:300px;height:400px;border-radius:18px}
+body.half .mw.m1{left:15px} body.half .mw.m2{left:350px} body.half .mw.m3{left:685px}
+.mw .bar{height:58px;padding:0 16px;gap:9px}
+body.half .mw .bar{height:50px;padding:0 13px}
+.mw .dot{width:12px;height:12px}
+.mw .name{margin-left:6px;font-size:20px}
+body.half .mw .name{font-size:18px}
+.mw .body{padding:20px 16px;gap:14px}
+.mw .ln b,.mw .ln em{font-size:22px}
+body.half .mw .ln b,body.half .mw .ln em{font-size:19px}
+.mw .rail{height:11px}
+.mw .st{right:14px;bottom:14px;height:44px;font-size:19px;padding:0 15px}
+body.half .mw .st{height:38px;font-size:17px;padding:0 12px}
+
+/* the message hops machine -> machine -> machine */
+.hop{position:absolute;top:640px;left:80px;padding:13px 22px;border-radius:16px;
+  background:var(--coral);color:#fff;font:800 26px var(--ui);white-space:nowrap;
+  box-shadow:0 12px 26px rgba(25,24,23,.26);
+  opacity:0;animation:hop var(--T) var(--ease) infinite both}
+body.half .hop{top:180px;left:55px;font-size:22px;padding:10px 18px}
+@keyframes hop{
+  0%,10%  {opacity:0;transform:translateX(0)     scale(.9)}
+  20%     {opacity:1;transform:translateX(0)     scale(1)}
+  40%     {opacity:1;transform:translateX(360px) scale(1)}
+  62%     {opacity:1;transform:translateX(720px) scale(1)}
+  74%,100%{opacity:0;transform:translateX(720px) scale(.94)}}
+body.half .hop{animation-name:hopHalf}
+@keyframes hopHalf{
+  0%,10%  {opacity:0;transform:translateX(0)     scale(.9)}
+  20%     {opacity:1;transform:translateX(0)     scale(1)}
+  40%     {opacity:1;transform:translateX(335px) scale(1)}
+  62%     {opacity:1;transform:translateX(670px) scale(1)}
+  74%,100%{opacity:0;transform:translateX(670px) scale(.94)}}
+
+/* each machine lights up as the message reaches it */
+.mfade1 {animation:mA var(--T) steps(1,end) infinite both}
+@keyframes mA{0%,19%{opacity:1}20%,100%{opacity:0}}
+.mfade1b{animation:mAb var(--T) steps(1,end) infinite both}
+@keyframes mAb{0%,19%{opacity:0}20%,100%{opacity:1}}
+.mfade2 {animation:mB var(--T) steps(1,end) infinite both}
+@keyframes mB{0%,41%{opacity:1}42%,100%{opacity:0}}
+.mfade2b{animation:mBb var(--T) steps(1,end) infinite both}
+@keyframes mBb{0%,41%{opacity:0}42%,100%{opacity:1}}
+.mfade3 {animation:mC var(--T) steps(1,end) infinite both}
+@keyframes mC{0%,63%{opacity:1}64%,100%{opacity:0}}
+.mfade3b{animation:mCb var(--T) steps(1,end) infinite both}
+@keyframes mCb{0%,63%{opacity:0}64%,100%{opacity:1}}
+
+/* ---------- relay mode: session -> message -> session ---------- */
+/* Two REAL windows stacked, and the message is a thing that travels between them. The
+   sessions are the UI; nothing here stands in for a session. */
+.rw{position:absolute;left:70px;width:940px;height:560px;border-radius:26px;overflow:hidden;
+  background:var(--term);box-shadow:0 24px 58px rgba(25,24,23,.30)}
+.rw.a{top:330px}
+.rw.b{top:1180px}
+body.half .rw{left:30px;width:940px;height:340px;transform:scale(.99);transform-origin:left top}
+body.half .rw.a{top:40px}
+body.half .rw.b{top:500px}
+.rw .bar{height:70px}
+.rw .body{padding:26px 26px;gap:18px}
+.rw .ln b,.rw .ln em{font-size:30px}
+body.half .rw .ln b,body.half .rw .ln em{font-size:25px}
+.rw .st{right:24px;bottom:22px}
+
+/* the wire the message rides, drawn left-to-right then the packet travels down it */
+.rwire{position:absolute;left:530px;top:900px;width:14px;height:274px;border-radius:7px;
+  background:repeating-linear-gradient(180deg,var(--coral) 0 24px,transparent 24px 46px);
+  transform-origin:top center;transform:scaleY(0);
+  animation:rwire var(--T) var(--ease) infinite both}
+body.half .rwire{left:495px;top:390px;height:112px}
+@keyframes rwire{0%,26%{transform:scaleY(0)}42%,100%{transform:scaleY(1)}}
+
+.pkt{position:absolute;left:452px;top:880px;padding:16px 26px;border-radius:18px;
+  background:var(--coral);color:#fff;font:800 30px var(--ui);white-space:nowrap;
+  box-shadow:0 14px 30px rgba(25,24,23,.28);
+  opacity:0;animation:pkt var(--T) var(--ease) infinite both}
+body.half .pkt{left:420px;top:376px;font-size:24px;padding:12px 20px}
+@keyframes pkt{
+  0%,30%  {opacity:0;transform:translateY(0) scale(.9)}
+  40%     {opacity:1;transform:translateY(0) scale(1)}
+  62%     {opacity:1;transform:translateY(250px) scale(1)}
+  70%,100%{opacity:0;transform:translateY(250px) scale(.94)}}
+body.half .pkt{animation-name:pktHalf}
+@keyframes pktHalf{
+  0%,30%  {opacity:0;transform:translateY(0) scale(.9)}
+  40%     {opacity:1;transform:translateY(0) scale(1)}
+  62%     {opacity:1;transform:translateY(100px) scale(1)}
+  70%,100%{opacity:0;transform:translateY(100px) scale(.94)}}
+
+/* window A finishes; window B only starts once the message lands */
+.rfadeA {animation:swapA var(--T) steps(1,end) infinite both}
+@keyframes swapA{0%,21%{opacity:1}22%,100%{opacity:0}}
+.rfadeA2{animation:swapA2 var(--T) steps(1,end) infinite both}
+@keyframes swapA2{0%,21%{opacity:0}22%,100%{opacity:1}}
+.rfadeB {animation:swapB var(--T) steps(1,end) infinite both}
+@keyframes swapB{0%,66%{opacity:1}67%,100%{opacity:0}}
+.rfadeB2{animation:swapB2 var(--T) steps(1,end) infinite both}
+@keyframes swapB2{0%,66%{opacity:0}67%,100%{opacity:1}}
+
+/* ---------- babysit / parallel choreography ---------- */
+/* each window's status pill swaps on its own schedule; in babysit the mascot has to run to
+   each one, in parallel they finish by themselves */
+.w1{left:60px;  top:480px}
+.w2{left:560px; top:480px}
+.w3{left:60px;  top:960px}
+.w4{left:560px; top:960px}
+body.half .w1{left:40px;top:60px}   body.half .w2{left:520px;top:60px}
+body.half .w3{left:40px;top:450px}  body.half .w4{left:520px;top:450px}
+
+/* ---------- head fit: one ROW of four, so the queue reads left-to-right ---------- */
+/* Re-laid, not scaled: the rails drop to two, the command line stays full size, and the
+   status pill moves under the caret instead of floating bottom-right, because at 232px
+   wide there is no bottom-right to float in. */
+/* THREE windows, not four. Four fit the width but drive the type down to ~19px, which is
+   half the size of the same window in the ?fit=half slot and lands squarely in BLACKLIST #1.
+   Three at 306px hold the SAME absolute type sizes as the half fit, and three still reads
+   as a queue. The fourth window is dropped, not shrunk. */
+body.head .win{width:306px;height:340px;border-radius:18px;box-shadow:0 14px 32px rgba(25,24,23,.26)}
+body.head .w4{display:none}
+body.head .bar{height:52px;padding:0 16px;gap:10px}
+body.head .dot{width:13px;height:13px}
+body.head .name{margin-left:8px;font-size:21px}
+body.head .body{padding:18px 16px;gap:14px}
+body.head .ln b,body.head .ln em{font-size:22px}
+body.head .ln{gap:10px}
+body.head .rail{height:12px;border-radius:6px}
+body.head .rail.c{display:none}
+body.head .st{height:44px;padding:0 16px;border-radius:22px;font-size:20px;gap:10px;
+  right:14px;bottom:14px}
+body.head .spin{width:19px;height:19px;border-width:3px}
+body.head .tick{width:21px;height:11px;border-left-width:4px;border-bottom-width:4px}
+body.head .w1{left:0;   top:40px}   body.head .w2{left:347px;top:40px}
+body.head .w3{left:694px;top:40px}
+/* the mascot would crowd a 420px band — in this slot the sessions carry the beat alone */
+body.head .masc{display:none}
+
+.fade{animation:swap var(--T) steps(1,end) infinite both}
+@keyframes swap{0%,49%{opacity:1}50%,100%{opacity:0}}
+.fade2{animation:swap2 var(--T) steps(1,end) infinite both}
+@keyframes swap2{0%,49%{opacity:0}50%,100%{opacity:1}}
+
+.run{animation:run var(--T) var(--ease) infinite both}
+@keyframes run{
+  0%   {transform:translate(0,0) scaleX(1)}
+  22%  {transform:translate(500px,0) scaleX(1)}
+  30%  {transform:translate(500px,0) scaleX(-1)}
+  52%  {transform:translate(0,480px) scaleX(-1)}
+  60%  {transform:translate(0,480px) scaleX(1)}
+  82%  {transform:translate(500px,480px) scaleX(1)}
+  100% {transform:translate(0,0) scaleX(1)}}
+.bob{animation:bob calc(var(--T)/4) ease-in-out infinite alternate both}
+@keyframes bob{to{transform:translateY(-14px)}}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+
+<script>
+const q = new URLSearchParams(location.search);
+const MODE  = q.get("mode") || "babysit";
+const FIT   = q.get("fit") || "full";
+const HALF  = FIT === "half";
+const HEAD  = FIT === "head";
+if (HALF){ document.body.classList.add("half");
+  document.documentElement.style.cssText="width:1000px;height:880px;overflow:hidden"; }
+if (HEAD){ document.body.classList.add("head");
+  document.documentElement.style.cssText="width:1000px;height:420px;overflow:hidden"; }
+if (q.get("plate") === "none") document.body.classList.add("bare");
+
+// ?T=<seconds> — override the loop length. A beat shorter than the block's natural 6s loop
+// would otherwise be cut off mid-move; compressing the loop keeps the WHOLE move inside the
+// beat instead of truncating it (HOW-WE-EDIT §3, "watch the loop boundary").
+const TT = q.get("T");
+if (TT) document.documentElement.style.setProperty("--T", parseFloat(TT) + "s");
+
+const M = "../mascot/outline/";
+const stage = document.getElementById("stage");
+
+const win = (cls, name, statusA, statusB, rails) => `
+  <div class="win ${cls}">
+    <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i>
+      <span class="name">${name}</span></div>
+    <div class="body">
+      <div class="ln"><b>&gt;</b><em>${rails[0]}</em></div>
+      <div class="rail a ${rails[1] ? "on" : ""}"></div>
+      <div class="rail b"></div>
+      <div class="rail c"></div>
+    </div>
+    <div class="st ${statusA[0]} fade">${statusA[1]}</div>
+    <div class="st ${statusB[0]} fade2">${statusB[1]}</div>
+  </div>`;
+
+const SPIN = ['work', '<i class="spin"></i>running'];
+const WAIT = ['wait', 'waiting'];
+const DONE = ['done', '<i class="tick"></i>done'];
+
+if (MODE === "approve") {
+  stage.innerHTML = `
+    <div class="big">
+      <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i>
+        <span class="name">claude — payments-api</span></div>
+      <div class="msg">
+        <div class="from">message from: schema-migration</div>
+        <div class="txt">migration finished — safe to rebase on main</div>
+      </div>
+      <div class="ask">
+        <h4>Run this in your session?</h4>
+        <div class="btns"><span class="btn deny">Deny</span><span class="btn allow">Allow</span></div>
+      </div>
+    </div>
+    <div class="masc bob" style="left:${HALF?780:830}px;top:${HALF?600:1450}px">
+      <img src="${M}mascot-thinking.webp" alt="">
+    </div>`;
+} else if (MODE === "machines") {
+  // "even if they're on different computers" — three sessions, three machines, one message
+  // crossing all three. The machine is named in its own title bar.
+  const mwin = (cls, machine, cmd, sA, sB, fA, fB) => `
+    <div class="win mw ${cls}">
+      <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i>
+        <span class="name">${machine}</span></div>
+      <div class="body">
+        <div class="ln"><b>&gt;</b><em>${cmd}</em></div>
+        <div class="rail a"></div><div class="rail b"></div>
+      </div>
+      <div class="st ${sA[0]} ${fA}">${sA[1]}</div>
+      <div class="st ${sB[0]} ${fB}">${sB[1]}</div>
+    </div>`;
+  stage.innerHTML =
+    mwin("m1", "mac mini", "npm test",   WAIT, SPIN, "mfade1", "mfade1b") +
+    mwin("m2", "laptop",   "pytest -q",  WAIT, SPIN, "mfade2", "mfade2b") +
+    mwin("m3", "desktop",  "alembic up", WAIT, SPIN, "mfade3", "mfade3b") +
+    `<div class="hop">handoff</div>`;
+} else if (MODE === "relay") {
+  // "the session fixing your code can tell a session that's writing your tests that it's done"
+  // — both are REAL windows; the message is the thing that moves between them.
+  const rwin = (cls, name, cmd, sA, sB, fA, fB) => `
+    <div class="win rw ${cls}">
+      <div class="bar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i>
+        <span class="name">${name}</span></div>
+      <div class="body">
+        <div class="ln"><b>&gt;</b><em>${cmd}</em></div>
+        <div class="rail a"></div><div class="rail b"></div><div class="rail c"></div>
+      </div>
+      <div class="st ${sA[0]} ${fA}">${sA[1]}</div>
+      <div class="st ${sB[0]} ${fB}">${sB[1]}</div>
+    </div>`;
+  stage.innerHTML =
+    rwin("a", "fix-auth",    "npm test",  SPIN, DONE, "rfadeA", "rfadeA2") +
+    `<div class="rwire"></div>
+     <div class="pkt">done &mdash; over to you</div>` +
+    rwin("b", "write-tests", "pytest -q", WAIT, SPIN, "rfadeB", "rfadeB2");
+} else {
+  const parallel = MODE === "parallel";
+  stage.innerHTML =
+    win("w1", "fix-auth",   parallel?SPIN:SPIN, parallel?DONE:SPIN, ["npm test", parallel]) +
+    win("w2", "write-tests",parallel?SPIN:WAIT, parallel?DONE:WAIT, ["pytest -q", parallel]) +
+    win("w3", "migrate-db", parallel?SPIN:WAIT, parallel?DONE:WAIT, ["alembic up", parallel]) +
+    win("w4", "docs-pass",  parallel?SPIN:WAIT, parallel?DONE:WAIT, ["mdx build", parallel]) +
+    `<div class="masc ${parallel ? "bob" : "run"}"
+        style="left:${HALF?250:290}px;top:${HALF?250:820}px">
+       <img src="${M}${parallel ? "mascot-happy" : "mascot-carrying"}.webp" alt=""></div>`;
+}
+
+/* ?seek=<seconds> — hold one instant so a headless shot lands where you want it */
+(() => {
+  const s = q.get("seek"); if (s === null) return;
+  const go = () => document.getAnimations().forEach(a => { a.pause(); a.currentTime = parseFloat(s)*1000; });
+  requestAnimationFrame(() => requestAnimationFrame(() => { go(); setTimeout(go, 250); }));
+})();
+</script>
+</body>
+</html>

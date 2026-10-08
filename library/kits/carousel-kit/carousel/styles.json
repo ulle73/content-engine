@@ -1,0 +1,90 @@
+{
+  "_about": "The style library. Each entry is one style sheet the user can pick. template/theme go into plan.json; sheet is the ONE reference image for the paid path; free_images says where $0 imagery comes from; paid_style is appended to every image_prompt on the paid path. own_layouts are the designs for the user's OWN photos.",
+  "styles": [
+    {
+      "id": "midnight",
+      "name": "Midnight Bioluminescent",
+      "template": "template.html",
+      "theme": "midnight",
+      "sheet": "assets/styles/midnight.jpg",
+      "example": "assets/styles/examples/midnight.jpg",
+      "spec": "knowledge/glass-and-brand.md",
+      "look": "Void-black meadow lit from inside by a teal glow; every card, chart and caption is frosted glass; thin serif headline with one word in a glass capsule.",
+      "best_for": ["tech", "AI", "finance", "data-heavy explainers", "premium brands"],
+      "free_images": "painted locally in code (carousel_localbg.py) — no photos needed",
+      "paid_style": "Midnight bioluminescent nocturnal macro photograph of a wild meadow. Pure void-black field; the ONLY light is a soft teal bioluminescent glow emitted from INSIDE the scene, low in the frame. Silhouette flora with thin teal rim light. Deep shadow, heavy grain, shallow depth of field. Keep the TOP HALF unbroken black. No text, no letters, no logos, no UI."
+    },
+    {
+      "id": "archival",
+      "name": "Archival Swiss Poster",
+      "template": "template-archival.html",
+      "theme": "archival",
+      "sheet": "assets/styles/archival.jpg",
+      "example": "assets/styles/examples/archival.jpg",
+      "spec": "SKILL.md#archival-specifics",
+      "look": "Bone paper, a brick-red block and one hard seam; one huge lowercase word clipped at both edges crossing into a sun-bleached photograph; metadata bands top and bottom.",
+      "best_for": ["history", "architecture", "design", "sport", "editorial/news"],
+      "free_images": "one freely-licensed Wikimedia photo per slide (fetch_photos.py), credited",
+      "paid_style": "Sun-bleached archival documentary photograph, warm faded sepia, low saturation, contrasty, visible film grain, printed-poster feel. Photograph only, no text, no letters, no logos, no borders."
+    },
+    {
+      "id": "celestial",
+      "name": "Celestial Surrealist Collage",
+      "template": "template-celestial.html",
+      "theme": "celestial",
+      "sheet": "assets/styles/celestial.jpg",
+      "example": "assets/styles/examples/celestial.jpg",
+      "spec": "SKILL.md#celestial-specifics",
+      "look": "High-key sky framed by ionic columns, headline set twice, doves and monarch butterflies crossing three depth layers, technical grid on top.",
+      "best_for": ["film", "culture", "wellness", "art", "luxury"],
+      "free_images": "freely-licensed landscape + blossom photos per slide (fetch_photos.py)",
+      "paid_style": "Bright high-key surreal landscape under an open sky, soft haze, dreamy daylight, marble and blossom tones, cinematic depth. No text, no letters, no logos."
+    },
+    {
+      "id": "chalk",
+      "name": "Chalk-on-Ground Editorial",
+      "template": "template-chalk.html",
+      "theme": "chalk",
+      "sheet": "assets/styles/chalk.jpg",
+      "example": "assets/styles/examples/chalk.jpg",
+      "spec": "knowledge/style-chalk.md",
+      "look": "Overhead lawn photo with hand-drawn chalk capitals lying on the grass, one yellow-outline accent word, heavy vignette, 'FROM A Creator FOR A Creator' footer lockup.",
+      "best_for": ["creators", "coaches", "sport", "outdoors", "motivation", "landscaping"],
+      "free_images": "top-down lawn photos from Wikimedia (search by grass species), credited",
+      "paid_style": "Overhead top-down photograph of a lush green lawn in late sun, grass texture filling the frame, soft dappled light, darkening sharply toward the edges. Photograph only, no text, no letters, no logos."
+    },
+    {
+      "id": "sunfaded",
+      "name": "Sun-Faded Photo Poster",
+      "template": "template-sunfaded.html",
+      "theme": "sunfaded",
+      "sheet": "assets/styles/sunfaded.jpg",
+      "example": "assets/styles/examples/sunfaded.jpg",
+      "spec": "knowledge/style-sunfaded.md",
+      "look": "Full-bleed pastoral photograph, one faded-gold serif headline sitting BEHIND the subject, almost-missed light captions, no panels.",
+      "best_for": ["real estate", "travel", "home services", "farming", "lifestyle", "nostalgia"],
+      "free_images": "freely-licensed pastoral photos (sky top, one subject middle, open ground bottom), with a Vision cutout per slide",
+      "paid_style": "Sun-faded nostalgic photograph: open sky in the top third, one clear subject in the middle, calm open ground in the bottom third. Slightly desaturated, sun-bleached, fine grain. Photograph only, no text, no letters, no logos."
+    },
+    {
+      "id": "skyblue",
+      "name": "Sky-Blue Tech Poster",
+      "template": "template-skyblue.html",
+      "theme": "skyblue",
+      "sheet": "assets/styles/skyblue.jpg",
+      "example": "assets/styles/examples/skyblue.jpg",
+      "spec": "knowledge/style-skyblue.md",
+      "look": "Navy field and clear-sky photography, heavy condensed white caps, ONE word re-written in a magenta-to-orange brush script, the subject cut out and standing in front of the headline.",
+      "best_for": ["social media marketing", "agencies", "tech", "apps", "personal brands"],
+      "free_images": "clear-sky + subject photos from Wikimedia with Vision cutouts",
+      "paid_style": "Bright clear blue sky with soft white cumulus clouds, a single subject in the lower half, crisp clean daylight, high clarity. Photograph only, no text, no letters, no logos."
+    }
+  ],
+  "own_layouts": [
+    {"id": "orbit",     "name": "Behind-the-subject + orbit text", "preview": "assets/own-images/previews/orbit.jpg",     "photo": "one person/object centred, head in the upper-middle"},
+    {"id": "punch",     "name": "Caps + script punch",             "preview": "assets/own-images/previews/punch.jpg",     "photo": "subject low in frame, calm top 40%"},
+    {"id": "editorial", "name": "Editorial serif",                 "preview": "assets/own-images/previews/editorial.jpg", "photo": "subject to one side, calm wall/space on the other; great with no person (a roof, a room)"},
+    {"id": "scatter",   "name": "Scattered serif",                 "preview": "assets/own-images/previews/scatter.jpg",   "photo": "subject centred with open space both sides, or open sky"},
+    {"id": "cascade",   "name": "Cascading serif",                 "preview": "assets/own-images/previews/cascade.jpg",   "photo": "subject in motion or looking across the frame, clear diagonal"}
+  ]
+}

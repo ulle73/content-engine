@@ -1,0 +1,179 @@
+{
+  "id": "tierlist",
+  "name": "Tierlist — the board owns the top half",
+  "since": "2026-08-27",
+  "default": false,
+  "one_line": "A tier board is on screen for the WHOLE video in the top half and the camera is a hard-split bottom half. Neither ever moves. Density comes from CARDS LANDING ON THE BEAT.",
+  "use_when": "Jad says TIERLIST, 'the tier list one', 'the ranking one'. PRECONDITION: the transcript must actually rank named things. If nothing gets ranked there is no board, and the style is wrong — use house.",
+
+  "sourced_from": {
+    "reference": "one frame Jad sent 2026-08-27 — a 9:16 ranking short, board top half / camera bottom half, five rows S A B C D, three cards placed",
+    "note": "a single reference frame, not a torn-down reel. The geometry below is measured off it and scaled to 1080x1920; the MOTION is ours, because the frame shows none.",
+    "palette_note": "the five row colours are the tiermaker defaults, unaltered. A tier board is a recognised object — inventing our own hues just reads as a broken one."
+  },
+
+  "precondition": {
+    "headline": "NO RANKING, NO BOARD.",
+    "test": "read the transcript and list the things he names AND grades. Fewer than four and the board sits three-quarters empty for a minute, which is the format's own retention mechanic pointed the wrong way.",
+    "minimum": "4 items placed, ideally 6-8, at least one of them re-ranked",
+    "if_it_fails": "use house. Do not build a board and put unranked b-roll in the rows.",
+    "density_gate": "check-density.py was PATCHED 2026-08-27 to count tierPresent()/tierMove() calls. This style's beats are timeline motion on clips that never leave, not new data-starts, so without the patch the gate saw 6 clips in a 22s cut and reported a 5.8s gap that was not there."
+  },
+
+  "ground": {
+    "plate": "flat BLACK --tier-void #0B0B0B, top half only",
+    "why_black": "the row colours are five saturated hues sitting edge to edge and the cards are white. On cream the colours go chalky and the cards vanish. This is the first non-cream ground in the skill; BLACKLIST #10 fixes the HOUSE plate as cream, it does not claim cream is the only ground (persa has no plate at all).",
+    "never": "no gradient, no grain, no vignette behind the board — anything under five saturated rows turns the top half to mud",
+    "media_sits": "there is no free media zone in this style. The board IS the top half. A b-roll beat replaces the board only for the hook and the CTA, never mid-body."
+  },
+
+  "geometry_at_1080x1920": {
+    "void": "0 -> 984",
+    "rows_region": "84 -> 884, height 800",
+    "row_height": "800 / N — 160 at N=5, 133.33 at N=6. The rows region and the seam do NOT move when N changes.",
+    "label_column": "0 -> 210, flush to the frame's left edge — it bleeds off, it is not inset",
+    "content_column": "210 -> 1080, width 870",
+    "card": "140 x 140, radius 18, pitch 150, first card left 226",
+    "cards_per_row_max": 5,
+    "present_size": 380,
+    "present_centre": [540, 484],
+    "caption_band": "884 -> 984, height 100",
+    "seam": "984 — hard edge, no feather, no gradient, no shadow",
+    "camera": "left 0, top 984, 1080 x 936, object-fit cover"
+  },
+
+  "camera": {
+    "treatment": "hard bottom half — full width, uncut, no card, no radius, no border",
+    "matte_required": false,
+    "matte_note": "THE ONLY STYLE IN THE SKILL THAT DOES NOT RUN rvm-matte. There is no pop-out and his head does not break the seam. Verified against the reference frame: he sits well below it. Skipping the matte pass is a real saving — do not add one back 'for polish'.",
+    "framing": "ONE framing for the whole video, same as house",
+    "never_scale_him": "n/a — he is at a fixed 1080x936 crop all video",
+    "object_position": "MEASURE per take, do not guess: objectY = (headTopInSource - 110) / (1920 - 936). tp-0821 head top is at source y=723 -> 62.3%. A guessed 32% put him halfway down the box with 135px of ceiling above his head and every gate still passed. Recipe in TIER-BOARD.md \u00a712."
+  },
+
+  "rotation": {
+    "treatments": ["the board (the entire body of the video)"],
+    "rule": "THERE IS NO ROTATION. The frame does not change. Do not try to give this style the house four-frame rotation — putting a b-roll takeover in the middle of a tier list throws away the board and the viewer loses the count.",
+    "never_two_neighbours_alike": false,
+    "max_hold_seconds": null,
+    "board_spine": "the board is on screen from ~0:01 to the CTA. Reference frame: board present, camera present, both static, one caption word.",
+    "the_only_two_exceptions": [
+      "the HOOK may run 1-2s of full-frame face or a title before the board wipes in",
+      "the CTA replaces the board with the old CTA panel in the top half — the camera stays exactly where it is (see cta-is-half-and-half: HIM in the bottom half)"
+    ]
+  },
+
+  "the_signature_move": {
+    "name": "PRESENT, then PLACE",
+    "phase_1": "on the word that NAMES the product, the card appears at the centre of the board at 380px and the row CONTENT dims (the scrim starts at x=210 \u2014 the label chips stay lit, or the layout gate calls text_occluded and #lab-s drops to 2.33:1). Big enough to actually read the mark.",
+    "phase_2": "~1.1s later, on the word that names the TIER, it flies to its slot and shrinks to 140. Rows come back, the row's letter pulses once.",
+    "why_two_phases": "presenting and placing in one motion is the mistake. The card is only ever 140px, nobody sees what it is, and the beat reads as a logo twitching in a corner. THE PAUSE BETWEEN THE TWO PHASES IS THE BEAT.",
+    "helper": "tierPresent(tl, id, tPresent, tPlace, {scrim, label}) in components/tier-board.html",
+    "cadence": "one placement per 3-5s. A card lands on a WORD, not on a round number."
+  },
+
+  "the_re_rank": {
+    "what": "a card already on the board slides to a different row",
+    "why_it_matters": "this is the payoff beat and the one move no other style can make. Write the script so at least one thing gets moved — 'actually, no' — and the board earns being on screen the whole time.",
+    "helper": "tierMove(tl, id, t, tierSlot(fromRow, fromCol), {label}). A card's style left/top is its FINAL resting slot; a card that will be re-ranked is PRESENTED with {slot: tierSlot(...)} to land elsewhere first, and tierMove just returns it home.",
+    "sound": "vinyl-rewind at cue - 0.053 on the lift, pop at cue + 0.52 on the land"
+  },
+
+  "cards": {
+    "what_a_card_is": "a 140px WHITE plate with the product's REAL SQUARE APP MARK at 116px, object-fit contain",
+    "not_a_wordmark": "a wordmark is type, and the caption already says the name at that exact moment — same reasoning as TYPE-ROLES role 3. Square mark if one exists.",
+    "wordmark_escape_hatch": "a product with genuinely no square mark: the wordmark fills the card's full 116px inner width, cap height ~26px minimum. If it cannot reach that, the product does not go on the board — say the name in the caption and move on.",
+    "dropped_from_the_reference": "the reference frame sets a tiny letterspaced wordmark ABOVE the mark inside the card. At 1080x1920 that is ~14px type. Dropped under BLACKLIST #1, which bans small text in any form.",
+    "no_placeholders": "every card is a real mark fetched by reference/SOURCING.md. A card you set in type is BLACKLIST #2."
+  },
+
+  "captions": {
+    "styles": ["c-ws"],
+    "count": 1,
+    "one_word_at_a_time": true,
+    "position": 934,
+    "colour": "#FFFFFF — the ground is black, so the c-ws ink colour does not apply",
+    "position_note": "884-984 band, 96px type centred in the 100px gap between the last row and the seam. It NEVER moves — not for a present, not for a move, not for the CTA.",
+    "on_black": "the caption sits on the void, not on his body and not over media, so BLACKLIST #12 stays IN FORCE here. That is the difference from persa, which suspends it.",
+    "chrome": "no box, no band, no highlight, no bounce"
+  },
+
+  "display_type": {
+    "roles": [],
+    "note": "no display type. The board's own letters are the only large type. An emphasis outline over a black board with five saturated rows behind it has nothing to screen through and reads as a sticker — the TYPE-ROLES precondition (photographic ground) is not met anywhere in this style."
+  },
+
+  "palette": {
+    "rows": "--tier-s #FF7F7F, --tier-a #FFBF7F, --tier-b #FFDF7F, --tier-c #FFFF7F, --tier-d #BFFF7F, --tier-e #7FFF7F, --tier-f #7FFFFF",
+    "void": "--tier-void #0B0B0B",
+    "row_bg": "--tier-row #141414",
+    "rule": "--tier-rule #2E2E2E, 2px",
+    "label_ink": "--tier-label-ink #1A1A1A — ink on the colour, never white",
+    "card": "--tier-card #FFFFFF",
+    "label_type": "--font-ui 700 at 62px"
+  },
+
+  "grade": {
+    "applies": false,
+    "note": "no grade. persa's feComponentTransfer exists to make a full-bleed photographic frame sit on one curve; here the only photographic surface is the bottom half and there is nothing for it to match."
+  },
+
+  "density_comes_from": "CARDS LANDING ON THE BEAT. Not layout change (there is none), not registry animations (they have nowhere to go), not b-roll. If the board is placing a card every 3-5s the video is dense; if it is not, no amount of graphics elsewhere will fix it.",
+
+  "sound": {
+    "present": "swoosh.wav",
+    "place": "pop.wav",
+    "s_tier_place": "pop.wav + confirm.wav",
+    "re_rank": "vinyl-rewind.mp3 on the lift, pop.wav on the land",
+    "board_wipe_in": "riser.wav",
+    "note": "BLACKLIST #8 applies with full force — every card motion is a layout change and none of them is silent. Gains MEASURED, and remember sfx-measure-at-cue-plus-lead: four cues have leading silence."
+  },
+
+  "blacklist_rules_that_apply": [
+    "#1 small text (this is why the card's wordmark label is dropped)",
+    "#2 typeset text cards as support",
+    "#3 captions with their own background band",
+    "#3b browser chrome on a page shot",
+    "#3c more than one highlight at a time",
+    "#4 emojis",
+    "#4b a webcam bubble or anyone else's screen recording",
+    "#5 people who aren't the subject",
+    "#6 a screenshot of an animated block",
+    "#8 a silent layout change — with full force, every card motion is one",
+    "#9 a new CTA",
+    "#10 the graph-paper plate",
+    "#12 captions on his body or over the b-roll — the band is on black, IN FORCE",
+    "#13 publishing anything",
+    "#14 a number that is the whole picture",
+    "#15 the Chrome caption",
+    "#16 a screenshot in a box instead of owning the frame"
+  ],
+
+  "blacklist_rules_suspended": {
+    "#2b media in a frame / with a drop shadow": "SUSPENDED FOR THE CARD ONLY. A card IS a white rounded plate with a drop shadow — that is what a tier list is made of, and it is the object being reproduced. Everything else still obeys #2b: a page shot on the board still gets no card behind it.",
+    "#7 the same frame twice in a row": "SUSPENDED. The frame never changes for the entire video. The clock runs on the board's CONTENT, exactly as persa's clock runs on its demo spine.",
+    "#11 shrinking him": "SUSPENDED. He is at a fixed 1080x936 bottom-half crop all video. It is not a shrink-for-a-beat, it is the layout."
+  },
+
+  "what_this_style_does_not_have": [
+    "no matte / no pop-out — the only style without one",
+    "no rotation of camera treatment",
+    "no display type",
+    "no grade",
+    "no cream plate",
+    "no free media zone in the top half"
+  ],
+
+  "signature_moves": [
+    "PRESENT then PLACE — the 1.1s pause between them is the beat",
+    "the re-rank: a placed card sliding to a different row",
+    "the empty rows visible from second one, so the viewer knows how much is left — the format's own retention mechanic",
+    "the board's row letter pulsing on a land, the only motion the board itself ever makes"
+  ],
+
+  "first_shipped": "tp-0827d — 9 tools ranked in 86.8s. What it taught: (1) a mark with its own opaque background must FILL the tile or it reads as a card inside a card; (2) a take with 5-13s of explanation between placements CANNOT pass check-density and no board-native device fixes that — the honest fix is a tighter script, so the spotlight was added as a state marker and explicitly NOT as density; (3) the CTA needs the cream plate back in the top half, because the old CTA is ink and coral and BLACKLIST #9 forbids redesigning it.",
+  "cta": "the board leaves at CTA_IN and the top half becomes the flat --cream plate; the camera does not move. A video with no single product takes the plain dot chip, same as videos/agent-skills. Captions are dropped for the whole CTA.",
+  "live_demo": "videos/_tierlist/ — index.html, rendered to out/tierlist.mp4",
+  "component": "components/tier-board.html — COPY it, do not re-type it",
+  "spec": "reference/TIER-BOARD.md"
+}

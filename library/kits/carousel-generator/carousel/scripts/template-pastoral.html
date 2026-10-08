@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Bevan:ital@0;1&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#8FBEDD; --cloud:#F7F4EE; --meadow:#7A9C4B; --blossom:#E7A3B6;
+    --terra:#CE6A4A; --charcoal:#2B2B2B;
+    --serif:'DM Serif Display', Georgia, serif;      /* elegant headline */
+    --display:'Bevan','DM Serif Display', serif;      /* chunky antique accent word */
+    --sans:'Inter', -apple-system, Segoe UI, Roboto, sans-serif;
+    --pad:64px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1350px}
+  .stage{position:relative;width:1080px;height:1350px;overflow:hidden;font-family:var(--sans);background:var(--sky)}
+  .bg{position:absolute;inset:0;background-position:center top;background-size:cover;background-repeat:no-repeat}
+  .scrim{position:absolute;inset:0;background:
+     linear-gradient(180deg, rgba(0,0,0,.16) 0%, rgba(0,0,0,0) 34%),
+     linear-gradient(0deg, rgba(0,0,0,.20) 0%, rgba(0,0,0,0) 26%)}
+
+  .topic{position:absolute;top:var(--pad);left:var(--pad);background:var(--charcoal);color:var(--cloud);
+         font-weight:700;font-size:20px;letter-spacing:.18em;text-transform:uppercase;
+         padding:12px 22px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:5}
+
+  /* ---- Content flow: headline -> data card -> caption, packed in the upper two-thirds ---- */
+  .flow{position:absolute;left:var(--pad);right:var(--pad);top:150px;bottom:150px;
+        display:flex;flex-direction:column;align-items:stretch;gap:24px}
+  /* hero layout: center the big visual in the page (fills ~55%) */
+  .stage.hero .flow{justify-content:center;gap:30px}
+
+  .headline{font-family:var(--serif);color:var(--cloud);font-size:104px;line-height:.86;
+            letter-spacing:-.015em;text-shadow:0 4px 22px rgba(0,0,0,.28)}
+  .hero-wrap{position:relative;display:inline-block;margin-top:2px}
+  .hero{font-family:var(--display);font-size:110px;line-height:.92;letter-spacing:.005em;position:relative;display:inline-block}
+  .hero .layer{position:relative;display:inline-block}
+  .hero .shadow{position:absolute;left:0;top:0;color:var(--terra);transform:translate(7px,9px);z-index:0}
+  .hero .fill{position:relative;color:var(--cloud);z-index:2;-webkit-text-stroke:3px var(--terra)}
+  .hero .dots{position:absolute;left:0;top:0;z-index:3;color:transparent;-webkit-text-fill-color:transparent;
+              background-image:radial-gradient(var(--charcoal) 1.9px, transparent 2.1px);
+              background-size:8px 8px;-webkit-background-clip:text;background-clip:text}
+  .burst{position:absolute;right:-60px;top:-14px;width:80px;height:80px;z-index:4}
+
+  /* ---- Caption pill ---- */
+  .pill{background:var(--charcoal);color:var(--cloud);font-weight:600;font-size:32px;line-height:1.25;
+        padding:18px 30px;border-radius:22px;max-width:100%;box-shadow:0 8px 30px rgba(0,0,0,.20)}
+
+  /* ---- Data card ---- */
+  .card{background:rgba(247,244,238,.93);border-radius:24px;padding:28px 32px;width:100%;
+        box-shadow:0 14px 44px rgba(0,0,0,.20);color:var(--charcoal)}
+  .card .ctitle{font-weight:800;font-size:25px;letter-spacing:.02em;text-transform:uppercase;color:var(--charcoal);margin-bottom:20px}
+  .card .cnote{font-weight:600;font-size:19px;color:#5f5f5f;margin-top:16px;line-height:1.4}
+
+  /* bars */
+  .bars{display:flex;flex-direction:column;gap:16px}
+  .bar-row{display:flex;align-items:center;gap:16px}
+  .bar-lab{width:170px;flex:none;font-weight:700;font-size:24px;color:var(--charcoal)}
+  .bar-track{flex:1;height:36px;background:rgba(43,43,43,.10);border-radius:999px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;background:var(--meadow)}
+  .bar-fill.hi{background:var(--terra)}
+  .bar-val{width:104px;flex:none;text-align:right;font-weight:800;font-size:26px;color:var(--charcoal)}
+  .bar-val.hi{color:var(--terra)}
+
+  /* stats */
+  .stats{display:flex;gap:30px}
+  .stat{flex:1}
+  .stat .v{font-family:var(--serif);font-size:88px;line-height:.9;color:var(--terra)}
+  .stat .l{font-weight:700;font-size:24px;color:var(--charcoal);margin-top:8px;text-transform:uppercase;letter-spacing:.04em}
+
+  /* dial */
+  .dial{display:flex;border:3px solid var(--charcoal);border-radius:999px;overflow:hidden}
+  .seg{flex:1;text-align:center;padding:18px 0;font-weight:800;font-size:26px;color:var(--charcoal);letter-spacing:.04em}
+  .seg.on{background:var(--terra);color:var(--cloud)}
+  .dial-cap{display:flex;justify-content:space-between;font-weight:700;font-size:19px;color:#5f5f5f;margin-top:14px}
+
+  /* framed screenshot (large, fills the middle) */
+  .shot{width:100%;background:var(--cloud);border-radius:22px;padding:16px 16px 14px;box-shadow:0 18px 50px rgba(0,0,0,.32)}
+  .shot img{display:block;width:100%;border-radius:13px;border:1px solid rgba(0,0,0,.06)}
+  .shot .cap{display:flex;justify-content:space-between;align-items:baseline;gap:18px;margin-top:13px}
+  .shot .cap .t{font-weight:700;font-size:23px;color:var(--charcoal)}
+  .shot .cap .s{font-weight:600;font-size:19px;color:#7a7a7a;white-space:nowrap}
+
+  /* hero illustration (transparent PNG floating on the background, big + centered) */
+  .heroimg{width:100%;display:flex;flex-direction:column;align-items:center;gap:16px}
+  .heroimg img{max-height:660px;max-width:94%;object-fit:contain;
+               filter:drop-shadow(0 16px 9px rgba(0,0,0,.30)) drop-shadow(0 44px 34px rgba(0,0,0,.18))}
+  .heroimg .hcap{background:var(--charcoal);color:var(--cloud);font-weight:700;font-size:30px;
+                 padding:14px 28px;border-radius:20px;box-shadow:0 8px 26px rgba(0,0,0,.22)}
+
+  /* chips */
+  .chips{display:flex;gap:14px;flex-wrap:wrap}
+  .chip{background:rgba(43,43,43,.82);color:var(--cloud);font-weight:700;font-size:23px;
+        padding:13px 22px;border-radius:999px;letter-spacing:.03em;text-transform:uppercase}
+
+  /* mascot overlay (decorative, sits in a corner so it doesn't cover the chart) */
+  .mascot{position:absolute;z-index:6;
+          filter:drop-shadow(0 14px 9px rgba(0,0,0,.28)) drop-shadow(0 40px 30px rgba(0,0,0,.16))}
+  .mascot.right{right:6px;bottom:150px}
+  .mascot.br{right:24px;bottom:120px}
+  .mascot.bl{left:24px;bottom:120px}
+
+  .brand{position:absolute;left:var(--pad);bottom:var(--pad);font-weight:700;font-size:22px;letter-spacing:.16em;
+         text-transform:uppercase;color:var(--cloud);text-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .handle{position:absolute;right:var(--pad);bottom:var(--pad);font-weight:700;font-size:30px;color:var(--cloud);
+          text-shadow:0 2px 8px rgba(0,0,0,.4)}
+  [data-optional].empty{display:none}
+</style>
+</head>
+<body>
+  <div class="stage __STAGECLASS__">
+    <div class="bg" id="bg"></div>
+    <div class="scrim"></div>
+    <div class="topic" data-optional>__TOPIC_TAG__</div>
+
+    <div class="flow">
+      <div class="head">
+        <div class="headline" data-optional>__HEADLINE__</div>
+        <div class="hero-wrap" data-optional>
+          <div class="hero">
+            <span class="layer shadow">__HERO_WORD__</span>
+            <span class="layer fill">__HERO_WORD__</span>
+            <span class="layer dots">__HERO_WORD__</span>
+          </div>
+          <svg class="burst" viewBox="0 0 100 100" aria-hidden="true"><g fill="var(--terra)">
+            <path d="M50 4 L57 40 L50 96 L43 40 Z"/><path d="M4 50 L40 43 L96 50 L40 57 Z"/>
+            <path d="M18 18 L48 46 L82 82 L46 48 Z"/><path d="M82 18 L54 46 L18 82 L52 48 Z"/>
+          </g></svg>
+        </div>
+      </div>
+
+      <div class="content" data-optional>__CONTENT__</div>
+
+      <div class="pill-row" data-optional><div class="pill">__SUBTITLE__</div></div>
+    </div>
+
+    __MASCOT__
+    <div class="brand" data-optional>__BRAND_LABEL__</div>
+    <div class="handle" data-optional>__HANDLE__</div>
+  </div>
+
+  <script>
+    var BG="__BG__";
+    if(BG) document.getElementById('bg').style.backgroundImage="url('"+BG+"')";
+    document.querySelectorAll('[data-optional]').forEach(function(el){
+      // keep if it has real text OR a content image; the decorative sparkle <svg> doesn't count
+      if(!el.textContent.trim() && !el.querySelector('img')) el.classList.add('empty');
+    });
+  </script>
+</body>
+</html>

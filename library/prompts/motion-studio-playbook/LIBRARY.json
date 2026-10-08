@@ -1,0 +1,474 @@
+{
+  "kit": "motion-studio-playbook",
+  "title": "Motion studio-playbook (egna promptmallar)",
+  "source": {
+    "name": "content-engine (egna mallar, inspirerade av publika motion-studio-tekniker)",
+    "url": "",
+    "license": "Repository LICENSE (egen text och kod)"
+  },
+  "items": [
+    {
+      "id": "prompts.motion-studio.render-contract",
+      "name": "Renderkontrakt: seek(t) som ren funktion av tiden",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "html-playwright",
+      "description": "Kontrakt att klistra in först: window.seek(t) är en ren funktion av t, seedat brus, inga timers/transitions, fonter klara före ruta 0, subframe-motion blur som aldrig blandas över klipp.",
+      "tags": [
+        "render-contract",
+        "deterministisk",
+        "seek",
+        "motion-blur",
+        "playwright",
+        "html",
+        "regler"
+      ],
+      "path": "library/prompts/motion-studio-playbook/01-render-contract.md",
+      "use": "Klistra in först i prompten för HTML/Canvas-filmer; principerna gäller även HyperFrames/Remotion.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.showreel-one-liner",
+      "name": "Showreel på en rad",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9",
+        "9:16",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "Enradsprompt: 15 s motion design-showreel, palett, en accentfärg, ingen musik – plus spakar när resultatet blir generiskt.",
+      "tags": [
+        "showreel",
+        "one-liner",
+        "stiltest",
+        "motion-design"
+      ],
+      "path": "library/prompts/motion-studio-playbook/02-showreel-one-liner.md",
+      "use": "Testa en ny motor/skill eller hitta en stil; välj sedan scener att bygga vidare på.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.showreel-variants",
+      "name": "Showreel-varianter (golf, friskvård, siffror, loop, ljud)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "Sex varianter av showreel-prompten: golfsäsong i en kamera, 'brinner inne'-typografi, datavisualisering med faktabanksvärden, sömlös loop, syntetiskt ljud, motorjämförelse.",
+      "tags": [
+        "showreel",
+        "golf",
+        "friskvård",
+        "loop",
+        "data",
+        "varianter",
+        "golfkuponger"
+      ],
+      "path": "library/prompts/motion-studio-playbook/02-showreel-one-liner.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.brand-reel",
+      "name": "Varumärkes-/produktreel från URL",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "9:16",
+        "1:1",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Riktiga tillgångar från URL, hook på max 5 ord, produkten sätts ihop, 3 funktioner med muspekare, ett bevistal, logga + CTA, musik på takt, 9:16 först och sedan omkomponerat 1:1/16:9.",
+      "tags": [
+        "brand-reel",
+        "produkt",
+        "launch",
+        "cursor",
+        "ui",
+        "annons",
+        "golfkuponger",
+        "beat-sync"
+      ],
+      "path": "library/prompts/motion-studio-playbook/03-brand-reel.md",
+      "use": "Fyll i URL, bevistal (verifierat) och musik; kör med HyperFrames, Remotion eller HTML+Playwright.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.reference-prompt",
+      "name": "Referensprompt: ta grammatiken, inte innehållet",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Extrahera bildrutor var 0,5 s ur en referensvideo, skriv style_guide.md och shotlist.md (palettlogik, typbeteende, rörelseordförråd, övergångar, rytm) och överför grammatiken till eget innehåll.",
+      "tags": [
+        "referens",
+        "style-guide",
+        "shotlist",
+        "analys",
+        "remake",
+        "frames"
+      ],
+      "path": "library/prompts/motion-studio-playbook/04-reference-prompt.md",
+      "use": "Kör review.py frames/sheet på referensen, klistra in prompten med bilderna.",
+      "requires": [
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.xml-spec",
+      "name": "XML-spec (inputs/direction/structure/build/gotchas/start)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "1:1",
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "Briefmall i sex taggar plus ett ifyllt Golfkuponger-exempel: 'en form klipper aldrig' – knapp → sök → belopp → kod → karta → toast, loopande UI-morph på takt.",
+      "tags": [
+        "xml",
+        "spec",
+        "brief",
+        "ui-morph",
+        "one-shape",
+        "loop",
+        "beat-sync",
+        "golfkuponger"
+      ],
+      "path": "library/prompts/motion-studio-playbook/05-xml-spec.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.springs-track",
+      "name": "Fjädrar i sluten form + track()",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "html-playwright",
+      "description": "springs.mjs: springFrom/springStep (alla dämpningsfall), track() där ett värde med många mål är en summa av fjädrar, trackObj för morphs, hold, seedat brus (hash/noise1/boil) och taktslagshjälp (beatInfo/pulse).",
+      "tags": [
+        "spring",
+        "fjäder",
+        "easing",
+        "track",
+        "morph",
+        "noise",
+        "deterministisk",
+        "javascript"
+      ],
+      "path": "library/prompts/motion-studio-playbook/springs.mjs",
+      "use": "import { track } from './springs.mjs' i en seek(t)-sida; se 06-springs-track.md. Självtest: node springs.selftest.mjs.",
+      "requires": [
+        "node"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Självtest (springs.selftest.mjs) kört och godkänt 2026-10-08. Ingen renderad förhandsvisning."
+    },
+    {
+      "id": "prompts.motion-studio.springs-guide",
+      "name": "Guide: fjädrar, drag och track() i prompts",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Hur springs.mjs används: retargeting, morph av rektangel, drag med släpp från aktuell fart, zeta/freq-tabell och en promptrad att klistra in.",
+      "tags": [
+        "spring",
+        "fjäder",
+        "guide",
+        "drag",
+        "morph"
+      ],
+      "path": "library/prompts/motion-studio-playbook/06-springs-track.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.beat-grid",
+      "name": "Taktgrid (beats/downbeats/hits/drop → JSON)",
+      "type": "tool",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "beat_grid.py: mäter BPM, taktslag, ettor, starka träffar per band och droppen; skriver JSON med beat_frames för Motion Engines BeatMap. librosa om installerat, annars numpy-reserv.",
+      "tags": [
+        "beat",
+        "takt",
+        "bpm",
+        "music",
+        "sync",
+        "librosa",
+        "numpy",
+        "beatmap"
+      ],
+      "path": "library/prompts/motion-studio-playbook/beat_grid.py",
+      "use": "library\\.venv\\Scripts\\python.exe library/prompts/motion-studio-playbook/beat_grid.py song.wav --fps 30 --out beats.json",
+      "requires": [
+        "python",
+        "numpy",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Testkört 2026-10-08 på friskvard-golf-bgm.wav: 112 BPM, 60 beats (numpy-vägen)."
+    },
+    {
+      "id": "prompts.motion-studio.sfx-synth",
+      "name": "Syntetiserade ljudeffekter + cue-mixer",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "sfx_synth.py: whoosh, swish, tick, click, pop, impact, riser, chime, sparkle syntetiserade med numpy; mixar cues.json så att varje ljuds topp landar 20 ms före sin tid, valfri musikbädd.",
+      "tags": [
+        "sfx",
+        "ljud",
+        "whoosh",
+        "impact",
+        "riser",
+        "syntes",
+        "cues",
+        "mix"
+      ],
+      "path": "library/prompts/motion-studio-playbook/sfx_synth.py",
+      "use": "python sfx_synth.py mix cues.json sfx.wav --duration 15 [--bed song.wav]; loudnorm med ffmpeg efteråt.",
+      "requires": [
+        "python",
+        "numpy",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Testkört 2026-10-08 (mix av 4 cues). Inte avlyssnat av människa än."
+    },
+    {
+      "id": "prompts.motion-studio.beat-grid-guide",
+      "name": "Guide: ljud och bild på samma tidslinje",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Prompt för takt-synk: starta på en etta, nyckelögonblick på droppen, klipp på slag, cue för varje visuell händelse, mixa, loudnorm, strip-kontroll av synk.",
+      "tags": [
+        "beat-sync",
+        "ljud",
+        "sfx",
+        "guide"
+      ],
+      "path": "library/prompts/motion-studio-playbook/07-beat-grid.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.directors-brief",
+      "name": "Regissörsbrief för längre filmer",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Mall: logline, format, referenser (vad vi tar/inte tar), verktyg och nycklar, karaktärsbibel, beat sheet, exakt skärmtext, arbetsgrindar, kritikloop och leverabler.",
+      "tags": [
+        "regissörsbrief",
+        "director",
+        "brief",
+        "långfilm",
+        "beat-sheet",
+        "storyboard",
+        "karaktär"
+      ],
+      "path": "library/prompts/motion-studio-playbook/08-directors-brief.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.critique-loop",
+      "name": "Kritikloop: titta, betygsätt, fixa de tre sämsta",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Kontaktark, strips, mobiltest, loop- och determinismkontroll; betyg 1–10 på hook, läsbarhet i mobil, rörelse, variation, komposition, varumärke och ljudsynk; åtgärda de tre sämsta tills alla ≥ 8.",
+      "tags": [
+        "kritikloop",
+        "critique",
+        "qa",
+        "granskning",
+        "kontaktark",
+        "betyg"
+      ],
+      "path": "library/prompts/motion-studio-playbook/09-critique-loop.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.review-tool",
+      "name": "review.py: kontaktark, strip, mobiltest, loop, determinism",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Granskningsverktyg (ffmpeg + Pillow): frames var N s, kontaktark med tider, varje ruta kring ett ögonblick, mobilstorlekstest, loopsöm (position + fart) och jämförelse av två renderingar ruta för ruta.",
+      "tags": [
+        "review",
+        "kontaktark",
+        "strip",
+        "qa",
+        "loop",
+        "determinism",
+        "ffmpeg",
+        "pillow"
+      ],
+      "path": "library/prompts/motion-studio-playbook/review.py",
+      "use": "library\\.venv\\Scripts\\python.exe library/prompts/motion-studio-playbook/review.py sheet film.mp4 --every 1 --out sheet.jpg",
+      "requires": [
+        "python",
+        "pillow",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Testkört 2026-10-08 på en friskvårdsrendering (sheet, strip, loop, same)."
+    },
+    {
+      "id": "prompts.motion-studio.package-as-skill",
+      "name": "Paketera som skill",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Prompt + SKILL.md-skelett för att göra en lyckad produktion till en återanvändbar Claude Code-skill (templates, references, scripts, grindar, kända fällor, LIBRARY.json-post, provkörning).",
+      "tags": [
+        "skill",
+        "paketera",
+        "mall",
+        "återanvändning"
+      ],
+      "path": "library/prompts/motion-studio-playbook/10-package-as-skill.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "prompts.motion-studio.parallel-chapters",
+      "name": "Parallella kapitel (storyboard + animationsguide för underagenter)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Huvudagenten skriver STORYBOARD.md och ANIMATION_GUIDE.md, bygger motor och ett referenskapitel, och låter en underagent per kapitel bygga parallellt med ägarskap per fil.",
+      "tags": [
+        "subagents",
+        "parallell",
+        "kapitel",
+        "storyboard",
+        "animation-guide",
+        "musikvideo",
+        "långfilm"
+      ],
+      "path": "library/prompts/motion-studio-playbook/11-parallel-chapters.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Mönster efter JohnHeibel/PDoomVideo, egen formulering."
+    }
+  ]
+}

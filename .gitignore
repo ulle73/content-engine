@@ -18,3 +18,7 @@ motion-renderer/build/
 motion-renderer/public/audio/
 
 motion-evidence/
+
+# Content library: local work output and venv
+work/
+library/.venv/

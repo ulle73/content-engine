@@ -5,7 +5,9 @@ description: Golfkupongers visuella identitet och tonalitet för annonser, video
 
 # Golfkuponger – brand
 
-Målet är att varje annons ska kännas som Golfkuponger utan att loggan behövs: premium skandinavisk golf, lugn, trovärdig, aldrig billig eller AI-generisk.
+Målet är att varje annons ska kännas som Golfkuponger utan att loggan behövs: premium skandinavisk golf, trovärdig, aldrig billig eller AI-generisk.
+
+> **Allt här är ett utgångsläge, inte regler.** Bryt mot vad som helst när idén blir bättre av det: andra färger, typsnitt, mer text, glitch, whips, 3D, studs, hårda klipp, fräck humor. Börja i Content Library (`skills/studio`) och välj en färdig, snygg mall. Det enda som inte är smak är fakta: påståenden i reklam kommer från faktabanken i `golfkuponger-friskvard`.
 
 ## Känsla i en mening
 
@@ -20,7 +22,7 @@ Ett mjukt morgonljus över en välskött svensk bana, någon som faktiskt spelar
 - Lugnt och luftigt: gott om andrum runt motivet så text får plats.
 - Riktiga skärminspelningar för portal, webb, app och kvitto. Återskapa aldrig UI med AI.
 
-**Nej**
+**Brukar se billigt ut (undvik om det inte är poängen)**
 - Amerikansk country club-glans, palmer, öken, överdriven lyx.
 - AI-typiska tecken: plastig hud, för perfekta gräsmattor, konstiga händer och klubbor, glow.
 - Stock-leenden rakt in i kameran, high-fives, "affärsfolk på golfbana".
@@ -29,7 +31,7 @@ Ett mjukt morgonljus över en välskött svensk bana, någon som faktiskt spelar
 
 ## Färger
 
-Tokens kommer från `engine/motion/brand.py` (preset `golfkuponger`), som speglar `gk-design-system.css`. Använd tokens, aldrig egna hex-värden.
+Tokens kommer från `engine/motion/brand.py` (preset `golfkuponger`), som speglar `gk-design-system.css`. Tokens är standard; avvik när en mall eller idé kräver det (t.ex. experiment-site-temats guld `#D6A536`, kräm `#F8F4EC` och mörkgrönt `#01170F`).
 
 | Token | Hex | Användning |
 |---|---|---|
@@ -46,20 +48,20 @@ Grön dominerar, vitt ger luft och guld används sparsamt.
 ## Typografi
 
 - Inter (enligt presetet). Rubriker i Semibold/Bold, brödtext i Regular.
-- Hooks får skrivas i VERSALER för tempo, men max en versalrad per scen.
-- Max 8 ord på skärmen per scen (`AdBrief`-regel). Hellre två korta scener än en lång.
-- Text ligger på lugna ytor eller på en halvtransparent grön platta (`background` @ 70–85 %), aldrig direkt på stökig bild.
+- Hooks fungerar ofta i VERSALER för tempo.
+- Kort text läses snabbast i rörlig video (AdBrief tipsar vid fler än 8 ord per scen, men stoppar inget).
+- Text läses bäst på lugna ytor eller en halvtransparent grön platta (`background` @ 70–85 %). Andra lösningar (text bakom motivet, konturtext, textur-fyllning) finns i biblioteket.
 
 ## Format och safe zones
 
 - **9:16 (Reels och Stories)**: håll text och logga inom de mittersta ~70 % av höjden. Topp ~14 % och botten ~20 % täcks av plattformens UI, och högerkanten av knappar.
 - **4:5 / 1:1 (feed)**: mer luft, rubrik i övre tredjedelen.
-- Bygg alltid 9:16 först. Feed-formaten är omkomponeringar, inte beskärningar.
+- Ofta smart att bygga 9:16 först. Feed-formaten blir bäst som omkomponeringar, inte beskärningar.
 
 ## Rörelse (Remotion)
 
 - Lugnt tempo med precisa övergångar. Mjuka ease-out, korta fades, diskreta slides.
-- Ingen studsande text, inga glitch- eller shake-effekter, inga snabba zoom-whips mer än en gång per annons.
+- Allt rörelsespråk är tillåtet – glitch, shake, whips, studs, 3D, morphs. Välj det som bär idén; biblioteket har färdiga, verifierade varianter.
 - Hooken ska synas inom första sekunden. Rörelse i bild från frame 0.
 - Ljud: lugn bed, en tydlig ljudcue på hook och CTA. Annonsen ska fungera helt utan ljud.
 
@@ -67,7 +69,7 @@ Grön dominerar, vitt ger luft och guld används sparsamt.
 
 - Varm, rak och självklar svenska. "Kompis som tipsar", inte säljare som skriker.
 - Konkret före smart: säg vad man får och hur, inte ordvitsar.
-- Du-tilltal. Inga utropstecken i rubriker. Max ett emoji i caption, inget i videon.
+- Du-tilltal brukar fungera bäst. Utropstecken och emoji är tonval, inte förbjudna.
 - Fakta får bara komma från `golfkuponger-friskvard` eller annan verifierad källa (`AdBrief.facts`).
 
 **Bra:** "Ditt friskvårdsbidrag brinner inne. Gör det till golf."
@@ -77,7 +79,7 @@ Grön dominerar, vitt ger luft och guld används sparsamt.
 
 Användaren beskriver ofta tonen med vardagsord ("lite rolig och fräck", "seriös", "stressa dem lite"). Översätt till ett av fyra register och använd mallen som hör till. Inom alla register gäller resten av den här skillen.
 
-| Register | Låter som | Tillåtet | Aldrig | Mall |
+| Register | Låter som | Passar | Brukar inte passa | Mall |
 |---|---|---|---|---|
 | **Lugn premium** | Självklar, varm, få ord | Korta påståenden, tystnad, stora bilder | Brådska, utropstecken | `golf-premium` |
 | **Informativ** | Kompis som förklarar | Konkreta steg, riktiga skärmar | Säljfloskler | `friskvard-portal-ad`, `friskvard-direct-ad` |
@@ -89,16 +91,16 @@ Användaren beskriver ofta tonen med vardagsord ("lite rolig och fräck", "seri�
 ## Text som ska se bra ut stort
 
 - Rubriker skalas så att det **längsta ordet** får plats på en rad. Långa sammansättningar, som "Friskvårdsbidraget", blir därför små. I stora text-scener (hook, punch, statement) ska du hellre skriva "Bidraget" eller "Ditt friskvårdsbidrag" med radbrytning (` / `).
-- Max cirka 6 ord i hook-scener och 8 i övriga.
+- Tumregel: ca 6 ord i hook-scener och 8 i övriga – bryt när det blir bättre.
 
 ## Slutkort
 
 Djupgrön bakgrund, logga centrerad (officiell logga via `company.official_logo`, aldrig AI-genererad), en rad nytta och `Golfkuponger.se`. 2 sekunder.
 
-## Snabbgranskning (kör före låsning)
+## Snabbgranskning (frivillig checklista)
 
 1. Känns det skandinaviskt, lugnt och premium? Inget AI-skimmer?
-2. Max 8 ord per scen och text inom safe zones?
+2. Hinner man läsa texten, och ligger den inom safe zones?
 3. Hook synlig inom 1 s, CTA i sista scenen?
 4. Bara brand-tokens och officiell logga?
 5. Alla påståenden i `facts` och verifierade?

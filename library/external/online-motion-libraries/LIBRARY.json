@@ -1,0 +1,347 @@
+{
+  "kit": "online-motion-libraries",
+  "title": "Online-bibliotek för motion (index)",
+  "source": {
+    "name": "GitHub (flera)",
+    "url": "",
+    "license": "Per post – se notes (kontrollerat med gh 2026-10-08)"
+  },
+  "items": [
+    {
+      "id": "ext.online.gtkottman-remotion-transitions",
+      "name": "GTKottman/remotion-transitions – 50 övergångar i taxonomi",
+      "type": "transition",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Öppet bibliotek med 50 deterministiska Remotion-övergångar i nio familjer (cut, blend, wipe, cover, motion, distortion, morph, carry, light) med catalog.json och överlägg.",
+      "tags": [
+        "remotion",
+        "transitions",
+        "övergångar",
+        "taxonomi",
+        "catalog"
+      ],
+      "path": "https://github.com/GTKottman/remotion-transitions",
+      "use": "",
+      "requires": [
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT (GitHub: NOASSERTION, LICENSE = MIT) · 0 ★. Utmärkande: Liquid Fill, Ink Bleed, Paint Drip, Brush Stroke, Text Mask Zoom, Halftone Wipe, Type Morph, Blob Morph, Portal Zoom, Line Led, Light Leak, Film Burn, Flare Sweep, RGB Glitch, Paper Tear. Kopiera src/core + övergångsmappen; linearTiming."
+    },
+    {
+      "id": "ext.online.ashad001-remotion-transitions",
+      "name": "Ashad001/remotion-transitions – TransitionPresentation-skill",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Claude Code-skill för egna Remotion-övergångar: TransitionPresentation från grunden, animationsmatematik, timing och sex färdiga exempel.",
+      "tags": [
+        "remotion",
+        "transitions",
+        "skill",
+        "animation-math"
+      ],
+      "path": "https://github.com/Ashad001/remotion-transitions",
+      "use": "",
+      "requires": [
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT · 69 ★. Utmärkande: Striped Slam, Zoom Punch, Diagonal Reveal, Emerald Burst, Vertical Shutter, Glitch Slam."
+    },
+    {
+      "id": "ext.online.ali-abassi-remotion-templates",
+      "name": "ali-abassi/remotion-templates – 1 000 mallar i 100 familjer",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Sökbart bibliotek med 1 000 Remotion-mallar (100 familjemotorer), förhandsvisningar, agentkatalog med recept och acceptansgrind.",
+      "tags": [
+        "remotion",
+        "templates",
+        "katalog",
+        "agent-recipes"
+      ],
+      "path": "https://github.com/ali-abassi/remotion-templates",
+      "use": "",
+      "requires": [
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens (GitHub: ingen) · 31 ★ – titta och lär, kopiera inte kod."
+    },
+    {
+      "id": "ext.online.reactvideoeditor-remotion-templates",
+      "name": "reactvideoeditor/remotion-templates – 81 gratis mallar",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "81 fristående Remotion-komponenter: diagram, text, innehållsanimation, bakgrunder, filmiska effekter (bara Remotion-hooks).",
+      "tags": [
+        "remotion",
+        "templates",
+        "charts",
+        "text",
+        "backgrounds",
+        "cinematic"
+      ],
+      "path": "https://github.com/reactvideoeditor/remotion-templates",
+      "use": "",
+      "requires": [
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens (GitHub: ingen) · 257 ★ – inspiration, kopiera inte. Demo: reactvideoeditor.com/remotion-templates."
+    },
+    {
+      "id": "ext.online.mamdouh-motion-graphics-skills",
+      "name": "imMamdouhaboammar/motion-graphics-skills – 53 skills (proprietär)",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "hyperframes",
+      "description": "53 agentskills för motion design, kreativ riktning och produktion ovanpå HyperFrames.",
+      "tags": [
+        "hyperframes",
+        "skills",
+        "creative-direction",
+        "motion-graphics"
+      ],
+      "path": "https://github.com/imMamdouhaboammar/motion-graphics-skills",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "PROPRIETÄR – 'All Rights Reserved' i LICENSE · 18 ★. Får inte kopieras eller användas utan tillstånd; endast referens."
+    },
+    {
+      "id": "ext.online.tuzhechen-opus-video-skills",
+      "name": "tuzhechen2005/opus-video-skills – painted-animation + kinetic-reel",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Två skills, en per stil: handmålad akvarellanimation med karaoke (p5.brush) och kinetisk typografi-reel med three.js-lager och syntetiserad musik.",
+      "tags": [
+        "skills",
+        "kinetic-type",
+        "akvarell",
+        "showreel",
+        "three-js"
+      ],
+      "path": "https://github.com/tuzhechen2005/opus-video-skills",
+      "use": "",
+      "requires": [
+        "node",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT · 125 ★. Utmärkande (kinetic-reel): particle terrain, liquid marble, chrome knot, partikelmoln som kondenseras till form, shape-continuity-övergångar, WebGL post pass."
+    },
+    {
+      "id": "ext.online.howseen-claude-motion-design",
+      "name": "howseen-ai/claude-motion-design – motion design i ren kod",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "16:9",
+        "9:16"
+      ],
+      "engine": "html-playwright",
+      "description": "Skill: HTML + Playwright + ffmpeg, seek(t)-motor, fjädrar i sluten form, kamera i log-rymd, subframe-motion blur, beat map + SFX på uppmätta toppar, regissörsbrief, promptbibliotek och remake-läge.",
+      "tags": [
+        "skill",
+        "seek",
+        "motion-blur",
+        "beat-sync",
+        "playwright",
+        "remake"
+      ],
+      "path": "https://github.com/howseen-ai/claude-motion-design",
+      "use": "",
+      "requires": [
+        "python",
+        "playwright",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT · 284 ★ · säkerhetsbetyg CAUTION (Agent Skills Hub) – granska scripts innan körning. Utmärkande: shared-element handoffs, color floods, masked word-by-word text, Animated Beam/Border Beam-portar, pop/one-frame-flash-detektion, loopsömkontroll."
+    },
+    {
+      "id": "ext.online.iart-motion-design-skills",
+      "name": "iart-ai/motion-design-skills – grunder som skills",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Nio skills: animationsprinciper, färg i rörelse (OKLCH), bildkomposition, art direction, After Effects, beat-sync-klippning, Remotion, logoanimation, rörliga bakgrunder.",
+      "tags": [
+        "skills",
+        "principles",
+        "color",
+        "composition",
+        "logo",
+        "backgrounds"
+      ],
+      "path": "https://github.com/iart-ai/motion-design-skills",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT · 50 ★. Utmärkande: mesh gradients, shader auroras, particle constellations, logo stingers, speed ramps."
+    },
+    {
+      "id": "ext.online.haidrrrry-claude-remotion-skill",
+      "name": "haidrrrry/claude-remotion-skill – motion-hantverk som regler",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Remotion-skill med hårda hantverksregler (fjädrar/bezier, trestegs-entréer, stagger 3–6 rutor, gradientmesh + grade + grain + vinjett, Ken Burns) och obligatorisk render → titta → fixa-loop.",
+      "tags": [
+        "remotion",
+        "skill",
+        "captions",
+        "ken-burns",
+        "grain",
+        "qa-loop"
+      ],
+      "path": "https://github.com/haidrrrry/claude-remotion-skill",
+      "use": "",
+      "requires": [
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "MIT · 274 ★. Utmärkande: 3-property entrances, drifting gradient mesh, word-synced captions, B-roll, sound design."
+    },
+    {
+      "id": "ext.online.remotion-dev-skills",
+      "name": "remotion-dev/skills – officiella Remotion Agent Skills",
+      "type": "skill",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Officiella skills: best-practices, create, markup, studio, render, maps, captions, saas, interactivity, docs, upgrade, multimedia.",
+      "tags": [
+        "remotion",
+        "official",
+        "skills",
+        "maps",
+        "captions"
+      ],
+      "path": "https://github.com/remotion-dev/skills",
+      "use": "npx skills add remotion-dev/skills",
+      "requires": [
+        "remotion"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licensfil (GitHub: ingen) · 4 880 ★. Remotion självt kräver företagslicens över gratisgränsen – se MOTION_LICENSE_MODE i docs/motion/USAGE.md."
+    },
+    {
+      "id": "ext.online.luxreal-astra-video-prompts",
+      "name": "LuxRealGrowth/awesome-astra-video-prompts – 24 verkliga prompts",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "24 prompts för video med GPT-6 Astra och kodagenter (Remotion, HyperFrames, Blender, Seedance, ElevenLabs, ffmpeg): lanseringar, previz, end-to-end, meta-prompts.",
+      "tags": [
+        "prompts",
+        "remotion",
+        "hyperframes",
+        "launch",
+        "previz",
+        "meta-prompt"
+      ],
+      "path": "https://github.com/LuxRealGrowth/awesome-astra-video-prompts",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC BY 4.0 för struktur/noter; de citerade prompterna omfattas INTE (författarnas) · 14 ★. Läs: FeatureReveal frame-exact contract, Six-Part Control Template + Shot JSON, Director/Animation Supervisor Template."
+    },
+    {
+      "id": "ext.online.hypermotion",
+      "name": "psiddharthdesign/hypermotion – motion-verktyg med Figma-layout",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Desktop-motionverktyg: auto-layout, semantiska keyframes, 3D-kamera med skärpedjup, Figma-import, MP4/WebM/GIF-export, CLI/MCP för agenter.",
+      "tags": [
+        "tool",
+        "figma",
+        "auto-layout",
+        "keyframes",
+        "mcp",
+        "desktop"
+      ],
+      "path": "https://github.com/psiddharthdesign/hypermotion",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Apache-2.0 · 40 ★ · research preview v0.1.x. Windows: osignerad installer (SmartScreen-varning) – installera bara efter beslut; bygg hellre från källkod."
+    }
+  ]
+}

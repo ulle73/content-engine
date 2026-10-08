@@ -1,0 +1,287 @@
+{
+  "kit": "awesome-opus-5-5-videos",
+  "title": "Awesome Claude 5.5 Videos (athemeroy)",
+  "source": {
+    "name": "athemeroy/awesome-opus-5-5-videos",
+    "url": "https://github.com/athemeroy/awesome-opus-5-5-videos",
+    "license": "CC BY 4.0 för repots egen text/mallar; X-poster, videor och skaparnas prompts omfattas inte"
+  },
+  "items": [
+    {
+      "id": "ext.awesome-opus-5-5-videos.code-animation",
+      "name": "Opus-videomall: Kodanimation utan externa bilder",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "canvas",
+      "description": "Canvas 2D-film utan externa tillgångar: storyboard 6–8 tagningar, låst figur och palett, deterministiska rutor, 5 s prov först.",
+      "tags": [
+        "awesome-opus-5-5-videos",
+        "produktionsväg",
+        "code-animation",
+        "mall"
+      ],
+      "path": "library/external/awesome-opus-5-5-videos/prompt-playbook.sv.md",
+      "use": "Byt hakparenteserna mot eget innehåll; se svensk bearbetning.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC BY 4.0, bearbetad/översatt – ange källa vid vidarespridning."
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.educational-explainer",
+      "name": "Opus-videomall: Utbildande explainer",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Faktapåståenden och källor först, manus per tagning, Manim/Remotion + TTS, undertexter från samma tidslinje, markera om rösten inte avlyssnats.",
+      "tags": [
+        "awesome-opus-5-5-videos",
+        "produktionsväg",
+        "educational-explainer",
+        "mall"
+      ],
+      "path": "library/external/awesome-opus-5-5-videos/prompt-playbook.sv.md",
+      "use": "Byt hakparenteserna mot eget innehåll; se svensk bearbetning.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC BY 4.0, bearbetad/översatt – ange källa vid vidarespridning."
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.existing-product-promo",
+      "name": "Opus-videomall: Reklamfilm av befintlig produkt",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "remotion",
+      "description": "Bara tillgångar vi har rätt till, tre visbara funktioner, 5 tagningar med riktigt UI-bevis, lågupplöst faktagranskning före MP4.",
+      "tags": [
+        "awesome-opus-5-5-videos",
+        "produktionsväg",
+        "existing-product-promo",
+        "mall"
+      ],
+      "path": "library/external/awesome-opus-5-5-videos/prompt-playbook.sv.md",
+      "use": "Byt hakparenteserna mot eget innehåll; se svensk bearbetning.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC BY 4.0, bearbetad/översatt – ange källa vid vidarespridning."
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.3d-scene",
+      "name": "Opus-videomall: 3D: bygg scenen, filma den",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Objekt/material/ljus/kamera per sekund, gråmodell före slutljus, tillgångslista och kända fel.",
+      "tags": [
+        "awesome-opus-5-5-videos",
+        "produktionsväg",
+        "3d-scene",
+        "mall"
+      ],
+      "path": "library/external/awesome-opus-5-5-videos/prompt-playbook.sv.md",
+      "use": "Byt hakparenteserna mot eget innehåll; se svensk bearbetning.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC BY 4.0, bearbetad/översatt – ange källa vid vidarespridning."
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.director-plus-video-model",
+      "name": "Opus-videomall: Claude regisserar, videomodellen genererar",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Kontinuitetstabell, första/sista bild per tagning, prompt per tagning, genereringslogg och kostnad, öppen redovisning.",
+      "tags": [
+        "awesome-opus-5-5-videos",
+        "produktionsväg",
+        "director-plus-video-model",
+        "mall"
+      ],
+      "path": "library/external/awesome-opus-5-5-videos/prompt-playbook.sv.md",
+      "use": "Byt hakparenteserna mot eget innehåll; se svensk bearbetning.",
+      "requires": [
+        "api:video-model"
+      ],
+      "cost": "paid",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC BY 4.0, bearbetad/översatt – ange källa vid vidarespridning."
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.restyle-existing-footage",
+      "name": "Opus-videomall: Omgestaltning av befintlig film",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Mät originalet, lista det som inte får ändras, plan per tidsavsnitt, 10 s prov med synkkontroll.",
+      "tags": [
+        "awesome-opus-5-5-videos",
+        "produktionsväg",
+        "restyle-existing-footage",
+        "mall"
+      ],
+      "path": "library/external/awesome-opus-5-5-videos/prompt-playbook.sv.md",
+      "use": "Byt hakparenteserna mot eget innehåll; se svensk bearbetning.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC BY 4.0, bearbetad/översatt – ange källa vid vidarespridning."
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.skill-trigger",
+      "name": "Opus-videomall: Kort trigger för befintlig skill",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Lista vad skillen anropar och kostar, kontrollera fakta, följ skillens flöde med lågupplöst prov och stickprov.",
+      "tags": [
+        "awesome-opus-5-5-videos",
+        "produktionsväg",
+        "skill-trigger",
+        "mall"
+      ],
+      "path": "library/external/awesome-opus-5-5-videos/prompt-playbook.sv.md",
+      "use": "Byt hakparenteserna mot eget innehåll; se svensk bearbetning.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC BY 4.0, bearbetad/översatt – ange källa vid vidarespridning."
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.production-brief",
+      "name": "Produktionsbrief (kopierbar mall)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Brief-mall: mål och leverans, indata och rättigheter, vem gör vad, tagningar och synliga tillstånd, tre acceptansgrindar, fakta-/fysikpåståenden, faktisk kostnad och redovisning.",
+      "tags": [
+        "brief",
+        "produktion",
+        "grindar",
+        "rättigheter",
+        "kostnad"
+      ],
+      "path": "library/external/awesome-opus-5-5-videos/production-brief.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "CC BY 4.0, oförändrad kopia. Kompletterar prompts.motion-studio.directors-brief."
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.visual-effects-fit",
+      "name": "Vilka visuella effekter passar Opus 5.5?",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Beslutsguide per uppgiftsfamilj (UI/varumärke, explainers, abstrakta loopar, 3D, stiliserade kortfilmer …): roll för modellen, renderare, feltest och när specialistverktyg behövs.",
+      "tags": [
+        "guide",
+        "produktionsväg",
+        "effekter",
+        "beslut"
+      ],
+      "path": "https://github.com/athemeroy/awesome-opus-5-5-videos/blob/main/docs/visual-effects-fit.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.prompt-matrix",
+      "name": "Prompt-/arbetsflödesmatris (88 fall)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Matris över 88 publika fall: prompttyp, indata, renderare och verifiering (kinesiska).",
+      "tags": [
+        "matris",
+        "prompts",
+        "research"
+      ],
+      "path": "https://github.com/athemeroy/awesome-opus-5-5-videos/blob/main/docs/prompt-matrix.zh-CN.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "ext.awesome-opus-5-5-videos.case-index",
+      "name": "Visuell fallkatalog (168 fall)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Bildkatalog med en samplad bildruta och originallänk för varje granskat fall, sorterat efter produktionsväg.",
+      "tags": [
+        "katalog",
+        "inspiration",
+        "opus-5-5"
+      ],
+      "path": "https://github.com/athemeroy/awesome-opus-5-5-videos/blob/main/docs/cases-index.zh-CN.md",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    }
+  ]
+}

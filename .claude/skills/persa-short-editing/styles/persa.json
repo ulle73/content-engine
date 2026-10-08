@@ -1,0 +1,217 @@
+{
+  "id": "persa",
+  "name": "Persa — full bleed",
+  "since": "2026-08-27",
+  "default": false,
+  "one_line": "The camera is the frame, always. Nothing is cut out, nothing sits on a plate — every graphic is composited INTO the photograph. The frame barely changes; the GRAPHICS do.",
+  "use_when": "Someone asks for a persa / full-bleed / Instagram-style edit. Needs a real product demo worth 15s+ of screen time.",
+  "sourced_from": {
+    "reels": [
+      {
+        "id": "DcOJfx0SXyN",
+        "len": 67.7,
+        "subject": "a 5-platform posting crew of AI agents"
+      },
+      {
+        "id": "DcgMgW6yahM",
+        "len": 38.8,
+        "subject": "the OpenCurve Premiere plugin"
+      }
+    ],
+    "files": "the two reference reels (not included)",
+    "teardown": "reference/TYPE-ROLES.md"
+  },
+  "ground": {
+    "plate": "NONE — the camera is the ground, full bleed, edge to edge",
+    "vignette": "REMOVED 2026-09-03 — nothing may darken the photograph (no vignette, scrim or band). If type does not read on a bright wall, switch the TYPE: the filled coral word or solid white instead of a hollow outline.",
+    "media_sits": "composited INTO the photograph, or owning the whole frame"
+  },
+  "camera": {
+    "treatment": "the raw take, full frame",
+    "matte_required": true,
+    "matte_note": "CORRECTED 2026-08-27 by measuring reel B at 16.4s, 19.0s and 23.5s. His head is MATTED and pops out ABOVE the camera card's rounded top edge, over the app chrome. That is our own house pop-out technique applied over a UI instead of over cream — so the rvm-matte / find-cut-line step is NOT skipped, it is reused.",
+    "matte_pipeline": [
+      "scripts/rvm-matte.py (ONE pass, whole take)",
+      "scripts/find-cut-line.py (mid-head, measured — never hardcoded)"
+    ],
+    "seam_invariant": "same as house: the card-clipped layer and the free matte layer share ONE position; the card's inner offsets are the free layer's position minus the card origin",
+    "full_face_beats": "no matte needed — the raw take is the frame",
+    "card_geometry": {
+      "measured_from": "reel B, 720x1280, at 21.0s",
+      "left_pct": 10.6,
+      "width_pct": 79.7,
+      "top_pct": 59.5,
+      "radius_pct_of_width": 3.6,
+      "at_1080x1920": {
+        "left": 114,
+        "top": 1143,
+        "width": 861,
+        "height": 777,
+        "radius": 39
+      },
+      "camera_min_scale": "0.797 — the camera must FILL the card (861/1080). Anything smaller leaves the app showing through inside the card.",
+      "chrome": "none — no border, no shadow, no label",
+      "layers": [
+        "the raw take, clipped by the card",
+        "the alpha matte, drawn over it UNCLIPPED at the same position, so the head breaks the edge"
+      ]
+    }
+  },
+  "rotation": {
+    "treatments": [
+      "full face — the raw take, captions and one emphasis word",
+      "floating real window — the real app window ~65% frame width dropped into the top third over the LIVE take, with a drop shadow, and an actor operating it",
+      "UI owns the frame — the app fills the frame, camera drops to the card",
+      "b-roll with one composited object — real b-roll plus the single real object being talked about, at the wrong scale",
+      "handheld device — a real phone in hand running the real app, shot as b-roll"
+    ],
+    "rule": "the frame does NOT have to change every beat. The GRAPHICS change over a continuous take.",
+    "never_two_neighbours_alike": false,
+    "max_hold_seconds": null,
+    "demo_spine": "Put a real product UI on screen and LEAVE IT for ~18s. Measured: reel A 14.0-32.2s = 27% of the video, 0 camera cuts inside it. Reel B 6-24s = 46% of the video, 1 cut. Reel B's whole structure: 0-5 hook / 6-24 the UI owns the frame / 25-28 face / 28.5-32 the real GitHub repo / 33-38.8 face, annotation, CTA. If the video has no real 15s+ demo to run, persa is the wrong style for it — use house.",
+    "measured_cadence": "reel A 16 cuts / 67.7s = one every 4.0s; reel B 4 cuts / 38.8s = one every 7.8s. Reel B's camera does not cut AT ALL between 20.1s and the end — panels appear and disappear over one continuous take."
+  },
+  "captions": {
+    "styles": [
+      "c-ws"
+    ],
+    "count": 1,
+    "one_word_at_a_time": true,
+    "position": 1400,
+    "position_note": "1400 of 1920 = 72.9%, and it NEVER moves — not for a split, not for a card, not for b-roll. When the camera shrinks to the card the caption still lands at 72.9% of the FULL frame, which puts it inside the card on his chest. One line the eye never has to re-find.",
+    "conflicts_with": "house BLACKLIST #12 (captions never on his body). That rule is HOUSE-ONLY.",
+    "cap_height_pct_of_frame": 2.6,
+    "chrome": "no box, no band, no highlight, no colour, no bounce",
+    "position_at_1080": 1400,
+    "his_measured_position": "74.2% (1425 at 1920). We use 1400 = 72.9%. Close enough to keep our existing value — do not introduce a second number."
+  },
+  "display_type": {
+    "roles": [
+      "word-caption",
+      "emphasis-outline-white",
+      "emphasis-outline-amber",
+      "name-tag",
+      "payoff-word",
+      "title-stack",
+      "marker-line",
+      "pill-label",
+      "lime-claim",
+      "lime-reaction",
+      "pixel-speech-bubble",
+      "stacked-repetition",
+      "arced-sentence"
+    ],
+    "spec": "reference/TYPE-ROLES.md",
+    "note": "display type, NOT caption styles. They run alongside the caption track and replace none of it.",
+    "precondition": "roles 1-3 need a photographic ground (never darkened); on a bright wall use filled type. Role 4 goes wherever a real UI owns the frame.",
+    "count": 13,
+    "catalogue": "components/persa-captions/ — all thirteen in one composition; sample/all.png"
+  },
+  "palette": {
+    "display_coral": "--display-coral #E12A2B — sampled IDENTICALLY in both reels, so it is a fixed brand red, not a per-video choice. Hook and CTA payoff only, FILLED.",
+    "emphasis": "--emph-white #FFFFFF neutral, --emph-amber #D99A12 the pain word. Coral is NEVER an outline.",
+    "annotation": "--annot-lime #B9DA31 claims, #C0DD5E reactions",
+    "fonts": "--font-display-heavy Anton, --font-marker Permanent Marker, --font-pixel Silkscreen"
+  },
+  "density_comes_from": "REAL PRODUCT SURFACES + a small recurring cast. In 106 seconds across both reels there is not one generic animation.",
+  "asset_rule": {
+    "note": "six literal mappings, zero taste. Applied to the noun he just said.",
+    "map": [
+      [
+        "a product name",
+        "that product's real mark or real UI, ON THE WORD, not eight seconds later"
+      ],
+      [
+        "a person or agent",
+        "one pixel actor, cast once, reused every single time that name is spoken"
+      ],
+      [
+        "an action inside a product",
+        "the real screen recording of THAT EXACT action, at readable size"
+      ],
+      [
+        "a place or an object",
+        "the real object composited into real b-roll, at the wrong scale"
+      ],
+      [
+        "a claim",
+        "the claim typed into the product's own empty space, in lime"
+      ],
+      [
+        "anything else",
+        "caption only — the face carries it (~40% of both reels)"
+      ]
+    ]
+  },
+  "blacklist_rules_that_apply": [
+    "#1 small text",
+    "#2 typeset text cards as support",
+    "#3 captions with their own background band",
+    "#3b browser chrome on a page shot",
+    "#3c more than one highlight at a time",
+    "#4 emojis",
+    "#4b a webcam bubble or anyone else's screen recording",
+    "#5 people who aren't the subject",
+    "#6 a screenshot of an animated block",
+    "#8 a silent layout change",
+    "#9 a new CTA",
+    "#13 publishing anything",
+    "#14 a number that is the whole picture",
+    "#15 the Chrome caption"
+  ],
+  "blacklist_rules_suspended": {
+    "#2b media in a frame / with a drop shadow": "SUSPENDED. The floating-window treatment is a real app window WITH a drop shadow over the live take — reel A does this at 32-38s. Still banned: a card behind a page shot on a plate.",
+    "#7 the same frame twice in a row": "SUSPENDED. This style holds one treatment through an 18s demo spine. Density comes from the media, not the layout.",
+    "#11 shrinking him": "SUSPENDED. Shrinking him to the card IS the treatment.",
+    "#12 captions on his body": "SUSPENDED. The caption sits at 72.9% on his chest, in every treatment, deliberately."
+  },
+  "signature_moves": [
+    "the hollow-outline emphasis word, screened over the photograph",
+    "the four-layer title stack over the live take",
+    "the 18-second demo spine on a real screen recording",
+    "a claim typed into the product's own negative space",
+    "one pixel actor per named agent, cast once and reused"
+  ],
+  "live_demo": "components/type-roles-demo/ and template/ (the last shipped persa build)",
+  "production_note": {
+    "headline": "THIS STYLE WANTS A WIDER RECORDING THAN WE SHOOT.",
+    "measured": "his head fills 10.2% of frame height; ours fills 26.6% — our take is 2.6x tighter",
+    "consequence": "to reproduce his card framing exactly, our camera would have to scale to 0.38 inside the card and he would be tiny. At the 0.80 the card actually needs, the card's top edge lands near his chin rather than mid-chest, and the fixed 72.9% caption line sits on his collar rather than his chest.",
+    "fix": "sit further back when recording for this style. It is a production change, not an editing one — no amount of compositing recovers framing that was never shot.",
+    "workaround_until_then": "accept the higher card edge; do NOT move the caption line, because one fixed line is the whole point of the caption rule in this style"
+  },
+  "grade": {
+    "what": "an SVG feComponentTransfer — a per-channel lookup table, i.e. a curve per channel",
+    "file": "components/grade-persa.svg  (id=persa-grade)",
+    "apply": "style=\"filter:url(#persa-grade)\" on the camera AND every b-roll clip, so every photographic surface in the cut sits on the same curve",
+    "strength_default": 0.75,
+    "strength_note": "1.00 is numerically closest to his profile (mean channel error 0.024 vs 0.076 ungraded) but picks up a green cast in the shadows of skin, because his profile is a different person in a different room. 0.75 looked best rendered side by side and still cuts the error to 0.036.",
+    "his_look": "warm highlights over cool, slightly green shadows; blue rolled off ~20% through the mids and highs; a small black LIFT (his darkest band never reaches 0)",
+    "derive_per_recording": "python scripts/make-grade-filter.py --derive videos/<slug>/assets/recording.mp4 --out components/grade-<slug>.svg",
+    "why_derive": "MOST of the correction is removing OUR room's tungsten cast — our low-mids run R 1.22-1.27 where his run 0.97-1.04. That is lighting, not grade, so the correction is specific to the take. Re-derive whenever the lighting changes; the reference profile (his) is fixed and never re-measured.",
+    "two_wrong_turns": [
+      "histogram matching ours->his reproduces HIS ROOM'S EXPOSURE, not his grade — it crushed mid-grey 128 to ~70 and flattened 32-160",
+      "binning by luma PERCENTILE compares different parts of the curve (our 20th percentile is luma 80, his is 59) and made the shadow error WORSE; bin by ABSOLUTE luma band instead"
+    ],
+    "never_apply_to": "product UI screenshots, page shots and captured devices. The grade goes on PHOTOGRAPHIC surfaces only — the camera, the cutout, the card, b-roll. Recolouring a real product's UI fabricates it, which is the same reasoning that gives brand-grade.json its `captured-device` class.",
+    "default": "OFF — apply only when asked. Recent cuts ship ungraded; the creator grades their own footage."
+  },
+  "aka": "was called 'artzen' while it was being reverse-engineered; Jad named it persa 2026-08-27",
+  "first_shipped": "2026-08-27; template/ is the build from 2026-09-25",
+  "sound": {
+    "banned": [
+      "ping",
+      "swoosh",
+      "confirm",
+      "beep"
+    ],
+    "keep": {
+      "swell": "every layout change",
+      "riser": "once, cresting on the hook payoff",
+      "camera-shutter": "per syllable of a product name, once",
+      "futuristic-click": "2-3 per video, where a real UI does the thing",
+      "pop": "CTA chip"
+    },
+    "level": ">= 8 dB under the local voice peak, measured on silence"
+  }
+}

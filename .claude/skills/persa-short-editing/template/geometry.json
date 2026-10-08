@@ -1,0 +1,67 @@
+{
+  "measured_from": "tp-0925b: one framing all take (10fps frame-diff max 23.1 = jump cuts at 4.9/46.0/60.1); head src 375-435 like tp-0925 -> its card solve reused",
+  "acts": [
+    [
+      0.0,
+      95.81,
+      "w"
+    ]
+  ],
+  "act_note": "ONE act \u2014 no framing cuts.",
+  "head_src": {
+    "w": 400
+  },
+  "card": {
+    "left": 114,
+    "top": 1143,
+    "width": 861,
+    "height": 777,
+    "radius": 39
+  },
+  "cam": {
+    "w": {
+      "left": 114,
+      "top": 655,
+      "width": 861,
+      "height": 1530,
+      "scale": 0.7972
+    }
+  },
+  "derived": {
+    "head_top_on_screen": 1010,
+    "caption_y": 1400,
+    "ui_surface_floor": 940
+  },
+  "full_top": 340,
+  "head_on_screen": {
+    "0": 430,
+    "1": 945,
+    "2": 374,
+    "3": 958,
+    "4": 388,
+    "5": 965,
+    "6": 393,
+    "7": 965,
+    "8": 393,
+    "9": 964,
+    "10": 393,
+    "11": 976,
+    "12": 973,
+    "13": 424,
+    "14": 977,
+    "15": 976,
+    "16": 416,
+    "17": 984,
+    "18": 417,
+    "19": 991,
+    "20": 987,
+    "21": 979,
+    "22": 414
+  },
+  "head_src_per_act": {
+    "w": {
+      "min": 364,
+      "max": 430
+    }
+  }
+}

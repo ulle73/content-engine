@@ -1,0 +1,171 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ZAK — the whole style on one page</title>
+<!--
+  Open this first. It is the fastest way to see what zak IS, and it is the
+  only place the five scenes sit side by side at the real proportions.
+
+  Everything here imports ../assets/tokens.css. Nothing here is a colour or a
+  size typed by hand — if a frame below looks right, the tokens are right.
+
+  ⚠ EVERY STRING ON THIS PAGE IS PLACEHOLDER, and the reference copy belongs
+  to another creator. scripts/check-zak.sh fails the render if any of it
+  survives into a segment. Rewrite every word from the real transcript.
+-->
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  body{ margin:0; background:#16181c; color:#c9ced6;
+        font:14px/1.55 "Inter",-apple-system,sans-serif; padding:44px 40px 90px; }
+  h1{ font:400 40px/1 "Playfair Display",Georgia,serif; color:#fff; margin:0 0 6px; }
+  h2{ font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+      color:#7f8792; margin:52px 0 14px; font-weight:600; }
+  p{ max-width:74ch; margin:0 0 14px; }
+  code{ background:#22252b; padding:1px 6px; border-radius:4px; font-size:12px; }
+  .row{ display:flex; flex-wrap:wrap; gap:26px; align-items:flex-start; }
+  .demo{ width:640px; }
+  .demo .stage{ width:640px; height:360px; }            /* 16:9 at 1/3 */
+  .demo.v .stage{ width:270px; height:480px; }          /* 9:16 at 1/4 */
+  .demo.v{ width:270px; }
+  .cap{ margin-top:9px; font-size:12px; color:#8b939e; }
+  .cap b{ color:#e8ecf1; font-weight:600; display:block; }
+  table{ border-collapse:collapse; font-size:12.5px; margin-top:6px; }
+  td,th{ border-bottom:1px solid #2a2e35; padding:6px 20px 6px 0; text-align:left;
+         vertical-align:top; }
+  th{ color:#7f8792; font-weight:600; }
+  .no{ color:#e2645c; } .yes{ color:#7fc08a; }
+  .note{ border-left:2px solid #3a4049; padding:2px 0 2px 16px; margin:16px 0;
+         color:#9aa3ae; max-width:74ch; }
+  /* placeholder plates — a flat swatch stands in for real footage */
+  .fake{ position:absolute; inset:0;
+         background:linear-gradient(150deg,#4a3c33,#2b2320 55%,#191413); }
+  .fake--ui{ background:linear-gradient(150deg,#2c3038,#191c22); }
+</style>
+
+<h1>zak</h1>
+<p>A rounded window floating on pure black, with real air above and below it.
+One serif line in the air, set once. Two-to-four-word captions inside the
+window that replace themselves on a single frame. <b>Nothing moves.</b></p>
+
+<div class="note">
+  Measured off one 39.9s reel at 1080×1920. The square window, the black ground,
+  the type, the caption cadence and the total stillness are all measured. The
+  16:9 window below is <b>derived</b> — see <code>reference/layouts.md</code> §16:9.
+</div>
+
+<h2>1 · Locked Window — the rest beat, and most of the runtime</h2>
+<div class="row">
+  <div class="demo">
+    <div class="zk-frame zk-16x9 stage">
+      <div class="zk-title">the title line goes here:</div>
+      <div class="zk-window"><div class="fake"></div></div>
+      <div class="zk-caption">two to four words</div>
+    </div>
+    <div class="cap"><b>16:9 — 1720×732 scope window</b>
+      100px side margin, 174px of black top and bottom.</div>
+  </div>
+  <div class="demo v">
+    <div class="zk-frame stage">
+      <div class="zk-title">the title line goes here:</div>
+      <div class="zk-window"><div class="fake"></div></div>
+      <div class="zk-caption">two to four words</div>
+    </div>
+    <div class="cap"><b>9:16 — the measured original</b>
+      968×968 square, 476px of black top and bottom.</div>
+  </div>
+</div>
+
+<h2>2 · Media Window — the window shows the resource instead of the face</h2>
+<div class="row">
+  <div class="demo">
+    <div class="zk-frame zk-16x9 stage">
+      <div class="zk-title">the real thing, named:</div>
+      <div class="zk-window"><div class="fake fake--ui"></div></div>
+      <div class="zk-caption">what it actually costs</div>
+    </div>
+    <div class="cap"><b>Same geometry, different contents.</b>
+      The window does not resize for media — the media is cropped to the window.
+      The title line names the resource. Hard cut in, hard cut out.</div>
+  </div>
+</div>
+
+<h2>3 · Split Window — the face and the thing at once</h2>
+<div class="row">
+  <div class="demo">
+    <div class="zk-frame zk-16x9 stage">
+      <div class="zk-title">side by side:</div>
+      <div class="zk-window zk-window--split">
+        <div class="zk-pane"><div class="fake"></div></div>
+        <div class="zk-pane"><div class="fake fake--ui"></div></div>
+      </div>
+      <div class="zk-caption">this is the difference</div>
+    </div>
+    <div class="cap"><b>One outer radius, a hard 2px seam.</b>
+      Never round the inner corners — two rounded boxes in a row is a different
+      style. The caption stays centred on the FRAME, not on a pane.</div>
+  </div>
+</div>
+
+<h2>4 · Title Card — the window goes dark and the serif line takes the frame</h2>
+<div class="row">
+  <div class="demo">
+    <div class="zk-frame zk-16x9 stage">
+      <div class="zk-title">chapter two:</div>
+      <div class="zk-window"></div>
+    </div>
+    <div class="cap"><b>The chapter break.</b>
+      An empty window is still a window — it holds the frame's shape while the
+      picture is gone. No caption here. Two seconds, with a sound.</div>
+  </div>
+</div>
+
+<h2>5 · Full Bleed — the one move in the entire style</h2>
+<div class="row">
+  <div class="demo">
+    <div class="zk-frame zk-16x9 stage">
+      <div class="zk-window zk-window--bleed"><div class="fake"></div></div>
+      <div class="zk-caption">this is the point</div>
+    </div>
+    <div class="cap"><b>Six frames, then it snaps back.</b>
+      The title line goes with it. Use it once or twice in a whole video — it
+      is loud precisely because nothing else here moves.</div>
+  </div>
+</div>
+
+<h2>The type — there are two faces and that is all</h2>
+<table>
+  <tr><th>Role</th><th>Face</th><th>Size</th><th>Treatment</th></tr>
+  <tr><td>Title line</td><td>Playfair Display 400</td>
+      <td>56px @1920h · 46px @1080h</td>
+      <td>white, sentence case, ends in a colon, no tracking</td></tr>
+  <tr><td>Caption</td><td>Inter 700 (Helvetica in the source)</td>
+      <td>68px @1920h · 56px @1080h</td>
+      <td>white, <b>−0.055em</b>, <span class="no">no shadow, no stroke, no box</span></td></tr>
+</table>
+
+<h2>The cadence — measured over 53 caption changes in 39.9s</h2>
+<table>
+  <tr><th>Move</th><th>Frames @30fps</th></tr>
+  <tr><td>Caption change</td><td class="no">0 — it hard-cuts</td></tr>
+  <tr><td>Window contents change</td><td class="no">0 — it hard-cuts</td></tr>
+  <tr><td>Camera drift / push-in</td><td class="no">0 — measured at 0px over 40s</td></tr>
+  <tr><td>Window → full bleed</td><td class="yes">6</td></tr>
+  <tr><td>Caption hold</td><td>mean 22 · floor 7 · ceiling 44</td></tr>
+</table>
+
+<h2>What breaks it</h2>
+<table>
+  <tr><td class="no">a shadow on the caption</td>
+      <td>Measured: there is none. If the type is hard to read the PLATE is
+          wrong, not the type. <code>scripts/check-contrast.py</code>.</td></tr>
+  <tr><td class="no">a drift, push-in or parallax</td>
+      <td>That is <code>motiongraphics</code>. Here the camera is bolted down.</td></tr>
+  <tr><td class="no">a one-word caption</td>
+      <td>That is <code>persa</code>. Zak captions are phrases.</td></tr>
+  <tr><td class="no">an asymmetric window</td>
+      <td>The air above and below is equal to the pixel. Off-centre reads as a
+          mistake, not a choice.</td></tr>
+  <tr><td class="no">a drop shadow under the window</td>
+      <td>There is nothing behind it to catch a shadow. It is invisible work.</td></tr>
+  <tr><td class="no">a second accent colour</td>
+      <td>There are two colours in this style: black and white.</td></tr>
+</table>

@@ -1,0 +1,20 @@
+Gratis palett skapad av scripts/make-free-sfx.py
+Pixabay-filer: Pixabay Content License (fri användning, även kommersiellt).
+Syntetiserade filer: eget material.
+
+whoosh: HyperFrames/Pixabay whoosh.mp3
+whoosh-2: syntetiserad (make-free-sfx.py)
+swoosh: syntetiserad (make-free-sfx.py)
+pop: HyperFrames/Pixabay pop.mp3
+click: HyperFrames/Pixabay click.mp3
+futuristic-click: syntetiserad (make-free-sfx.py)
+magic-reveal: HyperFrames/Pixabay sparkle.mp3
+riser: HyperFrames/Pixabay riser.mp3 (0,9–3,5 s, crest i slutet)
+camera-shutter: syntetiserad (make-free-sfx.py)
+swell: syntetiserad (make-free-sfx.py)
+highlighter: syntetiserad (make-free-sfx.py)
+confirm: HyperFrames/Pixabay chime.mp3
+ping: HyperFrames/Pixabay ping.mp3
+beep: syntetiserad (make-free-sfx.py)
+keyboard: HyperFrames/Pixabay typing.mp3
+vinyl-rewind: syntetiserad (make-free-sfx.py)

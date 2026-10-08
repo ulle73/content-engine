@@ -1,0 +1,172 @@
+{
+  "kit": "austerlitz",
+  "title": "Battle of Austerlitz Film (WinterArc21)",
+  "source": {
+    "name": "WinterArc21/Battle-of-Austerlitz-Film",
+    "url": "https://github.com/WinterArc21/Battle-of-Austerlitz-Film",
+    "license": "Ingen licens angiven – endast länkar"
+  },
+  "items": [
+    {
+      "id": "ext.austerlitz.film",
+      "name": "Austerlitz: 5 min historisk film helt i kod (WebGL)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "html-playwright",
+      "description": "Långform: varje ruta renderad av ett WebGL-program, allt ljud syntetiserat, berättarröst genererad offline, verklig terräng (SRTM), åtta akter.",
+      "tags": [
+        "långfilm",
+        "historia",
+        "webgl",
+        "dokumentär",
+        "berättarröst"
+      ],
+      "path": "https://github.com/WinterArc21/Battle-of-Austerlitz-Film",
+      "use": "",
+      "requires": [
+        "node",
+        "python",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens – studieobjekt, kopiera inte."
+    },
+    {
+      "id": "ext.austerlitz.narration-beats",
+      "name": "Berättelse styr bilden: script.js med beats",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Berättarmanuset beat för beat är tidslinjen – varje tagning tajmas mot TTS-tidsstämplar.",
+      "tags": [
+        "narration",
+        "beats",
+        "tidslinje",
+        "explainer"
+      ],
+      "path": "https://github.com/WinterArc21/Battle-of-Austerlitz-Film/blob/main/web/script.js",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens."
+    },
+    {
+      "id": "ext.austerlitz.sound-from-picture",
+      "name": "Ljud härlett från bilden (events.js)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Ljudcues härleds ur bildens händelser: varje kanon, salva, galopp med avstånd och panorering; ljud färdas 343 m/s så avlägsna skott hörs sent och filtrerat.",
+      "tags": [
+        "ljud",
+        "sfx",
+        "cues",
+        "avstånd",
+        "panorering"
+      ],
+      "path": "https://github.com/WinterArc21/Battle-of-Austerlitz-Film/blob/main/web/events.js",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens."
+    },
+    {
+      "id": "ext.austerlitz.painterly-filter",
+      "name": "Målerisk look: Kuwahara-filter + canvasväv + grain + letterbox",
+      "type": "effect",
+      "medium": "video",
+      "formats": [
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "Kuwahara-filter blandat över den renderade bilden, canvasväv, grain och 2.35:1-letterbox (shaders.js/renderer.js).",
+      "tags": [
+        "kuwahara",
+        "målerisk",
+        "grade",
+        "letterbox",
+        "shader"
+      ],
+      "path": "https://github.com/WinterArc21/Battle-of-Austerlitz-Film/blob/main/web/engine/shaders.js",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens."
+    },
+    {
+      "id": "ext.austerlitz.tts-mix",
+      "name": "Offline berättarröst (Kokoro) + mix + undertexter",
+      "type": "tool",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "tools/tts.py (Kokoro ONNX, offline) och tools/mix.py (syntetiserad musik, ljuddesign, röst → mix + SRT).",
+      "tags": [
+        "tts",
+        "kokoro",
+        "mix",
+        "undertexter",
+        "offline"
+      ],
+      "path": "https://github.com/WinterArc21/Battle-of-Austerlitz-Film/blob/main/tools/mix.py",
+      "use": "",
+      "requires": [
+        "python"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens."
+    },
+    {
+      "id": "ext.austerlitz.chunk-render",
+      "name": "Återupptagbar renderare i bitar (headless Chromium → ffmpeg)",
+      "type": "tool",
+      "medium": "video",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "tools/render.mjs renderar i återupptagbara bitar.",
+      "tags": [
+        "render",
+        "chunks",
+        "resumable",
+        "playwright"
+      ],
+      "path": "https://github.com/WinterArc21/Battle-of-Austerlitz-Film/blob/main/tools/render.mjs",
+      "use": "",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ingen licens."
+    }
+  ]
+}
