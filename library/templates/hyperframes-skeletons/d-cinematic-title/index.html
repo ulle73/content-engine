@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!-- Skeleton D — Cinematic Title (1920x1080, 60 s, 7 scener). Källa: HyperFrames docs/guides/claude-design-hyperframes.md §7 (Apache-2.0).
+         Guiden: 7 scener, rytm 8-7-8-10-9-10-8, 6 övergångar, återhållsamma shaders (cross-warp-morph, thermal-distortion).
+         Här: alla 7 scener är EN shader-kedja (6 shader-övergångar à 1,2 s), långsam Ken Burns/drift i varje scen. -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/core/dist/hyperframe.runtime.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- FILL: Google Fonts-länk -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* === FILL: Din varumärkesidentitet === */
+        --bg: #070a0c;
+        --ink: #ece6da;
+        --accent: #c9a36a;
+        --muted: #7d8a8f;
+        --accent-dim: #3b2f1e;
+        --font-display: "Instrument Serif", serif;
+        --font-data: "Space Grotesk", sans-serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        padding: 120px 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 28px;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 2;
+      }
+      .clip {
+      }
+      .display {
+        font-family: var(--font-display);
+        font-weight: 400;
+        line-height: 1;
+      }
+      .label {
+        font-family: var(--font-data);
+        font-weight: 300;
+        font-size: 24px;
+        letter-spacing: 0.5em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .data-text {
+        font-family: var(--font-data);
+        font-weight: 300;
+        font-variant-numeric: tabular-nums;
+      }
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        opacity: 0.2;
+        background-image:
+          radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.2px),
+          radial-gradient(rgba(0, 0, 0, 0.18) 1px, transparent 1.2px);
+        background-size:
+          3px 3px,
+          5px 5px;
+        background-position:
+          0 0,
+          1px 2px;
+        mix-blend-mode: overlay;
+      }
+      .vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 49;
+        background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.65) 100%);
+      }
+      .sky {
+        position: absolute;
+        inset: -60px;
+        z-index: 0;
+      }
+      .horizon {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 640px;
+        height: 2px;
+        background: #c9a36a;
+        z-index: 1;
+      }
+      .sweep {
+        position: absolute;
+        top: -200px;
+        left: -600px;
+        width: 420px;
+        height: 1500px;
+        background: linear-gradient(90deg, rgba(236, 230, 218, 0) 0%, rgba(236, 230, 218, 0.08) 50%, rgba(236, 230, 218, 0) 100%);
+        transform: rotate(18deg);
+        z-index: 3;
+      }
+      .dust {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #ece6da;
+        opacity: 0.35;
+        z-index: 1;
+      }
+      .w {
+        display: inline-block;
+      }
+      .char {
+        display: inline-block;
+      }
+      /* === FILL: Scenspecifika stilar nedan === */
+      #s1-by {
+        font-size: 30px;
+      }
+      #s2-line {
+        font-size: 104px;
+        font-style: italic;
+        max-width: 1500px;
+      }
+      #s3-stat {
+        font-size: 200px;
+      }
+      #s3-coast {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        z-index: 1;
+      }
+      #s4-title {
+        font-size: 230px;
+        letter-spacing: 0.08em;
+      }
+      #s4-sub {
+        font-size: 40px;
+        font-style: italic;
+        color: #c9a36a;
+      }
+      #s5-quote {
+        font-size: 96px;
+        max-width: 1500px;
+      }
+      #s5-hl {
+        background: linear-gradient(#3b2f1e, #3b2f1e) no-repeat 0 85% / 0% 40%;
+        padding: 0 10px;
+      }
+      .waves {
+        position: absolute;
+        left: -100px;
+        bottom: 0;
+        width: 2120px;
+        height: 420px;
+        z-index: 1;
+      }
+      .credits {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 34px 120px;
+        text-align: left;
+      }
+      .credit .role {
+        font-family: var(--font-data);
+        font-weight: 300;
+        font-size: 22px;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: #7d8a8f;
+      }
+      .credit .name {
+        font-family: var(--font-display);
+        font-size: 64px;
+      }
+      #s7-title {
+        font-size: 120px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main" data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="60">
+      <!-- SCEN 1 (0–8) — öppning: horisont ritas, ljussvep -->
+      <div class="scene clip" id="s1" data-start="0" data-duration="8" data-track-index="0">
+        <div class="sky" id="s1-sky" style="background: radial-gradient(ellipse at 50% 70%, #1d2a30 0%, #070a0c 60%)"></div>
+        <div class="horizon" id="s1-hz"></div>
+        <div class="sweep" id="s1-sweep"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: förtext -->
+          <div class="label" id="s1-label">Nordvind Film presenterar</div>
+          <div class="display" id="s1-by">en film av Elin Ek (exempel)</div>
+        </div>
+      </div>
+
+      <!-- SCEN 2 (8–15) — rad med ordvis toning + damm -->
+      <div class="scene clip" id="s2" data-start="8" data-duration="7" data-track-index="0" style="opacity:0;">
+        <div class="sky" id="s2-sky" style="background: radial-gradient(ellipse at 30% 40%, #18242a 0%, #070a0c 65%)"></div>
+        <div class="dust d2" style="left: 300px; top: 300px"></div>
+        <div class="dust d2" style="left: 620px; top: 780px"></div>
+        <div class="dust d2" style="left: 1100px; top: 210px"></div>
+        <div class="dust d2" style="left: 1500px; top: 640px"></div>
+        <div class="dust d2" style="left: 1700px; top: 330px"></div>
+        <div class="dust d2" style="left: 900px; top: 900px"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: inledande rad -->
+          <p class="display" id="s2-line">
+            <span class="w">Det</span> <span class="w">började</span> <span class="w">med</span> <span class="w">en</span> <span class="w">tystnad.</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- SCEN 3 (15–23) — kustlinje ritas + räknare -->
+      <div class="scene clip" id="s3" data-start="15" data-duration="8" data-track-index="0" style="opacity:0;">
+        <svg id="s3-coast" viewBox="0 0 1920 1080">
+          <path id="s3-path" d="M -20 760 C 160 700 260 820 420 760 S 640 620 780 700 S 1000 860 1160 760 S 1380 560 1540 640 S 1780 760 1940 690" stroke="#c9a36a" stroke-width="3" fill="none" stroke-dasharray="2400" stroke-dashoffset="2400" />
+          <circle id="s3-pin" cx="1160" cy="760" r="10" fill="#c9a36a" />
+        </svg>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content" style="justify-content: flex-start; padding-top: 220px">
+          <!-- FILL: siffra -->
+          <div class="display data-text" id="s3-stat">0 km</div>
+          <div class="label" id="s3-label">Kust. Ett minne i taget.</div>
+        </div>
+      </div>
+
+      <!-- SCEN 4 (23–33) — huvudtitel -->
+      <div class="scene clip" id="s4" data-start="23" data-duration="10" data-track-index="0" style="opacity:0;">
+        <div class="sky" id="s4-sky" style="background: radial-gradient(ellipse at 50% 55%, #2a2418 0%, #0b0d0e 55%, #070a0c 100%)"></div>
+        <div class="sweep" id="s4-sweep"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: huvudtitel -->
+          <h1 class="display" id="s4-title">
+            <span class="char">H</span><span class="char">A</span><span class="char">V</span><span class="char">E</span><span class="char">T</span>&nbsp;<span class="char">M</span><span class="char">I</span><span class="char">N</span><span class="char">N</span><span class="char">S</span>
+          </h1>
+          <div class="display" id="s4-sub">en dokumentär om det som kommer tillbaka</div>
+        </div>
+      </div>
+
+      <!-- SCEN 5 (33–42) — citat + vågor i parallax -->
+      <div class="scene clip" id="s5" data-start="33" data-duration="9" data-track-index="0" style="opacity:0;">
+        <svg class="waves" id="s5-w1" viewBox="0 0 2120 420"><path d="M 0 200 C 260 140 420 260 700 200 S 1160 140 1420 200 S 1860 260 2120 200 L 2120 420 L 0 420 Z" fill="#0f1a1f" /></svg>
+        <svg class="waves" id="s5-w2" viewBox="0 0 2120 420" style="height: 300px"><path d="M 0 160 C 300 110 520 210 820 160 S 1300 110 1560 170 S 1940 210 2120 160 L 2120 420 L 0 420 Z" fill="#14242b" /></svg>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content" style="justify-content: flex-start; padding-top: 260px">
+          <!-- FILL: citat -->
+          <p class="display" id="s5-quote">”Allt som sjunker <span id="s5-hl">kommer tillbaka.</span>”</p>
+          <div class="label" id="s5-by">Fiskare, Hönö (exempel)</div>
+        </div>
+      </div>
+
+      <!-- SCEN 6 (42–52) — förtexter -->
+      <div class="scene clip" id="s6" data-start="42" data-duration="10" data-track-index="0" style="opacity:0;">
+        <div class="sky" id="s6-sky" style="background: radial-gradient(ellipse at 70% 30%, #1a2226 0%, #070a0c 60%)"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: medverkande -->
+          <div class="credits">
+            <div class="credit"><div class="role">Regi</div><div class="name">Elin Ek</div></div>
+            <div class="credit"><div class="role">Foto</div><div class="name">Jonas Berg</div></div>
+            <div class="credit"><div class="role">Musik</div><div class="name">Maja Holm</div></div>
+            <div class="credit"><div class="role">Klipp</div><div class="name">Ali Nasser</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCEN 7 (52–60) — premiär, tona ut -->
+      <div class="scene clip" id="s7" data-start="52" data-duration="8" data-track-index="0" style="opacity:0;">
+        <div class="sky" id="s7-sky" style="background: radial-gradient(ellipse at 50% 60%, #2a2418 0%, #070a0c 58%)"></div>
+        <div class="horizon" id="s7-hz" style="top: 760px"></div>
+        <div class="grain"></div>
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <!-- FILL: avslut -->
+          <div class="label" id="s7-label">Premiär</div>
+          <h2 class="display" id="s7-title">Hösten 2027</h2>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // Alla 7 scener är shader-ankare; s1 syns från t=0, inga autoAlpha-växlar på clips (0.8.x).
+      tl.set("#s1", { opacity: 1 }, 0);
+
+      // === S1 (0–8) ===
+      tl.from("#s1-hz", { scaleX: 0, transformOrigin: "50% 50%", duration: 2.4, ease: "expo.inOut" }, 0.3);
+      tl.from("#s1-label", { autoAlpha: 0, scale: 1.25, duration: 2.2, ease: "power2.out" }, 1.4);
+      tl.from("#s1-by", { autoAlpha: 0, y: 20, duration: 1.6, ease: "sine.inOut" }, 2.8);
+      tl.to("#s1-sky", { scale: 1.08, duration: 7.6, ease: "none" }, 0.2);
+      tl.to("#s1-sweep", { x: 3000, duration: 3.2, ease: "power1.inOut" }, 3.6);
+
+      // === S2 (8–15) ===
+      tl.from("#s2-line .w", { autoAlpha: 0, y: 20, filter: "blur(10px)", duration: 1.1, ease: "power2.out", stagger: { each: 0.35, from: "start" } }, 8.6);
+      tl.to("#s2-sky", { scale: 1.1, x: -40, duration: 6.8, ease: "none" }, 8.1);
+      tl.to(".d2", { y: -120, duration: 6.6, ease: "none", stagger: { each: 0.2, from: "start" } }, 8.1);
+
+      // === S3 (15–23) ===
+      tl.to("#s3-path", { strokeDashoffset: 0, duration: 4.0, ease: "power2.inOut" }, 15.4);
+      tl.from("#s3-pin", { scale: 0, transformOrigin: "50% 50%", duration: 0.6, ease: "back.out(1.6)" }, 18.2);
+      tl.to("#s3-pin", { scale: 1.6, transformOrigin: "50% 50%", duration: 1.0, ease: "sine.inOut", yoyo: true, repeat: 1 }, 18.9);
+      var c3 = { v: 0 };
+      tl.from("#s3-stat", { autoAlpha: 0, y: 30, duration: 1.0, ease: "power2.out" }, 15.6);
+      tl.to(c3, { v: 1400, duration: 3.6, ease: "power2.out", onUpdate: function () { document.getElementById("s3-stat").textContent = Math.round(c3.v).toLocaleString("sv-SE") + " km"; } }, 15.7);
+      tl.from("#s3-label", { autoAlpha: 0, duration: 1.4, ease: "sine.inOut" }, 17.4);
+      tl.to("#s3-coast", { scale: 1.06, transformOrigin: "60% 70%", duration: 7.5, ease: "none" }, 15.2);
+
+      // === S4 (23–33) huvudtitel ===
+      tl.from("#s4-title .char", { autoAlpha: 0, y: 40, filter: "blur(14px)", duration: 1.4, ease: "expo.out", stagger: { each: 0.09, from: "center" } }, 23.8);
+      tl.from("#s4-title", { scale: 1.14, duration: 4.0, ease: "power3.out" }, 23.8);
+      tl.from("#s4-sub", { autoAlpha: 0, y: 16, duration: 1.6, ease: "sine.inOut" }, 26.2);
+      tl.to("#s4-sky", { scale: 1.12, duration: 9.6, ease: "none" }, 23.2);
+      tl.to("#s4-sweep", { x: 3000, duration: 3.4, ease: "power1.inOut" }, 27.4);
+      tl.to("#s4 .scene-content", { scale: 1.03, duration: 6.0, ease: "none" }, 26.8);
+
+      // === S5 (33–42) citat + vågparallax ===
+      tl.from("#s5-quote", { autoAlpha: 0, y: 30, duration: 1.6, ease: "power2.out" }, 33.8);
+      tl.to("#s5-hl", { backgroundSize: "100% 40%", duration: 1.2, ease: "power2.inOut" }, 35.6);
+      tl.from("#s5-by", { autoAlpha: 0, duration: 1.2, ease: "sine.inOut" }, 36.4);
+      tl.to("#s5-w1", { x: -80, duration: 8.6, ease: "none" }, 33.2);
+      tl.to("#s5-w2", { x: 60, duration: 8.6, ease: "none" }, 33.2);
+      tl.to("#s5-quote", { y: -12, duration: 5.0, ease: "sine.inOut" }, 36.6);
+
+      // === S6 (42–52) förtexter ===
+      tl.from("#s6 .credit", { autoAlpha: 0, y: 30, duration: 1.2, ease: "power3.out", stagger: { each: 0.5, from: "start" } }, 42.8);
+      tl.to("#s6-sky", { scale: 1.1, x: 40, duration: 9.6, ease: "none" }, 42.2);
+      tl.to("#s6 .credits", { y: -20, duration: 8.0, ease: "none" }, 43.6);
+
+      // === S7 (52–60) premiär, tona ut (sista scenen, exit OK) ===
+      tl.from("#s7-hz", { scaleX: 0, transformOrigin: "50% 50%", duration: 2.0, ease: "expo.inOut" }, 52.6);
+      tl.from("#s7-label", { autoAlpha: 0, duration: 1.2, ease: "sine.inOut" }, 53.0);
+      tl.from("#s7-title", { autoAlpha: 0, y: 30, filter: "blur(10px)", duration: 1.6, ease: "expo.out" }, 53.3);
+      tl.to("#s7-sky", { scale: 1.08, duration: 6.0, ease: "none" }, 52.2);
+      tl.to("#s7 .scene-content", { autoAlpha: 0, duration: 1.4, ease: "power2.in" }, 58.4);
+
+      // --- Övergångar: 6 återhållsamma shaders à 1,2 s. time = scengräns − 0,6 ---
+      window.HyperShader.init({
+        bgColor: getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#070a0c",
+        accentColor: "#c9a36a",
+        scenes: ["s1", "s2", "s3", "s4", "s5", "s6", "s7"],
+        timeline: tl,
+        transitions: [
+          { time: 7.4, shader: "cross-warp-morph", duration: 1.2 },
+          { time: 14.4, shader: "thermal-distortion", duration: 1.2 },
+          { time: 22.4, shader: "cross-warp-morph", duration: 1.2 },
+          { time: 32.4, shader: "light-leak", duration: 1.2 },
+          { time: 41.4, shader: "thermal-distortion", duration: 1.2 },
+          { time: 51.4, shader: "cross-warp-morph", duration: 1.2 },
+        ],
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

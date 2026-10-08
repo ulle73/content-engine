@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!-- Skeleton C — Product Explainer (1920x1080, 45 s, 12 scener). Källa: HyperFrames docs/guides/claude-design-hyperframes.md §7 (Apache-2.0).
+         Guiden beskriver C bara i text ("samma struktur som B, 12 scener, rytm 3-3-4-3.5-4-5-3.5-4-3.5-4-4-3.5").
+         Här: s1–s4 hårda klipp, s5–s12 en sammanhängande shader-kedja med 3 shaders (sdf-iris, whip-pan,
+         flash-through-white) och 4 korta crossfades (shader utelämnad = CSS-crossfade). -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/core/dist/hyperframe.runtime.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- FILL: Google Fonts-länk -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;500;800&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* === FILL: Din varumärkesidentitet === */
+        --bg: #f3f1ec;
+        --ink: #141414;
+        --accent: #2d5bff;
+        --muted: #6b6b6b;
+        --accent-dim: #c9d4ff;
+        --card: #ffffff;
+        --font-display: "Bricolage Grotesque", sans-serif;
+        --font-data: "DM Mono", monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        padding: 100px 160px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 24px;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1;
+      }
+      .clip {
+      }
+      .display {
+        font-family: var(--font-display);
+        font-weight: 800;
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+      }
+      .body-text {
+        font-family: var(--font-display);
+        font-weight: 300;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+      .data-text {
+        font-family: var(--font-data);
+        font-weight: 400;
+        font-variant-numeric: tabular-nums;
+      }
+      .kicker {
+        font-family: var(--font-data);
+        font-size: 24px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        opacity: 0.12;
+        background-image:
+          radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1.2px),
+          radial-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1.2px);
+        background-size:
+          3px 3px,
+          5px 5px;
+        background-position:
+          0 0,
+          1px 2px;
+        mix-blend-mode: multiply;
+      }
+      .blob {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(45, 91, 255, 0.22) 0%, rgba(45, 91, 255, 0) 65%);
+        z-index: 0;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 28px;
+        box-shadow: 0 30px 80px rgba(20, 20, 20, 0.1);
+      }
+      .h1 {
+        font-size: 120px;
+      }
+      .h2 {
+        font-size: 92px;
+      }
+      .lead {
+        font-size: 44px;
+      }
+      .row {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+      }
+      .w {
+        display: inline-block;
+      }
+
+      /* === FILL: Scenspecifika stilar nedan === */
+      .task {
+        width: 980px;
+        padding: 30px 40px;
+        font-family: var(--font-display);
+        font-size: 40px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .task span:last-child {
+        font-family: var(--font-data);
+        color: #d04a2b;
+        font-size: 30px;
+      }
+      #s3-stat {
+        font-size: 220px;
+      }
+      #s3-chart {
+        position: absolute;
+        right: 140px;
+        bottom: 170px;
+        width: 760px;
+        height: 420px;
+      }
+      #s4-hl {
+        background: linear-gradient(#2d5bff, #2d5bff) no-repeat 0 92% / 0% 18%;
+        padding: 0 8px;
+      }
+      .device {
+        width: 760px;
+        height: 520px;
+        padding: 36px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+      .device .bar {
+        height: 26px;
+        border-radius: 13px;
+        background: #e6e3dc;
+      }
+      .device .bar.blue {
+        background: #2d5bff;
+        width: 55%;
+      }
+      .apps {
+        position: relative;
+        width: 760px;
+        height: 620px;
+      }
+      .app {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border-radius: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-data);
+        font-size: 30px;
+        color: #fff;
+      }
+      .hub {
+        position: absolute;
+        left: 300px;
+        top: 230px;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: #2d5bff;
+        color: #fff;
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .toggle-row {
+        width: 900px;
+        padding: 26px 36px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--font-display);
+        font-size: 38px;
+      }
+      .toggle {
+        width: 110px;
+        height: 60px;
+        border-radius: 30px;
+        background: #d9d6cf;
+        position: relative;
+      }
+      .knob {
+        position: absolute;
+        left: 6px;
+        top: 6px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #fff;
+      }
+      .toggle-fill {
+        position: absolute;
+        inset: 0;
+        border-radius: 30px;
+        background: #2d5bff;
+        opacity: 0;
+      }
+      .check-list {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 26px;
+        font-family: var(--font-display);
+        font-size: 46px;
+      }
+      .check svg {
+        width: 64px;
+        height: 64px;
+      }
+      .cmp {
+        display: flex;
+        gap: 60px;
+        align-items: flex-end;
+        height: 460px;
+      }
+      .cmp .col {
+        width: 220px;
+        border-radius: 20px 20px 0 0;
+      }
+      #s10-quote {
+        font-size: 84px;
+        max-width: 1500px;
+        font-weight: 500;
+      }
+      .avatar {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2d5bff, #9fb4ff);
+      }
+      .plans {
+        display: flex;
+        gap: 40px;
+      }
+      .plan {
+        width: 420px;
+        padding: 44px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .plan.pop {
+        background: #141414;
+        color: #f3f1ec;
+      }
+      .plan .price {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 72px;
+      }
+      #s12 .scene-content {
+        align-items: center;
+        text-align: center;
+      }
+      #s12-cta {
+        margin-top: 30px;
+        padding: 30px 80px;
+        border-radius: 999px;
+        background: #2d5bff;
+        color: #fff;
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 52px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main" data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="45">
+      <!-- SCEN 1 (0–3) hook -->
+      <div class="scene clip" id="s1" data-start="0" data-duration="3" data-track-index="0">
+        <div class="blob" id="s1-blob" style="left: 1000px; top: -300px"></div>
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: hook -->
+          <div class="kicker" id="s1-k">Så funkar LUMA</div>
+          <h1 class="display h1" id="s1-t">
+            <span class="w">Hur</span> <span class="w">mycket</span> <span class="w">tid</span> <span class="w">går</span> <span class="w">till</span> <span class="w">admin?</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- SCEN 2 (3–6) problem -->
+      <div class="scene clip" id="s2" data-start="3" data-duration="3" data-track-index="0">
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: problem -->
+          <div class="card task" id="s2-a"><span>Boka om mötet med Nordbygg</span><span>försenad</span></div>
+          <div class="card task" id="s2-b"><span>Skicka faktura #2291</span><span>3 dagar sen</span></div>
+          <div class="card task" id="s2-c"><span>Uppdatera kundlistan</span><span>glömd</span></div>
+        </div>
+      </div>
+
+      <!-- SCEN 3 (6–10) stat + linjediagram -->
+      <div class="scene clip" id="s3" data-start="6" data-duration="4" data-track-index="0">
+        <div class="grain"></div>
+        <svg id="s3-chart" viewBox="0 0 760 420">
+          <path d="M 0 400 L 760 400" stroke="#d9d6cf" stroke-width="3" />
+          <path id="s3-line" d="M 0 360 C 120 340 180 300 260 290 S 420 190 500 170 S 660 60 760 40" stroke="#d04a2b" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="900" stroke-dashoffset="900" />
+          <circle id="s3-dot" cx="760" cy="40" r="16" fill="#d04a2b" />
+        </svg>
+        <div class="scene-content">
+          <!-- FILL: stat -->
+          <div class="kicker">Genomsnitt per vecka</div>
+          <div class="display data-text" id="s3-stat">0 h</div>
+          <p class="body-text lead" id="s3-sub">på uppgifter som går att automatisera</p>
+        </div>
+      </div>
+
+      <!-- SCEN 4 (10–13.5) vändning -->
+      <div class="scene clip" id="s4" data-start="10" data-duration="3.5" data-track-index="0">
+        <div class="blob" id="s4-blob" style="left: 420px; top: -40px"></div>
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: vändning -->
+          <h2 class="display h1" id="s4-t">Det finns ett <span id="s4-hl">bättre</span> sätt.</h2>
+        </div>
+      </div>
+
+      <!-- SCEN 5–12: shader-kedja (opacity:0, HyperShader styr) -->
+      <div class="scene clip" id="s5" data-start="13.5" data-duration="4" data-track-index="0" style="opacity:0;">
+        <div class="blob" id="s5-blob" style="left: 900px; top: -100px"></div>
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: produkt-hero -->
+          <div class="row" style="justify-content: space-between">
+            <div>
+              <div class="kicker" id="s5-k">Möt</div>
+              <h1 class="display" id="s5-t" style="font-size: 220px">LUMA</h1>
+              <p class="body-text lead" id="s5-sub">Assistenten som gör jobbet åt dig.</p>
+            </div>
+            <div class="card device" id="s5-dev">
+              <div class="bar blue"></div>
+              <div class="bar" style="width: 90%"></div>
+              <div class="bar" style="width: 70%"></div>
+              <div class="bar" style="width: 82%"></div>
+              <div class="bar" style="width: 60%"></div>
+              <div class="bar" style="width: 76%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s6" data-start="17.5" data-duration="5" data-track-index="0" style="opacity:0;">
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: steg 1 -->
+          <div class="row" style="justify-content: space-between">
+            <div>
+              <div class="kicker">Steg 1</div>
+              <h2 class="display h2" id="s6-t">Koppla dina<br />verktyg</h2>
+              <p class="body-text lead" id="s6-sub">Mejl, kalender, bokföring.</p>
+            </div>
+            <div class="apps">
+              <svg viewBox="0 0 760 620" style="position: absolute; inset: 0">
+                <path class="wire" d="M 120 120 L 380 310" stroke="#2d5bff" stroke-width="4" stroke-dasharray="330" stroke-dashoffset="330" />
+                <path class="wire" d="M 640 120 L 380 310" stroke="#2d5bff" stroke-width="4" stroke-dasharray="330" stroke-dashoffset="330" />
+                <path class="wire" d="M 120 500 L 380 310" stroke="#2d5bff" stroke-width="4" stroke-dasharray="330" stroke-dashoffset="330" />
+                <path class="wire" d="M 640 500 L 380 310" stroke="#2d5bff" stroke-width="4" stroke-dasharray="330" stroke-dashoffset="330" />
+              </svg>
+              <div class="app" style="left: 60px; top: 60px; background: #d04a2b">M</div>
+              <div class="app" style="left: 580px; top: 60px; background: #1f9d6b">K</div>
+              <div class="app" style="left: 60px; top: 440px; background: #8a4fff">B</div>
+              <div class="app" style="left: 580px; top: 440px; background: #f0a400">F</div>
+              <div class="hub" id="s6-hub">LUMA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s7" data-start="22.5" data-duration="3.5" data-track-index="0" style="opacity:0;">
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: steg 2 -->
+          <div class="kicker">Steg 2</div>
+          <h2 class="display h2" id="s7-t">Sätt reglerna en gång</h2>
+          <div class="card toggle-row t7"><span>Påminn kunder om obetalda fakturor</span><div class="toggle"><div class="toggle-fill"></div><div class="knob"></div></div></div>
+          <div class="card toggle-row t7"><span>Boka om krockande möten</span><div class="toggle"><div class="toggle-fill"></div><div class="knob"></div></div></div>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s8" data-start="26" data-duration="4" data-track-index="0" style="opacity:0;">
+        <div class="blob" id="s8-blob" style="left: 900px; top: 0px"></div>
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: steg 3 -->
+          <div class="kicker">Steg 3</div>
+          <h2 class="display h2" id="s8-t">Luta dig tillbaka</h2>
+          <div class="check-list">
+            <div class="check c8"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#2d5bff" /><path class="tick" d="M 18 33 L 28 43 L 47 22" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="44" stroke-dashoffset="44" /></svg>Faktura #2291 skickad</div>
+            <div class="check c8"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#2d5bff" /><path class="tick" d="M 18 33 L 28 43 L 47 22" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="44" stroke-dashoffset="44" /></svg>Mötet flyttat till torsdag</div>
+            <div class="check c8"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#2d5bff" /><path class="tick" d="M 18 33 L 28 43 L 47 22" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="44" stroke-dashoffset="44" /></svg>Kundlistan uppdaterad</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s9" data-start="30" data-duration="3.5" data-track-index="0" style="opacity:0;">
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: resultat -->
+          <div class="row" style="justify-content: space-between">
+            <div>
+              <div class="kicker">Resultat</div>
+              <div class="display data-text" id="s9-stat" style="font-size: 200px">0 %</div>
+              <p class="body-text lead">mindre tid på admin</p>
+            </div>
+            <div class="cmp">
+              <div class="col" id="s9-before" style="height: 100%; background: #d9d6cf"></div>
+              <div class="col" id="s9-after" style="height: 28%; background: #2d5bff"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s10" data-start="33.5" data-duration="4" data-track-index="0" style="opacity:0;">
+        <div class="blob" id="s10-blob" style="left: -200px; top: 200px"></div>
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: kundcitat -->
+          <p class="display" id="s10-quote">
+            <span class="w">”Jag</span> <span class="w">fick</span> <span class="w">tillbaka</span> <span class="w">mina</span> <span class="w">fredagar.”</span>
+          </p>
+          <div class="row" id="s10-who">
+            <div class="avatar" id="s10-av"></div>
+            <div>
+              <div class="display" style="font-size: 40px">Sara Lind</div>
+              <div class="body-text" style="font-size: 30px">Grundare, Lind Arkitekter (exempel)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s11" data-start="37.5" data-duration="4" data-track-index="0" style="opacity:0;">
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: pris -->
+          <h2 class="display h2" id="s11-t">Enkla priser</h2>
+          <div class="plans">
+            <div class="card plan p11"><div class="kicker">Start</div><div class="price">0 kr</div><div class="body-text" style="font-size: 28px">För dig som testar</div></div>
+            <div class="card plan pop p11" id="s11-pop"><div class="kicker">Pro</div><div class="price data-text" id="s11-price">0 kr</div><div style="font-size: 28px; opacity: 0.7">per månad</div></div>
+            <div class="card plan p11"><div class="kicker">Team</div><div class="price">Offert</div><div class="body-text" style="font-size: 28px">Från 10 personer</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene clip" id="s12" data-start="41.5" data-duration="3.5" data-track-index="0" style="opacity:0;">
+        <div class="blob" id="s12-blob" style="left: 410px; top: -10px"></div>
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: CTA -->
+          <h2 class="display h1" id="s12-t">Kom igång på 2 minuter</h2>
+          <div id="s12-cta">luma.example</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // --- Scensynlighet: s1–s4 styrs av ramverket (.clip-fönster). s5–s12 = shader-kedja. ---
+      tl.set("#s5", { opacity: 1 }, 13.5); // första ankaret måste visas explicit
+
+      // === S1 (0–3) ===
+      tl.from("#s1-k", { y: 20, autoAlpha: 0, duration: 0.4, ease: "power2.out" }, 0.15);
+      tl.from("#s1-t .w", { y: 60, autoAlpha: 0, duration: 0.5, ease: "power4.out", stagger: { each: 0.08, from: "start" } }, 0.25);
+      tl.to("#s1-blob", { x: -120, y: 60, duration: 2.8, ease: "sine.inOut" }, 0.1);
+
+      // === S2 (3–6) ===
+      tl.from("#s2-a", { x: -200, autoAlpha: 0, rotation: -3, duration: 0.45, ease: "back.out(1.6)" }, 3.15);
+      tl.from("#s2-b", { x: -200, autoAlpha: 0, rotation: 2, duration: 0.45, ease: "back.out(1.6)" }, 3.4);
+      tl.from("#s2-c", { x: -200, autoAlpha: 0, rotation: -2, duration: 0.45, ease: "back.out(1.6)" }, 3.65);
+      tl.to("#s2-a", { y: -6, duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: 1 }, 4.2);
+      tl.to("#s2-c", { x: 14, duration: 0.08, ease: "steps(2)", yoyo: true, repeat: 5 }, 4.9);
+
+      // === S3 (6–10) ===
+      var c3 = { v: 0 };
+      tl.from("#s3-stat", { y: 40, autoAlpha: 0, duration: 0.4, ease: "expo.out" }, 6.15);
+      tl.to(c3, { v: 9, duration: 1.6, ease: "power2.out", onUpdate: function () { document.getElementById("s3-stat").textContent = Math.round(c3.v) + " h"; } }, 6.2);
+      tl.from("#s3-sub", { y: 20, autoAlpha: 0, duration: 0.45, ease: "power2.out" }, 6.6);
+      tl.to("#s3-line", { strokeDashoffset: 0, duration: 1.8, ease: "power2.inOut" }, 6.5);
+      tl.from("#s3-dot", { scale: 0, transformOrigin: "50% 50%", duration: 0.4, ease: "back.out(1.6)" }, 8.2);
+      tl.to("#s3-dot", { scale: 1.3, transformOrigin: "50% 50%", duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 8.7);
+
+      // === S4 (10–13.5) ===
+      tl.from("#s4-t", { y: 50, autoAlpha: 0, duration: 0.55, ease: "power3.out" }, 10.15);
+      tl.to("#s4-hl", { backgroundSize: "100% 18%", duration: 0.6, ease: "power2.out" }, 10.8);
+      tl.to("#s4-blob", { scale: 1.2, duration: 3.2, ease: "sine.inOut" }, 10.2);
+
+      // === S5 (13.5–17.5) produkt-hero ===
+      tl.from("#s5-k", { autoAlpha: 0, duration: 0.4, ease: "sine.inOut" }, 13.6);
+      tl.from("#s5-t", { y: 80, autoAlpha: 0, duration: 0.55, ease: "expo.out" }, 13.7);
+      tl.from("#s5-sub", { y: 20, autoAlpha: 0, duration: 0.45, ease: "power2.out" }, 14.1);
+      tl.from("#s5-dev", { y: 120, rotation: 4, autoAlpha: 0, duration: 0.7, ease: "power3.out" }, 13.9);
+      tl.to("#s5-dev", { scale: 1.04, y: -10, duration: 2.6, ease: "none" }, 14.6);
+      tl.from("#s5-dev .bar", { scaleX: 0, transformOrigin: "left", duration: 0.5, ease: "power2.out", stagger: { each: 0.08, from: "start" } }, 14.4);
+
+      // === S6 (17.5–22.5) steg 1 (sdf-iris in) ===
+      tl.from("#s6-t", { y: 40, autoAlpha: 0, duration: 0.5, ease: "power3.out" }, 17.65);
+      tl.from("#s6-sub", { y: 20, autoAlpha: 0, duration: 0.45, ease: "power2.out" }, 18.0);
+      tl.from("#s6 .app", { scale: 0, autoAlpha: 0, duration: 0.4, ease: "back.out(1.6)", stagger: { each: 0.12, from: "start" } }, 17.9);
+      tl.from("#s6-hub", { scale: 0.4, autoAlpha: 0, duration: 0.5, ease: "expo.out" }, 18.5);
+      tl.to("#s6 .wire", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: { each: 0.12, from: "start" } }, 18.8);
+      tl.to("#s6-hub", { scale: 1.08, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 3 }, 19.8);
+
+      // === S7 (22.5–26) steg 2 ===
+      tl.from("#s7-t", { y: 40, autoAlpha: 0, duration: 0.5, ease: "power3.out" }, 22.62);
+      tl.from(".t7", { x: 120, autoAlpha: 0, duration: 0.45, ease: "power4.out", stagger: { each: 0.15, from: "start" } }, 22.9);
+      tl.to("#s7 .knob", { x: 50, duration: 0.3, ease: "back.out(1.6)", stagger: { each: 0.4, from: "start" } }, 23.6);
+      tl.to("#s7 .toggle-fill", { opacity: 1, duration: 0.3, ease: "power2.out", stagger: { each: 0.4, from: "start" } }, 23.6);
+
+      // === S8 (26–30) steg 3 ===
+      tl.from("#s8-t", { y: 40, autoAlpha: 0, duration: 0.5, ease: "power3.out" }, 26.12);
+      tl.from(".c8", { y: 30, autoAlpha: 0, duration: 0.4, ease: "power2.out", stagger: { each: 0.25, from: "start" } }, 26.4);
+      tl.to("#s8 .tick", { strokeDashoffset: 0, duration: 0.35, ease: "power2.out", stagger: { each: 0.25, from: "start" } }, 26.75);
+      tl.to("#s8-blob", { x: -160, duration: 3.6, ease: "sine.inOut" }, 26.2);
+
+      // === S9 (30–33.5) resultat (whip-pan in) ===
+      var c9 = { v: 0 };
+      tl.from("#s9-stat", { x: -60, autoAlpha: 0, duration: 0.4, ease: "expo.out" }, 30.12);
+      tl.to(c9, { v: 72, duration: 1.4, ease: "power2.out", onUpdate: function () { document.getElementById("s9-stat").textContent = "−" + Math.round(c9.v) + " %"; } }, 30.15);
+      tl.from("#s9-before", { scaleY: 0, transformOrigin: "bottom", duration: 0.6, ease: "expo.out" }, 30.3);
+      tl.from("#s9-after", { scaleY: 0, transformOrigin: "bottom", duration: 0.6, ease: "expo.out" }, 30.6);
+      tl.to("#s9-after", { scaleY: 1.06, transformOrigin: "bottom", duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 31.6);
+
+      // === S10 (33.5–37.5) citat ===
+      tl.from("#s10-quote .w", { y: 40, autoAlpha: 0, duration: 0.5, ease: "power3.out", stagger: { each: 0.12, from: "start" } }, 33.65);
+      tl.from("#s10-who", { y: 20, autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 34.6);
+      tl.to("#s10-av", { y: -6, duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: 1 }, 35.1);
+      tl.to("#s10-blob", { x: 200, duration: 3.8, ease: "sine.inOut" }, 33.6);
+
+      // === S11 (37.5–41.5) pris ===
+      var c11 = { v: 0 };
+      tl.from("#s11-t", { y: 40, autoAlpha: 0, duration: 0.5, ease: "power3.out" }, 37.62);
+      tl.from(".p11", { y: 80, autoAlpha: 0, duration: 0.5, ease: "back.out(1.6)", stagger: { each: 0.12, from: "center" } }, 37.85);
+      tl.to(c11, { v: 149, duration: 1.2, ease: "power2.out", onUpdate: function () { document.getElementById("s11-price").textContent = Math.round(c11.v) + " kr"; } }, 38.3);
+      tl.to("#s11-pop", { y: -16, duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: 1 }, 39.4);
+
+      // === S12 (41.5–45) CTA (flash-through-white in). Sista scenen, exit OK ===
+      tl.from("#s12-t", { y: 50, autoAlpha: 0, duration: 0.5, ease: "power3.out" }, 41.65);
+      tl.from("#s12-cta", { scale: 0.7, autoAlpha: 0, duration: 0.45, ease: "back.out(1.6)" }, 42.0);
+      tl.to("#s12-cta", { y: -8, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 42.6);
+      tl.to("#s12-blob", { scale: 1.2, duration: 2.5, ease: "sine.inOut" }, 41.7);
+      tl.to("#s12 .scene-content", { autoAlpha: 0, duration: 0.35, ease: "power2.in" }, 44.6);
+
+      // --- Övergångar: kedja s5..s12 (8 scener, 7 övergångar). time = scengräns − duration/2 ---
+      window.HyperShader.init({
+        bgColor: getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#f3f1ec",
+        accentColor: "#2d5bff",
+        scenes: ["s5", "s6", "s7", "s8", "s9", "s10", "s11", "s12"],
+        timeline: tl,
+        transitions: [
+          { time: 17.25, shader: "sdf-iris", duration: 0.5 },
+          { time: 22.35, duration: 0.3 },
+          { time: 25.85, duration: 0.3 },
+          { time: 29.75, shader: "whip-pan", duration: 0.5 },
+          { time: 33.35, duration: 0.3 },
+          { time: 37.35, duration: 0.3 },
+          { time: 41.25, shader: "flash-through-white", duration: 0.5 },
+        ],
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

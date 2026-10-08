@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!-- Skeleton A — Social Reel (1080x1920, 15 s, 6 scener). Källa: HyperFrames docs/guides/claude-design-hyperframes.md §7 (Apache-2.0). -->
+    <!-- Rör inte: script-ordningen, window.__timelines, .scene.clip, .scene-content. -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/core/dist/hyperframe.runtime.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- FILL: Google Fonts-länk för dina typsnitt -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* === FILL: Din varumärkesidentitet === */
+        --bg: #0a0a0d;
+        --ink: #f5f5f7;
+        --accent: #7c6cff;
+        --muted: #8a92a0;
+        --accent-dim: #3d3680;
+        --font-display: "Space Grotesk", sans-serif;
+        --font-data: "JetBrains Mono", monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      .scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        padding: 120px 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 24px;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1;
+      }
+      .clip {
+      }
+
+      .display {
+        font-family: var(--font-display);
+        font-weight: 700;
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+      }
+      .body-text {
+        font-family: var(--font-display);
+        font-weight: 300;
+        line-height: 1.35;
+        color: var(--muted);
+      }
+      .data-text {
+        font-family: var(--font-data);
+        font-weight: 400;
+        font-variant-numeric: tabular-nums;
+      }
+      .kicker {
+        font-family: var(--font-data);
+        font-size: 30px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        opacity: 0.18;
+        background-image:
+          radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.2px),
+          radial-gradient(rgba(0, 0, 0, 0.18) 1px, transparent 1.2px);
+        background-size:
+          3px 3px,
+          5px 5px;
+        background-position:
+          0 0,
+          1px 2px;
+        mix-blend-mode: overlay;
+      }
+      .glow {
+        position: absolute;
+        width: 1300px;
+        height: 1300px;
+        left: -110px;
+        top: 310px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--accent-dim) 0%, transparent 62%);
+        opacity: 0.35;
+        z-index: 0;
+      }
+
+      /* === FILL: Scenspecifika stilar nedan === */
+      #s1-title {
+        font-size: 190px;
+      }
+      #s1-title .char {
+        display: inline-block;
+      }
+      #s1-rule {
+        width: 760px;
+        height: 40px;
+      }
+      #s2-stat {
+        font-size: 300px;
+        line-height: 0.9;
+        color: var(--ink);
+      }
+      #s2-stat small {
+        font-size: 110px;
+        color: var(--accent);
+      }
+      #s2-sub {
+        font-size: 56px;
+        max-width: 860px;
+      }
+      #s3-line {
+        font-size: 128px;
+      }
+      #s3-hl {
+        background: linear-gradient(var(--accent), var(--accent)) no-repeat 0 88% / 0% 28%;
+        padding: 0 8px;
+      }
+      .orbit-wrap {
+        position: absolute;
+        left: 540px;
+        top: 1500px;
+        width: 0;
+        height: 0;
+      }
+      .orbit-dot {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--accent);
+        left: -13px;
+        top: -213px;
+        box-shadow: 0 0 30px var(--accent);
+      }
+      .orbit-ring {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        left: -200px;
+        top: -200px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.12);
+      }
+      #s4 .scene-content {
+        align-items: center;
+        text-align: center;
+      }
+      #s4-orb {
+        width: 560px;
+        height: 560px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 35% 30%, #ffffff 0%, var(--accent) 22%, var(--accent-dim) 55%, transparent 72%);
+        filter: blur(2px);
+      }
+      #s4-word {
+        font-size: 230px;
+        letter-spacing: 0.04em;
+      }
+      #s4-word .char {
+        display: inline-block;
+      }
+      #s4-tag {
+        font-size: 50px;
+      }
+      .bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 36px;
+        height: 620px;
+      }
+      .bar {
+        width: 170px;
+        border-radius: 18px 18px 0 0;
+        background: linear-gradient(to top, var(--accent-dim), var(--accent));
+      }
+      .bar.b1 {
+        height: 22%;
+        opacity: 0.55;
+      }
+      .bar.b2 {
+        height: 38%;
+        opacity: 0.7;
+      }
+      .bar.b3 {
+        height: 61%;
+        opacity: 0.85;
+      }
+      .bar.b4 {
+        height: 100%;
+        box-shadow: 0 0 60px var(--accent-dim);
+      }
+      #s5-stat {
+        font-size: 210px;
+      }
+      #s5-sub {
+        font-size: 50px;
+      }
+      #s6 .scene-content {
+        align-items: center;
+        text-align: center;
+      }
+      #s6-title {
+        font-size: 150px;
+      }
+      #s6-cta {
+        margin-top: 40px;
+        padding: 36px 90px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--bg);
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 64px;
+      }
+      #s6-url {
+        font-size: 40px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="main"
+      data-composition-id="main"
+      data-width="1080"
+      data-height="1920"
+      data-start="0"
+      data-duration="15"
+    >
+      <!-- SCEN 1 — synlig från t=0 -->
+      <div class="scene clip" id="s1" data-start="0" data-duration="2.5" data-track-index="0">
+        <div class="glow" id="s1-glow"></div>
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: Scen 1 — hook / öppning -->
+          <div class="kicker" id="s1-kicker">Nytt · 2026</div>
+          <h1 class="display" id="s1-title">
+            <span class="char">S</span><span class="char">l</span><span class="char">u</span><span class="char">t</span><span class="char">a</span><br /><span class="char">v</span><span class="char">ä</span><span class="char">n</span><span class="char">t</span><span class="char">a</span><span class="char">.</span>
+          </h1>
+          <svg id="s1-rule" viewBox="0 0 760 40">
+            <path
+              id="s1-line"
+              d="M 4 30 Q 380 2 756 24"
+              stroke="var(--accent)"
+              stroke-width="8"
+              fill="none"
+              stroke-linecap="round"
+              stroke-dasharray="780"
+              stroke-dashoffset="780"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <div
+        class="scene clip"
+        id="s2"
+        data-start="2.5"
+        data-duration="2.5"
+        data-track-index="0"
+      >
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: Scen 2 — bygg / kontext -->
+          <div class="kicker">Varje dag</div>
+          <div class="display data-text" id="s2-stat">0<small> min</small></div>
+          <p class="body-text" id="s2-sub">går förlorade på saker som borde gå av sig själva.</p>
+        </div>
+      </div>
+
+      <!-- SCEN 3 — SHADER-ANKARE (opacity:0, HyperShader styr) -->
+      <div
+        class="scene clip"
+        id="s3"
+        data-start="5"
+        data-duration="2.5"
+        data-track-index="0"
+        style="opacity:0;"
+      >
+        <div class="grain"></div>
+        <div class="orbit-wrap"><div class="orbit-ring"></div><div class="orbit-dot" id="s3-dot"></div></div>
+        <div class="scene-content">
+          <!-- FILL: Scen 3 — uppbyggnad före hero -->
+          <h2 class="display" id="s3-line">Tänk om allt <span id="s3-hl">bara</span> funkade?</h2>
+        </div>
+      </div>
+
+      <!-- SCEN 4 — SHADER-ANKARE (opacity:0, HyperShader styr) -->
+      <div
+        class="scene clip"
+        id="s4"
+        data-start="7.5"
+        data-duration="2.5"
+        data-track-index="0"
+        style="opacity:0;"
+      >
+        <div class="glow" id="s4-glow"></div>
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: Scen 4 — hero / nyckeltal (shadern avslöjar denna) -->
+          <div id="s4-orb"></div>
+          <h1 class="display" id="s4-word">
+            <span class="char">L</span><span class="char">U</span><span class="char">M</span><span class="char">A</span>
+          </h1>
+          <p class="body-text" id="s4-tag">Allt på ett ställe.</p>
+        </div>
+      </div>
+
+      <div
+        class="scene clip"
+        id="s5"
+        data-start="10"
+        data-duration="2.5"
+        data-track-index="0"
+      >
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: Scen 5 — bevis -->
+          <div class="display data-text" id="s5-stat">0×</div>
+          <p class="body-text" id="s5-sub">snabbare än förra året</p>
+          <div class="bars">
+            <div class="bar b1" id="bar1"></div>
+            <div class="bar b2" id="bar2"></div>
+            <div class="bar b3" id="bar3"></div>
+            <div class="bar b4" id="bar4"></div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="scene clip"
+        id="s6"
+        data-start="12.5"
+        data-duration="2.5"
+        data-track-index="0"
+      >
+        <div class="glow" id="s6-glow"></div>
+        <div class="grain"></div>
+        <div class="scene-content">
+          <!-- FILL: Scen 6 — CTA / avslut -->
+          <h2 class="display" id="s6-title">Prova LUMA</h2>
+          <div id="s6-cta">Gratis i 30 dagar</div>
+          <div class="data-text" id="s6-url">luma.example</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // --- Scensynlighet ---
+      // Guiden (2025) lade autoAlpha-växlar på icke-ankarscener. I HyperFrames 0.8.x styr ramverket
+      // själv synligheten för .clip-element utifrån data-start/data-duration, och lint stoppar
+      // autoAlpha på clip-element (gsap_animates_clip_element). Därför: inga växlar på s1, s2, s5, s6.
+      // s3, s4 är shader-ankare — HyperShader styr deras opacity.
+      tl.set("#s3", { opacity: 1 }, 5.0); // första ankaret måste visas explicit
+
+      // === SCEN 1 (0–2.5 s) — hook: teckenstagger + SVG-streck + glödpuls ===
+      tl.from("#s1-kicker", { y: 30, autoAlpha: 0, duration: 0.4, ease: "power2.out" }, 0.15);
+      tl.from(
+        "#s1-title .char",
+        { y: 90, autoAlpha: 0, rotation: 6, duration: 0.5, ease: "back.out(1.6)", stagger: { each: 0.05, from: "start" } },
+        0.25,
+      );
+      tl.to("#s1-line", { strokeDashoffset: 0, duration: 0.8, ease: "expo.out" }, 0.95);
+      tl.to("#s1-glow", { opacity: 0.6, scale: 1.08, duration: 1.1, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.1);
+
+      // === SCEN 2 (2.5–5 s) — räknare + andning ===
+      tl.from("#s2-stat", { x: -80, autoAlpha: 0, duration: 0.45, ease: "expo.out" }, 2.65);
+      var c2 = { v: 0 };
+      tl.to(
+        c2,
+        {
+          v: 47,
+          duration: 1.3,
+          ease: "power2.out",
+          onUpdate: function () {
+            document.getElementById("s2-stat").innerHTML = Math.round(c2.v) + "<small> min</small>";
+          },
+        },
+        2.7,
+      );
+      tl.from("#s2-sub", { y: 30, autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 3.1);
+      tl.to("#s2-sub", { y: -6, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 3.7);
+
+      // === SCEN 3 (5–7.5 s) — SHADER-ANKARE, inga exit-tweens ===
+      tl.from("#s3-line", { y: 50, autoAlpha: 0, duration: 0.55, ease: "power3.out" }, 5.15);
+      tl.to("#s3-hl", { backgroundSize: "100% 28%", duration: 0.6, ease: "power2.out" }, 5.8);
+      tl.to("#s3-dot", { rotation: 360, duration: 2.2, ease: "none", transformOrigin: "13px 213px" }, 5.2);
+
+      // === SCEN 4 (7.5–10 s) — hero (shadern avslöjar denna) ===
+      tl.from("#s4-orb", { scale: 0.6, autoAlpha: 0, duration: 0.8, ease: "expo.out" }, 7.6);
+      tl.to("#s4-orb", { scale: 1.06, duration: 1.6, ease: "none" }, 8.4);
+      tl.from(
+        "#s4-word .char",
+        { y: 70, autoAlpha: 0, duration: 0.45, ease: "power4.out", stagger: { each: 0.08, from: "center" } },
+        7.8,
+      );
+      tl.from("#s4-tag", { y: 24, autoAlpha: 0, duration: 0.5, ease: "power2.out" }, 8.4);
+      tl.to("#s4-glow", { opacity: 0.65, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: 1 }, 7.9);
+
+      // === SCEN 5 (10–12.5 s) — bevis: räknare + stapelfyllning ===
+      tl.from("#s5-stat", { scale: 0.7, autoAlpha: 0, duration: 0.4, ease: "back.out(1.6)" }, 10.12);
+      var c5 = { v: 0 };
+      tl.to(
+        c5,
+        {
+          v: 3,
+          duration: 1.1,
+          ease: "power2.out",
+          onUpdate: function () {
+            document.getElementById("s5-stat").textContent = c5.v.toFixed(1).replace(".", ",") + "×";
+          },
+        },
+        10.15,
+      );
+      tl.from("#s5-sub", { y: 20, autoAlpha: 0, duration: 0.4, ease: "power2.out" }, 10.35);
+      ["#bar1", "#bar2", "#bar3", "#bar4"].forEach(function (sel, i) {
+        tl.from(sel, { scaleY: 0, transformOrigin: "bottom", duration: 0.6, ease: "expo.out" }, 10.4 + i * 0.15);
+      });
+      tl.to("#bar4", { scaleY: 1.04, transformOrigin: "bottom", duration: 0.45, ease: "sine.inOut", yoyo: true, repeat: 1 }, 11.5);
+
+      // === SCEN 6 (12.5–15 s) — CTA, sista scenen, exit OK ===
+      tl.from("#s6-title", { y: 60, autoAlpha: 0, duration: 0.5, ease: "power3.out" }, 12.62);
+      tl.from("#s6-cta", { scale: 0.6, autoAlpha: 0, duration: 0.45, ease: "back.out(1.6)" }, 12.95);
+      tl.from("#s6-url", { autoAlpha: 0, duration: 0.4, ease: "sine.inOut" }, 13.3);
+      tl.to("#s6-cta", { y: -8, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 13.45);
+      tl.to("#s6-glow", { opacity: 0.6, duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: 1 }, 12.7);
+      tl.to("#s6 .scene-content", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 14.65);
+
+      // --- Shader: 1 övergång vid hero-avslöjandet ---
+      window.HyperShader.init({
+        bgColor: getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#0a0a0d",
+        scenes: ["s3", "s4"],
+        timeline: tl,
+        transitions: [{ time: 7.25, shader: "cinematic-zoom", duration: 0.5 }],
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,162 @@
+> Källa: <https://hyperframes.heygen.com/guides/color-grading> · HyperFrames (HeyGen), Apache-2.0 · kopierad 2026-10-07
+
+# Color grade images and footage
+
+*Fix exposure and color on an image or video, shape a look with wheels and curves, apply a LUT, and check the result against real measurements.*
+
+Grading changes how a photo or video **looks** — brighter, warmer, moodier, more
+or less colorful. It runs on one media element at a time. The file on disk never
+changes, and text, captions, SVG and ordinary HTML stay on their own layers,
+untouched.
+
+![The same presenter frame before and after a restrained natural portrait grade](https://static.heygen.ai/hyperframes-oss/docs/images/showcase/color-grading-before-after-v1.png)
+
+*The same source before and after a restrained natural-portrait grade.*
+
+Video: https://static.heygen.ai/hyperframes-oss/docs/images/showcase/color-grading-demo-v1.mp4
+
+Every control moves and the picture answers. The numbers on screen are measured
+from the frame, not illustrative — shadows lifted 2% to 23%, median 28% to 41%.
+
+## Correct first, then style
+
+Get exposure, white balance, contrast and saturation believable first. Then shape
+the tonal ranges or a single color, then a preset or a LUT, then grain, vignette
+and film effects last. No preset rescues blown-out highlights, shadows with
+nothing left in them, or the wrong shot.
+
+## Try it in Studio
+
+Select an image or video — on the canvas, in Layers, or on the timeline — and
+open **Grade** in the Inspector.
+
+Start with a preset. There are thirteen, from Neutral and Clean Studio to Night Lift, and Studio renders each as a thumbnail of **your** frame rather than
+someone else's sample. **Strength** dials the chosen look between nothing and
+full.
+
+Hold the compare button in the panel header to flash back to the original. On
+moving footage, scrub several places first — a grade that flatters one frame can
+wreck the next.
+
+## What each control does
+
+| Control | Use it for |
+| --- | --- |
+| Preset and strength | Pick a whole look, then dial it back |
+| Exposure, contrast, highlights, shadows, whites, blacks | Brightness and contrast, overall and per tonal range |
+| Warmth, tint, vibrance, saturation | Take out a color cast, or push color further |
+| Color wheels | Tint shadows, midtones and highlights separately |
+| RGB curves | Redraw the brightness ramp — whole image, or red, green and blue one at a time |
+| Hue curves | Pick one hue and move only it: shift, saturate or brighten |
+| HSL selections | Key a band of hue, saturation and brightness, then correct only those pixels. Up to four, in order |
+| Grain and vignette | Add texture, or darken the edges to pull the eye in |
+| Custom LUT | Load a `.cube` file that maps every color to another |
+
+## Read the scopes, not your screen
+
+Scopes measure the picture live, so you are not guessing from a monitor that may
+be too bright. Studio draws four.
+
+- **Histogram** — how much of the frame is dark, mid, or bright. Piled against
+  either end means detail is already gone.
+- **Waveform** — brightness across the frame left to right, so you see *which
+  part* is blown out.
+- **RGB parade** — that waveform split into red, green and blue. One channel
+  riding high is your color cast, named.
+- **Vectorscope** — a circle of hues: direction is which color, distance from the
+  centre is how saturated. Skin tones land on one known line, so faces are quick
+  to check.
+
+## Compare candidate looks in one image
+
+Instead of flipping between options, render them all onto one reference frame:
+
+```bash
+npx hyperframes grade-compare --for frame.png --grades grades.json
+```
+
+`--grades` takes a JSON array of `{ label, grading }` entries; `--for` takes an
+image, or a video sampled at its first frame. The untouched frame leads as a cell
+labelled `original` unless you pass `--no-baseline`. Up to sixteen cells land
+four to a row in `grade-compare.png`, or wherever `--out` points. Swap `--grades`
+for `--luts looks/a.cube,looks/b.cube` to compare LUT files the same way.
+
+## Or describe the problem to the agent
+
+You do not need to name controls or invent values:
+
+```text
+The interview looks too dark and slightly cold.
+Keep skin natural, recover the background enough to read, and avoid a filtered look.
+```
+
+The agent can list what exists, and measure a local source before changing it:
+
+```bash
+npx hyperframes media-treatment --capabilities --json
+npx hyperframes media-treatment --selector '#interview' --analyze --json
+```
+
+`--analyze` reports the source's color metadata, where its brightness sits, what
+is clipping, and a bounded correction to start from. For source-sensitive prompts
+and worked before-and-afters, see
+[Color grading and film effects](../prompting/color-grading.md).
+
+## Reuse a grade
+
+**Copy grade to** applies the current grade to other media, in this file or
+across the project — a starting point, since the same numbers rarely suit two
+shots. Project-wide copy refuses a relative LUT path, because that path means
+something different from another composition's folder; stay in the current file,
+or use a LUT reachable by URL or data URL.
+
+## Use a LUT only when you know what it expects
+
+A LUT is a lookup table: a file mapping every input color to an output color.
+HyperFrames reads a 3D `.cube` file up to 64 points per side and blends it in at
+an intensity you set.
+
+Nothing normalizes your footage first — HyperFrames does not identify camera
+profiles or run an ACES or OCIO pipeline, the color-management systems film
+finishing uses. The safe case is a creative Rec.709 LUT, built for ordinary web
+and broadcast video, which is also the only color space these controls work in.
+LOG footage, shot deliberately flat and grey so it holds detail for grading,
+needs the transform its camera expects or comes out wrong rather than stylized.
+
+## Where the grade is stored
+
+Studio and the CLI write the result into `data-color-grading`, in named sections:
+corrections under `adjust`, grain and vignette under `details`, stylized
+treatments under `effects`.
+
+```html
+<video src="./interview.mp4" data-color-grading='{"preset":"skin-soft","intensity":0.7,"adjust":{"exposure":0.15},"effects":{"bloom":0.4}}'></video>
+```
+
+The nesting is not optional. A flat object such as `{"exposure":0.15}` renders
+nothing at all; `npx hyperframes lint` catches it and names the section the
+control belongs in.
+
+## What it cannot do
+
+Grading picks pixels by value, never by position: no face tracking, region
+tracking, rotoscoping or masks — an HSL selection is a color qualifier, not a
+shape. To treat one part of a frame, split it into its own media layer and grade
+that layer, as in the [implementation reference](https://hyperframes.heygen.com/reference/color-grading). It
+targets media elements only, so a whole scene including HTML text cannot be
+graded.
+
+SDR images and video are the supported case; 4K works at a higher preview and
+render cost. An HDR source — iPhone HDR, HLG, Dolby Vision-style — gets an SDR
+preview and a banner saying so: the render may stay HDR-tagged, but this is not
+true HDR grading yet. Remote media needs permissive CORS headers and can vanish
+before render time, so keep media in the project.
+
+For blur, bloom, retro, print, glitch and art treatments, see
+[Media effects](media-effects.md).
+
+## Related topics
+
+- [Apply media effects](media-effects.md)
+- [Implement a grade in HTML](https://hyperframes.heygen.com/reference/color-grading)
+- [Deliver an HDR render](hdr.md)

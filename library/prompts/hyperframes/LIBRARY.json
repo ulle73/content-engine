@@ -1,0 +1,3919 @@
+{
+ "kit": "hyperframes-prompts",
+ "title": "HyperFrames promptguide (svenskt index)",
+ "source": {
+  "name": "HyperFrames (HeyGen)",
+  "url": "https://github.com/heygen-com/hyperframes",
+  "license": "Apache-2.0"
+ },
+ "items": [
+  {
+   "id": "hyperframes-prompts.claude-design.template-first",
+   "name": "Claude Design: mallen först (svensk arbetsguide)",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "9:16",
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Arbetsgång, promptmall, animationsmönster, 14 shaders och smakråd (tips, inga regler) för skelettmallarna A–D.",
+   "tags": [
+    "claude-design",
+    "template-first",
+    "skeleton",
+    "smakråd",
+    "shader",
+    "hyperframes"
+   ],
+   "path": "library/prompts/hyperframes/claude-design-template-first.md",
+   "use": "Läs först, kopiera sedan en mall från library/templates/hyperframes-skeletons/ och fyll i promptmallen i Claude Code",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Mallarna som guiden beskriver är renderade och verifierade (se kit hyperframes-skeletons)."
+  },
+  {
+   "id": "hyperframes-prompts.example.terminal-typing-intro",
+   "name": "Terminal som skriver + produktreveal",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Första-vinsten-prompten: en mörk macOS-terminal skriver ett kommando, sedan avslöjas produkten. Bra start för devtool-reklam.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "anatomy",
+    "motion-graphics",
+    "code-typing",
+    "vfx-shatter"
+   ],
+   "path": "library/prompts/hyperframes/examples/terminal-typing-intro.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.capstone-one-take-promo",
+   "name": "Capstone: 60 s promo i en enda kameraåkning",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Hela guidens tekniker i en prompt – en obruten kamerarörelse genom alla scener. Använd som mall för en ambitiös brandfilm.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "capstone",
+    "general-video",
+    "data-chart",
+    "world-map",
+    "caption-kinetic-slam",
+    "sdf-iris"
+   ],
+   "path": "library/prompts/hyperframes/examples/capstone-one-take-promo.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /general-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts",
+    "api:bild/musikgenerering"
+   ],
+   "cost": "paid",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts); api:bild/musikgenerering"
+  },
+  {
+   "id": "hyperframes-prompts.example.captions-anchor-verbatim",
+   "name": "Textning: ren ordagrann (anchor)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Lägger lugna, ordagranna undertexter på en talking-head-video utan att röra bilden.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "captions-and-talking-heads",
+    "embedded-captions"
+   ],
+   "path": "library/prompts/hyperframes/examples/captions-anchor-verbatim.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /embedded-captions",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.talking-head-overlay-cards",
+   "name": "Talking head med grafikkort",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Paketerar ett intervjuklipp med designade overlay-kort (titlar, lower thirds, datacallouts) synkade till transkriptet.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "captions-and-talking-heads",
+    "talking-head-recut"
+   ],
+   "path": "library/prompts/hyperframes/examples/talking-head-overlay-cards.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /talking-head-recut",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.captions-cinematic-embed",
+   "name": "Filmisk textning bakom motivet",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Hero-typografi komponerad bakom personen – stämning före ordagrannhet. För poesi, citat, känsloladdade klipp.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "captions-and-talking-heads",
+    "embedded-captions"
+   ],
+   "path": "library/prompts/hyperframes/examples/captions-cinematic-embed.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /embedded-captions",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.captions-bright-scene",
+   "name": "Textning i ljus dagsljusscen",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Ordagranna undertexter som förblir läsbara mot ljus bakgrund (utomhus-vlogg).",
+   "tags": [
+    "prompt",
+    "exempel",
+    "captions-and-talking-heads",
+    "embedded-captions"
+   ],
+   "path": "library/prompts/hyperframes/examples/captions-bright-scene.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /embedded-captions",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.captions-vfx-hype",
+   "name": "VFX-textning med tryck",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Hårt slående, effektrika undertexter för hype-klipp – välj en namngiven identitet ur katalogen.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "captions-and-talking-heads",
+    "embedded-captions"
+   ],
+   "path": "library/prompts/hyperframes/examples/captions-vfx-hype.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /embedded-captions",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.talking-head-data-recut-16x9",
+   "name": "Intervju som 16:9-datafilm",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Klipper om ett analytikerintervju till en klinisk 16:9-explainer med datakort och sidopaneler.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "captions-and-talking-heads",
+    "talking-head-recut"
+   ],
+   "path": "library/prompts/hyperframes/examples/talking-head-data-recut-16x9.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /talking-head-recut",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.explainer-caption-highlight",
+   "name": "Vertikal explainer med highlight-textning",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "30 s vertikal explainer där nyckelord markeras via caption-highlight-komponenten.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "captions-catalog",
+    "faceless-explainer",
+    "caption-highlight"
+   ],
+   "path": "library/prompts/hyperframes/examples/explainer-caption-highlight.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /faceless-explainer",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.pr-feature-reveal",
+   "name": "PR → feature-reveal (30 s)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "Gör en GitHub-PR till en 30 s video som leder med användarnyttan och visar diffen i ett beat.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "code-and-prs",
+    "pr-to-video",
+    "code-diff"
+   ],
+   "path": "library/prompts/hyperframes/examples/pr-feature-reveal.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /pr-to-video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.pr-changelog-roundup",
+   "name": "PR → changelog-sammanfattning",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "~40 s changelog-video från en PR: öppnar med versionen, listar ändringarna.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "code-and-prs",
+    "pr-to-video",
+    "code-diff"
+   ],
+   "path": "library/prompts/hyperframes/examples/pr-changelog-roundup.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /pr-to-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.pr-fix-explainer",
+   "name": "PR → buggfix-förklaring",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "~40 s video för utvecklare: symptom, orsak, fix – byggd från PR:ens diff.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "code-and-prs",
+    "pr-to-video",
+    "code-diff"
+   ],
+   "path": "library/prompts/hyperframes/examples/pr-fix-explainer.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /pr-to-video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.pr-refactor-walkthrough",
+   "name": "PR → refaktor-genomgång",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "~70 s genomgång av en refaktorering: före/efter-struktur, varför den blev bättre.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "code-and-prs",
+    "pr-to-video",
+    "code-morph"
+   ],
+   "path": "library/prompts/hyperframes/examples/pr-refactor-walkthrough.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /pr-to-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.code-typing-reveal",
+   "name": "Kod som skrivs tecken för tecken",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: en mörk editor skriver ett kodexempel med syntaxfärg. För devtool-ads och tutorials.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "code-blocks",
+    "motion-graphics",
+    "code-typing"
+   ],
+   "path": "library/prompts/hyperframes/examples/code-typing-reveal.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.code-diff-colored",
+   "name": "Kod-diff i färg",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: en ändring i en fil visas som färgad diff, rader in/ut animeras.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "code-blocks",
+    "motion-graphics",
+    "code-diff"
+   ],
+   "path": "library/prompts/hyperframes/examples/code-diff-colored.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.code-highlight-band",
+   "name": "Kod med svepande highlight-band",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "5 s: en konfigfil där ett highlight-band sveper till raden som spelar roll.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "code-blocks",
+    "motion-graphics",
+    "code-highlight"
+   ],
+   "path": "library/prompts/hyperframes/examples/code-highlight-band.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.code-scroll-to-line",
+   "name": "Scrolla kod till en nyckelrad",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: scrollar en lång källfil och stannar på en markerad rad.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "code-blocks",
+    "motion-graphics",
+    "code-scroll"
+   ],
+   "path": "library/prompts/hyperframes/examples/code-scroll-to-line.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.chart-named-block",
+   "name": "Diagram via registerblock",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "12 s stapeldiagram byggt på ett namngivet registerblock (data-chart).",
+   "tags": [
+    "prompt",
+    "exempel",
+    "data-and-maps",
+    "motion-graphics",
+    "data-chart"
+   ],
+   "path": "library/prompts/hyperframes/examples/chart-named-block.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.chart-bar-race-handdrawn",
+   "name": "Handritad bar chart race",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "10 s: fem horisontella staplar växer och kör om varandra, handritat utan diagrambibliotek.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "data-and-maps",
+    "motion-graphics"
+   ],
+   "path": "library/prompts/hyperframes/examples/chart-bar-race-handdrawn.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.stat-count-up",
+   "name": "Siffra som räknar upp (ARR)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: en jättesiffra rullar upp till $4.2M, '+312% YoY' stämplas in, sedelregn som spektakelbeat. Bygger på apple-money-count.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "data-and-maps",
+    "motion-graphics",
+    "apple-money-count"
+   ],
+   "path": "library/prompts/hyperframes/examples/stat-count-up.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.map-us-choropleth",
+   "name": "USA-karta (choropleth)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "12 s: delstater färgas efter andel, med förklaring och värdeetiketter.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "data-and-maps",
+    "motion-graphics",
+    "us-map",
+    "us-map-flow"
+   ],
+   "path": "library/prompts/hyperframes/examples/map-us-choropleth.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.map-flight-route",
+   "name": "Flygrutt på karta",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: realistisk karta där ett plan flyger mellan två städer (nyc-paris-flight).",
+   "tags": [
+    "prompt",
+    "exempel",
+    "data-and-maps",
+    "motion-graphics",
+    "nyc-paris-flight"
+   ],
+   "path": "library/prompts/hyperframes/examples/map-flight-route.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.brand-from-frame-md",
+   "name": "Varumärke från designspec (frame.md)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Peka på en designspec i stället för att beskriva en vibe – agenten tar palett och typsnitt därifrån.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "design-systems"
+   ],
+   "path": "library/prompts/hyperframes/examples/brand-from-frame-md.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.brand-from-website",
+   "name": "Varumärke från en webbplats",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Hämta palett och typsnitt från en sajt och gör ett 20 s lanseringsklipp.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "design-systems"
+   ],
+   "path": "library/prompts/hyperframes/examples/brand-from-website.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.animated-social-post",
+   "name": "Animerat socialt inlägg (tweet-kort)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "7 s 4:5: ett tweet-kort glider upp över mjuk gradient, likes räknar upp, 3D-tilt och highlight-svep.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples",
+    "motion-graphics",
+    "x-post",
+    "vfx-liquid-background"
+   ],
+   "path": "library/prompts/hyperframes/examples/animated-social-post.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.map-route",
+   "name": "Kartrutt med glödande båge",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "8 s: mörk världskarta, en glödande båge SF→Tokyo, nål med chockvåg, kamerazoom och etikett som skrivs ut.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples",
+    "motion-graphics",
+    "nyc-paris-flight"
+   ],
+   "path": "library/prompts/hyperframes/examples/map-route.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.logo-sting-shader",
+   "name": "Logo sting med shader-övergång",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "5 s: ordmärket byggs av ~1200 partiklar, swirl-vortex-shader, lockup med tagline på vitt.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples",
+    "motion-graphics",
+    "swirl-vortex",
+    "code-particle-assemble"
+   ],
+   "path": "library/prompts/hyperframes/examples/logo-sting-shader.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.product-launch-from-url",
+   "name": "Produktlansering från URL (45 s)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "45 s lanseringsvideo från en produkt-URL: hook, tre funktionsbeats med UI-skärmdumpar, slutkort. TTS + musik.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples",
+    "product-launch-video"
+   ],
+   "path": "library/prompts/hyperframes/examples/product-launch-from-url.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /product-launch-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.explainer-from-text",
+   "name": "Explainer från inklistrad text",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "~60 s vertikal explainer: en idé per scen, stor typografi, diagram, TTS och inbäddade captions.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples",
+    "faceless-explainer"
+   ],
+   "path": "library/prompts/hyperframes/examples/explainer-from-text.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /faceless-explainer",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.beat-synced-slideshow",
+   "name": "Beatsynkat bildspel",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "20 s 1:1: genererade bilder klipps på musikens beatgrid, punch-in på downbeats, whip-pan vid frasbyten.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples",
+    "music-to-video"
+   ],
+   "path": "library/prompts/hyperframes/examples/beat-synced-slideshow.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /music-to-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:bild/musikgenerering",
+    "api:heygen"
+   ],
+   "cost": "paid",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:bild/musikgenerering; api:heygen (media resolve)"
+  },
+  {
+   "id": "hyperframes-prompts.example.kinetic-quote",
+   "name": "Kinetiskt citat",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "12 s: citat byggs ord för ord i stor serif, sista ordet landar med bläckblom och handritad understrykning.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/kinetic-quote.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.countdown-title-card",
+   "name": "Nedräkning 3-2-1 → titel",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: siffror med diagonal mask och växlande svart/vitt, sedan 'LAUNCH DAY' med skak och vit blixtruta.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/countdown-title-card.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.bar-chart-race",
+   "name": "Bar chart race",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "10 s: fem staplar växer, kör om varandra två gånger, värden räknar upp, ledaren pulserar.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/bar-chart-race.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.before-after-split",
+   "name": "Före/efter-delning",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "8 s: rörigt 'FÖRE'-UI mot rent 'EFTER'-kort, en skanningslinje sveper och städar bilden.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/before-after-split.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.loader-reveal",
+   "name": "Laddring → reveal",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "7 s: en tunn progressring ritas 0→100 % med räknare, detonerar och 'READY.' stämplas in.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/loader-reveal.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.3d-cards-threejs",
+   "name": "3D-kort i Three.js",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "9 s: tre rundade kort reser sig ett i taget i isometrisk vy med mjuka skuggor och specular-svep.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/3d-cards-threejs.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.svg-line-draw-logo",
+   "name": "Logga som ritas med SVG-streck",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: en bergssiluett ritas som streck, fylls, ordmärket spärras in och en linje växer ut.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/svg-line-draw-logo.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.word-swap-headline",
+   "name": "Ordbyte i rubrik (split-flap)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "8 s: 'Make it ___.' där ordet byts som en split-flap-tavla; sista ordet landar i orange.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/word-swap-headline.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.stat-tile-dashboard",
+   "name": "Dashboard med statistikbrickor",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "10 s: fyra brickor i 2x2 räknar upp med egna eases, sparklines ritas, alla blixtrar i takt.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/stat-tile-dashboard.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.vertical-social-hook",
+   "name": "Vertikal social hook",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "9 s 9:16: fraser byts på hårda klipp med gula highlight-staplar; sista frasen slammar in med skak och kromatisk split.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/examples/vertical-social-hook.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.explainer-topic-16x9",
+   "name": "Ämnes-explainer 30 s (16:9)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "~30 s liggande explainer om ett tekniskt ämne (exempel: HTTPS) med diagram.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "explainers",
+    "faceless-explainer"
+   ],
+   "path": "library/prompts/hyperframes/examples/explainer-topic-16x9.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /faceless-explainer",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.explainer-listicle",
+   "name": "Listicle (5 saker)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "~45 s vertikal listicle, en punkt per scen.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "explainers",
+    "faceless-explainer"
+   ],
+   "path": "library/prompts/hyperframes/examples/explainer-listicle.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /faceless-explainer",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.explainer-how-to-diagrams",
+   "name": "How-to med diagram",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "~60 s liggande how-to för utvecklare, steg som diagram.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "explainers",
+    "faceless-explainer"
+   ],
+   "path": "library/prompts/hyperframes/examples/explainer-how-to-diagrams.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /faceless-explainer",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.telemetry-panel-alive",
+   "name": "Levande telemetripanel (inget står still)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: en live-panel där varje element fortsätter röra sig efter entrén – demonstrerar regel 1 i Motion that reads premium.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "motion"
+   ],
+   "path": "library/prompts/hyperframes/examples/telemetry-panel-alive.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.music-video-from-track",
+   "name": "Musikvideo från eget spår",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "20 s 1:1 från egen ljudfil: bästa 20 s väljs, klipp på beatgridet.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "music-and-slideshows",
+    "music-to-video",
+    "whip-pan"
+   ],
+   "path": "library/prompts/hyperframes/examples/music-video-from-track.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /music-to-video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.lyric-video",
+   "name": "Lyrikvideo",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "30 s 9:16 lyrikvideo från en låt, text synkad till sången.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "music-and-slideshows",
+    "music-to-video"
+   ],
+   "path": "library/prompts/hyperframes/examples/lyric-video.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /music-to-video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.kinetic-promo-mood-brief",
+   "name": "Kinetisk promo från stämningsbrief",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "15 s 1:1 utan eget spår – musik genereras från en stämningsbeskrivning, typografi i takt.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "music-and-slideshows",
+    "music-to-video"
+   ],
+   "path": "library/prompts/hyperframes/examples/kinetic-promo-mood-brief.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /music-to-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:bild/musikgenerering"
+   ],
+   "cost": "paid",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:bild/musikgenerering"
+  },
+  {
+   "id": "hyperframes-prompts.example.pitch-deck-slideshow",
+   "name": "Pitch deck (slideshow)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "5 bilder 16:9, en idé per bild – navigerbar presentation, inte MP4.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "music-and-slideshows",
+    "slideshow"
+   ],
+   "path": "library/prompts/hyperframes/examples/pitch-deck-slideshow.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /slideshow",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.overlay-spotify-card",
+   "name": "Transparent overlay (Spotify-kort)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Ren transparent overlay att lägga ovanpå egen film – exempel med spotify-card-blocket.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "overlays-and-lower-thirds",
+    "motion-graphics",
+    "spotify-card"
+   ],
+   "path": "library/prompts/hyperframes/examples/overlay-spotify-card.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.simple-product-intro",
+   "name": "Enkel produktintro (kort prompt)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Minsta möjliga prompt: 10 s produktintro med intonad titel – låt agenten fylla i resten.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "overview"
+   ],
+   "path": "library/prompts/hyperframes/examples/simple-product-intro.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.product-teaser-9x16",
+   "name": "Vertikal produktteaser 20 s",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "hyperframes",
+   "description": "~20 s 9:16-teaser från en URL, supermininmal.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "product-launch",
+    "product-launch-video"
+   ],
+   "path": "library/prompts/hyperframes/examples/product-teaser-9x16.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /product-launch-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.launch-from-script",
+   "name": "Lansering från eget manus",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "~20 s lanseringsvideo från inklistrat manus, utan skärminspelning.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "product-launch",
+    "product-launch-video"
+   ],
+   "path": "library/prompts/hyperframes/examples/launch-from-script.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /product-launch-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.launch-from-brand-name",
+   "name": "Lansering från bara varumärkesnamn",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "~45 s – agenten hittar själv officiella sajten och bygger lanseringsvideon.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "product-launch",
+    "product-launch-video"
+   ],
+   "path": "library/prompts/hyperframes/examples/launch-from-brand-name.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /product-launch-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.site-tour",
+   "name": "Sajtvisning (site tour)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "30 s rundtur av en webbplats byggd av sajtens egna bilder.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "product-launch",
+    "product-launch-video"
+   ],
+   "path": "library/prompts/hyperframes/examples/site-tour.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /product-launch-video",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:tts"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:tts (valfritt – gratis lokal TTS via npx hyperframes tts)"
+  },
+  {
+   "id": "hyperframes-prompts.example.hologram-globe-threejs",
+   "name": "Hologramglob (Three.js, full spec)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "1,8 s exakt specad Three.js-glob – exempel på hur man återskapar en referens med absoluta mål.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "recreating-references"
+   ],
+   "path": "library/prompts/hyperframes/examples/hologram-globe-threejs.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "api:bild/musikgenerering"
+   ],
+   "cost": "paid",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Kan kräva betald tjänst: api:bild/musikgenerering"
+  },
+  {
+   "id": "hyperframes-prompts.example.remotion-port",
+   "name": "Porta från Remotion",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Bas-prompt för att översätta en Remotion-komposition (React) till HyperFrames-HTML.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "remotion-migration",
+    "remotion-to-hyperframes"
+   ],
+   "path": "library/prompts/hyperframes/examples/remotion-port.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /remotion-to-hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.storyboard-3-frames",
+   "name": "Storyboard i 3 bildrutor",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "~15 s tyst film planerad som storyboard: båge, beats per ruta och tempo-regel.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "storyboards"
+   ],
+   "path": "library/prompts/hyperframes/examples/storyboard-3-frames.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.saas-explainer-transitions",
+   "name": "SaaS-explainer med namngivna övergångar",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Sexscenig explainer där varje skarv får en namngiven övergång (whip-pan m.fl.).",
+   "tags": [
+    "prompt",
+    "exempel",
+    "transitions",
+    "general-video",
+    "whip-pan",
+    "cinematic-zoom"
+   ],
+   "path": "library/prompts/hyperframes/examples/saas-explainer-transitions.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /general-video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.title-card-variables",
+   "name": "Titelkort med variabler",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s titelkort där namn, logga och accentfärg är variabler – rendera en per rad.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "variables-and-templating"
+   ],
+   "path": "library/prompts/hyperframes/examples/title-card-variables.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.personalized-welcome",
+   "name": "Personlig välkomstvideo",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "10 s välkomstklipp som hälsar varje ny kund vid förnamn och visar deras logga (batch-render).",
+   "tags": [
+    "prompt",
+    "exempel",
+    "variables-and-templating"
+   ],
+   "path": "library/prompts/hyperframes/examples/personalized-welcome.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.device-mockup-dashboard",
+   "name": "Dashboard i enhetsmockup",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "15 s: egen dashboard-UI på skärmen av en riktig enhet (iPhone/MacBook).",
+   "tags": [
+    "prompt",
+    "exempel",
+    "vfx-and-liquid-glass",
+    "product-launch-video",
+    "vfx-iphone-device"
+   ],
+   "path": "library/prompts/hyperframes/examples/device-mockup-dashboard.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /product-launch-video",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.liquid-glass-notifications",
+   "name": "Liquid glass-notiser",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "8 s: frostade glasnotiser driver in och staplas över färgstark bakgrund.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "vfx-and-liquid-glass",
+    "motion-graphics"
+   ],
+   "path": "library/prompts/hyperframes/examples/liquid-glass-notifications.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.hero-shatter-portal",
+   "name": "Hero som krossas/portal",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "8 s: en landningssida krossas eller dras in i en portal – VFX-ögonblick.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "vfx-and-liquid-glass",
+    "motion-graphics",
+    "vfx-shatter"
+   ],
+   "path": "library/prompts/hyperframes/examples/hero-shatter-portal.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.wordmark-ambient-polish",
+   "name": "Ordmärke med ambient polish",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: platina-ordmärke på nästan svart med anamorfisk flare, korn och glans.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "vfx-and-liquid-glass",
+    "motion-graphics",
+    "grain-overlay",
+    "parallax-zoom",
+    "shimmer-sweep"
+   ],
+   "path": "library/prompts/hyperframes/examples/wordmark-ambient-polish.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /motion-graphics",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.visual-spec-night-title",
+   "name": "Visuell spec: nattlig titelkort",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "8 s titelkort där varje element namnges, placeras, färgsätts och tajmas – från lös beskrivning till exakt spec.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "visual-specs"
+   ],
+   "path": "library/prompts/hyperframes/examples/visual-spec-night-title.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.visual-spec-command-palette",
+   "name": "Visuell spec: frostad kommandopalett",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "6 s: exakt specad glas-kommandopalett (mått, radie, rgba, timing).",
+   "tags": [
+    "prompt",
+    "exempel",
+    "visual-specs"
+   ],
+   "path": "library/prompts/hyperframes/examples/visual-spec-command-palette.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.example.visual-spec-precision-word",
+   "name": "Visuell spec: ordet PRECISION",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "hyperframes",
+   "description": "7 s: ordmärke på off-black med fint filmkorn – exakt specad typografi och rörelse.",
+   "tags": [
+    "prompt",
+    "exempel",
+    "visual-specs"
+   ],
+   "path": "library/prompts/hyperframes/examples/visual-spec-precision-word.md",
+   "use": "Klistra in examples/_preamble.md + prompten i Claude Code; skill /hyperframes",
+   "requires": [
+    "hyperframes",
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "hyperframes-prompts.guide.4k-rendering",
+   "name": "Guide: Render in 4K",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Author at 4K or supersample an existing composition at render time.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "4k-rendering"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/4k-rendering.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/4k-rendering",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.authentication",
+   "name": "Guide: Authentication & API keys",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Sign in to HeyGen and understand how agent workflows choose voice, music, sound, and optional capture-description providers.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "authentication"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/authentication.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/authentication",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.avatar-presenter",
+   "name": "Guide: Add an avatar presenter",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Create or reuse a presenter clip, keep it as project media, and combine it with editable HyperFrames scenes.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "avatar-presenter"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/avatar-presenter.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/avatar-presenter",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.captions-and-recuts",
+   "name": "Guide: Add captions or repackage talking-head footage",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Add captions, add designed overlays, or change the spoken edit.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "captions-and-recuts"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/captions-and-recuts.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/captions-and-recuts",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.choose-creation-path",
+   "name": "Guide: Choose how to create",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Four places to make a HyperFrames video, and how to tell which one is yours.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "choose-creation-path"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/choose-creation-path.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/choose-creation-path",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.claude-design-hyperframes",
+   "name": "Guide: claude-design-hyperframes",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): claude-design-hyperframes",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "claude-design-hyperframes"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/claude-design-hyperframes.md",
+   "use": "Läs före promptning; original: https://github.com/heygen-com/hyperframes/blob/main/docs/guides/claude-design-hyperframes.md",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.claude-design-send-to-hyperframes",
+   "name": "Guide: Send to HyperFrames",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Author a Claude Design as a single-file HyperFrames composition for the \\\"Send to HyperFrames\\\" URL import.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "claude-design-send-to-hyperframes"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/claude-design-send-to-hyperframes.md",
+   "use": "Läs före promptning; original: https://github.com/heygen-com/hyperframes/blob/main/docs/guides/claude-design-send-to-hyperframes.md",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.color-grading",
+   "name": "Guide: Color grade images and footage",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Fix exposure and color on an image or video, shape a look with wheels and curves, apply a LUT, and check the result against real measurements.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "color-grading"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/color-grading.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/color-grading",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.deploy",
+   "name": "Guide: Deploy a preview and render API",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Start from an official Vercel, Cloudflare, or Modal template when you need a hosted preview and MP4 render endpoint.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "deploy"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/deploy.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/deploy",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.design-tools",
+   "name": "Guide: Bring a design into a project",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Start from a Figma file or a design-tool draft. Keep the look, rebuild only what has to move.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "design-tools"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/design-tools.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/design-tools",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.export-and-share",
+   "name": "Guide: Finish and share a video",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Review the project, run its checks, render through an agent, Studio, or the CLI, and deliver the right file or link.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "export-and-share"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/export-and-share.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/export-and-share",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.faceless-explainer",
+   "name": "Guide: Create a faceless explainer",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Turn notes, an article, or a difficult idea into a visual explanation without product footage.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "faceless-explainer"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/faceless-explainer.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/faceless-explainer",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.feedback",
+   "name": "Guide: Share feedback",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Report a problem or tell the HyperFrames team what would make the product better.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "feedback"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/feedback.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/feedback",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.figma",
+   "name": "Guide: Figma integration",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Bring Figma designs into HyperFrames – frozen assets, brand tokens, editable components, storyboard reconstruction, and Figma Motion timelines translated to GSAP.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "figma"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/figma.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/figma",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.general-video",
+   "name": "Guide: Create a custom video",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Combine sources, change existing footage, or co-direct a video when no focused workflow fits.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "general-video"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/general-video.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/general-video",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.gsap-animation",
+   "name": "Guide: Animate with GSAP",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Create a paused timeline that HyperFrames can seek to any frame.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "gsap-animation"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/gsap-animation.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/gsap-animation",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.hdr",
+   "name": "Guide: Render HDR video",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Preserve BT.2020 PQ or HLG sources in a 10-bit H.265 MP4.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "hdr"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/hdr.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/hdr",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.html-in-canvas",
+   "name": "Guide: HTML in Canvas",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Use live DOM content as a texture for WebGL and canvas effects.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "html-in-canvas"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/html-in-canvas.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/html-in-canvas",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.hyperframes-vs-remotion",
+   "name": "Guide: HyperFrames or Remotion?",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): The same three-second title card written in Remotion React and in HyperFrames HTML, plus an honest read on which tool fits your project.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "hyperframes-vs-remotion"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/hyperframes-vs-remotion.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/hyperframes-vs-remotion",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.mcp",
+   "name": "Guide: Create through an AI chat",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Use the hosted HyperFrames MCP connector to create and render without installing the local CLI.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "mcp"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/mcp.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/mcp",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.media",
+   "name": "Guide: Work with media",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Use footage, images, audio, captions, backgrounds, and color in a HyperFrames project.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "media"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/media.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/media",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.media-effects",
+   "name": "Guide: Apply media effects",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Turn an image or video into ASCII, halftone print, tape damage, CRT, painted art, and more – without touching the original file.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "media-effects"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/media-effects.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/media-effects",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.motion-graphics",
+   "name": "Guide: Create a motion graphic",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Make a short, motion-led title, statistic, chart, logo sting, or overlay.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "motion-graphics"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/motion-graphics.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/motion-graphics",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.music-to-video",
+   "name": "Guide: Create a music-driven video",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Cut footage, images, lyrics, and motion to a track’s beat grid.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "music-to-video"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/music-to-video.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/music-to-video",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.open-design-hyperframes",
+   "name": "Guide: open-design-hyperframes",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): |",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "open-design-hyperframes"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/open-design-hyperframes.md",
+   "use": "Läs före promptning; original: https://github.com/heygen-com/hyperframes/blob/main/docs/guides/open-design-hyperframes.md",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.performance",
+   "name": "Guide: Fix a slow preview or render",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Find the expensive part of a composition and make it cheaper.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "performance"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/performance.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/performance",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.plugins",
+   "name": "Guide: Install the HyperFrames plugin",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Install video creation skills as one versioned plugin and let your agent manage updates.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "plugins"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/plugins.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/plugins",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.pr-to-video",
+   "name": "Guide: Turn a pull request into a video",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Show what changed, why it matters, and what happens next.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "pr-to-video"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/pr-to-video.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/pr-to-video",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.product-launch-video",
+   "name": "Guide: Create a product or website video",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Turn a product URL or launch brief into a promo, product tour, or social video.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "product-launch-video"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/product-launch-video.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/product-launch-video",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.remove-background",
+   "name": "Guide: Remove a background",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Turn footage of a person or a portrait image into transparent media you can layer over a HyperFrames scene.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "remove-background"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/remove-background.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/remove-background",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.rendering",
+   "name": "Guide: Render from the command line",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Check a project and render MP4, MOV, WebM, GIF, or PNG output.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "rendering"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/rendering.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/rendering",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.skills",
+   "name": "Guide: Install and update agent skills",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Teach a coding agent how to create valid HyperFrames projects and load specialized workflows when needed.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "skills"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/skills.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/skills",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.slideshow",
+   "name": "Guide: Create an interactive presentation",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Build a navigable deck with reveals, notes, optional branches, hotspots, and presenter mode.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "slideshow"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/slideshow.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/slideshow",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.troubleshooting",
+   "name": "Guide: Troubleshooting",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Solve common Studio, project, media, animation, preview, and rendering problems.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "troubleshooting"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/troubleshooting.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/troubleshooting",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.vfx-chain",
+   "name": "Guide: Per-pixel effects with data-vfx-chain",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): The data-vfx-chain attribute: a WebGL2 kernel chain for warps, displacement, and generated noise that repaints deterministically on every seek.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "vfx-chain"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/vfx-chain.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/vfx-chain",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.video-components",
+   "name": "Guide: Use images and video",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Import, place, replace, trim, and review images and footage in a HyperFrames project.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "video-components"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/video-components.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/video-components",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.voice-and-audio",
+   "name": "Guide: Use voice, music, sound, and captions",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Build an understandable audio mix, transcribe real speech, and turn it into readable captions.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "voice-and-audio"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/voice-and-audio.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/voice-and-audio",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.guide.webmcp",
+   "name": "Guide: Let an agent drive Studio",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Guide (engelska): Studio exposes its editing capabilities as WebMCP tools, so an agent in your browser can see the composition and change it alongside you.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "guide",
+    "webmcp"
+   ],
+   "path": "library/prompts/hyperframes/docs/guides/webmcp.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/guides/webmcp",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.anatomy",
+   "name": "Promptguide: Anatomy of a one-shot prompt",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Sexdelat promptskelett: route, spec, beats, copy, teknik, negativ.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "anatomy"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/anatomy.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/anatomy",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.audio-effects",
+   "name": "Promptguide: Audio effects and mixing",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Ljudmix i symptom: ducka musik, rensa röst, nivåer.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "audio-effects"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/audio-effects.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/audio-effects",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.capstone",
+   "name": "Promptguide: Capstone — every technique, one journey",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Capstone: varje teknik i en 62 s film i en tagning.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "capstone"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/capstone.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/capstone",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.captions-and-talking-heads",
+   "name": "Promptguide: Captions and talking-head footage",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Textning och grafikkort på talking-head-material.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "captions-and-talking-heads"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/captions-and-talking-heads.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/captions-and-talking-heads",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.captions-catalog",
+   "name": "Promptguide: Caption styles",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Textningsstilar: ton → namngiven caption-komponent.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "captions-catalog"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/captions-catalog.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/captions-catalog",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.code-and-prs",
+   "name": "Promptguide: Code changes and PRs",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Kodändringar/PR → explainer-video.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "code-and-prs"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/code-and-prs.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/code-and-prs",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.code-blocks",
+   "name": "Promptguide: Code animations",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Kodanimationer: skriva, diffa, markera, scrolla, teman.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "code-blocks"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/code-blocks.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/code-blocks",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.color-grading",
+   "name": "Promptguide: Color grading and film effects",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Färgsättning och filmeffekter i fast pipeline-ordning.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "color-grading"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/color-grading.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/color-grading",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.data-and-maps",
+   "name": "Promptguide: Data and maps",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Diagram, uppräknande siffror och kartor (regioner, flöden, rutter).",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "data-and-maps"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/data-and-maps.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/data-and-maps",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.design-systems",
+   "name": "Promptguide: Design systems and brand",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Peka på en varumärkeskälla (spec, sajt, Figma) i stället för 'on-brand'.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "design-systems"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/design-systems.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/design-systems",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.editing-existing-videos",
+   "name": "Promptguide: Editing existing videos",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Redigera som i en NLE: trimma, flytta, retajma, byta.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "editing-existing-videos"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/editing-existing-videos.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/editing-existing-videos",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.examples",
+   "name": "Promptguide: Verified example prompts",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Verifierade exempelprompter + den delade rörelse-preamblen.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "examples"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/examples.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/examples",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.explainers",
+   "name": "Promptguide: Explainers",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Ansiktslösa explainers från text/ämne.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "explainers"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/explainers.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/explainers",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.generated-artwork",
+   "name": "Promptguide: When to generate artwork",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "När bild ska genereras vs ritas i kod – hybriden.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "generated-artwork"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/generated-artwork.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/generated-artwork",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.iterating",
+   "name": "Promptguide: Iterating",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Iterera med små riktade ändringar och absoluta mål.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "iterating"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/iterating.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/iterating",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.media-and-audio",
+   "name": "Promptguide: Media and audio",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Voiceover, musik, ljudeffekter, captions, frilägg, PiP.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "media-and-audio"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/media-and-audio.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/media-and-audio",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.motion",
+   "name": "Promptguide: Motion that reads premium",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Åtta regler för rörelse som känns premium (inget står still, kameran agerar …).",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "motion"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/motion.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/motion",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.motion-graphics",
+   "name": "Promptguide: Motion graphics",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Korta designledda motion graphics: kinetisk typ, stat, logo sting.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "motion-graphics"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/motion-graphics.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/motion-graphics",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.music-and-slideshows",
+   "name": "Promptguide: Music videos and slideshows",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Beatsynkad musikvideo vs navigerbart bildspel.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "music-and-slideshows"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/music-and-slideshows.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/music-and-slideshows",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.overlays-and-lower-thirds",
+   "name": "Promptguide: Overlays and lower thirds",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Lower thirds och sociala overlays per tonläge.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "overlays-and-lower-thirds"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/overlays-and-lower-thirds.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/overlays-and-lower-thirds",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.overview",
+   "name": "Promptguide: Prompt Guide",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Promptguidens översikt: setup, de två promptformerna, nivåstegen.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "overview"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/overview.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/overview",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.product-launch",
+   "name": "Promptguide: Product launch videos",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Produktlanseringsvideor från URL, manus eller brief.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "product-launch"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/product-launch.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/product-launch",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.recreating-references",
+   "name": "Promptguide: Recreating something you saw",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Återskapa något du sett: transkribera rörelse, iterera, destillera.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "recreating-references"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/recreating-references.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/recreating-references",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.remotion-migration",
+   "name": "Promptguide: Porting from Remotion",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Porta Remotion-kompositioner till HyperFrames.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "remotion-migration"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/remotion-migration.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/remotion-migration",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.rendering-and-output",
+   "name": "Promptguide: Rendering and output",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Kvalitetsnivå, format, upplösning, fps, molnrendering.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "rendering-and-output"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/rendering-and-output.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/rendering-and-output",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.rules-and-anti-patterns",
+   "name": "Promptguide: Rules and anti-patterns",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Tekniska regler (determinism, lint) och friktionsmönster – stilråden är tips, inte spärrar.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "rules-and-anti-patterns"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/rules-and-anti-patterns.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/rules-and-anti-patterns",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.runtimes-and-3d",
+   "name": "Promptguide: Runtimes and 3D",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "GSAP som standard; Three.js, Lottie, shaders när det behövs.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "runtimes-and-3d"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/runtimes-and-3d.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/runtimes-and-3d",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.specification-dial",
+   "name": "Promptguide: The specification dial",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Specificeringsratten: hur täthet i prompten styr avvikelsen.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "specification-dial"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/specification-dial.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/specification-dial",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.storyboards",
+   "name": "Promptguide: Storyboards",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Prompta planen (båge, beats, tempo) i stället för scen för scen.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "storyboards"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/storyboards.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/storyboards",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.transitions",
+   "name": "Promptguide: Transitions",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Energi/stämning → namngivna shader- och CSS-övergångar.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "transitions"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/transitions.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/transitions",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.variables-and-templating",
+   "name": "Promptguide: Variables and templating",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Variabler/slots och batch-render en video per rad.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "variables-and-templating"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/variables-and-templating.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/variables-and-templating",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.vfx-and-liquid-glass",
+   "name": "Promptguide: VFX and liquid glass",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Enhetsmockups, liquid glass, shatter/portal, ambient polish.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "vfx-and-liquid-glass"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/vfx-and-liquid-glass.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/vfx-and-liquid-glass",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.visual-specs",
+   "name": "Promptguide: High-fidelity looks",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Visuella specar som namnger, placerar, färgsätter och tajmar varje element.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "visual-specs"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/visual-specs.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/visual-specs",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.doc.vocabulary",
+   "name": "Promptguide: Vocabulary that changes output",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Ordlista: adjektiv som skillsen översätter till easing, kamera, övergångar, captions, röster.",
+   "tags": [
+    "hyperframes",
+    "docs",
+    "doc",
+    "vocabulary"
+   ],
+   "path": "library/prompts/hyperframes/docs/prompting/vocabulary.md",
+   "use": "Läs före promptning; original: https://hyperframes.heygen.com/prompting/vocabulary",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Engelsk originaltext, konverterad från MDX."
+  },
+  {
+   "id": "hyperframes-prompts.example.preamble",
+   "name": "Delad rörelse-preamble",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "hyperframes",
+   "description": "Rörelsegrammatiken som alla verifierade exempelprompter kördes med – klistra in ovanför prompten.",
+   "tags": [
+    "preamble",
+    "motion",
+    "premium",
+    "prompt"
+   ],
+   "path": "library/prompts/hyperframes/examples/_preamble.md",
+   "use": "Klistra in överst, före exempelprompten",
+   "requires": [
+    "hyperframes"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  }
+ ]
+}
