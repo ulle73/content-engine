@@ -30,6 +30,8 @@ class Company(models.Model):
     postiz_ciphertext = models.TextField(blank=True, default="")
     postiz_channels = models.JSONField(default=list)
     official_logo = models.ForeignKey("MediaAsset", null=True, blank=True, on_delete=models.PROTECT, related_name="official_for")
+    # Per-company brand kit: colors, font, landing URL and which skills/fact skill apply (engine/motion/brand.py).
+    brand = models.JSONField(default=dict, blank=True)
 
     @staticmethod
     def cipher():

@@ -10,6 +10,7 @@ from engine.sequence_export import FilmSettings
 from . import service
 from .catalog import catalog
 from .planner import compile_template
+from .brand import brand_id_for
 
 
 def serialize_project(project):
@@ -97,7 +98,7 @@ def register(mcp, company_for, run_for, user_for, safe_call):
             fields,
             aspect_ratio=aspect_ratio,
             audio=audio,
-            brand_id="golfkuponger" if company.name.casefold() == "golfkuponger" else "workspace",
+            brand_id=brand_id_for(company),
         )
         run = run_for(company_ref, run_id) if run_id else None
         return serialize_project(

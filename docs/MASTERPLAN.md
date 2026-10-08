@@ -11,8 +11,9 @@
 ## 1. Slutmål (ägarens egna ord, sammanfattat)
 
 **En automatisk marknadsavdelning i molnet** för flera bolag – främst **Golfkuponger** (golfkuponger på 300+
-svenska klubbar; friskvårdsbidrag, företagspaket, presentkort) och **FAIV** (främst extraljus/LED-ramper till bilar –
-jämförbara: Ekstralys, Strands, Lazer Lamps, Nordic Lights; i andra hand grill-kit till bilar). Två användare: Jonas och en kollega.
+svenska klubbar; friskvårdsbidrag, företagspaket, presentkort) och **FAIV** (Fordonsanpassning i Väst AB, Kungälv: extraljus, LED-ramper, fordonsspecifika
+**grillkit** = ljus integrerat i bilens frontgrill, arbetsljus, husbilsel, arbetsfordon – jämförbara: Ekstralys,
+Extraljuskungen, Ljusgiganten, vparts, Strands). Två användare: Jonas och en kollega.
 
 1. **Bevakar** konton (konkurrenter, inspiration, kreatörer), Meta Ads Library (vilka annonser som körs och hur
    länge – länge = fungerar) och viralt innehåll – i branschen, i närliggande branscher och breda virala format.
@@ -101,7 +102,7 @@ Detaljer: kodgranskningen i sessionens underlag; relevanta filer listas per fas 
 | D4 | **Riktig rörlig film = egen bank + AI-video.** Egen media taggas i mediabanken; luckor fylls med AI-video (Kling/Seedance via Higgsfield, ev. Veo) med kostnadsgrind. | Ägarens #1: "riktig filmad video". AI-video för scener vi saknar (t.ex. grill vid bil i solnedgång). | Bara stillbilder + grafik (underkänt av ägaren). Stockvideo (generiskt, licenskrångel). |
 | D5 | **Vision-modell förstår referenser och granskar vår output** (ramar ur videon → beskrivning, poäng). | Text-analys av bildtext missar varför en video fungerar; samma modell kan vara kvalitetsgrind. | Bara bildtext (dagens läge). Människa granskar allt (skalar inte). |
 | D6 | **Lärande i två lager:** (a) snabbt – ägarens tummar + kommentarer och tidiga resultat styr prompts/val direkt; (b) långsamt – ML-modell när data räcker, med media- och krokfeatures. | 80-etikettsgränsen tar månader; ägarens bedömning finns från dag 1 och är högkvalitativ. | Vänta på ML (för långsamt). Sänka gränsen hårt (överanpassning). |
-| D7 | **Säsong/kalender som egen källa** (svenska högtider, friskvård "brinner inne" Q4, golfsäsong, grillsäsong, mörkerperiod för extraljus). | Starka, förutsägbara köptillfällen för båda bolagen. | Bara trender (missar planerbara toppar). |
+| D7 | **Säsong/kalender som egen källa** (svenska högtider, friskvård "brinner inne" Q4, golfsäsong, mörkerperiod för extraljus, husbilssäsong). | Starka, förutsägbara köptillfällen för båda bolagen. | Bara trender (missar planerbara toppar). |
 | D8 | **Render: uppgradera webbtjänsten till betald (starter)** när automatiken går live. | Gratisplanen somnar och har tappat formulär; Telegram-webhooks och schema kräver att appen är vaken. | Behålla free (opålitligt). |
 | D9 | **FAIV får eget brand-/fakta-/skillpaket** och mallar generaliseras per bolag (inget hårdkodat Golfkuponger). | Två bolag med helt olika målgrupp och ton. | Dela Golfkupongers (fel ton/fakta). |
 

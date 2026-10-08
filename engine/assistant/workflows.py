@@ -12,6 +12,7 @@ from engine.model_catalog import model_label
 from engine.models import ContentRun
 
 from .registry import WorkflowDefinition, register
+from engine.motion.brand import brand_id_for
 
 RATIOS = {"portrait": "9:16", "square": "1:1", "landscape": "16:9"}
 
@@ -129,7 +130,7 @@ def motion_compile(company, user, spec, assets):
         return {"model_label": "Motion · befintligt videoklipp", "prompt": "", "motion_spec": finishing_spec(company, spec, primary, assets),
                 "warnings": ["Originalklippet återanvänds. Logga och text monteras med Motion, utan ny AI-videogeneration. Klippljudet används inte; välj eget ljud eller musik."]}
     compiled = compile_template("kinetic-text", fields, aspect_ratio=RATIOS[spec["options"]["shape"]],
-                                audio=proposal["audio"] != "none", brand_id="golfkuponger" if company.name.casefold() == "golfkuponger" else "workspace")
+                                audio=proposal["audio"] != "none", brand_id=brand_id_for(company))
     if assets.get("audio"):
         compiled["audio"].update(enabled=True, music_asset_id=str(assets["audio"].pk))
     return {"model_label": "Motion · Remotion", "prompt": "", "motion_spec": compiled,
@@ -227,7 +228,7 @@ def finishing_spec(company, spec, footage, assets):
     scenes.append({"id": "brand-ending", "component": "end-card", "duration_frames": ending_frames,
                    "props": {"headline": proposal["headline"], "cta": proposal["cta"], "eyebrow": company.name[:80]}})
     return validate_spec({"template_id": "sequence-film", "aspect_ratio": ratio,
-                          "brand_id": "golfkuponger" if company.name.casefold() == "golfkuponger" else "workspace",
+                          "brand_id": brand_id_for(company),
                           "scenes": scenes,
                           "audio": {"enabled": bool(audio) or proposal["audio"] == "music", "music": "bed", "music_asset_id": str(audio.pk) if audio else None}})
 

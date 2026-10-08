@@ -63,6 +63,13 @@
         <div class="field">{{ form.current.label_tag }}{{ form.current }}{{ form.current.errors }}</div>
         <div class="form-pair"><div class="field">{{ form.source.label_tag }}{{ form.source }}{{ form.source.errors }}</div><div class="field">{{ form.valid_until.label_tag }}{{ form.valid_until }}{{ form.valid_until.errors }}</div></div>
         <details {% if form.voice.errors %}open{% endif %}><summary>Egna textexempel <span class="small">Valfritt</span></summary><div class="field">{{ form.voice.label_tag }}{{ form.voice }}{{ form.voice.errors }}</div></details>
+        <details><summary>Varumärke <span class="small">Färger, typsnitt, webbadress och skills för bolagets video och annonser</span></summary>
+          <div class="form-pair"><div class="field">{{ form.brand_background.label_tag }}{{ form.brand_background }}</div><div class="field">{{ form.brand_foreground.label_tag }}{{ form.brand_foreground }}</div></div>
+          <div class="form-pair"><div class="field">{{ form.brand_accent.label_tag }}{{ form.brand_accent }}</div><div class="field">{{ form.brand_font_family.label_tag }}{{ form.brand_font_family }}</div></div>
+          <div class="field">{{ form.brand_landing_url.label_tag }}{{ form.brand_landing_url }}{{ form.brand_landing_url.errors }}</div>
+          <div class="field">{{ form.brand_skills.label_tag }}{{ form.brand_skills }}<span class="small">{{ form.brand_skills.help_text }}</span></div>
+          <div class="field">{{ form.brand_fact_skill.label_tag }}{{ form.brand_fact_skill }}</div>
+        </details>
         <button type="submit">Spara företagsuppgifter</button>
       </form>
     </details>

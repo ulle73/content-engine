@@ -39,8 +39,13 @@ def _hex(value: str) -> tuple[int, int, int]:
     return tuple(int(value[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def brand_colors(preset: str = "golfkuponger") -> dict:
-    tokens = PRESETS.get(preset, PRESETS["golfkuponger"])
+def brand_colors(preset: str = "golfkuponger", company=None) -> dict:
+    from engine.motion.brand import brand_id_for, tokens_for
+
+    if company is not None and preset == brand_id_for(company):
+        tokens = tokens_for(company)
+    else:
+        tokens = PRESETS.get(preset, PRESETS["workspace"])
     return {k: _hex(v) for k, v in tokens.items() if isinstance(v, str) and v.startswith("#")}
 
 
@@ -265,8 +270,8 @@ def _panel(scene, image: Image.Image | None, colors, warnings: list[str]) -> Ima
     return panel
 
 
-def storyboard(brief, assets_by_id: dict, problems: list[str]) -> bytes:
-    colors = brand_colors(brief.brand_preset)
+def storyboard(brief, assets_by_id: dict, problems: list[str], company=None) -> bytes:
+    colors = brand_colors(brief.brand_preset, company=company)
     scenes = brief.scenes
     pad, info_h = 16, 120
     header_h = 120

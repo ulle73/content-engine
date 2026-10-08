@@ -60,7 +60,7 @@ def critique_spec(spec: dict, *, storyboard_scene_ids: list[str] | None = None) 
     backgrounds = {scene["background"] for scene in scenes}
     variation = 2 if len(components) >= 3 or (len(components) >= 2 and len(backgrounds) >= 2) else 1 if len(components) >= 2 else 0
 
-    brand = 2 if data["brand_id"] == "golfkuponger" else 1
+    brand = 2 if data["brand_id"] != "workspace" else 1
     beat = data.get("beat_map") or {}
     if not data["audio"]["enabled"] or data["audio"]["music"] == "none":
         audio_sync = 2
