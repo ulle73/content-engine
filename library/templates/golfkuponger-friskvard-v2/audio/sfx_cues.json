@@ -1,0 +1,769 @@
+{
+ "duration": 25.0,
+ "cues": [
+  {
+   "t": 0.0,
+   "fx": "impact",
+   "gain_db": -9,
+   "label": "slam DIN CHEF",
+   "args": {
+    "dur": 1.0
+   }
+  },
+  {
+   "t": 1.0,
+   "fx": "impact",
+   "gain_db": -9,
+   "label": "slam BETALAR",
+   "args": {
+    "dur": 1.0
+   }
+  },
+  {
+   "t": 1.0,
+   "fx": "whoosh",
+   "gain_db": -16,
+   "label": "slam air BETALAR",
+   "args": {
+    "dur": 0.3,
+    "f_lo": 500,
+    "f_hi": 6000
+   },
+   "peak": true
+  },
+  {
+   "t": 2.0,
+   "fx": "impact",
+   "gain_db": -6,
+   "label": "slam DIN GOLF.",
+   "args": {
+    "dur": 1.0
+   }
+  },
+  {
+   "t": 2.0,
+   "fx": "whoosh",
+   "gain_db": -16,
+   "label": "slam air DIN GOLF.",
+   "args": {
+    "dur": 0.3,
+    "f_lo": 500,
+    "f_hi": 6000
+   },
+   "peak": true
+  },
+  {
+   "t": 2.2,
+   "fx": "shimmer",
+   "gain_db": -20,
+   "label": "gold glint DIN GOLF.",
+   "args": {
+    "dur": 0.7,
+    "base": 1320
+   }
+  },
+  {
+   "t": 3.0,
+   "fx": "swell",
+   "gain_db": -10,
+   "label": "into the flash",
+   "args": {
+    "dur": 0.9,
+    "freq": 140
+   },
+   "align": "end"
+  },
+  {
+   "t": 3.0,
+   "fx": "whoosh",
+   "gain_db": -12,
+   "label": "flash-through",
+   "args": {
+    "dur": 0.7
+   },
+   "peak": true
+  },
+  {
+   "t": 3.06,
+   "fx": "pop",
+   "gain_db": -22,
+   "label": "Med",
+   "args": {
+    "f0": 380,
+    "f1": 760
+   }
+  },
+  {
+   "t": 3.31,
+   "fx": "pop",
+   "gain_db": -22,
+   "label": "friskvårdsbidraget",
+   "args": {
+    "f0": 420,
+    "f1": 880
+   }
+  },
+  {
+   "t": 4.0,
+   "fx": "pop",
+   "gain_db": -14,
+   "label": "orb born",
+   "args": {
+    "f0": 180,
+    "f1": 520,
+    "dur": 0.25
+   }
+  },
+  {
+   "t": 6.0,
+   "fx": "riser",
+   "gain_db": -12,
+   "label": "riser into the 5 000 landing",
+   "args": {
+    "dur": 2.0,
+    "f0": 220,
+    "f1": 2600
+   },
+   "align": "end"
+  },
+  {
+   "t": 4.0,
+   "fx": "tick",
+   "gain_db": -26.0,
+   "label": "count tick",
+   "args": {
+    "freq": 2400
+   }
+  },
+  {
+   "t": 4.076,
+   "fx": "tick",
+   "gain_db": -25.5,
+   "label": "count tick",
+   "args": {
+    "freq": 2460
+   }
+  },
+  {
+   "t": 4.154,
+   "fx": "tick",
+   "gain_db": -25.0,
+   "label": "count tick",
+   "args": {
+    "freq": 2520
+   }
+  },
+  {
+   "t": 4.2343,
+   "fx": "tick",
+   "gain_db": -24.5,
+   "label": "count tick",
+   "args": {
+    "freq": 2580
+   }
+  },
+  {
+   "t": 4.3171,
+   "fx": "tick",
+   "gain_db": -24.0,
+   "label": "count tick",
+   "args": {
+    "freq": 2640
+   }
+  },
+  {
+   "t": 4.4027,
+   "fx": "tick",
+   "gain_db": -23.5,
+   "label": "count tick",
+   "args": {
+    "freq": 2700
+   }
+  },
+  {
+   "t": 4.4915,
+   "fx": "tick",
+   "gain_db": -23.0,
+   "label": "count tick",
+   "args": {
+    "freq": 2760
+   }
+  },
+  {
+   "t": 4.5839,
+   "fx": "tick",
+   "gain_db": -22.5,
+   "label": "count tick",
+   "args": {
+    "freq": 2820
+   }
+  },
+  {
+   "t": 4.6805,
+   "fx": "tick",
+   "gain_db": -22.0,
+   "label": "count tick",
+   "args": {
+    "freq": 2880
+   }
+  },
+  {
+   "t": 4.7821,
+   "fx": "tick",
+   "gain_db": -21.5,
+   "label": "count tick",
+   "args": {
+    "freq": 2940
+   }
+  },
+  {
+   "t": 4.8897,
+   "fx": "tick",
+   "gain_db": -21.0,
+   "label": "count tick",
+   "args": {
+    "freq": 3000
+   }
+  },
+  {
+   "t": 5.0047,
+   "fx": "tick",
+   "gain_db": -20.5,
+   "label": "count tick",
+   "args": {
+    "freq": 3060
+   }
+  },
+  {
+   "t": 5.1294,
+   "fx": "tick",
+   "gain_db": -20.0,
+   "label": "count tick",
+   "args": {
+    "freq": 3120
+   }
+  },
+  {
+   "t": 5.2675,
+   "fx": "tick",
+   "gain_db": -19.5,
+   "label": "count tick",
+   "args": {
+    "freq": 3180
+   }
+  },
+  {
+   "t": 5.4257,
+   "fx": "tick",
+   "gain_db": -19.0,
+   "label": "count tick",
+   "args": {
+    "freq": 3240
+   }
+  },
+  {
+   "t": 5.6211,
+   "fx": "tick",
+   "gain_db": -18.5,
+   "label": "count tick",
+   "args": {
+    "freq": 3300
+   }
+  },
+  {
+   "t": 6.0,
+   "fx": "boom",
+   "gain_db": -3,
+   "label": "5 000 kr LANDS (sub)"
+  },
+  {
+   "t": 6.0,
+   "fx": "impact",
+   "gain_db": -8,
+   "label": "5 000 kr LANDS",
+   "args": {
+    "dur": 1.4
+   }
+  },
+  {
+   "t": 6.05,
+   "fx": "shimmer",
+   "gain_db": -16,
+   "label": "orb sheen",
+   "args": {
+    "dur": 1.2,
+    "base": 990
+   }
+  },
+  {
+   "t": 7.0,
+   "fx": "whoosh",
+   "gain_db": -11,
+   "label": "dive into gold",
+   "args": {
+    "dur": 0.6
+   },
+   "peak": true
+  },
+  {
+   "t": 7.1,
+   "fx": "whoosh",
+   "gain_db": -17,
+   "label": "page rises",
+   "args": {
+    "dur": 0.8,
+    "f_lo": 150,
+    "f_hi": 2500
+   }
+  },
+  {
+   "t": 8.0,
+   "fx": "paper",
+   "gain_db": -12,
+   "label": "marker sweep",
+   "args": {
+    "dur": 0.35
+   }
+  },
+  {
+   "t": 9.0,
+   "fx": "whoosh",
+   "gain_db": -16,
+   "label": "tilt down to cards",
+   "args": {
+    "dur": 0.7,
+    "f_lo": 200,
+    "f_hi": 3000
+   }
+  },
+  {
+   "t": 10.45,
+   "fx": "key",
+   "gain_db": -10,
+   "label": "click on 2 000 kr",
+   "args": {
+    "heavy": true
+   }
+  },
+  {
+   "t": 10.5,
+   "fx": "pop",
+   "gain_db": -18,
+   "label": "click ring",
+   "args": {
+    "f0": 700,
+    "f1": 1400
+   }
+  },
+  {
+   "t": 11.0,
+   "fx": "whoosh",
+   "gain_db": -13,
+   "label": "card lifts out",
+   "args": {
+    "dur": 0.5,
+    "f_lo": 300,
+    "f_hi": 5000
+   }
+  },
+  {
+   "t": 11.05,
+   "fx": "snap",
+   "gain_db": -14,
+   "label": "card lift settle"
+  },
+  {
+   "t": 11.25,
+   "fx": "shimmer",
+   "gain_db": -18,
+   "label": "card glint",
+   "args": {
+    "dur": 0.8,
+    "base": 1180
+   }
+  },
+  {
+   "t": 11.5,
+   "fx": "pop",
+   "gain_db": -13,
+   "label": "chip Greenfee",
+   "args": {
+    "f0": 520,
+    "f1": 1250
+   }
+  },
+  {
+   "t": 12.0,
+   "fx": "pop",
+   "gain_db": -13,
+   "label": "chip Range",
+   "args": {
+    "f0": 520,
+    "f1": 1250
+   }
+  },
+  {
+   "t": 12.5,
+   "fx": "pop",
+   "gain_db": -13,
+   "label": "chip Lektioner",
+   "args": {
+    "f0": 520,
+    "f1": 1250
+   }
+  },
+  {
+   "t": 13.0,
+   "fx": "whoosh",
+   "gain_db": -10,
+   "label": "card at the lens / cut",
+   "args": {
+    "dur": 0.45
+   },
+   "peak": true
+  },
+  {
+   "t": 13.25,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.3125,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.375,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.4375,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.5,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.5625,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.625,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.6875,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.75,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.8125,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.875,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 13.9375,
+   "fx": "key",
+   "gain_db": -18,
+   "label": "type Golfkuponger"
+  },
+  {
+   "t": 14.0,
+   "fx": "snap",
+   "gain_db": -12,
+   "label": "tile Benifex"
+  },
+  {
+   "t": 13.9,
+   "fx": "whoosh",
+   "gain_db": -20,
+   "label": "tile flight Benifex",
+   "args": {
+    "dur": 0.25,
+    "f_lo": 600,
+    "f_hi": 7000
+   }
+  },
+  {
+   "t": 14.25,
+   "fx": "snap",
+   "gain_db": -12,
+   "label": "tile ePassi"
+  },
+  {
+   "t": 14.15,
+   "fx": "whoosh",
+   "gain_db": -20,
+   "label": "tile flight ePassi",
+   "args": {
+    "dur": 0.25,
+    "f_lo": 600,
+    "f_hi": 7000
+   }
+  },
+  {
+   "t": 14.5,
+   "fx": "snap",
+   "gain_db": -12,
+   "label": "tile Söderberg & Partners"
+  },
+  {
+   "t": 14.4,
+   "fx": "whoosh",
+   "gain_db": -20,
+   "label": "tile flight Söderberg & Partners",
+   "args": {
+    "dur": 0.25,
+    "f_lo": 600,
+    "f_hi": 7000
+   }
+  },
+  {
+   "t": 14.75,
+   "fx": "snap",
+   "gain_db": -12,
+   "label": "tile Edenred"
+  },
+  {
+   "t": 14.65,
+   "fx": "whoosh",
+   "gain_db": -20,
+   "label": "tile flight Edenred",
+   "args": {
+    "dur": 0.25,
+    "f_lo": 600,
+    "f_hi": 7000
+   }
+  },
+  {
+   "t": 14.9,
+   "fx": "pop",
+   "gain_db": -20,
+   "label": "alt line",
+   "args": {
+    "f0": 600,
+    "f1": 900
+   }
+  },
+  {
+   "t": 15.0,
+   "fx": "whoosh",
+   "gain_db": -17,
+   "label": "grid tips",
+   "args": {
+    "dur": 0.8,
+    "f_lo": 150,
+    "f_hi": 2000
+   }
+  },
+  {
+   "t": 16.0,
+   "fx": "riser",
+   "gain_db": -10,
+   "label": "dive riser",
+   "args": {
+    "dur": 1.4,
+    "f0": 300,
+    "f1": 4000
+   },
+   "align": "end"
+  },
+  {
+   "t": 16.0,
+   "fx": "boom",
+   "gain_db": -2,
+   "label": "DROP: 300+"
+  },
+  {
+   "t": 16.0,
+   "fx": "impact",
+   "gain_db": -6,
+   "label": "300+ slam",
+   "args": {
+    "dur": 1.6
+   }
+  },
+  {
+   "t": 17.0,
+   "fx": "whoosh",
+   "gain_db": -14,
+   "label": "photo whip",
+   "args": {
+    "dur": 0.35,
+    "f_lo": 400,
+    "f_hi": 6000
+   },
+   "peak": true
+  },
+  {
+   "t": 17.0,
+   "fx": "shutter",
+   "gain_db": -18,
+   "label": "photo swap"
+  },
+  {
+   "t": 18.0,
+   "fx": "whoosh",
+   "gain_db": -14,
+   "label": "photo whip",
+   "args": {
+    "dur": 0.35,
+    "f_lo": 400,
+    "f_hi": 6000
+   },
+   "peak": true
+  },
+  {
+   "t": 18.0,
+   "fx": "shutter",
+   "gain_db": -18,
+   "label": "photo swap"
+  },
+  {
+   "t": 19.0,
+   "fx": "whoosh",
+   "gain_db": -14,
+   "label": "photo whip",
+   "args": {
+    "dur": 0.35,
+    "f_lo": 400,
+    "f_hi": 6000
+   },
+   "peak": true
+  },
+  {
+   "t": 19.0,
+   "fx": "shutter",
+   "gain_db": -18,
+   "label": "photo swap"
+  },
+  {
+   "t": 16.5,
+   "fx": "pop",
+   "gain_db": -20,
+   "label": "name tag in",
+   "args": {
+    "f0": 500,
+    "f1": 800
+   }
+  },
+  {
+   "t": 20.0,
+   "fx": "impact",
+   "gain_db": -7,
+   "label": "flare shockwave",
+   "args": {
+    "dur": 1.6
+   }
+  },
+  {
+   "t": 20.0,
+   "fx": "shimmer",
+   "gain_db": -14,
+   "label": "flare sparkle",
+   "args": {
+    "dur": 1.4,
+    "base": 880
+   }
+  },
+  {
+   "t": 21.0,
+   "fx": "whoosh",
+   "gain_db": -10,
+   "label": "whip to CTA",
+   "args": {
+    "dur": 0.55
+   },
+   "peak": true
+  },
+  {
+   "t": 22.0,
+   "fx": "swell",
+   "gain_db": -12,
+   "label": "into emblem reveal",
+   "args": {
+    "dur": 1.0,
+    "freq": 110
+   },
+   "align": "end"
+  },
+  {
+   "t": 22.0,
+   "fx": "chime",
+   "gain_db": -8,
+   "label": "EMBLEM resolves",
+   "args": {
+    "freqs": [
+     880,
+     1318.5
+    ]
+   }
+  },
+  {
+   "t": 22.5,
+   "fx": "paper",
+   "gain_db": -20,
+   "label": "wordmark wipe",
+   "args": {
+    "dur": 0.3
+   }
+  },
+  {
+   "t": 23.0,
+   "fx": "pop",
+   "gain_db": -21,
+   "label": "Låt chefen bjuda",
+   "args": {
+    "f0": 400,
+    "f1": 700
+   }
+  },
+  {
+   "t": 23.5,
+   "fx": "pop",
+   "gain_db": -16,
+   "label": "url pill",
+   "args": {
+    "f0": 600,
+    "f1": 1200
+   }
+  },
+  {
+   "t": 24.0,
+   "fx": "shimmer",
+   "gain_db": -11,
+   "label": "FINAL CHORD shimmer on the url",
+   "args": {
+    "dur": 1.2,
+    "base": 1320
+   }
+  }
+ ]
+}

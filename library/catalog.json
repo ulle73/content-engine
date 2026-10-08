@@ -1,8 +1,8 @@
 {
  "version": 1,
  "generated": "2026-10-08",
- "count": 1418,
- "verified": 325,
+ "count": 1426,
+ "verified": 333,
  "by_type": {
   "background": 60,
   "caption": 29,
@@ -10,12 +10,12 @@
   "effect": 242,
   "grade": 10,
   "prompt": 345,
-  "scene": 180,
+  "scene": 186,
   "skill": 60,
   "sound": 47,
-  "template": 96,
+  "template": 97,
   "text": 127,
-  "tool": 81,
+  "tool": 82,
   "transition": 119
  },
  "items": [
@@ -6001,6 +6001,262 @@
    "status": "verified"
   },
   {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Friskvård v2 (byråreklam)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; portalloggor och sajtbilder tillhör respektive ägare – endast egen marknadsföring"
+   },
+   "cost": "free",
+   "requires": [
+    "hyperframes"
+   ],
+   "use": "Ändra REVEAL, rubriken och URL:en; glanserna ligger på REVEAL+0,05 och 3,0.",
+   "notes": "Bygger på nextphase.short.logo-blur-reveal och golfkuponger.friskvard-v1.emblem-endcard.",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/gk.friskvard-v2.s6-cta.mp4",
+    "still": "library/previews/gk.friskvard-v2.s6-cta.jpg"
+   },
+   "id": "golfkuponger.friskvard-v2.emblem-endcard",
+   "name": "Emblem vrider sig suddigt och skärps på slaget, glans på slutackordet",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Whip in, guldemblemet vrider sig i rymden suddigt med drivande guldpartiklar och ljusläcka, skärps exakt på slaget med glöd och spekulär glans maskad i loggans alfa, ordmärke wipe, rubrik reser sig ur masker, URL-pill med guldgradient som sveps på slutackordet.",
+   "tags": [
+    "endcard",
+    "logo",
+    "blur-reveal",
+    "glint",
+    "cta",
+    "url",
+    "shimmer"
+   ],
+   "path": "library/templates/golfkuponger-friskvard-v2/compositions/s6-cta.html",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Friskvård v2 (byråreklam)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; portalloggor och sajtbilder tillhör respektive ägare – endast egen marknadsföring"
+   },
+   "cost": "free",
+   "requires": [
+    "hyperframes"
+   ],
+   "use": "Ändra LAND (lokal tid för landningen), slutvärdet i count-tweenen och texterna. Ljud: riser som slutar på LAND + boom/impact på LAND (audio/make_cues.py).",
+   "notes": "Bygger på nextphase.motiongraphics.device-orb-countup, omfärgad guld/grön.",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/gk.friskvard-v2.s2-turn.mp4",
+    "still": "library/previews/gk.friskvard-v2.s2-turn.jpg"
+   },
+   "id": "golfkuponger.friskvard-v2.gold-orb-countup",
+   "name": "Guldsfär räknar upp och landar på slaget",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Flash-through öppnar, rubriken föds mitt i bild och FLIP:ar upp när en glödande guldsfär föds; talet räknar 0 → 5 000 (svenskt mellanrum) och landar exakt på ett nedslag med punch, två chockvågsringar, glödpuls, halftonfält och specularsvep; kameran dyker in i guldet som övergång.",
+   "tags": [
+    "count-up",
+    "stat",
+    "orb",
+    "gold",
+    "shockwave",
+    "flip",
+    "transition"
+   ],
+   "path": "library/templates/golfkuponger-friskvard-v2/compositions/s2-turn.html",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Friskvård v2 (byråreklam)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; portalloggor och sajtbilder tillhör respektive ägare – endast egen marknadsföring"
+   },
+   "cost": "free",
+   "requires": [
+    "hyperframes"
+   ],
+   "use": "Lager görs med tools/prep_hook.py (crop → `npx hyperframes remove-background` på en tät crop → luma-keyad himmelsmatte → ren himmelsplatta) och tools/grade.py. Byt orden i #s1-type och HITS.",
+   "notes": "Matta personen på en tät crop – på hela plattan tappade modellen golfbagen.",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/gk.friskvard-v2.s1-hook.mp4",
+    "still": "library/previews/gk.friskvard-v2.s1-hook.jpg"
+   },
+   "id": "golfkuponger.friskvard-v2.hook-text-behind-subject",
+   "name": "Krok: jätteord bakom frilagd golfare, slam + extrusion på kicken",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Foto i tre lager (driftande himmel, träd/fairway, frilagd person) med Anton-ord emellan: varje ord slammar in på ett slag med shutter-motion-blur, 3D-extrusion (text-shadow-stack styrd av --d) poppar och sätter sig, kamera-push + kick, guldglans på sista ordet, ljusläcka ut.",
+   "tags": [
+    "hook",
+    "text-behind-subject",
+    "kinetic-type",
+    "slam",
+    "extrusion",
+    "cinemagraph",
+    "remove-background",
+    "motion-blur"
+   ],
+   "path": "library/templates/golfkuponger-friskvard-v2/compositions/s1-hook.html",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Friskvård v2 (byråreklam)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; portalloggor och sajtbilder tillhör respektive ägare – endast egen marknadsföring"
+   },
+   "cost": "free",
+   "requires": [
+    "hyperframes"
+   ],
+   "use": "Byt bilderna i .s4-plate och ordet i `word`. Brickorna har data-hf-motion-blur (registry motion-blur, laddas som motion-blur.js i roten).",
+   "notes": "Bygger på nextphase.motiongraphics.device-grid-3d + materials (glass tile).",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/gk.friskvard-v2.s4-portals.mp4",
+    "still": "library/previews/gk.friskvard-v2.s4-portals.jpg"
+   },
+   "id": "golfkuponger.friskvard-v2.portal-glass-grid-dive",
+   "name": "Sökfält skriver + loggor som glasbrickor, kameran dyker igenom",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Rubrik + vitt sökfält som skriver ett ord på 16-delar, fyra logotyper som glasbrickor med guldkant flyger ur djupet (z −2600) på 8-delar över ett perspektivgolv, rutnätet tippar i 3D, brickorna sprängs utåt när kameran dyker genom mitten in i en vit flash.",
+   "tags": [
+    "logos",
+    "glass-tile",
+    "3d-grid",
+    "typing",
+    "search",
+    "dive",
+    "transition",
+    "motion-blur"
+   ],
+   "path": "library/templates/golfkuponger-friskvard-v2/compositions/s4-portals.html",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Friskvård v2 (byråreklam)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; portalloggor och sajtbilder tillhör respektive ägare – endast egen marknadsföring"
+   },
+   "cost": "free",
+   "requires": [
+    "hyperframes",
+    "playwright"
+   ],
+   "use": "Fånga ny sida med tools/capture_ui.py (skriver rektanglar i ui.json); fyll WORD/CARD/PRICE med de uppmätta css-rektanglarna och byt bildfilerna.",
+   "notes": "Markören är två lager (multiply guld + 34 % guld) så den syns både på ljus text och mörk botten.",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/gk.friskvard-v2.s3-product.mp4",
+    "still": "library/previews/gk.friskvard-v2.s3-product.jpg"
+   },
+   "id": "golfkuponger.friskvard-v2.real-site-card-lift",
+   "name": "Riktig sajt i 3D: markör, cursor-klick, priskort lyfter ut",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "En helsidesbild av den riktiga sajten (430 css px, DPR 3) reser sig ur djupet, kameran styrs av poser (sidpunkt i bildmitt + skala, anpassade per format), guldmarkör sveper ett DOM-uppmätt ord, kameran tiltar till priskortet, cursor klickar, kortet (eget element-skott med alfa) lyfter ut i 3D med skugga och glans medan sidan mörknar, tre chips poppar på slagen, kortet flyger mot linsen.",
+   "tags": [
+    "product",
+    "real-ui",
+    "website",
+    "camera",
+    "cursor",
+    "highlight",
+    "3d-card",
+    "chips"
+   ],
+   "path": "library/templates/golfkuponger-friskvard-v2/compositions/s3-product.html",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Friskvård v2 (byråreklam)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; portalloggor och sajtbilder tillhör respektive ägare – endast egen marknadsföring"
+   },
+   "cost": "free",
+   "requires": [
+    "hyperframes"
+   ],
+   "use": "Byt bilder, FOCAL (x-fokus per foto), NAMES och SW (byte-tider).",
+   "notes": "Rättar v1-felet där skylten låg ett byte före bilden.",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/gk.friskvard-v2.s5-proof.mp4",
+    "still": "library/previews/gk.friskvard-v2.s5-proof.jpg"
+   },
+   "id": "golfkuponger.friskvard-v2.stat-photo-swaps-synced-tag",
+   "name": "Stor siffra står kvar, foton byts på slaget med synkad namnskylt",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "300+ slammar in på dropet (extrusion + guldglans) och står kvar; fotona hårdbyts med zoom-punch/whip-blur varje takt och kickar på mellanslaget; namnskylten byter text i SAMMA tl.set-tid som fotot (verifierat ruta för ruta i slut-mp4:n); sista bytet får flare + chockvågor och en rad, whip-pan ut.",
+   "tags": [
+    "stat",
+    "photo-cycle",
+    "beat-synced",
+    "name-tag",
+    "flare",
+    "shockwave",
+    "whip"
+   ],
+   "path": "library/templates/golfkuponger-friskvard-v2/compositions/s5-proof.html",
+   "status": "verified"
+  },
+  {
    "kit": "hyperframes",
    "kit_title": "HyperFrames-registret (block, komponenter, exempel) + installerade skills",
    "source": {
@@ -9660,6 +9916,57 @@
    "status": "verified"
   },
   {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Friskvård v2 (byråreklam)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; portalloggor och sajtbilder tillhör respektive ägare – endast egen marknadsföring"
+   },
+   "cost": "free",
+   "requires": [
+    "hyperframes",
+    "chrome",
+    "ffmpeg",
+    "python"
+   ],
+   "use": "Kopiera mappen till work/<namn>/film/. Byt text/bilder i compositions/s*.html (layout per format i L-tabellen överst i varje scen). `python build_index.py` skriver 9:16-roten + syskonprojekten ../film-4x5 och ../film-1x1. Ljud: `python audio/make_cues.py` → motion-studio build_sfx.py → `python audio/mix.py` (−14 LUFS). Rendera med tools/render.sh <9x16|4x5|1x1> <draft|delivery> <ut.mp4> (muxar soundtrack.wav själv). Nya UI-bilder: tools/capture_ui.py (avslår cookies).",
+   "notes": "Renderad i alla tre format och granskad i 3 kritikrundor (docs/review_log.md, alla kriterier 8/10). Musik: ACE-Step-spår F (120 BPM, drop 16 s, slutackord 24 s). 'upp till 5 000 kr/år' är overifierat i faktabanken (F7). Fotona är 2× Lanczos-uppskalade 1672 px-bilder – byt till större original om de finns. Renderarens egen ljudmix sänkte nivån 4 dB, därför muxas ljudet efteråt.",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "video": "library/previews/gk.friskvard-v2.mp4",
+    "still": "library/previews/gk.friskvard-v2.sheet.jpg"
+   },
+   "id": "golfkuponger.friskvard-v2",
+   "name": "Friskvård v2: \"Din chef betalar din golf.\" (9:16 + 4:5 + 1:1)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "25 s premiumreklam på ett 120 BPM-grid: text-bakom-golfaren-krok med extrusion och cinemagraph-himmel → guldsfär som räknar till 5 000 och landar på slaget → riktig golfkuponger.se i 3D (markör, cursor-klick, priskortet lyfter ut, chips) → sökfält + portalloggor som glasbrickor i perspektiv och kameradyk → 300+ med fotobyten på dropet → emblem blur-reveal + glans på slutackordet. Samma tidslinje omkomponerad till 4:5 och 1:1 via data-fmt.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "reklam",
+    "premium",
+    "beat-synced",
+    "text-behind-subject",
+    "count-up",
+    "real-ui",
+    "3d",
+    "motion-blur",
+    "multi-format",
+    "anton",
+    "playfair"
+   ],
+   "path": "library/templates/golfkuponger-friskvard-v2/index.html",
+   "status": "verified"
+  },
+  {
    "kit": "hf-skeletons",
    "kit_title": "HyperFrames skelettmallar, mönster och shaders (Claude Design template-first)",
    "source": {
@@ -11259,6 +11566,46 @@
     "moodboard"
    ],
    "path": ".claude/skills/animate/tools/gallery.mjs",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Friskvård v2 (byråreklam)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; portalloggor och sajtbilder tillhör respektive ägare – endast egen marknadsföring"
+   },
+   "cost": "free",
+   "requires": [
+    "hyperframes",
+    "python"
+   ],
+   "use": "python build_index.py i projektmappen; rendera ../<namn>-4x5 och ../<namn>-1x1 som vanliga projekt.",
+   "notes": "Fallgropar: inuti en sub-komposition är document.querySelector avgränsat till kompositionen (data-fmt hittades inte) och subkompositionens egen data-height styr rotens storlek – därav kopian per format.",
+   "verified_at": "2026-10-08",
+   "preview": {
+    "still": "library/previews/gk.friskvard-v2.formats.jpg"
+   },
+   "id": "golfkuponger.friskvard-v2.multi-format-roots",
+   "name": "En tidslinje → 9:16, 4:5 och 1:1 (omkomponerat, inte beskuret)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "python",
+   "description": "build_index.py skriver 9:16-roten och syskonprojekt för 4:5/1:1 (HyperFrames tillåter en rot per projekt): scenfilerna kopieras med rätt data-height, assets är en junction, data-fmt på roten läses i scenerna via root.closest('[data-fmt]') och väljer layouttabell.",
+   "tags": [
+    "multi-format",
+    "reframe",
+    "aspect-ratio",
+    "build",
+    "workflow"
+   ],
+   "path": "library/templates/golfkuponger-friskvard-v2/build_index.py",
    "status": "verified"
   },
   {

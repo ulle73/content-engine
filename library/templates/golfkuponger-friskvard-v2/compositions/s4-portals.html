@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: 'Playfair Display'; src: url("assets/fonts/playfair-500.woff2") format('woff2'); font-weight: 500; font-style: normal; font-display: block; }
+        @font-face { font-family: 'Playfair Display'; src: url("assets/fonts/playfair-500-italic.woff2") format('woff2'); font-weight: 500; font-style: italic; font-display: block; }
+        @font-face { font-family: 'Inter'; src: url("assets/fonts/inter-500.woff2") format('woff2'); font-weight: 500; font-display: block; }
+        @font-face { font-family: 'Inter'; src: url("assets/fonts/inter-600.woff2") format('woff2'); font-weight: 600; font-display: block; }
+        #root { position: absolute; inset: 0; overflow: hidden; background: #01170F; }
+        #s4-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 90% 55% at 50% 62%, #0D4630 0%, #062B1D 50%, #01170F 100%); }
+        /* perspective floor of gold hairlines (depth cue, recedes to a horizon) */
+        #s4-floorwrap { position: absolute; left: -50%; width: 200%; perspective: 900px; perspective-origin: 50% 0%; }
+        #s4-floor { position: absolute; inset: 0; transform-origin: 50% 0%; transform: rotateX(72deg);
+          background-image: linear-gradient(rgba(214, 165, 54, 0.32) 2px, transparent 2px), linear-gradient(90deg, rgba(214, 165, 54, 0.32) 2px, transparent 2px);
+          background-size: 120px 120px;
+          -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 70%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 70%, transparent 100%); }
+        #s4-world { position: absolute; inset: 0; }
+        #s4-head { position: absolute; left: 0; right: 0; text-align: center; font-family: 'Playfair Display', serif; font-weight: 500;
+          color: #F8F4EC; line-height: 1.04; letter-spacing: -0.015em; }
+        #s4-head em { font-style: italic; color: #E9C46A; }
+        .s4-ln { display: block; overflow: hidden; padding-bottom: 0.1em; }
+        .s4-li { display: inline-block; }
+        #s4-search { position: absolute; left: 50%; display: flex; align-items: center; gap: 26px; padding: 0 40px; border-radius: 999px;
+          background: #FFFDF8; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 0 3px rgba(214, 165, 54, 0.7), 0 0 50px rgba(214, 165, 54, 0.25);
+          font-family: 'Inter', sans-serif; font-weight: 500; color: #142018; white-space: nowrap; }
+        #s4-search svg { flex: none; }
+        #s4-typed { display: inline-block; }
+        #s4-caret { display: inline-block; width: 4px; background: #073C2B; margin-left: 4px; vertical-align: middle; }
+        #s4-gridwrap { position: absolute; left: 0; right: 0; perspective: 1700px; }
+        #s4-grid { position: absolute; left: 50%; top: 0; transform-style: preserve-3d; }
+        .s4-tile { position: absolute; border-radius: 30px; padding: 16px; transform-style: preserve-3d;
+          background: linear-gradient(160deg, rgba(255, 236, 190, 0.38), rgba(214, 165, 54, 0.12) 45%, rgba(7, 60, 43, 0.35));
+          border: 2px solid rgba(255, 226, 160, 0.75);
+          box-shadow: inset 0 3px 12px -2px rgba(255, 255, 255, 0.9), 0 0 40px rgba(214, 165, 54, 0.35), 0 30px 60px rgba(0, 0, 0, 0.5); }
+        .s4-plate { position: absolute; inset: 16px; border-radius: 18px; background: #ffffff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .s4-plate img { width: 92%; height: 92%; object-fit: contain; display: block; }
+        .s4-rim { position: absolute; inset: -2px; border-radius: 30px; pointer-events: none; opacity: 0;
+          box-shadow: 0 0 0 4px #FFE7A8, 0 0 60px 10px rgba(255, 220, 140, 0.8); }
+        #s4-alt { position: absolute; left: 0; right: 0; text-align: center; font-family: 'Inter', sans-serif; font-weight: 600;
+          color: #F8F4EC; letter-spacing: 0.02em; }
+        #s4-alt b { color: #E9C46A; font-weight: 600; }
+        #s4-flash { position: absolute; inset: 0; background: #FFF6E2; opacity: 0; pointer-events: none; }
+      </style>
+
+      <div id="root" data-composition-id="s4-portals" data-width="1080" data-height="1920" data-duration="3">
+        <div id="s4-bg"></div>
+        <div id="s4-floorwrap"><div id="s4-floor"></div></div>
+        <div id="s4-world">
+          <div id="s4-head"><span class="s4-ln"><span class="s4-li">Sök <em>Golfkuponger</em></span></span><span class="s4-ln"><span class="s4-li">i din förmånsportal</span></span></div>
+          <div id="s4-search">
+            <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#073C2B" stroke-width="2.6"/><path d="M15.5 15.5L21 21" stroke="#073C2B" stroke-width="2.6" stroke-linecap="round"/></svg>
+            <span id="s4-typed"></span><span id="s4-caret"></span>
+          </div>
+          <div id="s4-gridwrap">
+            <div id="s4-grid">
+              <div class="s4-tile" id="s4-t1" data-hf-motion-blur='{"samplesPerFrame": 24}'><div class="s4-plate"><img src="assets/portal-benifex.png" alt=""></div><div class="s4-rim"></div></div>
+              <div class="s4-tile" id="s4-t2" data-hf-motion-blur='{"samplesPerFrame": 24}'><div class="s4-plate"><img src="assets/portal-epassi.jpg" alt=""></div><div class="s4-rim"></div></div>
+              <div class="s4-tile" id="s4-t3" data-hf-motion-blur='{"samplesPerFrame": 24}'><div class="s4-plate"><img src="assets/portal-soderberg-partners.jpg" alt=""></div><div class="s4-rim"></div></div>
+              <div class="s4-tile" id="s4-t4" data-hf-motion-blur='{"samplesPerFrame": 24}'><div class="s4-plate"><img src="assets/portal-edenred.jpg" alt=""></div><div class="s4-rim"></div></div>
+            </div>
+          </div>
+          <div id="s4-alt">… eller direkt på <b>golfkuponger.se</b></div>
+        </div>
+        <div id="s4-flash"></div>
+      </div>
+
+      <script>
+        (function () {
+          const root = document.querySelector('[data-composition-id="s4-portals"]');
+          const $ = (s) => root.querySelector(s);
+          const FMT = (root.closest('[data-fmt]') || { dataset: {} }).dataset.fmt || '9x16';
+          const L = {
+            '9x16': { H: 1920, head: 250, hs: 104, pill: 560, ph: 128, pw: 860, pf: 50, gy: 1230, tw: 430, th: 310, gap: 36, alt: 1680, af: 48 },
+            '4x5':  { H: 1350, head: 80,  hs: 86,  pill: 330, ph: 108, pw: 760, pf: 44, gy: 820, tw: 370, th: 250, gap: 30, alt: 1180, af: 42 },
+            '1x1':  { H: 1080, head: 52,  hs: 70,  pill: 248, ph: 92,  pw: 640, pf: 38, gy: 640, tw: 320, th: 200, gap: 26, alt: 940, af: 38 },
+          }[FMT];
+          const head = $('#s4-head'); head.style.top = L.head + 'px'; head.style.fontSize = L.hs + 'px';
+          Object.assign($('#s4-search').style, { top: L.pill + 'px', height: L.ph + 'px', width: L.pw + 'px', marginLeft: -L.pw / 2 + 'px', fontSize: L.pf + 'px' });
+          const ic = $('#s4-search svg'); ic.style.width = ic.style.height = L.pf * 1.1 + 'px';
+          $('#s4-caret').style.height = L.pf * 1.1 + 'px';
+          $('#s4-gridwrap').style.top = L.gy + 'px';
+          $('#s4-gridwrap').style.perspectiveOrigin = '50% 0px';
+          const tiles = ['#s4-t1', '#s4-t2', '#s4-t3', '#s4-t4'].map((s) => $(s));
+          tiles.forEach((t, i) => {
+            const cx = (i % 2 === 0 ? -1 : 1) * (L.tw + L.gap) / 2, cy = (i < 2 ? -1 : 1) * (L.th + L.gap) / 2;
+            Object.assign(t.style, { width: L.tw + 'px', height: L.th + 'px', left: cx - L.tw / 2 + 'px', top: cy - L.th / 2 + 'px' });
+          });
+          Object.assign($('#s4-alt').style, { top: L.alt + 'px', fontSize: L.af + 'px' });
+          Object.assign($('#s4-floorwrap').style, { top: (L.gy - 40) + 'px', height: (L.H - L.gy + 400) + 'px' });
+          $('#s4-world').style.transformOrigin = '50% ' + L.gy + 'px';
+
+          const tl = gsap.timeline({ paused: true });
+          // 0.00 (13.00) hard cut in: headline lines rise, search pill drops in
+          root.querySelectorAll('.s4-li').forEach((el, i) => tl.fromTo(el, { yPercent: 45, opacity: 0.35 }, { yPercent: 0, opacity: 1, duration: 0.45, ease: 'expo.out' }, 0.0 + i * 0.08));
+          tl.fromTo('#s4-search', { y: -30, scale: 0.9, opacity: 0.5 }, { y: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.8)' }, 0.0);
+          tl.fromTo('#s4-floor', { backgroundPositionY: '0px' }, { backgroundPositionY: '240px', duration: 3, ease: 'none' }, 0);
+          // typing "Golfkuponger" on 16ths from 0.25 (13.25) to 1.0 (14.00)
+          const typed = $('#s4-typed'); const word = 'Golfkuponger';
+          for (let i = 0; i <= word.length; i++) tl.set(typed, { textContent: word.slice(0, i) }, i === 0 ? 0 : 0.25 + (i - 1) * 0.0625);
+          // caret blinks on 8ths (deterministic sets)
+          for (let k = 0; k < 24; k++) { const t = k * 0.125; tl.set('#s4-caret', { opacity: (t >= 0.25 && t <= 1.05) || k % 2 === 0 ? 1 : 0 }, t); }
+
+          // 1.00 / 1.25 / 1.50 / 1.75 (14.00–14.75) tiles fly out of depth into the grid
+          tiles.forEach((t, i) => {
+            const at = 1.0 + i * 0.25;
+            tl.fromTo(t, { z: -2600, rotationY: (i % 2 ? 50 : -50), rotationX: 30, opacity: 0 },
+              { z: 0, rotationY: 0, rotationX: 0, opacity: 1, duration: 0.5, ease: 'expo.out' }, at - 0.2);
+            tl.fromTo(t.querySelector('.s4-rim'), { opacity: 1 }, { opacity: 0, duration: 0.45, ease: 'power2.out', immediateRender: false }, at + 0.02);
+          });
+          tl.fromTo('#s4-alt', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: 'expo.out' }, 1.9);
+
+          // 2.00 (15.00) the grid tips into perspective; 2.45–3.00 the camera dives through its centre
+          tl.to('#s4-grid', { rotationX: 24, rotationY: -18, duration: 0.9, ease: 'power2.inOut' }, 1.95);
+          tl.to(['#s4-head', '#s4-search', '#s4-alt'], { opacity: 0, y: -50, duration: 0.3, ease: 'power2.in', stagger: 0.04 }, 2.45);
+          tl.to('#s4-world', { scale: 9, duration: 0.55, ease: 'power4.in' }, 2.45);
+          tiles.forEach((t, i) => tl.to(t, { x: (i % 2 ? 1 : -1) * 900, y: (i < 2 ? -1 : 1) * 700, duration: 0.5, ease: 'power3.in' }, 2.5));
+          tl.fromTo('#s4-flash', { opacity: 0 }, { opacity: 1, duration: 0.14, ease: 'power2.in' }, 2.86);
+
+          window.__timelines['s4-portals'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

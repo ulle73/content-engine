@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8"></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: 'Anton'; src: url("assets/fonts/anton.woff2") format('woff2'); font-weight: 400; font-display: block; }
+        #root { position: absolute; inset: 0; overflow: hidden; background: #0b2a1c; }
+        #s1-cam { position: absolute; inset: 0; transform-origin: 50% 62%; }
+        #s1-shake { position: absolute; inset: 0; }
+        .s1-plate { position: absolute; left: 0; top: 0; width: 2280px; height: 2463px; display: block; }
+        #s1-sky-wrap, #s1-fg-wrap, #s1-golfer-wrap { position: absolute; inset: 0; }
+        #s1-golfer-wrap { transform-origin: 762px 1641px; }
+        /* the sky gets a warm top-down density so cream type always has a dark rim to sit on */
+        #s1-skyshade { position: absolute; inset: 0; pointer-events: none;
+          background: linear-gradient(180deg, rgba(150, 96, 24, 0.55) 0%, rgba(190, 130, 40, 0.30) 30%, rgba(0, 0, 0, 0) 52%); mix-blend-mode: multiply; }
+        #s1-type { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; }
+        .s1-line { display: block; font-family: 'Anton', sans-serif; font-weight: 400; text-transform: uppercase;
+          line-height: 0.9; letter-spacing: 0.005em; white-space: nowrap; color: #F8F4EC;
+          --d: 0;
+          text-shadow:
+            calc(var(--d) * 0.12px) calc(var(--d) * 0.14px) 0 #0d4630,
+            calc(var(--d) * 0.24px) calc(var(--d) * 0.28px) 0 #0c412c,
+            calc(var(--d) * 0.36px) calc(var(--d) * 0.42px) 0 #0a3b28,
+            calc(var(--d) * 0.48px) calc(var(--d) * 0.56px) 0 #093524,
+            calc(var(--d) * 0.60px) calc(var(--d) * 0.70px) 0 #072f20,
+            calc(var(--d) * 0.72px) calc(var(--d) * 0.84px) 0 #06291b,
+            calc(var(--d) * 0.84px) calc(var(--d) * 0.98px) 0 #042317,
+            calc(var(--d) * 0.96px) calc(var(--d) * 1.12px) 0 #031d13,
+            calc(var(--d) * 1.08px) calc(var(--d) * 1.26px) 0 #02180f,
+            calc(var(--d) * 1.20px) calc(var(--d) * 1.40px) 0 #01140c,
+            calc(var(--d) * 1.6px) calc(var(--d) * 2.2px) calc(var(--d) * 1.6px) rgba(0, 12, 6, 0.55); }
+        .s1-gold { color: #E3B548; background: linear-gradient(100deg, #C8922A 0%, #F2D27A 38%, #FFF1C4 50%, #F2D27A 62%, #C8922A 100%);
+          background-size: 260% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text;
+          -webkit-text-fill-color: transparent; }
+        .s1-gold-line { position: relative; }
+        .s1-gold-line .s1-ext { color: #B98516; }
+        .s1-gold-line .s1-gold { position: absolute; left: 0; top: 0; text-shadow: none; }
+        /* exit light leak (first half of the flash-through; s2 opens on the matching white-gold) */
+        #s1-leak { position: absolute; left: -50%; top: -40%; width: 200%; height: 180%; pointer-events: none; opacity: 0;
+          background: radial-gradient(closest-side, rgba(255, 250, 235, 1) 0%, rgba(255, 214, 140, 0.95) 30%, rgba(214, 165, 54, 0.6) 55%, rgba(214, 165, 54, 0) 75%);
+          filter: blur(20px); }
+        #s1-flash { position: absolute; inset: 0; background: #FFF6E2; opacity: 0; pointer-events: none; }
+      </style>
+
+      <div id="root" data-composition-id="s1-hook" data-width="1080" data-height="1920" data-duration="3">
+        <div id="s1-cam">
+          <div id="s1-shake">
+            <div id="s1-sky-wrap"><img id="s1-sky" class="s1-plate" src="assets/hook-sky-g.jpg" alt=""></div>
+            <div id="s1-fg-wrap"><img id="s1-fg" class="s1-plate" src="assets/hook-fg-g.webp" alt=""></div>
+            <div id="s1-skyshade"></div>
+            <div id="s1-type">
+              <span id="s1-w1" class="s1-line" data-hf-motion-blur='{"samplesPerFrame": 16}'>Din chef</span>
+              <span id="s1-w2" class="s1-line" data-hf-motion-blur='{"samplesPerFrame": 16}'>betalar</span>
+              <span id="s1-w3" data-layout-allow-overlap data-layout-allow-occlusion class="s1-line s1-gold-line" data-hf-motion-blur='{"samplesPerFrame": 16}'>Din golf.</span>
+            </div>
+            <div id="s1-golfer-wrap"><img id="s1-golfer" class="s1-plate" src="assets/hook-golfer-g.png" alt=""></div>
+          </div>
+        </div>
+        <div id="s1-leak"></div>
+        <div id="s1-flash"></div>
+      </div>
+
+      <script>
+        (function () {
+          const root = document.querySelector('[data-composition-id="s1-hook"]');
+          const $ = (s) => root.querySelector(s);
+          const FMT = (root.closest('[data-fmt]') || { dataset: {} }).dataset.fmt || '9x16';
+          // per-format framing of the 2280x2463 plate (golfer bbox in plate px: x 648-876, y 1194-1641)
+          const L = {
+            '9x16': { px: -200, py: -250, fs: 250, top: 410, gap: 0 },
+            '4x5':  { px: -222, py: -360, fs: 236, top: 175, gap: 0 },
+            '1x1':  { px: -222, py: -480, fs: 186, top: 70, gap: 0 },
+          }[FMT];
+          root.querySelectorAll('.s1-plate').forEach((im) => { im.style.left = L.px + 'px'; im.style.top = L.py + 'px'; });
+          $('#s1-golfer-wrap').style.transformOrigin = (762 + L.px) + 'px ' + (1641 + L.py) + 'px';
+          const type = $('#s1-type');
+          type.style.top = L.top + 'px';
+          root.querySelectorAll('.s1-line').forEach((el) => { el.style.fontSize = L.fs + 'px'; });
+          // gold face for DIN GOLF.: extrusion stays on the outer span, gradient fill on the inner span
+          const w3 = $('#s1-w3');
+          w3.innerHTML = '<span class="s1-ext" data-layout-allow-overlap data-layout-allow-occlusion>Din golf.</span><span class="s1-gold" id="s1-w3g" data-layout-allow-overlap data-layout-allow-occlusion>Din golf.</span>';
+
+          const tl = gsap.timeline({ paused: true });
+          const B = 0.5;                       // 120 BPM
+          const HITS = [0.0, 1.0, 2.0];        // DIN CHEF · BETALAR · DIN GOLF.
+          const words = ['#s1-w1', '#s1-w2', '#s1-w3'].map((s) => $(s));
+
+          // camera: slow push across the scene + a faster push into the flash at the end
+          tl.fromTo('#s1-cam', { scale: 1.0 }, { scale: 1.075, duration: 2.75, ease: 'power1.inOut' }, 0);
+          tl.to('#s1-cam', { scale: 1.32, duration: 0.25, ease: 'power3.in' }, 2.75);
+          // depth: sky drifts (cinemagraph), trees creep, golfer walks toward us faster than the plate
+          tl.fromTo('#s1-sky-wrap', { x: 0, scale: 1.0 }, { x: -46, scale: 1.035, duration: 3, ease: 'none' }, 0);
+          tl.fromTo('#s1-fg-wrap', { scale: 1.0 }, { scale: 1.012, duration: 3, ease: 'none' }, 0);
+          tl.fromTo('#s1-golfer-wrap', { scale: 1.0 }, { scale: 1.05, duration: 3, ease: 'none' }, 0);
+          // type plane drifts slightly against the plate (it lives between trees and golfer)
+          tl.fromTo('#s1-type', { y: 14 }, { y: -10, duration: 3, ease: 'none' }, 0);
+
+          // word slams: land on the kick, extrusion pops then settles to a held depth
+          words.forEach((el, i) => {
+            const t = HITS[i];
+            const from = i === 0 ? { scale: 1.32, opacity: 1, y: -16 } : { scale: 2.3, opacity: 0, y: -60 };
+            const t0 = i === 0 ? 0 : t - 0.16;
+            tl.fromTo(el, from, { scale: 1, opacity: 1, y: 0, duration: i === 0 ? 0.2 : 0.16, ease: 'power4.in' }, t0);
+            tl.fromTo(el, { '--d': 0 }, { '--d': 46, duration: 0.09, ease: 'power2.out', immediateRender: false }, t);
+            tl.to(el, { '--d': 22, duration: 0.5, ease: 'power3.out' }, t + 0.09);
+          });
+          // hidden until their beat (set at t=0 so seeking back is clean)
+          tl.set(words[1], { opacity: 0 }, 0);
+          tl.set(words[2], { opacity: 0 }, 0);
+          // gold glint across DIN GOLF. one beat after it lands
+          tl.fromTo('#s1-w3g', { backgroundPosition: '100% 0' }, { backgroundPosition: '0% 0', duration: 0.55, ease: 'power2.inOut' }, 2.2);
+
+          // camera kicks on each hit: decaying shake computed from t alone (pure function)
+          const shake = $('#s1-shake');
+          const drv = { t: 0 };
+          const amps = [10, 14, 22];
+          tl.fromTo(drv, { t: 0 }, { t: 3, duration: 3, ease: 'none', onUpdate: () => {
+            const t = drv.t; let sx = 0, sy = 0, s = 0;
+            HITS.forEach((h, k) => {
+              const dt = t - h; if (dt < 0 || dt > 0.6) return;
+              const e = Math.exp(-dt * 9) * amps[k];
+              sx += Math.sin(dt * 61 + k * 3) * e; sy += Math.cos(dt * 53 + k * 5) * e;
+              s += Math.exp(-dt * 14) * 0.022 * (k + 1) / 2;
+            });
+            shake.style.transform = `translate(${sx.toFixed(2)}px, ${sy.toFixed(2)}px) scale(${(1 + s).toFixed(4)})`;
+          } }, 0);
+
+          // exit: warm leak blooms from the upper right and whites out exactly on 3.0
+          tl.fromTo('#s1-leak', { opacity: 0, x: 420, y: -200, scale: 0.7 }, { opacity: 1, x: 0, y: 0, scale: 1.25, duration: 0.42, ease: 'power2.in' }, 2.58);
+          tl.fromTo('#s1-flash', { opacity: 0 }, { opacity: 1, duration: 0.14, ease: 'power2.in' }, 2.86);
+
+          window.__timelines['s1-hook'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

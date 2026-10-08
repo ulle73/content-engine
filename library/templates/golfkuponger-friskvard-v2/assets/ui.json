@@ -1,0 +1,77 @@
+{
+ "url": "https://golfkuponger.se/pages/friskvard",
+ "css_width": 430,
+ "dpr": 3,
+ "crop_h": 2600,
+ "phrases": {
+  "friskvårdsbidraget": [
+   {
+    "x": 67.375,
+    "y": 180.203125,
+    "w": 295.25,
+    "h": 52
+   }
+  ],
+  "300+ anslutna golfklubbar": [
+   {
+    "x": 236.796875,
+    "y": 321.609375,
+    "w": 174.6875,
+    "h": 17
+   }
+  ],
+  "greenfee, range, golflektioner": [
+   {
+    "x": 265.15625,
+    "y": 279.609375,
+    "w": 109.484375,
+    "h": 17
+   },
+   {
+    "x": 22.84375,
+    "y": 300.609375,
+    "w": 82.859375,
+    "h": 17
+   }
+  ],
+  "upp till 5 000 kr per år": [
+   {
+    "x": 140.0625,
+    "y": 1322.109375,
+    "w": 145.828125,
+    "h": 17
+   }
+  ],
+  "Köp via din": [
+   {
+    "x": 125.78125,
+    "y": 1180.703125,
+    "w": 178.421875,
+    "h": 52
+   }
+  ],
+  "Populärast": [
+   {
+    "x": 186.078125,
+    "y": 425.609375,
+    "w": 57.84375,
+    "h": 14
+   }
+  ],
+  "2,000 kr": [
+   {
+    "x": 153.90625,
+    "y": 535.609375,
+    "w": 122.1875,
+    "h": 48
+   }
+  ]
+ },
+ "card": {
+  "x": 52.5,
+  "y": 425.609375,
+  "w": 325,
+  "h": 450,
+  "cls": "gk-package gk-package-card gk-shared-purchase-card gk-package--featured is-gk-carousel-active"
+ }
+}
