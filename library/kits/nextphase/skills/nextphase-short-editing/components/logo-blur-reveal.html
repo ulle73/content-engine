@@ -1,0 +1,63 @@
+<!-- LOGO BLUR-REVEAL — the house hook brick.
+     See reference/logo-reveal.md. Two numbers to set:
+       IN     = when the blurred logo appears (usually the composition start)
+       REVEAL = the transcript word onset of the product NAME
+     Everything else is measured and should not be eyeballed. -->
+
+<div id="lr" class="clip topzone" data-start="0.20" data-duration="7.60" data-track-index="4">
+  <div class="inr">
+    <div class="logowrap">
+      <span class="glow"></span>
+      <img class="logo" src="assets/broll/orca-icon.png" alt="">
+    </div>
+    <div class="wordmark"><b>Orca</b></div>
+    <div class="credit">github.com/stablyai/orca · MIT</div>
+  </div>
+</div>
+
+<style>
+/* the logo sits on a plain token background — never on top of a screenshot */
+.logowrap{position:relative;display:flex;align-items:center;justify-content:center;
+  width:360px;height:360px}
+.logo{position:relative;width:360px;height:360px;object-fit:contain;display:block;
+  border-radius:64px;z-index:2}
+.glow{position:absolute;left:50%;top:50%;width:320px;height:320px;margin:-160px 0 0 -160px;
+  border-radius:50%;background:radial-gradient(circle,rgba(217,119,87,.28),transparent 68%);
+  z-index:1}
+.wordmark b{font-family:var(--font-mono);font-weight:700;font-size:84px;color:var(--ink);
+  letter-spacing:-.02em}
+</style>
+
+<script>
+// ---- set these two ----------------------------------------------------------
+const IN = 0.20, REVEAL = 7.04;
+// -----------------------------------------------------------------------------
+
+// 1 · arrive already blurred, slightly oversized
+tl.fromTo("#lr .logo",
+  {opacity:0, scale:1.12, filter:"blur(26px)"},
+  {opacity:1, duration:.55, ease:"power2.out"}, IN);
+
+// 2 · never a frozen frame while it holds — slow drift + breathing glow
+tl.to("#lr .logo",   {scale:1.16, duration:REVEAL-IN, ease:"none"}, IN);
+tl.to("#lr .glow",   {scale:1.14, opacity:.62, duration:1.6, ease:"sine.inOut",
+                      repeat:Math.max(0, Math.floor((REVEAL-IN)/1.6)-1), yoyo:true}, IN);
+
+// 3 · THE REVEAL — blur resolves on the exact word onset of the name
+tl.to("#lr .logo",   {filter:"blur(0px)", scale:1.0, duration:.62, ease:"power3.out"}, REVEAL);
+tl.to("#lr .glow",   {scale:1.5, opacity:0, duration:.7, ease:"power2.out"}, REVEAL);
+
+// 4 · the wordmark lands AFTER the logo resolves, never with it
+tl.fromTo("#lr .wordmark b",
+  {opacity:0, y:22}, {opacity:1, y:0, duration:.42, ease:"power3.out"}, REVEAL + 0.12);
+
+// 5 · hard kills so a non-linear seek can never leave stale state
+tl.set("#lr .logo", {filter:"blur(0px)", scale:1}, REVEAL + 0.62);
+tl.set("#lr .glow", {opacity:0}, REVEAL + 0.70);
+</script>
+
+<!-- SFX (goes in sfx-cues.txt, not here):
+     <IN+0.10>  riser            0.09   # crests on the reveal
+     <REVEAL>   magic-reveal     0.15   # the hero moment
+     <REVEAL+0.12> futuristic-click 0.11 # the wordmark
+-->

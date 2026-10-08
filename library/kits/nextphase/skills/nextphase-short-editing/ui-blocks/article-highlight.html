@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>article-highlight</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/*  ⚠ SUPERSEDED 2026-08-10 by page-highlight.html + scripts/shoot-page-9x16.py.
+    Kept only as the record of the technique. Do NOT use it in a cut: it hardcodes its
+    screenshot, nudges its marker rects by eye, wears browser chrome, and paints FIVE
+    highlights at once — and the rule is now ONE mark on screen at a time (BLACKLIST #3c).
+
+    article-highlight — a REAL article screenshot, framed as a browser page, with a
+    yellow marker sweeping the real words. 1080x1920.  ?zoom=on|off  ?plate=none
+
+    The camera pushes in slowly for the whole shot and drifts DOWN the page, so it
+    reads as leaning in to read rather than as a zoom effect. It never cuts between
+    highlights — a jump per phrase reads as five separate shots.
+
+    Two things that make the marker read as ink and not as a rectangle:
+      · mix-blend-mode:multiply — the words stay dark THROUGH the highlight
+      · scaleX 0→1 from a left origin — the marker draws, it does not appear
+
+    Rect positions are in PERCENT of the screenshot and have to be nudged by eye;
+    the text is a bitmap, so there is no selector to anchor to. One line ≈ ±5% top. */
+:root{
+  --T:7s; --ease:cubic-bezier(.4,0,.2,1);
+  --mono:"JetBrains Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{background:#fff}
+body.bare{background:transparent}
+
+/* the camera: one continuous push + downward drift, never a cut */
+#cam{position:absolute;inset:0;transform-origin:540px 960px;
+  animation:read var(--T) linear infinite both}
+@keyframes read{
+  0%  {transform:translate(0,0) scale(1)}
+  92% {transform:translate(0,-330px) scale(1.30)}
+  100%{transform:translate(0,-345px) scale(1.32)}
+}
+body.nozoom #cam{animation:none}
+
+.chrome{position:absolute;top:0;left:0;right:0;height:104px;background:#e9e6df;z-index:3;
+  display:flex;align-items:center;gap:14px;padding:0 34px;border-bottom:1px solid #d7d2c8}
+.chrome .dot{width:20px;height:20px;border-radius:50%;background:#cfc9bd}
+.chrome .dot.r{background:#E0655A}.chrome .dot.y{background:#E7B23C}.chrome .dot.g{background:#5FB07A}
+.chrome .url{margin-left:18px;flex:1;background:#fff;border-radius:16px;padding:16px 26px;
+  font:500 26px var(--mono);color:#6b6660;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chrome .url b{color:#191817}
+.doc{position:absolute;top:150px;left:60px;width:960px;z-index:1}
+.doc img{display:block;width:100%}
+
+.hl{position:absolute;background:#F7E23C;opacity:.62;border-radius:4px;
+  mix-blend-mode:multiply;transform:scaleX(0);transform-origin:left center;
+  animation:sweep var(--T) var(--ease) infinite both;animation-delay:var(--d,0s)}
+@keyframes sweep{
+  0%{transform:scaleX(0)} 6%{transform:scaleX(1)}
+  94%{transform:scaleX(1);opacity:.62} 100%{transform:scaleX(1);opacity:.62}}
+</style>
+</head>
+<body>
+<div id="cam">
+  <div class="chrome">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="url"><b>anthropic.com</b>/news</span>
+  </div>
+  <div class="doc">
+    <img src="../pages/example-page.png" alt="">
+    <!-- nudged onto the real lines. One line up or down ≈ ±5% top. -->
+    <div class="hl" style="left:2.5%;top:6.6%;width:43%;height:3.6%;--d:.30s"></div>
+    <div class="hl" style="left:2.5%;top:12.4%;width:66%;height:3.2%;--d:1.5s"></div>
+    <div class="hl" style="left:2.5%;top:28.2%;width:47%;height:3.6%;--d:2.7s"></div>
+    <div class="hl" style="left:2.5%;top:58.0%;width:58%;height:3.2%;--d:3.9s"></div>
+    <div class="hl" style="left:2.5%;top:81.2%;width:52%;height:3.6%;--d:5.0s"></div>
+  </div>
+</div>
+<script>
+  const q = new URLSearchParams(location.search);
+  if (q.get("zoom") === "off") document.body.classList.add("nozoom");
+  if (q.get("plate") === "none") document.body.classList.add("bare");
+
+/* ?seek=<seconds> — pause every animation at one instant. Lets a headless shot land on
+   the settled frame instead of wherever the 6s loop happened to be. */
+(() => {
+  const s = new URLSearchParams(location.search).get("seek");
+  if (s === null) return;
+  const go = () => document.getAnimations().forEach(a => { a.pause(); a.currentTime = parseFloat(s) * 1000; });
+  requestAnimationFrame(() => requestAnimationFrame(() => { go(); setTimeout(go, 250); }));
+})();
+</script>
+</body>
+</html>

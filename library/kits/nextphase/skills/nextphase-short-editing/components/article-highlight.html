@@ -1,0 +1,58 @@
+<!-- ============================================================================
+  BRICK: article-highlight  ·  a REAL browser SCREENSHOT of an article filling
+  the 9:16 frame like a white page, with a yellow highlighter that sweeps the
+  actual words IN SYNC with the voice. (Jad's reference: a Word-doc page with
+  scattered yellow highlights — but real, "as if taken from the browser".)
+
+  WHEN: Jad references something with a source — headline, stat, quote, claim.
+  Show the genuine article page and highlight the real words as he says them.
+
+  HOW TO BUILD (screenshot-based — never re-typeset the text)
+  1. Browser: open the real article, scroll to the BODY. `zoom`+save_to_disk a
+     tall region of the paragraph text → assets/broll/<slug>.png. Real words only.
+  2. Frame it as a browser page: white #fff root + a slim chrome bar at top
+     (traffic-light dots + the real URL). Place the screenshot full-bleed
+     (width:1080) just below the bar so the white page fills the reel frame.
+  3. For each phrase to highlight, add a <div class="hl"> positioned in PERCENT
+     of the screenshot (left/top/width/height %). Render a snapshot and NUDGE the
+     %s until each rect hugs its phrase (line height ≈ 5.6% here; one line up/down
+     = ±~5% top). Expect 1-2 nudge passes — do them.
+  4. Animate each rect scaleX 0->1 (left origin) = the marker drawing across.
+     Anchor t to the TRANSCRIPT WORD ONSET where he says that phrase (never ahead);
+     duration = spoken length. Scatter 5-8 highlights across the paragraphs.
+  5. Highlighter = semi-transparent yellow (#F7E23C ~.62) with
+     mix-blend-mode:multiply → reads like a real highlighter pen on the page.
+  6. This is a full-screen b-roll takeover; captions drop to the lower third.
+
+  RULES: real screenshot + real words only, never re-typed/invented. No emojis.
+============================================================================ -->
+<style>
+  #root{background:#ffffff}
+  .chrome{position:absolute;top:0;left:0;right:0;height:104px;background:#e9e6df;display:flex;align-items:center;gap:14px;padding:0 34px;z-index:3;border-bottom:1px solid #d7d2c8}
+  .chrome .dot{width:20px;height:20px;border-radius:50%;background:#cfc9bd}
+  .chrome .dot.r{background:#E0655A}.chrome .dot.y{background:#E7B23C}.chrome .dot.g{background:#5FB07A}
+  .chrome .url{margin-left:18px;flex:1;background:#fff;border-radius:16px;padding:16px 26px;font-family:var(--font-mono);font-size:26px;color:#6b6660;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chrome .url b{color:#191817}
+  .doc{position:absolute;top:150px;left:0;width:1080px;z-index:1}
+  .doc img{display:block;width:1080px}
+  /* highlighter overlay — % of the screenshot, over the real words */
+  .hl{position:absolute;background:#F7E23C;opacity:.62;border-radius:4px;transform:scaleX(0);transform-origin:left center;mix-blend-mode:multiply}
+</style>
+
+<!-- markup (swap in the REAL body screenshot + its real URL; set each .hl over its phrase) -->
+<div class="chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url"><b>engadget.com</b>/openai-admits-models-hacked-hugging-face</span></div>
+<div class="doc" id="doc">
+  <img src="assets/broll/engadget-body.png" alt=""/>
+  <div class="hl" id="h1" style="left:43%;top:0.5%;width:14%;height:5.6%"></div>
+  <div class="hl" id="h2" style="left:36%;top:11%;width:55%;height:5.6%"></div>
+  <div class="hl" id="h3" style="left:29.5%;top:22.8%;width:38%;height:5.6%"></div>
+  <!-- …scatter 5-8 across the paragraphs… -->
+</div>
+
+<script>
+  // highlighter sweep — marker draws across the real words on the beat.
+  // t = transcript word onset; d = spoken duration of the phrase.
+  const sweep=(id,t,d)=>tl.fromTo(document.getElementById(id),
+     {scaleX:0},{scaleX:1,duration:d,ease:"power2.inOut"},t);
+  // e.g.  sweep('h1', 8.90, 0.45);  sweep('h2', 9.60, 1.10);  ...
+</script>

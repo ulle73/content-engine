@@ -1,0 +1,88 @@
+<!doctype html>
+<!--
+  caption-styles — the three NextPhase word-by-word caption styles as one runnable reference.
+  Added at the content-engine import: the kit only described them in prose
+  (reference/HOW-WE-EDIT.md "CAPTIONS — three styles", nextphase-long-editing/reference/design-system.md).
+  This file implements that spec so it can be previewed and copied:
+
+    PARALLAX      Instrument Serif, --red, big; enters with a vertical stretch scaleY 2.8 -> 1
+    WEIGHT SHIFT  Montserrat; weight 300 crossfades into 900 as the word lands, scale .85 -> 1
+    HIGHLIGHTED   --cream text on a --coral marker that sweeps in behind the word (scaleX, left origin)
+
+  One word on screen at a time; each word appears ON its transcript onset and is replaced by the next
+  (no chunks, no moving marker). Copy the CSS class + the matching tween into a composition.
+  Paused GSAP timeline registered as window.__timelines["caption-styles"]; ?seek=<s> holds one instant.
+  Demo words are placeholders (svensk exempeltext) — swap for the transcript's words and onsets.
+-->
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>caption-styles</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Montserrat:wght@300;900&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:var(--cream)}
+  #root{position:relative;width:1080px;height:1920px;overflow:hidden}
+  .band{position:absolute;left:0;width:1080px;height:520px;display:flex;align-items:center;justify-content:center}
+  .label{position:absolute;left:48px;top:34px;font:700 22px var(--font-mono);letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-soft)}
+  .w{position:absolute;opacity:0;white-space:nowrap}
+  /* PARALLAX — the lines that matter (hook, hero moment, close) */
+  .cap-parallax{font:400 190px/1 "Instrument Serif",Georgia,serif;color:var(--red);transform-origin:50% 100%}
+  /* WEIGHT SHIFT — ordinary narration; two stacked copies crossfade 300 -> 900 */
+  .cap-weight{display:grid;font:300 128px/1 "Montserrat",sans-serif;color:var(--ink);text-transform:uppercase}
+  .cap-weight > i, .cap-weight > b{grid-area:1/1;justify-self:center;font-style:normal}
+  .cap-weight > i{font-weight:300} .cap-weight > b{font-weight:900;opacity:0}
+  /* HIGHLIGHTED — every Half & Half beat, matching the coral half */
+  .cap-hl{font:900 112px/1 "Montserrat",sans-serif;color:var(--cream);text-transform:uppercase;
+    padding:14px 30px 18px;isolation:isolate}
+  .cap-hl::before{content:"";position:absolute;inset:0;background:var(--coral);border-radius:14px;
+    transform:scaleX(var(--m,0));transform-origin:left center;z-index:-1}
+  .face{position:absolute;left:0;top:1560px;width:1080px;height:360px;
+    background:radial-gradient(60% 90% at 50% 100%,#6d5845,#1b1512)}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="caption-styles" data-width="1080" data-height="1920" data-duration="6">
+  <div class="band" style="top:0"><div class="label">Parallax</div>
+    <span class="w cap-parallax" id="p1">Golfen</span><span class="w cap-parallax" id="p2">väntar</span></div>
+  <div class="band" style="top:520px"><div class="label">Weight Shift</div>
+    <span class="w cap-weight" id="w1"><i>fler</i><b>fler</b></span><span class="w cap-weight" id="w2"><i>rundor</i><b>rundor</b></span></div>
+  <div class="band" style="top:1040px;background:var(--coral-soft)"><div class="label" style="color:var(--ink)">Highlighted</div>
+    <span class="w cap-hl" id="h1">samma</span><span class="w cap-hl" id="h2">insats</span></div>
+  <div class="face"></div>
+</div>
+<script>
+  const tl = gsap.timeline({ paused: true });
+  const E = "power3.out";
+  // word onsets (seconds) — in a real cut these come from transcript-tight.json
+  const ON = { p1: 0.3, p2: 1.5, w1: 0.6, w2: 1.8, h1: 0.9, h2: 2.1 };
+  const OFF = 3.2;
+  const parallax = (id, t, out) => {
+    tl.fromTo("#" + id, { opacity: 0, scaleY: 2.8 }, { opacity: 1, scaleY: 1, duration: .34, ease: E }, t);
+    tl.set("#" + id, { opacity: 0 }, out);
+  };
+  const weight = (id, t, out) => {
+    tl.fromTo("#" + id, { opacity: 0, scale: .85 }, { opacity: 1, scale: 1, duration: .30, ease: E }, t);
+    tl.fromTo("#" + id + " b", { opacity: 0 }, { opacity: 1, duration: .32, ease: "power2.out" }, t + .06);
+    tl.fromTo("#" + id + " i", { opacity: 1 }, { opacity: 0, duration: .32, ease: "power2.out" }, t + .06);
+    tl.set("#" + id, { opacity: 0 }, out);
+  };
+  const marker = (id, t, out) => {
+    tl.set("#" + id, { opacity: 1, "--m": 0 }, t);
+    tl.to("#" + id, { "--m": 1, duration: .22, ease: "power2.out" }, t);
+    tl.set("#" + id, { opacity: 0 }, out);
+  };
+  parallax("p1", ON.p1, ON.p2); parallax("p2", ON.p2, OFF);
+  weight("w1", ON.w1, ON.w2);   weight("w2", ON.w2, OFF);
+  marker("h1", ON.h1, ON.h2);   marker("h2", ON.h2, OFF);
+  tl.to({}, { duration: 6 }, 0);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["caption-styles"] = tl;
+  const s = new URLSearchParams(location.search).get("seek");
+  if (s !== null) tl.seek(+s); else tl.play();
+</script>
+</body>
+</html>

@@ -1,0 +1,1037 @@
+<meta charset="utf-8">
+<title>Motiongraphics System</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,700;0,900;1,700;1,900&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   The complete motiongraphics system: 10 scene layouts, the signature
+   transition, 17 motion devices, the palette, the materials and the measured
+   cadence — every one of them live, at its real duration.
+   Built IN the style it documents. Single-theme by design: a lit dark stage,
+   so every colour is painted explicitly and nothing is inherited.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  --void:#08070C; --base:#0D0B14; --panel:#100C1E; --panel-2:#171029; --field:#241860;
+  --violet:#843CF0; --violet-hi:#9C6CFC; --violet-deep:#5418B4; --violet-ink:#300C6C;
+  --magenta:#A824CC; --magenta-hi:#C054E4; --orchid:#CC6CF0;
+  --coral:#D87854;
+  --alert:#E0344A; --alert-deep:#7A0F20;   /* semantic only — never an accent */
+  --edge:#A99CF5; --edge-soft:rgba(169,156,245,.34); --rim:rgba(255,255,255,.62);
+  --on:#FFFFFF; --on-soft:#C8C2DA; --on-dim:#7E7795;
+
+  --glow-violet:0 0 38px rgba(132,60,240,.55), 0 0 92px rgba(132,60,240,.26);
+  --glow-magenta:0 0 38px rgba(192,84,228,.60), 0 0 96px rgba(192,84,228,.28);
+  --glow-edge:0 0 16px rgba(169,156,245,.70), 0 0 44px rgba(132,60,240,.35);
+  --glow-rim:0 0 22px rgba(255,255,255,.45), 0 6px 40px rgba(132,60,240,.55);
+  --glow-text:0 0 24px rgba(132,60,240,.75);
+  --shadow:0 26px 70px rgba(0,0,0,.62), 0 4px 16px rgba(0,0,0,.4);
+
+  --f-slam:"Montserrat","Helvetica Neue",sans-serif;
+  --f-ui:"Inter","Helvetica Neue",sans-serif;
+  --f-serif:"Instrument Serif",Georgia,serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+  --r-card:22px; --r-sm:12px; --stroke:2px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{background:radial-gradient(72% 42% at 50% -6%,rgba(132,60,240,.18) 0%,transparent 62%),var(--void);
+  color:var(--on-soft);font-family:var(--f-ui);font-size:16px;line-height:1.6;padding:0 0 110px;overflow-x:hidden}
+::selection{background:var(--magenta-hi);color:#fff}
+:focus-visible{outline:2px solid var(--edge);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+
+/* ── chrome ───────────────────────────────────────────────────────────── */
+.hero{padding:74px 0 26px}
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--violet-hi);margin-bottom:18px}
+h1{font:900 italic clamp(34px,6.6vw,72px)/.94 var(--f-slam);color:var(--on);letter-spacing:-.025em;
+  text-transform:uppercase;text-wrap:balance;text-shadow:0 0 34px rgba(255,255,255,.18),0 6px 42px rgba(0,0,0,.8)}
+h1 em{font-style:italic;position:relative;display:inline-block;padding:0 .16em;z-index:1}
+h1 em::before{content:"";position:absolute;inset:.06em 0 .1em;z-index:-1;border-radius:6px;
+  background:linear-gradient(90deg,var(--magenta),var(--magenta-hi) 78%,var(--orchid));box-shadow:var(--glow-magenta)}
+.lede{margin-top:22px;max-width:64ch;font-size:17px;color:var(--on-soft)}
+.lede b{color:var(--on);font-weight:600}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.ctl button{background:var(--panel);color:var(--on);border:1px solid var(--edge-soft);border-radius:999px;
+  padding:10px 22px;font:600 13px var(--f-ui);cursor:pointer;transition:border-color .18s,box-shadow .18s}
+.ctl button:hover{border-color:var(--edge);box-shadow:var(--glow-edge)}
+
+nav{position:sticky;top:0;z-index:200;background:rgba(8,7,12,.82);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.07);margin-top:38px}
+nav div{max-width:1240px;margin:0 auto;padding:13px 24px;display:flex;gap:8px;flex-wrap:wrap}
+nav a{font:600 12px var(--f-ui);color:var(--on-dim);text-decoration:none;padding:6px 13px;border-radius:999px;
+  border:1px solid transparent;transition:color .16s,border-color .16s}
+nav a:hover{color:var(--on);border-color:var(--edge-soft)}
+
+.band{padding-top:76px}
+.band>.kick{font:500 12px/1 var(--f-mono);letter-spacing:.2em;text-transform:uppercase;color:var(--violet-hi)}
+.band>h2{font:900 italic clamp(26px,4vw,44px)/1.05 var(--f-slam);color:var(--on);text-transform:uppercase;
+  letter-spacing:-.02em;margin-top:10px}
+.band>.intro{margin-top:12px;max-width:70ch;font-size:15.5px;color:var(--on-dim)}
+.band>.intro b{color:var(--on-soft);font-weight:600}
+.rule{height:1px;background:linear-gradient(90deg,var(--violet),transparent);margin-top:20px;opacity:.55}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(490px,1fr));gap:40px 30px;margin-top:36px}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+.item .no{font:500 11px/1 var(--f-mono);letter-spacing:.2em;color:var(--violet-hi);margin-bottom:8px}
+.item h3{font:800 19px/1.2 var(--f-slam);color:var(--on);text-transform:uppercase;letter-spacing:-.01em}
+.item p{font-size:13.5px;line-height:1.55;color:var(--on-dim);margin-top:7px;min-height:58px}
+.item p b{color:var(--on-soft);font-weight:600}
+code{font-family:var(--f-mono);font-size:.85em;color:var(--edge);background:rgba(132,60,240,.13);padding:2px 5px;border-radius:4px}
+.wide{grid-column:1/-1}
+
+/* ── the 16:9 stage ───────────────────────────────────────────────────── */
+.screen{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;border-radius:14px;
+  border:1px solid rgba(255,255,255,.07);box-shadow:0 22px 60px rgba(0,0,0,.7);margin-top:14px;background:var(--base)}
+.stage{position:absolute;top:0;left:0;width:1920px;height:1080px;overflow:hidden;
+  transform:scale(var(--s,.3));transform-origin:top left}
+.vig{position:absolute;inset:0;pointer-events:none;z-index:60;box-shadow:inset 0 0 300px rgba(0,0,0,.6)}
+
+/* ── grounds ──────────────────────────────────────────────────────────── */
+.g-bloom{background:radial-gradient(64% 58% at 50% 46%,var(--violet-ink) 0%,transparent 68%),
+  radial-gradient(90% 80% at 12% 104%,rgba(168,36,204,.30) 0%,transparent 60%),var(--base);position:relative}
+.g-bloom::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(rgba(169,156,245,.10) 1.2px,transparent 1.4px);background-size:26px 26px;
+  -webkit-mask-image:radial-gradient(110% 95% at 50% 45%,#000 35%,transparent 88%);
+          mask-image:radial-gradient(110% 95% at 50% 45%,#000 35%,transparent 88%)}
+.g-field{background:radial-gradient(120% 70% at 50% 118%,var(--violet) 0%,transparent 58%),
+  linear-gradient(180deg,var(--void) 0%,var(--field) 100%);position:relative;overflow:hidden}
+.g-ribbon{background:var(--void);position:relative;overflow:hidden}
+.g-ribbon::before{content:"";position:absolute;left:-18%;top:14%;width:136%;height:74%;
+  background:radial-gradient(closest-side,var(--violet) 0%,transparent 72%);
+  border-radius:50%;transform:rotate(-13deg) scaleY(.46);filter:blur(58px);opacity:.92}
+.g-rails{background:var(--base);position:relative;overflow:hidden}
+.g-rails::before,.g-rails::after{content:"";position:absolute;top:-12%;height:124%;width:300px;
+  background:radial-gradient(closest-side,var(--violet) 0%,transparent 74%);filter:blur(50px);opacity:.8}
+.g-rails::before{left:-90px} .g-rails::after{right:-90px}
+.g-floor{background:var(--void);position:relative;overflow:hidden}
+.g-floor .grid-l{position:absolute;inset:0}
+.g-floor .grid-l line{stroke:rgba(169,156,245,.42);stroke-width:3}
+.g-floor .aur{position:absolute;border-radius:50%;filter:blur(90px);opacity:.85;
+  background:radial-gradient(closest-side,var(--violet) 0%,transparent 72%)}
+.g-blowout{background:radial-gradient(48% 62% at 50% 46%,#F2E9FF 0%,#C9A6F2 26%,#6A3AA8 56%,var(--base) 82%)}
+.g-vortex{background:var(--void);position:relative;overflow:hidden}
+.g-vortex i{position:absolute;border-radius:50%;border:80px solid rgba(132,60,240,.10);filter:blur(34px)}
+.dots{position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(var(--violet) 2.4px,transparent 2.6px);background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(58% 58% at 50% 50%,transparent 38%,#000 78%);
+          mask-image:radial-gradient(58% 58% at 50% 50%,transparent 38%,#000 78%);opacity:.5}
+.rays{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.rays i{position:absolute;left:50%;top:50%;height:2px;border-radius:2px;transform-origin:0 50%;
+  background:linear-gradient(90deg,transparent,var(--magenta-hi))}
+.ghost{position:absolute;left:0;right:0;top:6%;text-align:center;pointer-events:none;
+  font:900 italic 250px/1 var(--f-slam);text-transform:lowercase;letter-spacing:-.03em;color:rgba(255,255,255,.045)}
+
+/* ── materials ────────────────────────────────────────────────────────── */
+.tile{background:linear-gradient(168deg,rgba(168,36,204,.92),rgba(108,24,156,.86));
+  border:var(--stroke) solid var(--rim);border-radius:30px;box-shadow:var(--glow-rim),var(--shadow);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:34px}
+.tile .lab{font:300 34px/1.15 var(--f-ui);color:var(--on);text-align:center}
+.tile-glass{aspect-ratio:1/1.16;border-radius:16%;
+  background:linear-gradient(168deg,rgba(150,62,206,.52),rgba(92,32,140,.42));
+  border:1.5px solid rgba(255,255,255,.30);
+  box-shadow:inset 0 3px 10px -2px rgba(255,255,255,.85),0 0 34px rgba(168,85,216,.42),0 14px 40px rgba(0,0,0,.5);
+  backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8%}
+.tile-glass svg{width:44%;fill:var(--orchid);filter:drop-shadow(0 -2px 2px rgba(255,255,255,.55))}
+.tile-glass span{font:300 25px/1.22 var(--f-ui);color:var(--on);text-align:center}
+.pill{background:var(--panel);border:var(--stroke) solid var(--edge);border-radius:999px;
+  box-shadow:var(--glow-edge),inset 0 0 18px rgba(132,60,240,.30);padding:14px 34px;
+  font:500 24px/1 var(--f-ui);color:var(--on);white-space:nowrap}
+.pnl{background:rgba(10,9,16,.72);border:var(--stroke) solid var(--violet);border-radius:var(--r-card);
+  box-shadow:var(--glow-violet),var(--shadow);position:relative}
+.pnl>.ttl{position:absolute;top:16px;left:0;right:0;text-align:center;font:700 26px/1 var(--f-ui);
+  color:var(--on);text-shadow:var(--glow-text)}
+.media{border:3px solid rgba(255,255,255,.88);border-radius:var(--r-card);
+  box-shadow:var(--glow-rim),var(--shadow);overflow:hidden;background:var(--panel)}
+.media.phone{border-radius:36px}
+.card{background:rgba(24,16,42,.72);border:1px solid rgba(255,255,255,.16);border-radius:26px;
+  box-shadow:var(--glow-violet),var(--shadow);backdrop-filter:blur(10px)}
+.orb{border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 38% 32%,rgba(200,140,240,.85) 0%,rgba(140,60,200,.55) 42%,rgba(60,16,100,.9) 78%);
+  box-shadow:inset 0 6px 22px -4px rgba(255,255,255,.7),inset 0 -20px 40px rgba(20,4,40,.7),
+             0 0 60px rgba(168,85,216,.5),0 0 140px rgba(132,60,240,.3)}
+.num{display:flex;align-items:center;justify-content:center;border-radius:16px;
+  background:linear-gradient(160deg,rgba(169,156,245,.34),rgba(132,60,240,.16));
+  border:1px solid rgba(255,255,255,.24);box-shadow:inset 0 1px 6px rgba(255,255,255,.36),0 0 22px rgba(132,60,240,.4);
+  font:700 var(--nsz,46px)/1 var(--f-slam);color:#fff;text-shadow:0 0 16px rgba(255,255,255,.5)}
+.cursor{position:absolute;width:52px;height:60px;z-index:50;pointer-events:none;filter:drop-shadow(0 3px 8px rgba(0,0,0,.8))}
+.figure{position:absolute}
+.figure .head{width:300px;height:300px;border-radius:50%;position:relative;
+  background:radial-gradient(circle at 38% 30%,#B072E0 0%,#8A3FC8 46%,#6A25A6 78%,#521A85 100%);
+  box-shadow:inset 0 10px 22px -6px rgba(255,255,255,.95),inset 0 -18px 34px rgba(40,8,70,.55),
+             0 0 70px rgba(168,85,216,.60),0 0 150px rgba(132,60,240,.34)}
+.figure .eye{position:absolute;top:38%;width:44px;height:82px;border-radius:50%;background:#fff;
+  filter:blur(.4px);box-shadow:0 0 12px rgba(255,255,255,.6)}
+.figure .eye:nth-of-type(1){left:27%} .figure .eye:nth-of-type(2){right:27%}
+.figure .torso{width:380px;height:430px;margin:-26px 0 0 -40px;border-radius:50% 50% 42% 42%/62% 62% 38% 38%;
+  background:radial-gradient(ellipse at 40% 22%,#A85FD8 0%,#8A3FC8 44%,#6A25A6 76%,#4E1880 100%);
+  box-shadow:inset 0 12px 26px -8px rgba(255,255,255,.9),0 0 70px rgba(168,85,216,.45)}
+.camcirc{position:absolute;width:420px;height:420px;border-radius:50%;overflow:hidden;
+  border:3px solid var(--edge);box-shadow:var(--glow-edge),var(--shadow);z-index:40}
+.bubble{position:absolute;left:1364px;top:738px;width:500px;height:282px;border-radius:var(--r-card);
+  overflow:hidden;z-index:40;border:var(--stroke) solid var(--edge);box-shadow:var(--glow-edge),var(--shadow)}
+.leak{position:absolute;inset:0;z-index:80;pointer-events:none;overflow:hidden}
+.leak-core{position:absolute;left:-40%;top:-60%;width:180%;height:220%;opacity:0;
+  background:radial-gradient(closest-side,rgba(255,255,255,.98) 0%,rgba(216,180,255,.85) 34%,transparent 72%),
+             radial-gradient(closest-side,var(--orchid) 0%,transparent 66%);filter:blur(26px);transform:rotate(-18deg)}
+.doc{display:flex;flex-direction:column;align-items:center;gap:12px;width:200px}
+.doc .ico{width:76px;height:94px;border-radius:8px;background:#F4F2EE;box-shadow:0 8px 22px rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center}
+.doc span{font:500 18px/1.25 var(--f-ui);color:var(--on);text-align:center}
+
+/* ── type roles ───────────────────────────────────────────────────────── */
+.slam{font:900 italic 92px/.98 var(--f-slam);color:var(--on);letter-spacing:-.02em;text-transform:uppercase;
+  text-shadow:0 0 30px rgba(255,255,255,.28),0 6px 40px rgba(0,0,0,.7)}
+.hl{position:relative;display:inline-block;padding:2px 16px;color:var(--on);z-index:1}
+.hl::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:6px;
+  background:linear-gradient(90deg,var(--magenta) 0%,var(--magenta-hi) 78%,var(--orchid) 100%);
+  box-shadow:var(--glow-magenta);transform:scaleX(var(--x,1));transform-origin:left center}
+.sect{font:800 48px/1 var(--f-slam);color:var(--violet-hi);letter-spacing:.02em;text-transform:uppercase;
+  text-shadow:var(--glow-text);display:flex;gap:.34em;justify-content:center}
+.phead{font:700 40px/1.15 var(--f-ui);color:var(--violet-hi);text-shadow:var(--glow-text)}
+.pt{font:500 30px/1.32 var(--f-ui);color:var(--on);text-shadow:0 2px 14px rgba(0,0,0,.85)}
+.face{position:absolute;inset:0;background:radial-gradient(58% 74% at 62% 40%,#3a2d26 0%,#14100e 74%)}
+.face::after{content:"camera";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font:500 26px var(--f-mono);color:rgba(255,255,255,.13);letter-spacing:.2em}
+.mediaph{width:100%;height:100%;background:linear-gradient(140deg,#241a33,#120c1c);display:flex;
+  align-items:center;justify-content:center;text-align:center;padding:26px;font:500 21px/1.5 var(--f-mono);
+  color:rgba(255,255,255,.30)}
+
+/* ── reference sections ───────────────────────────────────────────────── */
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:28px}
+.sw{border-radius:var(--r-sm);border:1px solid rgba(255,255,255,.08);overflow:hidden;background:var(--panel)}
+.sw .chip{height:74px}
+.sw .meta{padding:11px 13px}
+.sw .nm{font:600 13px var(--f-ui);color:var(--on)}
+.sw .hx{font:500 11px var(--f-mono);color:var(--on-dim);letter-spacing:.04em;font-variant-numeric:tabular-nums;margin-top:3px}
+.sw .use{font:400 11.5px/1.4 var(--f-ui);color:var(--on-dim);margin-top:7px}
+.matgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:22px;margin-top:28px}
+.matcell{background:var(--base);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:34px 20px 18px;
+  display:flex;flex-direction:column;align-items:center;gap:20px;min-height:220px;justify-content:center}
+.matcell .cap{font:600 12px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--on-dim);text-align:center}
+.tblwrap{overflow-x:auto;border-radius:var(--r-sm);border:1px solid rgba(255,255,255,.08);margin-top:26px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:left;font:500 11px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--violet-hi);
+  padding:14px 16px;background:rgba(132,60,240,.10);white-space:nowrap}
+td{padding:13px 16px;border-top:1px solid rgba(255,255,255,.07);color:var(--on-soft);vertical-align:top}
+td:first-child{color:var(--on);font-weight:600;white-space:nowrap}
+td.f{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--edge);white-space:nowrap}
+.never{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:14px;margin-top:28px}
+.nv{background:var(--panel);border:1px solid rgba(255,255,255,.08);border-left:3px solid var(--magenta);
+  border-radius:var(--r-sm);padding:16px 18px}
+.nv h4{font:700 14px var(--f-ui);color:var(--on);margin-bottom:5px}
+.nv p{font-size:13.5px;line-height:1.55;color:var(--on-dim)}
+.warn{margin-top:26px;padding:16px 20px;border-radius:12px;font-size:14px;line-height:1.55;
+  color:var(--on-soft);background:rgba(224,52,74,.10);border:1px solid rgba(224,52,74,.42);
+  border-left:3px solid var(--alert);max-width:74ch}
+.warn b{color:var(--on)}
+footer{margin-top:84px;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);font-size:13.5px;color:var(--on-dim)}
+footer b{color:var(--on-soft)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">10 scenes · 1 transition · 17 devices · 16:9 · 1920×1080 · 30fps</div>
+  <h1>The <em>motiongraphics</em> system</h1>
+  <p class="lede">Everything in the house style, in one place and all of it running live:
+    the <b>ten scene layouts</b> a beat can be staged in, the <b>light leak</b> that joins them,
+    the <b>seventeen motion devices</b> that fill them, and the palette, materials and
+    frame-counted cadence underneath. Reverse-engineered from six reference edits; every
+    colour and duration is <b>measured, not chosen</b>.</p>
+<div class="warn">
+  <b>Every word on these stages is placeholder.</b> The bricks carry realistic copy so they
+  render in a browser — none of it describes your video. In a real edit each string is derived
+  from that recording: captions from the speaker's own words, labels from the thing actually
+  being described, stats from the real verified figure, media from real sourced screenshots.
+  <code>scripts/check-placeholders.sh</code> fails the render if any of it survives.
+</div>
+  <div class="ctl">
+    <button id="replay" type="button">▶ Replay everything</button>
+    <button id="hold" type="button">⏸ Hold at settled</button>
+  </div>
+</header>
+</div>
+
+<nav><div>
+  <a href="#scenes">Scenes</a><a href="#transition">Transition</a><a href="#devices">Devices</a>
+  <a href="#palette">Palette</a><a href="#materials">Materials</a><a href="#cadence">Cadence</a><a href="#never">Never</a>
+</div></nav>
+
+<div class="wrap">
+
+<!-- ══════════════════════════════════════════════════════ SCENES ═══ -->
+<section class="band" id="scenes">
+  <div class="kick">Part one</div><h2>The ten scenes</h2>
+  <p class="intro">Every beat is staged in one of these. <b>Never the same scene twice in a row,
+    never held past ~25s</b>, and every change carries a transition and a sound. But note what the
+    reference actually does: <b>Clean Face is 30–40% of the runtime</b> — the breathing between
+    beats is what makes the next one land.</p>
+  <div class="rule"></div>
+  <div class="grid">
+
+  <div class="item"><div class="no">01 · REST</div><h3>Clean face</h3>
+    <p>Full-frame camera, no graphics — and it carries a <b>slow push</b> so it is never truly
+       static. The cold open, the turn, the CTA.</p>
+    <div class="screen"><div class="stage" id="s1"><div class="pushf" style="position:absolute;inset:0"><div class="face"></div></div><div class="vig"></div></div></div></div>
+
+  <div class="item"><div class="no">02 · OVERLAY</div><h3>Floating panels</h3>
+    <p>Labelled <b>semi-transparent</b> screenshots drift over the footage and leave to their own
+       side. Opacity is what keeps the face readable — opaque here is just a split screen.</p>
+    <div class="screen"><div class="stage" id="s2"><div class="face"></div>
+      <div class="fp fp1" style="position:absolute;left:150px;top:230px;width:620px">
+        <div style="font:600 24px var(--f-ui);color:var(--on);margin-bottom:12px">Product UI</div>
+        <div class="media" style="height:400px;opacity:.62"><div class="mediaph">screenshot</div></div></div>
+      <div class="fp fp2" style="position:absolute;right:150px;top:380px;width:620px">
+        <div style="font:600 24px var(--f-ui);color:var(--on);margin-bottom:12px">Docs page</div>
+        <div class="media" style="height:400px;opacity:.62"><div class="mediaph">screenshot</div></div></div>
+      <div class="vig"></div></div></div></div>
+
+  <div class="item"><div class="no">03 · ARGUMENT</div><h3>Point stack</h3>
+    <p>The one text-only support beat the style allows. A violet headline builds, then white lines
+       stagger in out of blur. Holds the <b>left third</b>; exits as a whole stack.</p>
+    <div class="screen"><div class="stage" id="s3"><div class="face"></div>
+      <div class="stk" style="position:absolute;left:96px;top:320px;width:700px">
+        <div class="phead" style="margin-bottom:34px"><span class="w">Brand one</span> <span class="w">is</span> <span class="w">just</span> <span class="w">guessing</span></div>
+        <div class="pt l" style="margin-bottom:26px">It has no context on you</div>
+        <div class="pt l" style="margin-bottom:26px">It doesn't know what videos are working</div>
+        <div class="pt l">It doesn't know how the competitors post</div></div>
+      <div class="vig"></div></div></div></div>
+
+  <div class="item"><div class="no">04 · PROOF</div><h3>Stat card</h3>
+    <p>A glass card lands beside the speaker's gesturing hand — and the number
+       <b>counts up after the card has landed</b>, never with it.</p>
+    <div class="screen"><div class="stage" id="s4"><div class="face"></div>
+      <div class="statc" style="position:absolute;left:1080px;top:230px;width:600px;padding:30px 34px;
+        background:linear-gradient(150deg,rgba(132,60,240,.55),rgba(48,12,108,.55));
+        border:var(--stroke) solid var(--edge);border-radius:var(--r-card);
+        box-shadow:var(--glow-edge),var(--shadow);backdrop-filter:blur(14px);display:flex;align-items:center;gap:26px">
+        <div class="orb" style="width:96px;height:96px;flex:0 0 auto"></div>
+        <div><div style="font:600 26px var(--f-ui);color:var(--on-soft);margin-bottom:4px">@yourhandle</div>
+        <div style="display:flex;align-items:baseline;gap:12px">
+          <span class="num4" style="font:900 italic 72px var(--f-slam);color:var(--on);
+            font-variant-numeric:tabular-nums;text-shadow:var(--glow-text)">0</span>
+          <span style="font:500 26px var(--f-ui);color:var(--on-soft)">views</span></div></div></div>
+      <div class="vig"></div></div></div></div>
+
+  <div class="item"><div class="no">05 · BRAND</div><h3>Brand lockup</h3>
+    <p>Real marks in a lower third, entering on a blur-in and then <b>held 10–15s</b> — far longer
+       than any other graphic in the style.</p>
+    <div class="screen"><div class="stage" id="s5"><div class="face"></div>
+      <div class="lock" style="position:absolute;left:96px;bottom:190px;display:flex;align-items:center;gap:26px">
+        <span class="ast" style="width:58px;height:58px;display:inline-block"></span>
+        <span style="font:400 56px var(--f-serif);color:var(--on)">Brand one</span>
+        <span style="font:400 40px var(--f-ui);color:var(--on-dim)">+</span>
+        <span style="width:44px;height:44px;background:var(--on);border-radius:8px;display:inline-block"></span>
+        <span style="font:600 46px var(--f-ui);color:var(--on)">Brand two</span></div>
+      <div class="vig"></div></div></div></div>
+
+  <div class="item"><div class="no">06 · CENTREPIECE</div><h3>Diagram takeover</h3>
+    <p>The system builds itself while the camera <b>pulls back continuously</b> for the whole
+       scene — one unbroken zoom-out, not steps. Documents land grey then colour in.</p>
+    <div class="screen"><div class="stage g-field" id="s6">
+      <svg class="cogs" style="position:absolute;inset:0" width="1920" height="1080" aria-hidden="true">
+        <g fill="rgba(132,60,240,.30)">
+          <path class="cog" data-cx="210" data-cy="880" data-r="330" data-teeth="14"></path>
+          <path class="cog" data-cx="1700" data-cy="200" data-r="380" data-teeth="16"></path>
+          <path class="cog" data-cx="1080" data-cy="1010" data-r="240" data-teeth="12"></path></g></svg>
+      <div class="fit" style="position:absolute;left:0;right:0;top:70px;transform-origin:50% 20%">
+        <div class="sect" style="margin-bottom:30px"><span class="w">CONTENT</span><span class="w">GROWTH</span><span class="w">SYSTEM</span></div>
+        <div class="pnl p" style="width:1320px;height:224px;margin:0 auto 26px;padding:62px 40px 0">
+          <div class="ttl">Content Strategy &amp; Positioning</div>
+          <div style="display:flex;justify-content:space-around;align-items:flex-start">
+            <div class="doc"><span>Niche Interviewer</span></div><div class="doc"><span>Positioning Builder</span></div>
+            <div class="doc"><span>Bullseye Builder</span></div><div class="doc"><span>Topic Scanner</span></div>
+            <div class="doc"><span>Format Finder</span></div></div></div>
+        <div class="pnl p" style="width:1320px;height:224px;margin:0 auto 26px;padding:62px 44px 0">
+          <div class="ttl">Video Workflow</div>
+          <svg class="wires" style="position:absolute;inset:0;pointer-events:none;overflow:visible" width="1320" height="224" aria-hidden="true">
+            <g fill="none" stroke="var(--edge)" stroke-width="2" stroke-linecap="round"
+               style="filter:drop-shadow(0 0 6px rgba(169,156,245,.9))"></g></svg>
+          <div style="position:relative">
+            <span class="pill nd" style="position:absolute;left:40px;top:74px">Topics</span>
+            <span class="pill nd" style="position:absolute;left:262px;top:126px">Research</span>
+            <span class="pill nd" style="position:absolute;left:530px;top:74px">Formats</span>
+            <span class="pill nd" style="position:absolute;left:770px;top:126px">Hooks</span>
+            <span class="pill nd" style="position:absolute;left:1010px;top:74px">Scripts</span></div></div>
+        <div class="pnl p" style="width:1320px;height:224px;margin:0 auto;padding:0">
+          <svg class="loop" style="position:absolute;inset:0" width="1320" height="224" aria-hidden="true">
+            <ellipse class="ring" cx="660" cy="116" rx="168" ry="70" fill="none" stroke="#5B21A8"
+              stroke-width="34" stroke-linecap="round" style="filter:drop-shadow(0 0 22px rgba(91,33,168,.9))"></ellipse></svg>
+          <div class="ttl" style="top:64px">The Learning Loop</div>
+          <div class="coach" style="position:absolute;left:0;right:0;top:106px;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div class="ico" style="width:52px;height:64px"></div>
+            <span style="font:500 17px var(--f-ui);color:var(--on)">The Content Coach</span></div></div></div>
+      <div class="vig"></div></div></div></div>
+
+  <div class="item"><div class="no">07 · PAYOFF</div><h3>Slam card</h3>
+    <p>One headline in a magenta bar that <b>wipes open from the left</b>, one hero media that grows
+       for its whole hold, and a ring that arrives half a second late.</p>
+    <div class="screen"><div class="stage g-bloom" id="s7">
+      <div style="position:absolute;left:0;right:0;top:150px;text-align:center">
+        <div class="slam" style="display:inline-flex;gap:.28em;align-items:baseline;font-size:100px">
+          <span class="w">THE</span><span class="w">FINAL</span><span class="hl w"><span class="hw">RESULT</span></span></div></div>
+      <div class="media phone grow" style="position:absolute;left:810px;top:330px;width:300px;height:600px">
+        <div class="mediaph">hero media</div></div>
+      <div class="ring" style="position:absolute;left:1420px;top:790px;width:170px;height:170px;border-radius:50%;
+        filter:drop-shadow(0 0 18px rgba(192,84,228,.75))">
+        <div style="position:absolute;inset:11px;border-radius:50%;background:var(--base);display:flex;
+          flex-direction:column;align-items:center;justify-content:center">
+          <span style="font:900 italic 52px var(--f-slam);color:var(--on)">60</span>
+          <span style="font:500 13px var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--violet-hi)">seconds</span></div></div>
+      <div class="vig"></div></div></div></div>
+
+  <div class="item"><div class="no">08 · DEMO</div><h3>Screen stage</h3>
+    <p>Real recording as a <b>rimmed card on a lit stage</b> — never full-bleed. It enters blurred
+       from below, then the camera punches in on where the cursor is working.</p>
+    <div class="screen"><div class="stage g-rails" id="s8">
+      <div class="scr media" style="position:absolute;left:210px;top:120px;width:1500px;height:840px">
+        <div class="mediaph">screen recording — 30fps CFR</div></div>
+      <div class="bubble"><div class="face"></div></div>
+      <div class="vig"></div></div></div></div>
+
+  <div class="item"><div class="no">09 · OBJECTS</div><h3>Object stage</h3>
+    <p>A two-act scene. A rim-lit figure with <b>translucent</b> tiles arriving at different depths,
+       then a <b>solid</b> row the camera dives along. The two tile types are lit from opposite sides.</p>
+    <div class="screen"><div class="stage g-bloom" id="s9">
+      <div class="rig" style="position:absolute;inset:0;transform-origin:50% 46%">
+        <div class="figure" style="left:810px;top:250px;width:300px"><div class="head"><i class="eye"></i><i class="eye"></i></div><div class="torso"></div></div>
+        <div class="tile-glass gt" style="position:absolute;left:250px;top:430px;width:230px" data-d=".82">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="7.4" r="3.9"></circle><path d="M4.6 20.5c0-4 3.3-6.6 7.4-6.6s7.4 2.6 7.4 6.6z"></path></svg><span>Business<br>owner</span></div>
+        <div class="tile-glass gt" style="position:absolute;left:1440px;top:462px;width:236px" data-d=".86">
+          <svg viewBox="0 0 24 24"><path d="M3 8.6l5-2.8 5 2.8-5 2.8z"></path><path d="M11 13.2l5-2.8 5 2.8-5 2.8z"></path><path d="M6 15.4l5-2.8 5 2.8-5 2.8z"></path></svg><span>New<br>Product</span></div>
+        <div class="tile-glass gt" style="position:absolute;left:1188px;top:110px;width:206px" data-d=".70">
+          <svg viewBox="0 0 24 24"><path d="M3.4 7.2h17.2l-1.1 3.1H4.5z"></path><path d="M5.2 11.4h13.6v8.4H5.2z"></path></svg><span>Store<br>Management</span></div></div>
+      <div class="dive" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:90px;transform-origin:50% 50%">
+        <div class="tile t" style="width:340px;height:380px"><svg width="120" height="120" viewBox="0 0 24 24" fill="var(--orchid)" stroke="var(--violet-ink)" stroke-width="1.2"><circle cx="9" cy="7" r="3.4"></circle><path d="M2.6 20c0-3.6 2.9-6 6.4-6s6.4 2.4 6.4 6z"></path></svg><div class="lab">Photographer<br>#1</div></div>
+        <div class="tile t" style="width:340px;height:380px"><svg width="120" height="120" viewBox="0 0 24 24" fill="var(--orchid)" stroke="var(--violet-ink)" stroke-width="1.2"><rect x="3" y="9" width="11" height="7" rx="2"></rect><path d="M14 10l7-3v11l-7-3z"></path></svg><div class="lab">The lighting<br>#2</div></div>
+        <div class="tile t" style="width:340px;height:380px"><svg width="120" height="120" viewBox="0 0 24 24" fill="var(--orchid)" stroke="var(--violet-ink)" stroke-width="1.2"><path d="M4 7h3l2-2h6l2 2h3v12H4z"></path><circle cx="12" cy="13" r="4" fill="var(--violet-ink)"></circle></svg><div class="lab">Shooting<br>#3</div></div></div>
+      <div class="vig"></div></div></div></div>
+
+  <div class="item"><div class="no">10 · PERSONA</div><h3>Persona circle</h3>
+    <p>The camera masked into a circle with a glowing ring on the ribbon ground. The quote lands
+       beside it, clears, and the circle recentres for the name.</p>
+    <div class="screen"><div class="stage g-ribbon" id="s10">
+      <div class="circ" style="position:absolute;left:420px;top:330px"><div class="camcirc" style="position:relative"><div class="face"></div></div></div>
+      <div class="quote" style="position:absolute;left:930px;top:430px;width:640px">
+        <div style="font:600 34px/1.4 var(--f-ui);color:var(--on);text-shadow:0 2px 14px rgba(0,0,0,.8)">
+          Replace this with a real quote<br>from a real person you are<br>actually talking about</div></div>
+      <div class="vig"></div></div></div></div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════ TRANSITION ═══ -->
+<section class="band" id="transition">
+  <div class="kick">Part two</div><h2>The light leak</h2>
+  <p class="intro">The signature transition and the loudest thing in the style: <b>12 frames</b> —
+    bloom 5, white-out 3, reveal 4. The incoming scene is composited <i>underneath</i> the leak from
+    the first frame, so this is a wash over a hard cut, never a dissolve. Always carries a
+    <code>swoosh</code> with a <code>riser</code> cresting on the white-out.</p>
+  <div class="rule"></div>
+  <div class="grid"><div class="item wide">
+    <div class="screen" style="max-width:760px"><div class="stage g-bloom" id="s11">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div class="slam">NEXT SCENE</div></div>
+      <div class="outg" style="position:absolute;inset:0"><div class="face"></div></div>
+      <div class="leak"><div class="leak-core"></div></div>
+      <div class="vig"></div></div></div>
+  </div></div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════ DEVICES ═══ -->
+<section class="band" id="devices">
+  <div class="kick">Part three</div><h2>The seventeen devices</h2>
+  <p class="intro">Scenes are <b>where</b> a beat is staged; devices are <b>what moves in it</b>.
+    <b>One device per beat</b> — two is a collision, not a composition. The only pairing that works
+    is a ground plus one thing on top.</p>
+  <div class="rule"></div>
+  <div class="grid" id="devgrid"></div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════ PALETTE ═══ -->
+<section class="band" id="palette">
+  <div class="kick">Part four</div><h2>The palette</h2>
+  <p class="intro">One accent per frame — violet <i>or</i> magenta, never both fighting. Coral is
+    reserved for brand marks and is never a background. <code>--alert</code> is semantic and sits
+    deliberately off the violet ramp so it can never read as brand colour.</p>
+  <div class="rule"></div>
+  <div class="sw-grid" id="swatches"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ MATERIALS ═══ -->
+<section class="band" id="materials">
+  <div class="kick">Part five</div><h2>The materials</h2>
+  <p class="intro">Every object in the style is one of these. <b>Nothing has a hard edge without a
+    halo</b> — every lit edge is 2px and carries a two-layer glow: a tight ring and a wide bloom.
+    A single-layer shadow reads as a sticker.</p>
+  <div class="rule"></div>
+  <div class="matgrid">
+    <div class="matcell"><div class="tile" style="width:130px;height:150px"><div class="lab" style="font-size:15px">Tile</div></div><div class="cap">Solid tile · lit below</div></div>
+    <div class="matcell"><div class="tile-glass" style="width:120px"><span style="font-size:14px">Glass</span></div><div class="cap">Translucent · lit above</div></div>
+    <div class="matcell"><span class="pill" style="font-size:16px;padding:10px 22px">Node pill</span><div class="cap">Pill · 2px lavender</div></div>
+    <div class="matcell"><div class="pnl" style="width:180px;height:110px"></div><div class="cap">Panel · violet outline</div></div>
+    <div class="matcell"><div class="media" style="width:150px;height:100px"><div class="mediaph" style="font-size:12px">media</div></div><div class="cap">Media card · white rim</div></div>
+    <div class="matcell"><div class="orb" style="width:120px;height:120px"></div><div class="cap">Orb</div></div>
+    <div class="matcell"><div class="num" style="width:76px;height:76px;--nsz:36px">1</div><div class="cap">Glass numeral</div></div>
+    <div class="matcell">
+      <!-- transform doesn't reserve layout space, so the swatch gets an explicit
+           box the scaled figure is positioned inside — otherwise it bleeds out. -->
+      <div style="width:96px;height:160px;position:relative">
+        <div class="figure" style="left:50%;top:0;transform:translateX(-50%) scale(.22);transform-origin:top center">
+          <div class="head"><i class="eye"></i><i class="eye"></i></div><div class="torso"></div></div>
+      </div><div class="cap">The figure</div></div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════ CADENCE ═══ -->
+<section class="band" id="cadence">
+  <div class="kick">Part six</div><h2>The measured cadence</h2>
+  <p class="intro">Frame-counted at 30fps off the references, not rounded to convenient values.
+    These numbers are what make an edit <i>read</i> as this style rather than merely resemble it.</p>
+  <div class="rule"></div>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Move</th><th>Frames</th><th>What actually happens</th></tr></thead>
+    <tbody>
+      <tr><td>Word build</td><td class="f">8f / 267ms</td><td>Each word fades up over 8f, onsets 7f apart — and the whole line re-centres continuously as it grows.</td></tr>
+      <tr><td>Bar wipe</td><td class="f">12f / 400ms</td><td><code>scaleX</code> from the left, leading edge brightest. The word inside fades in after the bar passes it.</td></tr>
+      <tr><td>Light leak</td><td class="f">12f / 400ms</td><td>Bloom 5f, white-out 3f, reveal 4f. The next scene is already underneath from frame one.</td></tr>
+      <tr><td>Blur swap</td><td class="f">4f + 4f</td><td>Text becomes the next text through blur — out over 4, in over 4. Never a crossfade.</td></tr>
+      <tr><td>Ring draw</td><td class="f">18f / 600ms</td><td>Sweeps clockwise, but starts ~0.5s <i>after</i> the lockup settles — a deliberate second beat.</td></tr>
+      <tr><td>Camera pull-back</td><td class="f">whole scene</td><td>One unbroken zoom-out, <code>ease:none</code>. Not discrete re-fit steps — those read as a layout reflowing.</td></tr>
+      <tr><td>Tile pop</td><td class="f">5f / 180ms</td><td>Scale .86 → 1 with overshoot, siblings on a 90ms stagger.</td></tr>
+      <tr><td>Exit</td><td class="f">3f / 100ms</td><td>Elements are gone, not dissolved. A half-second fade-out breaks the cadence immediately.</td></tr>
+      <tr><td>Handoff overlap</td><td class="f">2f / 67ms</td><td>The incoming element is on screen while the outgoing one is still leaving. Never a gap.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ NEVER ═══ -->
+<section class="band" id="never">
+  <div class="kick">Part seven</div><h2>What this style never does</h2>
+  <div class="never">
+    <div class="nv"><h4>Never a still frame</h4><p>Every held scene carries a slow drift. It's the difference between a motion graphic and a slide, and how a composition holds 25s without dying.</p></div>
+    <div class="nv"><h4>Never a hard edge without a halo</h4><p>Every lit edge is 2px with a two-layer glow — a tight ring and a wide bloom. One layer reads as a sticker.</p></div>
+    <div class="nv"><h4>Never full-bleed media</h4><p>Real screenshots and recordings are always an object on a stage, inside a rimmed card. Never letterboxed, never edge to edge.</p></div>
+    <div class="nv"><h4>Never typeset text as support</h4><p>Every supporting beat shows a real resource. The point stack is the single exception the style allows.</p></div>
+    <div class="nv"><h4>Never emoji</h4><p>Designed marks only — a coral asterisk drawn as SVG, a flat pictogram, a CSS arrow. Dingbat characters render as colour emoji on some platforms.</p></div>
+    <div class="nv"><h4>Never two accents fighting</h4><p>Violet or magenta, one per frame. Coral is for brand marks. If everything is magenta, nothing is.</p></div>
+    <div class="nv"><h4>Never wall-to-wall graphics</h4><p>Clean face is 30–40% of the runtime. The reference cuts 20 times in 190 seconds. The breathing is what makes the next beat land.</p></div>
+    <div class="nv"><h4>Never a silent cut</h4><p>Every layout change carries a transition <i>and</i> a sound, at 12–20 cues a minute. The light leak is an event and is mixed like one.</p></div>
+  </div>
+</section>
+
+<footer>
+  <p><b>Sources.</b> Two long-form edits gave the scenes, the palette and the cadence
+  (<code>vwlK6MbdAto</code>, <code>xkj74ykB9Fw</code>); four 2×2 device grids gave the seventeen
+  devices (<code>U7gSizSj_ME</code>, <code>2p6DzWHPGgU</code>, <code>_I48er2ckk0</code>,
+  <code>EF0zycDs8MU</code>). Sampled at 1–2fps for structure and 4–30fps across every transition.
+  Everything here is CSS and SVG — no assets, no video, no 3D runtime.</p>
+</footer>
+</div>
+
+<script>
+/* ── fit every 1920×1080 stage to its container ──────────────────────── */
+function fit(){document.querySelectorAll('.screen').forEach(sc=>{
+  const st=sc.querySelector('.stage'); if(st) st.style.setProperty('--s', sc.clientWidth/1920);});}
+
+const F=1/30;
+const D={word:.267,cadence:.233,wipe:.400,pop:.180,ring:.600,refit:.500,stagger:.090};
+const EOUT='power3.out', ESLAM='back.out(1.7)', EIN='power2.in';
+const q=(r,s)=>gsap.utils.toArray(r.querySelectorAll(s));
+const el=(t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!==undefined)e.innerHTML=h; return e;};
+
+/* ── designed marks, drawn not typed ────────────────────────────────── */
+const ASTERISK=n=>{let p='';for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2;
+  p+=`<line x1="${12+Math.cos(a)*2.2}" y1="${12+Math.sin(a)*2.2}" x2="${12+Math.cos(a)*10}" y2="${12+Math.sin(a)*10}"/>`;}
+  return `<svg viewBox="0 0 24 24" width="100%" height="100%" stroke="var(--coral)" stroke-width="2.6" stroke-linecap="round" aria-hidden="true">${p}</svg>`;};
+document.querySelectorAll('.doc').forEach(d=>{const i=el('div','ico'); i.innerHTML=ASTERISK(8); d.prepend(i);});
+document.querySelectorAll('.coach .ico, .ast').forEach(i=>{i.innerHTML=ASTERISK(8);});
+
+function gearPath(cx,cy,r,teeth){const inner=r*.80,hub=r*.34,step=Math.PI/teeth,w=step*.34;let d='';
+  for(let i=0;i<teeth;i++){const a=i*2*step;
+    [[inner,a-step+w],[r,a-w],[r,a+w],[inner,a+step-w]].forEach(([rad,ang],k)=>{
+      d+=(i===0&&k===0?'M':'L')+(cx+Math.cos(ang)*rad).toFixed(1)+' '+(cy+Math.sin(ang)*rad).toFixed(1);});}
+  return d+'Z'+`M${cx+hub} ${cy}A${hub} ${hub} 0 1 0 ${cx-hub} ${cy}A${hub} ${hub} 0 1 0 ${cx+hub} ${cy}Z`;}
+document.querySelectorAll('.cog').forEach(c=>{const cx=+c.dataset.cx,cy=+c.dataset.cy;
+  c.setAttribute('d',gearPath(cx,cy,+c.dataset.r,+c.dataset.teeth));
+  c.setAttribute('fill-rule','evenodd'); c.dataset.origin=cx+' '+cy;});
+
+/* connectors from real pill geometry — offsets, not client rects, because the
+   stage carries a CSS scale() that would shrink every measurement. */
+function offsetIn(e,root){let x=0,y=0,n=e;while(n&&n!==root){x+=n.offsetLeft;y+=n.offsetTop;n=n.offsetParent;}
+  return {x,y,w:e.offsetWidth,h:e.offsetHeight};}
+function wireFlow(svg,pills){const g=svg.querySelector('g'),root=svg.offsetParent||svg.parentElement;g.innerHTML='';
+  for(let i=0;i<pills.length-1;i++){const a=offsetIn(pills[i],root),b=offsetIn(pills[i+1],root);
+    const x1=a.x+a.w,y1=a.y+a.h/2,x2=b.x,y2=b.y+b.h/2,h=Math.max((x2-x1)*.55,26);
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',`M${x1} ${y1} C ${x1+h} ${y1}, ${x2-h} ${y2}, ${x2} ${y2}`);p.setAttribute('class','cx');g.appendChild(p);}}
+
+/* the perspective floor — real SVG geometry: a CSS-gradient grid under an
+   extreme rotateX collapses to nothing, and a sub-pixel stroke vanishes in a
+   scaled preview. Keep the stroke at 3px. */
+function buildFloor(svg){const NS='http://www.w3.org/2000/svg',VPX=960,VPY=330,W=1920,H=1080;
+  for(let i=-9;i<=9;i++){const l=document.createElementNS(NS,'line');
+    l.setAttribute('x1',VPX+i*430);l.setAttribute('y1',H);l.setAttribute('x2',VPX+i*36);l.setAttribute('y2',VPY);svg.appendChild(l);}
+  for(let r=1;r<=16;r++){const t=r/16,y=VPY+(H-VPY)*Math.pow(t,2.3);
+    const l=document.createElementNS(NS,'line');l.setAttribute('x1',0);l.setAttribute('x2',W);
+    l.setAttribute('y1',y);l.setAttribute('y2',y);l.setAttribute('opacity',(0.18+t*0.82).toFixed(2));svg.appendChild(l);}}
+
+function wavePath(phase,amp,base){let d='M0 1080 L0 '+base;
+  for(let x=0;x<=1920;x+=24){const y=base+Math.sin(x/300+phase)*amp+Math.sin(x/135+phase*1.7)*amp*.45;
+    d+=` L${x} ${y.toFixed(1)}`;}
+  return d+' L1920 1080 Z';}
+
+function wordBuild(tl,line,at=0){const ws=q(line,'.w');if(!ws.length)return;gsap.set(ws,{opacity:0});
+  ws.forEach((w,i)=>tl.to(w,{opacity:1,duration:D.word,ease:'power2.out'},at+i*D.cadence));
+  tl.fromTo(line,{x:line.scrollWidth*.22},{x:0,duration:ws.length*D.cadence+D.word,ease:'none'},at);}
+function accumulate(tl,words,at=0,onWord){words.forEach((w,i)=>{
+  tl.to(w,{opacity:1,duration:D.word,ease:'power2.out'},at+i*D.cadence);
+  if(onWord) tl.add(()=>onWord(w,i),at+i*D.cadence);});}
+
+/* ── the 17 devices: markup generated, then wired ────────────────────── */
+const DEVICES=[
+ ['01 · UI','Cursor card','A glass card builds, a <b>cursor moves in, hovers and clicks</b>, and the card dismisses. A giant ghosted wordmark sits behind at ~4% opacity.','g-bloom',`
+   <div class="ghost">nextphase</div>
+   <div class="uicard card" style="position:absolute;left:530px;top:330px;width:860px;padding:44px 48px">
+     <div style="display:flex;align-items:center;gap:20px"><div class="orb" style="width:72px;height:72px"></div>
+     <div style="font:700 38px var(--f-ui);color:var(--on)">Your subject</div></div>
+     <div class="ln" style="margin-top:26px;font:400 26px/1.7 var(--f-ui);color:var(--on-soft)">Field one: replace me</div>
+     <div class="ln" style="font:400 26px/1.7 var(--f-ui);color:var(--on-soft)">Field two: replace me</div>
+     <div class="btn" style="margin-top:26px;display:inline-block;padding:14px 34px;border-radius:999px;
+       background:var(--alert);color:#fff;font:700 24px var(--f-ui);box-shadow:0 0 30px rgba(224,52,74,.6)">Delete</div></div>
+   <svg class="cursor cur" viewBox="0 0 24 28"><path d="M2 1l18 13-8 1.5 4.5 9-3.5 1.8-4.5-9L2 22z" fill="#fff" stroke="#111" stroke-width="1.1"/></svg>`],
+ ['02 · ENTRANCE','Tag cloud','Pills <b>fly in from alternating sides under heavy directional blur</b>, snap into a cluster, then their labels resolve.','g-bloom',`
+   <div class="beam" style="position:absolute;left:958px;top:0;width:3px;height:420px;
+     background:linear-gradient(180deg,#fff,transparent);box-shadow:0 0 24px 4px rgba(255,255,255,.7)"></div>
+   <div class="cloud" style="position:absolute;inset:0;display:flex;flex-wrap:wrap;align-content:center;
+     justify-content:center;gap:22px 20px;padding:0 300px"></div>`],
+ ['03 · TEXT','Blur swap','One label becomes the next <b>through a heavy horizontal blur</b> — 4 frames out, 4 in. Never a crossfade. Speed lines run behind it.','',`
+   <div class="rays"></div>
+   <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+     <div class="wd" style="font:700 96px var(--f-ui);color:var(--on);text-shadow:0 0 30px rgba(255,255,255,.3)">Your subject</div></div>
+   <svg class="cursor cur" viewBox="0 0 24 28" style="left:990px;top:590px"><path d="M2 1l18 13-8 1.5 4.5 9-3.5 1.8-4.5-9L2 22z" fill="#fff" stroke="#111" stroke-width="1.1"/></svg>`,'background:var(--void)'],
+ ['04 · CHART','Wave journey','A filled wave <b>undulates continuously</b> while two pin markers ride its surface and their labels resolve.','',`
+   <svg style="position:absolute;inset:0" width="1920" height="1080" aria-hidden="true">
+     <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A93FD8"/><stop offset="1" stop-color="#3E1268"/></linearGradient></defs>
+     <path class="wave" fill="url(#wg)" d=""></path></svg>
+   <div class="pin p1" style="position:absolute"><i></i><span>Zero</span></div>
+   <div class="pin p2" style="position:absolute"><i></i><span>Freelance freedom</span></div>`,'background:linear-gradient(180deg,var(--void) 30%,#1B0B2E)'],
+ ['05 · LIST','Goals list','Glass numeral badges with rows that <b>accumulate word by word</b>, and the camera <b>pushes in</b> as the list grows.','g-floor',`
+   <svg class="grid-l" width="1920" height="1080" aria-hidden="true"></svg>
+   <div class="aur" style="left:14%;top:52%;width:56%;height:46%"></div>
+   <div class="aur" style="right:8%;top:60%;width:44%;height:38%;opacity:.55"></div>
+   <div class="push" style="position:absolute;inset:0;transform-origin:50% 30%">
+     <div class="slam" style="position:absolute;left:0;right:0;top:120px;text-align:center;font-size:62px">2026 Goals</div>
+     <div class="rows" style="position:absolute;left:330px;top:290px;right:330px;display:flex;flex-direction:column;gap:44px"></div></div>`],
+ ['06 · METAPHOR','Ladder climb','A glowing ladder with a marker <b>climbing rung by rung</b>, then the whole thing tilts and shears away.','g-floor',`
+   <svg class="grid-l" width="1920" height="1080" aria-hidden="true"></svg>
+   <div class="aur" style="left:20%;top:56%;width:60%;height:44%"></div>
+   <div class="lad" style="position:absolute;left:830px;top:90px;width:260px;height:900px"></div>
+   <div class="climber" style="position:absolute;width:34px;height:34px;border-radius:50%;background:#fff;
+     box-shadow:0 0 26px 6px rgba(255,255,255,.85);z-index:5"></div>`],
+ ['07 · GROUND','Aurora floor','A background, not an element: a <b>perspective wireframe floor</b> with aurora clouds drifting across it. Loops forever.','g-floor',`
+   <svg class="grid-l" width="1920" height="1080" aria-hidden="true"></svg>
+   <div class="aur a1" style="left:6%;top:48%;width:52%;height:50%"></div>
+   <div class="aur a2" style="left:40%;top:58%;width:56%;height:44%;opacity:.7"></div>
+   <div class="aur a3" style="left:24%;top:42%;width:38%;height:36%;opacity:.5"></div>`],
+ ['08 · THE TURN','Alert flash','Real media with a slam headline, then the whole card <b>flashes to an alert state</b> — tint and glow together.','g-bloom',`
+   <div class="ui" style="position:absolute;left:280px;top:150px;width:1360px;height:780px;border-radius:20px;
+     overflow:hidden;border:1px solid rgba(255,255,255,.18);box-shadow:var(--shadow);background:#16141C">
+     <div style="height:56px;background:#211E2A;display:flex;align-items:center;gap:10px;padding:0 20px">
+       <i style="width:14px;height:14px;border-radius:50%;background:#4a4652"></i>
+       <i style="width:14px;height:14px;border-radius:50%;background:#4a4652"></i>
+       <i style="width:14px;height:14px;border-radius:50%;background:#4a4652"></i>
+       <span style="margin-left:14px;font:600 20px var(--f-ui);color:var(--on-soft)">January 2026</span></div>
+     <div class="cal" style="display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:118px"></div>
+     <div class="tint" style="position:absolute;inset:0;background:var(--alert);mix-blend-mode:color;opacity:0"></div></div>
+   <div class="slam" style="position:absolute;left:0;right:0;top:470px;text-align:center;font-size:80px">
+     <span class="w">Nothing</span> <span class="w">changes</span></div>`],
+ ['09 · HOOK','Bloom question','An accumulating question on a <b>blown-out light field</b> — the one place this style goes bright, and the only place text is dark.','g-blowout',`
+   <div class="q" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+     font:500 84px var(--f-ui);gap:.3em"></div>`],
+ ['10 · STAT','Orb count-up','A number <b>counts up inside a growing sphere</b> while a halftone dot field resolves behind it.','',`
+   <div class="dots"></div>
+   <div class="orb ob" style="position:absolute;left:660px;top:240px;width:600px;height:600px">
+     <span class="n" style="font:400 130px var(--f-ui);color:#fff;text-shadow:0 0 30px rgba(255,255,255,.6)">$0</span></div>`,'background:var(--base)'],
+ ['11 · REVEAL','Skeleton fill','A card arrives as <b>empty placeholder rows</b> that fill one at a time, the last landing as the highlighted result.','',`
+   <div class="lb card" style="position:absolute;left:460px;top:230px;width:1000px;padding:44px">
+     <div class="ttl2" style="text-align:center;font:600 34px var(--f-ui);color:var(--on);margin-bottom:34px">Leaderboard</div>
+     <div class="rowz" style="display:flex;flex-direction:column;gap:22px"></div></div>`,'background:var(--base)'],
+ ['12 · BAND','Chip marquee','A rail of glossy chips <b>scrolling continuously</b> across the frame — a band of passing items that reads as motion.','g-bloom',`
+   <div class="rail" style="position:absolute;left:0;top:430px;display:flex;gap:26px;white-space:nowrap"></div>`],
+ ['13 · TEXT','Countdown swap','A numeral and its label <b>both swap through blur</b> — 3 → 2 → 1 — over the undulating wave.','',`
+   <svg style="position:absolute;inset:0" width="1920" height="1080" aria-hidden="true">
+     <defs><linearGradient id="wg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A93FD8"/><stop offset="1" stop-color="#3E1268"/></linearGradient></defs>
+     <path class="wave" fill="url(#wg2)" d=""></path></svg>
+   <div style="position:absolute;left:0;right:0;top:330px;text-align:center;font:400 110px var(--f-ui);color:var(--on)">
+     <span class="cn">3</span> <span class="cl">Editors</span></div>`,'background:linear-gradient(180deg,var(--void) 40%,#1B0B2E)'],
+ ['14 · DIAGRAM','Orbit hub','A labelled sphere with <b>satellites orbiting it</b>, passing in front and behind — for one thing that drives two others.','',`
+   <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(169,156,245,.07) 1px,transparent 1px),
+     linear-gradient(90deg,rgba(169,156,245,.07) 1px,transparent 1px);background-size:130px 130px"></div>
+   <div class="hub orb" style="position:absolute;left:710px;top:290px;width:500px;height:500px">
+     <span style="font:600 46px/1.2 var(--f-ui);color:#fff;text-align:center">Your<br>subject</span></div>
+   <div class="sat s1"><span>Views</span></div><div class="sat s2"><span>Retention</span></div>`,'background:var(--base)'],
+ ['15 · PROOF','Notification pile-up','Notifications <b>stack in one at a time</b>, each pushing the pile down, with the text filling in after the shell lands.','g-vortex',`
+   <i style="left:20%;top:-30%;width:1300px;height:1300px"></i><i style="right:-16%;top:10%;width:1000px;height:1000px"></i>
+   <div class="stack" style="position:absolute;left:430px;top:170px;width:1060px;display:flex;flex-direction:column;gap:26px"></div>`],
+ ['16 · LIST','3D numbered grid','A two-column numbered list builds row by row, then the whole grid <b>tilts into perspective</b> and drifts past.','',`
+   <div style="position:absolute;left:0;right:0;bottom:-38%;height:70%;
+     background:radial-gradient(closest-side,var(--violet) 0%,transparent 70%);filter:blur(30px)"></div>
+   <div class="g3" style="position:absolute;left:170px;top:210px;right:170px;display:grid;
+     grid-template-rows:repeat(3,auto);grid-auto-flow:column;gap:52px 70px;transform-style:preserve-3d"></div>`,'background:var(--base);perspective:1600px'],
+ ['17 · PROOF','Chat count-up','A <b>light</b> chat pill on the dark stage — the style’s one deliberate inversion — with a badge counting up beside it.','g-bloom',`
+   <div class="chat" style="position:absolute;left:470px;top:450px;display:flex;align-items:center;gap:26px;
+     padding:26px 34px;border-radius:999px;background:#EFEAF6;box-shadow:0 0 60px rgba(255,255,255,.30),var(--shadow)">
+     <span style="font:500 40px var(--f-ui);color:#1A1024">You want to work with me?</span>
+     <span class="badge" style="min-width:86px;height:86px;border-radius:50%;background:#1A1024;color:#fff;
+       display:flex;align-items:center;justify-content:center;font:600 36px var(--f-ui);font-variant-numeric:tabular-nums">0</span></div>
+   <svg class="cursor cur" viewBox="0 0 24 28" style="left:1330px;top:520px"><path d="M2 1l18 13-8 1.5 4.5 9-3.5 1.8-4.5-9L2 22z" fill="#fff" stroke="#111" stroke-width="1.1"/></svg>`]
+];
+{
+  const g=document.getElementById('devgrid');
+  DEVICES.forEach((d,i)=>{
+    const [no,name,desc,ground,inner,extra]=d;
+    const it=el('div','item');
+    it.innerHTML=`<div class="no">${no}</div><h3>${name}</h3><p>${desc}</p>
+      <div class="screen"><div class="stage ${ground}" id="d${i+1}" style="${extra||''}">${inner}<div class="vig"></div></div></div>`;
+    g.appendChild(it);
+  });
+}
+
+/* generated children for the devices that need them */
+const TAGS=['Photo dump','Week in the life','Get ready with me','Faceless','POV','Aesthetics','AI storytelling','Reset','Hot takes'];
+{const c=document.querySelector('#d2 .cloud');
+ TAGS.forEach((t,i)=>{const p=el('span','tag',t);
+  // one accent per frame — the source used six hues; we vary VALUE, not hue
+  const lum=[.92,.62,.78,1,.5,.7,.85,.55,.68][i];
+  p.style.cssText=`padding:20px 40px;border-radius:999px;font:500 34px var(--f-ui);color:#fff;white-space:nowrap;
+    background:linear-gradient(160deg,rgba(168,36,204,${lum}),rgba(90,28,150,${lum*.8}));
+    border:1px solid rgba(255,255,255,.28);box-shadow:0 0 26px rgba(168,36,204,${lum*.5})`;
+  c.appendChild(p);});}
+{const r=document.querySelector('#d3 .rays');
+ for(let i=0;i<64;i++){const a=Math.random()*360,len=90+Math.random()*260,dist=260+Math.random()*520,s=el('i');
+  s.style.cssText=`width:${len}px;transform:rotate(${a}deg) translateX(${dist}px);opacity:${.15+Math.random()*.5}`;r.appendChild(s);}}
+{const c=document.querySelector('#d5 .rows');
+ ['Replace your 9-to-5 income','Start an online business','Discover new places'].forEach((g,i)=>{
+  const row=el('div','row');row.style.cssText='display:flex;align-items:center;gap:34px';
+  const n=el('span','num',String(i+1));n.style.cssText='width:82px;height:82px;flex:0 0 auto;--nsz:42px';
+  const t=el('div','gtext');t.style.cssText='font:500 46px var(--f-ui);color:var(--on)';
+  g.split(' ').forEach(w=>t.appendChild(el('span','w',w+' ')));
+  row.append(n,t);c.appendChild(row);});}
+{const l=document.querySelector('#d6 .lad');
+ const rail='position:absolute;top:0;bottom:0;width:12px;border-radius:6px;background:#fff;box-shadow:0 0 22px 3px rgba(255,255,255,.75)';
+ l.appendChild(Object.assign(el('i'),{style:rail+';left:0'}));l.appendChild(Object.assign(el('i'),{style:rail+';right:0'}));
+ for(let i=0;i<11;i++){const r=el('i','rung');
+  r.style.cssText=`position:absolute;left:0;right:0;height:11px;border-radius:6px;background:#fff;
+    box-shadow:0 0 18px 2px rgba(255,255,255,.7);top:${i*84+30}px`;l.appendChild(r);}}
+{const c=document.querySelector('#d9 .q');'What would happen?'.split(' ').forEach(w=>c.appendChild(el('span','w',w)));}
+{const c=document.querySelector('#d11 .rowz');
+ for(let i=0;i<3;i++){const r=el('div','sk');
+  r.style.cssText=`height:82px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);
+    display:flex;align-items:center;padding:0 30px;font:500 30px var(--f-ui);color:var(--on)`;c.appendChild(r);}}
+{const rail=document.querySelector('#d12 .rail');
+ for(let p=0;p<2;p++) ['Hook','Retention','Pacing','Sound design','B-roll','Captions','Colour','Cutdowns','Thumbnail'].forEach(t=>{
+  const c=el('span','chip',t);
+  c.style.cssText=`padding:30px 52px;border-radius:22px;font:600 36px var(--f-ui);color:#fff;
+    background:linear-gradient(180deg,rgba(150,110,255,.95),rgba(70,32,170,.95));border:1px solid rgba(255,255,255,.30);
+    box-shadow:inset 0 2px 8px rgba(255,255,255,.5),0 0 30px rgba(110,60,240,.55)`;rail.appendChild(c);});}
+document.querySelectorAll('#d14 .sat').forEach((s,i)=>{
+  s.style.cssText=`position:absolute;left:0;top:0;width:${i?210:180}px;height:${i?210:180}px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font:600 30px var(--f-ui);color:#fff;
+    background:radial-gradient(circle at 36% 30%,#E39BFF,#B33FE0 58%,#7A18AA);box-shadow:0 0 46px rgba(204,108,240,.85)`;});
+{const c=document.querySelector('#d15 .stack');
+ for(let i=0;i<4;i++){const n=el('div','notif');
+  n.style.cssText=`display:flex;gap:24px;align-items:flex-start;padding:26px 30px;border-radius:22px;
+    background:rgba(18,14,30,.92);border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow)`;
+  n.innerHTML=`<span style="width:66px;height:66px;flex:0 0 auto;border-radius:16px;
+     background:linear-gradient(160deg,#8A5CFF,#5B21C4);display:flex;align-items:center;justify-content:center;
+     font:800 34px var(--f-slam);color:#fff">S</span>
+   <span><b style="display:block;font:700 28px var(--f-ui);color:var(--on)">New payment</b>
+   <em class="body" style="display:block;font:400 24px/1.4 var(--f-ui);color:var(--on-dim);font-style:normal">
+   You've received a payment from a client. The amount: $3000</em></span>`;c.appendChild(n);}}
+{const g=document.querySelector('#d16 .g3');
+ [['Main character','Make the mission the main character'],['Real &gt; perfect','Keep the content raw'],
+  ['Honesty','Share the real moments'],['Visual continuity','One look end to end'],
+  ['Composition','Frame with intent'],['Light &amp; colour','Create depth and contrast']].forEach((p,i)=>{
+  const it=el('div','it');it.style.cssText='display:flex;align-items:center;gap:26px';
+  it.innerHTML=`<span class="num" style="width:76px;height:76px;flex:0 0 auto;--nsz:38px">${i+1}</span>
+    <span><b style="display:block;font:600 38px var(--f-ui);color:var(--on)">${p[0]}</b>
+    <em class="sub" style="display:block;font:400 22px var(--f-ui);color:var(--on-dim);font-style:normal">${p[1]}</em></span>`;
+  g.appendChild(it);});}
+{const c=document.querySelector('#d8 .cal');
+ for(let i=0;i<28;i++){const d=el('i',null,String(i+1));
+  d.style.cssText=`border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);
+    padding:12px 16px;font:400 20px var(--f-ui);color:rgba(255,255,255,.30);font-style:normal`;c.appendChild(d);}}
+document.querySelectorAll('.grid-l').forEach(buildFloor);
+{const p2=document.querySelectorAll('#s6 .p')[1]; wireFlow(p2.querySelector('.wires'),[...p2.querySelectorAll('.nd')]);}
+{const g=document.getElementById('swatches');
+ [['Violet','#843CF0','The workhorse. Panels, rules, titles, connectors, rings.'],
+  ['Magenta','#C054E4','The hot accent. The bar behind a slam word, the payoff.'],
+  ['Coral','#D87854','Brand marks only — within 2 points of the house coral.'],
+  ['Edge','#A99CF5','Every lit 2px stroke, and the connectors between pills.'],
+  ['Field','#241860','The indigo ground the gear silhouettes turn behind.'],
+  ['Base','#0D0B14','Near-black, tinted violet. Never flat, never pure black.'],
+  ['Alert','#E0344A','Semantic only. Deliberately off the violet ramp.']].forEach(([n,h,u])=>{
+  const s=el('div','sw');
+  s.innerHTML=`<div class="chip" style="background:${h}"></div><div class="meta">
+    <div class="nm">${n}</div><div class="hx">${h}</div><div class="use">${u}</div></div>`;
+  g.appendChild(s);});}
+fit(); addEventListener('resize',fit);
+
+/* ── timelines ──────────────────────────────────────────────────────── */
+const T={};
+
+/* SCENES */
+T.s1=()=>{const r=document.getElementById('s1'),tl=gsap.timeline();
+  gsap.fromTo(r.querySelector('.pushf'),{scale:1},{scale:1.06,duration:9,ease:'none'});
+  tl.addLabel('settled',0); return tl;};
+T.s2=()=>{const r=document.getElementById('s2'),tl=gsap.timeline();
+  const a=r.querySelector('.fp1'),b=r.querySelector('.fp2');
+  gsap.set(a,{opacity:0,x:-140}); gsap.set(b,{opacity:0,x:140});
+  tl.to(a,{opacity:1,x:0,duration:.6,ease:EOUT},0).to(b,{opacity:1,x:0,duration:.6,ease:EOUT},.25)
+    .addLabel('settled',1.1)
+    .to(a,{y:-26,duration:5,ease:'none'},0).to(b,{y:22,duration:5,ease:'none'},0)  // parallax drift
+    .to(a,{opacity:0,x:-140,duration:.3,ease:EIN},5.2).to(b,{opacity:0,x:140,duration:.3,ease:EIN},5.2);
+  return tl;};
+T.s3=()=>{const r=document.getElementById('s3'),tl=gsap.timeline(),ls=q(r,'.l');
+  gsap.set(ls,{opacity:0,y:10,filter:'blur(10px)'});
+  wordBuild(tl,r.querySelector('.phead'),0);
+  tl.to(ls,{opacity:1,y:0,filter:'blur(0px)',duration:.4,stagger:D.stagger,ease:EOUT},1.1)
+    .addLabel('settled',2.0)
+    .to(r.querySelector('.stk'),{opacity:0,filter:'blur(12px)',duration:.35,ease:EIN},5.2);
+  return tl;};
+T.s4=()=>{const r=document.getElementById('s4'),tl=gsap.timeline(),n=r.querySelector('.num4');
+  gsap.set(r.querySelector('.statc'),{opacity:0,x:70,scale:.94});
+  tl.to(r.querySelector('.statc'),{opacity:1,x:0,scale:1,duration:.5,ease:EOUT},0)
+    .to({v:0},{v:1000,duration:1.1,ease:'power2.out',
+      onUpdate(){const v=this.targets()[0].v;n.textContent=v<1000?Math.round(v)+'M+':'1B+';}},.65)  // counts AFTER the card lands
+    .addLabel('settled',1.9); return tl;};
+T.s5=()=>{const r=document.getElementById('s5'),tl=gsap.timeline();
+  gsap.set(r.querySelector('.lock'),{opacity:0,filter:'blur(12px)'});
+  tl.to(r.querySelector('.lock'),{opacity:1,filter:'blur(0px)',duration:.6,ease:EOUT},0).addLabel('settled',.9);
+  return tl;};
+T.s6=()=>{const r=document.getElementById('s6'),tl=gsap.timeline();
+  const fit_=r.querySelector('.fit'),ps=q(r,'.p'),docs=q(r,'.doc'),nds=q(r,'.nd'),cxs=q(r,'.cx'),
+        ring=r.querySelector('.ring'),coach=r.querySelector('.coach');
+  gsap.set(ps,{opacity:0,scale:.97}); gsap.set(docs,{opacity:0,y:12,filter:'grayscale(1) brightness(1.5)'});
+  gsap.set(nds,{opacity:0,y:14}); gsap.set(coach,{opacity:0});
+  cxs.forEach(p=>{const L=p.getTotalLength();gsap.set(p,{strokeDasharray:L,strokeDashoffset:L});});
+  const RL=ring.getTotalLength(); gsap.set(ring,{strokeDasharray:RL,strokeDashoffset:RL});
+  q(r,'.cog').forEach((c,i)=>gsap.to(c,{rotation:360,duration:40+i*9,repeat:-1,ease:'none',svgOrigin:c.dataset.origin}));
+  gsap.set(fit_,{scale:1.55,y:150});
+  tl.to(fit_,{scale:.82,y:0,duration:11,ease:'none'},0);   // ONE unbroken pull-back
+  wordBuild(tl,r.querySelector('.sect'),4*F);
+  tl.to(ps[0],{opacity:1,scale:1,duration:.45,ease:EOUT},1.2)
+    .to(docs,{opacity:1,y:0,duration:.3,stagger:.34,ease:EOUT},1.5)
+    .to(docs,{filter:'grayscale(0) brightness(1)',duration:.34,stagger:.34,ease:'none'},1.72)
+    .to(ps[1],{opacity:1,scale:1,duration:.45,ease:EOUT},4.2)
+    .to(nds,{opacity:1,y:0,duration:.3,stagger:D.stagger,ease:EOUT},4.45)
+    .to(cxs,{strokeDashoffset:0,duration:.35,stagger:D.stagger,ease:EOUT},4.75)
+    .to(ps[2],{opacity:1,scale:1,duration:.45,ease:EOUT},7.0)
+    .to(ring,{strokeDashoffset:0,duration:1.6,ease:'power1.inOut'},7.3)
+    .to(coach,{opacity:1,duration:.4,ease:EOUT},8.5).addLabel('settled',9.6);
+  return tl;};
+T.s7=()=>{const r=document.getElementById('s7'),tl=gsap.timeline(),bar=r.querySelector('.hl'),ring=r.querySelector('.ring');
+  gsap.set(r.querySelectorAll('.w'),{opacity:0}); gsap.set(bar,{'--x':0});
+  gsap.set(bar.querySelector('.hw'),{opacity:0});
+  gsap.set(r.querySelector('.grow'),{y:60,scale:.92,opacity:0,filter:'blur(14px)'}); gsap.set(ring,{opacity:0});
+  const paint=d=>ring.style.background=`conic-gradient(var(--magenta-hi) 0deg,var(--magenta-hi) ${d}deg,rgba(255,255,255,.07) ${d}deg)`;
+  paint(0);
+  tl.to(r.querySelector('.grow'),{y:0,scale:1,opacity:1,filter:'blur(0px)',duration:.55,ease:EOUT},0)
+    .to(r.querySelectorAll('.w')[0],{opacity:1,duration:D.word},.25)
+    .to(r.querySelectorAll('.w')[1],{opacity:1,duration:D.word},.25+D.cadence)
+    .to(bar,{'--x':1,duration:D.wipe,ease:EOUT,onStart(){gsap.set(bar,{opacity:1});}},.25+2*D.cadence)
+    .to(bar.querySelector('.hw'),{opacity:1,duration:.2},'>-0.12')
+    .to(r.querySelector('.grow'),{scale:1.06,duration:5,ease:'none'},0)
+    .to(ring,{opacity:1,duration:.2},1.6)
+    .to({v:0},{v:290,duration:D.ring,ease:EOUT,onUpdate(){paint(this.targets()[0].v);}},1.7)
+    .addLabel('settled',2.6); return tl;};
+T.s8=()=>{const r=document.getElementById('s8'),tl=gsap.timeline(),scr=r.querySelector('.scr');
+  gsap.set(scr,{opacity:0,y:80,scale:.9,filter:'blur(14px)'});
+  tl.to(scr,{opacity:1,y:0,scale:1,filter:'blur(0px)',duration:.55,ease:EOUT},0).addLabel('settled',.8)
+    .to(scr,{scale:1.3,x:-150,y:-80,duration:1.2,ease:'power2.inOut'},1.6); return tl;};
+T.s9=()=>{const r=document.getElementById('s9'),tl=gsap.timeline();
+  const rig=r.querySelector('.rig'),fig=r.querySelector('.figure'),gts=q(r,'.gt'),
+        dive=r.querySelector('.dive'),tls=q(r,'.t');
+  gts.forEach(g=>gsap.set(g,{scale:+g.dataset.d,opacity:0,transformOrigin:'50% 50%'}));
+  gsap.set(fig,{opacity:0,scale:.9,transformOrigin:'50% 40%'});
+  gsap.set(rig,{scale:1.28,x:60,y:20,opacity:1}); gsap.set(dive,{opacity:0,scale:1,x:0}); gsap.set(tls,{opacity:0,scale:.86});
+  tl.to(fig,{opacity:1,scale:1,duration:.6,ease:EOUT},0).to(rig,{scale:.84,x:-20,y:0,duration:7.2,ease:'none'},0);
+  gts.forEach((g,i)=>{const at=1.15+i*1.22,d=+g.dataset.d;
+    tl.to(g,{opacity:1,duration:.34,ease:EOUT},at).from(g,{scale:d*.7,duration:.44,ease:ESLAM},at);});
+  tl.addLabel('settled',4.6).to(rig,{opacity:0,y:-120,duration:.28,ease:EIN},7.0);
+  const S=3.4,TX=-430*S;
+  tl.to(dive,{opacity:1,duration:.2},7.15)
+    .to(tls,{opacity:1,scale:1,duration:D.pop,stagger:D.stagger,ease:ESLAM},7.2)
+    .to(dive,{scale:S,x:TX,duration:2.4,ease:'power2.inOut'},8.2)   // push-in + lateral track
+    .to(dive,{scale:1,x:0,duration:1.0,ease:'power2.inOut'},11.0);
+  return tl;};
+T.s10=()=>{const r=document.getElementById('s10'),tl=gsap.timeline();
+  gsap.set(r.querySelector('.circ'),{opacity:0,scale:.9});
+  gsap.set(r.querySelector('.quote'),{opacity:0,x:30,filter:'blur(10px)'});
+  tl.to(r.querySelector('.circ'),{opacity:1,scale:1,duration:.5,ease:EOUT},0)
+    .to(r.querySelector('.quote'),{opacity:1,x:0,filter:'blur(0px)',duration:.45,ease:EOUT},.4)
+    .addLabel('settled',1.2)
+    .to(r.querySelector('.quote'),{opacity:0,duration:.3,ease:EIN},3.4)
+    .to(r.querySelector('.circ'),{x:330,scale:.8,duration:.6,ease:EOUT},3.5); return tl;};
+T.s11=()=>{const r=document.getElementById('s11'),tl=gsap.timeline({repeat:-1,repeatDelay:1.4});
+  const core=r.querySelector('.leak-core'),out=r.querySelector('.outg');
+  gsap.set(out,{opacity:1}); gsap.set(core,{opacity:0,x:600,scale:1});
+  tl.to(core,{opacity:.55,x:0,duration:5*F,ease:'power1.in'},.8)   // bloom 5f
+    .to(core,{opacity:1,scale:1.3,duration:3*F,ease:'none'})       // white-out 3f
+    .set(out,{opacity:0})                                          // the cut, hidden inside it
+    .to(core,{opacity:0,scale:1.5,duration:4*F,ease:'power2.out'}) // reveal 4f
+    .set(out,{opacity:1,delay:1.2}); return tl;};
+
+/* DEVICES */
+T.d1=()=>{const r=document.getElementById('d1'),tl=gsap.timeline();
+  const card=r.querySelector('.uicard'),cur=r.querySelector('.cur'),btn=r.querySelector('.btn'),lns=q(r,'.ln');
+  gsap.set(card,{opacity:0,scale:.55,filter:'blur(18px)'}); gsap.set(lns,{opacity:0}); gsap.set(btn,{opacity:0,scale:.9});
+  gsap.set(cur,{x:1560,y:880,opacity:0});
+  tl.to(card,{opacity:1,scale:1,filter:'blur(0px)',duration:.6,ease:EOUT},0)
+    .to(lns,{opacity:1,duration:.3,stagger:.14,ease:EOUT},.5)
+    .to(btn,{opacity:1,scale:1,duration:.3,ease:ESLAM},.9)
+    .to(cur,{opacity:1,duration:.2},1.1).to(cur,{x:790,y:640,duration:.9,ease:'power2.inOut'},1.15)
+    .addLabel('settled',2.1)
+    .to(btn,{scale:.92,duration:.09,ease:EIN},2.2).to(btn,{scale:1,duration:.12,ease:EOUT},2.29)
+    .to(card,{opacity:0,scale:.9,filter:'blur(14px)',duration:.3,ease:EIN},2.5)
+    .to(cur,{opacity:0,duration:.2},2.6); return tl;};
+T.d2=()=>{const r=document.getElementById('d2'),tl=gsap.timeline(),tags=q(r,'.tag');
+  gsap.set(r.querySelector('.beam'),{scaleY:0,transformOrigin:'top center'});
+  tags.forEach((t,i)=>gsap.set(t,{opacity:0,x:i%2?900:-900,filter:'blur(22px)',scale:1.12}));
+  tl.to(r.querySelector('.beam'),{scaleY:1,duration:.4,ease:EOUT},0)
+    .to(tags,{opacity:1,x:0,filter:'blur(0px)',scale:1,duration:.6,stagger:.075,ease:EOUT},.15)
+    .to(r.querySelector('.beam'),{opacity:0,duration:.4},1.3).addLabel('settled',1.6); return tl;};
+T.d3=()=>{const r=document.getElementById('d3'),tl=gsap.timeline({repeat:-1,repeatDelay:.5});
+  const wd=r.querySelector('.wd');
+  q(r,'.rays i').forEach(s=>gsap.to(s,{opacity:.08,duration:.7+Math.random(),repeat:-1,yoyo:true,ease:'none',delay:Math.random()}));
+  ['Your subject','Easier','Faster'].forEach((w,i)=>{
+    if(i) tl.to(wd,{filter:'blur(26px)',scaleX:1.5,opacity:.15,duration:4*F,ease:EIN})
+            .set(wd,{textContent:w})
+            .to(wd,{filter:'blur(0px)',scaleX:1,opacity:1,duration:4*F,ease:EOUT});
+    tl.to({},{duration:.85});});
+  tl.addLabel('settled',.4); return tl;};
+T.d4=()=>{const r=document.getElementById('d4'),tl=gsap.timeline();
+  const path=r.querySelector('.wave'),p1=r.querySelector('.p1'),p2=r.querySelector('.p2');
+  [p1,p2].forEach(p=>{p.querySelector('i').style.cssText='display:block;width:20px;height:20px;border-radius:50%;background:#fff;margin:0 auto;box-shadow:0 0 18px rgba(255,255,255,.8)';
+    p.querySelector('span').style.cssText='display:block;margin-top:10px;font:500 30px var(--f-ui);color:var(--on);white-space:nowrap';
+    p.style.cssText+=';text-align:center;transform:translateX(-50%)';});
+  const st={ph:0},base=640,amp=70;
+  const place=()=>{path.setAttribute('d',wavePath(st.ph,amp,base));
+    [[p1,300],[p2,1560]].forEach(([p,x])=>{const y=base+Math.sin(x/300+st.ph)*amp+Math.sin(x/135+st.ph*1.7)*amp*.45;
+      p.style.left=x+'px';p.style.top=(y-96)+'px';});};
+  place(); gsap.to(st,{ph:Math.PI*2,duration:9,repeat:-1,ease:'none',onUpdate:place});
+  gsap.set([p1,p2],{opacity:0});
+  tl.to(p1,{opacity:1,duration:.4,ease:EOUT},.2).to(p2,{opacity:1,duration:.4,ease:EOUT},.9).addLabel('settled',1.5);
+  return tl;};
+T.d5=()=>{const r=document.getElementById('d5'),tl=gsap.timeline();
+  const push=r.querySelector('.push'),rows=q(r,'.row');
+  gsap.set(rows,{opacity:0}); rows.forEach(x=>gsap.set(q(x,'.w'),{opacity:0})); gsap.set(push,{scale:.92});
+  tl.to(push,{scale:1.3,duration:9,ease:'none'},0);      // continuous push-IN
+  rows.forEach((row,i)=>{const at=.5+i*1.9;
+    tl.to(row,{opacity:1,duration:.3,ease:EOUT},at); accumulate(tl,q(row,'.w'),at+.15);});
+  tl.addLabel('settled',5.6); return tl;};
+T.d6=()=>{const r=document.getElementById('d6'),tl=gsap.timeline();
+  const lad=r.querySelector('.lad'),cl=r.querySelector('.climber'),rungs=q(r,'.rung');
+  gsap.set(rungs,{opacity:0,scaleX:.2}); gsap.set(cl,{opacity:0});
+  tl.to(rungs,{opacity:1,scaleX:1,duration:.22,stagger:.05,ease:EOUT},0).set(cl,{opacity:1,left:945,top:960},.7);
+  rungs.slice().reverse().forEach((rg,i)=>tl.to(cl,{top:90+(10-i)*84+18,duration:.2,ease:'power1.inOut'},.8+i*.2));
+  tl.addLabel('settled',2.6)
+    .to(lad,{rotationZ:-24,skewY:12,y:200,opacity:0,duration:.7,ease:EIN},3.4)
+    .to(cl,{opacity:0,duration:.2},3.4); return tl;};
+T.d7=()=>{const r=document.getElementById('d7'),tl=gsap.timeline();   // a ground loops forever
+  gsap.to(r.querySelector('.a1'),{x:180,y:-40,scale:1.2,duration:11,repeat:-1,yoyo:true,ease:'sine.inOut'});
+  gsap.to(r.querySelector('.a2'),{x:-220,y:30,scale:1.15,duration:14,repeat:-1,yoyo:true,ease:'sine.inOut'});
+  gsap.to(r.querySelector('.a3'),{x:120,y:60,scale:1.3,duration:9,repeat:-1,yoyo:true,ease:'sine.inOut'});
+  gsap.fromTo(r.querySelector('.grid-l'),{y:0},{y:34,duration:5,repeat:-1,ease:'none'});
+  tl.addLabel('settled',0); return tl;};
+T.d8=()=>{const r=document.getElementById('d8'),tl=gsap.timeline();
+  const ui=r.querySelector('.ui'),tint=r.querySelector('.tint'),ws=q(r,'.w');
+  gsap.set(ui,{opacity:0,y:70,scale:.94,filter:'blur(12px)'}); gsap.set(ws,{opacity:0});
+  tl.to(ui,{opacity:1,y:0,scale:1,filter:'blur(0px)',duration:.55,ease:EOUT},0);
+  accumulate(tl,ws,.5);
+  tl.addLabel('settled',1.4)
+    .to(tint,{opacity:.85,duration:.1,ease:'none'},2.1)      // tint and glow flip together
+    .to(ui,{boxShadow:'0 0 90px rgba(224,52,74,.85), 0 0 200px rgba(224,52,74,.5)',duration:.1},2.1)
+    .to({},{duration:1.4})
+    .to(tint,{opacity:0,duration:.5,ease:EOUT}).to(ui,{boxShadow:'var(--shadow)',duration:.5},'<');
+  return tl;};
+T.d9=()=>{const r=document.getElementById('d9'),tl=gsap.timeline(),ws=q(r,'.w');
+  gsap.set(ws,{opacity:0});
+  accumulate(tl,ws,.2,(w,i)=>{ws.forEach((x,j)=>x.style.color=j===i?'#160A26':'rgba(22,10,38,.42)');});
+  tl.addLabel('settled',1.4).to(r.querySelector('.q'),{filter:'blur(20px)',opacity:0,duration:.5,ease:EIN},2.6);
+  return tl;};
+T.d10=()=>{const r=document.getElementById('d10'),tl=gsap.timeline();
+  const orb=r.querySelector('.ob'),n=r.querySelector('.n'),dots=r.querySelector('.dots');
+  gsap.set(orb,{scale:.12,opacity:0}); gsap.set(dots,{opacity:0,scale:.9});
+  tl.to(orb,{scale:1,opacity:1,duration:1.5,ease:EOUT},0)
+    .to(dots,{opacity:.5,scale:1,duration:1.2,ease:EOUT},.35)
+    .to({v:0},{v:4000,duration:1.5,ease:'power2.out',
+      onUpdate(){n.textContent='$'+Math.round(this.targets()[0].v).toLocaleString();}},0)
+    .addLabel('settled',1.7); return tl;};
+T.d11=()=>{const r=document.getElementById('d11'),tl=gsap.timeline();
+  const card=r.querySelector('.lb'),ttl=r.querySelector('.ttl2'),sk=q(r,'.sk');
+  gsap.set(card,{opacity:0,scale:.9,filter:'blur(16px)'}); gsap.set(ttl,{opacity:0}); gsap.set(sk,{opacity:0,x:-30});
+  tl.to(card,{opacity:1,scale:1,filter:'blur(0px)',duration:.55,ease:EOUT},0)
+    .to(ttl,{opacity:1,duration:.3},.4)
+    .to(sk,{opacity:1,x:0,duration:.34,stagger:.2,ease:EOUT},.65)
+    .add(()=>{const last=sk[2];last.textContent='3rd place — $150';
+      last.style.background='linear-gradient(160deg,rgba(168,36,204,.9),rgba(90,28,150,.9))';
+      last.style.borderColor='rgba(255,255,255,.4)';last.style.boxShadow='var(--glow-magenta)';},1.9)
+    .fromTo(sk[2],{scale:.95},{scale:1,duration:.3,ease:ESLAM},1.9).addLabel('settled',2.4); return tl;};
+T.d12=()=>{const r=document.getElementById('d12'),tl=gsap.timeline(),rail=r.querySelector('.rail');
+  const half=rail.scrollWidth/2; gsap.set(rail,{x:0});
+  gsap.to(rail,{x:-half,duration:14,repeat:-1,ease:'none'});   // seamless via the doubled pass
+  const chips=q(r,'.chip'); gsap.set(chips,{opacity:0,filter:'blur(20px)'});
+  tl.to(chips,{opacity:1,filter:'blur(0px)',duration:.4,stagger:.04,ease:EOUT},0).addLabel('settled',.9); return tl;};
+T.d13=()=>{const r=document.getElementById('d13'),tl=gsap.timeline({repeat:-1,repeatDelay:.6});
+  const path=r.querySelector('.wave'),cn=r.querySelector('.cn'),cl=r.querySelector('.cl');
+  const st={ph:0},base=760,amp=54; const place=()=>path.setAttribute('d',wavePath(st.ph,amp,base));
+  place(); gsap.to(st,{ph:Math.PI*2,duration:8,repeat:-1,ease:'none',onUpdate:place});
+  [['3','Editors'],['2','Judges'],['1','Job']].forEach((s,i)=>{
+    if(i) tl.to([cn,cl],{filter:'blur(24px)',opacity:.1,scaleX:1.4,duration:4*F,ease:EIN})
+            .set(cn,{textContent:s[0]}).set(cl,{textContent:s[1]})
+            .to([cn,cl],{filter:'blur(0px)',opacity:1,scaleX:1,duration:4*F,ease:EOUT});
+    tl.to({},{duration:.9});});
+  tl.addLabel('settled',.4); return tl;};
+T.d14=()=>{const r=document.getElementById('d14'),tl=gsap.timeline();
+  const hub=r.querySelector('.hub'),sats=q(r,'.sat');
+  gsap.set(hub,{scale:.2,opacity:0}); gsap.set(sats,{opacity:0});
+  const cx=960,cy=540;
+  sats.forEach((s,i)=>{const rx=520+i*120,ry=210+i*70,sp=11+i*4,off=i*Math.PI,o={a:off};
+    gsap.to(o,{a:off+Math.PI*2,duration:sp,repeat:-1,ease:'none',onUpdate(){
+      const w=s.offsetWidth/2;
+      s.style.left=(cx+Math.cos(o.a)*rx-w)+'px'; s.style.top=(cy+Math.sin(o.a)*ry-w)+'px';
+      s.style.zIndex=Math.sin(o.a)>0?30:1;                  // in front / behind the hub
+      s.style.transform=`scale(${.82+Math.sin(o.a)*.18})`;}});});
+  tl.to(hub,{scale:1,opacity:1,duration:.7,ease:EOUT},0)
+    .to(sats,{opacity:1,duration:.4,stagger:.25,ease:EOUT},.5).addLabel('settled',1.4); return tl;};
+T.d15=()=>{const r=document.getElementById('d15'),tl=gsap.timeline(),ns=q(r,'.notif');
+  q(r,'i').forEach((v,i)=>{if(v.closest('.notif'))return;gsap.to(v,{rotation:360,duration:50+i*20,repeat:-1,ease:'none'});});
+  ns.forEach(n=>{gsap.set(n,{opacity:0,y:-40,scale:.94}); gsap.set(n.querySelector('.body'),{opacity:0});});
+  ns.forEach((n,i)=>{const at=i*.55;
+    tl.to(n,{opacity:1,y:0,scale:1,duration:.4,ease:EOUT},at)
+      .to(n.querySelector('.body'),{opacity:1,duration:.3},at+.22);});   // shell first, text after
+  tl.addLabel('settled',2.6); return tl;};
+T.d16=()=>{const r=document.getElementById('d16'),tl=gsap.timeline(),g=r.querySelector('.g3'),its=q(r,'.it');
+  gsap.set(its,{opacity:0,x:-40}); gsap.set(g,{rotationY:0,rotationX:0,scale:1});
+  tl.to(its,{opacity:1,x:0,duration:.35,stagger:.16,ease:EOUT},0).addLabel('settled',1.4)
+    .to(g,{rotationY:-34,rotationX:6,scale:1.25,x:-120,duration:2.2,ease:'power2.inOut'},2.0); return tl;};
+T.d17=()=>{const r=document.getElementById('d17'),tl=gsap.timeline();
+  const chat=r.querySelector('.chat'),badge=r.querySelector('.badge'),cur=r.querySelector('.cur');
+  gsap.set(chat,{opacity:0,scale:.6,filter:'blur(16px)'}); gsap.set(cur,{opacity:0,x:120,y:60});
+  tl.to(chat,{opacity:1,scale:1,filter:'blur(0px)',duration:.55,ease:EOUT},0)
+    .to(cur,{opacity:1,x:0,y:0,duration:.6,ease:'power2.inOut'},.35)
+    .to({v:0},{v:50,duration:1.4,ease:'power2.out',onUpdate(){badge.textContent=Math.round(this.targets()[0].v);}},.6)
+    .addLabel('settled',2.2); return tl;};
+
+const ORDER=Object.keys(T);
+let live=[];
+function playAll(){live.forEach(t=>t.kill()); live=ORDER.map(k=>T[k]());}
+function holdAll(){playAll(); live.forEach(t=>{
+  if(t.repeat()===-1) return;                     // loops have no settled state
+  t.pause(); (t.labels&&'settled' in t.labels)?t.time(t.labels.settled):t.progress(1);});}
+document.getElementById('replay').addEventListener('click',playAll);
+document.getElementById('hold').addEventListener('click',holdAll);
+matchMedia('(prefers-reduced-motion: reduce)').matches ? holdAll() : playAll();
+</script>

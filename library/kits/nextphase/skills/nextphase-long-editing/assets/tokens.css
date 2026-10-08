@@ -1,0 +1,117 @@
+/* NextPhase Studio — LONG-FORM (16:9) design tokens.
+   Import this into EVERY scene. Never hardcode a hex or a font.
+   Canvas 1920x1080 @ 30fps. Margin 96 x 54 (5% title-safe). */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..900&family=Instrument+Serif:ital@0;1&family=Montserrat:wght@300;400;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  /* Brand (shared with the short) */
+  --coral:#D97757; --coral-deep:#BD5D3A; --coral-soft:#E8A38A;
+
+  /* LONG — dark dotted grid (the default look for 16:9) */
+  --dark:#201512; --dark-2:#140D0B; --dark-glow:#3A2016;
+  --on:#F7F3EF; --on-soft:#B9A59C;
+  --panel:#2A1C17; --hairline:rgba(247,243,239,.10);
+  --dot:rgba(217,119,87,.16);
+
+  /* SHORT — cream (available; a deliberate choice on 16:9, not a drift) */
+  --cream:#F0EDE4; --cream-card:#EAE6DA; --paper:#F6F5F1;
+  --ink:#191817; --ink-soft:#6B6660;
+
+  /* Terminal (both) */
+  --term-bg:#17140F; --term-prompt:#E0A15F; --term-text:#E7E2D7;
+
+  /* Type */
+  --font-serif:"Fraunces",Georgia,serif;             /* display TITLES */
+  --font-display:"Instrument Serif",Georgia,serif;   /* Parallax captions */
+  --font-heavy:"Montserrat",sans-serif;              /* captions + big stats */
+  --font-ui:"Inter",sans-serif;                      /* labels, body, UI mockups */
+  --font-mono:"JetBrains Mono",monospace;            /* terminals, data labels */
+
+  /* 16:9 TYPE SCALE — NOT the short's. A 1920-wide frame is viewed further away
+     than a phone-held 9:16 frame; the short's 110px title reads as a meme here.
+     Nothing below 22px survives YouTube's compression at 1080p. */
+  --t-title:86px;      /* chapter / section title, --font-serif */
+  --t-stat:150px;      /* hero stat, --font-heavy 900, tabular-nums */
+  --t-headline:40px;   /* card headline, --font-ui 700 */
+  --t-body:30px;       /* body / list row, --font-ui 500 */
+  --t-cap-parallax:96px;
+  --t-cap:64px;        /* Weight Shift / Highlighted captions */
+  --t-label:22px;      /* kicker / mono label, .18em tracking, uppercase */
+  --t-lower-name:34px; --t-lower-sub:22px;
+
+  /* Layout */
+  --pad:96px;          /* title-safe margin. Generous margins = premium. Never crowd. */
+  --pad-y:54px;
+  --gutter:32px;       /* 12 cols x 128px inside the margins */
+
+  /* Radius / shadow — deeper than the short's, because they sit on --dark */
+  --r-card:22px; --r-sm:12px; --r-pill:999px;
+  --shadow-card:0 24px 70px rgba(0,0,0,.45),0 4px 14px rgba(0,0,0,.25);
+  --shadow-cam:0 18px 60px rgba(0,0,0,.55);
+
+  /* Motion (cinematic, never linear) */
+  --ease-out:cubic-bezier(.16,1,.3,1);        /* primary entrance */
+  --ease-soft:cubic-bezier(.4,0,.2,1);
+  --ease-overshoot:cubic-bezier(.34,1.56,.64,1);
+  --dur-enter:600ms; --dur-exit:380ms; --dur-pop:180ms; --dur-draw:850ms;
+  --dur-whip:280ms;      /* whip-pan between layouts — the long-form workhorse */
+  --dur-chapter:600ms;   /* chapter wipe */
+  --stagger:80ms;
+
+  /* Reserved zones (see reference/editing-rules.md) — documented as vars so a
+     composition can position against them instead of hardcoding pixels. */
+  --cam-x:1364px; --cam-y:738px; --cam-w:500px; --cam-h:282px;   /* bubble */
+  --lower3-x:96px; --lower3-y:830px; --lower3-w:904px;
+  --caption-y:940px;
+}
+
+/* ── Backgrounds (apply to the scene root) ───────────────────────────────── */
+.bg-darkgrid{
+  background:
+    radial-gradient(80% 90% at 8% 0%, var(--dark-glow) 0%, transparent 55%),
+    radial-gradient(120% 120% at 100% 100%, var(--dark-2) 0%, transparent 60%),
+    linear-gradient(135deg,#2a1a13,#160f0c 70%);
+  position:relative;
+}
+/* The dot grid stays UNDER everything and is masked toward the centre — a grid
+   behind small text eats legibility, which is the whole reason for the mask. */
+.bg-darkgrid::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(var(--dot) 1.4px, transparent 1.6px);background-size:30px 30px;
+  -webkit-mask-image:radial-gradient(120% 100% at 50% 40%, #000 40%, transparent 90%);
+          mask-image:radial-gradient(120% 100% at 50% 40%, #000 40%, transparent 90%);}
+.bg-darkgrid::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  box-shadow:inset 0 0 340px rgba(0,0,0,.55)}
+
+.bg-cream{background:var(--cream)}
+.bg-paper{background:var(--paper)}
+
+/* ── Safe-zone helpers ───────────────────────────────────────────────────── */
+.safe{position:absolute;left:var(--pad);right:var(--pad);top:var(--pad-y);bottom:var(--pad-y)}
+.cam-bubble{position:absolute;left:var(--cam-x);top:var(--cam-y);
+  width:var(--cam-w);height:var(--cam-h);border-radius:var(--r-card);overflow:hidden;
+  box-shadow:var(--shadow-cam);border:2px solid var(--hairline);z-index:40}
+
+/* Split layouts — the MEDIA HALF ITSELF is the coral block, full bleed, so the
+   split reads instantly as a split. A coral frame around the picture is not this. */
+.half-media{position:absolute;top:0;bottom:0;background:var(--coral);overflow:hidden;z-index:10}
+.half-media.left{left:0;width:1150px}
+.half-media.right{right:0;width:1150px}
+.half-media > *{position:absolute;inset:40px;border-radius:var(--r-sm);overflow:hidden}
+.half-face{position:absolute;top:0;bottom:0;overflow:hidden;z-index:10}
+.half-face.right{left:1150px;right:0}
+.half-face.left{left:0;width:770px}
+
+/* Cards / panels on dark */
+.card{background:var(--panel);border:1px solid var(--hairline);
+  border-radius:var(--r-card);box-shadow:var(--shadow-card);overflow:hidden}
+.kicker{font-family:var(--font-mono);font-size:var(--t-label);letter-spacing:.18em;
+  text-transform:uppercase;color:var(--coral);font-weight:500}
+.title{font-family:var(--font-serif);font-weight:600;font-size:var(--t-title);
+  line-height:1.02;color:var(--on);letter-spacing:-.01em}
+.stat{font-family:var(--font-heavy);font-weight:900;font-size:var(--t-stat);color:var(--on);
+  line-height:1;font-variant-numeric:tabular-nums}
+
+/* Progress rail — chapter N of M along the bottom title-safe edge.
+   Grows with scaleX (transform-origin:left), NEVER width. */
+.rail{position:absolute;left:0;bottom:0;height:4px;width:1920px;background:var(--coral);
+  opacity:.6;transform:scaleX(0);transform-origin:left center;z-index:50}

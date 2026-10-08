@@ -1,0 +1,42 @@
+<!-- BRICK: lower-third (16:9) — the long-form element the short has no room for.
+     USE FOR: a person's name + role · a tool name + one-line descriptor ·
+              a source citation under a stat · the chapter label for the first ~4s.
+     ON SCREEN 3.5-5s, never longer. TWO LINES MAXIMUM.
+     Box 96,830 -> 1000,1000. Never during the Screen-Share bubble layout if it
+     would collide with a callout; move the callout, not the lower third. -->
+
+<div id="l3" class="clip" data-start="0" data-duration="4.20" data-track-index="6">
+  <div class="l3box">
+    <div class="l3name">Orca</div>
+    <div class="l3sub">github.com/stablyai/orca · MIT</div>
+  </div>
+</div>
+
+<style>
+  #l3{position:absolute;left:var(--lower3-x);top:var(--lower3-y);width:var(--lower3-w);z-index:35}
+  .l3box{display:inline-block;background:rgba(42,28,23,.92);
+    border-left:3px solid var(--coral);border-radius:0 var(--r-sm) var(--r-sm) 0;
+    padding:24px 40px 26px 32px;box-shadow:var(--shadow-card);
+    /* clip-reveal wipes it in from the left */
+    clip-path:inset(0 100% 0 0)}
+  .l3name{font:700 var(--t-lower-name)/1.1 var(--font-ui);color:var(--on)}
+  .l3sub{font:500 var(--t-lower-sub)/1.2 var(--font-mono);color:var(--on-soft);margin-top:8px}
+</style>
+
+<script>
+// IN = the word onset where the name/term/source is first said. OUT = IN + 3.5..5.
+const IN = 0.0, OUT = 4.0;
+
+// clip-reveal in — clip-path is a paint property, not layout; it does not stutter.
+tl.fromTo("#l3 .l3box", {clipPath:"inset(0 100% 0 0)"},
+  {clipPath:"inset(0 0% 0 0)", duration:.52, ease:"power3.out"}, IN);
+// the sub-line staggers +80ms behind the name
+tl.fromTo("#l3 .l3name", {opacity:0, x:-14}, {opacity:1, x:0, duration:.4, ease:"power3.out"}, IN+0.10);
+tl.fromTo("#l3 .l3sub",  {opacity:0, x:-14}, {opacity:1, x:0, duration:.4, ease:"power3.out"}, IN+0.18);
+// wipe-out — the reverse
+tl.to("#l3 .l3box", {clipPath:"inset(0 100% 0 0)", duration:.38, ease:"power2.in"}, OUT);
+tl.set("#l3 .l3box", {clipPath:"inset(0 100% 0 0)"}, OUT+0.38);   // hard kill for seeks
+</script>
+
+<!-- SFX:  IN        futuristic-click  0.10
+          OUT       whoosh-2          0.08   # every card exits on soft air -->

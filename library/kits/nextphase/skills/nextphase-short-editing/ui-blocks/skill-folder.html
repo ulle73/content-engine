@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>skill-folder</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/*  skill-folder — the Apple file-fan. 1080x1920.  ?plate=on|none
+
+    A folder sits closed, then its files LIFT OUT and fan across the top, one after
+    another, each on its own arc. Hold. Then they drop back in and it closes.
+
+    Built in DOM, not an illustration, for the same reason as ai-new-chat: the camera
+    pushes in on it, and every filename is per-video text you will want to change.
+    Swap FILES below — badges recolour themselves from the extension.
+
+    The cards start BEHIND the folder's front panel (z-index 2 vs 3), so they genuinely
+    emerge from the mouth instead of appearing on top of it. That single z-order is what
+    sells the move; without it the whole thing reads as five cards fading in.            */
+:root{
+  --T:6s; --ease:cubic-bezier(.16,1,.3,1);
+  --pop:cubic-bezier(.34,1.4,.64,1);
+  --paper:#F0EDE4;  
+  --ink:#141413; --muted:#8C8A85;
+  --folder:#D9865E; --folder-lo:#C2734E; --folder-hi:#E9A075;
+  --ui:"Inter",-apple-system,sans-serif; --mono:"JetBrains Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{
+  background:var(--paper);font-family:var(--ui);
+}
+body.bare{background:transparent;background-image:none}
+
+#stage{position:absolute;left:0;right:0;top:0;bottom:0}
+
+/* ── the folder ─────────────────────────────────────────────────────────
+   back panel + tab, three sheets peeking, then the front panel over them   */
+#folder{position:absolute;left:260px;top:1010px;width:560px;height:400px;
+  animation:folderIn var(--T) var(--ease) infinite both}
+@keyframes folderIn{
+  0%{opacity:0;transform:translateY(70px) scale(.94)}
+  9%{opacity:1;transform:translateY(0) scale(1)}
+  93%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(0) scale(.98)}}
+
+#back{position:absolute;left:0;top:34px;width:560px;height:366px;z-index:1;
+  background:linear-gradient(180deg,var(--folder-lo),#B4663F);
+  border-radius:22px 22px 26px 26px}
+#tab{position:absolute;left:0;top:0;width:210px;height:70px;z-index:1;
+  background:var(--folder-lo);border-radius:18px 26px 0 0}
+.sheet{position:absolute;z-index:2;background:#fff;border-radius:8px;
+  box-shadow:0 2px 6px rgba(20,20,19,.12)}
+#s1{left:52px;top:78px;width:456px;height:230px}
+#s2{left:72px;top:96px;width:416px;height:212px;background:#FBFAF7}
+#s3{left:92px;top:114px;width:376px;height:194px;background:#F4F2EC}
+/* the front panel tips forward a few degrees as the files come out */
+#front{position:absolute;left:0;top:168px;width:560px;height:232px;z-index:3;
+  background:linear-gradient(180deg,var(--folder-hi) 0%,var(--folder) 38%,var(--folder-lo) 100%);
+  border-radius:14px 14px 28px 28px;transform-origin:50% 100%;
+  box-shadow:0 -2px 0 rgba(255,255,255,.28) inset, 0 26px 44px rgba(120,60,30,.28);
+  animation:frontTip var(--T) var(--ease) infinite both}
+@keyframes frontTip{
+  0%,10%{transform:rotate(0) translateY(0)}
+  22%   {transform:rotate(-1.4deg) translateY(6px)}
+  76%   {transform:rotate(-1.4deg) translateY(6px)}
+  88%,100%{transform:rotate(0) translateY(0)}}
+
+/* ── the files ──────────────────────────────────────────────────────────
+   each card owns one keyframe set, written by script, so every file gets its
+   own arc and its own delay instead of five copies of the same move          */
+.file{position:absolute;left:450px;top:1040px;width:180px;height:250px;z-index:2;
+  background:#fff;border-radius:15px;padding:20px 18px;
+  box-shadow:0 3px 8px rgba(20,20,19,.10),0 18px 34px rgba(20,20,19,.13);
+  display:flex;flex-direction:column;transform-origin:50% 100%}
+.file .badge{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;font:700 19px var(--mono);color:#fff;letter-spacing:-.02em}
+.file .lines{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.file .lines i{display:block;height:7px;border-radius:4px;background:#E6E3DB}
+/* the name is allowed to run past the card edge, as in the reference — a long
+   filename reads better overhanging than truncated to prompts.js… */
+.file .nm{position:absolute;left:-40px;right:-40px;bottom:16px;text-align:center;
+  font:600 21px var(--mono);color:var(--ink);white-space:nowrap}
+
+/* ══ mode=drop — the reference mp4's move, in our language ══════════════════
+   The whole group scales up slowly for the entire shot (that continuous push is
+   the thing that reads as "Apple"), while folders pop in one at a time and their
+   labels come up underneath. The reference does it on black with a blue macOS
+   folder; this keeps the motion and swaps in the house plate and our coral.      */
+#group{position:absolute;left:0;right:0;top:0;bottom:0;
+  display:flex;align-items:center;justify-content:center;gap:120px;
+  animation:groupPush var(--T) linear infinite both}
+@keyframes groupPush{
+  0%{transform:scale(.42)} 96%{transform:scale(1)} 100%{transform:scale(1.02)}}
+.fold{position:relative;width:300px;flex:none;text-align:center;
+  animation:foldIn var(--T) var(--pop) infinite both}
+@keyframes foldIn{
+  0%,var(--in,10%){opacity:0;transform:translateY(46px) scale(.7)}
+  var(--at,24%){opacity:1;transform:translateY(0) scale(1)}
+  94%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(0) scale(1)}}
+.fold .glyph{position:relative;width:300px;height:216px;margin:0 auto}
+.fold .gb{position:absolute;left:0;top:18px;width:300px;height:198px;border-radius:14px 14px 18px 18px}
+.fold .gt{position:absolute;left:0;top:0;width:126px;height:40px;border-radius:11px 16px 0 0}
+.fold .gf{position:absolute;left:0;top:74px;width:300px;height:142px;border-radius:9px 9px 20px 20px;
+  box-shadow:0 -2px 0 rgba(255,255,255,.30) inset,0 16px 30px rgba(60,40,25,.24)}
+.fold .lbl{margin-top:22px;font:700 30px var(--ui);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink);white-space:nowrap;overflow:hidden;
+  animation:lblIn var(--T) var(--ease) infinite both}
+@keyframes lblIn{
+  0%,var(--lin,20%){opacity:0;transform:translateY(14px)}
+  var(--lat,30%){opacity:1;transform:translateY(0)}
+  94%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(0)}}
+
+/* ── ?fit=half — the fan re-laid for 1000x880: folder lower, arc flatter ── */
+body.half{width:1000px;height:880px;background:transparent;background-image:none}
+body.half #folder{left:350px;top:470px;width:300px;height:215px}
+body.half #back{top:18px;width:300px;height:197px;border-radius:12px 12px 14px 14px}
+body.half #tab{width:113px;height:38px;border-radius:10px 14px 0 0}
+body.half #s1{left:28px;top:42px;width:245px;height:124px}
+body.half #s2{left:39px;top:52px;width:222px;height:114px}
+body.half #s3{left:50px;top:61px;width:200px;height:104px}
+body.half #front{top:90px;width:300px;height:125px;border-radius:8px 8px 15px 15px}
+body.half .file{left:410px;top:496px;width:96px;height:134px;border-radius:9px;padding:11px 10px}
+body.half .file .badge{width:25px;height:25px;border-radius:6px;font-size:11px}
+body.half .file .lines{margin-top:9px;gap:5px}
+body.half .file .lines i{height:4px}
+body.half .file .nm{left:-22px;right:-22px;bottom:9px;font-size:12px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="folder">
+    <div id="tab"></div>
+    <div id="back"></div>
+    <div class="sheet" id="s1"></div>
+    <div class="sheet" id="s2"></div>
+    <div class="sheet" id="s3"></div>
+    <div id="front"></div>
+  </div>
+</div>
+
+<script>
+/* filenames are per-video — swap this list and the badges recolour themselves */
+const FILES = [
+  "CLAUDE.md", "SKILL.md", "prompts.json", "config.yaml", "tools.ts",
+];
+/* badge colour + label by extension */
+const KIND = {
+  md:   ["#D9765B", "md"],   json: ["#2F6FD4", "{ }"], yaml: ["#3F9E62", "yml"],
+  yml:  ["#3F9E62", "yml"],  ts:   ["#E0A63C", "ts"],  js:   ["#E0A63C", "js"],
+  py:   ["#4B77BE", "py"],   sh:   ["#5B5955", "sh"],  txt:  ["#8C8A85", "txt"],
+};
+/* where each card ends up: a shallow arc, middle card highest, ends rotated out */
+const FAN_FULL = [
+  { dx: -410, dy: -444, rot: -16 },
+  { dx: -205, dy: -520, rot:  -8 },
+  { dx:    0, dy: -548, rot:   0 },
+  { dx:  205, dy: -520, rot:   8 },
+  { dx:  410, dy: -444, rot:  16 },
+];
+const FAN_HALF = [
+  { dx: -218, dy: -228, rot: -16 }, { dx: -109, dy: -268, rot: -8 },
+  { dx:    0, dy: -282, rot:   0 }, { dx:  109, dy: -268, rot:  8 },
+  { dx:  218, dy: -228, rot:  16 },
+];
+const MODE = new URLSearchParams(location.search).get("mode") || "fan";
+const HALF = new URLSearchParams(location.search).get("fit") === "half";
+if (HALF) { document.body.classList.add("half");
+  document.documentElement.style.cssText = "width:1000px;height:880px;overflow:hidden"; }
+const FAN = HALF ? FAN_HALF : FAN_FULL;
+const stage = document.getElementById("stage");
+const sheet = document.styleSheets[document.styleSheets.length - 1];
+
+if (MODE !== "drop") FILES.slice(0, FAN.length).forEach((name, i) => {
+  const ext = name.split(".").pop().toLowerCase();
+  const [colour, label] = KIND[ext] || KIND.txt;
+  const f = FAN[i];
+
+  const el = document.createElement("div");
+  el.className = "file";
+  el.style.animation = `fly${i} var(--T) var(--ease) infinite both`;
+  el.innerHTML =
+    `<span class="badge" style="background:${colour}">${label}</span>` +
+    `<span class="lines"><i style="width:82%"></i><i style="width:64%"></i>` +
+    `<i style="width:74%"></i><i style="width:48%"></i></span>` +
+    `<span class="nm">${name}</span>`;
+  stage.appendChild(el);
+
+  /* out of the mouth, up the arc, hold, then back down into it.
+     The overshoot lives only on the way out — coming back is a plain settle. */
+  const out   = 10 + i * 3.5;          // % when this card starts to lift
+  const there = out + 13;
+  const back  = 78 + i * 2;
+  sheet.insertRule(`@keyframes fly${i}{
+    0%,${out}%   {opacity:0;transform:translate(0,40px) scale(.55) rotate(0deg)}
+    ${out + 3}%  {opacity:1}
+    ${there}%    {opacity:1;transform:translate(${f.dx}px,${f.dy}px) scale(1) rotate(${f.rot}deg);
+                  animation-timing-function:cubic-bezier(.16,1,.3,1)}
+    ${back}%     {opacity:1;transform:translate(${f.dx}px,${f.dy}px) scale(1) rotate(${f.rot}deg)}
+    ${back + 11}%{opacity:0;transform:translate(0,40px) scale(.55) rotate(0deg)}
+    100%         {opacity:0;transform:translate(0,40px) scale(.55) rotate(0deg)}
+  }`, sheet.cssRules.length);
+});
+
+
+/* ?mode=drop — one folder per entry, popping in on its own beat.
+   Colour per folder: "coral" (the live one) or "grey" (the rest), like the
+   reference's blue-then-grey pair. Labels are per video.                      */
+const DROPS = [
+  { label: "YOUR SKILL",  tone: "coral" },
+  { label: "YOUR FOLDER", tone: "grey"  },
+];
+const TONE = {
+  coral: ["#C2734E", "#C2734E", "linear-gradient(180deg,#E9A075 0%,#D9865E 38%,#C2734E 100%)"],
+  grey:  ["#A9A49B", "#A9A49B", "linear-gradient(180deg,#D8D4CB 0%,#C6C1B7 38%,#ADA89E 100%)"],
+};
+if (MODE === "drop") {
+  document.getElementById("folder").remove();
+  const g = document.createElement("div");
+  g.id = "group";
+  g.innerHTML = DROPS.map((d, i) => {
+    const [back, tab, front] = TONE[d.tone] || TONE.grey;
+    const inAt = 8 + i * 16, at = inAt + 14, lin = at, lat = at + 8;
+    return `<div class="fold" style="--in:${inAt}%;--at:${at}%">
+      <div class="glyph">
+        <span class="gb" style="background:${back}"></span>
+        <span class="gt" style="background:${tab}"></span>
+        <span class="gf" style="background:${front}"></span>
+      </div>
+      <div class="lbl" style="--lin:${lin}%;--lat:${lat}%">${d.label}</div>
+    </div>`;
+  }).join("");
+  stage.appendChild(g);
+}
+
+if (new URLSearchParams(location.search).get("plate") === "none")
+  document.body.classList.add("bare");
+
+/* ?seek=<seconds> — pause every animation at one instant. Lets a headless shot land on
+   the settled frame instead of wherever the 6s loop happened to be. */
+(() => {
+  const s = new URLSearchParams(location.search).get("seek");
+  if (s === null) return;
+  const go = () => document.getAnimations().forEach(a => { a.pause(); a.currentTime = parseFloat(s) * 1000; });
+  requestAnimationFrame(() => requestAnimationFrame(() => { go(); setTimeout(go, 250); }));
+})();
+</script>
+</body>
+</html>

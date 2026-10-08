@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>vibecode — the whole style on one page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  /* --- page chrome. NOT part of the style; it just frames the demos. --- */
+  body { margin:0; background:#0E1116; color:#C9D2E0;
+         font:14px/1.55 'Inter',system-ui,sans-serif; }
+  header { padding:40px 48px 8px; max-width:1180px; }
+  h1 { font:800 30px/1.15 'Inter',sans-serif; color:#fff; margin:0 0 10px; letter-spacing:-.02em; }
+  header p { margin:0 0 6px; max-width:78ch; color:#96A3B6; }
+  section { padding:34px 48px; max-width:1180px; }
+  h2 { font:800 17px/1.3 'Inter',sans-serif; color:#fff; margin:0 0 4px;
+       letter-spacing:.01em; }
+  h2 span { color:#4E7DF0; font-weight:800; margin-right:9px; }
+  .note { color:#8794A8; margin:0 0 18px; max-width:80ch; }
+  .note b { color:#D8E1EF; font-weight:600; }
+  .note code { background:#1A2029; padding:1px 6px; border-radius:4px;
+               font:12px ui-monospace,monospace; color:#9FD0FF; }
+  /* every demo frame is a real 1920x1080 .vc-frame, scaled to fit */
+  .stage { width:1080px; height:607.5px; position:relative; overflow:hidden;
+           border-radius:8px; }
+  .stage > .vc-frame { transform:scale(.5625); transform-origin:0 0; }
+  .row { display:flex; gap:22px; flex-wrap:wrap; }
+  .swatches { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+              gap:10px; }
+  .sw { border-radius:7px; overflow:hidden; background:#171C24; }
+  .sw i { display:block; height:56px; }
+  .sw b { display:block; padding:8px 10px 2px; font:700 12px 'Inter'; color:#E4EBF5; }
+  .sw code { display:block; padding:0 10px 9px; font:11px ui-monospace,monospace;
+             color:#7E8DA3; }
+  table { border-collapse:collapse; width:100%; max-width:760px; margin-top:6px; }
+  th,td { text-align:left; padding:7px 12px; border-bottom:1px solid #1E242E;
+          font-size:13px; }
+  th { color:#8794A8; font-weight:600; }
+  td:first-child { color:#E4EBF5; font-weight:600; }
+  td code { font:12px ui-monospace,monospace; color:#9FD0FF; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>vibecode</h1>
+  <p>The frame is a workspace somebody built out of cut paper, and it is being
+     operated on while you watch.</p>
+  <p><b style="color:#E4A11B">Every string below is placeholder</b> — marked
+     <code style="background:#1A2029;padding:1px 5px;border-radius:4px">data-kit</code>.
+     Rewrite all of it from the real transcript;
+     <code style="background:#1A2029;padding:1px 5px;border-radius:4px">check-vibecode.sh</code>
+     fails the render if any survives.</p>
+</header>
+
+<!-- ============================================================ PALETTE -->
+<section>
+  <h2><span>0</span>The palette</h2>
+  <p class="note">Measured, not chosen — see <b>reference/reference-log.md</b>.
+     <b>Red is negation only.</b> The three clip colours are track identities:
+     keep a kind of work on its own colour for the whole video.</p>
+  <div class="swatches">
+    <div class="sw"><i style="background:#226DE5"></i><b>ground</b><code>#226DE5</code></div>
+    <div class="sw"><i style="background:#FEFEF5"></i><b>paper</b><code>#FEFEF5</code></div>
+    <div class="sw"><i style="background:#162949"></i><b>ink</b><code>#162949</code></div>
+    <div class="sw"><i style="background:#E54926"></i><b>red — NO only</b><code>#E54926</code></div>
+    <div class="sw"><i style="background:#FFDD36"></i><b>yellow</b><code>#FFDD36</code></div>
+    <div class="sw"><i style="background:#3DDEFE"></i><b>track 1</b><code>#3DDEFE</code></div>
+    <div class="sw"><i style="background:#FF9EC0"></i><b>track 2</b><code>#FF9EC0</code></div>
+    <div class="sw"><i style="background:#2F68E0"></i><b>track 3</b><code>#2F68E0</code></div>
+    <div class="sw"><i style="background:#EE8A4E"></i><b>mascot</b><code>#EE8A4E</code></div>
+    <div class="sw"><i style="background:#F7F1DD"></i><b>.vc-cream</b><code>#F7F1DD</code></div>
+    <div class="sw"><i style="background:#D3A74B"></i><b>cream gold</b><code>#D3A74B</code></div>
+    <div class="sw"><i style="background:#19140A"></i><b>.vc-dark</b><code>#19140A</code></div>
+  </div>
+</section>
+
+<!-- ============================================================ SCENE 2 -->
+<section>
+  <h2><span>2</span>Paper Timeline — the signature</h2>
+  <p class="note">Ruled notebook paper, torn edge, hard offset shadow, chromatic
+     fringe. Clips build <b>left → right</b>, 5 frames each, staggered 4. The
+     playhead sweeps after the last clip lands.</p>
+  <div class="stage">
+    <div class="vc-frame">
+      <div style="position:absolute;left:12%;top:29%;width:76%"
+           class="vc-paper vc-paper-ruled vc-fringe vc-timeline">
+        <div class="vc-track">
+          <span class="vc-clip t2" style="left:4%;width:20%"></span>
+          <span class="vc-clip t2" style="left:27%;width:16%"></span>
+          <span class="vc-clip t2" style="left:46%;width:24%"></span>
+        </div>
+        <div class="vc-track">
+          <span class="vc-clip t3" style="left:11%;width:26%"></span>
+          <span class="vc-clip t3" style="left:40%;width:14%"></span>
+        </div>
+        <div class="vc-track">
+          <span class="vc-clip t1" style="left:2%;width:34%"></span>
+          <span class="vc-clip t1" style="left:38%;width:19%"></span>
+          <span class="vc-clip t1" style="left:59%;width:15%"></span>
+        </div>
+        <div class="vc-playhead" style="left:52%"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SCENE 3 -->
+<section>
+  <h2><span>3</span>Tile Row — then the red X lands</h2>
+  <p class="note">Three paper tiles at <b>three different tilts</b>, each with a
+     built navy pictogram and a label. Then a red X lands on each in turn — two
+     strokes, 5 frames each, 3-frame lag, <b>overshooting the tile</b>. Loudest
+     sound in the style. <b>Never an emoji.</b></p>
+  <div class="stage">
+    <div class="vc-frame">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;
+                  justify-content:center;gap:8cqh">
+
+        <div style="text-align:center">
+          <div class="vc-paper vc-fringe" style="width:30cqh;height:30cqh;
+               --vc-tilt:-2.1deg;display:grid;place-items:center">
+            <svg viewBox="0 0 100 100" style="width:52%;overflow:visible">
+              <path d="M50 26 L64 50 L50 74 L36 50 Z" fill="var(--vc-ink)"/>
+              <path d="M4 44h22v12H4z M74 44h22v12H74z" fill="var(--vc-ink)"/>
+              <path d="M12 34 L12 66 M88 34 L88 66" stroke="var(--vc-ink)"
+                    stroke-width="7" stroke-linecap="round"/>
+              <g class="vc-x-stroke">
+                <path d="M6 8 L94 92"/><path d="M94 8 L6 92"/>
+              </g>
+            </svg>
+          </div>
+          <div class="vc-label" style="margin-top:2.4cqh" data-kit>KEYFRAMES</div>
+        </div>
+
+        <div style="text-align:center">
+          <div class="vc-paper vc-fringe" style="width:30cqh;height:30cqh;
+               --vc-tilt:1.4deg;display:grid;place-items:center">
+            <svg viewBox="0 0 100 100" style="width:52%;overflow:visible">
+              <circle cx="50" cy="50" r="27" fill="none" stroke="var(--vc-ink)"
+                      stroke-width="9"/>
+              <path d="M50 23 A27 27 0 0 1 50 77 Z" fill="var(--vc-ink)"/>
+              <g class="vc-x-stroke">
+                <path d="M6 8 L94 92"/><path d="M94 8 L6 92"/>
+              </g>
+            </svg>
+          </div>
+          <div class="vc-label" style="margin-top:2.4cqh" data-kit>COLOR PASSES</div>
+        </div>
+
+        <div style="text-align:center">
+          <div class="vc-paper vc-fringe" style="width:30cqh;height:30cqh;
+               --vc-tilt:-0.8deg;display:grid;place-items:center">
+            <svg viewBox="0 0 100 100" style="width:52%;overflow:visible">
+              <path d="M50 18 L58 18 L60 30 L70 34 L79 27 L85 33 L78 42
+                       L82 52 L94 54 L94 62 L82 64 L78 74 L85 83 L79 89
+                       L70 82 L60 86 L58 98 L50 98 L48 86 L38 82 L29 89
+                       L23 83 L30 74 L26 64 L14 62 L14 54 L26 52 L30 42
+                       L23 33 L29 27 L38 34 L48 30 Z" fill="var(--vc-ink)"/>
+              <circle cx="54" cy="58" r="11" fill="var(--vc-paper)"/>
+            </svg>
+          </div>
+          <div class="vc-label" style="margin-top:2.4cqh" data-kit>MANUAL EXPORTS</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SCENE 4 -->
+<section>
+  <h2><span>4</span>Poster</h2>
+  <p class="note">Two lines of display caps, line 2 at <b>1.7–1.8×</b> line 1 —
+     that ratio <i>is</i> the poster. Cream fill, hard navy offset shadow, a
+     yellow hand-cut arrow pointing in from the left.</p>
+  <div class="stage">
+    <div class="vc-frame">
+      <div style="position:absolute;left:var(--vc-safe-x);top:34%;
+                  display:flex;align-items:center;gap:4cqh">
+        <div class="vc-fringe" style="width:9cqh;height:6cqh;
+             background:var(--vc-yellow);
+             clip-path:polygon(0 34%,58% 34%,58% 8%,100% 50%,58% 92%,58% 66%,0 66%);
+             filter:drop-shadow(var(--vc-shadow-x) var(--vc-shadow-y) 0 var(--vc-shadow))">
+        </div>
+        <div>
+          <div class="vc-display vc-display-sm vc-fringe" data-kit>ONE PROMPT</div>
+          <div class="vc-display vc-fringe" data-kit>FULL EDIT</div>
+        </div>
+      </div>
+      <div class="vc-paper vc-fringe"
+           style="position:absolute;left:var(--vc-safe-x);top:70%;width:46%;
+                  height:9cqh;--vc-tilt:-0.9deg;padding:1.6cqh 2cqh">
+        <div class="vc-track">
+          <span class="vc-clip t1" style="left:2%;width:26%"></span>
+          <span class="vc-clip t2" style="left:31%;width:20%"></span>
+          <span class="vc-clip t3" style="left:54%;width:30%"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SCENE 5 -->
+<section>
+  <h2><span>5</span>Workspace — REF-A's furniture, in paper</h2>
+  <p class="note">Step list down the left, <b>exactly one row active</b>,
+     advancing with the VO. A media card below it, the head card upper-right, the
+     scrub rail pinned to the bottom. Shown on <b>.vc-cream</b> — the calm ground.</p>
+  <div class="stage">
+    <div class="vc-frame vc-cream">
+      <div class="vc-eyebrow" style="position:absolute;left:var(--vc-safe-x);top:7%"
+           data-kit>WHAT IT ACTUALLY DID</div>
+
+      <div style="position:absolute;left:var(--vc-safe-x);top:13%;width:46%">
+        <div class="vc-step"><span class="num">1</span><span data-kit>ROUGH CUT</span></div>
+        <div class="vc-step"><span class="num">2</span><span data-kit>DEAD AIR</span></div>
+        <div class="vc-step is-active"><span class="num">3</span><span data-kit>GRAPHICS</span></div>
+      </div>
+
+      <div class="vc-meter" style="position:absolute;left:var(--vc-safe-x);
+           top:56%;width:38%">
+        <div class="vc-label" style="color:var(--vc-ink);text-shadow:none;
+             margin-bottom:1.4cqh" data-kit>RENDER BUDGET</div>
+        <div class="rail"><i style="transform:scaleX(.62)"></i></div>
+      </div>
+
+      <div class="vc-head vc-fringe" style="position:absolute;right:var(--vc-safe-x);
+           top:22%;width:40%;aspect-ratio:16/9;background:var(--vc-paper)">
+        <div style="width:100%;height:100%;background:
+             repeating-linear-gradient(135deg,#D8CDB2 0 14px,#CFC3A4 14px 28px);
+             display:grid;place-items:center;font:700 13px 'Inter';color:#6B6047">
+          the head card — real footage
+        </div>
+      </div>
+
+      <div class="vc-rail">
+        <span style="width:0;height:0;border-left:1.3cqh solid var(--vc-ink);
+              border-top:.8cqh solid transparent;border-bottom:.8cqh solid transparent">
+        </span>
+        <span class="track"><i style="transform:scaleX(.41)"></i></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SCENE 6 -->
+<section>
+  <h2><span>6</span>Sticker Wall + the caption lozenge</h2>
+  <p class="note">Real assets, <b>scissored</b> — white paper border, torn edge,
+     hard shadow, different tilt each. This is where the real-media requirement
+     gets paid: ≥1 per 20s, minimum 8. The caption <b>hard-cuts</b>: 0 frames in,
+     0 frames out, forever.</p>
+  <div class="stage">
+    <div class="vc-frame">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;
+                  justify-content:center;gap:4cqh">
+        <div class="vc-sticker" style="width:30cqh;height:19cqh;--vc-tilt:2.2deg">
+          <div style="width:100%;height:100%;background:
+               repeating-linear-gradient(135deg,#2B3550 0 12px,#232C44 12px 24px);
+               display:grid;place-items:center;font:700 12px 'Inter';color:#8FA3C8">
+            real screenshot
+          </div>
+        </div>
+        <div class="vc-sticker" style="width:19cqh;height:19cqh;--vc-tilt:-1.5deg">
+          <div style="width:100%;height:100%;background:
+               repeating-linear-gradient(135deg,#2B3550 0 12px,#232C44 12px 24px);
+               display:grid;place-items:center;font:700 12px 'Inter';color:#8FA3C8">
+            repo card
+          </div>
+        </div>
+        <div class="vc-sticker" style="width:23cqh;height:19cqh;--vc-tilt:1.1deg">
+          <div style="width:100%;height:100%;background:
+               repeating-linear-gradient(135deg,#2B3550 0 12px,#232C44 12px 24px);
+               display:grid;place-items:center;font:700 12px 'Inter';color:#8FA3C8">
+            docs page
+          </div>
+        </div>
+      </div>
+      <div class="vc-sparkle" style="position:absolute;left:24%;top:24%"></div>
+      <div class="vc-sparkle" style="position:absolute;right:27%;top:66%;
+           width:2.2cqh;height:2.2cqh"></div>
+      <div class="vc-caption">
+        <span data-kit>IT PULLED</span><span class="hot" data-kit>EVERY SOURCE</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SCENE 7 -->
+<section>
+  <h2><span>7</span>Agent Beat + the Teaser</h2>
+  <p class="note">The mascot is the AI's body — it is also how the style obeys
+     <b>no random humans as b-roll</b>. Punctuation only: 1.5–3s. Right: the
+     <b>.vc-dark</b> teaser between chapters — head card, blurred preview of what
+     is coming, 2s, then the ground swaps.</p>
+  <div class="row">
+    <div class="stage" style="width:530px;height:298px">
+      <div class="vc-frame" style="transform:scale(.276)">
+        <div style="position:absolute;left:50%;top:50%;
+                    transform:translate(-50%,-50%)">
+          <!-- pixel agent: neutral golf-ball placeholder (import; the original Claude-like mascot was removed) -->
+          <svg viewBox="0 0 120 80" style="width:34cqh;overflow:visible">
+            <g fill="var(--vc-paper)">
+              <rect x="40" y="2" width="40" height="8"/><rect x="28" y="10" width="64" height="8"/>
+              <rect x="22" y="18" width="76" height="34"/><rect x="28" y="52" width="64" height="8"/>
+              <rect x="40" y="60" width="40" height="6"/>
+            </g>
+            <g fill="var(--vc-mascot)"><rect x="40" y="66" width="12" height="10"/><rect x="68" y="66" width="12" height="10"/></g>
+            <g fill="#C9C2AE"><rect x="34" y="22" width="4" height="4"/><rect x="82" y="22" width="4" height="4"/><rect x="58" y="12" width="4" height="4"/><rect x="30" y="44" width="4" height="4"/><rect x="86" y="44" width="4" height="4"/></g>
+            <rect x="46" y="28" width="9" height="14" fill="var(--vc-ink)"/>
+            <rect x="65" y="28" width="9" height="14" fill="var(--vc-ink)"/>
+          </svg>
+        </div>
+        <div class="vc-sparkle" style="position:absolute;left:33%;top:30%"></div>
+        <div class="vc-sparkle" style="position:absolute;right:34%;top:33%;
+             width:2.4cqh;height:2.4cqh"></div>
+      </div>
+    </div>
+
+    <div class="stage" style="width:530px;height:298px">
+      <div class="vc-frame vc-dark" style="transform:scale(.276)">
+        <div class="vc-head" style="position:absolute;left:6%;top:24%;width:31%;
+             aspect-ratio:16/9">
+          <div style="width:100%;height:100%;background:
+               repeating-linear-gradient(135deg,#3A3122 0 14px,#2E2719 14px 28px)">
+          </div>
+        </div>
+        <div class="vc-panel" style="position:absolute;right:8%;top:16%;width:46%;
+             aspect-ratio:16/9;filter:blur(2.4cqh)">
+          <div style="width:100%;height:100%;background:var(--vc-paper);
+               display:grid;place-items:center">
+            <div style="display:flex;gap:1.4cqh;align-items:flex-end">
+              <i style="width:3cqh;height:6cqh;background:var(--vc-yellow)"></i>
+              <i style="width:3cqh;height:11cqh;background:var(--vc-yellow)"></i>
+              <i style="width:3cqh;height:8cqh;background:var(--vc-yellow)"></i>
+            </div>
+          </div>
+        </div>
+        <div class="vc-display vc-display-sm" style="position:absolute;right:7%;
+             bottom:12%;text-shadow:none">
+          <span data-kit>COMING</span> <span style="color:var(--vc-yellow)"
+          data-kit>UP</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ CADENCE -->
+<section>
+  <h2><span>8</span>The cadence</h2>
+  <p class="note">Frames @30fps, converted from REF-B's 23.976. <b>The churn is
+     the style</b> — step the values, never tween them. Churn is texture around
+     the message, never the message: the ground, the head and anything being read
+     hold still.</p>
+  <table>
+    <tr><th>Move</th><th>Frames</th><th>Note</th></tr>
+    <tr><td>Churn hold</td><td><code>2</code></td><td>stop-motion on 2s — the whole style lives here</td></tr>
+    <tr><td>Caption in / out</td><td><code>0</code></td><td><b>hard cut. always.</b></td></tr>
+    <tr><td>Paper card in</td><td><code>7</code></td><td>+25 settle, <code>back.out(1.7)</code></td></tr>
+    <tr><td>Sibling stagger</td><td><code>3</code></td><td></td></tr>
+    <tr><td>Timeline clip in</td><td><code>5</code></td><td>staggered 4, <code>scaleX</code> from left</td></tr>
+    <tr><td>Red X stroke</td><td><code>5</code></td><td>2nd stroke lags 3; overshoots the tile</td></tr>
+    <tr><td>Anything out</td><td><code>4</code></td><td>scale to .96 — never slides off</td></tr>
+    <tr><td>Paper wipe</td><td><code>9</code></td><td>default scene transition</td></tr>
+    <tr><td>Ground swap</td><td><code>12</code></td><td>chapter boundary only; biggest sound in the video</td></tr>
+  </table>
+</section>
+
+</body>
+</html>

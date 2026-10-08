@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1080, height=1920"/>
+<title>registry blocks in 9:16</title>
+<style>
+  /* house plate — the registry blocks are all 1920x1080, so each one is scaled
+     into a band and the plate fills the rest of the vertical frame */
+  body{margin:0;background:#EFEFEC;
+    background-image:
+      linear-gradient(rgba(25,24,23,.15) 5px,transparent 5px),
+      linear-gradient(90deg,rgba(25,24,23,.15) 5px,transparent 5px),
+      linear-gradient(rgba(25,24,23,.075) 2px,transparent 2px),
+      linear-gradient(90deg,rgba(25,24,23,.075) 2px,transparent 2px);
+    background-size:160px 160px,160px 160px,32px 32px,32px 32px;}
+  .band{position:absolute;left:0;width:1920px;height:1080px;
+    transform-origin:top left;transform:scale(.5625);   /* 1920 -> 1080 wide */
+    border-radius:0;overflow:hidden}
+  #chart{top:300px}
+  #code {top:1010px}
+</style>
+</head>
+<body>
+  <div data-composition-id="root" data-width="1080" data-height="1920" data-duration="12">
+
+    <div class="clip band" id="chart"
+         data-composition-id="data-chart"
+         data-composition-src="blocks/data-chart.html"
+         data-start="0" data-duration="12"
+         data-width="1920" data-height="1080" data-track-index="1"></div>
+
+    <div class="clip band" id="code"
+         data-composition-id="vscode-dark-2026"
+         data-composition-src="blocks/code-snippet-dark-2026.html"
+         data-start="0" data-duration="12"
+         data-width="1920" data-height="1080" data-track-index="2"></div>
+
+  </div>
+</body>
+</html>

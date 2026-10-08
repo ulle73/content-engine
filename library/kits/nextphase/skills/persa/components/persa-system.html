@@ -1,0 +1,175 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>PERSA — the system</title>
+<!--
+  The whole PERSA style on one page: the five scenes, both caption tiers, the
+  z-order that makes the style work, the palette and the measured cadence.
+  Open it in a browser beside reference/stills/ when tuning a scene.
+
+  Every string here is PLACEHOLDER. It exists so the bricks render.
+  scripts/check-persa.sh fails a segment that still carries any of it.
+-->
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  body{margin:0;background:#0b0c0a;color:#CFBFA8;font-family:var(--pa-font-ui)}
+  h2{font:600 13px/1.4 var(--pa-font-ui);letter-spacing:.14em;text-transform:uppercase;
+     color:#8a8676;margin:34px 0 10px}
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 24px 80px}
+  .row{display:flex;gap:22px;flex-wrap:wrap}
+  /* A stage is a 9:16 frame at 1/3 scale: 360x640. Percentages make it exact. */
+  .stage{position:relative;container-type:size;   /* <- the cqh/cqw container */
+         width:360px;height:640px;border-radius:10px;overflow:hidden;
+         background:#1a1c16;flex:0 0 auto}
+  .stage .note{position:absolute;left:8px;bottom:6px;z-index:99;font-size:10px;
+               letter-spacing:.1em;text-transform:uppercase;color:rgba(207,191,168,.55)}
+  /* Stand-ins for real footage. In a real comp these are <video>/<img>. */
+  .plate{position:absolute;inset:0;background:
+     radial-gradient(120% 80% at 50% 18%, #b9b49a 0%, #6f7358 42%, #2b2f24 100%)}
+  .body{position:absolute;left:50%;bottom:0;width:62%;height:58%;transform:translateX(-50%);
+        background:linear-gradient(180deg,#9aa383,#6d7458);border-radius:46% 46% 0 0}
+  .head{position:absolute;left:50%;top:34%;width:26%;aspect-ratio:1;transform:translateX(-50%);
+        background:#b9a48b;border-radius:50% 50% 46% 46%}
+  .cap-{position:absolute;left:50%;top:32%;width:31%;height:7%;transform:translateX(-50%);
+        background:var(--pa-amber);border-radius:40% 40% 10% 10%}
+  .media{position:absolute;inset:0;background:#0e1014;
+    background-image:linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px),
+                     linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:26px 26px}
+  .media::after{content:"";position:absolute;left:8%;top:16%;width:56%;height:3%;
+                background:#4b8ef7;border-radius:2px;box-shadow:0 22px 0 rgba(75,142,247,.5),
+                0 44px 0 rgba(255,255,255,.14),0 66px 0 rgba(255,255,255,.10)}
+  /* The subject matte: everything inside it draws ABOVE .pa-emph and .pa-panel. */
+  .subject{position:absolute;inset:0;z-index:40;filter:var(--pa-rim-glow)}
+  .swatch{width:104px}
+  .swatch i{display:block;height:56px;border-radius:8px}
+  .swatch b{display:block;font:600 11px/1.8 var(--pa-font-ui);letter-spacing:.06em;margin-top:6px}
+  .swatch span{font:400 10px/1.4 var(--pa-font-ui);color:#8a8676}
+  table{border-collapse:collapse;font-size:12px;width:100%;max-width:760px}
+  td,th{border-bottom:1px solid rgba(207,191,168,.14);padding:7px 10px;text-align:left}
+  th{color:#8a8676;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:10px}
+  code{color:var(--pa-lime);font-size:11px}
+</style>
+
+<div class="wrap">
+<h2>1 · Clean Face — the rest beat, ~40% of runtime</h2>
+<div class="row">
+  <div class="stage">
+    <div class="plate"></div><div class="body"></div>
+    <div class="subject"><div class="head"></div><div class="cap-"></div></div>
+    <div class="pa-caption" style="z-index:50">KEYFRAMES</div>
+    <div class="note">scene 1</div>
+  </div>
+
+  <div class="stage">
+    <div class="plate"></div><div class="body"></div>
+    <!-- emphasis word BELOW the subject: the head occludes its lower third -->
+    <div class="pa-emph" style="z-index:20">MANUAL</div>
+    <div class="subject"><div class="head"></div><div class="cap-"></div></div>
+    <div class="pa-caption" style="z-index:50">DOING</div>
+    <div class="note">1 + emphasis word (behind)</div>
+  </div>
+
+  <div class="stage">
+    <div class="plate"></div><div class="body"></div>
+    <div style="position:absolute;left:0;right:0;top:14%;text-align:center;z-index:20">
+      <div class="pa-hand">a hand-lettered line</div>
+      <div class="pa-slam">SLAM WORD</div>
+    </div>
+    <div class="subject"><div class="head"></div><div class="cap-"></div></div>
+    <div class="note">the slam opener (behind)</div>
+  </div>
+</div>
+
+<h2>2 · Panel Over Face — the signature</h2>
+<div class="row">
+  <div class="stage">
+    <div class="plate"></div><div class="body"></div>
+    <div class="pa-panel" style="height:34%;z-index:10"><div class="media"></div></div>
+    <!-- the matte goes back on top, so the head breaks the panel's bottom edge -->
+    <div class="subject"><div class="head"></div><div class="cap-"></div></div>
+    <div class="pa-caption" style="z-index:50">ESPECIALLY</div>
+    <div class="note">panel 86% w · top 8%</div>
+  </div>
+
+  <div class="stage">
+    <div class="plate"></div><div class="body"></div>
+    <div class="pa-panel" style="height:34%;z-index:10"><div class="media"></div></div>
+    <div style="position:absolute;left:50%;top:4%;transform:translateX(-50%);z-index:12">
+      <span class="pa-chip">App Name 2026</span></div>
+    <div class="subject"><div class="head"></div><div class="cap-"></div></div>
+    <div class="note">+ the app chip</div>
+  </div>
+
+  <div class="stage">
+    <div class="media" style="z-index:10"></div>
+    <div class="pa-card" style="height:42%;z-index:12;overflow:hidden">
+      <div class="plate" style="border-radius:inherit"></div>
+      <div class="body" style="height:100%;width:70%"></div>
+      <div class="head" style="top:6%"></div>
+    </div>
+    <div class="pa-caption" style="z-index:50">PLAYHEAD</div>
+    <div class="note">3 · media full / head card</div>
+  </div>
+</div>
+
+<h2>4 · Split — the head breaks out of its own card</h2>
+<div class="row">
+  <div class="stage">
+    <div class="media" style="height:56%;z-index:10"></div>
+    <div class="pa-card" style="top:52%;height:48%;z-index:12">
+      <div class="plate" style="border-radius:inherit"></div>
+      <div class="body" style="height:100%;width:74%"></div>
+    </div>
+    <!-- the head is drawn ABOVE the seam: it crosses into the media above -->
+    <div class="subject" style="z-index:40">
+      <div class="head" style="top:44%"></div><div class="cap-" style="top:42%"></div></div>
+    <div class="pa-caption" style="z-index:50">REUSE</div>
+    <div class="note">the break IS the scene</div>
+  </div>
+
+  <div class="stage">
+    <div class="plate"></div><div class="body"></div>
+    <div class="subject"><div class="head"></div><div class="cap-"></div></div>
+    <div class="pa-hand pa-hand--lime" style="position:absolute;left:8%;top:18%;
+         width:60%;z-index:50;transform:rotate(-4deg)">free &amp; open source</div>
+    <div class="note">5 · hand-note beat</div>
+  </div>
+
+  <div class="stage">
+    <div class="plate"></div><div class="body"></div>
+    <div class="pa-emph pa-emph--lime" style="z-index:20">RESPECT</div>
+    <div class="subject"><div class="head"></div><div class="cap-"></div></div>
+    <div class="note">emphasis · lime variant</div>
+  </div>
+</div>
+
+<h2>The z-order — get this wrong and it is not persa</h2>
+<table>
+<tr><th>z</th><th>layer</th><th>class</th><th>why</th></tr>
+<tr><td>50</td><td>word caption</td><td><code>.pa-caption</code></td><td>always readable, in front of everything</td></tr>
+<tr><td>40</td><td>subject matte</td><td><code>.pa-subject</code></td><td>the cutout — occludes panels and emphasis</td></tr>
+<tr><td>20</td><td>emphasis / slam</td><td><code>.pa-emph .pa-slam</code></td><td>the head cuts into it → it sits in the room</td></tr>
+<tr><td>10</td><td>media panels</td><td><code>.pa-panel .pa-card</code></td><td>real screenshots and recordings</td></tr>
+<tr><td>0</td><td>graded plate</td><td>—</td><td>the footage</td></tr>
+</table>
+
+<h2>Palette — three accents, one per frame</h2>
+<div class="row">
+  <div class="swatch"><i style="background:var(--pa-red)"></i><b>--pa-red</b><span>#DE2B2A · slam</span></div>
+  <div class="swatch"><i style="background:var(--pa-lime)"></i><b>--pa-lime</b><span>#BEE24B · approval</span></div>
+  <div class="swatch"><i style="background:var(--pa-amber)"></i><b>--pa-amber</b><span>#D48D33 · emphasis</span></div>
+  <div class="swatch"><i style="background:var(--pa-white)"></i><b>--pa-white</b><span>#CFBFA8 · ceiling</span></div>
+  <div class="swatch"><i style="background:var(--pa-black)"></i><b>--pa-black</b><span>#060805 · floor</span></div>
+</div>
+
+<h2>Cadence — measured at 30fps</h2>
+<table>
+<tr><th>move</th><th>frames</th><th>note</th></tr>
+<tr><td>word caption</td><td><b style="color:var(--pa-red)">0</b></td><td><b>hard cut.</b> no fade, no scale, ever</td></tr>
+<tr><td>emphasis in</td><td>5</td><td>scale .94→1 + glow bloom</td></tr>
+<tr><td>slam</td><td>4</td><td>lands hard, no overshoot</td></tr>
+<tr><td>panel in</td><td>9</td><td>opacity + scale .97→1</td></tr>
+<tr><td>panel out</td><td>8</td><td>fades <b>in place</b> — never slides</td></tr>
+<tr><td>plate drift</td><td>continuous</td><td>scale 1.00→1.03 over 6s, <b>linear</b></td></tr>
+</table>
+</div>

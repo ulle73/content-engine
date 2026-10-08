@@ -1,0 +1,81 @@
+<!-- LOGO BLUR-REVEAL — the house cold open (16:9). See reference/logo-reveal.md.
+     Two numbers to set:
+       IN     = when the blurred logo appears (usually the segment start, 0)
+       REVEAL = the transcript word onset of the product NAME, in SEGMENT time
+                (assembly.md §3: REVEAL = at(absolute_onset), never a round number)
+     Everything else is measured and should not be eyeballed. -->
+
+<div id="lr" class="clip" data-start="0.20" data-duration="9.40" data-track-index="4">
+  <div class="inr">
+    <div class="logowrap">
+      <span class="glow"></span>
+      <img class="logo" src="../assets/broll/orca-icon.png" alt="">
+    </div>
+    <div class="wordmark"><b>Orca</b></div>
+    <div class="credit">github.com/stablyai/orca · MIT</div>
+  </div>
+</div>
+
+<style>
+/* Centred in the 1920x1080 frame, on a plain token background — never over a screenshot */
+#lr{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#lr .inr{display:flex;flex-direction:column;align-items:center;gap:44px}
+
+.logowrap{position:relative;display:flex;align-items:center;justify-content:center;
+  width:440px;height:440px}
+.logo{position:relative;width:440px;height:440px;object-fit:contain;display:block;
+  border-radius:76px;z-index:2}
+.glow{position:absolute;left:50%;top:50%;width:400px;height:400px;margin:-200px 0 0 -200px;
+  border-radius:50%;background:radial-gradient(circle,rgba(217,119,87,.28),transparent 68%);
+  z-index:1}
+
+/* If the logo is dark-on-transparent it VANISHES on --dark. Add this class rather than
+   recolouring the mark — recolouring someone's logo is a brand violation. */
+.logowrap.plate .logo{background:var(--on);padding:32px;border-radius:48px}
+
+.wordmark b{font-family:var(--font-mono);font-weight:700;font-size:96px;color:var(--on);
+  letter-spacing:-.02em}
+.credit{font-family:var(--font-mono);font-size:var(--t-label);color:var(--on-soft);
+  letter-spacing:.04em}
+</style>
+
+<script>
+// ---- set these two ----------------------------------------------------------
+const IN = 0.20, REVEAL = 7.04;     // REVEAL is a real word onset in SEGMENT time
+// -----------------------------------------------------------------------------
+// Long-form hold: 4-10s. Past ~10s the viewer stops wondering and starts leaving.
+// OUT must be >= REVEAL + 1.2s so the sharp logo is actually read.
+
+// 1 · arrive already blurred, slightly oversized
+tl.fromTo("#lr .logo",
+  {opacity:0, scale:1.12, filter:"blur(30px)"},
+  {opacity:1, duration:.55, ease:"power2.out"}, IN);
+
+// 2 · never a frozen frame while it holds — slow drift + breathing glow
+tl.to("#lr .logo",  {scale:1.16, duration:REVEAL-IN, ease:"none"}, IN);
+tl.to("#lr .glow",  {scale:1.14, opacity:.62, duration:1.6, ease:"sine.inOut",
+                     repeat:Math.max(0, Math.floor((REVEAL-IN)/1.6)-1), yoyo:true}, IN);
+
+// 3 · THE REVEAL — blur resolves on the exact word onset of the name.
+//     filter:blur() is the ONE non-transform property sanctioned to animate.
+tl.to("#lr .logo",  {filter:"blur(0px)", scale:1.0, duration:.62, ease:"power3.out"}, REVEAL);
+tl.to("#lr .glow",  {scale:1.5, opacity:0, duration:.7, ease:"power2.out"}, REVEAL);
+
+// 4 · the wordmark lands AFTER the logo resolves, never with it
+tl.fromTo("#lr .wordmark b",
+  {opacity:0, y:22}, {opacity:1, y:0, duration:.42, ease:"power3.out"}, REVEAL + 0.12);
+tl.fromTo("#lr .credit",
+  {opacity:0}, {opacity:1, duration:.4, ease:"power2.out"}, REVEAL + 0.30);
+
+// 5 · hard kills so a non-linear seek can never leave stale state
+tl.set("#lr .logo", {filter:"blur(0px)", scale:1}, REVEAL + 0.62);
+tl.set("#lr .glow", {opacity:0}, REVEAL + 0.70);
+</script>
+
+<!-- SFX (goes in sfx-cues.txt, not here — times are SEGMENT-relative, offset them by
+     this segment's start from out/chapters.txt before the full mix):
+       <IN+0.10>       riser             0.09   # crests on the reveal
+       <REVEAL>        magic-reveal      0.15   # the hero moment
+       <REVEAL+0.12>   futuristic-click  0.11   # the wordmark
+     MUSIC BED: drop it from REVEAL-3.0 to REVEAL (mix-bgm.sh --drops) — the return
+     of the bed on the reveal is the retention device, not the reveal alone. -->

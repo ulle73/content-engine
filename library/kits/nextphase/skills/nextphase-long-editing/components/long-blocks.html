@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>NextPhase — Long Style Kit (16:9, Dark Dotted-Grid)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#0c0908;color:var(--on-soft);font-family:var(--font-ui);
+    padding:40px 0 120px;overflow-x:hidden}
+  h1{font-family:var(--font-serif);color:var(--on);font-size:34px;margin:0 0 6px;text-align:center}
+  .sub{text-align:center;font-size:14px;margin-bottom:34px;font-family:var(--font-mono)}
+  .row{max-width:1180px;margin:0 auto 54px;padding:0 24px}
+  .row h2{font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--coral);margin-bottom:6px}
+  .row p{font-size:13px;line-height:1.6;margin-bottom:14px;max-width:900px}
+  /* true 1920x1080 stage, scaled to fit the page */
+  .frame{width:1120px;height:630px;position:relative;overflow:hidden;border-radius:10px;
+    box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .stage{width:1920px;height:1080px;position:absolute;top:0;left:0;overflow:hidden;
+    transform:scale(0.58333);transform-origin:top left}
+  /* ---- the reserved zones, drawn as guides (toggle) ---- */
+  .guides{position:absolute;inset:0;z-index:90;pointer-events:none;display:none}
+  body.show-guides .guides{display:block}
+  .guides i{position:absolute;border:2px dashed rgba(217,119,87,.65);
+    font:500 20px var(--font-mono);color:var(--coral);padding:6px 10px}
+  .g-safe{left:96px;top:54px;right:96px;bottom:54px}
+  .g-cam{left:1364px;top:738px;width:500px;height:282px}
+  .g-l3{left:96px;top:830px;width:904px;height:170px}
+  .g-cap{left:96px;top:890px;right:96px;height:100px;border-style:dotted}
+  .toggle{display:block;margin:0 auto 30px;background:var(--panel);color:var(--on);
+    border:1px solid var(--hairline);border-radius:999px;padding:9px 22px;font:600 13px var(--font-ui);cursor:pointer}
+  /* ---- shared brick pieces ---- */
+  .cam-ph{background:linear-gradient(160deg,#4a3128,#241713);display:flex;align-items:center;
+    justify-content:center;font:500 26px var(--font-mono);color:rgba(247,243,239,.35)}
+  .media-ph{width:100%;height:100%;background:linear-gradient(140deg,#2d1e18,#1a1210);
+    display:flex;align-items:center;justify-content:center;font:500 24px var(--font-mono);
+    color:rgba(247,243,239,.4);text-align:center;padding:30px}
+</style>
+</head>
+<body>
+
+<h1>NextPhase — Long Style Kit</h1>
+<div class="sub">1920 × 1080 · 30fps · dark dotted-grid · every brick uses tokens.css only</div>
+<button class="toggle" onclick="document.body.classList.toggle('show-guides')">toggle safe-zone guides</button>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="row">
+  <h2>Layout · Screen-Share + Bubble</h2>
+  <p>The demo layout. Screen recording full-frame, camera in the bottom-right bubble.
+     Graphics stay out of x&gt;1300, y&gt;700. Callouts and labels only — never a full card
+     over the screen. See <code>reference/screen-recording.md</code>.</p>
+  <div class="frame"><div class="stage bg-darkgrid">
+    <div style="position:absolute;inset:0" class="media-ph">screen.mp4 — 1920×1080, 30fps CFR</div>
+    <!-- callout: ring + leader line + label -->
+    <svg style="position:absolute;inset:0;z-index:30" width="1920" height="1080">
+      <path d="M 620 430 L 820 300" stroke="var(--coral)" stroke-width="3" fill="none"
+            stroke-dasharray="240" stroke-dashoffset="0"/>
+      <circle cx="620" cy="430" r="22" stroke="var(--coral)" stroke-width="3" fill="none"/>
+    </svg>
+    <div style="position:absolute;left:836px;top:272px;z-index:31;background:var(--panel);
+      border:1px solid var(--hairline);border-radius:var(--r-pill);padding:12px 26px;
+      font:700 30px var(--font-ui);color:var(--on)">the model picker</div>
+    <div class="cam-bubble cam-ph">camera</div>
+    <div class="guides"><i class="g-safe"></i><i class="g-cam">bubble</i><i class="g-l3">lower third</i><i class="g-cap"></i></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="row">
+  <h2>Layout · Split — Media Left / Face Right</h2>
+  <p><b>The media HALF is the coral block</b>, full bleed, edge to edge — the media sits
+     inside it on a ~40px margin. A coral frame around the picture is <i>not</i> this.
+     Captions go Highlighted style, centred in the media half at y≈940.</p>
+  <div class="frame"><div class="stage bg-darkgrid">
+    <div class="half-media left"><div class="media-ph">real product UI<br>(30fps CFR)</div></div>
+    <div class="half-face right cam-ph">camera</div>
+    <div style="position:absolute;left:0;width:1150px;top:900px;z-index:35;text-align:center">
+      <span style="font:900 64px var(--font-heavy);color:var(--on);background:var(--coral);
+        border-radius:14px;padding:6px 20px">QUEUE</span>
+    </div>
+    <div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="row">
+  <h2>Chapter card (2s)</h2>
+  <p>Every chapter boundary. Kicker + serif title + a coral rule drawing left→right
+     (<code>scaleX</code>, never <code>width</code>). The dot-grid wipes across on entry.
+     Always carries a <code>riser</code> tail or a <code>magic-reveal</code>.</p>
+  <div class="frame"><div class="stage bg-darkgrid">
+    <div style="position:absolute;left:96px;top:400px;z-index:20">
+      <div class="kicker" style="margin-bottom:22px">Chapter 02</div>
+      <div class="title" style="max-width:1300px">What it actually does<br>when you turn it on</div>
+      <div style="height:4px;width:520px;background:var(--coral);margin-top:38px;
+        transform:scaleX(1);transform-origin:left center"></div>
+    </div>
+    <div class="rail" style="transform:scaleX(0.34)"></div>
+    <div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="row">
+  <h2>Lower third (3.5–5s)</h2>
+  <p>The long-form element the short has no room for: a name + role, a tool + descriptor,
+     a source under a stat, or the chapter label for the first ~4s. Two lines max.
+     Enters <code>clip-reveal</code> from the left, sub-line staggered +80ms.</p>
+  <div class="frame"><div class="stage bg-darkgrid">
+    <div style="position:absolute;inset:0" class="media-ph">B-roll / face behind it</div>
+    <div style="position:absolute;left:96px;top:830px;z-index:30;background:rgba(42,28,23,.92);
+      border-left:3px solid var(--coral);border-radius:0 var(--r-sm) var(--r-sm) 0;
+      padding:24px 40px 26px 32px;box-shadow:var(--shadow-card)">
+      <div style="font:700 34px var(--font-ui);color:var(--on)">Orca</div>
+      <div style="font:500 22px var(--font-mono);color:var(--on-soft);margin-top:8px">
+        github.com/stablyai/orca · MIT</div>
+    </div>
+    <div class="guides"><i class="g-safe"></i><i class="g-l3">lower third</i></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="row">
+  <h2>Stat reveal — count-up + the spike</h2>
+  <p>Numbers <b>always</b> count up; the bar grows with <code>scaleX</code>. Punctuate the
+     final value with a shake. <code>beep</code> ticks while counting, <code>confirm</code> on landing.
+     Source cited underneath — a stat with no source does not go on screen.</p>
+  <div class="frame"><div class="stage bg-darkgrid">
+    <div style="position:absolute;left:96px;top:300px;z-index:20">
+      <div class="kicker" style="margin-bottom:26px">Inference cost, per million tokens</div>
+      <div class="stat">$0.42</div>
+      <div style="height:14px;width:1100px;background:var(--coral);border-radius:7px;margin-top:44px;
+        transform:scaleX(.72);transform-origin:left center"></div>
+      <div style="font:500 22px var(--font-mono);color:var(--on-soft);margin-top:30px">
+        source: openai.com/api/pricing · read 2026-08-06</div>
+    </div>
+    <div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="row">
+  <h2>Search-bar autocomplete (the Anthropic-explainer block)</h2>
+  <p>Query <code>type-on</code>s with a blinking caret; numbered options fade/slide in staggered
+     at 80ms. <code>keyboard</code> under the typing, <code>futuristic-click</code> per row.</p>
+  <div class="frame"><div class="stage bg-darkgrid">
+    <div style="position:absolute;left:360px;top:300px;width:1200px;z-index:20">
+      <div style="background:var(--panel);border:1px solid var(--coral);border-radius:var(--r-pill);
+        padding:26px 42px;font:500 34px var(--font-ui);color:var(--on);
+        box-shadow:0 0 60px rgba(217,119,87,.22)">
+        how do i run it locally<span style="display:inline-block;width:3px;height:36px;
+        background:var(--on);margin-left:6px;vertical-align:-5px"></span></div>
+      <div style="margin-top:26px">
+        <div style="display:flex;gap:24px;align-items:center;padding:20px 42px;
+          font:500 30px var(--font-ui);color:var(--on-soft)">
+          <span style="font-family:var(--font-mono);color:var(--coral)">01</span> clone the repo</div>
+        <div style="display:flex;gap:24px;align-items:center;padding:20px 42px;
+          font:500 30px var(--font-ui);color:var(--on-soft)">
+          <span style="font-family:var(--font-mono);color:var(--coral)">02</span> point it at a local model</div>
+        <div style="display:flex;gap:24px;align-items:center;padding:20px 42px;
+          font:500 30px var(--font-ui);color:var(--on)">
+          <span style="font-family:var(--font-mono);color:var(--coral)">03</span> run the queue</div>
+      </div>
+    </div>
+    <div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="row">
+  <h2>Terminal / code panel</h2>
+  <p>For the designed b-roll takeover. Type-on with a caret, <code>keyboard</code> underneath
+     for the whole typing span (not one hit at the start). Mono ≥26px or it dies in compression.</p>
+  <div class="frame"><div class="stage bg-darkgrid">
+    <div style="position:absolute;left:260px;top:220px;width:1400px;background:var(--term-bg);
+      border-radius:20px;box-shadow:var(--shadow-card);overflow:hidden;z-index:20">
+      <div style="display:flex;gap:14px;padding:22px 30px;border-bottom:1px solid rgba(255,255,255,.06)">
+        <span style="width:16px;height:16px;border-radius:50%;background:#E0655A"></span>
+        <span style="width:16px;height:16px;border-radius:50%;background:#E7B23C"></span>
+        <span style="width:16px;height:16px;border-radius:50%;background:#5FB07A"></span>
+      </div>
+      <div style="padding:34px 40px;font:400 30px var(--font-mono);color:var(--term-text);line-height:1.7">
+        <div><span style="color:var(--term-prompt)">$</span> orca run --local</div>
+        <div style="color:#8f887b">  resolving 3 tasks…</div>
+        <div style="color:#5FB07A">  ✓ done in 1.2s</div>
+      </div>
+    </div>
+    <div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="row">
+  <h2>Recap ladder (the close)</h2>
+  <p>One row per chapter, staggered in at 80ms. If you built <b>the stack</b> device through
+     the video, the rows are already there and this beat only highlights them.
+     No emojis — designed coral-circle numerals.</p>
+  <div class="frame"><div class="stage bg-darkgrid">
+    <div style="position:absolute;left:96px;top:190px;z-index:20">
+      <div class="kicker" style="margin-bottom:34px">What you actually got</div>
+      <div style="display:flex;flex-direction:column;gap:30px">
+        <div style="display:flex;gap:30px;align-items:center">
+          <span style="width:62px;height:62px;border-radius:50%;background:var(--coral);
+            display:flex;align-items:center;justify-content:center;font:700 30px var(--font-ui);
+            color:var(--dark);flex:none">1</span>
+          <span style="font:500 40px var(--font-ui);color:var(--on)">It runs entirely on your machine</span>
+        </div>
+        <div style="display:flex;gap:30px;align-items:center">
+          <span style="width:62px;height:62px;border-radius:50%;background:var(--coral);
+            display:flex;align-items:center;justify-content:center;font:700 30px var(--font-ui);
+            color:var(--dark);flex:none">2</span>
+          <span style="font:500 40px var(--font-ui);color:var(--on)">The queue is the whole trick</span>
+        </div>
+        <div style="display:flex;gap:30px;align-items:center">
+          <span style="width:62px;height:62px;border-radius:50%;background:var(--coral);
+            display:flex;align-items:center;justify-content:center;font:700 30px var(--font-ui);
+            color:var(--dark);flex:none">3</span>
+          <span style="font:500 40px var(--font-ui);color:var(--on-soft)">…and the catch is the memory ceiling</span>
+        </div>
+      </div>
+    </div>
+    <div class="rail" style="transform:scaleX(0.93)"></div>
+    <div class="guides"><i class="g-safe"></i></div>
+  </div></div>
+</div>
+
+<div class="row" style="text-align:center">
+  <p style="margin:0 auto">These are <b>starting points, not a cage.</b> Invent bespoke,
+  story-specific scenes freely — the only constraints are tokens, motion grammar,
+  the safe zones, and the pacing floor.</p>
+</div>
+
+</body>
+</html>
