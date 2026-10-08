@@ -1,0 +1,639 @@
+{
+  "kit": "carousel-generator-kie",
+  "title": "Carousel Generator Kit (kie.ai, Soft Pastoral)",
+  "source": {
+    "name": "Carousel Generator Kit (kie.ai-versionen)",
+    "url": "",
+    "license": "Ingen licens angiven – endast egen användning"
+  },
+  "items": [
+    {
+      "id": "carousel-generator-kie.style.pastoral",
+      "name": "Soft Pastoral Editorial",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Ljus pastellhimmel, DM Serif-rubrik och ett chunky Bevan-ord med rastrerade prickar och terrakottaskugga.",
+      "tags": [
+        "pastell",
+        "mjuk",
+        "serif",
+        "halftone",
+        "foto",
+        "vänlig",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/template.html",
+      "use": "/carousel-generator-kie — eller library/.venv/Scripts/python library/kits/carousel-generator-kie/carousel/scripts/carousel_run.py init \"<ämne>\" --template template.html --theme midnight; bg_file = eget/fritt foto per bild (render + export); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.style.pastoral.jpg"
+      },
+      "notes": "Utan bg_file visas ren pastellhimmel (#8FBEDD). Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-generator-kie.style.90s",
+      "name": "90-tals film",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Åldrad filmlook med kornighet, Anton-versaler, gult accentord och orange datumstämpel som på en analogkamera.",
+      "tags": [
+        "90-tal",
+        "film",
+        "retro",
+        "korn",
+        "datumstämpel",
+        "nostalgi",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/template-90s.html",
+      "use": "/carousel-generator-kie — eller library/.venv/Scripts/python library/kits/carousel-generator-kie/carousel/scripts/carousel_run.py init \"<ämne>\" --template template-90s.html --theme midnight; bg_file = eget/fritt foto per bild (render + export); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.style.90s.jpg"
+      },
+      "notes": "Bildtexten (caption) har låg kontrast på ljusa foton — håll den kort eller lägg mörkare foto. Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-generator-kie.block.bars",
+      "name": "Block: Horisontella staplar",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "2–4 jämförda värden med ett markerat vinnarvärde och källrad.",
+      "tags": [
+        "block",
+        "innehåll",
+        "bars",
+        "data"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"bars\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.block.bars.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-generator-kie.block.stats",
+      "name": "Block: Nyckeltal",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "1–3 stora siffror med etiketter (valfri sparkline och delta).",
+      "tags": [
+        "block",
+        "innehåll",
+        "stats",
+        "data"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"stats\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.block.stats.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-generator-kie.block.dial",
+      "name": "Block: Reglage/skala",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Segmenterad skala med ett eller flera tända segment och ändetiketter.",
+      "tags": [
+        "block",
+        "innehåll",
+        "dial",
+        "data"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"dial\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "carousel-generator-kie.block.chips",
+      "name": "Block: Chips",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Kort lista av nyckelord i piller, bra på krok- och CTA-bild.",
+      "tags": [
+        "block",
+        "innehåll",
+        "chips",
+        "data"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"chips\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "carousel-generator-kie.block.image",
+      "name": "Block: Skärmbild/foto i ram",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Riktig skärmbild eller foto stort i mitten med bildtext och källa.",
+      "tags": [
+        "block",
+        "innehåll",
+        "image",
+        "data"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"image\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "carousel-generator-kie.block.hero",
+      "name": "Block: Hero-utklipp",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Stor frilagd bild (transparent PNG) mitt på bilden med bildtext; layout hero.",
+      "tags": [
+        "block",
+        "innehåll",
+        "hero",
+        "data"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"hero\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.block.hero.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-generator-kie.prompt.00-how-to-run",
+      "name": "Så körs kitet",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Översikt över flödet och vilka kunskapsfiler som används när.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "00-how-to-run"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/knowledge/00-how-to-run.md",
+      "use": "Läs innan du skriver planen (/carousel-generator-kie hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-generator-kie.prompt.structure",
+      "name": "Karusellstruktur",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Krok → en idé per bild → CTA; 5–7 bilder och två beprövade upplägg.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "structure"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/knowledge/structure.md",
+      "use": "Läs innan du skriver planen (/carousel-generator-kie hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-generator-kie.prompt.hooks",
+      "name": "Krokar (bild 1)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Formler för krokrubriker med ett accentord: före/efter, siffra, kontrast, nyfikenhet.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "hooks"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/knowledge/hooks.md",
+      "use": "Läs innan du skriver planen (/carousel-generator-kie hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-generator-kie.prompt.ctas",
+      "name": "CTA (sista bilden)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "En tydlig uppmaning: kommentera ett ord, följ, spara; formler och exempel.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "ctas"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/knowledge/ctas.md",
+      "use": "Läs innan du skriver planen (/carousel-generator-kie hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-generator-kie.prompt.backgrounds",
+      "name": "Bakgrunder",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Lokal procedurell målare (gratis) vs kie.ai (betald) och reglerna för bakgrunden.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "backgrounds"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/knowledge/backgrounds.md",
+      "use": "Läs innan du skriver planen (/carousel-generator-kie hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-generator-kie.prompt.data-and-screenshots",
+      "name": "Data, diagram och skärmbilder",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Hur beviset i mitten byggs: välj diagramform efter datans jobb, verifiera och källange.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "data-and-screenshots"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/knowledge/data-and-screenshots.md",
+      "use": "Läs innan du skriver planen (/carousel-generator-kie hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-generator-kie.prompt.mascots",
+      "name": "Maskotar",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Valfria maskotar: basprompt, poser per bildroll och hur de friläggs och placeras.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "mascots"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/knowledge/mascots.md",
+      "use": "Läs innan du skriver planen (/carousel-generator-kie hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-generator-kie.mascot.voxel-coin",
+      "name": "Voxelmaskot med mynt",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Orange kubmaskot håller ett guldmynt och gör tummen upp — pris/spara-bilder.",
+      "tags": [
+        "maskot",
+        "voxel",
+        "3d",
+        "utklipp",
+        "webp"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/assets/mascots/voxel_coin.webp",
+      "use": "content: {\"type\":\"hero\",\"src\":\"assets/mascots/voxel_coin.webp\",\"caption\":\"…\"} + \"layout\":\"hero\", eller slide.mascot {src,pos,h}",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.mascot.voxel-coin.jpg"
+      },
+      "notes": "Konverterad från 6 MB PNG till WebP (q92, alfa kvar). AI-genererad av kitets författare (Higgsfield-jobb-id i metadata)."
+    },
+    {
+      "id": "carousel-generator-kie.mascot.voxel-hook",
+      "name": "Voxelmaskot vinkar",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Kubmaskot med båda armarna i luften — krok/avslöjande.",
+      "tags": [
+        "maskot",
+        "voxel",
+        "3d",
+        "utklipp",
+        "webp"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/assets/mascots/voxel_hook.webp",
+      "use": "content: {\"type\":\"hero\",\"src\":\"assets/mascots/voxel_hook.webp\",\"caption\":\"…\"} + \"layout\":\"hero\", eller slide.mascot {src,pos,h}",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.mascot.voxel-hook.jpg"
+      },
+      "notes": "Konverterad från 6 MB PNG till WebP (q92, alfa kvar). AI-genererad av kitets författare (Higgsfield-jobb-id i metadata)."
+    },
+    {
+      "id": "carousel-generator-kie.mascot.voxel-dash",
+      "name": "Voxelmaskot springer",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Kubmaskot i farten med fartstreck — 'snabbt'.",
+      "tags": [
+        "maskot",
+        "voxel",
+        "3d",
+        "utklipp",
+        "webp"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/assets/mascots/voxel_dash.webp",
+      "use": "content: {\"type\":\"hero\",\"src\":\"assets/mascots/voxel_dash.webp\",\"caption\":\"…\"} + \"layout\":\"hero\", eller slide.mascot {src,pos,h}",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.mascot.voxel-dash.jpg"
+      },
+      "notes": "Konverterad från 6 MB PNG till WebP (q92, alfa kvar). AI-genererad av kitets författare (Higgsfield-jobb-id i metadata)."
+    },
+    {
+      "id": "carousel-generator-kie.mascot.voxel-mascot",
+      "name": "Voxelmaskot med palett",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Kubmaskot med färgpalett — kreativt/CTA.",
+      "tags": [
+        "maskot",
+        "voxel",
+        "3d",
+        "utklipp",
+        "webp"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/assets/mascots/voxel_mascot.webp",
+      "use": "content: {\"type\":\"hero\",\"src\":\"assets/mascots/voxel_mascot.webp\",\"caption\":\"…\"} + \"layout\":\"hero\", eller slide.mascot {src,pos,h}",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.mascot.voxel-mascot.jpg"
+      },
+      "notes": "Konverterad från 6 MB PNG till WebP (q92, alfa kvar). AI-genererad av kitets författare (Higgsfield-jobb-id i metadata)."
+    },
+    {
+      "id": "carousel-generator-kie.paid.kie-backgrounds",
+      "name": "AI-bakgrunder via kie.ai (betald)",
+      "type": "background",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Huvudfunktionen i detta kit: Nano Banana Pro målar pastellbakgrunder från stilreferensen (carousel-style-reference.jpg).",
+      "tags": [
+        "ai",
+        "kie.ai",
+        "nano-banana-pro",
+        "betald",
+        "bakgrund"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/carousel_generate.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-generator-kie/carousel/scripts/carousel_run.py generate <run> (först efter uttryckligt 'kör'), sedan render + export",
+      "requires": [
+        "api:kie.ai",
+        "python"
+      ],
+      "cost": "paid",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Inte körd vid importen (ingen nyckel, kostar pengar). Kräver KIE_API_KEY i .env OCH en publik URL till stilskissen (CAROUSEL_STYLE_REFERENCE_URL) — automatisk uppladdning till catbox.moe/0x0.st är borttagen."
+    },
+    {
+      "id": "carousel-generator-kie.tool.capture",
+      "name": "Skärmbild av webbsida",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Vanlig Playwright-skärmbild av sida/element/ruta.",
+      "tags": [
+        "skärmbild",
+        "playwright"
+      ],
+      "path": "library/kits/carousel-generator-kie/carousel/scripts/capture.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-generator-kie/carousel/scripts/capture.py \"<url>\" work/carousel-generator-kie/shots/x.png",
+      "requires": [
+        "python"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "UA-förfalskning borttagen."
+    },
+    {
+      "id": "carousel-generator-kie.skill.carousel-generator-kie",
+      "name": "Skill: carousel-generator-kie",
+      "type": "skill",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Soft Pastoral Editorial med voxelmaskotar; gratis med egna foton/ren himmel, betalda AI-bakgrunder via kie.ai.",
+      "tags": [
+        "skill",
+        "karusell",
+        "pastell",
+        "maskot",
+        "kie.ai"
+      ],
+      "path": ".claude/skills/carousel-generator-kie/SKILL.md",
+      "use": "/carousel-generator-kie i Claude Code",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-generator-kie.skill.carousel-generator-kie.jpg"
+      },
+      "notes": "Verifierad på gratisvägen (render + export med golffoton). kie.ai-vägen ej körd."
+    }
+  ]
+}

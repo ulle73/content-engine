@@ -1,0 +1,1593 @@
+{
+  "kit": "carousel-kit",
+  "title": "Carousel Kit (8 stilar + egna foton)",
+  "source": {
+    "name": "Carousel Kit (nedladdat kit, senaste versionen Carousel-Kit (1).zip)",
+    "url": "",
+    "license": "Ingen licens angiven – endast egen användning"
+  },
+  "items": [
+    {
+      "id": "carousel-kit.style.midnight",
+      "name": "Midnight Bioluminescent",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Kolsvart äng upplyst inifrån av turkos glöd, allt i frostat glas, tunn serif med ett ord i glaskapsel.",
+      "tags": [
+        "mörk",
+        "glas",
+        "premium",
+        "turkos",
+        "serif",
+        "data",
+        "procedurell-bakgrund",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template.html",
+      "use": "/carousel-kit — eller library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py init \"<ämne>\" --template template.html --theme midnight; bg_scene per bild, målas lokalt (build); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.style.midnight.jpg"
+      },
+      "notes": "Långa ord som 'friskvårdsbidraget' ryms i glaskapseln (verifierat). Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.style.archival",
+      "name": "Archival Swiss Poster",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Benvitt papper, tegelrött block och en hård söm; ett jätteord i gemener klipps i kanterna över ett foto.",
+      "tags": [
+        "swiss",
+        "poster",
+        "editorial",
+        "tegelröd",
+        "foto",
+        "typografi",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-archival.html",
+      "use": "/carousel-kit — eller library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py init \"<ämne>\" --template template-archival.html --theme archival; bg_file = eget/fritt foto per bild (render + export); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.style.archival.jpg"
+      },
+      "notes": "Rubriken är EN gemen ord som klipps i kanterna med flit; långa ord som 'friskvårdsbidraget' klipps hårdare. Varje bild behöver eget foto. Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.style.celestial",
+      "name": "Celestial Surrealist Collage",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Ljus himmel inramad av joniska kolonner, rubrik i två lager, duvor och fjärilar i tre djupled.",
+      "tags": [
+        "kollage",
+        "himmel",
+        "surrealism",
+        "kolonner",
+        "foto",
+        "lyx",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-celestial.html",
+      "use": "/carousel-kit — eller library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py init \"<ämne>\" --template template-celestial.html --theme celestial; bg_file = eget/fritt foto per bild (render + export); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.style.celestial.jpg"
+      },
+      "notes": "Huvudrubriken klipps avsiktligt i kanterna; håll den kort. Undertext får <br>. Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.style.chalk",
+      "name": "Chalk-on-Ground Editorial",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Krita på gräsmattan: handritade versaler ligger på gräset, ett gult konturord, kraftig vinjett.",
+      "tags": [
+        "krita",
+        "gräs",
+        "handritat",
+        "golf",
+        "utomhus",
+        "coach",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-chalk.html",
+      "use": "/carousel-kit — eller library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py init \"<ämne>\" --template template-chalk.html --theme chalk; bg_file = eget/fritt foto per bild (render + export); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.style.chalk.jpg"
+      },
+      "notes": "Fotot bör vara taget rakt uppifrån (gräsmatta); golfbaneexempel fungerar men flaggor/träd syns. Lockup översatt via plan-fältet lockup. Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.style.sunfaded",
+      "name": "Sun-Faded Photo Poster",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Solblekt helbildsfoto med en guldfärgad serifrubrik bakom motivet och nästan osynliga bildtexter.",
+      "tags": [
+        "foto",
+        "nostalgi",
+        "pastoral",
+        "guld",
+        "serif",
+        "bakom-motivet",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-sunfaded.html",
+      "use": "/carousel-kit — eller library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py init \"<ämne>\" --template template-sunfaded.html --theme sunfaded; bg_file = eget/fritt foto per bild (render + export); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.style.sunfaded.jpg"
+      },
+      "notes": "Rubriken hamnar bakom motivet via utklipp (cutout.py) eller sky-key; markdisen är kraftig på ljusa foton. Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.style.skyblue",
+      "name": "Sky-Blue Tech Poster",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Marinblått och klarblå himmel, kondenserade vita versaler och ett ord i magenta–orange penselskrift.",
+      "tags": [
+        "blå",
+        "himmel",
+        "tech",
+        "pensel",
+        "versaler",
+        "social-media",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-skyblue.html",
+      "use": "/carousel-kit — eller library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py init \"<ämne>\" --template template-skyblue.html --theme skyblue; bg_file = eget/fritt foto per bild (render + export); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.style.skyblue.jpg"
+      },
+      "notes": "Lägg accentordet (hero_word) på den mindre första raden. 'SWIPE →' är engelsk standard (cue:false döljer). Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.style.pastoral",
+      "name": "Soft Pastoral Editorial",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Ljus pastellhimmel, DM Serif-rubrik och ett chunky Bevan-ord med rastrerade prickar och terrakottaskugga.",
+      "tags": [
+        "pastell",
+        "mjuk",
+        "serif",
+        "halftone",
+        "foto",
+        "vänlig",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-pastoral.html",
+      "use": "/carousel-kit — eller library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py init \"<ämne>\" --template template-pastoral.html --theme midnight; bg_file = eget/fritt foto per bild (render + export); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.style.pastoral.jpg"
+      },
+      "notes": "Utan bg_file visas ren pastellhimmel (#8FBEDD). Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.style.90s",
+      "name": "90-tals film",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Åldrad filmlook med kornighet, Anton-versaler, gult accentord och orange datumstämpel som på en analogkamera.",
+      "tags": [
+        "90-tal",
+        "film",
+        "retro",
+        "korn",
+        "datumstämpel",
+        "nostalgi",
+        "instagram",
+        "karusell",
+        "4:5"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-90s.html",
+      "use": "/carousel-kit — eller library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py init \"<ämne>\" --template template-90s.html --theme midnight; bg_file = eget/fritt foto per bild (render + export); build/render",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.style.90s.jpg"
+      },
+      "notes": "Bildtexten (caption) har låg kontrast på ljusa foton — håll den kort eller lägg mörkare foto. Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.own-photo.orbit",
+      "name": "Egna foton: Bakom motivet + omloppstext",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Stor rubrik bakom personens huvud (utklipp) och en textring runt kroppen.",
+      "tags": [
+        "egna-foton",
+        "foto",
+        "orbit",
+        "utklipp",
+        "golf"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-own.html",
+      "use": "plan: \"template\":\"template-own.html\",\"theme\":\"own\", per bild \"layout\":\"orbit\", bg_file + subject_file (cutout.py); kontrollera med check_own.py",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.own-photo.orbit.jpg"
+      },
+      "notes": "Foton och utklipp läggs i work/carousel-kit/ (import_images.py). Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.own-photo.punch",
+      "name": "Egna foton: Versaler + skriptord",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Tre rader feta versaler, ett accentord och ett stort kursivt skriptord; lugn överdel.",
+      "tags": [
+        "egna-foton",
+        "foto",
+        "punch",
+        "utklipp",
+        "golf"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-own.html",
+      "use": "plan: \"template\":\"template-own.html\",\"theme\":\"own\", per bild \"layout\":\"punch\", bg_file + subject_file (cutout.py); kontrollera med check_own.py",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.own-photo.punch.jpg"
+      },
+      "notes": "Foton och utklipp läggs i work/carousel-kit/ (import_images.py). Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.own-photo.editorial",
+      "name": "Egna foton: Editorial serif",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Serifrubrik + brödtext på den lugna sidan, logga uppe till höger, pil mot motivet; kan visa data.",
+      "tags": [
+        "egna-foton",
+        "foto",
+        "editorial",
+        "utklipp",
+        "golf"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-own.html",
+      "use": "plan: \"template\":\"template-own.html\",\"theme\":\"own\", per bild \"layout\":\"editorial\", bg_file + subject_file (cutout.py); kontrollera med check_own.py",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.own-photo.editorial.jpg"
+      },
+      "notes": "Foton och utklipp läggs i work/carousel-kit/ (import_images.py). Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.own-photo.scatter",
+      "name": "Egna foton: Utspridd serif",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Ett ord per rad i sicksack runt motivet, piller-etikett och serie-lockup.",
+      "tags": [
+        "egna-foton",
+        "foto",
+        "scatter",
+        "utklipp",
+        "golf"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-own.html",
+      "use": "plan: \"template\":\"template-own.html\",\"theme\":\"own\", per bild \"layout\":\"scatter\", bg_file + subject_file (cutout.py); kontrollera med check_own.py",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.own-photo.scatter.jpg"
+      },
+      "notes": "Foton och utklipp läggs i work/carousel-kit/ (import_images.py). Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.own-photo.cascade",
+      "name": "Egna foton: Kaskadserif",
+      "type": "carousel",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Rubrik i blandad rak/kursiv serif som faller diagonalt längs motivet, handskriven parentes.",
+      "tags": [
+        "egna-foton",
+        "foto",
+        "cascade",
+        "utklipp",
+        "golf"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/template-own.html",
+      "use": "plan: \"template\":\"template-own.html\",\"theme\":\"own\", per bild \"layout\":\"cascade\", bg_file + subject_file (cutout.py); kontrollera med check_own.py",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.own-photo.cascade.jpg"
+      },
+      "notes": "Foton och utklipp läggs i work/carousel-kit/ (import_images.py). Svenska standardtexter: sätt cue, cta_pill, byline, lockup, credit_text m.fl. i plan.json (mallarnas standard är engelska)."
+    },
+    {
+      "id": "carousel-kit.chart.line",
+      "name": "Linjediagram (trend)",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Trend över tid: en tänd serie + en dämpad streckad, slutvärde märkt direkt.",
+      "tags": [
+        "diagram",
+        "svg",
+        "data",
+        "line",
+        "chart"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_charts.py",
+      "use": "content: {\"type\":\"line\", ...} på en bild (se SKILL.md); färg följer plan.theme",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.chart.line.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.chart.column",
+      "name": "Stapeldiagram (kolumner)",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Storlek per kategori — en markerad stapel, resten dämpade.",
+      "tags": [
+        "diagram",
+        "svg",
+        "data",
+        "column",
+        "chart"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_charts.py",
+      "use": "content: {\"type\":\"column\", ...} på en bild (se SKILL.md); färg följer plan.theme",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.chart.column.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.chart.dumbbell",
+      "name": "Hantel före/efter",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Före → efter per rad, båda ändar märkta, delar etiketter när de krockar.",
+      "tags": [
+        "diagram",
+        "svg",
+        "data",
+        "dumbbell",
+        "chart"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_charts.py",
+      "use": "content: {\"type\":\"dumbbell\", ...} på en bild (se SKILL.md); färg följer plan.theme",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.chart.dumbbell.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.chart.meter",
+      "name": "Mätare (andel av tak)",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Ett värde mot ett tak, t.ex. använt av friskvårdsbidraget.",
+      "tags": [
+        "diagram",
+        "svg",
+        "data",
+        "meter",
+        "chart"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_charts.py",
+      "use": "content: {\"type\":\"meter\", ...} på en bild (se SKILL.md); färg följer plan.theme",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.chart.meter.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.block.bars",
+      "name": "Block: Horisontella staplar",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "2–4 jämförda värden med ett markerat vinnarvärde och källrad.",
+      "tags": [
+        "block",
+        "innehåll",
+        "bars",
+        "data"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"bars\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.block.bars.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.block.stats",
+      "name": "Block: Nyckeltal",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "1–3 stora siffror med etiketter (valfri sparkline och delta).",
+      "tags": [
+        "block",
+        "innehåll",
+        "stats",
+        "data"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"stats\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.block.stats.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.block.dial",
+      "name": "Block: Reglage/skala",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Segmenterad skala med ett eller flera tända segment och ändetiketter.",
+      "tags": [
+        "block",
+        "innehåll",
+        "dial",
+        "data"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"dial\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.block.dial.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.block.chips",
+      "name": "Block: Chips",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Kort lista av nyckelord i piller, bra på krok- och CTA-bild.",
+      "tags": [
+        "block",
+        "innehåll",
+        "chips",
+        "data"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"chips\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.block.chips.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.block.image",
+      "name": "Block: Skärmbild/foto i ram",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Riktig skärmbild eller foto stort i mitten med bildtext och källa.",
+      "tags": [
+        "block",
+        "innehåll",
+        "image",
+        "data"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"image\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.block.image.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.block.hero",
+      "name": "Block: Hero-utklipp",
+      "type": "effect",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Stor frilagd bild (transparent PNG) mitt på bilden med bildtext; layout hero.",
+      "tags": [
+        "block",
+        "innehåll",
+        "hero",
+        "data"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_render.py",
+      "use": "content: {\"type\":\"hero\", ...} (build_content i carousel_render.py)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.block.hero.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.scene.deep-bloom",
+      "name": "Bakgrundsscen: deep-bloom",
+      "type": "background",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "canvas",
+      "description": "Glöd lågt i mitten med djup flora — signaturbilden, bra krok.",
+      "tags": [
+        "procedurell",
+        "canvas",
+        "mörk",
+        "turkos",
+        "natt",
+        "deep-bloom"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/bg_local.html",
+      "use": "per bild \"bg_scene\":\"deep-bloom\" (+ bg_seed, bg_tweak); library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py localbg <run>; förhandsvisa alla: carousel_localbg.py --preview",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.scene.deep-bloom.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.scene.far-field",
+      "name": "Bakgrundsscen: far-field",
+      "type": "background",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "canvas",
+      "description": "Bred, tyst, mest svart himmel — för långa rubriker.",
+      "tags": [
+        "procedurell",
+        "canvas",
+        "mörk",
+        "turkos",
+        "natt",
+        "far-field"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/bg_local.html",
+      "use": "per bild \"bg_scene\":\"far-field\" (+ bg_seed, bg_tweak); library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py localbg <run>; förhandsvisa alla: carousel_localbg.py --preview",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.scene.far-field.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.scene.starfield",
+      "name": "Bakgrundsscen: starfield",
+      "type": "background",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "canvas",
+      "description": "Nästan tomt svart med stjärnor — ett stort påstående.",
+      "tags": [
+        "procedurell",
+        "canvas",
+        "mörk",
+        "turkos",
+        "natt",
+        "starfield"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/bg_local.html",
+      "use": "per bild \"bg_scene\":\"starfield\" (+ bg_seed, bg_tweak); library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py localbg <run>; förhandsvisa alla: carousel_localbg.py --preview",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.scene.starfield.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.scene.dandelion",
+      "name": "Bakgrundsscen: dandelion",
+      "type": "background",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "canvas",
+      "description": "En maskros i ljuset — en stor idé.",
+      "tags": [
+        "procedurell",
+        "canvas",
+        "mörk",
+        "turkos",
+        "natt",
+        "dandelion"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/bg_local.html",
+      "use": "per bild \"bg_scene\":\"dandelion\" (+ bg_seed, bg_tweak); library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py localbg <run>; förhandsvisa alla: carousel_localbg.py --preview",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.scene.dandelion.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.scene.amber-meadow",
+      "name": "Bakgrundsscen: amber-meadow",
+      "type": "background",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "canvas",
+      "description": "Små bärnstensfärgade blommor i förgrunden — CTA/varmaste bilden.",
+      "tags": [
+        "procedurell",
+        "canvas",
+        "mörk",
+        "turkos",
+        "natt",
+        "amber-meadow"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/bg_local.html",
+      "use": "per bild \"bg_scene\":\"amber-meadow\" (+ bg_seed, bg_tweak); library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py localbg <run>; förhandsvisa alla: carousel_localbg.py --preview",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.scene.amber-meadow.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.scene.mist",
+      "name": "Bakgrundsscen: mist",
+      "type": "background",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "canvas",
+      "description": "Horisontell dimma genom ljuset — lugna mellanbilder.",
+      "tags": [
+        "procedurell",
+        "canvas",
+        "mörk",
+        "turkos",
+        "natt",
+        "mist"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/bg_local.html",
+      "use": "per bild \"bg_scene\":\"mist\" (+ bg_seed, bg_tweak); library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py localbg <run>; förhandsvisa alla: carousel_localbg.py --preview",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.scene.mist.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.scene.close-flora",
+      "name": "Bakgrundsscen: close-flora",
+      "type": "background",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "canvas",
+      "description": "Höga oskarpa stjälkar framför ljuset — mest djup, databilder.",
+      "tags": [
+        "procedurell",
+        "canvas",
+        "mörk",
+        "turkos",
+        "natt",
+        "close-flora"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/bg_local.html",
+      "use": "per bild \"bg_scene\":\"close-flora\" (+ bg_seed, bg_tweak); library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py localbg <run>; förhandsvisa alla: carousel_localbg.py --preview",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.scene.close-flora.jpg"
+      },
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.prompt.structure",
+      "name": "Karusellstruktur",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Krok → en idé per bild → CTA; 5–7 bilder och två beprövade upplägg.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "structure"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/structure.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.hooks",
+      "name": "Krokar (bild 1)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Formler för krokrubriker med ett accentord: före/efter, siffra, kontrast, nyfikenhet.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "hooks"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/hooks.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.ctas",
+      "name": "CTA (sista bilden)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "En tydlig uppmaning: kommentera ett ord, följ, spara; formler och exempel.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "ctas"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/ctas.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.data-and-screenshots",
+      "name": "Data, diagram och skärmbilder",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Hur beviset i mitten byggs: välj diagramform efter datans jobb, verifiera och källange.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "data-and-screenshots"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/data-and-screenshots.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.backgrounds",
+      "name": "Bakgrunder",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Lokal procedurell målare (gratis) vs kie.ai (betald) och reglerna för bakgrunden.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "backgrounds"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/backgrounds.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.glass-and-brand",
+      "name": "Glas och varumärke (Midnight)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Palett, glasmaterialet (fem CSS-variabler), typografi och bildens anatomi i Midnight.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "glass-and-brand"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/glass-and-brand.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.mascots",
+      "name": "Maskotar",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Valfria maskotar: basprompt, poser per bildroll och hur de friläggs och placeras.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "mascots"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/mascots.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.new-style-from-a-sheet",
+      "name": "Ny stil från en stilskiss",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Åtta steg för att läsa en egen stilskiss och bygga en ny mall + validerat diagramtema.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "new-style-from-a-sheet"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/new-style-from-a-sheet.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.logos",
+      "name": "Logotyper",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Riktiga logotyper: hämta, färgregler i mallen och hur de skickas till betald generering.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "logos"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/logos.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.own-images-layouts",
+      "name": "Egna foton – layoutreferenser",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "De fem layouterna för egna foton och vilken som passar vilket foto.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "own-images-layouts"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/own-images-layouts.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.style-own",
+      "name": "Stil: egna foton",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Fält, placeringslogik, kontrastpass och kontroller för template-own.html.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "style-own"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/style-own.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.style-chalk",
+      "name": "Stil: Chalk-on-Ground",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Stilskissen som spec: palett, regler, fält och fotokällor för kritstilen.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "style-chalk"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/style-chalk.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.style-skyblue",
+      "name": "Stil: Sky-Blue",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Regler för penselordet, scrim, utklipp och fält för Sky-Blue-stilen.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "style-skyblue"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/style-skyblue.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.style-sunfaded",
+      "name": "Stil: Sun-Faded",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Regler för guldrubrik bakom motivet, sifferskydd, markdis och fält.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "style-sunfaded"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/style-sunfaded.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.prompt.00-how-to-run",
+      "name": "Så körs kitet",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Översikt över flödet och vilka kunskapsfiler som används när.",
+      "tags": [
+        "kunskap",
+        "copywriting",
+        "karusell",
+        "00-how-to-run"
+      ],
+      "path": "library/kits/carousel-kit/carousel/knowledge/00-how-to-run.md",
+      "use": "Läs innan du skriver planen (/carousel-kit hänvisar hit)",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Referensdokument (engelska) — inget att rendera."
+    },
+    {
+      "id": "carousel-kit.paid.kie-backgrounds",
+      "name": "AI-bakgrunder via kie.ai (betald)",
+      "type": "background",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Nano Banana Pro målar bakgrunden utifrån stilens stilskiss; text renderas fortfarande av mallen.",
+      "tags": [
+        "ai",
+        "kie.ai",
+        "nano-banana-pro",
+        "betald",
+        "bakgrund"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/carousel_generate.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/carousel_run.py generate <run> (först efter uttryckligt 'kör'), sedan render + export",
+      "requires": [
+        "api:kie.ai",
+        "python"
+      ],
+      "cost": "paid",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Inte körd vid importen (ingen nyckel, kostar pengar). Kräver KIE_API_KEY i .env OCH en publik URL till stilskissen (CAROUSEL_STYLE_REFERENCE_URL) — automatisk uppladdning till catbox.moe/0x0.st är borttagen."
+    },
+    {
+      "id": "carousel-kit.tool.cutout",
+      "name": "Frilägg motiv (Windows)",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Frilägger motivet i ett foto till transparent PNG i samma storlek (rembg eller npx hyperframes remove-background).",
+      "tags": [
+        "frilägg",
+        "utklipp",
+        "bakgrundsborttagning"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/cutout.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/cutout.py <foto> [<ut.png>]",
+      "requires": [
+        "python"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Ersätter Apple Vision/cutout.swift. Motorn (hyperframes, u2net_human_seg) testad på golfbild med person; bäst på människor."
+    },
+    {
+      "id": "carousel-kit.tool.import_images",
+      "name": "Importera egna foton",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Konverterar HEIC/roterar, friläggar och analyserar egna foton till en manifest för layoutval.",
+      "tags": [
+        "egna-foton",
+        "import",
+        "heic",
+        "manifest"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/import_images.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/import_images.py <set> <filer/mapp>",
+      "requires": [
+        "python"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.tool.check_own",
+      "name": "Layout- och kontrastkontroll",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Kontrollerar egna-foto-bilder: text inom ram, inga överlapp, kontrast mot verkliga pixlar.",
+      "tags": [
+        "kvalitet",
+        "kontrast",
+        "kontroll"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/check_own.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/check_own.py <run>",
+      "requires": [
+        "python"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "Körd på demo-own: 4/5 rena, 1 liten kicker med kontrast 4.1 (<4.5)."
+    },
+    {
+      "id": "carousel-kit.tool.fetch_photos",
+      "name": "Hämta fria foton (Wikimedia)",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Hämtar fritt licensierade foton från Wikimedia Commons med krediter i credits.json.",
+      "tags": [
+        "foto",
+        "wikimedia",
+        "cc",
+        "gratis"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/fetch_photos.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/fetch_photos.py work/carousel-kit/photos/<set> \"<sökord>\" ...",
+      "requires": [
+        "python"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.tool.fetch_logo",
+      "name": "Hämta riktig logotyp",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Hämtar vektorlogga (SVG + PNG) från Wikimedia Commons med källa och licens.",
+      "tags": [
+        "logotyp",
+        "svg",
+        "wikimedia"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/fetch_logo.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/fetch_logo.py work/carousel-kit/logos \"<Företag>\"",
+      "requires": [
+        "python"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.tool.capture",
+      "name": "Skärmbild av webbsida",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Vanlig Playwright-skärmbild av en sida/element/ruta för bevisbilder.",
+      "tags": [
+        "skärmbild",
+        "playwright",
+        "bevis"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/capture.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/capture.py \"<url>\" work/carousel-kit/shots/x.png --selector \"figure\"",
+      "requires": [
+        "python"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": "User-agent-förfalskning och dold automationsflagga borttagna; avvisar bara cookies (aldrig acceptera)."
+    },
+    {
+      "id": "carousel-kit.tool.gallery",
+      "name": "Stilgalleri (STYLES.html)",
+      "type": "tool",
+      "medium": "image",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "python",
+      "description": "Bygger och öppnar ett numrerat galleri över alla stilskisser och egna-foto-layouter.",
+      "tags": [
+        "galleri",
+        "stilval"
+      ],
+      "path": "library/kits/carousel-kit/carousel/scripts/gallery.py",
+      "use": "library/.venv/Scripts/python library/kits/carousel-kit/carousel/scripts/gallery.py",
+      "requires": [
+        "python"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    },
+    {
+      "id": "carousel-kit.skill.carousel-kit",
+      "name": "Skill: carousel-kit",
+      "type": "skill",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Hela flödet: frågor, stilval (8 stilar) eller egna foton (5 layouter), plan → godkännande → bygg → granska.",
+      "tags": [
+        "skill",
+        "karusell",
+        "instagram",
+        "golfkuponger",
+        "gratis"
+      ],
+      "path": ".claude/skills/carousel-kit/SKILL.md",
+      "use": "/carousel-kit i Claude Code (laddas automatiskt i repot)",
+      "requires": [
+        "python",
+        "playwright"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-08",
+      "preview": {
+        "still": "library/previews/carousel-kit.skill.carousel-kit.jpg"
+      },
+      "notes": "Standard: @golfkuponger / Golfkuponger. Gratisvägen är standard."
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Carousel Styles</title>
+<style>
+ :root{--bg:#f6f4ef;--fg:#1c1b19;--mut:#6b675f;--card:#fff;--line:#e3dfd6}
+ @media (prefers-color-scheme:dark){:root{--bg:#141412;--fg:#f1efe9;--mut:#a39f96;--card:#1e1d1a;--line:#2f2d29}}
+ *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,system-ui,sans-serif}
+ main{max-width:1180px;margin:0 auto;padding:40px 16px 80px}
+ h1{font-size:34px;margin:0 0 4px} .lede{color:var(--mut);margin:0 0 32px}
+ .style{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin:0 0 24px}
+ .style header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+ .style h2{font-size:22px;margin:0;flex:1} code{color:var(--mut)}
+ .n{width:36px;height:36px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-weight:700}
+ img{display:block;width:100%;height:auto;border-radius:8px} .ex{margin-top:10px}
+ .meta{color:var(--mut);font-size:14px}
+ h3{margin:40px 0 6px;font-size:24px} .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+ figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+ figcaption{font-size:13px;color:var(--mut);margin-top:8px} .ph{aspect-ratio:4/5;background:var(--line);border-radius:8px}
+</style></head><body><main>
+<h1>Pick a style</h1>
+<p class="lede">Tell Claude the number. Every style works free ($0, built on your computer) or paid (AI images).</p>
+
+  <article class="style">
+    <header><span class="n">1</span><h2>Midnight Bioluminescent</h2><code>midnight</code></header>
+    <img class="sheet" src="assets/styles/midnight.jpg" alt="Midnight Bioluminescent style sheet" loading="lazy">
+    <img class="ex" src="assets/styles/examples/midnight.jpg" alt="example carousel" loading="lazy">
+    <p>Void-black meadow lit from inside by a teal glow; every card, chart and caption is frosted glass; thin serif headline with one word in a glass capsule.</p>
+    <p class="meta"><b>Best for:</b> tech, AI, finance, data-heavy explainers, premium brands<br>
+       <b>Free ($0) images:</b> painted locally in code (carousel_localbg.py) — no photos needed<br>
+       <b>Paid:</b> AI images painted from this sheet (+ your logo)</p>
+  </article>
+  <article class="style">
+    <header><span class="n">2</span><h2>Archival Swiss Poster</h2><code>archival</code></header>
+    <img class="sheet" src="assets/styles/archival.jpg" alt="Archival Swiss Poster style sheet" loading="lazy">
+    <img class="ex" src="assets/styles/examples/archival.jpg" alt="example carousel" loading="lazy">
+    <p>Bone paper, a brick-red block and one hard seam; one huge lowercase word clipped at both edges crossing into a sun-bleached photograph; metadata bands top and bottom.</p>
+    <p class="meta"><b>Best for:</b> history, architecture, design, sport, editorial/news<br>
+       <b>Free ($0) images:</b> one freely-licensed Wikimedia photo per slide (fetch_photos.py), credited<br>
+       <b>Paid:</b> AI images painted from this sheet (+ your logo)</p>
+  </article>
+  <article class="style">
+    <header><span class="n">3</span><h2>Celestial Surrealist Collage</h2><code>celestial</code></header>
+    <img class="sheet" src="assets/styles/celestial.jpg" alt="Celestial Surrealist Collage style sheet" loading="lazy">
+    <img class="ex" src="assets/styles/examples/celestial.jpg" alt="example carousel" loading="lazy">
+    <p>High-key sky framed by ionic columns, headline set twice, doves and monarch butterflies crossing three depth layers, technical grid on top.</p>
+    <p class="meta"><b>Best for:</b> film, culture, wellness, art, luxury<br>
+       <b>Free ($0) images:</b> freely-licensed landscape + blossom photos per slide (fetch_photos.py)<br>
+       <b>Paid:</b> AI images painted from this sheet (+ your logo)</p>
+  </article>
+  <article class="style">
+    <header><span class="n">4</span><h2>Chalk-on-Ground Editorial</h2><code>chalk</code></header>
+    <img class="sheet" src="assets/styles/chalk.jpg" alt="Chalk-on-Ground Editorial style sheet" loading="lazy">
+    <img class="ex" src="assets/styles/examples/chalk.jpg" alt="example carousel" loading="lazy">
+    <p>Overhead lawn photo with hand-drawn chalk capitals lying on the grass, one yellow-outline accent word, heavy vignette, &#x27;FROM A Creator FOR A Creator&#x27; footer lockup.</p>
+    <p class="meta"><b>Best for:</b> creators, coaches, sport, outdoors, motivation, landscaping<br>
+       <b>Free ($0) images:</b> top-down lawn photos from Wikimedia (search by grass species), credited<br>
+       <b>Paid:</b> AI images painted from this sheet (+ your logo)</p>
+  </article>
+  <article class="style">
+    <header><span class="n">5</span><h2>Sun-Faded Photo Poster</h2><code>sunfaded</code></header>
+    <img class="sheet" src="assets/styles/sunfaded.jpg" alt="Sun-Faded Photo Poster style sheet" loading="lazy">
+    <img class="ex" src="assets/styles/examples/sunfaded.jpg" alt="example carousel" loading="lazy">
+    <p>Full-bleed pastoral photograph, one faded-gold serif headline sitting BEHIND the subject, almost-missed light captions, no panels.</p>
+    <p class="meta"><b>Best for:</b> real estate, travel, home services, farming, lifestyle, nostalgia<br>
+       <b>Free ($0) images:</b> freely-licensed pastoral photos (sky top, one subject middle, open ground bottom), with a Vision cutout per slide<br>
+       <b>Paid:</b> AI images painted from this sheet (+ your logo)</p>
+  </article>
+  <article class="style">
+    <header><span class="n">6</span><h2>Sky-Blue Tech Poster</h2><code>skyblue</code></header>
+    <img class="sheet" src="assets/styles/skyblue.jpg" alt="Sky-Blue Tech Poster style sheet" loading="lazy">
+    <img class="ex" src="assets/styles/examples/skyblue.jpg" alt="example carousel" loading="lazy">
+    <p>Navy field and clear-sky photography, heavy condensed white caps, ONE word re-written in a magenta-to-orange brush script, the subject cut out and standing in front of the headline.</p>
+    <p class="meta"><b>Best for:</b> social media marketing, agencies, tech, apps, personal brands<br>
+       <b>Free ($0) images:</b> clear-sky + subject photos from Wikimedia with Vision cutouts<br>
+       <b>Paid:</b> AI images painted from this sheet (+ your logo)</p>
+  </article>
+<h3>Using your own photos?</h3>
+<p class="lede">Claude matches each photo to one of these layouts automatically.</p>
+<div class="grid"><figure><img src="assets/own-images/previews/orbit.jpg" alt="Behind-the-subject + orbit text" loading="lazy"><figcaption><b>Behind-the-subject + orbit text</b><br>one person/object centred, head in the upper-middle</figcaption></figure><figure><img src="assets/own-images/previews/punch.jpg" alt="Caps + script punch" loading="lazy"><figcaption><b>Caps + script punch</b><br>subject low in frame, calm top 40%</figcaption></figure><figure><img src="assets/own-images/previews/editorial.jpg" alt="Editorial serif" loading="lazy"><figcaption><b>Editorial serif</b><br>subject to one side, calm wall/space on the other; great with no person (a roof, a room)</figcaption></figure><figure><img src="assets/own-images/previews/scatter.jpg" alt="Scattered serif" loading="lazy"><figcaption><b>Scattered serif</b><br>subject centred with open space both sides, or open sky</figcaption></figure><figure><img src="assets/own-images/previews/cascade.jpg" alt="Cascading serif" loading="lazy"><figcaption><b>Cascading serif</b><br>subject in motion or looking across the frame, clear diagonal</figcaption></figure></div>
+</main></body></html>

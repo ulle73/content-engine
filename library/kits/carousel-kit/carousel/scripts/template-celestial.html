@@ -1,0 +1,402 @@
+<!doctype html>
+<!--
+  CELESTIAL SURREALIST COLLAGE — carousel slide template (1080x1350, 4:5).
+
+  The sheet's rules, enforced here:
+    - ALL TYPE IS CLOUD WHITE and always carries a soft shadow.
+    - MONARCH ORANGE appears ONLY as butterflies — never as type or field.
+    - INK BLACK is reserved for sticker glyphs and badges, nothing else.
+    - Every slide is ARCHITECTURALLY FRAMED — columns at left and right.
+    - The headline is ALWAYS SET TWICE: small and tracked above, huge and clipped below.
+    - Depth is three layers: blurred flora FRONT, architecture MIDDLE, landscape BACK.
+    - Flying elements — doves, butterflies, petals — CROSS BETWEEN LAYERS.
+    - The technical grid sits ON TOP of everything and never breaks.
+    - Sticker glyphs are placed OFF-AXIS, as if applied by hand.
+
+  The columns, doves, butterflies and glyphs are drawn as SVG rather than sourced,
+  so they are crisp, recolourable, and carry no licence.
+
+  Placeholders are filled by carousel_render.py.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&family=EB+Garamond:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#6E9BC4; --cloud:#F2F0EA; --marble:#D6CFC2;
+    --slate:#6B7566; --monarch:#D97A32; --ink:#111111;
+    --plate:#3E463C;                       /* deepened slate: the only chart plate */
+    --display:'Anton','Archivo Black',Impact,sans-serif;
+    --sans:'Archivo','Helvetica Neue',Arial,sans-serif;
+    --serif:'EB Garamond',Georgia,serif;
+    --pad:58px;
+    --soft:0 2px 6px rgba(28,38,52,.55), 0 6px 22px rgba(28,38,52,.42), 0 14px 50px rgba(28,38,52,.30);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1350px;background:var(--cloud)}
+  .stage{position:relative;width:1080px;height:1350px;overflow:hidden;
+         font-family:var(--sans);color:var(--cloud)}
+
+  /* ---------- LAYER 1 (back): the landscape ---------- */
+  .sky{position:absolute;inset:0;z-index:1;overflow:hidden;background:#9dc0dc}
+  .sky img{width:100%;height:100%;object-fit:cover;display:block;
+           /* bright, airy, high-key, warm daylight */
+           filter:brightness(1.14) contrast(.92) saturate(.88)}
+  .sky::after{content:'';position:absolute;inset:0;
+       background:linear-gradient(180deg, rgba(120,140,160,.20) 0%, rgba(242,240,234,.04) 30%,
+                  rgba(242,240,234,.10) 62%, rgba(242,240,234,.50) 100%)}
+
+  /* ---------- LAYER 2 (middle): the architecture ---------- */
+  .arch{position:absolute;inset:0;z-index:3;pointer-events:none}
+  .arch svg{position:absolute;top:-40px;height:calc(100% + 80px);
+            filter:drop-shadow(0 10px 30px rgba(40,50,60,.28))}
+  .arch .l{left:-14px} .arch .r{right:-14px;transform:scaleX(-1)}
+
+  /* ---------- LAYER 3 (front): blurred flora ---------- */
+  .flora{position:absolute;left:-6%;right:-6%;bottom:-30px;height:330px;z-index:5;
+         overflow:hidden;pointer-events:none;
+         -webkit-mask-image:linear-gradient(180deg, rgba(0,0,0,0), #000 44%, #000 100%);
+         mask-image:linear-gradient(180deg, rgba(0,0,0,0), #000 44%, #000 100%)}
+  .flora img{width:100%;height:100%;object-fit:cover;
+             filter:blur(7px) brightness(1.20) contrast(.90) saturate(.72)}
+  .flora.top{top:-70px;bottom:auto;left:auto;right:-8%;width:46%;height:250px;
+             -webkit-mask-image:linear-gradient(200deg, #000 30%, rgba(0,0,0,0) 78%);
+             mask-image:linear-gradient(200deg, #000 30%, rgba(0,0,0,0) 78%)}
+
+  /* ---------- flying elements: they cross between the layers ---------- */
+  .flyer{position:absolute;pointer-events:none}
+  .flyer.back{z-index:4}   /* behind the flora, in front of the columns */
+  .flyer.front{z-index:6}  /* in front of everything but the type */
+  .flyer svg{display:block;filter:drop-shadow(0 8px 16px rgba(40,50,60,.42)) drop-shadow(0 2px 3px rgba(40,50,60,.30))}
+
+  /* ---------- type: always cloud white, always a soft shadow ---------- */
+  .type{position:absolute;inset:0;z-index:7;pointer-events:none}
+  .brand{position:absolute;top:56px;left:0;right:0;text-align:center}
+  .brand .b1{font-family:var(--sans);font-weight:700;font-size:29px;letter-spacing:.20em;
+             text-transform:uppercase;
+             text-shadow:0 2px 5px rgba(28,38,52,.66), 0 5px 16px rgba(28,38,52,.52),
+                         0 12px 40px rgba(28,38,52,.34)}
+  .brand .b2{font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.42em;
+             text-transform:uppercase;margin-top:9px;
+             text-shadow:0 2px 5px rgba(28,38,52,.62), 0 5px 16px rgba(28,38,52,.46)}
+
+  .quote{position:absolute;left:var(--pad);right:var(--pad);top:var(--quote-top,300px);
+         text-align:center;font-family:var(--serif);font-style:italic;font-weight:500;
+         font-size:32px;line-height:1.44;
+         text-shadow:0 2px 5px rgba(28,38,52,.62), 0 5px 18px rgba(28,38,52,.50),
+                     0 12px 44px rgba(28,38,52,.34)}
+
+  /* the headline, set twice */
+  .headwrap{position:absolute;left:0;right:0;top:var(--head-top,690px);text-align:center}
+  .headsmall{font-family:var(--sans);font-weight:600;font-size:21px;letter-spacing:.40em;
+             text-transform:uppercase;margin-bottom:46px;
+             text-shadow:0 2px 5px rgba(28,38,52,.66), 0 5px 16px rgba(28,38,52,.50);
+             padding:0 var(--pad)}
+  .headbig{font-family:var(--display);font-weight:400;font-size:var(--head-size,150px);
+           line-height:.86;letter-spacing:.004em;text-transform:uppercase;white-space:nowrap;
+           text-shadow:0 3px 10px rgba(28,38,52,.46), 0 10px 34px rgba(28,38,52,.34),
+                       0 22px 70px rgba(28,38,52,.22);
+           transform:scaleY(1.10);transform-origin:center top}
+
+  .corners{position:absolute;left:var(--pad);right:var(--pad);bottom:44px;z-index:7;
+           display:flex;justify-content:space-between;
+           font-family:var(--sans);font-weight:600;font-size:19px;letter-spacing:.26em;
+           text-transform:uppercase;text-shadow:var(--soft)}
+
+  /* ---------- data plate ---------- */
+  .content{position:absolute;left:var(--pad);right:var(--pad);bottom:var(--content-bottom,110px);z-index:8}
+  .card{background:rgba(62,70,60,.90);padding:28px 32px 26px;color:var(--cloud);
+        border:1px solid rgba(242,240,234,.30);box-shadow:0 22px 54px rgba(40,50,60,.34)}
+  .card .ctitle{font-family:var(--sans);font-weight:600;font-size:18px;letter-spacing:.20em;
+                text-transform:uppercase;color:var(--marble);margin-bottom:20px;
+                padding-bottom:11px;border-bottom:1px solid rgba(242,240,234,.28)}
+  .card .cnote{font-family:var(--sans);font-weight:400;font-size:17px;color:var(--marble);
+               margin-top:12px;line-height:1.45}
+
+  .chart{display:block;width:100%;height:auto;overflow:visible}
+  .legend{display:flex;flex-wrap:wrap;gap:22px;margin-top:14px}
+  .lk{display:inline-flex;align-items:center;gap:9px;font-size:18px;color:var(--marble)}
+  .spark{display:block;margin-top:12px}
+
+  .bars{display:flex;flex-direction:column;gap:15px}
+  .bar-row{display:flex;align-items:center;gap:18px}
+  .bar-lab{width:210px;flex:none;font-size:22px;color:var(--cloud)}
+  .bar-track{flex:1;height:26px;background:rgba(242,240,234,.12)}
+  .bar-fill{height:100%;background:#8E9A87}
+  .bar-fill.hi{background:var(--blue)}
+  .bar-val{width:126px;flex:none;text-align:right;font-weight:700;font-size:24px;color:var(--cloud);
+           font-variant-numeric:tabular-nums}
+
+  .stats{display:flex;gap:26px}
+  .stat{flex:1}
+  .stat .v{font-family:var(--display);font-weight:400;font-size:62px;line-height:1;color:var(--cloud)}
+  .stat .l{font-size:16px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+           color:var(--marble);margin-top:9px}
+  .stat .d{font-size:16px;color:var(--marble);margin-top:5px}
+
+  .dial{display:flex;border:1px solid rgba(242,240,234,.45)}
+  .seg{flex:1;text-align:center;padding:14px 0;font-size:21px;color:rgba(242,240,234,.72);
+       border-right:1px solid rgba(242,240,234,.26)}
+  .seg:last-child{border-right:none}
+  .seg.on{background:var(--blue);color:#fff}
+  .dial-cap{display:flex;justify-content:space-between;font-size:17px;color:var(--marble);margin-top:11px}
+
+  .chips{display:flex;gap:11px;flex-wrap:wrap}
+  .chip{background:rgba(110,155,196,.92);color:#fff;font-weight:600;font-size:19px;
+        padding:9px 18px;letter-spacing:.05em;text-transform:uppercase}
+
+  .shot{background:var(--cloud);padding:11px;box-shadow:0 20px 48px rgba(40,50,60,.4)}
+  .shot img{display:block;width:100%;max-height:520px;object-fit:cover;object-position:top}
+  .shot .cap{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-top:9px}
+  .shot .cap .t{font-weight:600;font-size:19px;color:#2a2f28}
+  .shot .cap .s{font-size:16px;color:#6a6f66;white-space:nowrap}
+
+  .heroimg{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .heroimg img{max-height:480px;max-width:92%;object-fit:contain}
+  .heroimg .hcap{background:rgba(62,70,60,.9);color:var(--cloud);font-size:23px;padding:11px 22px}
+
+  /* ---------- sticker glyphs — ink black, off-axis, as if applied by hand ---------- */
+  .sticker{position:absolute;z-index:9;filter:drop-shadow(0 6px 14px rgba(40,50,60,.34))}
+  .badge{position:absolute;z-index:9;background:var(--ink);color:#fff;padding:9px 12px 10px;
+         text-align:center;font-family:var(--sans);line-height:1.12;
+         box-shadow:0 8px 20px rgba(40,50,60,.36)}
+  .badge .t1{font-weight:700;font-size:17px;letter-spacing:.14em}
+  .badge .t2{font-weight:700;font-size:26px;letter-spacing:.06em;background:#fff;color:var(--ink);
+             margin:4px 0;padding:1px 0}
+  .badge .t3{font-weight:500;font-size:10.5px;letter-spacing:.06em}
+
+  /* ---------- the technical grid: on top of everything, never breaks ---------- */
+  .grid{position:absolute;inset:0;z-index:10;pointer-events:none}
+  .grid .ln{position:absolute;background:rgba(242,240,234,.30)}
+  .grid .v{top:0;bottom:0;width:1px}
+  .grid .h{left:0;right:0;height:1px}
+  .grid svg.x{position:absolute;width:26px;height:26px;opacity:.62}
+
+  /* ---------- paper / marble tooth over the whole plate ---------- */
+  .paper{position:absolute;inset:0;z-index:11;pointer-events:none;opacity:.30;
+         background-image:var(--tooth);background-size:280px 280px;mix-blend-mode:multiply}
+  [data-optional].empty{display:none}
+
+  /* per-slide composition — the type block and plate move down the set */
+  .stage{--quote-top:__QUOTETOP__px;--head-top:__HEADTOP__px;--content-bottom:__CONTENTBOTTOM__px}
+</style>
+</head>
+<body>
+  <div class="stage __STAGECLASS__">
+
+    <!-- LAYER 1 — landscape -->
+    <div class="sky"><img id="sky" alt=""></div>
+
+    <!-- LAYER 2 — architecture: an ionic column at each edge -->
+    <div class="arch">
+      <svg class="l" viewBox="0 0 150 1000" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="mrb" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0"   stop-color="#B9B1A2"/>
+            <stop offset=".26" stop-color="#EDE8DE"/>
+            <stop offset=".58" stop-color="#D6CFC2"/>
+            <stop offset="1"   stop-color="#A9A294"/>
+          </linearGradient>
+        </defs>
+        <!-- abacus + volutes -->
+        <rect x="2" y="52" width="140" height="20" fill="#E4DFD4"/>
+        <path d="M6 72 h132 v34 H6 z" fill="url(#mrb)"/>
+        <circle cx="40" cy="90" r="15" fill="none" stroke="#B4AC9D" stroke-width="4"/>
+        <circle cx="104" cy="90" r="15" fill="none" stroke="#B4AC9D" stroke-width="4"/>
+        <!-- shaft -->
+        <rect x="16" y="106" width="112" height="838" fill="url(#mrb)"/>
+        <g stroke="#B4AC9D" stroke-width="1.6" opacity=".75">
+          <line x1="34" y1="112" x2="34" y2="938"/><line x1="52" y1="112" x2="52" y2="938"/>
+          <line x1="70" y1="112" x2="70" y2="938"/><line x1="88" y1="112" x2="88" y2="938"/>
+          <line x1="106" y1="112" x2="106" y2="938"/>
+        </g>
+        <!-- base -->
+        <rect x="6"  y="944" width="132" height="22" fill="#E4DFD4"/>
+        <rect x="0"  y="966" width="144" height="26" fill="url(#mrb)"/>
+      </svg>
+      <svg class="r" viewBox="0 0 150 1000" preserveAspectRatio="none" aria-hidden="true">
+        <use href="#none"/>
+        <rect x="2" y="52" width="140" height="20" fill="#E4DFD4"/>
+        <path d="M6 72 h132 v34 H6 z" fill="url(#mrb)"/>
+        <circle cx="40" cy="90" r="15" fill="none" stroke="#B4AC9D" stroke-width="4"/>
+        <circle cx="104" cy="90" r="15" fill="none" stroke="#B4AC9D" stroke-width="4"/>
+        <rect x="16" y="106" width="112" height="838" fill="url(#mrb)"/>
+        <g stroke="#B4AC9D" stroke-width="1.6" opacity=".75">
+          <line x1="34" y1="112" x2="34" y2="938"/><line x1="52" y1="112" x2="52" y2="938"/>
+          <line x1="70" y1="112" x2="70" y2="938"/><line x1="88" y1="112" x2="88" y2="938"/>
+          <line x1="106" y1="112" x2="106" y2="938"/>
+        </g>
+        <rect x="6"  y="944" width="132" height="22" fill="#E4DFD4"/>
+        <rect x="0"  y="966" width="144" height="26" fill="url(#mrb)"/>
+      </svg>
+    </div>
+
+    <!-- flying elements, behind the flora -->
+    <div class="flyer back" id="fly1"></div>
+    <!-- LAYER 3 — blurred flora, front -->
+    <div class="flora top" data-optional><img id="floraTop" alt=""></div>
+    <div class="flora"><img id="flora" alt=""></div>
+    <!-- flying elements, in front -->
+    <div class="flyer front" id="fly2"></div>
+
+    <div class="type">
+      <div class="brand">
+        <div class="b1" data-optional>__BRAND_LABEL__</div>
+        <div class="b2" data-optional>__HANDLE__</div>
+      </div>
+      <div class="quote" data-optional>__SUBTITLE__</div>
+      <div class="headwrap">
+        <div class="headsmall" data-optional>__KICKER__</div>
+        <div class="headbig" id="hb" data-optional>__HEADLINE__</div>
+      </div>
+    </div>
+
+    <div class="content" data-optional>__CONTENT__</div>
+
+    <div class="corners">
+      <span data-optional>__META1__</span>
+      <span data-optional>__META2__</span>
+    </div>
+
+    <div class="badge" id="bdg" data-optional>
+      <div class="t1">__BADGE1__</div>
+      <div class="t2">__BADGE2__</div>
+      <div class="t3">__BADGE3__</div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="paper"></div>
+  </div>
+
+  <script>
+  (function(){
+    var SKY = "__BG__", FLORA = "__FLORA__";
+    if (SKY)   document.getElementById('sky').src = SKY;
+    if (FLORA) { document.getElementById('flora').src = FLORA;
+                 document.getElementById('floraTop').src = FLORA; }
+
+    document.querySelectorAll('[data-optional]').forEach(function(el){
+      if(!el.textContent.trim() && !el.querySelector('img')) el.classList.add('empty');
+    });
+    var bdg = document.getElementById('bdg');
+    if (bdg && !bdg.textContent.trim()) bdg.classList.add('empty');
+
+    var seed = (parseInt("__INDEX__",10)||1) * 7717 + 4242;
+    function rnd(){ seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed/0x7fffffff; }
+
+    /* ---- flying elements: doves, butterflies, petals, crossing the layers ---- */
+    // a dove reads only if the head, beak, tail and two wings are separate shapes
+    function dove(s){ return '<svg width="'+s+'" height="'+(s*0.70)+'" viewBox="0 0 120 84">'+
+      '<g stroke="#93A5B5" stroke-width="1.1" stroke-linejoin="round">'+
+      '<path d="M4 62 L30 50 L34 60 Z" fill="#E9ECEF"/>'+
+      '<ellipse cx="58" cy="49" rx="32" ry="10.5" fill="#FFFFFF" transform="rotate(-11 58 49)"/>'+
+      '<path d="M52 44 C56 26 70 10 92 4 C84 18 80 30 78 42 C70 46 60 47 52 44 Z" fill="#FFFFFF"/>'+
+      '<path d="M50 52 C52 62 62 74 78 80 C70 68 68 60 68 52 C62 53 56 53 50 52 Z" fill="#E4E8EC"/>'+
+      '<circle cx="93" cy="39" r="8.5" fill="#FFFFFF"/>'+
+      '<path d="M101 38 L114 41 L101 44 Z" fill="#D9C08A"/>'+
+      '</g><circle cx="96" cy="36.5" r="1.7" fill="#4E5A66"/></svg>'; }
+    // monarch orange exists ONLY here
+    function butterfly(s){ return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 100 100">'+
+      '<g fill="#D97A32">'+
+      '<path d="M48 50 C34 22 12 16 8 28 C4 40 22 50 48 50 Z"/>'+
+      '<path d="M52 50 C66 22 88 16 92 28 C96 40 78 50 52 50 Z"/>'+
+      '<path d="M48 52 C36 74 18 84 14 74 C10 64 28 54 48 52 Z"/>'+
+      '<path d="M52 52 C64 74 82 84 86 74 C90 64 72 54 52 52 Z"/></g>'+
+      '<g fill="#B4601F" opacity=".55">'+
+      '<path d="M48 50 C36 30 20 22 14 28 C24 28 38 38 48 50 Z"/>'+
+      '<path d="M52 50 C64 30 80 22 86 28 C76 28 62 38 52 50 Z"/></g>'+
+      '<ellipse cx="50" cy="52" rx="3" ry="13" fill="#3A3A38"/></svg>'; }
+    function petal(s){ return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 20 20">'+
+      '<ellipse cx="10" cy="10" rx="8" ry="5" fill="#FFFFFF" opacity=".9"/></svg>'; }
+
+    function place(host, html, x, y, rot, scale){
+      var d = document.createElement('div');
+      d.style.cssText = 'position:absolute;left:'+x+'px;top:'+y+'px;'+
+        'transform:rotate('+rot+'deg) scale('+(scale||1)+')';
+      d.innerHTML = html; host.appendChild(d);
+    }
+    var b1 = document.getElementById('fly1'), b2 = document.getElementById('fly2');
+    // two doves behind, two butterflies + petals in front — positions vary by slide
+    // doves ride the open sky band between the brand block and the quote,
+    // butterflies sit low against the flora — nothing lands on the type
+    place(b1, dove(150 + rnd()*34), 54 + rnd()*90, 132 + rnd()*70, -14 + rnd()*22);
+    place(b1, dove(96 + rnd()*24), 812 + rnd()*120, 168 + rnd()*80,  -6 + rnd()*26);
+    place(b2, butterfly(128 + rnd()*36), 726 + rnd()*180, 812 + rnd()*140, -18 + rnd()*40);
+    place(b2, butterfly(86 + rnd()*26),  126 + rnd()*150, 908 + rnd()*140, -30 + rnd()*50);
+    for (var i=0;i<7;i++)
+      place(b2, petal(12 + rnd()*12), rnd()*1030, 700 + rnd()*560, rnd()*180, 1);
+
+    /* ---- sticker glyphs, off-axis as if applied by hand ---- */
+    function sticker(html, x, y, rot){
+      var d = document.createElement('div');
+      d.className = 'sticker';
+      d.style.cssText = 'left:'+x+'px;top:'+y+'px;transform:rotate('+rot+'deg)';
+      d.innerHTML = html;
+      document.querySelector('.stage').appendChild(d);
+    }
+    var star = '<svg width="62" height="62" viewBox="0 0 100 100"><path fill="#111111"'+
+      ' d="M50 2 C54 34 66 46 98 50 C66 54 54 66 50 98 C46 66 34 54 2 50 C34 46 46 34 50 2 Z"/></svg>';
+    var smiley = '<svg width="56" height="56" viewBox="0 0 100 100"><g fill="none" stroke="#111111"'+
+      ' stroke-width="7"><circle cx="50" cy="50" r="42"/><path d="M32 60 C40 72 60 72 68 60"'+
+      ' stroke-linecap="round"/></g><g fill="#111111"><circle cx="36" cy="40" r="6"/>'+
+      '<circle cx="64" cy="40" r="6"/></g></svg>';
+    if ("__GLYPH__".indexOf("star") >= 0)   sticker(star,   __GX__, __GY__, -12 + rnd()*26);
+    if ("__GLYPH__".indexOf("smiley") >= 0) sticker(smiley, __GX__, __GY__,  -8 + rnd()*20);
+    var bd = document.getElementById('bdg');
+    if (bd && !bd.classList.contains('empty')){
+      bd.style.left = "__BADGEX__" + 'px'; bd.style.top = "__BADGEY__" + 'px';
+      bd.style.transform = 'rotate(' + (-9 + rnd()*18).toFixed(1) + 'deg)';
+    }
+
+    /* ---- the technical grid: on top, and it never breaks ---- */
+    (function(){
+      var g = document.getElementById('grid');
+      [58, 300, 540, 780, 1022].forEach(function(x){
+        var d = document.createElement('div'); d.className='ln v'; d.style.left=x+'px'; g.appendChild(d);
+      });
+      [58, 360, 700, 1010, 1292].forEach(function(y){
+        var d = document.createElement('div'); d.className='ln h'; d.style.top=y+'px'; g.appendChild(d);
+      });
+      var cross = '<svg class="x" viewBox="0 0 26 26"><g stroke="#F2F0EA" stroke-width="1.4" fill="none">'+
+        '<line x1="13" y1="0" x2="13" y2="26"/><line x1="0" y1="13" x2="26" y2="13"/>'+
+        '<circle cx="13" cy="13" r="8"/></g></svg>';
+      [[45,45],[1009,45],[45,1279],[1009,1279]].forEach(function(p){
+        var w = document.createElement('div');
+        w.style.cssText='position:absolute;left:'+p[0]+'px;top:'+p[1]+'px';
+        w.innerHTML = cross; g.appendChild(w.firstChild);
+      });
+    })();
+
+    /* ---- marble tooth ---- */
+    (function(){
+      var s=280, c=document.createElement('canvas'); c.width=c.height=s;
+      var x=c.getContext('2d');
+      for (var i=0;i<s*s*0.07;i++){
+        x.fillStyle='rgba(120,116,104,'+(0.22*(0.2+rnd()*0.8)).toFixed(3)+')';
+        x.beginPath(); x.arc(rnd()*s, rnd()*s, 0.3+rnd()*1.1, 0, 6.2832); x.fill();
+      }
+      document.documentElement.style.setProperty('--tooth','url('+c.toDataURL()+')');
+    })();
+
+    /* ---- the huge headline is clipped by the frame; fit it to overflow ---- */
+    (function(){
+      var hb = document.getElementById('hb');
+      if (!hb || hb.classList.contains('empty')) return;
+      var over = parseFloat("__HEAD_OVERFLOW__") || 1.04;
+      var size = 150;
+      hb.style.fontSize = size + 'px';
+      for (var i=0;i<26;i++){
+        var w = hb.scrollWidth; if (!w) break;
+        var ratio = (1080 * over) / w;
+        if (Math.abs(ratio-1) < 0.012) break;
+        size = Math.max(52, Math.min(280, size * ratio));
+        hb.style.fontSize = size + 'px';
+      }
+    })();
+  })();
+  </script>
+</body>
+</html>

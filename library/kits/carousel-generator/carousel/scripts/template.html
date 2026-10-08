@@ -1,0 +1,270 @@
+<!doctype html>
+<!--
+  MIDNIGHT BIOLUMINESCENT — carousel slide template (1080x1350, 4:5).
+  Every surface in here is GLASS: translucent fill, backdrop blur, a 1px light
+  edge, an inner top highlight, and a soft outer bloom. Nothing is opaque.
+
+  Rules from the style sheet:
+    - type is MOON WHITE or FOG GRAY only. No other text colour exists.
+    - teal is light, never paint — it appears as emitted glow (bar fills, rings,
+      the capsule bloom), never as a text or surface colour.
+    - amber is reserved for the scene's foreground flora — never in the UI.
+    - one glass-capsule accent word per slide, always serif against sans.
+    - at least 40% of the slide stays unbroken black; edges fall off to black.
+
+  Placeholders are filled by carousel_render.py.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ---- palette (style sheet) ---- */
+    --void:#08080A; --ash:#1A1B1E; --moon:#FFFFFF; --teal:#3FBFB2;
+    --amber:#E9A33C; --fog:#7C7C82;
+
+    --serif:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --sans:'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --pad:76px;
+
+    /* ---- the glass system ----
+       On a void-black scene a blur alone shows nothing, so every panel is a
+       frosted BODY (tint) + gradient sheen + light edge + inner highlight. */
+    --glass-tint:rgba(26,29,32,.52);
+    --glass-fill:linear-gradient(163deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.065) 38%,
+                 rgba(255,255,255,.03) 72%, rgba(255,255,255,.055) 100%);
+    --glass-edge:rgba(255,255,255,.28);
+    --glass-blur:blur(28px) saturate(130%);
+    --glass-shadow:
+       0 30px 74px rgba(0,0,0,.66),
+       0 0 60px rgba(63,191,178,.07),
+       inset 0 1px 0 rgba(255,255,255,.42),
+       inset 0 -1px 0 rgba(255,255,255,.08),
+       inset 0 -26px 46px rgba(63,191,178,.05);
+    /* teal reads as light spilling onto the glass, never as a fill colour */
+    --lit:0 0 46px rgba(63,191,178,.20);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1350px;background:var(--void)}
+  .stage{position:relative;width:1080px;height:1350px;overflow:hidden;
+         font-family:var(--sans);background:var(--void);color:var(--moon)}
+  .bg{position:absolute;inset:0;background-position:center center;background-size:cover;background-repeat:no-repeat}
+  /* keeps type legible without ever lifting the black */
+  .grade{position:absolute;inset:0;background:
+     linear-gradient(180deg, rgba(8,8,10,.72) 0%, rgba(8,8,10,.28) 26%, rgba(8,8,10,0) 46%),
+     linear-gradient(0deg, rgba(8,8,10,.80) 0%, rgba(8,8,10,.30) 16%, rgba(8,8,10,0) 34%)}
+
+  /* ================= reusable glass surface =================
+     Every panel the renderer can emit is glass: cards, screenshot frames,
+     chips, caption pills, hero captions. One material, no exceptions. */
+  .glass, .card, .shot, .chip, .hcap{
+         background-color:var(--glass-tint);background-image:var(--glass-fill);
+         -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+         border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow);
+         position:relative;overflow:hidden}
+  /* the specular sweep every real glass panel has */
+  .glass::after, .card::after, .shot::after, .chip::after, .hcap::after{
+         content:'';position:absolute;inset:0;pointer-events:none;z-index:2;
+         background:linear-gradient(102deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 32%,
+                    rgba(255,255,255,0) 68%, rgba(255,255,255,.07) 100%)}
+  /* content has to sit above the sweep */
+  .card > *, .shot > *, .chip > *, .glass > *{position:relative;z-index:3}
+
+  /* ================= top rail ================= */
+  .rail{position:absolute;top:var(--pad);left:var(--pad);right:var(--pad);
+        display:flex;align-items:center;justify-content:space-between;z-index:6}
+  .topic{border-radius:999px;padding:11px 24px;font-size:18px;font-weight:500;
+         letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.88)}
+  .count{font-size:19px;font-weight:400;letter-spacing:.20em;color:var(--fog)}
+  .count b{color:var(--moon);font-weight:500}
+
+  /* ================= flow ================= */
+  .flow{position:absolute;left:var(--pad);right:var(--pad);top:186px;bottom:196px;
+        display:flex;flex-direction:column;align-items:center;text-align:center;gap:34px}
+  .stage.hero .flow{justify-content:center}
+
+  .head{display:flex;flex-direction:column;align-items:center;gap:22px;width:100%;flex:none}
+  .kicker{font-size:20px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:var(--fog)}
+  .headline{font-family:var(--serif);font-weight:300;font-size:94px;font-feature-settings:'lnum' 1;font-variant-numeric:lining-nums;line-height:1.04;
+            letter-spacing:-.008em;color:var(--moon);
+            text-shadow:0 0 60px rgba(255,255,255,.22), 0 2px 26px rgba(0,0,0,.55);
+            max-width:15ch}
+
+  /* ---- the one glass capsule: the accent word ---- */
+  .capsule{display:inline-flex;align-items:center;justify-content:center;
+           border-radius:999px;padding:12px 54px 18px;
+           background-image:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
+           -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+           border:1.5px solid rgba(255,255,255,.72);
+           box-shadow:0 0 34px rgba(255,255,255,.30), 0 0 90px rgba(63,191,178,.22),
+                      inset 0 1px 0 rgba(255,255,255,.45), inset 0 -14px 34px rgba(63,191,178,.10);
+           position:relative}
+  /* light pooling along the bottom edge of the capsule, as on the sheet */
+  .capsule::after{content:'';position:absolute;left:14%;right:14%;bottom:-2px;height:16px;
+           background:radial-gradient(ellipse at center, rgba(255,255,255,.75), rgba(255,255,255,0) 70%);
+           filter:blur(7px)}
+  .capsule span{font-family:var(--serif);font-weight:300;font-size:78px;line-height:1.18;
+           color:var(--moon);text-shadow:0 0 40px rgba(255,255,255,.35)}
+
+  /* caption pill under the headline (optional) */
+  .pill{border-radius:22px;padding:18px 32px;font-size:29px;font-weight:400;line-height:1.34;
+        color:rgba(255,255,255,.92);max-width:92%}
+
+  /* ================= content ================= */
+  .content{width:100%;min-height:0;display:flex;flex-direction:column;align-items:center;gap:22px}
+  .stage.hero .content{flex:1;justify-content:center}
+
+  .card{border-radius:30px;padding:34px 38px;width:100%;text-align:left}
+  .card .ctitle{font-size:22px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
+                color:var(--fog);margin-bottom:26px}
+  .card .cnote{font-size:20px;font-weight:400;color:var(--fog);margin-top:20px;line-height:1.45}
+
+  /* bars — the fill is emitted light, the numbers stay moon white */
+  .bars{display:flex;flex-direction:column;gap:19px}
+  .bar-row{display:flex;align-items:center;gap:20px}
+  .bar-lab{width:190px;flex:none;font-size:25px;font-weight:400;color:rgba(255,255,255,.86)}
+  .bar-track{flex:1;height:30px;border-radius:999px;background:rgba(255,255,255,.07);
+             border:1px solid rgba(255,255,255,.10);overflow:hidden;position:relative}
+  .bar-fill{height:100%;border-radius:999px;
+            background:linear-gradient(90deg, rgba(63,191,178,.35), rgba(63,191,178,.70));
+            box-shadow:0 0 22px rgba(63,191,178,.45), inset 0 1px 0 rgba(255,255,255,.35)}
+  .bar-fill.hi{background:linear-gradient(90deg, rgba(63,191,178,.55), rgba(150,246,236,.95));
+               box-shadow:0 0 34px rgba(63,191,178,.75), inset 0 1px 0 rgba(255,255,255,.6)}
+  .bar-val{width:120px;flex:none;text-align:right;font-size:28px;font-weight:600;color:var(--moon)}
+  .bar-val.hi{text-shadow:0 0 18px rgba(63,191,178,.55)}
+
+  /* stats */
+  .stats{display:flex;gap:34px}
+  .stat{flex:1}
+  .stat .v{font-family:var(--serif);font-weight:300;font-size:86px;font-feature-settings:'lnum' 1;font-variant-numeric:lining-nums;line-height:1;color:var(--moon);
+           text-shadow:0 0 44px rgba(63,191,178,.45)}
+  .stat .l{font-size:21px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+           color:var(--fog);margin-top:12px}
+
+  /* ---- SVG charts (carousel_charts.py) ----
+     The chart is the only loud thing in the card; grid and axes stay recessive. */
+  .chart{display:block;width:100%;height:auto;overflow:visible}
+  .legend{display:flex;flex-wrap:wrap;gap:26px;margin-top:20px}
+  /* identity comes from the mark key, never from colouring the text */
+  .lk{display:inline-flex;align-items:center;gap:10px;font-size:20px;color:var(--fog)}
+  .lk svg{flex:none}
+  .spark{display:block;margin-top:14px;opacity:.95}
+  .stat .d{font-size:19px;font-weight:500;color:var(--fog);margin-top:8px}
+
+  /* dial */
+  .dial{display:flex;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.18)}
+  .seg{flex:1;text-align:center;padding:18px 0;font-size:24px;font-weight:500;
+       color:rgba(255,255,255,.7);letter-spacing:.05em;
+       border-right:1px solid rgba(255,255,255,.10)}
+  .seg:last-child{border-right:none}
+  .seg.on{color:var(--moon);background:linear-gradient(180deg, rgba(63,191,178,.42), rgba(63,191,178,.18));
+          box-shadow:inset 0 0 30px rgba(63,191,178,.55), 0 0 30px rgba(63,191,178,.35)}
+  .dial-cap{display:flex;justify-content:space-between;font-size:19px;color:var(--fog);margin-top:16px}
+
+  /* chips */
+  .chips{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .chip{border-radius:999px;padding:13px 26px;font-size:22px;font-weight:500;
+        letter-spacing:.06em;color:rgba(255,255,255,.90)}
+
+  /* framed screenshot — a glass slab holding the proof */
+  .shot{width:100%;border-radius:26px;padding:16px 16px 14px;text-align:left}
+  .shot img{display:block;position:relative;z-index:3;width:100%;border-radius:15px;border:1px solid rgba(255,255,255,.14);
+            box-shadow:0 10px 34px rgba(0,0,0,.55)}
+  .shot .cap{display:flex;justify-content:space-between;align-items:baseline;gap:18px;
+             margin-top:14px;padding:0 6px 4px}
+  .shot .cap .t{font-size:22px;font-weight:500;color:rgba(255,255,255,.92)}
+  .shot .cap .s{font-size:19px;font-weight:400;color:var(--fog);white-space:nowrap}
+
+  /* hero illustration floating on the scene */
+  .heroimg{width:100%;display:flex;flex-direction:column;align-items:center;gap:22px}
+  .heroimg img{max-height:540px;max-width:92%;min-height:0;object-fit:contain;
+               filter:drop-shadow(0 18px 26px rgba(0,0,0,.65)) drop-shadow(0 0 70px rgba(63,191,178,.22))}
+  .heroimg .hcap{border-radius:20px;padding:15px 30px;font-size:27px;font-weight:500;
+                 color:var(--moon)}
+
+  /* ================= call to action ================= */
+  /* the action block always sits just above the footer, as in the sheet's anatomy */
+  .cta{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;margin-top:auto;padding-top:20px}
+  /* the bright frosted pill from the sheet: light glass, dark type */
+  .cta .btn{border-radius:999px;padding:20px 46px;font-size:32px;font-weight:500;color:#0B0C0D;
+            background-image:linear-gradient(180deg, rgba(255,255,255,.97), rgba(226,230,231,.86));
+            border:1px solid rgba(255,255,255,.9);
+            box-shadow:0 18px 46px rgba(0,0,0,.55), 0 0 60px rgba(255,255,255,.20),
+                       inset 0 1px 0 rgba(255,255,255,1), inset 0 -8px 18px rgba(0,0,0,.06)}
+  .cta .btn i{font-style:normal;color:#6B6F72}
+  .cta .micro{font-size:23px;font-weight:400;color:var(--fog)}
+
+  /* ================= footer ================= */
+  .footer{position:absolute;left:var(--pad);right:var(--pad);bottom:var(--pad);z-index:6}
+  .footer .rule{height:1px;width:100%;
+       background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.22) 22%,
+                  rgba(255,255,255,.22) 78%, rgba(255,255,255,0));margin-bottom:20px}
+  .footer .row{display:flex;align-items:center;justify-content:space-between;
+       font-size:20px;font-weight:400;letter-spacing:.04em;color:var(--fog)}
+  .footer .row .h{color:rgba(255,255,255,.88);font-weight:500}
+
+  /* mascot overlay (optional, decorative) */
+  .mascot{position:absolute;z-index:5;
+          filter:drop-shadow(0 16px 22px rgba(0,0,0,.65)) drop-shadow(0 0 60px rgba(63,191,178,.20))}
+  .mascot.right{right:10px;bottom:210px}
+  .mascot.br{right:34px;bottom:190px}
+  .mascot.bl{left:34px;bottom:190px}
+
+  [data-optional].empty{display:none}
+</style>
+</head>
+<body>
+  <div class="stage __STAGECLASS__">
+    <div class="bg" id="bg"></div>
+    <div class="grade"></div>
+
+    <div class="rail">
+      <div class="topic glass" data-optional>__TOPIC_TAG__</div>
+      <div class="count" data-optional><b>__INDEX__</b> / __TOTAL__</div>
+    </div>
+
+    <div class="flow">
+      <div class="head">
+        <div class="kicker" data-optional>__KICKER__</div>
+        <div class="headline" data-optional>__HEADLINE__</div>
+        <div class="capsule" data-optional><span>__HERO_WORD__</span></div>
+        <div class="pill glass" data-optional>__SUBTITLE__</div>
+      </div>
+
+      <div class="content" data-optional>__CONTENT__</div>
+
+      <div class="cta" data-optional>
+        <div class="btn" data-optional>__CTA_PILL__ <i>__CTA_SOFT__</i></div>
+        <div class="micro" data-optional>__MICROCOPY__</div>
+      </div>
+    </div>
+
+    __MASCOT__
+
+    <div class="footer">
+      <div class="rule"></div>
+      <div class="row">
+        <span class="h" data-optional>__HANDLE__</span>
+        <span data-optional>__TAGLINE__</span>
+        <span data-optional>__BRAND_LABEL__</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var BG="__BG__";
+    if(BG) document.getElementById('bg').style.backgroundImage="url('"+BG+"')";
+    // hide any optional block that ended up with no text and no image
+    document.querySelectorAll('[data-optional]').forEach(function(el){
+      if(!el.textContent.trim() && !el.querySelector('img')) el.classList.add('empty');
+    });
+    // if the CTA has neither a pill nor microcopy, drop the whole block
+    document.querySelectorAll('.cta').forEach(function(el){
+      if(!el.querySelector(':scope > *:not(.empty)')) el.classList.add('empty');
+    });
+  </script>
+</body>
+</html>

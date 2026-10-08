@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Serif+Display:ital@1&family=Space+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --indigo:#3F5F94; --haze:#9FB6CE; --cream:#EDE6D6; --kodak:#F0D93E;
+    --orange:#E0693A; --umber:#2E211A;
+    --display:'Anton', Impact, sans-serif;       /* heavy display (white + yellow) */
+    --serif:'DM Serif Display', Georgia, serif;   /* italic kicker */
+    --mono:'Space Mono', ui-monospace, monospace; /* timestamp + captions + handle */
+    --sans:'Inter', -apple-system, Segoe UI, sans-serif;
+    --pad:70px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1350px}
+  .stage{position:relative;width:1080px;height:1350px;overflow:hidden;background:var(--umber);font-family:var(--sans)}
+  .bg{position:absolute;inset:0;background-position:center;background-size:cover;background-repeat:no-repeat;
+      filter:saturate(.92) contrast(.94) brightness(1.02)}   /* lifted blacks, faded */
+  /* indigo sky wash top -> haze; lifted-black cream vignette; text scrim */
+  .wash{position:absolute;inset:0;background:
+     linear-gradient(180deg, rgba(63,95,148,.42) 0%, rgba(159,182,206,.10) 45%, rgba(46,33,26,.30) 100%)}
+  .scrim{position:absolute;inset:0;background:
+     linear-gradient(160deg, rgba(20,16,12,.62) 0%, rgba(20,16,12,.12) 42%, rgba(20,16,12,0) 60%)}
+  /* soft orange halation glow (light leak) */
+  .halation{position:absolute;inset:0;mix-blend-mode:screen;pointer-events:none;background:
+     radial-gradient(60% 40% at 88% 8%, rgba(224,105,58,.55), rgba(224,105,58,0) 60%),
+     radial-gradient(50% 30% at 10% 95%, rgba(240,217,62,.20), rgba(240,217,62,0) 60%)}
+  /* heavy film grain */
+  .grain{position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+     background-size:360px 360px}
+
+  /* vertical film timestamp on the left edge */
+  .stamp{position:absolute;left:14px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;
+     font-family:var(--mono);font-weight:700;font-size:38px;letter-spacing:.14em;color:var(--orange);
+     text-shadow:0 0 12px rgba(224,105,58,.7);z-index:5}
+
+  /* top-right film label */
+  .filmtag{position:absolute;top:var(--pad);right:var(--pad);font-family:var(--mono);font-size:19px;
+     letter-spacing:.16em;color:var(--cream);opacity:.85;text-transform:uppercase;z-index:5}
+
+  /* headline flow (upper-left), three weights */
+  .flow{position:absolute;left:var(--pad);right:var(--pad);top:150px;bottom:150px;
+     display:flex;flex-direction:column;align-items:flex-start;gap:20px;z-index:4}
+  .stage.hero .flow{justify-content:center}
+  .head{display:flex;flex-direction:column;align-items:flex-start}
+  .kicker{font-family:var(--serif);font-style:italic;font-size:46px;color:var(--cream);line-height:1;
+     margin-bottom:2px;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+  .headline{font-family:var(--display);font-size:104px;line-height:.92;letter-spacing:.005em;color:var(--cream);
+     text-transform:none;text-shadow:0 3px 18px rgba(0,0,0,.55)}
+  .hero-phrase{font-family:var(--display);font-size:132px;line-height:.9;letter-spacing:.006em;color:var(--kodak);
+     text-shadow:0 0 34px rgba(240,217,62,.55), 0 4px 16px rgba(0,0,0,.4);margin-top:2px}
+  .subtitle{font-family:var(--sans);font-weight:600;font-size:38px;line-height:1.25;color:var(--cream);
+     max-width:88%;text-shadow:0 2px 12px rgba(0,0,0,.6);margin-top:6px}
+  .caption{font-family:var(--mono);font-size:22px;letter-spacing:.06em;color:var(--haze);margin-top:8px}
+
+  /* content: stats / chips / hero mascot / image */
+  .stats{display:flex;gap:40px;margin-top:8px}
+  .stat .v{font-family:var(--display);font-size:96px;line-height:.9;color:var(--kodak);text-shadow:0 0 26px rgba(240,217,62,.4)}
+  .stat .l{font-family:var(--mono);font-size:22px;letter-spacing:.08em;color:var(--cream);text-transform:uppercase;margin-top:8px}
+  .chips{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+  .chip{display:inline-block;background:rgba(46,33,26,.66);border-left:5px solid var(--orange);
+     color:var(--cream);font-family:var(--sans);font-weight:600;font-size:32px;padding:16px 24px;border-radius:8px;
+     backdrop-filter:blur(2px);max-width:96%}
+  .heroimg{width:100%;display:flex;flex-direction:column;align-items:center;gap:14px}
+  .heroimg img{max-height:640px;max-width:94%;object-fit:contain;
+     filter:drop-shadow(0 16px 10px rgba(0,0,0,.4)) drop-shadow(0 40px 30px rgba(0,0,0,.25))}
+  .heroimg .hcap{background:rgba(46,33,26,.7);color:var(--cream);font-family:var(--mono);font-size:26px;
+     padding:12px 24px;border-radius:8px}
+  .shot{width:100%;background:var(--cream);border-radius:10px;padding:14px;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+  .shot img{display:block;width:100%;border-radius:6px}
+  .shot .cap{display:flex;justify-content:space-between;margin-top:10px;font-family:var(--mono);font-size:20px;color:var(--umber)}
+
+  /* mascot corner overlay */
+  .mascot{position:absolute;z-index:6;filter:drop-shadow(0 14px 9px rgba(0,0,0,.4))}
+  .mascot.right{right:2px;bottom:150px}
+  .mascot.br{right:24px;bottom:118px}
+  .mascot.bl{left:24px;bottom:118px}
+
+  .brand{position:absolute;left:var(--pad);bottom:var(--pad);font-family:var(--mono);font-size:20px;
+     letter-spacing:.1em;text-transform:uppercase;color:var(--cream);opacity:.85;z-index:5}
+  .handle{position:absolute;right:var(--pad);bottom:var(--pad);font-family:var(--mono);font-weight:700;font-size:26px;
+     color:var(--cream);z-index:5;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+  [data-optional].empty{display:none}
+</style>
+</head>
+<body>
+  <div class="stage __STAGECLASS__">
+    <div class="bg" id="bg"></div>
+    <div class="wash"></div>
+    <div class="scrim"></div>
+    <div class="halation"></div>
+    <div class="grain"></div>
+
+    <div class="stamp">__TIMESTAMP__</div>
+    <div class="filmtag" data-optional>__FILMTAG__</div>
+
+    <div class="flow">
+      <div class="head">
+        <div class="kicker" data-optional>__KICKER__</div>
+        <div class="headline" data-optional>__HEADLINE__</div>
+        <div class="hero-phrase" data-optional>__HERO_PHRASE__</div>
+      </div>
+      <div class="subtitle" data-optional>__SUBTITLE__</div>
+      <div class="content" data-optional>__CONTENT__</div>
+      <div class="caption" data-optional>__CAPTION__</div>
+    </div>
+
+    __MASCOT__
+    <div class="brand" data-optional>__BRAND_LABEL__</div>
+    <div class="handle" data-optional>__HANDLE__</div>
+  </div>
+
+  <script>
+    var BG="__BG__";
+    if(BG) document.getElementById('bg').style.backgroundImage="url('"+BG+"')";
+    document.querySelectorAll('[data-optional]').forEach(function(el){
+      if(!el.textContent.trim() && !el.querySelector('img')) el.classList.add('empty');
+    });
+  </script>
+</body>
+</html>

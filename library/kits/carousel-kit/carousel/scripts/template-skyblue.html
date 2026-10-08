@@ -1,0 +1,361 @@
+<!doctype html>
+<!--
+  SKY-BLUE TECH POSTER — carousel slide template (1080x1350, 4:5).
+  Sheet: carousel/assets/styles/skyblue.jpg · spec: carousel/knowledge/style-skyblue.md
+
+  The sheet's rules, as the template enforces them:
+    - ALL TYPE IS WHITE. Hierarchy is size, weight and the condensed/sans split — never hue.
+    - THE GRADIENT (magenta #CE3FC3 -> pink #F4428C -> orange #FC7E41) IS THE ACCENT.
+      It exists in exactly one place: the brush-script re-write of ONE headline word per
+      slide (hero_word). Real brand marks (logo) keep their own colours. Nothing else.
+    - NAVY #2C4E72 IS THE FIELD; SKY + CLOUDS PHOTOGRAPHY IS THE WORLD.
+    - THE HEADLINE IS SET TWICE-SIZED: a condensed caps line, then a bigger last line.
+    - ON A HERO SLIDE THE SUBJECT SITS IN FRONT OF THE HEADLINE (photo -> headline -> cutout).
+    - FRAMES ARE THIN WHITE RULES, SQUARE-CORNERED. Silver is for devices/bezels only.
+
+  Layers (z): field 0 · sky photo 1 · scrim 2 · headline 3 · subject cutout 4 · logo 5 ·
+              subtitle / content / cta 6 · rail 7 · grain 9
+  Placeholders are filled by carousel_render.py; per-slide knobs are read from __SLIDE_JSON__.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#2C4E72; --navy-deep:#1F3A57; --sky:#95BCDD; --tan:#DD956D; --white:#FFFFFF;
+    --g1:#CE3FC3; --g2:#F4428C; --g3:#FC7E41;
+    --silver:linear-gradient(135deg,#D5D6DC 0%,#F9F9F9 45%,#E5E6EA 60%,#C9CBD2 100%);
+    --cond:'Anton','Impact','Haettenschweiler',sans-serif;
+    --sans:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif;
+    --brush:'Permanent Marker','Marker Felt',cursive;
+    --pad:60px;
+    --type-shadow:0 6px 26px rgba(12,28,48,.28);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1350px;background:var(--navy)}
+  .stage{position:relative;width:1080px;height:1350px;overflow:hidden;background:var(--navy);
+         color:var(--white);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+
+  /* ---------- the world: sky photograph, full-bleed ---------- */
+  .sky{position:absolute;inset:0;z-index:1;display:none}
+  .sky img{width:100%;height:100%;object-fit:cover;display:block;object-position:var(--bgpos,50% 50%);
+           filter:saturate(.92) contrast(1.02)}
+  .stage.photo .sky{display:block}
+  /* the navy scrim: keeps the top third on-palette and the white type legible */
+  .scrim{position:absolute;inset:0;z-index:2;pointer-events:none;display:none;
+         background:linear-gradient(180deg,rgba(31,58,87,var(--scrim-top,.62)) 0%,rgba(44,78,114,.28) 34%,
+                    rgba(44,78,114,0) 58%, rgba(44,78,114,0) 80%, rgba(31,58,87,var(--scrim-bottom,.5)) 100%)}
+  .stage.photo .scrim{display:block}
+
+  /* ---------- top line: bold category | handle ---------- */
+  .topline{position:absolute;left:0;right:0;top:62px;z-index:6;text-align:center;
+           font-size:27px;letter-spacing:-.005em;text-shadow:var(--type-shadow)}
+  .topline b{font-weight:700}
+  .topline .bar{display:inline-block;width:2px;height:30px;background:var(--white);opacity:.9;
+                margin:0 14px;vertical-align:-6px}
+  .topline .h{font-weight:400}
+
+  /* ---------- headline: condensed caps, last line bigger ---------- */
+  .kicker{position:absolute;left:0;right:0;z-index:3;text-align:center;font-weight:600;font-size:20px;
+          letter-spacing:.22em;text-transform:uppercase;opacity:.9;text-shadow:var(--type-shadow)}
+  .headline{position:absolute;left:0;right:0;top:var(--head-top,128px);z-index:3;text-align:center}
+  .headline .ln{display:block;width:max-content;margin:0 auto;font-family:var(--cond);font-weight:400;
+                text-transform:uppercase;line-height:.96;letter-spacing:.004em;white-space:nowrap;
+                text-shadow:var(--type-shadow)}
+  .headline .hw{position:relative;display:inline-block}
+  /* the ONE gradient element: the brush-script re-write over the accent word */
+  .brush{position:absolute;z-index:3;pointer-events:none;white-space:nowrap;font-family:var(--brush);
+         line-height:1;text-transform:uppercase;letter-spacing:-.02em;
+         background:linear-gradient(100deg,var(--g1) 0%,var(--g2) 48%,var(--g3) 100%);
+         -webkit-background-clip:text;background-clip:text;color:transparent;
+         filter:drop-shadow(0 4px 10px rgba(80,10,60,.25));transform-origin:50% 55%}
+
+  /* ---------- subject cutout (in front of the headline) + real logo ---------- */
+  .subject{position:absolute;z-index:4;pointer-events:none;display:none}
+  .subject.aligned{inset:0}
+  .subject.aligned img{width:100%;height:100%;object-fit:cover;object-position:var(--bgpos,50% 50%);display:block}
+  .subject.boxed img{display:block;width:100%;height:auto}
+  .subject img{filter:drop-shadow(0 18px 34px rgba(10,24,44,.28))}
+  .logo{position:absolute;z-index:5;display:none;pointer-events:none}
+  .logo img{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 18px rgba(40,10,40,.35))}
+  /* optional device frame for the logo (silver bezel + sky screen), as on the sheet */
+  .logo.framed{padding:3.8%;background:var(--silver);border-radius:9%/14%;
+               box-shadow:0 22px 40px rgba(10,24,44,.35), inset 0 2px 0 rgba(255,255,255,.9)}
+  .logo.framed .screen{border-radius:7%/11%;overflow:hidden;
+               background:linear-gradient(180deg,#5E8FC0 0%,#95BCDD 60%,#D9E8F4 100%);
+               display:flex;align-items:center;justify-content:center;aspect-ratio:1.62}
+  .logo.framed .screen img{width:auto;height:74%}
+
+  /* ---------- subtitle: centred sans paragraph ---------- */
+  .sub{position:absolute;left:var(--pad);right:var(--pad);z-index:6;text-align:center;
+       font-weight:400;font-size:34px;line-height:1.3;letter-spacing:-.008em;text-shadow:var(--type-shadow)}
+  .sub b{font-weight:700}
+  .sub{text-wrap:balance}
+  .stage.photo .sub,.stage.photo .rail,.stage.photo .cta .micro{text-shadow:0 2px 16px rgba(12,28,48,.62),0 0 3px rgba(12,28,48,.35)}
+
+  /* ---------- content: proof in thin white frames on a deep-navy plate ---------- */
+  .content{position:absolute;left:var(--pad);right:var(--pad);z-index:6;bottom:var(--content-bottom,118px)}
+  .card{background:var(--navy-deep);border:3px solid rgba(255,255,255,.94);padding:28px 32px 24px;
+        box-shadow:0 20px 44px rgba(10,24,44,.28)}
+  .stage.photo .card{background:rgba(31,58,87,.95)}
+  .ctitle{font-weight:700;font-size:20px;letter-spacing:.1em;text-transform:uppercase;padding-bottom:14px;
+          margin-bottom:18px;border-bottom:2px solid rgba(255,255,255,.22)}
+  .cnote{font-size:18px;line-height:1.4;color:#C3DAEE;margin-top:10px}
+  .chart{display:block;width:100%;height:auto;overflow:visible}
+  .legend{display:flex;flex-wrap:wrap;gap:22px;margin-top:12px}
+  .lk{display:inline-flex;align-items:center;gap:9px;font-size:18px;color:#C3DAEE}
+  .spark{display:block;margin-top:12px}
+
+  .bars{display:flex;flex-direction:column;gap:16px}
+  .bar-row{display:flex;align-items:center;gap:18px}
+  .bar-lab{width:190px;flex:none;font-size:25px;font-weight:500}
+  .bar-track{flex:1;height:30px;background:rgba(255,255,255,.10)}
+  .bar-fill{height:100%;background:#7F9DBC}
+  .bar-fill.hi{background:var(--white)}
+  .bar-val{width:110px;flex:none;text-align:right;font-family:var(--cond);font-size:38px;line-height:1}
+
+  .stats{display:flex;gap:28px}
+  .stat{flex:1;min-width:0}
+  .stat .v{font-family:var(--cond);font-size:104px;line-height:.92;letter-spacing:.005em}
+  .stat .l{font-weight:700;font-size:19px;letter-spacing:.1em;text-transform:uppercase;margin-top:12px}
+  .stat .d{font-size:18px;color:#C3DAEE;margin-top:6px}
+
+  .dial{display:flex;gap:12px}
+  .seg{flex:1;text-align:center;padding:18px 6px;font-weight:600;font-size:24px;
+       border:2px solid rgba(255,255,255,.35);color:rgba(255,255,255,.72)}
+  .seg.on{border:3px solid var(--white);color:var(--white);background:rgba(255,255,255,.14);font-weight:800}
+  .dial-cap{display:flex;justify-content:space-between;gap:20px;font-size:19px;color:#C3DAEE;margin-top:14px}
+
+  .chips{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .chip{border:3px solid var(--white);padding:12px 22px;font-weight:700;font-size:22px;letter-spacing:.04em;
+        text-transform:uppercase;background:rgba(31,58,87,.55)}
+
+  .shot{background:var(--white);padding:10px;box-shadow:0 20px 44px rgba(10,24,44,.3)}
+  .shot img{display:block;width:100%;max-height:520px;object-fit:cover;object-position:top}
+  .shot .cap{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-top:10px;
+             padding:0 4px 2px;color:var(--navy-deep)}
+  .shot .cap .t{font-weight:700;font-size:20px}
+  .shot .cap .s{font-size:17px;opacity:.7;white-space:nowrap}
+
+  .heroimg{display:flex;flex-direction:column;align-items:center;gap:16px}
+  .heroimg img{max-height:520px;max-width:92%;object-fit:contain}
+  .heroimg .hcap{border:3px solid var(--white);font-weight:700;font-size:24px;padding:12px 24px;
+                 background:rgba(31,58,87,.6)}
+
+  /* ---------- CTA: a thin white frame, white type (no filled button) ---------- */
+  .cta{position:absolute;left:0;right:0;z-index:6;display:flex;flex-direction:column;align-items:center;gap:14px;
+       bottom:var(--cta-bottom,128px)}
+  .cta .pill{border:3px solid var(--white);padding:20px 38px;font-weight:700;font-size:34px;letter-spacing:-.01em;
+             background:rgba(31,58,87,.62);box-shadow:0 18px 40px rgba(10,24,44,.3)}
+  .cta .pill span{font-weight:400;opacity:.75;margin-left:10px}
+  .cta .micro{font-size:22px;opacity:.9;text-shadow:var(--type-shadow)}
+
+  /* ---------- bottom rail: counter · photo credit · swipe cue ---------- */
+  .rail{position:absolute;left:var(--pad);right:var(--pad);bottom:44px;z-index:7;display:flex;
+        justify-content:space-between;align-items:center;gap:24px;font-size:19px;text-shadow:var(--type-shadow)}
+  .rail .n{font-weight:600;letter-spacing:.12em}
+  .rail .credit{flex:1;text-align:center;font-size:14px;opacity:.72;letter-spacing:.02em;white-space:nowrap;
+                overflow:hidden;text-overflow:ellipsis}
+  .rail .cue{font-weight:700;letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+  .rail .cue svg{width:34px;height:12px}
+
+  /* ---------- the navy field's texture (the sheet's field is lightly toothed) ---------- */
+  .grain{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.07;
+         background-image:var(--grain);background-size:240px 240px;mix-blend-mode:overlay}
+
+  [data-optional].empty{display:none}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+  <div class="stage __STAGECLASS__" id="st">
+    <div class="sky"><img id="sky" alt=""></div>
+    <div class="scrim"></div>
+
+    <div class="topline" id="tl" data-optional><b id="tlb"></b><span class="bar" id="tlbar"></span><span class="h" id="tlh"></span></div>
+    <div class="kicker" id="kk" data-optional>__KICKER__</div>
+    <div class="headline" id="hl"></div>
+
+    <div class="subject" id="subj"><img id="subjimg" alt=""></div>
+    <div class="logo" id="logo"></div>
+
+    <div class="sub" id="sub" data-optional>__SUBTITLE__</div>
+    <div class="content" id="ct" data-optional>__CONTENT__</div>
+
+    <div class="cta" id="cta">
+      <div class="pill" id="pill" data-optional>__CTA_PILL__<span data-optional>__CTA_SOFT__</span></div>
+      <div class="micro" data-optional>__MICROCOPY__</div>
+    </div>
+
+    <div class="rail">
+      <div class="n">__INDEX__ / __TOTAL__</div>
+      <div class="credit" id="credit"></div>
+      <div class="cue" id="cue">Swipe<svg viewBox="0 0 34 12"><path d="M0 6h31M26 1l5 5-5 5" fill="none" stroke="#FFFFFF" stroke-width="2"/></svg></div>
+    </div>
+    <div class="grain"></div>
+    __MASCOT__
+
+    <!-- fields this style does not draw; kept so every renderer placeholder is consumed -->
+    <div class="hidden" aria-hidden="true">__HEADLINE__ __HERO_WORD__ __TOPIC_TAG__ __BRAND_LABEL__ __HANDLE__
+      __TAGLINE__ __META1__ __META2__ __META3__</div>
+  </div>
+
+  <script>
+  (function(){
+    var S = __SLIDE_JSON__, P = __PLAN_JSON__;
+    var st = document.getElementById('st');
+    var BG = "__BG__", SUBJ = "__SUBJECT__", LOGO = "__LOGO__";
+
+    // ---- world: sky photo or the navy field ----
+    if (BG && S.layout !== 'field'){ st.classList.add('photo'); document.getElementById('sky').src = BG; }
+    if (S.bg_pos) st.style.setProperty('--bgpos', S.bg_pos);
+    if (S.scrim != null) st.style.setProperty('--scrim-top', S.scrim);
+    if (S.scrim_bottom != null) st.style.setProperty('--scrim-bottom', S.scrim_bottom);
+    if (S.content_bottom != null) st.style.setProperty('--content-bottom', S.content_bottom + 'px');
+    if (S.cta_bottom != null) st.style.setProperty('--cta-bottom', S.cta_bottom + 'px');
+    if (S.head_top != null) st.style.setProperty('--head-top', S.head_top + 'px');
+
+    // ---- top line: bold category | handle ----
+    var cat = S.topic_tag || P.brand_label || '', handle = P.handle || '';
+    document.getElementById('tlb').textContent = cat;
+    document.getElementById('tlh').textContent = handle;
+    if (!cat || !handle) document.getElementById('tlbar').style.display = 'none';
+
+    // ---- rail: credit + swipe cue (hidden on the last slide) ----
+    document.getElementById('credit').textContent = S.credit || '';
+    if (S.cue === false || S.index === P.total) document.getElementById('cue').style.visibility = 'hidden';
+
+    // ---- headline lines ("|" or newline breaks); the accent word gets wrapped ----
+    var hl = document.getElementById('hl');
+    var lines = String(S.headline || '').split(/\s*\|\s*|\n/).filter(Boolean);
+    var hw = String(S.hero_word || '').trim().toUpperCase(), hwDone = false;
+    lines.forEach(function(t){
+      var ln = document.createElement('span'); ln.className = 'ln';
+      var up = t.toUpperCase(), i = hw && !hwDone ? up.search(new RegExp('\\b' + hw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\b')) : -1;
+      if (i >= 0){
+        ln.appendChild(document.createTextNode(t.slice(0, i)));
+        var w = document.createElement('span'); w.className = 'hw'; w.textContent = t.slice(i, i + hw.length);
+        ln.appendChild(w); ln.appendChild(document.createTextNode(t.slice(i + hw.length)));
+        hwDone = true;
+      } else ln.textContent = t;
+      hl.appendChild(ln);
+    });
+
+    // hide empty optional blocks
+    document.querySelectorAll('[data-optional]').forEach(function(el){
+      if(!el.textContent.trim() && !el.querySelector('img,svg')) el.classList.add('empty');
+    });
+    if (document.getElementById('pill').classList.contains('empty')) document.getElementById('cta').style.display = 'none';
+
+    // ---- subject cutout: aligned to the photo, or placed in a box ----
+    if (SUBJ){
+      var sj = document.getElementById('subj'), si = document.getElementById('subjimg');
+      si.src = SUBJ; sj.style.display = 'block';
+      var b = S.subject_box;
+      if (b){ sj.classList.add('boxed'); sj.style.width = b.w + 'px'; sj.style.left = (b.x - b.w/2) + 'px';
+              if (b.bottom != null) sj.style.bottom = b.bottom + 'px'; else sj.style.top = (b.y || 0) + 'px';
+              if (b.rot) sj.style.transform = 'rotate(' + b.rot + 'deg)';
+              if (b.flip) si.style.transform = 'scaleX(-1)'; }
+      else sj.classList.add('aligned');
+    }
+    // ---- the real logo (knowledge/logos.md): never redrawn, only placed ----
+    if (LOGO && S.logo_box){
+      var lg = document.getElementById('logo'), L = S.logo_box, img = '<img src="' + LOGO + '" alt="">';
+      lg.innerHTML = L.frame ? '<div class="screen">' + img + '</div>' : img;
+      if (L.frame) lg.classList.add('framed');
+      lg.style.display = 'block'; lg.style.width = L.w + 'px';
+      lg.style.left = (L.x - L.w/2) + 'px'; lg.style.top = L.y + 'px';
+      lg.style.transform = 'perspective(900px) rotateY(' + (L.ry||0) + 'deg) rotate(' + (L.rot||0) + 'deg)';
+    }
+
+    // ---- grain for the navy field ----
+    (function(){
+      var c = document.createElement('canvas'); c.width = c.height = 240;
+      var x = c.getContext('2d'), seed = (S.index||1) * 7919 + 17;
+      function r(){ seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed/0x7fffffff; }
+      var d = x.createImageData(240,240);
+      for (var i=0;i<d.data.length;i+=4){ var v = 128 + (r()-.5)*140; d.data[i]=d.data[i+1]=d.data[i+2]=v; d.data[i+3]=255; }
+      x.putImageData(d,0,0);
+      st.style.setProperty('--grain','url(' + c.toDataURL() + ')');
+    })();
+
+    // ---- layout once the real fonts are in ----
+    document.fonts.ready.then(function(){
+      var lns = hl.querySelectorAll('.ln'), n = lns.length;
+      var maxW = 1080 * (S.head_w || 0.86), last = null;
+      // fit the last line to maxW, earlier lines to ~93% of it but never above 64% of its size
+      function fit(el, target, cap){
+        var size = 100; el.style.fontSize = size + 'px';
+        for (var k=0;k<24;k++){ var w = el.getBoundingClientRect().width, rr = target / w;
+          if (Math.abs(rr-1) < .004) break; size = Math.min(cap, size*rr); el.style.fontSize = size + 'px'; if (size >= cap) break; }
+        return size;
+      }
+      if (n){ last = fit(lns[n-1], maxW, S.head_max || 300);
+        for (var j=0;j<n-1;j++) fit(lns[j], maxW*0.93, last * (S.head_ratio || 0.64)); }
+
+      // kicker sits just above the headline
+      var kk = document.getElementById('kk');
+      if (!kk.classList.contains('empty')) kk.style.top = (hl.offsetTop - 34) + 'px';
+
+      // the brush re-write, centred over the accent word
+      var w = hl.querySelector('.hw');
+      if (w){
+        var r = w.getBoundingClientRect(), br = document.createElement('div');
+        br.className = 'brush'; br.textContent = w.textContent;
+        var cap = parseFloat(getComputedStyle(w.parentElement).fontSize);
+        br.style.fontSize = (cap * (S.brush_scale || 1.0)) + 'px';
+        st.appendChild(br);
+        // the brush re-writes the word, it does not run past it: at most ~1.12x the
+        // word's width — squeeze a little first (brush lettering tolerates it), then shrink
+        var maxBW = r.width * (S.brush_w || 1.12), sx = 1;
+        var bw0 = br.getBoundingClientRect().width;
+        if (bw0 > maxBW){
+          sx = Math.max(.82, maxBW / bw0);
+          if (bw0 * sx > maxBW) br.style.fontSize = (parseFloat(br.style.fontSize) * maxBW / (bw0 * sx)) + 'px';
+        }
+        var bw = br.getBoundingClientRect(), sr = st.getBoundingClientRect();
+        var vis = bw.width * sx;
+        var left = r.left - sr.left + (r.width - bw.width)/2 + (S.brush_dx||0);
+        // keep the painted word inside the frame
+        var lo = 34 - (bw.width - vis)/2, hi = 1080 - 34 - (bw.width + vis)/2;
+        left = Math.max(lo, Math.min(hi, left));
+        br.style.left = left + 'px';
+        br.style.top  = (r.top - sr.top + (r.height - bw.height)/2 + cap*0.06 + (S.brush_dy||0)) + 'px';
+        br.style.transform = 'rotate(' + (S.brush_rot != null ? S.brush_rot : -6) + 'deg) skewX(-8deg) scaleX(' + sx + ')';
+      }
+
+      // subtitle flows under the headline
+      var hb = hl.offsetTop + hl.offsetHeight;
+      var sub = document.getElementById('sub');
+      if (!sub.classList.contains('empty')) sub.style.top = (S.sub_top != null ? S.sub_top : hb + (S.sub_gap || 34)) + 'px';
+
+      // proof placement: photo slides anchor it low (the sky stays open); field slides
+      // centre it in the space left under the subtitle so no dead band opens up
+      var ct = document.getElementById('ct');
+      if (!ct.classList.contains('empty') && (S.content_place || (st.classList.contains('photo') ? 'bottom' : 'center')) === 'center'){
+        var above = sub.classList.contains('empty') ? hb : sub.offsetTop + sub.offsetHeight;
+        var railTop = 1350 - 44 - 30, h = ct.offsetHeight;
+        ct.style.bottom = 'auto';
+        ct.style.top = Math.round(above + Math.max(40, (railTop - above - h) / 2)) + 'px';
+      }
+      // scrim: on photo slides the navy wash reaches just past the last line of type,
+      // so white text never sits on a bright cloud (sheet: sky deepens toward the top)
+      if (st.classList.contains('photo')){
+        var typeBottom = sub.classList.contains('empty') ? hb : sub.offsetTop + sub.offsetHeight;
+        var t = S.scrim != null ? S.scrim : .62, m = S.scrim_mid != null ? S.scrim_mid : (sub.classList.contains('empty') ? .22 : .44);
+        var stop = Math.min(80, (typeBottom + 30) / 13.5), fade = Math.min(92, stop + 16);
+        var bot = S.scrim_bottom != null ? S.scrim_bottom : .5;
+        document.querySelector('.scrim').style.background = 'linear-gradient(180deg,' +
+          'rgba(31,58,87,' + t + ') 0%, rgba(38,68,100,' + m + ') ' + stop + '%, rgba(44,78,114,0) ' + fade + '%,' +
+          'rgba(44,78,114,0) 80%, rgba(31,58,87,' + bot + ') 100%)';
+      }
+      st.dataset.headBottom = Math.round(hb);
+      window.__ready = true;
+    });
+  })();
+  </script>
+</body>
+</html>

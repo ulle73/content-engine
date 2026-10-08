@@ -1,0 +1,15 @@
+{
+  "_notes": [
+    "Sky-Blue Tech Poster: all type is white; the magenta->orange gradient is reserved for the ONE brush accent word (and real brand marks), so it never touches a chart.",
+    "Marks: emphasis = white #FFFFFF (the series that matters) vs muted = darkened sky #7F9DBC, on a deepened-navy plate #1F3A57 (the sheet's navy #2C4E72 pushed darker for the panel only).",
+    "validate_palette.js --mode dark --surface #1F3A57: CVD dE 30.5 (protan), normal-vision dE 32.1, both marks >= 3:1. Lightness-band/chroma checks FAIL by design: they are categorical-palette checks and this is an emphasis pair (white + a desaturated sky), same situation as the archival/celestial muted marks; identity never rides colour — every mark is directly labelled in white.",
+    "Ordinal ramp #5A7FA6 -> #E6F0F9 (sky hue): --ordinal ALL CHECKS PASS — monotone L, adjacent dL >= 0.06, hue spread 7 deg, light end 2.79:1."
+  ],
+  "ink": "#FFFFFF", "ink2": "#C3DAEE", "axis": "#9CC0DE",
+  "accent": "#FFFFFF", "muted": "#7F9DBC",
+  "surface": "#1F3A57", "grid": "rgba(255,255,255,.14)",
+  "track": "rgba(255,255,255,.10)", "track_line": "rgba(255,255,255,.18)",
+  "bar_ctx": "#7F9DBC", "baseline": "rgba(255,255,255,.34)",
+  "glow": "", "glow_soft": "", "area_op": ".16", "h_scale": 0.84,
+  "ramp": ["#5A7FA6", "#7F9DBC", "#9CC0DE", "#C3DAEE", "#E6F0F9"]
+}

@@ -1,0 +1,9 @@
+Layout previews for the own-images template (template-own.html).
+Business, handle and copy are FICTIONAL ("Crumb & Crema", @crumbandcrema.demo) — demo only.
+Photos are freely licensed from Wikimedia Commons:
+
+orbit.png       A Man is enjoying a coffee in the coffee shop.jpg — Peachyeung316 — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:A_Man_is_enjoying_a_coffee_in_the_coffee_shop.jpg
+punch.png       Aromas Latte art, Noosa Heads, Queensland.jpg — Kgbo — CC BY-SA 4.0 — https://commons.wikimedia.org/wiki/File:Aromas_Latte_art,_Noosa_Heads,_Queensland.jpg
+editorial.png   Cafe Interior - geograph.org.uk - 4801988.jpg — Bob Harvey — CC BY-SA 2.0 — https://commons.wikimedia.org/wiki/File:Cafe_Interior_-_geograph.org.uk_-_4801988.jpg
+scatter.png     Barista prepares coffee at a busy cafe in the morning with customers waiting for their orders.jpg — Shixart1985 — CC BY 2.0 — https://commons.wikimedia.org/wiki/File:Barista_prepares_coffee_at_a_busy_cafe_in_the_morning_with_customers_waiting_for_their_orders.jpg
+cascade.png     1 1pétrin à spirale eau.jpg — Pancrat — CC BY-SA 3.0 — https://commons.wikimedia.org/wiki/File:1_1p%C3%A9trin_%C3%A0_spirale_eau.jpg

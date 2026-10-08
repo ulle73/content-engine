@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carousel Generator Kit — examples</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#FBFAF7;--ink:#14161A;--soft:#5A6068;--line:#E2DED6;--accent:#E4572E}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);
+       font-family:'Archivo','Helvetica Neue',Arial,sans-serif;padding:56px 6vw 100px}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+           color:var(--accent);margin-bottom:18px}
+  h1{font-size:clamp(38px,5vw,72px);font-weight:900;letter-spacing:-.03em;line-height:1}
+  .lede{font-size:19px;line-height:1.6;color:var(--soft);max-width:70ch;margin-top:20px}
+  .lede b{color:var(--ink);font-weight:600}
+  h2{font-size:13px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+     margin:64px 0 4px;display:flex;gap:14px;align-items:baseline}
+  h2 .n{background:var(--ink);color:#fff;padding:4px 10px;font-size:11px}
+  .hr{height:1.5px;background:var(--ink);opacity:.85;margin-top:12px}
+  .sub{font-size:16px;color:var(--soft);margin:16px 0 22px;max-width:80ch}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+  .row img{width:100%;border-radius:8px;border:1px solid var(--line);
+           box-shadow:0 12px 30px rgba(20,22,26,.13);display:block}
+  footer{margin-top:76px;padding-top:20px;border-top:1.5px solid var(--ink);
+         font-size:14px;color:var(--soft);display:flex;justify-content:space-between;
+         flex-wrap:wrap;gap:12px}
+</style>
+</head>
+<body>
+  <div class="eyebrow">Carousel Generator Kit</div>
+  <h1>Three styles.<br>Same engine.</h1>
+  <p class="lede">Every slide below was built on one machine with <b>no image model and no API key</b>.
+    Backgrounds are painted in code or use freely-licensed photographs; every headline, chart and
+    number is rendered by a template in a real browser. A six-slide set takes about
+    <b>17 seconds</b> and costs nothing.</p>
+
+  <h2><span class="n">01</span> Midnight Bioluminescent</h2><div class="hr"></div>
+  <p class="sub">Backgrounds painted procedurally — a seeded canvas painter draws the field, the light
+    and the flora. Every surface is glass. Topic: the collapse in the price of solar, from Our World in Data.</p>
+  <div class="row">
+    <img src="solar-price-collapse-01.jpg" alt=""><img src="solar-price-collapse-02.jpg" alt="">
+    <img src="solar-price-collapse-04.jpg" alt=""><img src="solar-price-collapse-07.jpg" alt="">
+  </div>
+
+  <h2><span class="n">02</span> Archival Swiss Poster</h2><div class="hr"></div>
+  <p class="sub">One hard seam per slide, the headline oversized and clipped as it crosses it, paper
+    grain across the frame. A different licensed photograph on every slide. Topic: Ferrari's half-year
+    results — fewer cars shipped, more money made.</p>
+  <div class="row">
+    <img src="ferrari-h1-2026-01.jpg" alt=""><img src="ferrari-h1-2026-02.jpg" alt="">
+    <img src="ferrari-h1-2026-04.jpg" alt=""><img src="ferrari-h1-2026-07.jpg" alt="">
+  </div>
+
+  <h2><span class="n">03</span> Celestial Surrealist Collage</h2><div class="hr"></div>
+  <p class="sub">Ionic columns framing every slide, the headline set twice, doves and butterflies
+    crossing three depth layers, a technical grid on top. Topic: the box office of Christopher Nolan's
+    The Odyssey.</p>
+  <div class="row">
+    <img src="odyssey-box-office-01.jpg" alt=""><img src="odyssey-box-office-02.jpg" alt="">
+    <img src="odyssey-box-office-04.jpg" alt=""><img src="odyssey-box-office-07.jpg" alt="">
+  </div>
+
+  <footer>
+    <span>Made with Claude Code</span>
+    <span>Bring your own style sheet — the kit reads it and builds a matching template.</span>
+  </footer>
+</body>
+</html>
