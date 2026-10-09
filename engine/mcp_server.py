@@ -787,4 +787,9 @@ register_motion_tools(mcp, _company, _run, current_django_user, _safe_call)
 from .ad_studio.mcp import register as register_ad_studio_tools
 
 register_ad_studio_tools(mcp, _company, _run, current_django_user, _safe_call)
+
+from .review.mcp import register as register_review_tools
+
+register_review_tools(mcp, _company, _safe_call)
+
 app = build_app()

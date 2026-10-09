@@ -5,6 +5,7 @@ from mcp.types import ToolAnnotations
 
 from engine import product_catalog
 from engine.mcp_db import database_tool
+from engine.review import lessons
 
 from . import blueprints, library, service, skills
 
@@ -13,6 +14,8 @@ FLOW = (
     "0) Börja aldrig från noll: sök i Content Library med search_content_library (mallar, effekter, övergångar, "
     "textbehandlingar, karusellstilar, prompts) och föreslå 2–3 färdiga, snygga kombinationer att utgå från. "
     "Stilen är fri; brand-skillen är ett utgångsläge, inte regler. "
+    "Läs alltid list_lessons först: det är ägarens tidigare betyg och kommentarer (t.ex. 'undvik glitch-övergången'). "
+    "Följ dem, och sökträffar med our_feedback visar vad som gillats/ogillats. "
     "Visar annonsen en produkt eller bana: hitta den med search_products och hämta de riktiga bilderna med "
     "use_product_images (laddas ner först då). Hitta aldrig på hur en produkt ser ut. "
     "1) read_ad_skill: studio (bibliotekets arbetssätt), ad-studio (hur samtalet leds), golfkuponger-brand och relevant domänskill. "
@@ -66,9 +69,9 @@ def register(mcp, company_for, run_for, user_for, safe_call):
         type: template/scene/effect/transition/text/caption/grade/background/carousel/skill/prompt/sound/tool.
         format: 9:16/1:1/4:5/16:9. medium: video/carousel/image/audio/text. Verified items with previews rank first.
         Propose 2-3 combinations (base template + effects + text + sound) and let the user pick."""
-        company_for(company_ref)
+        company = company_for(company_ref)
         return library.search(query, type=type, format=format, medium=medium, kit=kit,
-                              verified_only=verified_only, limit=limit)
+                              verified_only=verified_only, limit=limit, feedback=lessons.library_feedback(company))
 
     @mcp.tool(title="Get content library item", annotations=read)
     @database_tool

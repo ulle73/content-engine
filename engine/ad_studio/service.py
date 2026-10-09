@@ -11,6 +11,7 @@ from pydantic import ValidationError as PydanticValidationError
 from engine.models import Company, MediaAsset
 from engine.operator_common import serialize_asset
 
+from ..review import lessons as review_lessons
 from . import blueprints
 from .brief import AdBrief, BriefNotReady
 from .models import AdDraft, AdFact, AssetTags
@@ -62,6 +63,7 @@ def serialize(draft: AdDraft) -> dict:
         "lockable": not missing and not brief.problems() and not blocked,
         "motion_project_id": str(draft.motion_project_id) if draft.motion_project_id else None,
         "studio_url": studio_url(draft),
+        "lessons": review_lessons.for_prompt(draft.company),
     }
 
 

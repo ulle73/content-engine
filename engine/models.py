@@ -32,6 +32,8 @@ class Company(models.Model):
     official_logo = models.ForeignKey("MediaAsset", null=True, blank=True, on_delete=models.PROTECT, related_name="official_for")
     # Per-company brand kit: colors, font, landing URL and which skills/fact skill apply (engine/motion/brand.py).
     brand = models.JSONField(default=dict, blank=True)
+    # Discord channel where finished videos are posted for 👍/👎, 1–10 and comments (engine/review).
+    review_channel_id = models.CharField(max_length=32, blank=True)
 
     @staticmethod
     def cipher():
@@ -1074,3 +1076,6 @@ from .motion.models import (  # noqa: F401,E402
 
 # Ad Studio: persisted AdBrief drafts and the tagged image bank.
 from .ad_studio.models import AdDraft, AdFact, AssetTags  # noqa: F401,E402
+
+# Review loop: Discord verdicts, 1–10 ratings, comments and the lessons learned from them.
+from .review.models import Lesson, Review, ReviewFeedback  # noqa: F401,E402
