@@ -65,7 +65,8 @@ async function measure(file) {
  * picture: HyperFrames render (H.264, maybe with clip sound). music: optional audio file.
  * Returns {master, preview|null, loudness, masterBytes, previewBytes}.
  */
-export async function finish({ picture, music = null, musicVolume = 1, duration, fps = 30, outDir, previewMax, masterMax }) {
+export async function finish({ picture, music = null, musicVolume = 1, duration, fps = 30, outDir, previewMax, masterMax,
+  outro = null }) {
   const D = Number(duration);
   const pic = await probe(picture);
   const mixFile = join(outDir, 'mix.wav');
@@ -116,13 +117,54 @@ export async function finish({ picture, music = null, musicVolume = 1, duration,
     throw new JobError('invalid_output', `Mastern klarade inte kontrollen (${verified.video?.codec_name}/${verified.video?.pix_fmt}, ${verified.duration.toFixed(2)} s).`);
   }
   const after = loud ? await measure(master) : null;
+  let total = D;
+  let final = master;
+  let finalBytes = masterBytes;
+  if (outro) {
+    ({ file: final, duration: total } = await appendOutro({ master, outro, D, fps, outDir, capKbps,
+      width: Number(verified.video.width), height: Number(verified.video.height) }));
+    finalBytes = statSync(final).size;
+    if (finalBytes > masterMax) throw new JobError('invalid_output', `Mastern med slutbild blev ${(finalBytes / 1e6).toFixed(1)} MB.`);
+  }
   let preview = null;
   let previewBytes = 0;
-  if (masterBytes > previewMax) {
-    preview = await makePreview({ master, D, fps, outDir, previewMax, width: Number(verified.video.width), height: Number(verified.video.height) });
+  if (finalBytes > previewMax) {
+    preview = await makePreview({ master: final, D: total, fps, outDir, previewMax, width: Number(verified.video.width), height: Number(verified.video.height) });
     previewBytes = statSync(preview).size;
   }
-  return { master, preview, masterBytes, previewBytes, loudness: after ? Number(Number(after.input_i).toFixed(1)) : null };
+  return { master: final, preview, masterBytes: finalBytes, previewBytes, duration: total,
+    loudness: after ? Number(Number(after.input_i).toFixed(1)) : null };
+}
+
+/**
+ * Brand outro (slutbild) after the cut: same size/fps, its own original sound untouched (not re-normalized, so the
+ * sonic logo stays identical). Returns {file, duration}.
+ */
+async function appendOutro({ master, outro, D, fps, outDir, capKbps, width, height }) {
+  const info = await probe(outro);
+  if (!info.video) throw new JobError('invalid_output', `Slutbilden saknar bild: ${outro}`);
+  const O = info.duration;
+  const out = join(outDir, 'master-outro.mp4');
+  const outroAudio = info.hasAudio
+    ? `[1:a]aresample=48000,aformat=channel_layouts=stereo,apad,atrim=0:${O},asetpts=PTS-STARTPTS[a1]`
+    : `anullsrc=r=48000:cl=stereo,atrim=0:${O}[a1]`;
+  const graph = [
+    `[0:v]fps=${fps},scale=${width}:${height},setsar=1,format=yuv420p[v0]`,
+    `[1:v]fps=${fps},scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=0x0e1f15,setsar=1,format=yuv420p[v1]`,
+    '[0:a]aresample=48000,aformat=channel_layouts=stereo[a0]',
+    outroAudio,
+    '[v0][a0][v1][a1]concat=n=2:v=1:a=1[v][a]',
+  ];
+  await ffmpeg(['-i', master, '-i', outro, '-filter_complex', graph.join(';'), '-map', '[v]', '-map', '[a]',
+    '-c:v', 'libx264', '-preset', process.env.EDIT_X264_PRESET || 'slow', '-crf', '18', '-maxrate', `${capKbps}k`,
+    '-bufsize', `${capKbps * 2}k`, '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-r', String(fps), '-g', String(fps * 2),
+    '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-ac', '2', '-movflags', '+faststart', out],
+  'render_failed', 'Slutbilden kunde inte läggas till');
+  const verified = await probe(out);
+  if (Math.abs(verified.duration - (D + O)) > 0.25) {
+    throw new JobError('invalid_output', `Videon med slutbild blev ${verified.duration.toFixed(2)} s (väntat ${(D + O).toFixed(2)} s).`);
+  }
+  return { file: out, duration: D + O };
 }
 
 async function makePreview({ master, D, fps, outDir, previewMax, width, height }) {

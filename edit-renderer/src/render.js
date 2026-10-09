@@ -1,11 +1,13 @@
 // One cut: compose the HyperFrames project → lint → render → mix/normalize/encode. Shared by the worker and the CLI.
-import { mkdirSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, mkdirSync, rmSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { compose } from './compose.js';
 import { JobError, finish, probe, run } from './finish.js';
 
 export const HYPERFRAMES = `hyperframes@${process.env.HYPERFRAMES_VERSION || '0.8.140'}`;
+const RENDERER_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const DEFAULT_LIMITS = { master_max_bytes: 80 * 1024 * 1024, preview_max_bytes: Math.floor(9.5 * 1024 * 1024) };
 
 const strip = (s) => s.replace(/\x1b\[[0-9;]*m/g, '');
@@ -89,7 +91,14 @@ export async function renderCut({ spec, brand = {}, files, workDir, logoId = nul
     throw new JobError('render_failed', tail.slice(0, 300), { retryable: true });
   }
   onStage('rendering', 0.85);
+  let outro = null;
+  if (spec.outro?.file) {
+    const path = resolve(RENDERER_ROOT, spec.outro.file);
+    if (path.startsWith(RENDERER_ROOT) && existsSync(path)) outro = path;
+    else warnings.push(`Slutbilden ${spec.outro.file} saknas i renderaren och hoppades över.`);
+  }
   const result = await finish({
+    outro,
     picture, music: spec.music_asset_id ? described[spec.music_asset_id]?.path : null,
     musicVolume: spec.music_volume ?? 1, duration: composed.total, fps: spec.fps || 30, outDir: workDir,
     previewMax: limits.preview_max_bytes, masterMax: limits.master_max_bytes,
@@ -97,7 +106,7 @@ export async function renderCut({ spec, brand = {}, files, workDir, logoId = nul
   onStage('uploading', 0.95);
   return {
     master: result.master, preview: result.preview, warnings, project,
-    meta: { duration_s: composed.total, loudness_lufs: result.loudness, master_bytes: result.masterBytes,
+    meta: { duration_s: result.duration ?? composed.total, outro: outro ? spec.outro.id : null, loudness_lufs: result.loudness, master_bytes: result.masterBytes,
             preview_bytes: result.previewBytes, hyperframes: HYPERFRAMES },
   };
 }

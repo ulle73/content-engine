@@ -354,6 +354,11 @@ def build_manifest(spec: dict) -> dict:
                        "items": [{"id": "edit-renderer.end-card", "type": "scene", "label": "Slutkort med CTA och logga",
                                   "params": {"url": spec["cta"].get("url", "")}}]})
         clock = end
+    if spec.get("outro"):
+        end = clock + float(spec["outro"]["duration_s"])
+        scenes.append({"id": "outro", "start": clock, "end": end, "purpose": "cta", "text": "",
+                       "items": [{"id": spec["outro"]["id"], "type": "scene", "label": spec["outro"]["label"]}]})
+        clock = end
     return {"duration_s": clock, "global": global_items, "scenes": scenes}
 
 

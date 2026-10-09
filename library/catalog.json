@@ -1,8 +1,8 @@
 {
  "version": 1,
  "generated": "2026-10-09",
- "count": 1443,
- "verified": 333,
+ "count": 1444,
+ "verified": 334,
  "by_type": {
   "background": 60,
   "caption": 29,
@@ -15,7 +15,7 @@
   "scene": 186,
   "skill": 60,
   "sound": 47,
-  "template": 97,
+  "template": 98,
   "text": 127,
   "tool": 82,
   "transition": 119
@@ -9966,6 +9966,51 @@
     "playfair"
    ],
    "path": "library/templates/golfkuponger-friskvard-v2/index.html",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – slutbild (logo + ljud)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material (logo-animation och ljud); Caveat Brush (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "ffmpeg",
+    "python"
+   ],
+   "use": "Används automatiskt i varje Golfkuponger-klipp (engine/edit/outros.py). Nya varianter: python library/templates/golfkuponger-outro/render.py --variants <namn> --formats 9x16,4x5,1x1, kopiera till edit-renderer/outros/golfkuponger/ (ljudet orört, pan till stereo utan sänkning).",
+   "notes": "Fem andra varianter finns i build.py (klassisk, glod, stralar, stoft, minimal). Logon friställs matematiskt ur svart (alfa = max-kanal), så guldet är identiskt.",
+   "verified_at": "2026-10-09",
+   "preview": {
+    "video": "edit-renderer/outros/golfkuponger/spotlight-9x16.mp4",
+    "still": "library/previews/golfkuponger-outro-spotlight.jpg"
+   },
+   "id": "golfkuponger.outro.spotlight",
+   "name": "Slutbild Spotlight (4 s, 9:16 + 4:5 + 1:1)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Golfkupongers slutbild som klipps in sist i varje video: originalets svingande logo med originalljudet på mörkgrönt (#0e1f15), scenen öppnas ur mörker med långsam inzoomning, ljussvep och glimt över guldet, \"Mer golf. Fler upplevelser.\" skrivs fram i Caveat Brush med guldpenseldrag. Vald av ägaren 2026-10-09. Färdiga filer i edit-renderer/outros/golfkuponger/ används automatiskt av molnklippningen (brand kit: outro).",
+   "tags": [
+    "golfkuponger",
+    "slutbild",
+    "outro",
+    "end-card",
+    "logo",
+    "sonic-logo",
+    "spotlight",
+    "brand"
+   ],
+   "path": "library/templates/golfkuponger-outro/build.py",
    "status": "verified"
   },
   {
