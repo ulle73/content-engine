@@ -13,6 +13,10 @@ FLOW = (
     "Ad Studio-flöde. Var proaktiv: föreslå hellre en komplett plan som användaren justerar än att ställa många frågor. "
     "0) Börja aldrig från noll: sök i Content Library med search_content_library (mallar, effekter, övergångar, "
     "textbehandlingar, karusellstilar, prompts) och föreslå 2–3 färdiga, snygga kombinationer att utgå från. "
+    "För video: sök först type='recipe' (produktionsrecept per bolag med scener, filmlista-id:n, effekter och "
+    "valfria AI-uppgraderingar; get_content_library_item ger hela receptet) och type='model' (model playbooks: "
+    "vilken AI-modell per scentyp och hur den promptas). Recepten är förslag, inte regler, och fungerar med riktigt "
+    "material utan betald AI. "
     "Stilen är fri; brand-skillen är ett utgångsläge, inte regler. "
     "Läs alltid list_lessons först: det är ägarens tidigare betyg och kommentarer (t.ex. 'undvik glitch-övergången'). "
     "Följ dem, och sökträffar med our_feedback visar vad som gillats/ogillats. "
@@ -65,8 +69,10 @@ def register(mcp, company_for, run_for, user_for, safe_call):
                                medium: str = "", kit: str = "", verified_only: bool = False,
                                limit: int = 15) -> dict:
         """Find ready-made, good-looking starting points before creating anything. Searches every template,
-        effect, transition, text treatment, carousel style, skill and prompt in the Content Library.
-        type: template/scene/effect/transition/text/caption/grade/background/carousel/skill/prompt/sound/tool.
+        effect, transition, text treatment, carousel style, skill, prompt, production recipe and AI-model playbook
+        in the Content Library.
+        type: template/scene/effect/transition/text/caption/grade/background/carousel/skill/prompt/sound/tool/
+        recipe/model.
         format: 9:16/1:1/4:5/16:9. medium: video/carousel/image/audio/text. Verified items with previews rank first.
         Propose 2-3 combinations (base template + effects + text + sound) and let the user pick."""
         company = company_for(company_ref)

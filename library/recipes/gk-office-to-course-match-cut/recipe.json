@@ -1,0 +1,199 @@
+{
+  "schema": "recipe/v1",
+  "id": "gk-office-to-course-match-cut",
+  "company": "golfkuponger",
+  "title": "Kontoret → banan (match cut)",
+  "type": "match-cut",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 15,
+  "hook": "Samma rörelse. Bättre plats.",
+  "why_it_works": "Match cuts är tillfredsställande att titta på och berättar hela budskapet utan ord: samma rörelse, kontoret byts mot banan. Tre par i stigande tempo och ett slow-mo-utslag som final.",
+  "references": [
+    {
+      "label": "Match cut som teknik (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Match_cut"
+    },
+    {
+      "label": "Matchklipp kontor → fritid (sök)",
+      "url": "https://www.tiktok.com/search?q=match%20cut%20office%20to%20golf"
+    },
+    {
+      "label": "Timeplan – kontorsvardag (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=Timeplan&search_type=keyword_unordered"
+    }
+  ],
+  "music": {
+    "mood": "självsäker, rytmisk house/pop med stegring",
+    "bpm": 124,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 1.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-o1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Måndag 09:12",
+      "effects": [
+        "nextphase.zak.caption"
+      ],
+      "transition_in": null,
+      "camera": "Lyfter kaffekoppen – kontor, låst utsnitt",
+      "notes": "Spela in båda halvorna med samma utsnitt och tempo."
+    },
+    {
+      "id": "s2",
+      "purpose": "match",
+      "duration_s": 1.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-o1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "seedance",
+        "prompt_template": "GLOBAL STYLE: warm natural golf film, vertical 9:16, no on-screen text. SCENE: the same person lifts a golf driver instead of a coffee cup on a Swedish golf course. FIRST FRAME: {start_frame} (gpt-image-2 edit of the last office frame: same pose and framing, office replaced by a tee box). CAMERA: locked-off, identical framing to the office shot. PHYSICS: the club shaft stays straight, five fingers per hand. AUDIO: none."
+      },
+      "text": "Fredag 16:30",
+      "effects": [
+        "nextphase.zak.caption",
+        "motion-studio.sound.whoosh"
+      ],
+      "transition_in": "hyperframes.registry.cut-the-curve",
+      "camera": "Lyfter klubban – banan, samma utsnitt",
+      "notes": "Klipp i rörelsens toppfart så att handen 'fortsätter'."
+    },
+    {
+      "id": "s3",
+      "purpose": "match",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-o2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Stänger laptopen",
+      "notes": ""
+    },
+    {
+      "id": "s4",
+      "purpose": "match",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-o2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.whoosh"
+      ],
+      "transition_in": "motion-studio.transition.push-through-match-cut",
+      "camera": "Öppnar bagageluckan med golfbagen",
+      "notes": ""
+    },
+    {
+      "id": "s5",
+      "purpose": "match",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-o3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Går ut genom kontorsdörren",
+      "notes": ""
+    },
+    {
+      "id": "s6",
+      "purpose": "match",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-o3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "Start frame: {start_frame}. A person in casual golf clothes steps onto the first tee of a Swedish golf course in the morning, pine trees and soft mist in the background. Camera: follow from behind at walking pace, steady gimbal. Lighting: soft morning sun. Vertical 9:16. Negative: text, logos, distortion, extra limbs."
+      },
+      "text": "",
+      "effects": [
+        "hyperframes.registry.organic-light-leak-overlay"
+      ],
+      "transition_in": "motion-studio.transition.push-through-match-cut",
+      "camera": "Kliver ut på första tee, samma riktning",
+      "notes": ""
+    },
+    {
+      "id": "s7",
+      "purpose": "payoff",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-g1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Ditt friskvårdsbidrag. Din bana.",
+      "effects": [
+        "nextphase.zak.caption",
+        "nextphase.persa.grade"
+      ],
+      "transition_in": "motion-studio.transition.hard-cut-on-drop",
+      "camera": "Slow-mo utslag bakifrån",
+      "notes": ""
+    },
+    {
+      "id": "s8",
+      "purpose": "cta",
+      "duration_s": 2.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Gör ditt friskvårdsbidrag till golf.",
+      "effects": [
+        "hyperframes.registry.logo-sting"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": ""
+    }
+  ],
+  "cta": {
+    "text": "Gör ditt friskvårdsbidrag till golf – golfkuponger.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Humorn landar utan förklaring – testa på någon som inte sett manuset",
+    "Varje faktapåstående på skärm har fact-id från faktabanken och är verifierat; annars säker formulering",
+    "Inga absoluta deadlines ('alla förlorar 31/12') – F6 gäller per arbetsgivare",
+    "Portal-, app- och kvitto-UI är riktiga skärminspelningar (personuppgifter dolda), aldrig AI",
+    "Text inom 9:16-safe zone, max ~8 ord per skärm, läsbar i 360 px mobilvy",
+    "Klipp på musikens slag; något nytt händer var 2–4 s",
+    "AI-klipp: vision-QA – händer, klubbor som inte böjs, ansikte konsekvent, ingen inbränd text",
+    "Ljud: −14 LUFS, fungerar även helt utan ljud",
+    "Varje matchpar: samma utsnitt, riktning och tempo – klippet syns knappt"
+  ],
+  "status": "draft"
+}

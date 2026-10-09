@@ -1,0 +1,167 @@
+{
+  "schema": "recipe/v1",
+  "id": "gk-friskvard-tips",
+  "company": "golfkuponger",
+  "title": "3 saker om friskvårdsbidraget",
+  "type": "tips",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 20,
+  "hook": "3 saker om friskvårdsbidraget som HR inte hinner berätta.",
+  "why_it_works": "Tips-formatet sparas och delas: konkret nytta i tre steg, en person som pratar direkt till tittaren och riktiga skärminspelningar som bevis. Varje tips är ett verifierat påstående från faktabanken.",
+  "references": [
+    {
+      "label": "Tips-format för förmåner (sök)",
+      "url": "https://www.tiktok.com/search?q=friskvårdsbidrag%20tips"
+    },
+    {
+      "label": "Duolingo – direkt tilltal",
+      "url": "https://www.tiktok.com/@duolingo"
+    }
+  ],
+  "music": {
+    "mood": "lätt, positiv lo-fi under rösten (duckad)",
+    "bpm": 100,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-r5",
+        "bo-4"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "veo-3.1",
+        "prompt_template": "Medium shot, handheld phone-style framing, vertical 9:16. A friendly Swedish woman in her 30s in a bright office kitchen points up and says to the camera in Swedish: \"Tre saker om friskvårdsbidraget som ingen berättar.\" (no subtitles). Ambient noise: quiet office, a coffee machine in the background. No music. No on-screen text."
+      },
+      "text": "3 saker om friskvårdsbidraget som HR inte hinner berätta.",
+      "effects": [
+        "nextphase.short.caption-highlighted"
+      ],
+      "transition_in": null,
+      "camera": "Person pekar uppåt mot texten",
+      "notes": "Egen person föredras; Veo-alternativet är overifierat på svenska."
+    },
+    {
+      "id": "s2",
+      "purpose": "tips 1",
+      "duration_s": 4.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-b3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "1. {fact:F1}",
+      "effects": [
+        "hf-skeletons.pattern.highlight-sweep",
+        "motion-studio.sound.pop"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Skärminspelning: portalen, personuppgifter dolda",
+      "notes": "Bara med verifierad F1 – byt annars tipset."
+    },
+    {
+      "id": "s3",
+      "purpose": "tips 2",
+      "duration_s": 4.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-b2",
+        "gk-k7"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "2. {fact:F2}",
+      "effects": [
+        "hf-skeletons.pattern.highlight-sweep",
+        "motion-studio.sound.pop"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Skärminspelning golfkuponger.se, sedan kvittot",
+      "notes": "Bara med verifierad F2."
+    },
+    {
+      "id": "s4",
+      "purpose": "tips 3",
+      "duration_s": 4.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-s2",
+        "gk-g4"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "A Swedish golf course on an early spring morning, mist over the fairway, dew on the grass, pine trees, nobody playing. Camera: slow low dolly forward along the fairway. Lighting: soft sunrise. Realistic, vertical 9:16. Negative: people, text, logos."
+      },
+      "text": "3. {fact:F5}",
+      "effects": [
+        "hf-skeletons.pattern.highlight-sweep",
+        "motion-studio.sound.pop"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Vårrunda i morgondimma",
+      "notes": "Bara med verifierad F5. AI-alternativet bara som miljö, inga spelare."
+    },
+    {
+      "id": "s5",
+      "purpose": "uppmaning",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-r3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Kolla hur mycket friskvårdsbidrag du har kvar.",
+      "effects": [
+        "nextphase.zak.caption"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Nickar in i kameran",
+      "notes": ""
+    },
+    {
+      "id": "s6",
+      "purpose": "cta",
+      "duration_s": 3.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "golfkuponger.se",
+      "effects": [
+        "hyperframes.registry.logo-sting"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": ""
+    }
+  ],
+  "cta": {
+    "text": "Gör ditt friskvårdsbidrag till golf – golfkuponger.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Humorn landar utan förklaring – testa på någon som inte sett manuset",
+    "Varje faktapåstående på skärm har fact-id från faktabanken och är verifierat; annars säker formulering",
+    "Inga absoluta deadlines ('alla förlorar 31/12') – F6 gäller per arbetsgivare",
+    "Portal-, app- och kvitto-UI är riktiga skärminspelningar (personuppgifter dolda), aldrig AI",
+    "Text inom 9:16-safe zone, max ~8 ord per skärm, läsbar i 360 px mobilvy",
+    "Klipp på musikens slag; något nytt händer var 2–4 s",
+    "AI-klipp: vision-QA – händer, klubbor som inte böjs, ansikte konsekvent, ingen inbränd text",
+    "Ljud: −14 LUFS, fungerar även helt utan ljud",
+    "Alla tre tipsen är verifierade fakta; ett overifierat tips byts ut, inte omformuleras till ett påstående"
+  ],
+  "status": "draft"
+}

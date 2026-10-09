@@ -23,7 +23,13 @@ python library/tools/build_catalog.py          # om catalog.json saknas eller ä
 python library/tools/find.py "<ord från beställningen>" --format 9:16 --limit 20
 python library/tools/find.py "<ord>" --type template --verified
 python library/tools/find.py "<ord>" --type transition
+python library/tools/find.py "<bolag + idé>" --type recipe    # video: produktionsrecept per bolag
+python library/tools/find.py "<scentyp>" --type model         # vilken AI-modell per scen + promptformat
 ```
+
+För **film** börjar du helst i ett recept (`library/recipes/<id>/RECIPE.md` + `recipe.json`): scener med
+filmlista-id:n (`docs/FILMLISTA.md`), effekter, ljud och valfria AI-uppgraderingar per scen. Receptet är ett förslag –
+blanda och bryt fritt.
 
 Sök flera gånger: en **bas** (`template`, `carousel` eller en `skill`), **effekter/övergångar**
 (`effect`, `transition`, `background`, `grade`), **text** (`text`, `caption`), **ljud** (`sound`)

@@ -1,0 +1,159 @@
+{
+  "schema": "recipe/v1",
+  "id": "gk-deadline-31-dec",
+  "company": "golfkuponger",
+  "title": "Innan årsskiftet",
+  "type": "seasonal",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 15,
+  "hook": "Har du friskvårdsbidrag kvar i år?",
+  "why_it_works": "Okt–dec är högsäsong: bidraget ska användas innan året är slut hos många arbetsgivare. En lugn nedräkning skapar brådska utan att skrika, och golfen nästa säsong är belöningen.",
+  "references": [
+    {
+      "label": "Säsongsbrådska för friskvård (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=friskvårdsbidrag&search_type=keyword_unordered"
+    },
+    {
+      "label": "Duolingo – deadline-humor",
+      "url": "https://www.tiktok.com/@duolingo"
+    }
+  ],
+  "music": {
+    "mood": "tickande, framåtlutad elektronisk puls som löser upp sig i något varmt",
+    "bpm": 128,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-s3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Har du friskvårdsbidrag kvar i år?",
+      "effects": [
+        "nextphase.zak.caption"
+      ],
+      "transition_in": null,
+      "camera": "Höstlöv på fairway, något som visar 31 december",
+      "notes": ""
+    },
+    {
+      "id": "s2",
+      "purpose": "nedräkning",
+      "duration_s": 3.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "{dagar_kvar} dagar kvar av året",
+      "effects": [
+        "nextphase.motiongraphics.device-countdown-swap",
+        "motion-studio.sound.tick"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "",
+      "notes": "Räknas från publiceringsdatum till 31/12 – ett datum, inget påstående om bidraget."
+    },
+    {
+      "id": "s3",
+      "purpose": "igenkänning",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-k2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.tick"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Tittar på klockan",
+      "notes": ""
+    },
+    {
+      "id": "s4",
+      "purpose": "vändning",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-s1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "A snow-covered golf green in Sweden in December, the flag moving slightly, gentle snowfall, no people. Camera: slow push-in at ground level. Lighting: grey winter daylight. Realistic, vertical 9:16. Negative: people, text, logos."
+      },
+      "text": "{fact:F6}",
+      "effects": [
+        "nextphase.zak.caption"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Snö på green eller simulator",
+      "notes": "F6 gäller per arbetsgivare. Utan verifierad formulering: 'Innan årsskiftet – kolla med din arbetsgivare.'"
+    },
+    {
+      "id": "s5",
+      "purpose": "belöning",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-s2",
+        "gk-g1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Gör det till golf nästa säsong.",
+      "effects": [
+        "nextphase.zak.caption",
+        "nextphase.persa.grade"
+      ],
+      "transition_in": "motion-studio.transition.hard-cut-on-drop",
+      "camera": "Vårens första utslag i morgondimma",
+      "notes": ""
+    },
+    {
+      "id": "s6",
+      "purpose": "cta",
+      "duration_s": 3.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Kolla hur mycket friskvårdsbidrag du har kvar.\n{fact:F5}",
+      "effects": [
+        "hyperframes.registry.logo-sting"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": "F5 (giltighet nästa säsong) bara om verifierad."
+    }
+  ],
+  "cta": {
+    "text": "Kolla hur mycket friskvårdsbidrag du har kvar – golfkuponger.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Humorn landar utan förklaring – testa på någon som inte sett manuset",
+    "Varje faktapåstående på skärm har fact-id från faktabanken och är verifierat; annars säker formulering",
+    "Inga absoluta deadlines ('alla förlorar 31/12') – F6 gäller per arbetsgivare",
+    "Portal-, app- och kvitto-UI är riktiga skärminspelningar (personuppgifter dolda), aldrig AI",
+    "Text inom 9:16-safe zone, max ~8 ord per skärm, läsbar i 360 px mobilvy",
+    "Klipp på musikens slag; något nytt händer var 2–4 s",
+    "AI-klipp: vision-QA – händer, klubbor som inte böjs, ansikte konsekvent, ingen inbränd text",
+    "Ljud: −14 LUFS, fungerar även helt utan ljud",
+    "Publicera okt–dec; nedräkningen stämmer mot publiceringsdatumet"
+  ],
+  "status": "draft"
+}

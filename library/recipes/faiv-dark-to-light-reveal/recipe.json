@@ -1,0 +1,176 @@
+{
+  "schema": "recipe/v1",
+  "id": "faiv-dark-to-light-reveal",
+  "company": "faiv",
+  "title": "Mörker → ljus",
+  "type": "before-after",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 15,
+  "hook": "Så här mörkt är det.",
+  "why_it_works": "Av → på är det starkaste produktbeviset som finns: tittaren ser skillnaden själv, ingen text behöver övertyga. Låst stativ gör att bara ljuset ändras, och klippet på musikens drop gör ögonblicket fysiskt.",
+  "references": [
+    {
+      "label": "Pilotreferens: Xenonkungen – 'Monterat & Klart' (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=Xenonkungen&search_type=keyword_unordered"
+    },
+    {
+      "label": "RIGID Industries – dag→natt-reveals",
+      "url": "https://www.rigidindustries.com/"
+    },
+    {
+      "label": "Baja Designs – natt-drönare och ljuskäglor",
+      "url": "https://www.bajadesigns.com/"
+    },
+    {
+      "label": "Ultra Vision grillkit-reveal (sök)",
+      "url": "https://www.youtube.com/results?search_query=ultra+vision+grille+kit+reveal"
+    }
+  ],
+  "music": {
+    "mood": "mörk, spänd ambient som bygger mot ett tungt drop när ljuset tänds",
+    "bpm": 100,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-m1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Så här mörkt är det.",
+      "effects": [
+        "nextphase.zak.caption",
+        "motion-studio.sound.room-tone"
+      ],
+      "transition_in": null,
+      "camera": "Låst stativ, låst exponering, bilen i mörker på skogsväg",
+      "notes": "Börja i mörkret från bildruta 0 – ingen logga, ingen intro."
+    },
+    {
+      "id": "s2",
+      "purpose": "spänning",
+      "duration_s": 1.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-m4",
+        "fa-n2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "Dark Swedish forest road at night, a moose warning sign barely visible at the edge of the road, light mist drifting between pine trees, no cars, no people. Camera: slow push-in, tripod height. Lighting: moonless night, very low exposure, cold blue ambience. Realistic, documentary, vertical 9:16. Negative: text, logos, cars, people, blur, distortion."
+      },
+      "text": "",
+      "effects": [
+        "motion-studio.sound.riser"
+      ],
+      "transition_in": null,
+      "camera": "Stilla eller mycket långsam push mot skylten",
+      "notes": "Stämnings-b-roll: AI får göra miljön, men aldrig ljusbilden."
+    },
+    {
+      "id": "s3",
+      "purpose": "reveal",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-m1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.impact",
+        "hyperframes.registry.camera-shake"
+      ],
+      "transition_in": "motion-studio.transition.hard-cut-on-drop",
+      "camera": "Exakt samma utsnitt som s1 – ljuset på",
+      "notes": "Hårt klipp på dropet. Aldrig AI: ljusbilden är ett produktpåstående och måste vara äkta."
+    },
+    {
+      "id": "s4",
+      "purpose": "bevis",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-m3",
+        "fa-m2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Och så här ser det ut med rätt ljus.",
+      "effects": [
+        "nextphase.zak.caption",
+        "hyperframes.registry.grain-overlay"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Ljuskäglan över vägen, reflexstolpar som tänds en efter en",
+      "notes": "Riktig film. Byt till fa-m2 (snö/dimma) under mörkerperioden."
+    },
+    {
+      "id": "s5",
+      "purpose": "produkt",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-p5",
+        "fa-p1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "Start frame: {product_image} (the exact product photo). Extreme macro of the {product} light bar in the grille; the LEDs ignite left to right and a soft bloom builds, then settles. Camera: very slow dolly-in, shallow depth of field. Lighting: dark studio, only the product's own light. The product shape, logo and LED layout stay exactly as in the start frame. Negative: warped text, morphing, extra LEDs, changed logo, blur."
+      },
+      "text": "{product}",
+      "effects": [
+        "hyperframes.registry.light-sweep-pass",
+        "motion-studio.sound.swell"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Makro, slow-mo 120 fps när lampan tänds",
+      "notes": "Produktnamn från produktkatalogen. AI-alternativet startar alltid från det exakta produktfotot (D12)."
+    },
+    {
+      "id": "s6",
+      "purpose": "cta",
+      "duration_s": 3.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Montering i Kungälv · faiv.se",
+      "effects": [
+        "nextphase.short.logo-blur-reveal",
+        "motion-studio.sound.shimmer"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": "Grafit #2d2d2d, vit text, signalröd #ff1a1a som enda accent."
+    }
+  ],
+  "cta": {
+    "text": "Hitta rätt ljus för din bil – faiv.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Före/efter-beviset är riktigt filmat med samma bil, plats, stativ och låst exponering – aldrig AI",
+    "Ljuset tänds exakt på musikens slag (±1 bildruta) och klicket hörs",
+    "Inga registreringsskyltar, andra företags loggor eller ansikten utan samtycke",
+    "Varje påstående på skärm kommer från faktabanken (fact-id) och är verifierat, annars bort",
+    "Text inom 9:16-safe zone (mittersta ~70 % av höjden), läsbar i 360 px mobilvy",
+    "Produkten är exakt FAIV:s (från produktkatalogen/egen film), aldrig AI-ritad",
+    "AI-klipp: vision-QA bildruta för bildruta – produktform, logga, händer, inga påhittade detaljer",
+    "Ljud: −14 LUFS, motor/klick/natt-ambiens hörs, fungerar även helt utan ljud"
+  ],
+  "status": "draft"
+}

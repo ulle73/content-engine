@@ -1,0 +1,166 @@
+{
+  "schema": "recipe/v1",
+  "id": "gk-pov-hr-mail",
+  "company": "golfkuponger",
+  "title": "POV: mejlet från HR",
+  "type": "pov",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 12,
+  "hook": "POV: mejlet från HR om friskvårdsbidraget kommer.",
+  "why_it_works": "POV-formatet sätter tittaren i en situation hen känner igen direkt. Notisen är en igenkänningskrok, reaktionen är humorn och matchklippet från laptop till golfbag är lösningen – på 12 sekunder.",
+  "references": [
+    {
+      "label": "POV-format (sök)",
+      "url": "https://www.tiktok.com/search?q=pov%20mejl%20från%20hr"
+    },
+    {
+      "label": "Duolingo – notis-humor",
+      "url": "https://www.tiktok.com/@duolingo"
+    },
+    {
+      "label": "Timeplan (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=Timeplan&search_type=keyword_unordered"
+    }
+  ],
+  "music": {
+    "mood": "snabb, studsig pop med tydligt slag på reaktionen",
+    "bpm": 120,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-k6"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "POV: mejlet från HR kommer",
+      "effects": [
+        "nextphase.short.liquid-glass-notification",
+        "motion-studio.sound.chime"
+      ],
+      "transition_in": null,
+      "camera": "Mobilen i handen, notisen glider in",
+      "notes": "Mejlet är en fejkad skärm byggd i HTML – aldrig AI-UI, inga riktiga namn."
+    },
+    {
+      "id": "s2",
+      "purpose": "reaktion",
+      "duration_s": 1.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-r1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "seedance",
+        "prompt_template": "GLOBAL STYLE: bright natural office light, realistic, vertical 9:16, no on-screen text. SCENE: a Swedish office worker in their 30s looks up from their phone with a sudden 'oh no' realisation. FIRST FRAME: {start_frame}. CAMERA: static medium close-up, quick subtle push-in. PHYSICS: natural facial motion, no exaggerated expressions. AUDIO: none."
+      },
+      "text": "",
+      "effects": [
+        "hyperframes.registry.beat-freeze-cut",
+        "motion-studio.sound.impact"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Halvnära, aha-ansikte",
+      "notes": "Frys på reaktionen i 6 bildrutor."
+    },
+    {
+      "id": "s3",
+      "purpose": "insikt",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-k7",
+        "gk-k2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "…du har bidrag kvar.",
+      "effects": [
+        "nextphase.zak.caption"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Lönespec utan siffror, blick på klockan",
+      "notes": ""
+    },
+    {
+      "id": "s4",
+      "purpose": "beslut",
+      "duration_s": 1.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-o2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.whoosh"
+      ],
+      "transition_in": "hyperframes.registry.cut-the-curve",
+      "camera": "Stänger laptopen → öppnar bagageluckan med golfbagen",
+      "notes": "Matchklipp i rörelsens toppfart."
+    },
+    {
+      "id": "s5",
+      "purpose": "payoff",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-g1",
+        "gk-g3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Gör det till golf.",
+      "effects": [
+        "nextphase.zak.caption",
+        "nextphase.persa.grade"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Slow-mo utslag, putten går i med ljud",
+      "notes": "Riktig golffilm – AI-svingar ser ofta fel ut."
+    },
+    {
+      "id": "s6",
+      "purpose": "cta",
+      "duration_s": 2.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Sök på Golfkuponger i din förmånsportal\n{fact:F1}",
+      "effects": [
+        "hyperframes.registry.logo-sting"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": "Visa bara med verifierad F1. Annars: 'Kolla hur mycket friskvårdsbidrag du har kvar.'"
+    }
+  ],
+  "cta": {
+    "text": "Sök på Golfkuponger i din förmånsportal",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Humorn landar utan förklaring – testa på någon som inte sett manuset",
+    "Varje faktapåstående på skärm har fact-id från faktabanken och är verifierat; annars säker formulering",
+    "Inga absoluta deadlines ('alla förlorar 31/12') – F6 gäller per arbetsgivare",
+    "Portal-, app- och kvitto-UI är riktiga skärminspelningar (personuppgifter dolda), aldrig AI",
+    "Text inom 9:16-safe zone, max ~8 ord per skärm, läsbar i 360 px mobilvy",
+    "Klipp på musikens slag; något nytt händer var 2–4 s",
+    "AI-klipp: vision-QA – händer, klubbor som inte böjs, ansikte konsekvent, ingen inbränd text",
+    "Ljud: −14 LUFS, fungerar även helt utan ljud"
+  ],
+  "status": "draft"
+}

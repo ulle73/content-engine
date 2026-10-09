@@ -1,0 +1,160 @@
+{
+  "schema": "recipe/v1",
+  "id": "faiv-customer-reaction",
+  "company": "faiv",
+  "title": "Kundens reaktion – hur blev det?",
+  "type": "testimonial",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 15,
+  "hook": "Vi frågade: hur blev det?",
+  "why_it_works": "En riktig kund med egna ord är mer trovärdig än all reklamtext. Bästa repliken först, sedan ögonblicket när ljuset tänds – reaktionen säljer.",
+  "references": [
+    {
+      "label": "Kundreaktioner på extraljus (sök)",
+      "url": "https://www.tiktok.com/search?q=extraljus%20reaktion"
+    },
+    {
+      "label": "Diode Dynamics – kundklipp",
+      "url": "https://www.diodedynamics.com/"
+    },
+    {
+      "label": "Ekstralys (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=Ekstralys&search_type=keyword_unordered"
+    }
+  ],
+  "music": {
+    "mood": "varm, enkel gitarr/pianobädd under rösten (duckad)",
+    "bpm": 92,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-h2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "\"{citat}\"",
+      "effects": [
+        "nextphase.short.caption-weight-shift"
+      ],
+      "transition_in": null,
+      "camera": "Halvbild, kunden vid sin bil",
+      "notes": "Börja med kundens bästa mening. Fråga om samtycke först."
+    },
+    {
+      "id": "s2",
+      "purpose": "miljö",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-n4",
+        "fa-v4"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "Small Swedish car workshop at dusk, garage door half open, warm practical lights inside, wet asphalt outside, no people, no logos, no licence plates. Camera: slow crane down from the roof edge to eye level. Lighting: blue hour outside, warm inside. Realistic, vertical 9:16. Negative: text, logos, people, distortion."
+      },
+      "text": "",
+      "effects": [],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Verkstaden i kvällsljus",
+      "notes": "Bara miljön får vara AI – aldrig kunden."
+    },
+    {
+      "id": "s3",
+      "purpose": "ögonblicket",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-m1",
+        "fa-f2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.impact"
+      ],
+      "transition_in": "motion-studio.transition.hard-cut-on-drop",
+      "camera": "Kunden tänder ljuset / tittar ut i mörkret",
+      "notes": "Riktig film."
+    },
+    {
+      "id": "s4",
+      "purpose": "kommentar",
+      "duration_s": 4.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-h2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "{citat_fortsättning}",
+      "effects": [
+        "nextphase.short.caption-weight-shift"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "",
+      "notes": "Ordsynkade captions från transkriptionen; korta pauser trimmas bort."
+    },
+    {
+      "id": "s5",
+      "purpose": "bekräftelse",
+      "duration_s": 1.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-h1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Tummen upp",
+      "notes": ""
+    },
+    {
+      "id": "s6",
+      "purpose": "cta",
+      "duration_s": 2.5,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Montering i Kungälv · faiv.se",
+      "effects": [
+        "hyperframes.registry.logo-sting"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": ""
+    }
+  ],
+  "cta": {
+    "text": "Boka montering – faiv.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Före/efter-beviset är riktigt filmat med samma bil, plats, stativ och låst exponering – aldrig AI",
+    "Ljuset tänds exakt på musikens slag (±1 bildruta) och klicket hörs",
+    "Inga registreringsskyltar, andra företags loggor eller ansikten utan samtycke",
+    "Varje påstående på skärm kommer från faktabanken (fact-id) och är verifierat, annars bort",
+    "Text inom 9:16-safe zone (mittersta ~70 % av höjden), läsbar i 360 px mobilvy",
+    "Produkten är exakt FAIV:s (från produktkatalogen/egen film), aldrig AI-ritad",
+    "AI-klipp: vision-QA bildruta för bildruta – produktform, logga, händer, inga påhittade detaljer",
+    "Ljud: −14 LUFS, motor/klick/natt-ambiens hörs, fungerar även helt utan ljud",
+    "Kunden har godkänt att synas och att citatet används i reklam"
+  ],
+  "status": "draft"
+}

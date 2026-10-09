@@ -1,0 +1,193 @@
+{
+  "schema": "recipe/v1",
+  "id": "faiv-winter-mood",
+  "company": "faiv",
+  "title": "Vintermörker",
+  "type": "mood",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 20,
+  "hook": "Mörkret kommer.",
+  "why_it_works": "Säsongsfilm för sep–feb: stämningen gör jobbet, inte säljtexten. Älgvinkeln vänder rädslan till en lösning och ljuset blir befrielsen. Fungerar organiskt och som annons under mörkerperioden.",
+  "references": [
+    {
+      "label": "Baja Designs – natt-drönare",
+      "url": "https://www.bajadesigns.com/"
+    },
+    {
+      "label": "RIGID Industries – nattmiljöer",
+      "url": "https://www.rigidindustries.com/"
+    },
+    {
+      "label": "Nordiska extraljusannonser (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=extraljus&search_type=keyword_unordered"
+    }
+  ],
+  "music": {
+    "mood": "kall, filmisk ambient med långsam stråk-/synthsvällning och ett tungt slag vid ljuset",
+    "bpm": 80,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-n1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "Empty winter road through a dark Swedish pine forest at dusk, fresh snow, no cars, no people. Camera: slow aerial drone push forward along the road, slight descent. Lighting: deep blue dusk, very low light. Cinematic, realistic, vertical 9:16. Negative: text, logos, cars."
+      },
+      "text": "Mörkret kommer.",
+      "effects": [
+        "nextphase.zak.caption",
+        "hyperframes.registry.grain-overlay",
+        "motion-studio.sound.room-tone"
+      ],
+      "transition_in": null,
+      "camera": "Drönare eller låg följekamera längs vägen",
+      "notes": ""
+    },
+    {
+      "id": "s2",
+      "purpose": "hot",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-n2",
+        "fa-m4"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "A Swedish moose warning sign beside a dark snowy road at night, faint snowfall. Camera: slow push-in. Lighting: moonless, cold, minimal. Realistic, vertical 9:16. Keep the sign's shape plain; no readable text."
+      },
+      "text": "Det är inte älgen du ska oroa dig för.",
+      "effects": [
+        "nextphase.zak.caption"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Långsam push mot skylten",
+      "notes": ""
+    },
+    {
+      "id": "s3",
+      "purpose": "hot",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-n3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "Northern lights over a snowy forest clearing in Sweden, slow green ribbons moving. Camera: static wide shot, slight tilt up. Realistic long-exposure look, vertical 9:16."
+      },
+      "text": "Det är att du inte ser den.",
+      "effects": [
+        "nextphase.zak.caption"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "Norrsken, stativ",
+      "notes": ""
+    },
+    {
+      "id": "s4",
+      "purpose": "ljus",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-m2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.boom",
+        "hyperframes.registry.camera-shake"
+      ],
+      "transition_in": "motion-studio.transition.hard-cut-on-drop",
+      "camera": "Stativ i snö/dimma, ljuset på",
+      "notes": "Aldrig AI – produktbeviset."
+    },
+    {
+      "id": "s5",
+      "purpose": "rörelse",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-b3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.whoosh"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Bilen kör förbi, motorljud",
+      "notes": ""
+    },
+    {
+      "id": "s6",
+      "purpose": "andning",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-b4"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "Start frame: {start_frame} (real still of the parked car with lights on in the snow). Gentle snowfall drifts through the light beams; nothing else moves. Camera: very slow push-in. Car and lights stay exactly as in the start frame. Negative: morphing, extra lights, text."
+      },
+      "text": "",
+      "effects": [
+        "hyperframes.registry.light-sweep-pass"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Parkerad i snö, ljuset på, långsam push",
+      "notes": "Cinemagraph-uppgradering: AI rör bara snön runt ett riktigt foto."
+    },
+    {
+      "id": "s7",
+      "purpose": "cta",
+      "duration_s": 3.5,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Extraljus, grillkit och arbetsljus. Montering i Kungälv.",
+      "effects": [
+        "nextphase.short.logo-blur-reveal",
+        "motion-studio.sound.shimmer"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": ""
+    }
+  ],
+  "cta": {
+    "text": "Rusta bilen för mörkret – faiv.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Före/efter-beviset är riktigt filmat med samma bil, plats, stativ och låst exponering – aldrig AI",
+    "Ljuset tänds exakt på musikens slag (±1 bildruta) och klicket hörs",
+    "Inga registreringsskyltar, andra företags loggor eller ansikten utan samtycke",
+    "Varje påstående på skärm kommer från faktabanken (fact-id) och är verifierat, annars bort",
+    "Text inom 9:16-safe zone (mittersta ~70 % av höjden), läsbar i 360 px mobilvy",
+    "Produkten är exakt FAIV:s (från produktkatalogen/egen film), aldrig AI-ritad",
+    "AI-klipp: vision-QA bildruta för bildruta – produktform, logga, händer, inga påhittade detaljer",
+    "Ljud: −14 LUFS, motor/klick/natt-ambiens hörs, fungerar även helt utan ljud"
+  ],
+  "status": "draft"
+}
