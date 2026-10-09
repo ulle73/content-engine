@@ -1,0 +1,20 @@
+{
+  "company": "golfkuponger",
+  "aliases": ["golfkuponger"],
+  "source": "work/references/round-2/FOLLOW-LIST.md (2026-10-09), godkänd av ägaren",
+  "instagram": [
+    {"name": "Melkers / ICA Supermarket Rimforsa", "username": "melkersqueensofficial", "why": "Återkommande karaktärer och julkalender – mall för en serie."},
+    {"name": "St. André Golf", "username": "standregolf", "why": "Golfsketcher med betalda varumärkessamarbeten."},
+    {"name": "Corporate Natalie", "username": "corporatenatalie", "why": "Kontors-/POV-sketcher med partnerannonser."},
+    {"name": "Duolingo", "username": "duolingo", "why": "Maskot och påminnelse som underhållning."}
+  ],
+  "ad_pages": [
+    {"name": "Grillkliniken", "page_id": "735544842985326", "country": "SE"},
+    {"name": "Float In Space", "page_id": "100085907209113", "country": "SE"}
+  ],
+  "later": {
+    "tiktok": ["timeplango", "melkersqueens", "aftonbladet", "coltinscottgolf", "standregolf", "corporatenatalie", "duolingo", "teemate_app", "hagabadet"],
+    "facebook_pages_without_id": ["https://www.facebook.com/EpassiSwe/", "https://www.facebook.com/halsoresurs/", "https://www.facebook.com/edenredsweden/", "https://www.facebook.com/Hagabadet/", "https://www.facebook.com/61564911711913/"]
+  },
+  "keywords": ["friskvårdsbidrag", "kontorshumor", "jobbhumor", "golfhumor"]
+}

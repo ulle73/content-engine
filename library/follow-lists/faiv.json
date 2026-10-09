@@ -1,0 +1,34 @@
+{
+  "company": "faiv",
+  "aliases": ["faiv", "f.a.i.v", "f.a.i.v.", "fordonsanpassning i väst", "fordonsanpassning i väst ab"],
+  "source": "work/references/round-2/FOLLOW-LIST.md (2026-10-09), godkänd av ägaren",
+  "instagram": [
+    {"name": "Ljusgiganten.se", "username": "ljusgiganten.se", "why": "Kund-/ambassadörsvideor från förarplatsen i mörker."},
+    {"name": "Ekstralys (NO)", "username": "ekstralys.no", "why": "Mest filmiska konkurrenten; säljer Lumen-grillkit."},
+    {"name": "Valostore.se", "username": "valostore.se", "why": "Längst körda svenska annonsen; humor med Gunde och Ferry Svan."},
+    {"name": "Xenonkungen", "username": "xenonkungen.se", "why": "'Monterat & Klart' – nästan exakt FAIV:s erbjudande."},
+    {"name": "Crazyride.se", "username": "crazyride.se", "why": "Talking head i lagret som körts i 11 mån."},
+    {"name": "Strands Lighting Division", "username": "strandslightingdivision", "why": "Svenskt varumärke, 53 aktiva annonser."},
+    {"name": "Vparts", "username": "vparts", "why": "Modellspecifik belysning för Volvo."},
+    {"name": "Extraljuskungen", "username": "extraljuskungen", "why": "Bevaka när höstkampanjen startar."},
+    {"name": "Nordic Lights", "username": "nordiclights.ltd", "why": "Finsk B2B-arbetsbelysning."}
+  ],
+  "ad_pages": [
+    {"name": "Ljusgiganten.se", "page_id": "117163235108353", "country": "SE"},
+    {"name": "Ekstralys", "page_id": "133016172910", "country": "NO"},
+    {"name": "Valostore.se", "page_id": "544955162220312", "country": "SE"},
+    {"name": "Xenonkungen", "page_id": "148068018677367", "country": "SE"},
+    {"name": "Crazyride.se", "page_id": "555955787602196", "country": "SE"},
+    {"name": "Strands Lighting Division", "page_id": "180589320860", "country": "SE"},
+    {"name": "Vparts", "page_id": "117043944993835", "country": "SE"},
+    {"name": "Extraljuskungen.se", "page_id": "142879885783949", "country": "SE"},
+    {"name": "Nordic Lights", "page_id": "265299940315882", "country": "FI"},
+    {"name": "FAIV AB (egen sida)", "page_id": "110091915222932", "country": "SE"}
+  ],
+  "later": {
+    "tiktok": [],
+    "facebook_pages_without_id": ["https://www.facebook.com/Lumise.se/", "https://www.facebook.com/mrtuning.se/"],
+    "international_formats": ["Ultra Vision Lighting (ad 1399230835177831)", "Lazer Lamps (ad 796590389919781)", "RIGID", "Baja Designs", "Diode Dynamics"]
+  },
+  "keywords": ["extraljus", "grillkit", "ledramp", "arbetsljus"]
+}
