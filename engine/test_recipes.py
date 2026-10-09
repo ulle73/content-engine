@@ -54,7 +54,6 @@ class RecipeSchemaTests(unittest.TestCase):
                 self.assertEqual(list(data), list(build_catalog.RECIPE_KEYS))
                 for scene in data["scenes"]:
                     self.assertEqual(list(scene), list(build_catalog.SCENE_KEYS))
-                    self.assertNotIn(scene["source"], {"ai_video", "ai_image"})
                 self.assertTrue((path.parent / "RECIPE.md").exists())
 
     def test_playbooks_exist_for_required_models(self):

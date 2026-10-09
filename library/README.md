@@ -100,9 +100,10 @@ klipprytm, text, ljud, varianter, AI-uppgraderingar) + `recipe.json` som maskine
 | `qa` | checklista |
 | `status` | `draft` · `verified` |
 
-Scenregler (kontrolleras av `build_catalog.py`): `source` är `footage` · `product_image` · `graphic` (`ai_video`/`ai_image`
-underkänns – receptet ska fungera med riktigt material; betald AI läggs som `ai_upgrade: {model, prompt_template}` där
-`model` är en mapp i `library/models/`). `footage_ids` måste finnas i `docs/FILMLISTA.md`; `product_image` kräver
+Scenregler (kontrolleras av `build_catalog.py`): `source` är `footage` · `product_image` · `graphic` · `ai_video` · `ai_image`.
+AI som huvudkälla kräver `ai_upgrade: {model, prompt_template}` som beskriver genereringen; för andra källor är
+`ai_upgrade` ett valfritt AI-alternativ för scenen (`model` är en mapp i `library/models/`). De 12 första recepten
+fungerar med enbart eget material, men det är ett val, inte en regel. `footage_ids` måste finnas i `docs/FILMLISTA.md`; `product_image` kräver
 `catalog_query` (produktkatalogen). `effects` är katalog-id:n (effekt, caption, text, grade, sound …) och `transition_in`
 en `transition`-post. Påståenden skrivs som `{fact:F4}` och måste finnas i bolagets faktaskill (`faiv-fakta` /
 `golfkuponger-friskvard`) – de visas bara när faktat är verifierat i appens faktabank. Övriga `{platshållare}` är fria.

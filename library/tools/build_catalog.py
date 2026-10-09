@@ -150,9 +150,8 @@ def _validate_scene(scene, at: str, *, catalog: dict[str, dict], footage: set[st
     source = scene["source"]
     if source not in SCENE_SOURCES:
         problems.append(f"{at}: source='{source}' är inte ett av {sorted(SCENE_SOURCES)}")
-    elif source in {"ai_video", "ai_image"}:
-        problems.append(f"{at}: source='{source}' – receptet ska fungera med riktigt material; "
-                        "lägg betald AI som ai_upgrade (valfri per scen)")
+    elif source in {"ai_video", "ai_image"} and scene.get("ai_upgrade") is None:
+        problems.append(f"{at}: source='{source}' kräver ai_upgrade {{model, prompt_template}} som beskriver genereringen")
     shots = scene["footage_ids"]
     if not (isinstance(shots, list) and all(isinstance(s, str) for s in shots)):
         problems.append(f"{at}: footage_ids måste vara en lista med id:n")
