@@ -86,6 +86,8 @@ class ReviewLoopTests(TestCase):
         self.assertIn("7/10", self.handle("ce:rate:{id}", values=["7"]))
         self.review.refresh_from_db()
         self.assertEqual((self.review.status, self.review.rating), ("approved", 7))
+        state = discord.handle({"custom_id": f"ce:rate:{self.review.pk}", "user": JONAS, "values": ["8"]})["card_content"]
+        self.assertIn("✅ Godkänd av Jonas · ⭐ 8/10", state)
         self.assertIn("1–10", self.handle("ce:rate:{id}", values=["11"]))
 
     def test_comment_becomes_lesson_and_strengthens(self):

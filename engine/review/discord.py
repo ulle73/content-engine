@@ -21,7 +21,7 @@ import httpx
 from . import service
 from .models import Review
 
-DEFAULT_REVIEWERS = "388380559606546432"  # Jonas
+DEFAULT_REVIEWERS = "388380559606546432,1080945367673229362"  # Jonas, colleague
 
 
 def reviewers() -> set[str]:
@@ -46,6 +46,19 @@ def _summary(review: Review) -> str:
     return ("**Byggd av:** " + ", ".join(used)) if used else ""
 
 
+STATUS = {"approved": "✅ Godkänd", "rejected": "❌ Nej", "changes": "✏️ Ändras", "superseded": "🔁 Ersatt av ny version"}
+
+
+def card_content(review: Review, by: str = "") -> str:
+    """Public first line of the card, updated after every verdict so everyone in the channel sees the state."""
+    parts = [f"🎬 **{review.company.name}** · ny video att granska (v{review.version})"]
+    if review.status in STATUS:
+        parts.append(STATUS[review.status] + (f" av {by}" if by and review.status != "superseded" else ""))
+    if review.rating:
+        parts.append(f"⭐ {review.rating}/10")
+    return " · ".join(parts)
+
+
 def card(review: Review) -> dict:
     link = service.video_link(review)
     attach = bool(review.asset.byte_size) and review.asset.byte_size <= upload_limit()
@@ -66,7 +79,7 @@ def card(review: Review) -> dict:
     return {
         "channel_id": review.discord_channel_id or review.company.review_channel_id,
         "message": {
-            "content": f"🎬 **{review.company.name}** · ny video att granska (v{review.version})",
+            "content": card_content(review),
             "embeds": [{"title": review.title[:256], "description": description[:4000], "url": link}],
             "components": [{"type": 1, "components": buttons}, {"type": 1, "components": [rating]}],
         },
@@ -107,7 +120,8 @@ def handle(data: dict) -> dict:
     action, review_id = parts[1], parts[2]
     user = data.get("user") or {}
     if str(user.get("id", "")) not in reviewers():
-        return {"reply": "Du kan se videon men inte godkänna eller betygsätta den."}
+        return {"reply": "Du kan se videon men inte godkänna eller betygsätta den. "
+                         f"Be Jonas lägga till ditt Discord-ID: `{user.get('id', '?')}`"}
     review = Review.objects.select_related("company", "asset").filter(pk=review_id).first() if len(review_id) == 36 else None
     if not review:
         return {"reply": "Videon finns inte längre."}
@@ -116,13 +130,15 @@ def handle(data: dict) -> dict:
     reviewer = {"id": str(user.get("id", "")), "name": str(user.get("name", ""))}
     try:
         if action == "ok":
-            return {"reply": service.decide(review, "approve", reviewer)}
-        if action == "no":
-            return {"reply": service.decide(review, "reject", reviewer)}
-        if action == "rate":
-            return {"reply": service.rate(review, int((data.get("values") or ["0"])[0]), reviewer)}
-        if action in {"notetext", "edittext"}:
-            return {"reply": service.comment(review, data.get("text", ""), reviewer, change=action == "edittext")}
+            reply = service.decide(review, "approve", reviewer)
+        elif action == "no":
+            reply = service.decide(review, "reject", reviewer)
+        elif action == "rate":
+            reply = service.rate(review, int((data.get("values") or ["0"])[0]), reviewer)
+        elif action in {"notetext", "edittext"}:
+            reply = service.comment(review, data.get("text", ""), reviewer, change=action == "edittext")
+        else:
+            return {"reply": "Knappen känns inte igen."}
     except (service.ReviewError, ValueError) as exc:
         return {"reply": str(exc)}
-    return {"reply": "Knappen känns inte igen."}
+    return {"reply": reply, "card_content": card_content(review, reviewer["name"])}
