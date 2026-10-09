@@ -1,0 +1,36 @@
+name: Edit Smoke Test
+# Manual end-to-end check of cloud editing: cuts a short test video from catalog images, renders it on
+# "Edit Render" and posts it to the company's Discord review channel.
+on:
+  workflow_dispatch:
+    inputs:
+      company:
+        description: Bolag
+        default: Golfkuponger
+permissions:
+  contents: read
+  actions: write
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: ${{ secrets.CONTENT_DATABASE_URL }}
+      SECRET_KEY: ${{ secrets.CONTENT_DJANGO_SECRET }}
+      POSTIZ_ENCRYPTION_SECRET: ${{ secrets.CONTENT_POSTIZ_ENCRYPTION_SECRET }}
+      R2_ENDPOINT_URL: ${{ secrets.CONTENT_R2_ENDPOINT_URL }}
+      R2_BUCKET_NAME: ${{ secrets.CONTENT_R2_BUCKET_NAME }}
+      R2_ACCESS_KEY_ID: ${{ secrets.CONTENT_R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.CONTENT_R2_SECRET_ACCESS_KEY }}
+      MEDIA_STORAGE: r2
+      APP_URL: http://127.0.0.1:8765
+      GITHUB_DISPATCH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python manage.py migrate --check
+      - run: python manage.py edit_smoke --company "${{ inputs.company }}"
