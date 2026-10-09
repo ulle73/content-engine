@@ -92,6 +92,7 @@ engine_urls = [
     path("runs/<uuid:run_id>/media/<uuid:asset_id>/delete/", media_views.delete_asset, name="media_delete"),
     path("intelligence/", intelligence_views.intelligence, name="intelligence"),
     path("intelligence/refresh/", intelligence_views.refresh_imports, name="refresh_imports"),
+    path("intelligence/follow-list/", intelligence_views.apply_follow_list, name="apply_follow_list"),
     path("intelligence/accounts/<int:competitor_id>/", intelligence_views.competitor_action, name="competitor_action"),
     path("intelligence/analyze/<int:post_id>/", intelligence_views.analyze_signal, name="analyze_signal"),
     path("runs/<uuid:run_id>/reject/<int:idea_index>/", intelligence_views.reject_idea, name="reject_idea"),
