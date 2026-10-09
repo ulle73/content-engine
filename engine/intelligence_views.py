@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from openai import APIError
 
-from . import apify
+from . import apify, follow_lists
 from .competitors import OPEN_STATUSES, collect_import, instagram_username, start_import
 from .models import Competitor, CompetitorImport, CompetitorPost, ContentEvent, ContentRun
 from .openrouter import OpenRouterError
@@ -89,8 +89,21 @@ def intelligence(request, workspace_id):
             "references": [s for s in signals if s["age_days"] > 7 and s["relative"] and s["relative"] >= 1.5][:4],
             "patterns": recurring_patterns(signals),
             "channel":"organic", "learning":ads_views.overview(company, "organic"),
+            "follow_list": follow_lists.missing(company),
         },
     )
+
+
+@login_required
+@company_required
+@require_POST
+def apply_follow_list(request, workspace_id):
+    """Add the curated start list's missing Instagram accounts and ad pages for this company."""
+    result = follow_lists.apply(request.workspace)
+    messages.success(request, f"Startlistan är tillagd: {result['instagram']} Instagramkonton och {result['ad_pages']} annonssidor.")
+    for error in result["import_errors"]:
+        messages.error(request, f"Kunde inte starta hämtning för {error}")
+    return redirect("engine:intelligence", workspace_id=workspace_id)
 
 
 @login_required

@@ -72,6 +72,14 @@
       <details class="open-section inspiration-disclosure"><summary>Äldre referensinlägg <span class="small">Överpresterat inom sitt konto</span></summary><p class="small">Äldre poster som överpresterat inom sitt konto och format. De är referenser, inte aktuella trendsignaler.</p><div class="reference-list">{% for signal in references %}{% include 'engine/signal_card.html' %}{% endfor %}</div></details>
     {% endif %}
 
+    {% if follow_list.instagram or follow_list.ad_pages %}
+    <section class="open-section follow-list-card" aria-label="Startlista att bevaka">
+      <div class="section-head"><div><span class="insight-section-kicker">Startlista</span><h2>Bevaka utvalda konton</h2>
+        <p class="small">Godkänd referenslista för {{ workspace.name }}: {{ follow_list.instagram|length }} Instagramkonton och {{ follow_list.ad_pages|length }} annonssidor som inte bevakas än. Befintliga konton påverkas inte.</p></div></div>
+      <ul class="small">{% for a in follow_list.instagram %}<li>@{{ a.username }} – {{ a.why }}</li>{% endfor %}{% for p in follow_list.ad_pages %}<li>Annonser: {{ p.name }} ({{ p.country }})</li>{% endfor %}</ul>
+      <form method="post" action="{% url 'engine:apply_follow_list' workspace_id=workspace.pk %}" data-busy-label="Lägger till…">{% csrf_token %}<button type="submit">Lägg till startlistan</button></form>
+    </section>
+    {% endif %}
     <details class="open-section inspiration-accounts-card" id="accounts" {% if editing or form.errors or not competitors %}open{% endif %}>
       <summary>Konton att lära av <span class="small">{{ competitors|length }} konton</span></summary>
       <div class="operations-body">
