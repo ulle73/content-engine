@@ -128,12 +128,18 @@ def fetch_products(company, *, client=None) -> tuple[str, list[dict]]:
             products = reader(client, base)
             if products is not None:
                 return source, products
+        # Say what the shop answered, so a block (e.g. bot protection against cloud IPs) is visible.
+        answers = []
+        for path in ("/wp-json/wc/store/v1/products", "/products.json"):
+            response = client.get(f"{base}{path}")
+            answers.append(f"{path} → {response.status_code} {response.headers.get('content-type', '?').split(';')[0]}")
     except (httpx.HTTPError, ValueError, KeyError) as exc:
         raise CatalogError(f"Kunde inte läsa produkter från {base}: {exc}") from exc
     finally:
         if own:
             client.close()
-    raise CatalogError("Hittade varken WooCommerce- eller Shopify-produkter på webbadressen.")
+    raise CatalogError("Hittade varken WooCommerce- eller Shopify-produkter på webbadressen ("
+                       + "; ".join(answers) + ").")
 
 
 def _image_asset(company, url, *, client, alt_text, tags) -> MediaAsset | None:
