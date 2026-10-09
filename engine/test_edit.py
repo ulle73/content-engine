@@ -101,7 +101,9 @@ class CutSpecTests(EditTestCase):
         joined = "\n".join(warnings)
         self.assertIn("hyperframes.registry.confetti stöds inte av klippmallen", joined)
         self.assertIn("no.such.effect finns inte i biblioteket", joined)
-        self.assertIn("faiv-dark-to-light-reveal finns inte i library/recipes", joined)
+        self.assertNotIn("faiv-dark-to-light-reveal", joined)  # a real recipe in library/recipes
+        _, warnings = cut_spec.validate(self.company, self.spec(recipe_id="faiv-finns-inte"))
+        self.assertIn("faiv-finns-inte finns inte i library/recipes", " | ".join(warnings))
         self.assertEqual(cut_spec.resolve("transitions", "hyperframes.registry.flash-through-white"), "flash")
         self.assertEqual(cut_spec.resolve("effects", "cut.effect.dark-to-light"), "dark-to-light")
 
