@@ -1,9 +1,10 @@
-"""Discord review cards, posted and answered through the owner's existing n8n Discord bot.
+"""Discord review cards, posted and answered through n8n with the dedicated "Content Engine" Discord app.
 
-content-engine never holds the bot token. It sends the finished card to an n8n relay webhook, which uploads the video
-(or links it when it is above Discord's upload limit) with the "AI Radar Discord Bot". Button clicks reach the bot's
-single interactions endpoint in n8n; every custom_id starting with "ce:" is answered there immediately (deferred) and
-forwarded here, so Render's cold start never breaks Discord's 3-second rule.
+content-engine never holds the bot token. It sends the finished card to the n8n workflow "CE – Discord Review
+Publisher", which uploads the video (or links it above Discord's upload limit). Button clicks reach the app's own
+interactions endpoint, the n8n workflow "CE – Discord Interactions": it verifies Discord's signature, answers at once
+(deferred, or a modal for comments) and forwards the click here, so Render's cold start never breaks Discord's
+3-second rule. Both directions are authenticated with the shared CONTENT_N8N_SECRET header.
 
 custom_id protocol:
     ce:ok:<review>      👍 approve          ce:no:<review>        👎 reject
