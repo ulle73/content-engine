@@ -1079,3 +1079,6 @@ from .ad_studio.models import AdDraft, AdFact, AssetTags  # noqa: F401,E402
 
 # Review loop: Discord verdicts, 1–10 ratings, comments and the lessons learned from them.
 from .review.models import Lesson, Review, ReviewFeedback  # noqa: F401,E402
+
+# Cloud editing: cut specs rendered with HyperFrames on GitHub Actions (engine/edit, edit-renderer/).
+from .edit.models import EditJob  # noqa: F401,E402

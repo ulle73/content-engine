@@ -106,6 +106,7 @@ engine_urls = [
 ]
 urlpatterns = [
     path("internal/motion/", include("engine.motion.worker_api")),
+    path("internal/edit/", include("engine.edit.worker_api")),
     path("", views.index, name="dashboard"),
     path("setup/", setup, name="setup"),
     path("accounts/login/", SignInView.as_view(), name="login"),

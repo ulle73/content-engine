@@ -792,4 +792,8 @@ from .review.mcp import register as register_review_tools
 
 register_review_tools(mcp, _company, _safe_call)
 
+from .edit.mcp import register as register_edit_tools
+
+register_edit_tools(mcp, _company, _safe_call)
+
 app = build_app()

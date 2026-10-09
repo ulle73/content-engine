@@ -1,0 +1,31 @@
+name: Edit Renderer CI
+# Builds the cut template from a fixture covering every supported treatment in all formats and runs `hyperframes lint`.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'edit-renderer/**'
+      - '.github/workflows/edit-renderer-ci.yml'
+permissions:
+  contents: read
+jobs:
+  compose-and-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: edit-renderer
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Cache HyperFrames CLI
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm/_npx
+          key: hyperframes-cli-${{ runner.os }}-0.8.140
+      - name: Compose fixtures and lint them
+        working-directory: edit-renderer
+        env:
+          HF_LINT: '1'
+        run: node --test test/*.test.js

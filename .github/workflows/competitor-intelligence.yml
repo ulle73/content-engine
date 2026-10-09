@@ -5,6 +5,8 @@ on:
     - cron: '17 6 * * *'
 permissions:
   contents: read
+  # Lets the step below start the Edit Render workflow for cut jobs nobody picked up (workflow_dispatch).
+  actions: write
 concurrency:
   group: competitor-intelligence
   cancel-in-progress: false
@@ -53,3 +55,10 @@ jobs:
         if: always()
         continue-on-error: true
         run: python manage.py interpret_feedback
+      - name: Wake the cloud editor for queued cut jobs
+        if: always()
+        continue-on-error: true
+        env:
+          GITHUB_DISPATCH_TOKEN: ${{ github.token }}
+        # Discord retries run on Render (they need the public APP_URL); here only requeue + dispatch.
+        run: python manage.py edit_jobs --no-discord

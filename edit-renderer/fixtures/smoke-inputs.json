@@ -1,0 +1,16 @@
+{
+  "about": "Local files for fixtures/smoke-spec.json. Paths are relative to this file. clip-a/clip-b come from `node src/cli.js smoke-media`.",
+  "brand": {
+    "id": "golfkuponger", "name": "Golfkuponger", "background": "#082f27", "foreground": "#ffffff", "accent": "#d6a536",
+    "muted": "#e8f7ef", "paper": "#f8f4ec", "ink": "#111814", "font_family": "Inter, Arial, sans-serif"
+  },
+  "logo_asset_id": "0a6f0f0e-0000-4000-8000-00000000000f",
+  "files": {
+    "0a6f0f0e-0000-4000-8000-00000000000a": {"kind": "video", "path": "../../work/edit-smoke/media/clip-a.mp4"},
+    "0a6f0f0e-0000-4000-8000-00000000000b": {"kind": "image", "path": "../../library/templates/golfkuponger-friskvard-v2/assets/klubb-falsterbo-gk-g.jpg"},
+    "0a6f0f0e-0000-4000-8000-00000000000c": {"kind": "video", "path": "../../work/edit-smoke/media/clip-b.mp4"},
+    "0a6f0f0e-0000-4000-8000-00000000000d": {"kind": "image", "path": "../../library/templates/golfkuponger-friskvard-v2/assets/klubb-bro-hof-slott-g.jpg"},
+    "0a6f0f0e-0000-4000-8000-00000000000e": {"kind": "audio", "path": "../../library/templates/golfkuponger-friskvard-v2/assets/music.wav"},
+    "0a6f0f0e-0000-4000-8000-00000000000f": {"kind": "image", "path": "../../library/templates/golfkuponger-friskvard-v2/assets/golfkuponger-loggan02-2026-04-10-cropped.png"}
+  }
+}
