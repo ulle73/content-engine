@@ -9,6 +9,7 @@ from .company_settings import company_settings, costs
 from .motion import views as motion_views
 from .onboarding import SignInView, setup
 from .performance_views import performance
+from .review import views as review_views
 
 engine_urls = [
     path("annonser/", ad_views.ad_list, name="ad_list"),
@@ -111,5 +112,7 @@ urlpatterns = [
     path("accounts/logout/", LogoutView.as_view(), name="logout"),
     path("health/", lambda request: JsonResponse({"status": "ok"})),
     path("webhooks/higgsfield/", media_views.higgsfield_webhook, name="higgsfield_webhook"),
+    path("webhooks/discord/", review_views.discord_interaction, name="engine_review_discord"),
+    path("review/v/<str:token>/", review_views.video, name="engine_review_video"),
     path("company/<uuid:workspace_id>/", include((engine_urls, "engine"))),
 ]

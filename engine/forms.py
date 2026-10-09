@@ -9,8 +9,9 @@ from .models import Company, MediaAsset
 class BrandForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ["profile", "voice", "current", "source", "valid_until"]
+        fields = ["profile", "voice", "current", "source", "valid_until", "review_channel_id"]
         labels = {
+            "review_channel_id": "Discord-kanal för granskning (kanal-ID)",
             "profile": "Vad gör ni och vilka vill ni nå?",
             "voice": "Klistra in texter som låter som er",
             "current": "Aktuellt just nu",
@@ -48,6 +49,10 @@ class BrandForm(forms.ModelForm):
         for field in ["profile", "voice", "current"]:
             if len(data.get(field, "")) > 16000:
                 self.add_error(field, "Högst 16 000 tecken.")
+        channel = (data.get("review_channel_id") or "").strip()
+        if channel and not channel.isdigit():
+            self.add_error("review_channel_id", "Klistra in kanalens ID (bara siffror): högerklicka kanalen → Kopiera kanal-ID.")
+        data["review_channel_id"] = channel
         raw = {key: data.get(f"brand_{key}") for key in self.BRAND_FIELDS}
         # An untouched color picker posts #000000; treat it as "not set" unless it was saved before.
         kit = self.instance.brand if isinstance(self.instance.brand, dict) else {}

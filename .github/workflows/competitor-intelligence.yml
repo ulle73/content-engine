@@ -49,3 +49,7 @@ jobs:
         if: always()
         continue-on-error: true
         run: python manage.py sync_products
+      - name: Interpret saved review comments into lessons
+        if: always()
+        continue-on-error: true
+        run: python manage.py interpret_feedback

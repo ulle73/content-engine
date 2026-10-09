@@ -84,7 +84,7 @@ Detaljer: kodgranskningen i sessionens underlag; relevanta filer listas per fas 
                                            ▼
                  KVALITETSGRIND  (vision-kritik: poäng ≥ 8 annars om)
                                            ▼
-           GODKÄNN I MOBILEN (Telegram först; tumme + kommentar → omarbetning)
+           GODKÄNN I MOBILEN (Discord; 👍/👎, Ändra, Kommentar, betyg 1–10 → lärdomar)
                                            ▼
            PUBLICERA (Postiz schema) · ANNONS (Meta Marketing API, senare)
                                            ▼
@@ -144,13 +144,13 @@ Produktionsrecept (library: recipes/<typ>)  e.g. "person-presenterar-produkt-vid
 | # | Beslut | Varför | Bortvalt (och varför) |
 |---|---|---|---|
 | D1 | **Viral discovery via Apify** (TikTok-, Instagram-hashtag-/explore- och profilscrapers) i stället för Virlo. | Ägaren har ingen Virlo-nyckel; Apify är redan integrerat, betalas per körning med kostnadstak, täcker TikTok. | Virlo (behåller koden, aktiveras om nyckel finns). Egen scraping utan Apify (skör, ToS-risk). |
-| D2 | **Mobilgodkännande via Telegram-bot först**, PWA i appen senare. | Gratis, notis direkt, spelar video inline, knappar 👍👎 + svar som kommentar, noll appinstallation. | Webb-push/PWA (mer bygge, iOS-begränsningar). E-post (långsamt, ingen inline-video). SMS (kostar, ingen video). |
+| D2 | **Mobilgodkännande i Discord med en egen "Content Engine"-bot i ägarens n8n** (egna flöden: CE – Discord Review Publisher / CE – Discord Interactions). Video bifogas (länk om > uppladdningsgränsen); 👍/👎, ✏️ Ändra, 💬 Kommentar, betyg 1–10. Kommentarer tolkas mot videons manifest → lärdomar per biblioteksobjekt/aspekt. | Ägaren använder redan Discord och n8n; egen app = isolerad från AI Radar (en Discord-app har bara en knapp-endpoint), eget namn, minsta behörighet; bot-token stannar i n8n; n8n svarar Discord direkt så Render-kallstart inte bryter 3-sekundersgränsen. | Telegram (ägaren valde bort). Dela AI Radar-boten via routing i dess flöde (påverkar delat produktionsflöde). Discord direkt mot Render (kallstart > 3 s). |
 | D3 | **Molnrendering med HyperFrames i en container-worker** (Render Background Worker eller Google Cloud Run-jobb), Remotion-workern behålls för befintliga mallar. | HyperFrames är Apache-2.0, kör i headless Chrome + ffmpeg, har inbyggt `cloudrun`/`lambda`-stöd; hela `library/` är HyperFrames. Cloud Run skalar till noll (betalar per rendering). | Bara Remotion (kräver företagslicens för större bolag, katalogen låst). Lokala datorn (bryter "molnet"-målet). |
 | D4 | **Riktig rörlig film = egen bank + AI-video.** Egen media taggas i mediabanken; luckor fylls med AI-video (Kling/Seedance via Higgsfield, ev. Veo) med kostnadsgrind. | Ägarens #1: "riktig filmad video". AI-video för scener vi saknar (t.ex. grill vid bil i solnedgång). | Bara stillbilder + grafik (underkänt av ägaren). Stockvideo (generiskt, licenskrångel). |
 | D5 | **Vision-modell förstår referenser och granskar vår output** (ramar ur videon → beskrivning, poäng). | Text-analys av bildtext missar varför en video fungerar; samma modell kan vara kvalitetsgrind. | Bara bildtext (dagens läge). Människa granskar allt (skalar inte). |
 | D6 | **Lärande i två lager:** (a) snabbt – ägarens tummar + kommentarer och tidiga resultat styr prompts/val direkt; (b) långsamt – ML-modell när data räcker, med media- och krokfeatures. | 80-etikettsgränsen tar månader; ägarens bedömning finns från dag 1 och är högkvalitativ. | Vänta på ML (för långsamt). Sänka gränsen hårt (överanpassning). |
 | D7 | **Säsong/kalender som egen källa** (svenska högtider, friskvård "brinner inne" Q4, golfsäsong, mörkerperiod för extraljus, husbilssäsong). | Starka, förutsägbara köptillfällen för båda bolagen. | Bara trender (missar planerbara toppar). |
-| D8 | **Render: uppgradera webbtjänsten till betald (starter)** när automatiken går live. | Gratisplanen somnar och har tappat formulär; Telegram-webhooks och schema kräver att appen är vaken. | Behålla free (opålitligt). |
+| D8 | **Render: uppgradera webbtjänsten till betald (starter)** när automatiken går live. | Gratisplanen somnar och har tappat formulär; schema och snabba svar på Discord-feedback kräver att appen är vaken. | Behålla free (opålitligt). |
 | D9 | **FAIV får eget brand-/fakta-/skillpaket** och mallar generaliseras per bolag (inget hårdkodat Golfkuponger). | Två bolag med helt olika målgrupp och ton. | Dela Golfkupongers (fel ton/fakta). |
 
 ## 6. Faser (ordning, innehåll, klart-kriterier)
@@ -185,7 +185,10 @@ Varje fas levereras som PR mot `main` med tester och en kort "vad ändrades / hu
 - **Klart när:** varje vecka dyker ≥3 "vår spinn"-förslag per bolag upp automatiskt med länk till originalet och förklaring.
 
 ### Fas 4 – Mobilgodkännande och publicering
-- Telegram-bot (D2): video + text + knappar 👍 / 👎 / ✏️; svar = kommentar → omarbetning → ny version.
+- Discord (D2, `engine/review/`): video + text + 👍 / 👎 / ✏️ Ändra / 💬 Kommentar / 1–10. Varje video har ett manifest
+  (scener, tider, exakta biblioteks-id:n) så att "effekten vid 0:07 är billig" hittar rätt effekt. Kommentaren tolkas
+  till lärdomar (undvik / mer av / justera, med styrka) som rankar biblioteket och följer med varje nytt utkast.
+  Ändra → ny version postas i samma kanal. Betyg 1–10 blir etiketter för lärandet.
 - Godkänt → Postiz-schema i nästa lediga slot (veckoplan 5–7 per bolag).
 - **Klart när:** ägaren kan gå igenom en veckas förslag i mobilen på < 10 minuter; inget publiceras utan tumme.
 
@@ -224,7 +227,7 @@ Varje fas levereras som PR mot `main` med tester och en kort "vad ändrades / hu
 2. Budget per bolag och månad för Apify, AI-video och molnrendering (förslag: start 300–500 kr/bolag/mån, höj när kvaliteten bevisats).
 3. Egen media: finns klipp/foton från banor (Golfkuponger) och bilar/grill/ljus (FAIV)? Var ska de laddas upp?
 4. Vilka konton och annonssidor ska bevakas från start per bolag (vi föreslår en lista att godkänna)?
-5. Telegram ok som första mobilkanal?
+5. ~~Telegram ok som första mobilkanal?~~ Nej: Discord via befintlig n8n-bot (beslutat 2026-10-09).
 
 ## 9. Utmana planen
 
@@ -240,5 +243,7 @@ gärna förslag. Datera och signera.*
 | 2026-10-09 | Masterplan v1 (D1–D9, faser 0–7) | Claude + Jonas (intervju) |
 | 2026-10-09 | Produktionsmotorn: modell per scen, recept, exakt produkt (D10–D12), pilot ett recept per bolag | Jonas + Claude |
 | 2026-10-09 | Analys: gratis → GLM 5.3 Flash → Gemini 3.1 Flash-Lite, även annonser | Jonas |
+| 2026-10-09 | Produktkatalog: alla produkter + banor från hemsidan, bara URL:er; bilder laddas ner när de används | Jonas |
+| 2026-10-09 | Godkännande i Discord (inte Telegram) med egen Content Engine-bot i n8n; betyg 1–10 + kommentarer → lärdomar per effekt/mall; allt publiceras först efter godkännande | Jonas |
 | 2026-10-07 | Stilregler blir råd, inte spärrar (AdBrief advisories); fakta spärrar fortfarande | Jonas |
 | 2026-10-08 | Content Library + /studio mergat (PR #85) | Jonas |

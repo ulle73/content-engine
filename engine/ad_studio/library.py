@@ -60,7 +60,8 @@ def _public(item: dict) -> dict:
 
 
 def search(query: str = "", *, type: str = "", format: str = "", medium: str = "", kit: str = "",
-           verified_only: bool = False, limit: int = 15) -> dict:
+           verified_only: bool = False, limit: int = 15, feedback: dict | None = None) -> dict:
+    """`feedback` (engine.review.lessons.library_feedback) ranks items by what the owner liked/disliked before."""
     limit = max(1, min(int(limit), 50))
     words = _tokens(query)
     pool = [
@@ -71,8 +72,17 @@ def search(query: str = "", *, type: str = "", format: str = "", medium: str = "
         and (not format or format in i["formats"] or "any" in i["formats"])
         and (not verified_only or i["status"] == "verified")
     ]
-    ranked = sorted(((_score(i, words), i) for i in pool), key=lambda pair: -pair[0])
-    hits = [_public(i) for score, i in ranked if score > 0][:limit]
+    feedback = feedback or {}
+    ranked = sorted(((_score(i, words) * feedback.get(i["id"], {}).get("multiplier", 1.0), i) for i in pool),
+                    key=lambda pair: -pair[0])
+    hits = []
+    for score, item in ranked:
+        if score <= 0 or len(hits) >= limit:
+            continue
+        hit = _public(item)
+        if item["id"] in feedback:
+            hit["our_feedback"] = {k: v for k, v in feedback[item["id"]].items() if k != "multiplier"}
+        hits.append(hit)
     return {"total_in_library": len(items()), "matches": len(hits), "results": hits}
 
 
