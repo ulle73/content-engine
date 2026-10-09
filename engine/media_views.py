@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Case, IntegerField, Q, Value, When
+from django.db.models import Case, Count, IntegerField, Max, Q, Value, When
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
+from . import product_catalog
 from .creative_core import ReferenceRole
 from .creative_registry import verified_models
 from .forms import snapshot_company_context
@@ -92,8 +93,23 @@ def library(request, workspace_id):
             "now": now,
             "studio_token": uuid.uuid4(),
             "storage_usage": registered_usage(request.workspace),
+            "catalog": request.workspace.catalog_products.filter(active=True).aggregate(count=Count("pk"), synced=Max("synced_at")),
         },
     )
+
+
+@login_required
+@company_required
+@require_POST
+def sync_products(request, workspace_id):
+    try:
+        result = product_catalog.sync(request.workspace, page_budget=60)
+    except product_catalog.CatalogError as exc:
+        messages.error(request, str(exc))
+    else:
+        left = f" {result['pages_left']} sidor återstår, klicka igen eller vänta på nattens körning." if result.get("pages_left") else ""
+        messages.success(request, f"{result['products']} produkter och {result['image_urls']} produktbilder hittades. Bilderna laddas ner först när de används.{left}")
+    return redirect(f"{reverse('engine:media_library', kwargs={'workspace_id': workspace_id})}#products")
 
 
 @login_required

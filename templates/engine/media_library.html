@@ -34,6 +34,14 @@
   <form method="post" action="{% url 'engine:media_new' workspace_id=workspace.pk %}" class="creative-actions">{% csrf_token %}<input type="hidden" name="token" value="{{ studio_token }}"><button type="submit" name="kind" value="video">Skapa video</button><button type="submit" name="kind" value="image" class="button-secondary">Skapa bild</button><span class="small">Öppnar AI-studion. Ingen betald generation startas.</span></form>
   <div class="creative-actions"><a class="button button-secondary" href="{% url 'engine:motion_list' workspace_id=workspace.pk %}">Skapa motionvideo</a><a class="text-link" href="{% url 'engine:sequence_list' workspace_id=workspace.pk %}">Gör film av mina bilder eller klipp →</a></div>
 
+  <section class="media-storage-overview" id="products" aria-labelledby="products-title">
+    <div class="media-storage-heading">
+      <div><h2 id="products-title">Produkter från hemsidan</h2><p>{% if catalog.count %}{{ catalog.count }} produkter · senast hämtade {{ catalog.synced|date:'j M Y H:i' }}{% else %}Inga produkter hämtade ännu{% endif %}</p></div>
+      <form method="post" action="{% url 'engine:sync_products' workspace_id=workspace.pk %}">{% csrf_token %}<button type="submit" class="button-secondary">Hämta produkter från hemsidan</button></form>
+    </div>
+    <p class="small">Läser alla produkter, banor och bildadresser från bolagets webbshop (WooCommerce eller Shopify). Uppdateras automatiskt varje natt. Bildfilerna laddas ner till mediabanken först när en annons använder dem, så katalogen tar ingen lagringsplats.</p>
+  </section>
+
   <section class="media-library-upload-card" id="upload">
     <div class="media-library-upload-copy">
       <span class="media-library-upload-icon" aria-hidden="true">↑</span>

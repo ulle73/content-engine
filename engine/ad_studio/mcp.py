@@ -3,6 +3,7 @@
 from mcp.server.mcpserver import Image
 from mcp.types import ToolAnnotations
 
+from engine import product_catalog
 from engine.mcp_db import database_tool
 
 from . import blueprints, library, service, skills
@@ -12,6 +13,8 @@ FLOW = (
     "0) Börja aldrig från noll: sök i Content Library med search_content_library (mallar, effekter, övergångar, "
     "textbehandlingar, karusellstilar, prompts) och föreslå 2–3 färdiga, snygga kombinationer att utgå från. "
     "Stilen är fri; brand-skillen är ett utgångsläge, inte regler. "
+    "Visar annonsen en produkt eller bana: hitta den med search_products och hämta de riktiga bilderna med "
+    "use_product_images (laddas ner först då). Hitta aldrig på hur en produkt ser ut. "
     "1) read_ad_skill: studio (bibliotekets arbetssätt), ad-studio (hur samtalet leds), golfkuponger-brand och relevant domänskill. "
     "2) start_ad_brief med användarens budskap. "
     "3) Max 3 frågor, bara det som verkligen saknas (next_question), alltid med färdiga svarsförslag. "
@@ -73,6 +76,31 @@ def register(mcp, company_for, run_for, user_for, safe_call):
         """Full details for one Content Library item: how to use it, requirements, cost, preview and file path."""
         company_for(company_ref)
         return safe_call(library.get, item_id)
+
+    @mcp.tool(title="Search products", annotations=read)
+    @database_tool
+    def search_products(company_ref: str, query: str = "", limit: int = 20) -> list[dict]:
+        """Products (FAIV) or golf courses (Golfkuponger) synced from the company's own webshop, with every
+        image URL. Words match name, SKU, category and description. Run sync_products if the list is empty."""
+        return [product_catalog.serialize(p) for p in product_catalog.search(company_for(company_ref), query, limit=min(limit, 50))]
+
+    @mcp.tool(title="Use product images", annotations=write)
+    @database_tool
+    def use_product_images(company_ref: str, product_id: int, image_indexes: list[int] | None = None) -> dict:
+        """Download chosen images (indexes into image_urls; default all) of one product into the media bank and
+        return their asset_ids for the brief. Only images that are actually used get stored."""
+        from engine.models import CatalogProduct
+
+        company = company_for(company_ref)
+        product = safe_call(CatalogProduct.objects.get, pk=product_id, company=company)
+        assets = safe_call(product_catalog.materialize, product, indexes=image_indexes)
+        return dict(product_catalog.serialize(product), stored_asset_ids=[str(a.pk) for a in assets])
+
+    @mcp.tool(title="Sync products", annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=True))
+    @database_tool
+    def sync_products(company_ref: str) -> dict:
+        """Re-read the product catalog (data + image URLs, no image downloads) from the company's own webshop."""
+        return safe_call(product_catalog.sync, company_for(company_ref))
 
     @mcp.tool(title="Start ad brief", annotations=write, description="Start the guided ad flow. " + FLOW)
     @database_tool
