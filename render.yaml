@@ -68,3 +68,13 @@ services:
         value: content-engine.operate
       - key: MCP_OAUTH_ALLOWED_CLIENT_HOSTS
         value: chatgpt.com,openai.com,connectors.api.openai.org
+      # Cloud editing (engine/edit): the GitHub Actions renderer authenticates with this token (≥ 32 characters);
+      # the same value is the GitHub secret CONTENT_EDIT_WORKER_TOKEN.
+      - key: EDIT_WORKER_TOKEN
+        sync: false
+      # Fine-grained GitHub token (repo ulle73/content-engine, permission Actions: read and write) used to start
+      # the Edit Render workflow. Without it jobs wait for the daily workflow or a manual run.
+      - key: GITHUB_DISPATCH_TOKEN
+        sync: false
+      - key: GITHUB_REPOSITORY
+        value: ulle73/content-engine

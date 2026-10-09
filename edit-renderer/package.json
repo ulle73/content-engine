@@ -1,0 +1,14 @@
+{
+  "name": "content-engine-edit-renderer",
+  "private": true,
+  "type": "module",
+  "description": "Cloud editing worker: cut spec (cut/v1) → HyperFrames composition → MP4, run on GitHub Actions.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "worker": "node src/worker.js",
+    "smoke:media": "node src/cli.js smoke-media",
+    "smoke:dry": "node src/cli.js render --spec fixtures/smoke-spec.json --inputs fixtures/smoke-inputs.json --out ../work/edit-smoke --dry-run",
+    "smoke": "node src/cli.js render --spec fixtures/smoke-spec.json --inputs fixtures/smoke-inputs.json --out ../work/edit-smoke"
+  }
+}

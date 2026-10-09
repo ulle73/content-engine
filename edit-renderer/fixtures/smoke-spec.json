@@ -1,0 +1,32 @@
+{
+  "schema": "cut/v1",
+  "format": "9:16",
+  "fps": 30,
+  "title": "Rökprov: friskvårdsgolf",
+  "caption": "Rökprov för molnklippning.",
+  "recipe_id": null,
+  "brand": "golfkuponger",
+  "scenes": [
+    {"id": "s1", "purpose": "hook", "duration_s": 2.6, "asset_id": "0a6f0f0e-0000-4000-8000-00000000000a", "asset_kind": "video",
+     "trim_start_s": 0.4, "fit": "cover", "text": "Din chef *betalar* din golf", "text_style": "hyperframes.registry.headline-slam",
+     "text_position": null, "audio": null,
+     "effects": ["cut.effect.dark-to-light", "hyperframes.registry.vignette", "hyperframes.registry.grain-overlay"], "transition_in": null},
+    {"id": "s2", "purpose": "problem", "duration_s": 3.0, "asset_id": "0a6f0f0e-0000-4000-8000-00000000000b", "asset_kind": "image",
+     "trim_start_s": 0, "fit": "cover", "text": "Friskvårdsbidraget räcker till *greenfee*", "text_style": "hyperframes.registry.per-word-rise",
+     "text_position": null, "audio": null,
+     "effects": ["hyperframes.registry.push-in", "nextphase.persa.grade"], "transition_in": "hyperframes.registry.flash-through-white"},
+    {"id": "s3", "purpose": "proof", "duration_s": 3.0, "asset_id": "0a6f0f0e-0000-4000-8000-00000000000c", "asset_kind": "video",
+     "trim_start_s": 1.0, "fit": "cover", "text": "Över *400 klubbar*", "text_style": "hyperframes.registry.marker-highlight",
+     "text_position": null, "audio": null,
+     "effects": ["nextphase.long.camera-handheld-drift", "hyperframes.registry.light-sweep-pass"], "transition_in": "hyperframes.registry.whip-pan"},
+    {"id": "s4", "purpose": "benefit", "duration_s": 2.6, "asset_id": "0a6f0f0e-0000-4000-8000-00000000000d", "asset_kind": "image",
+     "trim_start_s": 0, "fit": "cover", "text": "Boka på två minuter", "text_style": "hyperframes.registry.blur-in",
+     "text_position": "center", "audio": null,
+     "effects": ["hyperframes.registry.pull-back-reveal", "live-carousel.photo.light-leak", "hyperframes.registry.confetti"],
+     "transition_in": "hyperframes.registry.light-leak"}
+  ],
+  "music_asset_id": "0a6f0f0e-0000-4000-8000-00000000000e",
+  "music_volume": 0.9,
+  "cta": {"text": "Använd bidraget *innan nyår*", "url": "https://golfkuponger.se", "duration_s": 2.5},
+  "duration_s": 13.7
+}

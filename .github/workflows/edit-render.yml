@@ -1,0 +1,62 @@
+name: Edit Render
+# Cloud editing ("klippning i molnet"): renders queued cut jobs (engine/edit) with HyperFrames and uploads the MP4.
+# Started on demand by content-engine (workflow_dispatch via GITHUB_DISPATCH_TOKEN) and by the daily workflow when
+# jobs are waiting. One run processes up to EDIT_MAX_JOBS queued jobs, then exits.
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: 'EditJob-id att rendera först (valfritt; övriga köade jobb tas också)'
+        required: false
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  # One renderer at a time; a newer pending run replaces an older pending one (it would claim the same queue).
+  group: edit-render
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CONTENT_APP_URL: ${{ secrets.CONTENT_APP_URL || 'https://content-engine-mcp.onrender.com' }}
+      CONTENT_EDIT_WORKER_TOKEN: ${{ secrets.CONTENT_EDIT_WORKER_TOKEN }}
+      EDIT_JOB_ID: ${{ inputs.job_id }}
+      EDIT_MAX_JOBS: '3'
+      HYPERFRAMES_VERSION: '0.8.140'
+      # 2 vCPU / 7 GB runner: two Chrome workers without HyperFrames' low-memory single-worker profile.
+      HYPERFRAMES_WORKERS: '2'
+      HYPERFRAMES_RENDER_ARGS: '--no-low-memory-mode'
+    steps:
+      - name: Check configuration
+        run: |
+          if [ -z "$CONTENT_EDIT_WORKER_TOKEN" ]; then
+            echo "::error::Secret CONTENT_EDIT_WORKER_TOKEN saknas (samma värde som EDIT_WORKER_TOKEN på Render)."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: edit-renderer
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install ffmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+          ffmpeg -version | head -1
+      - name: Cache HyperFrames and its browser
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm/_npx
+            ~/.cache/hyperframes
+            ~/.cache/puppeteer
+          key: hyperframes-${{ runner.os }}-0.8.140
+      - name: Prepare HyperFrames browser
+        run: npx --yes hyperframes@0.8.140 browser ensure
+      - name: Render queued cut jobs
+        working-directory: edit-renderer
+        run: node src/worker.js
