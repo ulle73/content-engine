@@ -268,3 +268,27 @@ class OpenRouterAnalysisTests(TestCase):
                 payload={"caption": "Golf"},
                 schema=Classification,
             )
+
+
+class AnalysisRouteTests(TestCase):
+    def test_rate_limit_falls_through_free_then_glm_to_last_resort(self):
+        from unittest import mock
+
+        from . import openrouter
+
+        env = {"OPENROUTER_ANALYSIS_MODEL": "@preset/gk-free", "OPENROUTER_ANALYSIS_FALLBACK_MODEL": "z-ai/glm-5.3-flash",
+               "OPENROUTER_ANALYSIS_LAST_RESORT_MODEL": "google/gemini-3.1-flash-lite"}
+        tried = []
+
+        def fake_call(model, **kwargs):
+            tried.append(model)
+            if model != "google/gemini-3.1-flash-lite":
+                raise openrouter.OpenRouterError("rate limited", status_code=429)
+            return ("ok", {"model": model})
+
+        with mock.patch.dict("os.environ", env), mock.patch.object(openrouter, "_call", side_effect=fake_call):
+            result = openrouter.structured_analysis(system="s", payload={}, schema=object)
+        self.assertEqual(result, ("ok", {"model": "google/gemini-3.1-flash-lite"}))
+        self.assertEqual(tried, ["@preset/gk-free", "z-ai/glm-5.3-flash", "google/gemini-3.1-flash-lite"])
+        with mock.patch.dict("os.environ", env):
+            self.assertEqual(openrouter.route_signature(), "openrouter:@preset/gk-free>z-ai/glm-5.3-flash>google/gemini-3.1-flash-lite")

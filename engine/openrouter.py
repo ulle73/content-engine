@@ -270,20 +270,25 @@ def structured_generation(*, system, payload, schema: type[T], operation="genera
         ) from exc
 
 
-def route_signature():
+def analysis_route():
+    """Free preset first, then the low-cost fallback, then an optional last resort (e.g. Gemini Flash)."""
     free_model = os.environ.get("OPENROUTER_ANALYSIS_MODEL", "@preset/gk-free").strip() or "@preset/gk-free"
     paid_model = os.environ.get("OPENROUTER_ANALYSIS_FALLBACK_MODEL", "z-ai/glm-5.3-flash").strip() or "z-ai/glm-5.3-flash"
-    return f"openrouter:{free_model}>{paid_model}"
+    last_resort = os.environ.get("OPENROUTER_ANALYSIS_LAST_RESORT_MODEL", "").strip()
+    return list(dict.fromkeys(m for m in (free_model, paid_model, last_resort) if m))
+
+
+def route_signature():
+    return "openrouter:" + ">".join(analysis_route())
 
 
 def structured_analysis(*, system, payload, schema: type[T], operation="analysis", max_tokens=4000, temperature=0):
-    free_model = os.environ.get("OPENROUTER_ANALYSIS_MODEL", "@preset/gk-free").strip() or "@preset/gk-free"
-    paid_model = os.environ.get("OPENROUTER_ANALYSIS_FALLBACK_MODEL", "z-ai/glm-5.3-flash").strip() or "z-ai/glm-5.3-flash"
+    route = analysis_route()
     errors = []
 
-    for model in dict.fromkeys((free_model, paid_model)):
+    for model in route:
         try:
-            is_fallback = model == paid_model and paid_model != free_model
+            is_fallback = model != route[0]
             timeout_seconds = 18 if not is_fallback else 35
             route_max_tokens = max(max_tokens, 1600) if is_fallback else max_tokens
             return _call(
