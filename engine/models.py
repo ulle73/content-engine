@@ -260,6 +260,29 @@ class MediaAsset(models.Model):
     generation_base_key = models.CharField(max_length=300, blank=True)
 
 
+class CatalogProduct(models.Model):
+    """A product synced from the company's own webshop (WooCommerce Store API or Shopify products.json)."""
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="catalog_products")
+    source = models.CharField(max_length=20)  # woocommerce | shopify
+    external_id = models.CharField(max_length=100)
+    name = models.CharField(max_length=300)
+    sku = models.CharField(max_length=120, blank=True)
+    url = models.URLField(max_length=500, blank=True)
+    price = models.CharField(max_length=40, blank=True)
+    currency = models.CharField(max_length=10, blank=True)
+    description = models.TextField(blank=True)
+    categories = models.JSONField(default=list)
+    image_urls = models.JSONField(default=list)
+    assets = models.ManyToManyField(MediaAsset, blank=True, related_name="catalog_products")
+    active = models.BooleanField(default=True)
+    synced_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["company", "source", "external_id"], name="unique_catalog_product")]
+        ordering = ["name"]
+
+
 class MediaGenerationReference(models.Model):
     """Provider-neutral typed input reference with durable provenance.
 

@@ -45,3 +45,7 @@ jobs:
         run: python manage.py showmigrations --plan | grep -F "[ ]" || echo "All migrations applied."
       - run: python manage.py migrate --check
       - run: python manage.py run_daily
+      - name: Sync product catalogs from the company webshops
+        if: always()
+        continue-on-error: true
+        run: python manage.py sync_products
