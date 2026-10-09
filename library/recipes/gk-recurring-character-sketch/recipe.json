@@ -1,0 +1,190 @@
+{
+  "schema": "recipe/v1",
+  "id": "gk-recurring-character-sketch",
+  "company": "golfkuponger",
+  "title": "Återkommande karaktär – {karaktär} och bidraget",
+  "type": "sketch",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 20,
+  "hook": "Det här är {karaktär}.",
+  "why_it_works": "En återkommande karaktär bygger igenkänning över många inlägg (som Duolingo-ugglan eller en julkalender): tittaren väntar på nästa avsnitt. Deadpan-humor om något alla känner igen – bidraget som aldrig blir använt – och golfen som punchline. Pilotreceptet för Golfkuponger.",
+  "references": [
+    {
+      "label": "Pilotreferens: Duolingo – påminnelsehumor",
+      "url": "https://www.tiktok.com/@duolingo"
+    },
+    {
+      "label": "Pilotreferens: Timeplan – kontorssketcher (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=Timeplan&search_type=keyword_unordered"
+    },
+    {
+      "label": "Pilotreferens: Melkers julkalender (sök)",
+      "url": "https://www.youtube.com/results?search_query=melkers+julkalender"
+    }
+  ],
+  "music": {
+    "mood": "torr, lekfull kontorsfunk som stannar för frys-skämten",
+    "bpm": 108,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-r4"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "veo-3.1",
+        "prompt_template": "Medium close-up, static camera at eye level. A Swedish office worker in his 50s with glasses and a beige cardigan stands in a bright open-plan office and looks straight into the camera with a completely deadpan face. He says in Swedish: \"Jag har friskvårdsbidrag kvar. Igen.\" (no subtitles). Ambient noise: quiet office room tone, distant keyboard typing. No music. No on-screen text."
+      },
+      "text": "Det här är {karaktär}.",
+      "effects": [
+        "nextphase.persa.emphasis-behind-head",
+        "motion-studio.sound.tick"
+      ],
+      "transition_in": null,
+      "camera": "Rakt in i kameran, luft ovanför huvudet för text",
+      "notes": "Samma skådis/karaktär i varje avsnitt. Veo-alternativet: svensk tal/läppsynk är odokumenterad – provkör, annars Veo utan tal + egen svensk röst i efterhand."
+    },
+    {
+      "id": "s2",
+      "purpose": "setup",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-k1",
+        "gk-k3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "{karaktär} har friskvårdsbidrag kvar.",
+      "effects": [
+        "nextphase.zak.caption",
+        "nextphase.persa.grade"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Halvbild vid datorn, sedan full kalender",
+      "notes": ""
+    },
+    {
+      "id": "s3",
+      "purpose": "eskalering",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-k5",
+        "gk-k2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Varje år.",
+      "effects": [
+        "hyperframes.registry.beat-freeze-cut",
+        "motion-studio.sound.tapestop"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Regn mot fönstret, tittar på klockan",
+      "notes": "Frys-bild på 'Varje år.' – komisk paus."
+    },
+    {
+      "id": "s4",
+      "purpose": "vändning",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-k6"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "nextphase.short.liquid-glass-notification",
+        "motion-studio.sound.chime"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Mobilen med mejl från HR",
+      "notes": "Fejkad skärm byggd i HTML, aldrig AI-genererat UI."
+    },
+    {
+      "id": "s5",
+      "purpose": "punchline",
+      "duration_s": 4.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-g1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "seedance",
+        "prompt_template": "GLOBAL STYLE: warm, natural Scandinavian golf film, vertical 9:16, no on-screen text. CHARACTERS: {karaktär} = @character from {character_ref} (glasses; cardigan swapped for a golf pullover). SCENE: he hits a drive on a Swedish parkland course at golden hour. FIRST FRAME: {start_frame}. CAMERA: behind the golfer, static, slow-motion feel. PHYSICS: the club shaft stays straight and rigid, exactly five fingers per hand, the ball leaves the tee cleanly. LIGHTING: low warm sun. AUDIO: none."
+      },
+      "text": "I år blev det golf.",
+      "effects": [
+        "nextphase.zak.caption",
+        "hyperframes.registry.organic-light-leak-overlay",
+        "motion-studio.sound.whoosh"
+      ],
+      "transition_in": "hyperframes.registry.whip-pan-cut",
+      "camera": "Bakifrån, slow-mo 120 fps",
+      "notes": "AI-golfsvingar deformerar ofta klubban – kör vision-QA bildruta för bildruta."
+    },
+    {
+      "id": "s6",
+      "purpose": "knorr",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-g8",
+        "gk-r2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Kompisar skrattar på banan",
+      "notes": "Lämna utrymme för en sista blick in i kameran."
+    },
+    {
+      "id": "s7",
+      "purpose": "cta",
+      "duration_s": 3.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Gör ditt friskvårdsbidrag till golf.",
+      "effects": [
+        "hyperframes.registry.logo-sting"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": "Säker formulering. Guld #d6a536 sparsamt på mörkgrönt #01170f."
+    }
+  ],
+  "cta": {
+    "text": "Gör ditt friskvårdsbidrag till golf – golfkuponger.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Humorn landar utan förklaring – testa på någon som inte sett manuset",
+    "Varje faktapåstående på skärm har fact-id från faktabanken och är verifierat; annars säker formulering",
+    "Inga absoluta deadlines ('alla förlorar 31/12') – F6 gäller per arbetsgivare",
+    "Portal-, app- och kvitto-UI är riktiga skärminspelningar (personuppgifter dolda), aldrig AI",
+    "Text inom 9:16-safe zone, max ~8 ord per skärm, läsbar i 360 px mobilvy",
+    "Klipp på musikens slag; något nytt händer var 2–4 s",
+    "AI-klipp: vision-QA – händer, klubbor som inte böjs, ansikte konsekvent, ingen inbränd text",
+    "Ljud: −14 LUFS, fungerar även helt utan ljud",
+    "Karaktären ser likadan ut som i tidigare avsnitt (kläder, frisyr, namn)"
+  ],
+  "status": "draft"
+}

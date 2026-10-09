@@ -1,0 +1,420 @@
+{
+  "kit": "recipes",
+  "title": "Produktionsrecept (recipe/v1)",
+  "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+  },
+  "items": [
+    {
+      "id": "recipe.faiv-dark-to-light-reveal",
+      "name": "Mörker → ljus",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "Så här mörkt är det. – Av → på är det starkaste produktbeviset som finns: tittaren ser skillnaden själv, ingen text behöver övertyga.",
+      "tags": [
+        "faiv",
+        "extraljus",
+        "grillkit",
+        "before-after",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "kling"
+      ],
+      "path": "library/recipes/faiv-dark-to-light-reveal/RECIPE.md",
+      "use": "get_content_library_item('recipe.faiv-dark-to-light-reveal') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "faiv",
+      "notes": "recipe/v1 · 15 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling."
+    },
+    {
+      "id": "recipe.faiv-driver-pov-before-after",
+      "name": "Förarens POV – före/efter",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "Samma väg. Samma kväll. – Förarperspektivet gör tittaren till föraren: hen känner obehaget i mörkret och lättnaden när ljuset kommer.",
+      "tags": [
+        "faiv",
+        "extraljus",
+        "grillkit",
+        "pov",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "seedance"
+      ],
+      "path": "library/recipes/faiv-driver-pov-before-after/RECIPE.md",
+      "use": "get_content_library_item('recipe.faiv-driver-pov-before-after') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "faiv",
+      "notes": "recipe/v1 · 12 s · 5 scener · status draft. Valfria betalda AI-uppgraderingar: seedance."
+    },
+    {
+      "id": "recipe.faiv-installed-and-done",
+      "name": "Monterat & klart",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "Rullar in: {car_model}. Rullar ut: … – Hantverket bygger förtroende: händer, verktyg och kablage visar att det görs ordentligt, timelapsen komprimerar en arbetsdag till sekunder och slutet belönar tittaren med ljuset.",
+      "tags": [
+        "faiv",
+        "extraljus",
+        "grillkit",
+        "before-after",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "kling"
+      ],
+      "path": "library/recipes/faiv-installed-and-done/RECIPE.md",
+      "use": "get_content_library_item('recipe.faiv-installed-and-done') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "faiv",
+      "notes": "recipe/v1 · 20 s · 7 scener · status draft. Valfria betalda AI-uppgraderingar: kling."
+    },
+    {
+      "id": "recipe.faiv-product-in-nordic-context",
+      "name": "Grillkitet på plats – nordisk miljö",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "Din {car_model} – fast som den borde sett ut från fabrik. – Visar grillkitet där det hör hemma: på kundens bilmodell i svensk skog, snö och blå timme.",
+      "tags": [
+        "faiv",
+        "extraljus",
+        "grillkit",
+        "product-in-context",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "kling",
+        "seedance"
+      ],
+      "path": "library/recipes/faiv-product-in-nordic-context/RECIPE.md",
+      "use": "get_content_library_item('recipe.faiv-product-in-nordic-context') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "faiv",
+      "notes": "recipe/v1 · 15 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling, seedance."
+    },
+    {
+      "id": "recipe.faiv-customer-reaction",
+      "name": "Kundens reaktion – hur blev det?",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "Vi frågade: hur blev det? – En riktig kund med egna ord är mer trovärdig än all reklamtext.",
+      "tags": [
+        "faiv",
+        "extraljus",
+        "grillkit",
+        "testimonial",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "kling"
+      ],
+      "path": "library/recipes/faiv-customer-reaction/RECIPE.md",
+      "use": "get_content_library_item('recipe.faiv-customer-reaction') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "faiv",
+      "notes": "recipe/v1 · 15 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling."
+    },
+    {
+      "id": "recipe.faiv-winter-mood",
+      "name": "Vintermörker",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "Mörkret kommer. – Säsongsfilm för sep–feb: stämningen gör jobbet, inte säljtexten.",
+      "tags": [
+        "faiv",
+        "extraljus",
+        "grillkit",
+        "mood",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "kling"
+      ],
+      "path": "library/recipes/faiv-winter-mood/RECIPE.md",
+      "use": "get_content_library_item('recipe.faiv-winter-mood') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "faiv",
+      "notes": "recipe/v1 · 20 s · 7 scener · status draft. Valfria betalda AI-uppgraderingar: kling."
+    },
+    {
+      "id": "recipe.gk-recurring-character-sketch",
+      "name": "Återkommande karaktär – {karaktär} och bidraget",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "Det här är {karaktär}. – En återkommande karaktär bygger igenkänning över många inlägg (som Duolingo-ugglan eller en julkalender): tittaren väntar på nästa avsnitt.",
+      "tags": [
+        "golfkuponger",
+        "friskvård",
+        "golf",
+        "sketch",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "seedance",
+        "veo-3.1"
+      ],
+      "path": "library/recipes/gk-recurring-character-sketch/RECIPE.md",
+      "use": "get_content_library_item('recipe.gk-recurring-character-sketch') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "golfkuponger",
+      "notes": "recipe/v1 · 20 s · 7 scener · status draft. Valfria betalda AI-uppgraderingar: seedance, veo-3.1."
+    },
+    {
+      "id": "recipe.gk-pov-hr-mail",
+      "name": "POV: mejlet från HR",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "POV: mejlet från HR om friskvårdsbidraget kommer. – POV-formatet sätter tittaren i en situation hen känner igen direkt.",
+      "tags": [
+        "golfkuponger",
+        "friskvård",
+        "golf",
+        "pov",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "seedance"
+      ],
+      "path": "library/recipes/gk-pov-hr-mail/RECIPE.md",
+      "use": "get_content_library_item('recipe.gk-pov-hr-mail') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "golfkuponger",
+      "notes": "recipe/v1 · 12 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: seedance."
+    },
+    {
+      "id": "recipe.gk-office-to-course-match-cut",
+      "name": "Kontoret → banan (match cut)",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "Samma rörelse. Bättre plats. – Match cuts är tillfredsställande att titta på och berättar hela budskapet utan ord: samma rörelse, kontoret byts mot banan.",
+      "tags": [
+        "golfkuponger",
+        "friskvård",
+        "golf",
+        "match-cut",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "kling",
+        "seedance"
+      ],
+      "path": "library/recipes/gk-office-to-course-match-cut/RECIPE.md",
+      "use": "get_content_library_item('recipe.gk-office-to-course-match-cut') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "golfkuponger",
+      "notes": "recipe/v1 · 15 s · 8 scener · status draft. Valfria betalda AI-uppgraderingar: kling, seedance."
+    },
+    {
+      "id": "recipe.gk-friskvard-tips",
+      "name": "3 saker om friskvårdsbidraget",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "3 saker om friskvårdsbidraget som HR inte hinner berätta. – Tips-formatet sparas och delas: konkret nytta i tre steg, en person som pratar direkt till tittaren och riktiga skärminspelningar som bevis.",
+      "tags": [
+        "golfkuponger",
+        "friskvård",
+        "golf",
+        "tips",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "kling",
+        "veo-3.1"
+      ],
+      "path": "library/recipes/gk-friskvard-tips/RECIPE.md",
+      "use": "get_content_library_item('recipe.gk-friskvard-tips') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "golfkuponger",
+      "notes": "recipe/v1 · 20 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling, veo-3.1."
+    },
+    {
+      "id": "recipe.gk-deadline-31-dec",
+      "name": "Innan årsskiftet",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "hyperframes",
+      "description": "Har du friskvårdsbidrag kvar i år? – Okt–dec är högsäsong: bidraget ska användas innan året är slut hos många arbetsgivare.",
+      "tags": [
+        "golfkuponger",
+        "friskvård",
+        "golf",
+        "seasonal",
+        "recept",
+        "video",
+        "riktig film",
+        "ai-upgrade",
+        "kling"
+      ],
+      "path": "library/recipes/gk-deadline-31-dec/RECIPE.md",
+      "use": "get_content_library_item('recipe.gk-deadline-31-dec') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "golfkuponger",
+      "notes": "recipe/v1 · 15 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling."
+    },
+    {
+      "id": "recipe.gk-ugc-reaction",
+      "name": "UGC-reaktion – visste du det här?",
+      "type": "recipe",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5"
+      ],
+      "engine": "hyperframes",
+      "description": "Okej, varför sa ingen det här tidigare? – UGC-känsla (mobil, egen röst, ingen reklamfinish) läses som ett tips från en vän, inte som en annons.",
+      "tags": [
+        "golfkuponger",
+        "friskvård",
+        "golf",
+        "testimonial",
+        "recept",
+        "video",
+        "riktig film"
+      ],
+      "path": "library/recipes/gk-ugc-reaction/RECIPE.md",
+      "use": "get_content_library_item('recipe.gk-ugc-reaction') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+      "requires": [
+        "footage:docs/FILMLISTA.md"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "preview": null,
+      "company": "golfkuponger",
+      "notes": "recipe/v1 · 15 s · 6 scener · status draft. Ingen AI – bara riktigt material."
+    }
+  ]
+}

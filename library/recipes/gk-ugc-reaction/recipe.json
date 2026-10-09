@@ -1,0 +1,155 @@
+{
+  "schema": "recipe/v1",
+  "id": "gk-ugc-reaction",
+  "company": "golfkuponger",
+  "title": "UGC-reaktion – visste du det här?",
+  "type": "testimonial",
+  "formats": [
+    "9:16",
+    "4:5"
+  ],
+  "duration_s": 15,
+  "hook": "Okej, varför sa ingen det här tidigare?",
+  "why_it_works": "UGC-känsla (mobil, egen röst, ingen reklamfinish) läses som ett tips från en vän, inte som en annons. Reaktionen bär humorn och skärminspelningen bevisar att det är på riktigt.",
+  "references": [
+    {
+      "label": "UGC-reaktioner (sök)",
+      "url": "https://www.tiktok.com/search?q=ugc%20reaction%20friskvård"
+    },
+    {
+      "label": "Duolingo – UGC-ton",
+      "url": "https://www.tiktok.com/@duolingo"
+    }
+  ],
+  "music": {
+    "mood": "nästan ingen musik – diskret bädd under rösten",
+    "bpm": null,
+    "library_id": null
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "bo-4"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Okej, varför sa ingen det här tidigare?",
+      "effects": [
+        "nextphase.short.caption-weight-shift"
+      ],
+      "transition_in": null,
+      "camera": "Selfie, armlängds avstånd, naturligt ljus",
+      "notes": "Riktig anställd/kund med samtycke – aldrig AI-genererad 'kund'."
+    },
+    {
+      "id": "s2",
+      "purpose": "reaktion",
+      "duration_s": 1.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-r1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.pop"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Aha-ansikte",
+      "notes": ""
+    },
+    {
+      "id": "s3",
+      "purpose": "bevis",
+      "duration_s": 3.5,
+      "source": "footage",
+      "footage_ids": [
+        "gk-b2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "{fact:F1}",
+      "effects": [
+        "hf-skeletons.pattern.highlight-sweep"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Skärminspelning av golfkuponger.se i mobilen",
+      "notes": "Bara med verifierad F1."
+    },
+    {
+      "id": "s4",
+      "purpose": "senare",
+      "duration_s": 4.0,
+      "source": "footage",
+      "footage_ids": [
+        "gk-g8",
+        "gk-g7"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "nextphase.persa.grade"
+      ],
+      "transition_in": "hyperframes.registry.whip-pan-cut",
+      "camera": "Med kompisar på banan, sedan terrassen",
+      "notes": ""
+    },
+    {
+      "id": "s5",
+      "purpose": "replik",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "bo-4"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "\"{citat}\"",
+      "effects": [
+        "nextphase.short.caption-weight-shift"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "",
+      "notes": ""
+    },
+    {
+      "id": "s6",
+      "purpose": "cta",
+      "duration_s": 2.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Gör ditt friskvårdsbidrag till golf.",
+      "effects": [
+        "hyperframes.registry.logo-sting"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": ""
+    }
+  ],
+  "cta": {
+    "text": "Gör ditt friskvårdsbidrag till golf – golfkuponger.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Humorn landar utan förklaring – testa på någon som inte sett manuset",
+    "Varje faktapåstående på skärm har fact-id från faktabanken och är verifierat; annars säker formulering",
+    "Inga absoluta deadlines ('alla förlorar 31/12') – F6 gäller per arbetsgivare",
+    "Portal-, app- och kvitto-UI är riktiga skärminspelningar (personuppgifter dolda), aldrig AI",
+    "Text inom 9:16-safe zone, max ~8 ord per skärm, läsbar i 360 px mobilvy",
+    "Klipp på musikens slag; något nytt händer var 2–4 s",
+    "AI-klipp: vision-QA – händer, klubbor som inte böjs, ansikte konsekvent, ingen inbränd text",
+    "Ljud: −14 LUFS, fungerar även helt utan ljud",
+    "Personen har godkänt att synas; repliken är personens egen"
+  ],
+  "status": "draft"
+}

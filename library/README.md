@@ -17,6 +17,8 @@ library/
   effects/<id>/       egna effekter/övergångar (HyperFrames) + LIBRARY.json
   templates/<id>/     egna kompletta mallar (t.ex. golfkuponger-friskvard-promo)
   prompts/            promptmallar (regissörsbrief, kritikloop, varumärkesprompt …) + LIBRARY.json
+  recipes/<id>/       produktionsrecept: RECIPE.md + recipe.json (schema recipe/v1) + LIBRARY.json
+  models/<modell>/    model playbooks: PLAYBOOK.md per AI-modell; models/README.md = routning scentyp → modell
   external/           index över externa bibliotek (HyperFrames-registret, Remotion-katalogen,
                       öppna repon) — pekar ut, kopierar inte
   previews/<id>.*     förhandsvisningar (liten mp4/webm + jpg)
@@ -65,7 +67,7 @@ automatiskt när Claude Code körs i repot.
 
 | Fält | Värden |
 |---|---|
-| `type` | `template` (hel video/karusell) · `scene` · `effect` · `transition` · `text` (textanimation/typografi) · `caption` · `grade` (färgsättning) · `background` · `carousel` · `skill` · `prompt` · `sound` · `tool` |
+| `type` | `template` (hel video/karusell) · `scene` · `effect` · `transition` · `text` (textanimation/typografi) · `caption` · `grade` (färgsättning) · `background` · `carousel` · `skill` · `prompt` · `sound` · `tool` · `recipe` (produktionsrecept) · `model` (model playbook) |
 | `medium` | `video` · `carousel` · `image` · `audio` · `text` |
 | `formats` | `9:16` · `1:1` · `4:5` · `16:9` · `any` |
 | `engine` | `hyperframes` · `remotion` · `html-playwright` · `python` · `canvas` · `none` |
@@ -74,3 +76,37 @@ automatiskt när Claude Code körs i repot.
 | `preview` | `null` eller `{ "video": "library/previews/<id>.mp4", "still": "library/previews/<id>.jpg" }` |
 
 `id` är unikt i hela biblioteket: `<kit>.<del>.<namn>`, gemener och bindestreck.
+
+## Recept och modell-playbooks (produktionsmotorn, MASTERPLAN §4b)
+
+**Recept** (`library/recipes/<id>/`) är den återanvändbara enheten för film (D11): `RECIPE.md` (idé, regi per scen,
+klipprytm, text, ljud, varianter, AI-uppgraderingar) + `recipe.json` som maskiner läser. Catalog-id: `recipe.<id>`
+(post i `library/recipes/LIBRARY.json`, med fältet `company`). `get_content_library_item` returnerar hela `recipe.json`.
+
+`recipe.json` följer **exakt** schemat `recipe/v1` (andra agenter och kod beror på det):
+
+| Fält | Innehåll |
+|---|---|
+| `schema` | `"recipe/v1"` |
+| `id`, `title` | mappnamn (gemener-bindestreck), svensk titel |
+| `company` | `faiv` · `golfkuponger` · `any` |
+| `type` | `before-after` · `sketch` · `pov` · `product-in-context` · `tips` · `seasonal` · `testimonial` · `mood` · `match-cut` |
+| `formats`, `duration_s` | t.ex. `["9:16","4:5","1:1"]`, `15`; scenernas längder summerar till `duration_s` (±0,5 s) |
+| `hook`, `why_it_works` | kroken (första 1–2 s, svenska) och varför formatet fungerar |
+| `references` | `[{label, url}]`, minst en |
+| `music` | `{mood, bpm (heltal/null), library_id (sound-post i katalogen eller null)}` |
+| `scenes[]` | `{id, purpose, duration_s, source, footage_ids, catalog_query, ai_upgrade, text, effects, transition_in, camera, notes}` |
+| `cta` | `{text, landing}` (`brand` · `product` …) |
+| `qa` | checklista |
+| `status` | `draft` · `verified` |
+
+Scenregler (kontrolleras av `build_catalog.py`): `source` är `footage` · `product_image` · `graphic` (`ai_video`/`ai_image`
+underkänns – receptet ska fungera med riktigt material; betald AI läggs som `ai_upgrade: {model, prompt_template}` där
+`model` är en mapp i `library/models/`). `footage_ids` måste finnas i `docs/FILMLISTA.md`; `product_image` kräver
+`catalog_query` (produktkatalogen). `effects` är katalog-id:n (effekt, caption, text, grade, sound …) och `transition_in`
+en `transition`-post. Påståenden skrivs som `{fact:F4}` och måste finnas i bolagets faktaskill (`faiv-fakta` /
+`golfkuponger-friskvard`) – de visas bara när faktat är verifierat i appens faktabank. Övriga `{platshållare}` är fria.
+
+**Model playbooks** (`library/models/<modell>/PLAYBOOK.md`, catalog-id `model.<modell>`): styrkor/svagheter, promptformat,
+parametrar, kameraord, fallgropar och exempel för våra recept, med källor. `library/models/README.md` är routningen
+scentyp → modell (D10). Modellregistret i `engine/creative_registry.py` är sanningen om vad som är tillgängligt.

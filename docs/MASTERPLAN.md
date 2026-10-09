@@ -135,6 +135,13 @@ Produktionsrecept (library: recipes/<typ>)  e.g. "person-presenterar-produkt-vid
 | D11 | **Recept är den återanvändbara enheten** – varje lyckad film blir ett recept med promptar, modellval och klipp-mall som nästa film startar från; lärandet mäter per recept och modell. | "Börja aldrig från noll" i praktiken; jämförbart och förbättringsbart. | Fri prompt varje gång (inkonsekvent, går inte att lära av). |
 | D12 | **Exakt produkt, genererad omgivning** – produkter (grillkit, logotyper, appskärmar) kommer från riktiga foton/inspelningar som första/sista bild eller komposit; AI genererar människa, miljö och rörelse. | AI hittar på produktdetaljer; varumärkesrisk. | Låta modellen rita produkten. |
 
+**Status 2026-10-09 – steg 1 klart (biblioteket):** formatet `recipe/v1` finns (schema i `library/README.md`, validering i
+`library/tools/build_catalog.py`: filmlista-id:n, katalog-id:n, model playbooks och `{fact:F…}` mot faktaskillen) med
+12 recept i status `draft` – 6 FAIV, 6 Golfkuponger, alla körbara med riktigt material och med valfria AI-uppgraderingar
+per scen. Model playbooks finns för Kling, Seedance, Veo 3.1 och gpt-image-2 + routningstabell (`library/models/README.md`).
+Allt är sökbart i Content Library (`type=recipe` / `type=model`). Inga recept är verifierade end-to-end och inga betalda
+AI-körningar är gjorda. Veo 3.1 finns inte i Higgsfields API och saknar integration; svensk läppsynk är odokumenterad hos alla modeller.
+
 **Pilot (först):** två recept, ett per bolag, byggda och verifierade end-to-end:
 1. FAIV – "person vid bil visar grillkit, mörker→ljus" (ref: Xenonkungen "Monterat & Klart", Ljusgiganten POV, Ultra Vision grillkit-reveal).
 2. Golfkuponger – "återkommande karaktär / sketch om friskvårdsbidraget" (ref: Timeplan, Melkers julkalender, Duolingo-påminnelse).
@@ -242,6 +249,7 @@ gärna förslag. Datera och signera.*
 |---|---|---|
 | 2026-10-09 | Masterplan v1 (D1–D9, faser 0–7) | Claude + Jonas (intervju) |
 | 2026-10-09 | Produktionsmotorn: modell per scen, recept, exakt produkt (D10–D12), pilot ett recept per bolag | Jonas + Claude |
+| 2026-10-09 | Steg 1: receptformat `recipe/v1` + 12 utkastrecept (6/bolag) + model playbooks (Kling, Seedance, Veo 3.1, gpt-image-2) i Content Library; produktbevis (ljus av→på) och kunder är aldrig AI | Claude |
 | 2026-10-09 | Analys: gratis → GLM 5.3 Flash → Gemini 3.1 Flash-Lite, även annonser | Jonas |
 | 2026-10-09 | Produktkatalog: alla produkter + banor från hemsidan, bara URL:er; bilder laddas ner när de används | Jonas |
 | 2026-10-09 | Godkännande i Discord (inte Telegram) med egen Content Engine-bot i n8n; betyg 1–10 + kommentarer → lärdomar per effekt/mall; allt publiceras först efter godkännande | Jonas |

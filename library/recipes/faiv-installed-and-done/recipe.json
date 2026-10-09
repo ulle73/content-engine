@@ -1,0 +1,183 @@
+{
+  "schema": "recipe/v1",
+  "id": "faiv-installed-and-done",
+  "company": "faiv",
+  "title": "Monterat & klart",
+  "type": "before-after",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 20,
+  "hook": "Rullar in: {car_model}. Rullar ut: …",
+  "why_it_works": "Hantverket bygger förtroende: händer, verktyg och kablage visar att det görs ordentligt, timelapsen komprimerar en arbetsdag till sekunder och slutet belönar tittaren med ljuset. Fungerar för alla bilmodeller.",
+  "references": [
+    {
+      "label": "Pilotreferens: Xenonkungen – 'Monterat & Klart' (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=Xenonkungen&search_type=keyword_unordered"
+    },
+    {
+      "label": "Verkstads-timelapse för ljusmontering (sök)",
+      "url": "https://www.youtube.com/results?search_query=grille+light+install+timelapse"
+    },
+    {
+      "label": "Ekstralys – studio- och montageklipp (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=Ekstralys&search_type=keyword_unordered"
+    }
+  ],
+  "music": {
+    "mood": "drivande, mekanisk groove med tydliga slag att klippa på",
+    "bpm": 118,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 1.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-b2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Rullar in: {car_model}",
+      "effects": [
+        "nextphase.zak.caption",
+        "motion-studio.sound.whoosh"
+      ],
+      "transition_in": null,
+      "camera": "Snett framifrån när bilen rullar in i verkstaden",
+      "notes": "Bilmodell från produktkatalogen/kundorder."
+    },
+    {
+      "id": "s2",
+      "purpose": "process",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-v1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.snap"
+      ],
+      "transition_in": "hyperframes.registry.whip-pan-cut",
+      "camera": "Närbild: grillen lyfts av",
+      "notes": "Händerna i fokus, inga ansikten behövs."
+    },
+    {
+      "id": "s3",
+      "purpose": "process",
+      "duration_s": 5.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-v3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Monteras i Kungälv",
+      "effects": [
+        "motion-studio.sound.tick",
+        "hyperframes.registry.grain-overlay"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Mobil på stativ, hela monteringen som timelapse",
+      "notes": "Speed ramp: snabbt i mitten, bromsa in mot slutet."
+    },
+    {
+      "id": "s4",
+      "purpose": "detalj",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-p4",
+        "fa-v2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "{fact:F1}",
+      "effects": [
+        "nextphase.zak.caption"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Makro på kablage och verktyg",
+      "notes": "Visa bara fact F1 om den är verifierad i faktabanken; annars ingen text."
+    },
+    {
+      "id": "s5",
+      "purpose": "reveal",
+      "duration_s": 4.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-n4",
+        "fa-p5"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "Start frame: {product_image} (real photo of the installed {product} on this {car_model}). The car stands still in a dark workshop; the grille light switches on and gently fills the room, then holds. Camera: slow dolly-out. Lighting: evening, warm practical lights, then the product's white light. Car, grille and light layout stay exactly as in the start frame. Negative: morphing, warped text, extra lights, changed logo, licence plate."
+      },
+      "text": "Rullar ut.",
+      "effects": [
+        "motion-studio.sound.impact",
+        "hyperframes.registry.light-sweep-pass"
+      ],
+      "transition_in": "motion-studio.transition.hard-cut-on-drop",
+      "camera": "Mörk verkstad, ljuset tänds på dropet",
+      "notes": "AI-alternativet bara från riktigt foto av just denna bil (D12)."
+    },
+    {
+      "id": "s6",
+      "purpose": "överlämning",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-v4",
+        "fa-h1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Kunden hämtar bilen, tummen upp",
+      "notes": "Riktig kund med samtycke – aldrig AI-genererade kunder."
+    },
+    {
+      "id": "s7",
+      "purpose": "cta",
+      "duration_s": 2.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Vi bygger din bil på ditt sätt.",
+      "effects": [
+        "hyperframes.registry.logo-sting"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": "Taglinen är en säker formulering."
+    }
+  ],
+  "cta": {
+    "text": "Boka montering – faiv.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Före/efter-beviset är riktigt filmat med samma bil, plats, stativ och låst exponering – aldrig AI",
+    "Ljuset tänds exakt på musikens slag (±1 bildruta) och klicket hörs",
+    "Inga registreringsskyltar, andra företags loggor eller ansikten utan samtycke",
+    "Varje påstående på skärm kommer från faktabanken (fact-id) och är verifierat, annars bort",
+    "Text inom 9:16-safe zone (mittersta ~70 % av höjden), läsbar i 360 px mobilvy",
+    "Produkten är exakt FAIV:s (från produktkatalogen/egen film), aldrig AI-ritad",
+    "AI-klipp: vision-QA bildruta för bildruta – produktform, logga, händer, inga påhittade detaljer",
+    "Ljud: −14 LUFS, motor/klick/natt-ambiens hörs, fungerar även helt utan ljud"
+  ],
+  "status": "draft"
+}

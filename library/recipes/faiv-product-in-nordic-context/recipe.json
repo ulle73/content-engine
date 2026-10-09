@@ -1,0 +1,168 @@
+{
+  "schema": "recipe/v1",
+  "id": "faiv-product-in-nordic-context",
+  "company": "faiv",
+  "title": "Grillkitet på plats – nordisk miljö",
+  "type": "product-in-context",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 15,
+  "hook": "Din {car_model} – fast som den borde sett ut från fabrik.",
+  "why_it_works": "Visar grillkitet där det hör hemma: på kundens bilmodell i svensk skog, snö och blå timme. Personen vid bilen ger skala och ägarkänsla; ljuset som tänds blir beviset. Pilotreceptet för FAIV (person vid bil visar grillkit).",
+  "references": [
+    {
+      "label": "Pilotreferens: Ultra Vision grillkit-reveal (sök)",
+      "url": "https://www.youtube.com/results?search_query=ultra+vision+grille+kit"
+    },
+    {
+      "label": "Pilotreferens: Xenonkungen (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=Xenonkungen&search_type=keyword_unordered"
+    },
+    {
+      "label": "Baja Designs – produkt i miljö",
+      "url": "https://www.bajadesigns.com/"
+    }
+  ],
+  "music": {
+    "mood": "nordisk, filmisk, lugn puls som lyfter i andra halvan",
+    "bpm": 96,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-b4",
+        "fa-n1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "seedance",
+        "prompt_template": "GLOBAL STYLE: premium automotive film, natural Nordic colours, vertical 9:16, no on-screen text. SCENE: a {car_model} parked on a snowy forest road at blue hour; a person walks into frame towards the front of the car. FIRST FRAME: {start_frame} (gpt-image-2 composite with the exact {product} photo in the grille). CAMERA: slow push-in at bumper height. PHYSICS: light snowfall, breath visible, the grille does not change. LIGHTING: blue hour, car lights off. AUDIO: none."
+      },
+      "text": "Din {car_model} – fast som den borde sett ut från fabrik.",
+      "effects": [
+        "nextphase.zak.caption",
+        "nextphase.persa.grade"
+      ],
+      "transition_in": null,
+      "camera": "Låg vinkel, långsam push mot fronten",
+      "notes": "Grade är ett utgångsläge – byt till kallare om det passar bättre."
+    },
+    {
+      "id": "s2",
+      "purpose": "människa",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-b2",
+        "fa-h1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "seedance",
+        "prompt_template": "GLOBAL STYLE: realistic documentary automotive, vertical 9:16, no on-screen text. SCENE: the owner crouches next to the {car_model} and points at the light bar integrated in the front grille, proud and relaxed. FIRST FRAME: {start_frame} (composite: real person + real car + exact {product} photo). CAMERA: handheld medium shot, gentle arc to the right. PHYSICS: hands at medium distance, five fingers, no touching the lens. LIGHTING: blue hour. AUDIO: none."
+      },
+      "text": "",
+      "effects": [],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Halvbild, personen pekar på grillen",
+      "notes": "Produkten ritas aldrig av modellen: första bilden är en komposit med det exakta produktfotot."
+    },
+    {
+      "id": "s3",
+      "purpose": "produkt",
+      "duration_s": 2.5,
+      "source": "product_image",
+      "footage_ids": [],
+      "catalog_query": "grillkit {car_model}",
+      "ai_upgrade": null,
+      "text": "{product}",
+      "effects": [
+        "hf-skeletons.pattern.ken-burns",
+        "hyperframes.registry.light-sweep-pass"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Ken Burns på produktfotot",
+      "notes": "Finns fa-p1 filmat: använd det i stället (source footage)."
+    },
+    {
+      "id": "s4",
+      "purpose": "reveal",
+      "duration_s": 3.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-m1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.impact",
+        "hyperframes.registry.camera-shake"
+      ],
+      "transition_in": "motion-studio.transition.hard-cut-on-drop",
+      "camera": "Stativ, låst exponering – ljuset på",
+      "notes": "Aldrig AI: ljusbilden är produktbeviset."
+    },
+    {
+      "id": "s5",
+      "purpose": "rörelse",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-b3"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "kling",
+        "prompt_template": "Start frame: {start_frame} (real still of the {car_model} with the {product} lit). The car drives slowly past the camera on a snowy forest road at night, snow dust swirling in the light. Camera: low static shot, slight pan following the car. Car and grille stay exactly as in the start frame. Negative: morphing, extra lights, licence plate, text."
+      },
+      "text": "",
+      "effects": [
+        "motion-studio.sound.whoosh"
+      ],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Låg, bilen kör förbi med ljud",
+      "notes": "Stämningsbild – inga räckviddspåståenden."
+    },
+    {
+      "id": "s6",
+      "purpose": "cta",
+      "duration_s": 2.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "{product} · {fact:F4}",
+      "effects": [
+        "nextphase.short.logo-blur-reveal"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": "F4 (garanti) bara om verifierad; annars bara produktnamnet. Priser (F5–F7) verifieras före varje annons."
+    }
+  ],
+  "cta": {
+    "text": "Se grillkitet för din {car_model} – faiv.se",
+    "landing": "product"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Före/efter-beviset är riktigt filmat med samma bil, plats, stativ och låst exponering – aldrig AI",
+    "Ljuset tänds exakt på musikens slag (±1 bildruta) och klicket hörs",
+    "Inga registreringsskyltar, andra företags loggor eller ansikten utan samtycke",
+    "Varje påstående på skärm kommer från faktabanken (fact-id) och är verifierat, annars bort",
+    "Text inom 9:16-safe zone (mittersta ~70 % av höjden), läsbar i 360 px mobilvy",
+    "Produkten är exakt FAIV:s (från produktkatalogen/egen film), aldrig AI-ritad",
+    "AI-klipp: vision-QA bildruta för bildruta – produktform, logga, händer, inga påhittade detaljer",
+    "Ljud: −14 LUFS, motor/klick/natt-ambiens hörs, fungerar även helt utan ljud"
+  ],
+  "status": "draft"
+}

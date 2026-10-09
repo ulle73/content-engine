@@ -1,0 +1,144 @@
+{
+  "schema": "recipe/v1",
+  "id": "faiv-driver-pov-before-after",
+  "company": "faiv",
+  "title": "Förarens POV – före/efter",
+  "type": "pov",
+  "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+  ],
+  "duration_s": 12,
+  "hook": "Samma väg. Samma kväll.",
+  "why_it_works": "Förarperspektivet gör tittaren till föraren: hen känner obehaget i mörkret och lättnaden när ljuset kommer. Samma sträcka och samma mobilplacering gör jämförelsen ärlig och omedelbart begriplig.",
+  "references": [
+    {
+      "label": "Pilotreferens: Ljusgiganten POV (Meta Ads Library)",
+      "url": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=SE&q=Ljusgiganten&search_type=keyword_unordered"
+    },
+    {
+      "label": "Diode Dynamics – förarperspektiv i mörker",
+      "url": "https://www.diodedynamics.com/"
+    },
+    {
+      "label": "POV-format för extraljus (sök)",
+      "url": "https://www.tiktok.com/search?q=extraljus%20pov"
+    }
+  ],
+  "music": {
+    "mood": "dov, pulserande bas som öppnar upp när ljuset slår på",
+    "bpm": 90,
+    "library_id": "tools.make-music"
+  },
+  "scenes": [
+    {
+      "id": "s1",
+      "purpose": "hook",
+      "duration_s": 2.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-f1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Utan extraljus",
+      "effects": [
+        "nextphase.zak.caption",
+        "motion-studio.sound.room-tone"
+      ],
+      "transition_in": null,
+      "camera": "Mobil fast monterad vid backspegeln, samma placering båda åken",
+      "notes": "Etikett uppe till vänster; resten av bilden ska vara mörk och obekväm."
+    },
+    {
+      "id": "s2",
+      "purpose": "spänning",
+      "duration_s": 1.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-f2"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": {
+        "model": "seedance",
+        "prompt_template": "GLOBAL STYLE: realistic night-time car interior, documentary, vertical 9:16, no on-screen text. SCENE: a Swedish driver in their 40s squints into the darkness through the windshield on a forest road. FIRST FRAME: {start_frame}. CAMERA: static, dashboard-mounted, medium close-up. PHYSICS: subtle head movement, natural blinking. LIGHTING: only dim dashboard glow. AUDIO: none."
+      },
+      "text": "",
+      "effects": [],
+      "transition_in": "ext.content-engine-motion.transition.cut",
+      "camera": "Halvnära på föraren, bara instrumentbelysning",
+      "notes": "Människoscen – AI-alternativ via Seedance. Ansikten bara med samtycke om filmat."
+    },
+    {
+      "id": "s3",
+      "purpose": "klick",
+      "duration_s": 0.5,
+      "source": "footage",
+      "footage_ids": [
+        "fa-p5"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "",
+      "effects": [
+        "motion-studio.sound.impact"
+      ],
+      "transition_in": "motion-studio.transition.hard-cut-on-drop",
+      "camera": "Slow-mo: lampan tänds",
+      "notes": "Klicket (bo-3) ligger exakt på dropet."
+    },
+    {
+      "id": "s4",
+      "purpose": "bevis",
+      "duration_s": 5.0,
+      "source": "footage",
+      "footage_ids": [
+        "fa-f1"
+      ],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Med {product}",
+      "effects": [
+        "nextphase.zak.caption",
+        "hyperframes.registry.grain-overlay"
+      ],
+      "transition_in": "hyperframes.registry.before-after-wipe",
+      "camera": "Samma sträcka, samma utsnitt – nu med extraljus",
+      "notes": "Aldrig AI. Wipe som delar bilden före/efter; låt efter-bilden stå ensam sista 2 s."
+    },
+    {
+      "id": "s5",
+      "purpose": "cta",
+      "duration_s": 3.0,
+      "source": "graphic",
+      "footage_ids": [],
+      "catalog_query": null,
+      "ai_upgrade": null,
+      "text": "Se mer av vägen.",
+      "effects": [
+        "hyperframes.registry.logo-sting",
+        "motion-studio.sound.shimmer"
+      ],
+      "transition_in": "hyperframes.registry.fade-through",
+      "camera": "",
+      "notes": "Ingen räckvidds- eller säkerhetssiffra utan verifierat fact-id."
+    }
+  ],
+  "cta": {
+    "text": "Extraljus för din bil – faiv.se",
+    "landing": "brand"
+  },
+  "qa": [
+    "Krok syns och läses inom 1 s, utan ljud",
+    "Före/efter-beviset är riktigt filmat med samma bil, plats, stativ och låst exponering – aldrig AI",
+    "Ljuset tänds exakt på musikens slag (±1 bildruta) och klicket hörs",
+    "Inga registreringsskyltar, andra företags loggor eller ansikten utan samtycke",
+    "Varje påstående på skärm kommer från faktabanken (fact-id) och är verifierat, annars bort",
+    "Text inom 9:16-safe zone (mittersta ~70 % av höjden), läsbar i 360 px mobilvy",
+    "Produkten är exakt FAIV:s (från produktkatalogen/egen film), aldrig AI-ritad",
+    "AI-klipp: vision-QA bildruta för bildruta – produktform, logga, händer, inga påhittade detaljer",
+    "Ljud: −14 LUFS, motor/klick/natt-ambiens hörs, fungerar även helt utan ljud"
+  ],
+  "status": "draft"
+}

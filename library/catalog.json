@@ -1,7 +1,7 @@
 {
  "version": 1,
- "generated": "2026-10-08",
- "count": 1426,
+ "generated": "2026-10-09",
+ "count": 1443,
  "verified": 333,
  "by_type": {
   "background": 60,
@@ -9,7 +9,9 @@
   "carousel": 22,
   "effect": 242,
   "grade": 10,
+  "model": 5,
   "prompt": 345,
+  "recipe": 12,
   "scene": 186,
   "skill": 60,
   "sound": 47,
@@ -21686,6 +21688,200 @@
    "status": "unverified"
   },
   {
+   "kit": "models",
+   "kit_title": "Model playbooks (AI-modell per scen, D10)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "paid",
+   "requires": [
+    "api:openai"
+   ],
+   "use": "ai_upgrade.model = \"gpt-image-2\" i recipe.json, eller som {start_frame} till Kling/Seedance/Veo",
+   "notes": "OpenAI rekommenderar nu GPT Image 2.5 för nya integrationer – ej utvärderad/registrerad.",
+   "verified_at": null,
+   "preview": null,
+   "id": "model.gpt-image-2",
+   "name": "gpt-image-2 – playbook (komposit och första/sista bild)",
+   "type": "model",
+   "medium": "image",
+   "formats": [
+    "9:16",
+    "1:1",
+    "4:5",
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Komposit-startbilder med exakt produktfoto (D12), matchbilder via redigering, stämningsstills. Promptstruktur, preserve/change-only, storlekar, pris och fallgropar.",
+   "tags": [
+    "gpt-image-2",
+    "openai",
+    "bild",
+    "komposit",
+    "start-frame",
+    "produkt",
+    "playbook"
+   ],
+   "path": "library/models/gpt-image-2/PLAYBOOK.md",
+   "status": "unverified"
+  },
+  {
+   "kit": "models",
+   "kit_title": "Model playbooks (AI-modell per scen, D10)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "paid",
+   "requires": [
+    "api:higgsfield"
+   ],
+   "use": "ai_upgrade.model = \"kling\" i recipe.json; endpoints kling-video/v2.5-turbo/pro, v2.6/pro, v3.0/{std,pro,4k}",
+   "notes": "Inga betalda körningar gjorda. Svensk dialog stöds inte (översätts till engelska).",
+   "verified_at": null,
+   "preview": null,
+   "id": "model.kling",
+   "name": "Kling 2.5 Turbo / 2.6 / 3.0 – playbook",
+   "type": "model",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "1:1",
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Produkt i rörelse från exakt startbild, miljö/b-roll, längre tagningar och multi-shot (3.0). Promptformat, parametrar, kameraord, fallgropar och exempel för FAIV och Golfkuponger.",
+   "tags": [
+    "kling",
+    "ai-video",
+    "image-to-video",
+    "produkt",
+    "b-roll",
+    "multi-shot",
+    "higgsfield",
+    "playbook"
+   ],
+   "path": "library/models/kling/PLAYBOOK.md",
+   "status": "unverified"
+  },
+  {
+   "kit": "models",
+   "kit_title": "Model playbooks (AI-modell per scen, D10)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs innan ett recepts ai_upgrade körs; registret (engine/creative_registry.py) avgör vad som är tillgängligt",
+   "notes": "Utgångsläge, inte regler. Kontopris alltid via leverantörens /estimate/.",
+   "verified_at": null,
+   "preview": null,
+   "id": "model.routing",
+   "name": "Modellval per scentyp (routningstabell)",
+   "type": "model",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Vilken AI-modell per scentyp: produkt i rörelse, människa, tal/läppsynk, miljö, första/sista bild – och vad som aldrig ska vara AI (produktbevis, text, UI).",
+   "tags": [
+    "ai-video",
+    "routing",
+    "modellval",
+    "kling",
+    "seedance",
+    "veo",
+    "gpt-image-2",
+    "d10"
+   ],
+   "path": "library/models/README.md",
+   "status": "unverified"
+  },
+  {
+   "kit": "models",
+   "kit_title": "Model playbooks (AI-modell per scen, D10)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "paid",
+   "requires": [
+    "api:higgsfield"
+   ],
+   "use": "ai_upgrade.model = \"seedance\" i recipe.json; endpoints bytedance/seedance-2.5 och -2.0 (text/image-to-video)",
+   "notes": "generate_audio är true som default – sätt explicit. Reference-to-video ej aktiverat i Content Engine.",
+   "verified_at": null,
+   "preview": null,
+   "id": "model.seedance",
+   "name": "Seedance 2.0 / 2.5 – playbook",
+   "type": "model",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1",
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Människor och karaktärer, första/sista bild-övergångar, multi-shot upp till 30 s (2.5), 4K (2.0). Sektionsprompt (GLOBAL STYLE … AUDIO), parametrar och fallgropar.",
+   "tags": [
+    "seedance",
+    "ai-video",
+    "människa",
+    "karaktär",
+    "first-last-frame",
+    "higgsfield",
+    "playbook"
+   ],
+   "path": "library/models/seedance/PLAYBOOK.md",
+   "status": "unverified"
+  },
+  {
+   "kit": "models",
+   "kit_title": "Model playbooks (AI-modell per scen, D10)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "paid",
+   "requires": [
+    "api:gemini"
+   ],
+   "use": "ai_upgrade.model = \"veo-3.1\" i recipe.json; kräver Gemini API/Vertex-integration (finns inte än)",
+   "notes": "Gemini API-pris (läst 2026-10-09): Veo 3.1 0,40 USD/s, Fast 0,10–0,12 USD/s.",
+   "verified_at": null,
+   "preview": null,
+   "id": "model.veo-3.1",
+   "name": "Veo 3.1 – playbook (tal och läppsynk)",
+   "type": "model",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9"
+   ],
+   "engine": "none",
+   "description": "Native dialog, SFX och ambiens; 4/6/8 s, referensbilder, första/sista bild. Svenska odokumenterat – provkör. Inte i Higgsfields API eller i modellregistret.",
+   "tags": [
+    "veo",
+    "ai-video",
+    "läppsynk",
+    "dialog",
+    "ljud",
+    "google",
+    "playbook"
+   ],
+   "path": "library/models/veo-3.1/PLAYBOOK.md",
+   "status": "unverified"
+  },
+  {
    "kit": "animate",
    "kit_title": "Animate – procedurell animation i valfri stil (cth9191)",
    "source": {
@@ -33284,6 +33480,511 @@
    ],
    "path": "library/prompts/motion-studio-playbook/05-xml-spec.md",
    "status": "unverified"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.faiv-customer-reaction') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 15 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.faiv-customer-reaction",
+   "name": "Kundens reaktion – hur blev det?",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Vi frågade: hur blev det? – En riktig kund med egna ord är mer trovärdig än all reklamtext.",
+   "tags": [
+    "faiv",
+    "extraljus",
+    "grillkit",
+    "testimonial",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "kling"
+   ],
+   "path": "library/recipes/faiv-customer-reaction/RECIPE.md",
+   "status": "unverified",
+   "company": "faiv"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.faiv-dark-to-light-reveal') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 15 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.faiv-dark-to-light-reveal",
+   "name": "Mörker → ljus",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Så här mörkt är det. – Av → på är det starkaste produktbeviset som finns: tittaren ser skillnaden själv, ingen text behöver övertyga.",
+   "tags": [
+    "faiv",
+    "extraljus",
+    "grillkit",
+    "before-after",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "kling"
+   ],
+   "path": "library/recipes/faiv-dark-to-light-reveal/RECIPE.md",
+   "status": "unverified",
+   "company": "faiv"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.faiv-driver-pov-before-after') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 12 s · 5 scener · status draft. Valfria betalda AI-uppgraderingar: seedance.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.faiv-driver-pov-before-after",
+   "name": "Förarens POV – före/efter",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Samma väg. Samma kväll. – Förarperspektivet gör tittaren till föraren: hen känner obehaget i mörkret och lättnaden när ljuset kommer.",
+   "tags": [
+    "faiv",
+    "extraljus",
+    "grillkit",
+    "pov",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "seedance"
+   ],
+   "path": "library/recipes/faiv-driver-pov-before-after/RECIPE.md",
+   "status": "unverified",
+   "company": "faiv"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.faiv-installed-and-done') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 20 s · 7 scener · status draft. Valfria betalda AI-uppgraderingar: kling.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.faiv-installed-and-done",
+   "name": "Monterat & klart",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Rullar in: {car_model}. Rullar ut: … – Hantverket bygger förtroende: händer, verktyg och kablage visar att det görs ordentligt, timelapsen komprimerar en arbetsdag till sekunder och slutet belönar tittaren med ljuset.",
+   "tags": [
+    "faiv",
+    "extraljus",
+    "grillkit",
+    "before-after",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "kling"
+   ],
+   "path": "library/recipes/faiv-installed-and-done/RECIPE.md",
+   "status": "unverified",
+   "company": "faiv"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.faiv-product-in-nordic-context') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 15 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling, seedance.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.faiv-product-in-nordic-context",
+   "name": "Grillkitet på plats – nordisk miljö",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Din {car_model} – fast som den borde sett ut från fabrik. – Visar grillkitet där det hör hemma: på kundens bilmodell i svensk skog, snö och blå timme.",
+   "tags": [
+    "faiv",
+    "extraljus",
+    "grillkit",
+    "product-in-context",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "kling",
+    "seedance"
+   ],
+   "path": "library/recipes/faiv-product-in-nordic-context/RECIPE.md",
+   "status": "unverified",
+   "company": "faiv"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.faiv-winter-mood') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 20 s · 7 scener · status draft. Valfria betalda AI-uppgraderingar: kling.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.faiv-winter-mood",
+   "name": "Vintermörker",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Mörkret kommer. – Säsongsfilm för sep–feb: stämningen gör jobbet, inte säljtexten.",
+   "tags": [
+    "faiv",
+    "extraljus",
+    "grillkit",
+    "mood",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "kling"
+   ],
+   "path": "library/recipes/faiv-winter-mood/RECIPE.md",
+   "status": "unverified",
+   "company": "faiv"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.gk-deadline-31-dec') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 15 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.gk-deadline-31-dec",
+   "name": "Innan årsskiftet",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Har du friskvårdsbidrag kvar i år? – Okt–dec är högsäsong: bidraget ska användas innan året är slut hos många arbetsgivare.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "golf",
+    "seasonal",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "kling"
+   ],
+   "path": "library/recipes/gk-deadline-31-dec/RECIPE.md",
+   "status": "unverified",
+   "company": "golfkuponger"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.gk-friskvard-tips') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 20 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: kling, veo-3.1.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.gk-friskvard-tips",
+   "name": "3 saker om friskvårdsbidraget",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "3 saker om friskvårdsbidraget som HR inte hinner berätta. – Tips-formatet sparas och delas: konkret nytta i tre steg, en person som pratar direkt till tittaren och riktiga skärminspelningar som bevis.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "golf",
+    "tips",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "kling",
+    "veo-3.1"
+   ],
+   "path": "library/recipes/gk-friskvard-tips/RECIPE.md",
+   "status": "unverified",
+   "company": "golfkuponger"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.gk-office-to-course-match-cut') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 15 s · 8 scener · status draft. Valfria betalda AI-uppgraderingar: kling, seedance.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.gk-office-to-course-match-cut",
+   "name": "Kontoret → banan (match cut)",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Samma rörelse. Bättre plats. – Match cuts är tillfredsställande att titta på och berättar hela budskapet utan ord: samma rörelse, kontoret byts mot banan.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "golf",
+    "match-cut",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "kling",
+    "seedance"
+   ],
+   "path": "library/recipes/gk-office-to-course-match-cut/RECIPE.md",
+   "status": "unverified",
+   "company": "golfkuponger"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.gk-pov-hr-mail') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 12 s · 6 scener · status draft. Valfria betalda AI-uppgraderingar: seedance.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.gk-pov-hr-mail",
+   "name": "POV: mejlet från HR",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "POV: mejlet från HR om friskvårdsbidraget kommer. – POV-formatet sätter tittaren i en situation hen känner igen direkt.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "golf",
+    "pov",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "seedance"
+   ],
+   "path": "library/recipes/gk-pov-hr-mail/RECIPE.md",
+   "status": "unverified",
+   "company": "golfkuponger"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.gk-recurring-character-sketch') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 20 s · 7 scener · status draft. Valfria betalda AI-uppgraderingar: seedance, veo-3.1.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.gk-recurring-character-sketch",
+   "name": "Återkommande karaktär – {karaktär} och bidraget",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "hyperframes",
+   "description": "Det här är {karaktär}. – En återkommande karaktär bygger igenkänning över många inlägg (som Duolingo-ugglan eller en julkalender): tittaren väntar på nästa avsnitt.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "golf",
+    "sketch",
+    "recept",
+    "video",
+    "riktig film",
+    "ai-upgrade",
+    "seedance",
+    "veo-3.1"
+   ],
+   "path": "library/recipes/gk-recurring-character-sketch/RECIPE.md",
+   "status": "unverified",
+   "company": "golfkuponger"
+  },
+  {
+   "kit": "recipes",
+   "kit_title": "Produktionsrecept (recipe/v1)",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Repository LICENSE"
+   },
+   "cost": "free",
+   "requires": [
+    "footage:docs/FILMLISTA.md"
+   ],
+   "use": "get_content_library_item('recipe.gk-ugc-reaction') ger hela receptet; filma enligt footage_ids (docs/FILMLISTA.md), klipp i HyperFrames",
+   "notes": "recipe/v1 · 15 s · 6 scener · status draft. Ingen AI – bara riktigt material.",
+   "verified_at": null,
+   "preview": null,
+   "id": "recipe.gk-ugc-reaction",
+   "name": "UGC-reaktion – visste du det här?",
+   "type": "recipe",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5"
+   ],
+   "engine": "hyperframes",
+   "description": "Okej, varför sa ingen det här tidigare? – UGC-känsla (mobil, egen röst, ingen reklamfinish) läses som ett tips från en vän, inte som en annons.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "golf",
+    "testimonial",
+    "recept",
+    "video",
+    "riktig film"
+   ],
+   "path": "library/recipes/gk-ugc-reaction/RECIPE.md",
+   "status": "unverified",
+   "company": "golfkuponger"
   },
   {
    "kit": "content-engine-motion",
