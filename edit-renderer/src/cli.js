@@ -2,7 +2,8 @@
 // Local renderer: build and render a cut spec from local files, no server needed.
 //   node src/cli.js smoke-media                                   generate the smoke-test clips (ffmpeg)
 //   node src/cli.js render --spec fixtures/smoke-spec.json --inputs fixtures/smoke-inputs.json --out ../work/edit-smoke
-//   ... add --dry-run to only build the composition and run `hyperframes lint`.
+//   ... add --dry-run to only build the composition and run the browser check (lint, layout, contrast, safe zones).
+//   node src/cli.js contact-sheet <video.mp4> <sheet.png> [--every 1]           a frame grid for reviews
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,14 +39,30 @@ async function smokeMedia(outDir) {
   }
 }
 
+/** One row of frames every `every` seconds (two rows for long cuts), 270 px wide each. */
+async function contactSheet(video, out, every = 1) {
+  const { stdout } = await run('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', video]);
+  const n = Math.max(1, Math.floor(Number(stdout) / every));
+  const cols = Math.min(n, 8);
+  const rows = Math.ceil(n / cols);
+  const { code, stderr } = await run('ffmpeg', ['-hide_banner', '-y', '-i', video, '-vf',
+    `fps=1/${every},scale=270:-2,tile=${cols}x${rows}:padding=6:color=0x202020`, '-frames:v', '1', out]);
+  if (code !== 0) throw new Error(stderr.slice(-400));
+  console.log(`skapade ${out} (${n} bilder)`);
+}
+
 async function main() {
   const command = process.argv[2];
   if (command === 'smoke-media') {
     await smokeMedia(resolve(arg('out', join(REPO, 'work', 'edit-smoke', 'media'))));
     return;
   }
+  if (command === 'contact-sheet') {
+    await contactSheet(resolve(process.argv[3]), resolve(process.argv[4]), Number(arg('every', 1)));
+    return;
+  }
   if (command !== 'render') {
-    console.log('Användning: cli.js smoke-media | render --spec <fil> --inputs <fil> --out <mapp> [--dry-run] [--no-lint]');
+    console.log('Användning: cli.js smoke-media | render --spec <fil> --inputs <fil> --out <mapp> [--dry-run] [--no-lint] | contact-sheet <mp4> <png>');
     process.exit(2);
   }
   const specPath = resolve(arg('spec'));
@@ -69,7 +86,8 @@ async function main() {
     console.log(JSON.stringify({ master: result.master, preview: result.preview, ...result.meta,
       seconds: Math.round((Date.now() - started) / 1000) }, null, 2));
   } else {
-    console.log(`komposition: ${result.project} (${result.total} s)`);
+    console.log(JSON.stringify({ project: result.project, total: result.total, beats: result.beats, sfx: result.sfx,
+      typography: result.typography, safe: result.safe }, null, 2));
   }
 }
 

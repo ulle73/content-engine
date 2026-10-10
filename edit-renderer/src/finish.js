@@ -3,6 +3,8 @@ import { spawn } from 'node:child_process';
 import { statSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { mixCues, writeWav } from './sfx.js';
+
 export class JobError extends Error {
   constructor(code, message, { retryable = false } = {}) {
     super(message);
@@ -62,11 +64,12 @@ async function measure(file) {
 }
 
 /**
- * picture: HyperFrames render (H.264, maybe with clip sound). music: optional audio file.
- * Returns {master, preview|null, loudness, masterBytes, previewBytes}.
+ * picture: HyperFrames render (H.264, maybe with clip sound). music: optional audio file. sfx: optional cue sheet
+ * (compose.js planSfx) rendered to one stem and mixed under the music; music + SFX duck under clip sound.
+ * Returns {master, cut, preview|null, loudness, masterBytes, previewBytes, sfx}.
  */
 export async function finish({ picture, music = null, musicVolume = 1, duration, fps = 30, outDir, previewMax, masterMax,
-  outro = null }) {
+  outro = null, sfx = null }) {
   const D = Number(duration);
   const pic = await probe(picture);
   const mixFile = join(outDir, 'mix.wav');
@@ -76,24 +79,40 @@ export async function finish({ picture, music = null, musicVolume = 1, duration,
   if (pic.hasAudio) {
     chains.push(`[0:a]aresample=48000,aformat=channel_layouts=stereo,apad,atrim=0:${D},asetpts=PTS-STARTPTS[clip]`);
   }
+  let bed = null;
   if (music) {
     inputs.push('-i', music);
     const fadeAt = Math.max(0, D - 1.5).toFixed(3);
-    chains.push(`[1:a]aresample=48000,aformat=channel_layouts=stereo,atrim=0:${D},asetpts=PTS-STARTPTS,`
+    chains.push(`[${inputs.length / 2 - 1}:a]aresample=48000,aformat=channel_layouts=stereo,atrim=0:${D},asetpts=PTS-STARTPTS,`
       + `volume=${Number(musicVolume).toFixed(3)},afade=t=in:d=0.08,afade=t=out:st=${fadeAt}:d=1.5,apad,atrim=0:${D}[mus]`);
+    bed = '[mus]';
   }
-  if (pic.hasAudio && music) {
-    chains.push('[clip]asplit=2[c1][c2]', '[mus][c1]sidechaincompress=threshold=0.04:ratio=6:attack=15:release=350[duck]',
+  let sfxCount = 0;
+  if (sfx && sfx.length) {
+    const sfxFile = join(outDir, 'sfx.wav');
+    writeWav(sfxFile, mixCues(sfx, D));
+    sfxCount = sfx.length;
+    inputs.push('-i', sfxFile);
+    chains.push(`[${inputs.length / 2 - 1}:a]aresample=48000,aformat=channel_layouts=stereo,apad,atrim=0:${D},asetpts=PTS-STARTPTS[sfx]`);
+    if (bed) {
+      chains.push(`${bed}[sfx]amix=inputs=2:duration=first:normalize=0[bed]`);
+      bed = '[bed]';
+    } else {
+      bed = '[sfx]';
+    }
+  }
+  if (pic.hasAudio && bed) {
+    chains.push('[clip]asplit=2[c1][c2]', `${bed}[c1]sidechaincompress=threshold=0.04:ratio=6:attack=15:release=350[duck]`,
       '[duck][c2]amix=inputs=2:duration=longest:normalize=0[mix]');
     mixLabel = '[mix]';
   } else if (pic.hasAudio) {
     mixLabel = '[clip]';
-  } else if (music) {
-    mixLabel = '[mus]';
+  } else if (bed) {
+    mixLabel = bed;
   }
   let loud = null;
   if (mixLabel) {
-    await ffmpeg([...inputs, '-filter_complex', chains.join(';'), '-map', mixLabel, '-c:a', 'pcm_s16le', '-t', String(D), mixFile],
+    await ffmpeg([...inputs, '-filter_complex', chains.join(';'), '-map', mixLabel, '-c:a', 'pcm_f32le', '-t', String(D), mixFile],
       'audio_failed', 'Ljudmixen misslyckades');
     loud = await measure(mixFile);
   }
@@ -132,7 +151,7 @@ export async function finish({ picture, music = null, musicVolume = 1, duration,
     preview = await makePreview({ master: final, D: total, fps, outDir, previewMax, width: Number(verified.video.width), height: Number(verified.video.height) });
     previewBytes = statSync(preview).size;
   }
-  return { master: final, preview, masterBytes: finalBytes, previewBytes, duration: total,
+  return { master: final, cut: master, preview, masterBytes: finalBytes, previewBytes, duration: total, sfx: sfxCount,
     loudness: after ? Number(Number(after.input_i).toFixed(1)) : null };
 }
 

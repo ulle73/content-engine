@@ -1,31 +1,33 @@
 // Build a HyperFrames project (index.html + assets + fonts) from a cut spec (cut/v1) with the generic cut template.
+// Finish layer: beat-snapped timing, designed typography (type scale, balanced Swedish line breaks, bundled fonts),
+// platform safe zones, a per-brand look (grade, grain, vignette, always-moving camera, motion blur), legibility
+// treatment from the measured picture, and the SFX cue sheet for finish.js.
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { resolve, transitionDuration } from './support.js';
+import { alignToBeat, snapScenes } from './beats.js';
+import { legibility } from './legibility.js';
+import { FORMATS, PLATFORM_ZONES } from './safezones.js';
+import { TRANSITION_SFX } from './sfx.js';
+import { SUPPORT, resolve, transitionDuration } from './support.js';
+import {
+  FONTS_DIR, FONT_FACES, GLUE_WORDS, breakLines, fontFiles, isGlue, maxChars, metrics, resolveBrandFonts, sizeSteps,
+} from './typeset.js';
+
+export { FORMATS };
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const FONTS = join(HERE, '..', 'template', 'fonts');
 const RUNTIME = readFileSync(join(HERE, 'runtime.js'), 'utf8');
 export const GSAP_URL = 'https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js';
 
-export const FORMATS = {
-  '9:16': { W: 1080, H: 1920, safe: { top: 250, bottom: 430, left: 110, right: 110 } },
-  '4:5': { W: 1080, H: 1350, safe: { top: 110, bottom: 150, left: 90, right: 90 } },
-  '1:1': { W: 1080, H: 1080, safe: { top: 80, bottom: 90, left: 80, right: 80 } },
-  '16:9': { W: 1920, H: 1080, safe: { top: 80, bottom: 100, left: 140, right: 140 } },
-};
-const HARD_SWAPS = new Set(['cut', 'flash', 'glitch']);
+const HARD_SWAPS = new Set(['cut', 'flash', 'glitch', 'speed-ramp']);
+const BLUR_TRANSITIONS = { whip: 'x', push: 'y', 'speed-ramp': 'x' };
 const CAMERAS = ['ken-burns', 'push-in', 'pull-back'];
 const CHAR_STYLES = new Set(['typewriter', 'cascade', 'scramble', 'tracking-in']);
 const MASK_STYLES = new Set(['rise', 'line-reveal', 'highlight', 'shimmer', 'lower-third']);
+const DISPLAY_STYLES = new Set(['slam', 'extrusion', 'caption', 'chunk']);
 const LT_PAD = 92; // .lt horizontal padding (40 + 52)
-const BASE_SIZE = {
-  slam: [176, 132], extrusion: [170, 128], caption: [158, 128], rise: [108, 86], 'line-reveal': [104, 84],
-  'blur-in': [104, 84], typewriter: [80, 68], 'tracking-in': [96, 80], cascade: [104, 84], highlight: [100, 84],
-  shimmer: [108, 86], 'lower-third': [66, 66], scramble: [96, 80],
-};
 const DEFAULT_BRAND = { background: '#111814', foreground: '#ffffff', accent: '#68766f', muted: '#dfe7e3', paper: '#f6f8f7', ink: '#111814' };
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -59,22 +61,50 @@ export function words(text) {
   return out;
 }
 
-function wordsHtml(list, style) {
-  const mark = style === 'highlight' && !list.some((w) => w.em) && list.length ? list.length - 1 : -1;
-  return list.map((w, i) => {
-    const inner = CHAR_STYLES.has(style)
-      ? [...w.text].map((ch) => `<span class="ch">${esc(ch)}</span>`).join('')
-      : esc(w.text);
-    const em = w.em || i === mark;
-    const marker = style === 'highlight' && em ? '<span class="mk"></span>' : '';
-    return `<span class="w${em ? ' em' : ''}" data-layout-allow-overflow>${marker}<span class="wi">${inner}</span></span>`;
-  }).join(' ');
+/** Caption chunks: 2–3 words (≤ 16 characters), never ending on a function word or a bare number. */
+export function chunkWords(list) {
+  const out = [];
+  let cur = [];
+  const len = (arr) => arr.reduce((s, w) => s + w.text.length, 0) + Math.max(0, arr.length - 1);
+  for (const w of list) {
+    if (cur.length && (cur.length >= 3 || len([...cur, w]) > 16) && !isGlue(cur[cur.length - 1].text)) {
+      out.push(cur);
+      cur = [];
+    }
+    cur.push(w);
+  }
+  if (cur.length) {
+    // Fold a lone trailing word into the previous chunk when it still reads as one phrase.
+    if (cur.length === 1 && out.length && len([...out[out.length - 1], ...cur]) <= 20) out[out.length - 1].push(...cur);
+    else out.push(cur);
+  }
+  return out;
 }
 
-function plan(spec, files, warnings) {
-  const scenes = [];
-  let clock = 0;
-  spec.scenes.forEach((s, idx) => {
+function wordHtml(w, i, style, mark) {
+  const inner = CHAR_STYLES.has(style)
+    ? [...w.text].map((ch) => `<span class="ch">${esc(ch)}</span>`).join('')
+    : esc(w.text);
+  const em = w.em || i === mark;
+  const marker = style === 'highlight' && em ? '<span class="mk"></span>' : '';
+  return `<span class="w${em ? ' em' : ''}" data-layout-allow-overflow>${marker}<span class="wi">${inner}</span></span>`;
+}
+
+function wordsHtml(list, style) {
+  const mark = style === 'highlight' && !list.some((w) => w.em) && list.length ? list.length - 1 : -1;
+  if (style === 'chunk') {
+    let k = 0;
+    return chunkWords(list).map((c) => `<span class="ck">${c.map((w) => wordHtml(w, k++, style, mark)).join(' ')}</span>`).join('');
+  }
+  return list.map((w, i) => wordHtml(w, i, style, mark)).join(' ');
+}
+
+function sfxOf(native) {
+  return SUPPORT.effects[native]?.sfx || null;
+}
+
+function plan(spec, files, warnings, { grid, logo }) {
+  const raw = spec.scenes.map((s, idx) => {
     const where = `Scen ${s.id}`;
     let transition = null;
     if (idx > 0 && s.transition_in) {
@@ -92,26 +122,42 @@ function plan(spec, files, warnings) {
     if (cams.length > 1) warnings.push(`${where}: flera kamerarörelser (${cams.join(', ')}); bara ${cams[0]} används.`);
     const grades = natives.filter((n) => n.startsWith('grade-'));
     if (grades.length > 1) warnings.push(`${where}: flera graderingar; bara ${grades[0]} används.`);
+    if (!logo && natives.some((n) => n.startsWith('logo-'))) warnings.push(`${where}: logo-effekten kräver en logga i varumärket och hoppades över.`);
     const file = files[s.asset_id];
     if (!file) throw new Error(`Mediefil saknas för ${where}`);
+    // Never a static frame: stills get Ken Burns, video a slow eased push.
     const camera = cams[0] || (file.kind === 'image' ? 'ken-burns' : 'micro-push');
     let style = null;
     if (s.text) {
       style = resolve('text', s.text_style);
       if (s.text_style && !style) warnings.push(`${where}: textstilen ${s.text_style} stöds inte av klippmallen; standardstilen används.`);
-      style = style || (s.purpose === 'hook' ? 'slam' : 'rise');
+      const captionLook = natives.map((n) => SUPPORT.effects[n]?.text_style).find(Boolean);
+      style = style || captionLook || (s.purpose === 'hook' ? 'slam' : 'rise');
     }
-    const duration = Number(s.duration_s);
-    scenes.push({
-      id: s.id, idx, start: r3(clock), end: r3(clock + duration), transition, natives, camera,
-      grade: grades[0] || null, style, kind: file.kind, file, source: s,
+    const trim = Number(s.trim_start_s || 0);
+    return {
+      id: s.id, idx, duration: Number(s.duration_s), transition, natives, camera, grade: grades[0] || null, style,
+      kind: file.kind, file, source: s,
+      maxDuration: file.kind === 'video' && file.duration ? Math.max(0.5, file.duration - trim) : undefined,
       position: style === 'lower-third' ? 'bottom' : s.text_position || (s.purpose === 'hook' || s.purpose === 'cta' ? 'center' : 'bottom'),
-    });
-    clock += duration;
+    };
   });
+  // Beat sync: move scene boundaries (and with them the transitions) onto the music's beats.
+  let timing = null;
+  if (grid) {
+    const snapped = snapScenes(raw.map((r) => ({ id: r.id, duration: r.duration, max: r.maxDuration })), grid);
+    snapped.durations.forEach((d, i) => { raw[i].duration = d; });
+    timing = snapped;
+  }
+  const scenes = [];
+  let clock = 0;
+  for (const r of raw) {
+    scenes.push({ ...r, start: r3(clock), end: r3(clock + r.duration) });
+    clock += r.duration;
+  }
   // Clamp each transition to what the two neighbouring scenes can carry.
   scenes.forEach((s, i) => {
-    if (!s.transition || s.transition.cut || !i) return;
+    if (!s.transition || !i) return;
     const room = Math.min(s.end - s.start, scenes[i - 1].end - scenes[i - 1].start) * 0.6;
     s.transition.d = r3(Math.min(s.transition.d, room));
   });
@@ -129,9 +175,13 @@ function plan(spec, files, warnings) {
     s.winStart = i && t && !t.cut ? r3(Math.max(0, s.start - t.d / 2)) : s.start;
     const next = seq[i + 1];
     s.winEnd = next && next.transition && !next.transition.cut ? r3(Math.min(total, s.end + next.transition.d / 2)) : s.end;
+    // Text lands after the transition settles – on a beat when there is music.
+    const base = s.start + (t && !t.cut ? t.d / 2 : 0) + (s.isEnd ? 0.1 : 0.12);
+    const onBeat = grid ? alignToBeat(base, grid, { before: 0.08, after: 0.4 }) : base;
+    s.textAt = r3(onBeat <= s.end - 0.7 ? onBeat : base);
   });
   if (scenes.length) scenes[scenes.length - 1].winEnd = endcard ? scenes[scenes.length - 1].winEnd : total;
-  return { scenes, endcard, total };
+  return { scenes, endcard, total, timing };
 }
 
 function mediaHtml(s, music) {
@@ -153,19 +203,28 @@ function mediaHtml(s, music) {
     + `data-duration="${r3(len)}" data-media-start="${r3(mediaStart)}" data-track-index="${s.idx + 1}"></video>`;
 }
 
-function textHtml(s, fmt) {
-  if (!s.style) return { html: '', text: null };
+/** Layout parameters for one text block (the browser runtime fits and breaks it). */
+function textSpec(style, position, fmt, format, fonts, extra = {}) {
   const { W, H, safe } = fmt;
-  const list = words(s.source.text);
   const maxW = W - safe.left - safe.right;
   const room = H - safe.top - safe.bottom;
-  const [center, side] = BASE_SIZE[s.style] || BASE_SIZE.rise;
-  const text = {
-    style: s.style,
-    base: s.position === 'center' ? center : side,
-    maxW: s.style === 'lower-third' ? maxW - LT_PAD : maxW,
-    maxH: Math.round(room * (s.position === 'center' ? 0.55 : s.style === 'lower-third' ? 0.2 : 0.34)),
+  const display = DISPLAY_STYLES.has(style);
+  const face = display ? fonts.display : fonts.text;
+  const m = metrics(style, face);
+  return {
+    style, face, sizes: sizeSteps(format, style, position, W, H), leading: m.leading, tracking: m.tracking,
+    maxW: style === 'lower-third' ? maxW - LT_PAD : maxW,
+    maxH: Math.round(room * (position === 'center' ? 0.55 : style === 'lower-third' ? 0.2 : 0.34)),
+    maxChars: maxChars(format, style), maxLines: style === 'lower-third' ? 2 : display ? 3 : 3,
+    ...extra,
   };
+}
+
+function textHtml(s, fmt, format, fonts, analysis) {
+  if (!s.style) return { html: '', text: null };
+  const list = words(s.source.text);
+  const legible = legibility(analysis?.[s.id], s.style);
+  const text = textSpec(s.style, s.position, fmt, format, fonts, { at: s.textAt, legible });
   const glow = s.natives.includes('glow') ? ' glow' : '';
   const mask = MASK_STYLES.has(s.style) ? ' mask' : '';
   const caret = s.style === 'typewriter' ? `<span id="CR-${s.id}" class="caret"></span>` : '';
@@ -173,27 +232,44 @@ function textHtml(s, fmt) {
   if (s.style === 'lower-third') {
     body = `<div class="lt"><div id="LP-${s.id}" class="lt-panel"></div><div id="LB-${s.id}" class="lt-bar"></div>${body}</div>`;
   }
+  const plate = legible.mode === 'plate' ? `<div id="PL-${s.id}" class="plate" data-layout-allow-overflow></div>` : '';
   const scrimSide = s.style === 'lower-third' ? 'bottom' : s.position;
+  const scrimAlpha = legible.mode === 'own' ? 0.3 : legible.mode === 'plate' ? 0.22 : legible.alpha;
   return {
     text,
-    html: `<div id="SC-${s.id}" class="scrim scrim-${scrimSide}"></div>`
-      + `<div id="X-${s.id}" class="txt pos-${s.position} style-${s.style}${glow}" data-layout-allow-occlusion>${body}</div>`,
+    html: `<div id="SC-${s.id}" class="scrim scrim-${scrimSide}" style="--sa: ${scrimAlpha}"></div>`
+      + `<div id="X-${s.id}" class="txt pos-${s.position} style-${s.style} face-${text.face.replace(/\s+/g, '-')}${glow} legible-${legible.mode}" `
+      + `data-layout-allow-occlusion>${plate}${body}</div>`,
   };
 }
 
-function sceneHtml(s, fmt, music) {
+function logoHtml(s, logoName, fmt) {
+  const kind = s.natives.includes('logo-sting') ? 'sting' : s.natives.includes('logo-reveal') ? 'reveal' : null;
+  if (!kind || !logoName) return '';
+  const { W, H, safe } = fmt;
+  const maxW = Math.round((W - safe.left - safe.right) * 0.6);
+  // Above centered text, centered otherwise.
+  const top = s.style && s.position === 'center' ? safe.top + 20 : Math.round(H * 0.36);
+  return `<div id="LG-${s.id}" class="logo-fx logo-${kind}" style="top: ${top}px">`
+    + `<div id="LR-${s.id}" class="logo-ring"></div><img src="assets/${logoName}" alt="" style="max-width: ${maxW}px; max-height: ${Math.round(H * 0.12)}px"></div>`;
+}
+
+function sceneHtml(s, fmt, format, music, fonts, analysis, look, logoName) {
   const n = s.natives;
-  const grade = s.grade ? ` ${s.grade}` : '';
+  const grade = s.grade ? ` ${s.grade}` : look ? ' look' : '';
   const tint = s.grade && s.grade !== 'grade-noir' ? `<div class="tint tint-${s.grade.slice(6)}"></div>` : '';
+  const vignette = n.includes('vignette') ? 'vignette' : look ? 'vignette vignette-lite' : '';
+  const grain = n.includes('grain') ? 'grain' : look ? 'grain grain-lite' : '';
   const overlays = [
     tint,
     n.includes('dark-to-light') ? `<div id="BL-${s.id}" class="bloom" data-layout-allow-overflow></div>` : '',
-    n.includes('vignette') ? '<div class="vignette"></div>' : '',
+    vignette ? `<div class="${vignette}"></div>` : '',
     n.includes('leak-overlay') ? `<div id="LO-${s.id}" class="leak-ov" data-layout-allow-overflow></div>` : '',
     n.includes('light-sweep') ? `<div id="SW-${s.id}" class="sweep-wrap" data-layout-allow-overflow><div class="sweep-band" data-layout-allow-overflow></div></div>` : '',
-    n.includes('grain') ? `<div class="grain"><div id="GT-${s.id}" class="grain-tex" data-layout-allow-overflow></div></div>` : '',
+    grain ? `<div class="${grain}"><div id="GT-${s.id}" class="grain-tex" data-layout-allow-overflow></div></div>` : '',
+    n.includes('beat-punch') ? `<div id="PF-${s.id}" class="punch-flash"></div>` : '',
   ].join('');
-  const { html: textBlock, text } = textHtml(s, fmt);
+  const { html: textBlock, text } = textHtml(s, fmt, format, fonts, analysis);
   const t = s.transition;
   const extras = [
     t && t.type === 'wipe' ? `<div id="E-${s.id}" class="edge"></div>` : '',
@@ -207,6 +283,7 @@ function sceneHtml(s, fmt, music) {
             ${mediaHtml(s, music)}
           </div></div></div></div></div>
           ${overlays}
+          ${logoHtml(s, logoName, fmt)}
           ${textBlock}
         </div>
         ${extras}
@@ -214,23 +291,23 @@ function sceneHtml(s, fmt, music) {
   return { html, text };
 }
 
-function endHtml(e, fmt, spec, brand, logoName) {
+function endHtml(e, fmt, format, spec, brand, logoName, fonts) {
   const { W, H, safe } = fmt;
   const maxW = W - safe.left - safe.right;
   const list = words(spec.cta.text);
   const host = String(spec.cta.url || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
   const logo = logoName
-    ? `<div id="ELW-${e.id}" class="end-logo"><img src="assets/${logoName}" alt="" style="max-width: ${Math.round(maxW * 0.62)}px; max-height: ${Math.round(H * 0.15)}px"></div>`
+    ? `<div id="ELW-${e.id}" class="end-logo"><img src="assets/${logoName}" alt="" style="max-width: ${Math.round(maxW * 0.7)}px; max-height: ${Math.round(H * 0.16)}px"></div>`
     : `<div id="ELW-${e.id}" class="end-word">${esc(brand.name || '')}</div>`;
-  e.text = { style: 'rise', base: 104, maxW, maxH: Math.round((H - safe.top - safe.bottom) * 0.3) };
+  e.text = textSpec('rise', 'center', fmt, format, fonts, { at: e.textAt + 0.25, maxH: Math.round((H - safe.top - safe.bottom) * 0.3), legible: { mode: 'own' } });
   return `
       <div id="L-${e.id}" class="layer end" style="z-index: ${10 + e.idx}">
         <div id="T-${e.id}" class="tr">
           <div id="EB-${e.id}" class="end-bg" data-layout-allow-overflow></div>
-          <div class="grain"><div id="GT-${e.id}" class="grain-tex" data-layout-allow-overflow></div></div>
+          <div class="grain grain-lite"><div id="GT-${e.id}" class="grain-tex" data-layout-allow-overflow></div></div>
           <div class="end-inner">
             ${logo}
-            <div id="X-${e.id}" class="txt-end"><div id="TB-${e.id}" class="tb mask">${wordsHtml(list, 'rise')}</div></div>
+            <div id="X-${e.id}" class="txt-end face-${e.text.face.replace(/\s+/g, '-')}"><div id="TB-${e.id}" class="tb mask">${wordsHtml(list, 'rise')}</div></div>
             ${host ? `<div id="EP-${e.id}" class="end-pill">${esc(host)}</div>` : ''}
           </div>
           <div id="SW-${e.id}" class="sweep-wrap" data-layout-allow-overflow><div class="sweep-band" data-layout-allow-overflow></div></div>
@@ -238,7 +315,46 @@ function endHtml(e, fmt, spec, brand, logoName) {
       </div>`;
 }
 
-function css(fmt, brand) {
+/**
+ * Brand look as an SVG colour matrix: blacks lifted a touch toward the brand background, highlights warmed or cooled
+ * toward the accent. Subtle by design – it unifies footage from different sources into one film.
+ */
+export function lookMatrix(brand) {
+  const bg = rgb(hex(brand.background, DEFAULT_BRAND.background)).map((v) => v / 255);
+  const ac = rgb(hex(brand.accent, DEFAULT_BRAND.accent)).map((v) => v / 255);
+  const mean = (ac[0] + ac[1] + ac[2]) / 3;
+  const lift = 0.04;
+  const gains = ac.map((c) => 1 + 0.06 * (c - mean));
+  const rows = [0, 1, 2].map((i) => {
+    const row = [0, 0, 0, 0, r3(bg[i] * lift + 0.004)];
+    row[i] = r3(gains[i] * (1 - lift));
+    return row;
+  });
+  return [...rows.flat(), 0, 0, 0, 1, 0].join(' ');
+}
+
+function defsHtml(seq, brand, look) {
+  const filters = [];
+  if (look) filters.push(`<filter id="look" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${lookMatrix(brand)}"/></filter>`);
+  seq.forEach((s, i) => {
+    const t = s.transition;
+    if (!t || !BLUR_TRANSITIONS[t.type] || !i) return;
+    // Directional motion blur for fast moves: one filter for the incoming scene, one for the outgoing.
+    for (const side of ['I', 'O']) {
+      filters.push(`<filter id="MB${side}-${s.id}" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">`
+        + `<feGaussianBlur id="MB${side}G-${s.id}" stdDeviation="0 0"/></filter>`);
+    }
+  });
+  if (!filters.length) return '';
+  return `\n      <svg class="fx-defs" width="0" height="0" aria-hidden="true" data-layout-ignore><defs>${filters.join('')}</defs></svg>`;
+}
+
+function fontCss(fonts) {
+  return fonts.map((f) => `
+      @font-face { font-family: '${f.family}'; src: url("fonts/${f.file}") format('${f.file.endsWith('.ttf') ? 'truetype' : 'woff2'}'); font-weight: ${f.weight}; font-style: ${f.style}; font-display: block; }`).join('');
+}
+
+function css(fmt, brand, fonts, faces) {
   const { W, H, safe } = fmt;
   const bg = hex(brand.background, DEFAULT_BRAND.background);
   const fg = hex(brand.foreground, DEFAULT_BRAND.foreground);
@@ -253,15 +369,16 @@ function css(fmt, brand) {
   const ext = Array.from({ length: 10 }, (_, i) => mix(mix(accent, bg, 0.55), deep, i / 9));
   const extShadow = ext.map((c, i) => `calc(var(--d) * ${r3(0.12 * (i + 1))}px) calc(var(--d) * ${r3(0.14 * (i + 1))}px) 0 ${c}`).join(', ');
   const noise = "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
-  return `
-      @font-face { font-family: 'Inter'; src: url("fonts/inter-500.woff2") format('woff2'); font-weight: 500; font-display: block; }
-      @font-face { font-family: 'Inter'; src: url("fonts/inter-600.woff2") format('woff2'); font-weight: 600; font-display: block; }
-      @font-face { font-family: 'Inter'; src: url("fonts/inter-700.woff2") format('woff2'); font-weight: 700; font-display: block; }
-      @font-face { font-family: 'Anton'; src: url("fonts/anton.woff2") format('woff2'); font-weight: 400; font-display: block; }
-      :root { --bg: ${bg}; --fg: ${fg}; --accent: ${accent}; --accent-text: ${accentText}; --paper: ${paper}; --ink: ${ink}; --em-ink: ${emInk}; }
+  const family = (key) => `'${FONT_FACES[key].css}', ${FONT_FACES[key].fallback}`;
+  const displayCaps = faces.display === 'anton';
+  return `${fontCss(fonts)}
+      :root { --bg: ${bg}; --fg: ${fg}; --accent: ${accent}; --accent-text: ${accentText}; --paper: ${paper}; --ink: ${ink}; --em-ink: ${emInk};
+        --font-text: ${family(faces.text)}; --font-display: ${family(faces.display)}; --plate: ${rgba(mix(bg, '#000000', 0.25), 0.8)}; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: ${W}px; height: ${H}px; overflow: hidden; background: var(--bg); }
-      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); font-family: 'Inter', sans-serif; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); font-family: var(--font-text);
+        font-kerning: normal; font-feature-settings: "kern" 1, "liga" 1, "calt" 1; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+      .fx-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
       .layer { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
       .tr { position: absolute; inset: 0; overflow: hidden; background: var(--bg); }
       .cam, .shk, .fx { position: absolute; inset: 0; transform-origin: 50% 50%; }
@@ -269,6 +386,7 @@ function css(fmt, brand) {
       .fit-cover { object-fit: cover; }
       .fit-contain { object-fit: contain; }
       .bgfill { object-fit: cover; filter: blur(48px) brightness(0.5) saturate(1.2); }
+      .look { filter: url(#look) contrast(1.05) saturate(1.07); }
       .grade-warm { filter: sepia(0.16) saturate(1.12) contrast(1.06) brightness(1.02); }
       .grade-noir { filter: grayscale(1) contrast(1.28) brightness(0.96); }
       .grade-duotone { filter: grayscale(1) contrast(1.15) brightness(1.05); }
@@ -280,8 +398,11 @@ function css(fmt, brand) {
       .tint-forest { background: #1f5a3a; mix-blend-mode: soft-light; opacity: 0.5; }
       .tint-tomato { background: #e2462c; mix-blend-mode: soft-light; opacity: 0.4; }
       .vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 78% 70% at 50% 48%, transparent 50%, rgba(0, 0, 0, 0.62) 100%); }
+      .vignette-lite { background: radial-gradient(ellipse 85% 78% at 50% 46%, transparent 58%, rgba(0, 0, 0, 0.34) 100%); }
       .grain { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
       .grain-tex { position: absolute; left: -25%; top: -25%; width: 150%; height: 150%; background: ${noise}; background-size: 300px 300px; opacity: 0.12; mix-blend-mode: overlay; }
+      .grain-lite .grain-tex { opacity: 0.055; }
+      .punch-flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: #fff6e8; mix-blend-mode: screen; }
       .bloom { position: absolute; left: -30%; top: -10%; width: 160%; height: 120%; pointer-events: none; opacity: 0;
         background: radial-gradient(closest-side, ${rgba(mix(accent, '#ffffff', 0.55), 0.9)} 0%, ${rgba(accent, 0.35)} 45%, rgba(0, 0, 0, 0) 75%); mix-blend-mode: screen; }
       .leak-ov, .tleak { position: absolute; left: -20%; top: -10%; width: 140%; height: 120%; pointer-events: none; opacity: 0; mix-blend-mode: screen;
@@ -294,23 +415,39 @@ function css(fmt, brand) {
       .gbars { position: absolute; left: 0; top: 0; width: 100%; height: 9%; opacity: 0; z-index: 6; mix-blend-mode: difference;
         background: linear-gradient(90deg, rgba(255, 0, 90, 0.75), rgba(0, 255, 230, 0.75)); }
       #flash { position: absolute; inset: 0; background: #fff8ec; opacity: 0; z-index: 900; pointer-events: none; }
-      .scrim { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
-      .scrim-bottom { background: linear-gradient(0deg, rgba(0, 0, 0, 0.74) 0%, rgba(0, 0, 0, 0.38) 30%, rgba(0, 0, 0, 0) 55%); }
-      .scrim-top { background: linear-gradient(180deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.36) 30%, rgba(0, 0, 0, 0) 55%); }
-      .scrim-center { background: radial-gradient(ellipse 95% 42% at 50% 47%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.22) 55%, rgba(0, 0, 0, 0) 80%); }
+      .logo-fx { position: absolute; left: 0; right: 0; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; }
+      .logo-fx img { display: block; object-fit: contain; filter: drop-shadow(0 8px 28px rgba(0, 0, 0, 0.45)); }
+      .logo-ring { position: absolute; left: 50%; top: 50%; width: 360px; height: 360px; margin: -180px 0 0 -180px; border-radius: 50%;
+        border: 10px solid var(--accent); opacity: 0; }
+      .scrim { position: absolute; inset: 0; pointer-events: none; opacity: 0; --sa: 0.42; }
+      .scrim-bottom { background: linear-gradient(0deg, rgba(0, 0, 0, var(--sa)) 0%, rgba(0, 0, 0, var(--sa)) 20%,
+        rgba(0, 0, 0, calc(var(--sa) * 0.9)) 38%, rgba(0, 0, 0, calc(var(--sa) * 0.45)) 52%, rgba(0, 0, 0, 0) 68%); }
+      .scrim-top { background: linear-gradient(180deg, rgba(0, 0, 0, var(--sa)) 0%, rgba(0, 0, 0, var(--sa)) 20%,
+        rgba(0, 0, 0, calc(var(--sa) * 0.9)) 38%, rgba(0, 0, 0, calc(var(--sa) * 0.45)) 52%, rgba(0, 0, 0, 0) 68%); }
+      .scrim-center { background: radial-gradient(ellipse 95% 34% at 50% 48%, rgba(0, 0, 0, var(--sa)) 0%, rgba(0, 0, 0, calc(var(--sa) * 0.8)) 45%,
+        rgba(0, 0, 0, calc(var(--sa) * 0.3)) 75%, rgba(0, 0, 0, 0) 100%); }
+      .plate { position: absolute; left: 0; top: 0; width: 0; height: 0; background: var(--plate); border-radius: 22px;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35); opacity: 0; }
       .txt { position: absolute; left: ${safe.left}px; right: ${safe.right}px; display: flex; justify-content: center; pointer-events: none; }
       .pos-top { top: ${safe.top}px; }
       .pos-center { top: ${safe.top}px; bottom: ${safe.bottom}px; align-items: center; }
       .pos-bottom { bottom: ${safe.bottom}px; }
-      .tb { width: 100%; text-align: center; color: var(--fg); font-family: 'Inter', sans-serif; font-weight: 700; line-height: 1.04;
-        letter-spacing: -0.015em; text-shadow: 0 6px 28px rgba(0, 0, 0, 0.45); }
+      .tb { position: relative; width: 100%; text-align: center; color: var(--fg); font-family: var(--font-text); font-weight: 700; line-height: 1.06;
+        letter-spacing: -0.02em; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.28), 0 10px 34px rgba(0, 0, 0, 0.38); }
+      .face-playfair-display .tb { font-weight: 600; }
+      .face-playfair-display .tb .em .wi { font-style: italic; font-weight: 500; }
+      .legible-shadow .tb { text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 12px 40px rgba(0, 0, 0, 0.45); }
+      .legible-plate .tb { text-shadow: none; }
       .tb .w { display: inline-block; vertical-align: top; }
       .tb.mask .w { overflow: hidden; padding: 0.16em 0.05em 0.1em; margin: -0.16em 0 -0.1em; }
       .tb .wi { display: inline-block; }
       .tb .em .wi { color: var(--accent-text); }
       .tb .ch { display: inline-block; }
-      .style-slam .tb, .style-extrusion .tb, .style-caption .tb { font-family: 'Anton', sans-serif; font-weight: 400; text-transform: uppercase;
-        line-height: 0.95; letter-spacing: 0.005em; }
+      .style-slam .tb, .style-extrusion .tb, .style-caption .tb, .style-chunk .tb { font-family: var(--font-display); font-weight: ${displayCaps ? 400 : 700};
+        ${displayCaps ? 'text-transform: uppercase; ' : ''}line-height: 0.98; letter-spacing: ${displayCaps ? '0.01em' : '-0.02em'}; }
+      .style-chunk .tb { font-family: var(--font-text); font-weight: 700; text-transform: none; letter-spacing: -0.04em; line-height: 1.02;
+        display: grid; place-items: center; }
+      .style-chunk .ck { grid-area: 1 / 1; display: block; }
       .style-slam .tb { color: var(--paper); text-shadow: 0 0.035em 0 rgba(0, 0, 0, 0.35), 0 12px 44px rgba(0, 0, 0, 0.55); }
       .style-extrusion .tb { color: var(--paper); text-shadow: none; }
       .style-extrusion .w { --d: 22; text-shadow: ${extShadow}, calc(var(--d) * 1.6px) calc(var(--d) * 2.2px) calc(var(--d) * 1.6px) rgba(0, 0, 0, 0.5); }
@@ -327,30 +464,64 @@ function css(fmt, brand) {
       .glow .tb { text-shadow: 0 0 18px var(--accent), 0 0 46px var(--accent); }
       .style-lower-third { justify-content: flex-start; }
       .lt { position: relative; padding: 26px 40px 30px 52px; max-width: 100%; }
-      .lt-panel { position: absolute; inset: 0; background: ${rgba(bg, 0.84)}; }
-      .lt-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: var(--accent); transform-origin: 50% 100%; }
-      .lt .tb { position: relative; text-align: left; width: auto; text-shadow: none; }
+      .lt-panel { position: absolute; inset: 0; background: ${rgba(bg, 0.86)}; border-radius: 6px; }
+      .lt-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: var(--accent); transform-origin: 50% 100%; border-radius: 6px 0 0 6px; }
+      .lt .tb { position: relative; text-align: left; width: auto; text-shadow: none; font-weight: 600; }
       .end-bg { position: absolute; inset: -6%; background: radial-gradient(ellipse 70% 46% at 50% 40%, ${rgba(accent, 0.38)} 0%, ${rgba(accent, 0)} 72%),
         linear-gradient(180deg, ${mix(bg, '#ffffff', 0.06)} 0%, ${bg} 60%, ${deep} 100%); }
       .end-inner { position: absolute; left: ${safe.left}px; right: ${safe.right}px; top: ${safe.top}px; bottom: ${safe.bottom}px;
-        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: ${Math.round(Math.min(W, H) * 0.05)}px; }
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: ${Math.round(Math.min(W, H) * 0.055)}px; }
       .end-logo { display: flex; justify-content: center; }
       .end-logo img { display: block; object-fit: contain; }
-      .end-word { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 72px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg); }
+      .end-word { font-family: var(--font-text); font-weight: 700; font-size: 72px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg); }
       .txt-end { width: 100%; display: flex; justify-content: center; }
       .txt-end .tb { text-shadow: none; }
-      .end-pill { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 44px; color: var(--em-ink); background: var(--accent);
-        padding: 18px 44px; border-radius: 999px; }`;
+      .end-pill { font-family: var(--font-text); font-weight: 600; font-size: ${Math.round(Math.min(W, H) * 0.04)}px; letter-spacing: -0.005em; color: var(--em-ink); background: var(--accent);
+        padding: 0.42em 1.05em; border-radius: 999px; box-shadow: 0 14px 40px ${rgba(accent, 0.35)}; }`;
+}
+
+/** SFX cue sheet: transition accents, slam impacts, explicit catalog sounds, a riser into the outro. */
+export function planSfx(seq, total, { outro = false, auto = true } = {}) {
+  const cues = [];
+  const has = (t, kinds) => cues.some((c) => Math.abs(c.t - t) < 0.12 && kinds.includes(c.kind));
+  for (const s of seq) {
+    if (s.isEnd) continue;
+    for (const native of s.natives || []) {
+      const kind = sfxOf(native);
+      if (!kind) continue;
+      if (['riser', 'swell'].includes(kind)) cues.push({ kind, t: r3(s.end), src: s.id });
+      else if (kind === 'tapestop') cues.push({ kind, t: r3(Math.max(s.start, s.end - 0.6)), at: 'start', src: s.id });
+      else if (kind === 'room-tone') cues.push({ kind, t: r3(s.winStart), at: 'start', dur: r3(s.winEnd - s.winStart), src: s.id });
+      else if (['whoosh', 'swish', 'impact', 'boom'].includes(kind)) cues.push({ kind, t: r3(s.idx ? s.start : s.textAt), src: s.id });
+      else cues.push({ kind, t: r3(s.textAt), src: s.id });
+    }
+  }
+  if (auto) {
+    for (const s of seq) {
+      const tr = s.transition;
+      const sound = tr && TRANSITION_SFX[tr.type];
+      if (sound && !has(s.start, ['whoosh', 'swish', 'impact', 'boom'])) cues.push({ ...sound, t: r3(s.start), src: s.id, auto: true });
+      if (!s.isEnd && ['slam', 'extrusion'].includes(s.style) && s.idx === 0 && !has(s.textAt, ['impact', 'boom'])) {
+        cues.push({ kind: 'impact', t: r3(s.textAt), gainDb: -18, src: s.id, auto: true });
+      }
+      if ((s.natives || []).includes('logo-sting') && !has(s.textAt, ['impact'])) cues.push({ kind: 'impact', t: r3(s.textAt + 0.28), src: s.id, auto: true });
+      if ((s.natives || []).includes('logo-reveal')) cues.push({ kind: 'shimmer', t: r3(s.textAt + 0.4), src: s.id, auto: true });
+    }
+    if (outro && total > 2) cues.push({ kind: 'riser', t: r3(total), dur: 1.4, gainDb: -18, src: 'outro', auto: true });
+  }
+  return cues.filter((c) => c.t >= 0 && c.t <= total + 0.05).sort((a, b) => a.t - b.t);
 }
 
 /**
  * Build the project.
  * files: {assetId: {path, kind, hasAudio, duration}} for every scene asset (and optionally the logo).
- * Returns {dir, total, warnings, config}.
+ * beats: beat grid (beats.js) to snap to; analysis: {sceneId: luminance stats} (legibility.js); outro: a brand outro
+ * follows the cut (adds a riser). Returns {dir, total, warnings, config, timing, sfx, intent}.
  */
-export function compose({ spec, brand = {}, files, outDir, logoId = null }) {
+export function compose({ spec, brand = {}, files, outDir, logoId = null, beats = null, analysis = null, outro = false, autoSfx = true }) {
   const warnings = [];
-  const fmt = FORMATS[spec.format] || FORMATS['9:16'];
+  const format = FORMATS[spec.format] ? spec.format : '9:16';
+  const fmt = FORMATS[format];
   const prepared = {};
   mkdirSync(join(outDir, 'assets'), { recursive: true });
   mkdirSync(join(outDir, 'fonts'), { recursive: true });
@@ -359,28 +530,33 @@ export function compose({ spec, brand = {}, files, outDir, logoId = null }) {
     copyFileSync(file.path, join(outDir, 'assets', name));
     prepared[id] = { ...file, name };
   }
-  for (const font of ['inter-500', 'inter-600', 'inter-700', 'anton']) {
-    copyFileSync(join(FONTS, `${font}.woff2`), join(outDir, 'fonts', `${font}.woff2`));
-  }
-  const family = String(brand.font_family || '');
-  if (family && !/inter/i.test(family)) {
-    warnings.push(`Typsnittet ${family.split(',')[0]} finns inte i renderaren; Inter används.`);
-  }
+  const brandFonts = resolveBrandFonts(brand.font_family, { display: brand.display_font });
+  if (brandFonts.warning) warnings.push(brandFonts.warning);
+  const faces = { text: brandFonts.text, display: brandFonts.display };
+  const fonts = fontFiles(['inter', faces.text, faces.display]);
+  for (const f of fonts) copyFileSync(join(FONTS_DIR, f.file), join(outDir, 'fonts', f.file));
   const music = Boolean(spec.music_asset_id);
-  const { scenes, endcard, total } = plan(spec, prepared, warnings);
-  const parts = scenes.map((s) => sceneHtml(s, fmt, music));
-  const endPart = endcard ? endHtml(endcard, fmt, spec, brand, logoId && prepared[logoId] ? prepared[logoId].name : null) : '';
+  const logoName = logoId && prepared[logoId] ? prepared[logoId].name : null;
+  const { scenes, endcard, total, timing } = plan(spec, prepared, warnings, { grid: music ? beats : null, logo: Boolean(logoName) });
+  const look = brand.look !== 'none';
+  const parts = scenes.map((s) => sceneHtml(s, fmt, format, music, faces, analysis, look, logoName));
+  const endPart = endcard ? endHtml(endcard, fmt, format, spec, brand, logoName, faces) : '';
+  const seq = endcard ? [...scenes, endcard] : scenes;
+  const grid = music ? beats : null;
+  const sfx = planSfx(seq, total, { outro, auto: autoSfx && brand.sfx !== false });
   const config = {
-    W: fmt.W, H: fmt.H, total,
+    W: fmt.W, H: fmt.H, total, format, zones: PLATFORM_ZONES[format],
+    beats: grid ? { period: grid.period, times: grid.beats.filter((b) => b.t <= total + 0.01).map((b) => [b.t, b.down ? 1 : 0]) } : null,
     scenes: scenes.map((s, i) => ({
-      id: s.id, idx: s.idx, start: s.start, end: s.end, winStart: s.winStart, winEnd: s.winEnd,
-      transition: s.transition, effects: s.natives, camera: s.camera, text: parts[i].text,
+      id: s.id, idx: s.idx, start: s.start, end: s.end, winStart: s.winStart, winEnd: s.winEnd, textAt: s.textAt,
+      transition: s.transition, effects: s.natives, camera: s.camera, text: parts[i].text, kind: s.kind,
     })),
     endcard: endcard && {
-      id: endcard.id, idx: endcard.idx, isEnd: true, start: endcard.start, end: endcard.end,
+      id: endcard.id, idx: endcard.idx, isEnd: true, start: endcard.start, end: endcard.end, textAt: endcard.textAt,
       winStart: endcard.winStart, winEnd: endcard.winEnd, transition: endcard.transition, text: endcard.text,
     },
   };
+  const runtime = `const GLUE_WORDS = ${JSON.stringify(GLUE_WORDS)};\nconst breakLines = ${breakLines.toString()};\n${RUNTIME}`;
   const html = `<!doctype html>
 <html lang="sv">
   <head>
@@ -388,21 +564,25 @@ export function compose({ spec, brand = {}, files, outDir, logoId = null }) {
     <meta name="viewport" content="width=${fmt.W}, height=${fmt.H}">
     <title>${esc(spec.title)}</title>
     <script src="${GSAP_URL}"></script>
-    <style>${css(fmt, brand)}
+    <style>${css(fmt, brand, fonts, faces)}
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="${total}" data-width="${fmt.W}" data-height="${fmt.H}" data-fps="${spec.fps || 30}">${parts.map((p) => p.html).join('')}${endPart}
+    <div id="root" data-composition-id="main" data-start="0" data-duration="${total}" data-width="${fmt.W}" data-height="${fmt.H}" data-fps="${spec.fps || 30}">${defsHtml(seq, brand, look)}${parts.map((p) => p.html).join('')}${endPart}
       <div id="flash"></div>
     </div>
     <script type="application/json" id="cut-config">${JSON.stringify(config).replace(/</g, '\\u003c')}</script>
     <script>
-${RUNTIME}
+${runtime}
     </script>
   </body>
 </html>
 `;
   writeFileSync(join(outDir, 'index.html'), html);
   writeFileSync(join(outDir, 'meta.json'), JSON.stringify({ id: 'cut', name: 'cut', createdAt: '2026-10-09T00:00:00.000Z' }, null, 2));
-  return { dir: outDir, total, warnings, config };
+  // What QA should not flag: the intentional black open of dark-to-light.
+  const intent = {
+    dark: scenes.filter((s) => s.natives.includes('dark-to-light')).map((s) => ({ start: s.winStart, end: r3(s.start + Math.min((s.end - s.start) * 0.75, 3.2) * 0.6) })),
+  };
+  return { dir: outDir, total, warnings, config, timing, sfx, intent, fonts: faces };
 }
