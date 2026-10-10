@@ -1,0 +1,25 @@
+{
+  "kit": "golfkuponger",
+  "title": "Golfkuponger – Kalendern vs golfbagen (bara kod)",
+  "source": {"name": "Golfkuponger (egen produktion)", "url": "", "license": "Eget material; musik genererad lokalt med ACE-Step; SFX ur repots kit; Anton/Inter/Caveat Brush (SIL OFL)"},
+  "items": [
+    {
+      "id": "golfkuponger.js-ad.kalendern-vs-golfbagen",
+      "name": "Kalendern vs golfbagen (14 s + slutbild, 9:16, bara JS)",
+      "type": "template",
+      "medium": "video",
+      "formats": ["9:16"],
+      "engine": "hyperframes",
+      "description": "Reklamfilm byggd helt i kod (HTML/CSS/SVG/GSAP), inga filmklipp eller AI-bilder: mobil med mötesnotiser som staplas + FULLBOKAD-stämpel → dammig golfbag i förrådet med glödlampa, damm och spindel → UI-kort ”Friskvårdsbidrag” där muspekaren slår på reglaget → gyllene cirkelwipe till green där bollen rullar i hål på taktslaget → adressrad som skrivs fram → Spotlight-slutbilden. 120 BPM, alla scenbyten på slag, 39 synkade ljudeffekter, −14 LUFS. Inga faktapåståenden (faktabanken overifierad).",
+      "tags": ["golfkuponger", "friskvård", "reklam", "kod", "js-only", "motion-graphics", "ui", "humor", "beat-synced", "kinetic-typography", "svg", "120bpm"],
+      "path": "library/templates/golfkuponger-js-ad/index.html",
+      "use": "python library/templates/golfkuponger-js-ad/render.py → work/gk-js-ad/master-outro.mp4 (+ preview.mp4). Byt text/tider i index.html och sfx.json; scenerna är oberoende block (#s1–#s5).",
+      "notes": "Lärdomar: animera bara transforms (x/y/scale), aldrig left/top; fromTo med immediateRender:false för element som ska vara dolda före sin tid; undvik CSS 3D-plan (perspective/rotateX) under zoomande föräldrar – rita perspektiv i 2D-SVG.",
+      "status": "verified",
+      "cost": "free",
+      "requires": ["node", "ffmpeg", "python"],
+      "verified_at": "2026-10-10",
+      "preview": {"video": "library/templates/golfkuponger-js-ad/README-preview.mp4", "still": "library/previews/golfkuponger-js-ad.jpg"}
+    }
+  ]
+}

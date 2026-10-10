@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /* "Kalendern vs golfbagen" – Golfkuponger, 14 s at 120 BPM (beat = 0.5 s), every pixel drawn in code. */
+      @font-face { font-family: "Anton"; src: url("assets/fonts/anton.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 500; src: url("assets/fonts/inter-500.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url("assets/fonts/inter-700.woff2") format("woff2"); }
+      @font-face { font-family: "Caveat Brush"; src: url("assets/fonts/CaveatBrush-Regular.ttf") format("truetype"); }
+      :root { --green: #01170f; --green2: #0e1f15; --moss: #073c2b; --gold: #d6a536; --gold2: #f0cd7a; --cream: #f8f4ec; --ink: #10241a; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--green); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--green); }
+      .scene { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
+      .head { position: absolute; left: 80px; right: 150px; font-family: "Anton", sans-serif; font-size: 128px; line-height: 1.02;
+        color: var(--cream); text-transform: uppercase; letter-spacing: .005em; text-shadow: 0 6px 30px rgba(0,0,0,.35); }
+      .head .g { color: var(--gold); }
+      .hand { position: absolute; font-family: "Caveat Brush", cursive; color: var(--gold2); }
+      .w { display: inline-block; }
+
+      /* S1 – phone full of meetings */
+      #s1 { background: radial-gradient(ellipse 80% 60% at 50% 60%, #15261d 0%, #08120d 70%); }
+      #phone { position: absolute; left: 230px; top: 560px; width: 620px; height: 1180px; border-radius: 86px; background: #0b0f0d;
+        box-shadow: 0 0 0 10px #1c2420, 0 0 0 12px #3a463f, 0 60px 120px rgba(0,0,0,.6); overflow: hidden; }
+      #screen { position: absolute; inset: 22px; border-radius: 66px; overflow: hidden;
+        background: linear-gradient(160deg, #1d3a2c 0%, #0f2219 55%, #0a1711 100%); }
+      #clock { position: absolute; top: 120px; left: 0; right: 0; text-align: center; font: 700 150px/1 Inter, sans-serif; color: rgba(248,244,236,.92); letter-spacing: -.03em; }
+      #date { position: absolute; top: 90px; left: 0; right: 0; text-align: center; font: 500 30px Inter, sans-serif; color: rgba(248,244,236,.7); }
+      .note { position: absolute; left: 26px; right: 26px; top: 330px; height: 150px; border-radius: 34px; padding: 22px 26px;
+        background: rgba(248,244,236,.86); backdrop-filter: blur(10px); display: grid; grid-template-columns: 70px 1fr; gap: 18px; align-items: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,.25); opacity: 0; }
+      .note .ic { width: 70px; height: 70px; border-radius: 18px; background: #fff; display: grid; grid-template-rows: 22px 1fr; overflow: hidden; box-shadow: inset 0 0 0 1px #e3ddd0; }
+      .note .ic b { background: #d94b3d; color: #fff; font: 700 14px/22px Inter; text-align: center; }
+      .note .ic i { font: 700 30px/48px Inter; color: #1b1b1b; text-align: center; font-style: normal; }
+      .note .tx { font: 500 26px/1.25 Inter, sans-serif; color: #2b2f2c; }
+      .note .tx strong { display: block; font-weight: 700; font-size: 28px; color: #121513; }
+      #s1-head { top: 250px; }
+      #stamp { position: absolute; left: 250px; top: 1080px; padding: 10px 34px; border: 12px solid #e0473a; border-radius: 22px; color: #e0473a;
+        font: 400 130px/1 "Anton", sans-serif; letter-spacing: .02em; transform: rotate(-14deg); opacity: 0; mix-blend-mode: normal;
+        text-shadow: 0 0 1px #e0473a; background: rgba(255,255,255,.04); }
+
+      /* S2 – golf bag in storage */
+      #s2 { background: linear-gradient(180deg, #050b08 0%, #0b1712 60%, #0f1f17 100%); }
+      #cone { position: absolute; left: 140px; top: 360px; width: 800px; height: 1300px; transform-origin: 400px 0;
+        background: linear-gradient(180deg, rgba(255,226,160,.30), rgba(255,226,160,0) 85%); clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%); filter: blur(6px); }
+      #bulb { position: absolute; left: 515px; top: 300px; width: 50px; height: 70px; border-radius: 50% 50% 40% 40%; background: #ffe7a8;
+        box-shadow: 0 0 60px 20px rgba(255,214,120,.55), 0 0 160px 60px rgba(255,214,120,.2); }
+      #wire { position: absolute; left: 538px; top: 0; width: 4px; height: 304px; background: #22302a; }
+      #floor { position: absolute; left: 0; right: 0; top: 1560px; bottom: 0; background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(255,214,120,.14), transparent 70%), #0a140f; }
+      #bag { position: absolute; left: 290px; top: 760px; width: 500px; height: 880px; }
+      .dust { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: rgba(255,232,180,.75); filter: blur(.6px); }
+      #spider-thread { position: absolute; left: 742px; top: 0; width: 2px; height: 0; background: rgba(240,240,230,.55); }
+      #spider { position: absolute; left: 718px; top: -60px; width: 50px; height: 50px; }
+      #s2-head { top: 210px; }
+      #s2-hand { left: 40px; right: 40px; top: 1650px; font-size: 92px; white-space: nowrap; text-align: center; clip-path: inset(0 100% 0 0); }
+
+      /* S3 – the allowance card */
+      #s3 { background: radial-gradient(ellipse 90% 70% at 50% 55%, #fffdf7 0%, var(--cream) 60%, #ece4d2 100%); }
+      #s3-head { top: 300px; right: 80px; font-size: 116px; color: var(--green); text-shadow: none; }
+      #s3-head .g { color: #b7861f; }
+      #card { position: absolute; left: 110px; top: 980px; width: 860px; height: 560px; border-radius: 44px; background: #fff;
+        box-shadow: 0 40px 90px rgba(16,36,26,.18), 0 6px 18px rgba(16,36,26,.08); padding: 56px 60px; }
+      #card .row1 { display: flex; align-items: center; gap: 26px; font: 700 50px Inter, sans-serif; color: var(--ink); }
+      #card .heart { width: 84px; height: 84px; border-radius: 26px; background: #e8f3ec; display: grid; place-items: center; }
+      #card .row2 { margin-top: 70px; display: flex; justify-content: space-between; align-items: center; font: 500 38px Inter; color: #4b5a51; }
+      #pill { position: relative; display: inline-grid; padding: 14px 30px; border-radius: 999px; background: #fff1d2; color: #9a6a10; font: 700 34px Inter; }
+      #pill > span { grid-area: 1 / 1; text-align: center; }
+      #pill-b { opacity: 0; }
+      #card .row3 { margin-top: 56px; display: flex; justify-content: space-between; align-items: center; font: 500 38px Inter; color: #4b5a51; }
+      #toggle { position: relative; width: 170px; height: 92px; border-radius: 999px; background: #d9dfdb; }
+      #knob { position: absolute; left: 8px; top: 8px; width: 76px; height: 76px; border-radius: 50%; background: #fff; box-shadow: 0 6px 14px rgba(0,0,0,.18); }
+      #ripple { position: absolute; left: 0; top: 0; width: 60px; height: 60px; border-radius: 50%; border: 6px solid var(--gold); opacity: 0; }
+      #cursor { position: absolute; left: 1200px; top: 1700px; width: 90px; height: 110px; filter: drop-shadow(0 8px 12px rgba(0,0,0,.25)); }
+      #wipe { position: absolute; left: 845px; top: 1420px; width: 60px; height: 60px; border-radius: 50%; background: var(--gold); }
+
+      /* S4 – the putt */
+      #s4 { background: linear-gradient(180deg, #f6dfab 0%, #f2c779 38%, #e9a65a 52%, #c9894b 56%); }
+      #sun { position: absolute; left: 640px; top: 640px; width: 260px; height: 260px; border-radius: 50%;
+        background: radial-gradient(circle, #fff6dc 0%, #ffe3a1 40%, rgba(255,214,140,0) 70%); }
+      #hills { position: absolute; left: -40px; right: -40px; top: 860px; height: 260px; }
+      #course { position: absolute; left: 0; top: 1040px; width: 1080px; height: 880px; }
+      #hole { position: absolute; left: 676px; top: 1272px; width: 120px; height: 34px; border-radius: 50%;
+        background: radial-gradient(ellipse at 50% 35%, #05110a 55%, #0e2a18 100%); box-shadow: inset 0 6px 8px rgba(0,0,0,.6); }
+      #pole { position: absolute; left: 733px; top: 860px; width: 7px; height: 420px; background: linear-gradient(90deg, #fafafa, #b9b9b9); border-radius: 3px; }
+      #flag { position: absolute; left: 740px; top: 860px; width: 190px; height: 130px; transform-origin: 0 50%; }
+      #ball { position: absolute; left: -140px; top: 1600px; width: 92px; height: 92px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #fff 0%, #f2f2ee 35%, #cfcfc8 75%, #a9a9a0 100%);
+        box-shadow: inset -8px -10px 18px rgba(0,0,0,.18); }
+      #ball::after { content: ""; position: absolute; inset: 0; border-radius: 50%; opacity: .35;
+        background: radial-gradient(circle, rgba(0,0,0,.35) 1.4px, transparent 2px) 0 0 / 11px 11px; }
+      #ball-shadow { position: absolute; left: -150px; top: 1690px; width: 100px; height: 26px; border-radius: 50%; background: rgba(0,0,0,.28); filter: blur(5px); }
+      .spark { position: absolute; left: 730px; top: 1286px; width: 14px; height: 14px; border-radius: 50%; background: #fff4cf; box-shadow: 0 0 14px #ffd36a; opacity: 0; }
+      #cam4 { position: absolute; inset: 0; }
+      #hole, #pole, #flag, #ball-shadow, #ball, #sparks { z-index: 5; }
+      #hole { box-shadow: inset 0 6px 8px rgba(0,0,0,.6), 0 0 0 5px rgba(255,255,255,.18); }
+      #s4-head { top: 230px; color: var(--green); text-shadow: 0 4px 24px rgba(255,240,200,.6); }
+
+      /* S5 – go check */
+      #s5 { background: radial-gradient(ellipse 80% 60% at 50% 48%, #12301f 0%, var(--green2) 55%, #08130d 100%); }
+      #url { position: absolute; left: 130px; top: 820px; width: 820px; height: 150px; border-radius: 999px; background: var(--cream);
+        display: flex; align-items: center; gap: 26px; padding: 0 46px; box-shadow: 0 30px 70px rgba(0,0,0,.45); }
+      #url .lock { width: 40px; height: 48px; }
+      #typed { font: 700 60px Inter, sans-serif; color: var(--ink); letter-spacing: -.01em; white-space: nowrap; }
+      #caret { width: 5px; height: 66px; background: var(--ink); }
+      #underline { position: absolute; left: 220px; top: 1010px; width: 640px; height: 10px; border-radius: 6px; background: var(--gold); transform-origin: 0 50%; }
+      #s5-head { top: 470px; text-align: center; left: 60px; right: 60px; font-size: 112px; }
+      #s5-small { position: absolute; left: 140px; right: 140px; top: 1110px; text-align: center; font: 500 40px/1.35 Inter, sans-serif; color: rgba(248,244,236,.8); }
+      #cursor5 { position: absolute; left: 1150px; top: 1500px; width: 90px; height: 110px; filter: drop-shadow(0 8px 12px rgba(0,0,0,.35)); }
+
+      #fx-vig { position: absolute; inset: 0; pointer-events: none; z-index: 90; background: radial-gradient(ellipse 80% 72% at 50% 48%, transparent 58%, rgba(0,8,4,.42) 100%); }
+      #fx-grain { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 100; }
+      #fx-grain-tex { position: absolute; left: -25%; top: -25%; width: 150%; height: 150%; opacity: .07; mix-blend-mode: overlay;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 300px 300px; }
+      #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 95; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="14" data-width="1080" data-height="1920" data-fps="30">
+
+      <section class="scene" id="s1">
+        <div id="phone"><div id="screen">
+          <div id="date">Måndag</div><div id="clock">08:02</div>
+          <div id="notes"></div>
+        </div></div>
+        <div id="stamp">FULLBOKAD</div>
+        <div class="head" id="s1-head"><span class="w">Din</span> <span class="w g">kalender:</span></div>
+      </section>
+
+      <section class="scene" id="s2">
+        <div id="wire"></div><div id="cone"></div><div id="bulb"></div><div id="floor"></div>
+        <svg id="bag" viewBox="0 0 500 880">
+          <defs>
+            <linearGradient id="bagG" x1="0" x2="1"><stop offset="0" stop-color="#2b3a30"/><stop offset=".45" stop-color="#46594a"/><stop offset="1" stop-color="#26332a"/></linearGradient>
+            <linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#6d736f"/><stop offset=".5" stop-color="#d9ddd9"/><stop offset="1" stop-color="#7d837f"/></linearGradient>
+          </defs>
+          <g transform="translate(0,0)">
+            <rect x="150" y="40" width="16" height="300" fill="url(#metal)" transform="rotate(-12 158 190)"/>
+            <rect x="250" y="20" width="16" height="320" fill="url(#metal)"/>
+            <rect x="330" y="50" width="16" height="290" fill="url(#metal)" transform="rotate(10 338 190)"/>
+            <ellipse cx="120" cy="60" rx="70" ry="44" fill="#1a1f1c" transform="rotate(-18 120 60)"/>
+            <path d="M228 6 h72 l10 34 h-92 z" fill="#2a2f2c"/>
+            <circle cx="360" cy="40" r="46" fill="#7a2b26"/><circle cx="360" cy="-4" r="16" fill="#d8cbb2"/>
+            <rect x="70" y="250" width="360" height="600" rx="70" fill="url(#bagG)"/>
+            <rect x="70" y="250" width="360" height="70" rx="34" fill="#1d2822"/>
+            <rect x="70" y="300" width="360" height="12" fill="#d6a536" opacity=".85"/>
+            <rect x="70" y="760" width="360" height="12" fill="#d6a536" opacity=".85"/>
+            <rect x="300" y="380" width="96" height="320" rx="30" fill="#2f4035" stroke="#1c2620" stroke-width="4"/>
+            <path d="M80 360 C 10 420, 10 640, 90 720" fill="none" stroke="#1c2620" stroke-width="20" stroke-linecap="round"/>
+            <rect x="70" y="250" width="360" height="600" rx="70" fill="#cfc7b2" opacity=".14"/>
+          </g>
+          <g stroke="rgba(235,235,225,.55)" stroke-width="1.6" fill="none">
+            <path d="M70 330 L170 250 M70 330 L120 250 M70 330 L70 250 M70 330 L200 300"/>
+            <path d="M84 318 Q 100 290 128 262 M100 330 Q 120 300 152 272 M118 318 Q 150 300 180 282"/>
+          </g>
+        </svg>
+        <div id="dust"></div>
+        <div id="spider-thread"></div>
+        <svg id="spider" viewBox="0 0 50 50"><g stroke="#0d0f0e" stroke-width="2.4" fill="none" stroke-linecap="round">
+          <path d="M14 22 L2 12 M14 26 L0 26 M14 30 L2 40 M16 34 L8 48 M36 22 L48 12 M36 26 L50 26 M36 30 L48 40 M34 34 L42 48"/></g>
+          <ellipse cx="25" cy="27" rx="12" ry="14" fill="#0d0f0e"/><circle cx="21" cy="22" r="2.4" fill="#f8f4ec"/><circle cx="29" cy="22" r="2.4" fill="#f8f4ec"/></svg>
+        <div class="head" id="s2-head"><span class="w">Din</span> <span class="w g">golfbag:</span></div>
+        <div class="hand" id="s2-hand">står i förrådet sedan maj.</div>
+      </section>
+
+      <section class="scene" id="s3">
+        <div class="head" id="s3-head"><span class="w">Har</span> <span class="w">du</span> <span class="w">kollat</span><br><span class="w">ditt</span> <span class="w g">friskvårds-</span><br><span class="w g">bidrag?</span></div>
+        <div id="card">
+          <div class="row1"><div class="heart"><svg width="50" height="46" viewBox="0 0 50 46"><path d="M25 44 C 8 30, 0 22, 0 12 C 0 5, 6 0, 13 0 C 18 0, 22 3, 25 7 C 28 3, 32 0, 37 0 C 44 0, 50 5, 50 12 C 50 22, 42 30, 25 44 Z" fill="#2e8b57"/><path d="M6 22 h10 l4 -8 l6 16 l4 -8 h14" stroke="#fff" stroke-width="3.4" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg></div>Friskvårdsbidrag</div>
+          <div class="row2"><span>Status</span><span id="pill"><span id="pill-a">Oanvänt?</span><span id="pill-b">Dags att kolla!</span></span></div>
+          <div class="row3"><span>Kolla vad som gäller</span><div id="toggle"><div id="ripple"></div><div id="knob"></div></div></div>
+        </div>
+        <svg id="cursor" viewBox="0 0 90 110"><path d="M8 4 L8 86 L28 68 L42 102 L58 95 L44 62 L72 62 Z" fill="#fff" stroke="#10241a" stroke-width="5" stroke-linejoin="round"/></svg>
+        <div id="wipe"></div>
+      </section>
+
+      <section class="scene" id="s4">
+        <div id="cam4">
+        <div id="sun"></div>
+        <svg id="hills" viewBox="0 0 1160 260" preserveAspectRatio="none">
+          <path d="M0 150 C 160 70, 300 90, 440 130 C 600 60, 760 40, 900 110 C 1000 70, 1100 80, 1160 100 L1160 260 L0 260 Z" fill="#3f6b45" opacity=".75"/>
+          <path d="M0 200 C 200 140, 380 150, 560 185 C 760 130, 960 140, 1160 175 L1160 260 L0 260 Z" fill="#2c5a38"/>
+          <g fill="#1f4429"><circle cx="120" cy="150" r="46"/><circle cx="170" cy="160" r="34"/><circle cx="980" cy="140" r="52"/><circle cx="1040" cy="150" r="38"/></g>
+        </svg>
+        <svg id="course" viewBox="0 0 1080 880" preserveAspectRatio="none"><g id="stripes"></g><rect width="1080" height="880" fill="url(#courseShade)"/><defs><linearGradient id="courseShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".25" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient></defs></svg>
+        <div id="hole"></div>
+        <div id="pole"></div>
+        <svg id="flag" viewBox="0 0 190 130"><path id="flagpath" d="M0 6 C 60 -4, 120 22, 190 10 L 180 60 C 120 74, 60 50, 0 62 Z" fill="#d6a536"/><text x="40" y="48" font-family="Anton" font-size="34" fill="#01170f">GK</text></svg>
+        <div id="ball-shadow"></div>
+        <div id="ball"></div>
+        <div id="sparks"></div>
+        </div>
+        <div class="head" id="s4-head"><span class="w">Det</span> <span class="w">kan</span> <span class="w">bli</span> <span class="w g">golf.</span></div>
+      </section>
+
+      <section class="scene" id="s5">
+        <div class="head" id="s5-head"><span class="w">Kolla</span> <span class="w g">nu:</span></div>
+        <div id="url">
+          <svg class="lock" viewBox="0 0 40 48"><rect x="2" y="20" width="36" height="26" rx="6" fill="#10241a"/><path d="M10 20 V13 a10 10 0 0 1 20 0 V20" fill="none" stroke="#10241a" stroke-width="5"/></svg>
+          <span id="typed"></span><span id="caret"></span>
+        </div>
+        <div id="underline"></div>
+        <div id="s5-small">Kolla med din arbetsgivare vad som gäller för ditt friskvårdsbidrag.</div>
+        <svg id="cursor5" viewBox="0 0 90 110"><path d="M8 4 L8 86 L28 68 L42 102 L58 95 L44 62 L72 62 Z" fill="#fff" stroke="#10241a" stroke-width="5" stroke-linejoin="round"/></svg>
+      </section>
+
+      <div id="flash"></div>
+      <div id="fx-vig"></div>
+      <div id="fx-grain"><div id="fx-grain-tex"></div></div>
+    </div>
+
+    <script>
+      (function () {
+        const B = 0.5; // one beat at 120 BPM
+        const tl = gsap.timeline({ paused: true });
+        const $ = (s) => document.querySelector(s);
+        const show = (id, at) => tl.set(id, { opacity: 1 }, at);
+        const hide = (id, at) => tl.set(id, { opacity: 0 }, at);
+        const slam = (sel, at, stagger = 0.12) => tl.from(sel, { y: 90, scale: 1.18, opacity: 0, duration: .42, stagger, ease: "back.out(2.2)" }, at);
+
+        // ---------- S1 (0–2 s): the meetings pile up ----------
+        show("#s1", 0);
+        const meetings = [["08:00", "Veckoavstämning"], ["09:30", "Budget Q4"], ["11:00", "Synk"], ["13:00", "Uppföljning"], ["14:30", "Möte om mötet"], ["16:00", "Avstämning inför imorgon"]];
+        const notes = $("#notes");
+        meetings.forEach(([time, what], i) => {
+          const el = document.createElement("div");
+          el.className = "note"; el.id = "n" + i;
+          el.innerHTML = `<div class="ic"><b>MÅN</b><i>${12 + i}</i></div><div class="tx"><strong>Kalender · ${time}</strong>${what}</div>`;
+          notes.appendChild(el);
+        });
+        tl.from("#phone", { y: 260, rotate: -4, duration: .6, ease: "expo.out" }, 0);
+        slam("#s1-head .w", 0.05);
+        meetings.forEach((_, i) => {
+          const at = 0.18 + i * 0.22;
+          tl.fromTo("#n" + i, { y: -190, opacity: 0, scale: .92 }, { y: 0, opacity: 1, scale: 1, duration: .28, ease: "back.out(1.6)" }, at);
+          for (let j = 0; j < i; j++) tl.to("#n" + j, { y: (i - j) * 166, duration: .28, ease: "power3.out" }, at);
+        });
+        tl.fromTo("#stamp", { scale: 2.6, opacity: 0, rotate: -24 }, { scale: 1, opacity: .95, rotate: -14, duration: .22, ease: "power4.in", immediateRender: false }, 1.45);
+        tl.to("#phone", { keyframes: [{ x: -14, rotate: -1.2 }, { x: 14, rotate: 1.2 }, { x: -10 }, { x: 10 }, { x: 0, rotate: 0 }], duration: .35, ease: "none" }, 1.45);
+        tl.to("#s1 #phone, #s1-head, #stamp", { x: -900, filter: "blur(18px)", duration: .22, ease: "power3.in" }, 2 - .22);
+        hide("#s1", 2);
+
+        // ---------- S2 (2–4.5 s): the dusty golf bag ----------
+        show("#s2", 2);
+        tl.from("#s2 > *:not(.head):not(#s2-hand)", { x: 700, filter: "blur(16px)", duration: .3, ease: "power3.out" }, 2);
+        slam("#s2-head .w", 2.0);
+        tl.fromTo("#cone, #bulb", { rotate: -3 }, { rotate: 3, duration: 1.25, ease: "sine.inOut", yoyo: true, repeat: 1 }, 2);
+        const dust = $("#dust");
+        for (let i = 0; i < 26; i++) {
+          const d = document.createElement("i");
+          d.className = "dust"; d.id = "du" + i;
+          const x = 300 + ((i * 97) % 480), y = 520 + ((i * 173) % 900);
+          d.style.left = x + "px"; d.style.top = y + "px";
+          dust.appendChild(d);
+          tl.fromTo(d, { y: 0, opacity: 0 }, { y: -60 - (i % 5) * 18, x: ((i % 3) - 1) * 26, opacity: .2 + (i % 4) * .18, duration: 2.5, ease: "sine.inOut" }, 2);
+        }
+        tl.to("#s2-hand", { clipPath: "inset(0 0% 0 0)", duration: .55, ease: "power1.inOut" }, 3.0);
+        tl.to("#spider-thread", { height: 640, duration: .35, ease: "power2.out" }, 3.5)
+          .fromTo("#spider", { y: 0 }, { y: 690, duration: .35, ease: "power2.out" }, 3.5)
+          .to("#spider", { y: 660, duration: .18, ease: "sine.inOut", yoyo: true, repeat: 3 }, 3.86);
+        tl.to("#s2", { scale: 2.6, filter: "blur(14px)", opacity: 0, duration: .3, ease: "power3.in" }, 4.5 - .3);
+
+        // ---------- S3 (4.5–7.5 s): the allowance card ----------
+        show("#s3", 4.5);
+        tl.from("#s3", { scale: .7, filter: "blur(14px)", duration: .35, ease: "expo.out" }, 4.5);
+        tl.from("#s3-head .w", { y: 70, opacity: 0, duration: .32, stagger: B / 2, ease: "back.out(2)" }, 4.6);
+        tl.from("#card", { y: 240, opacity: 0, rotateX: 18, duration: .6, ease: "expo.out" }, 4.75);
+        tl.to("#pill", { scale: 1.08, duration: .25, yoyo: true, repeat: 3, ease: "sine.inOut" }, 5.5);
+        tl.fromTo("#cursor", { x: 0, y: 0 }, { x: -380, y: -285, duration: .75, ease: "power3.inOut" }, 5.85);
+        tl.to("#cursor", { scale: .86, duration: .08, yoyo: true, repeat: 1 }, 6.6);
+        tl.to("#knob", { x: 78, duration: .22, ease: "back.out(2)" }, 6.65)
+          .to("#toggle", { backgroundColor: "#d6a536", duration: .2 }, 6.65)
+          .fromTo("#ripple", { x: 120, y: 18, scale: .2, opacity: .9 }, { scale: 3.2, opacity: 0, duration: .5, ease: "power2.out", immediateRender: false }, 6.65)
+          .to("#pill", { backgroundColor: "#e5f4ea", color: "#1f6b3f", duration: .2 }, 6.7);
+        tl.to("#pill-a", { opacity: 0, y: -14, duration: .18 }, 6.7).fromTo("#pill-b", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .22 }, 6.72);
+        tl.fromTo("#wipe", { scale: 0 }, { scale: 80, duration: .55, ease: "power3.in" }, 7.5 - .55);
+
+        // ---------- S4 (7.5–11 s): the putt ----------
+        show("#s4", 7.5);
+        hide("#s3", 7.5);
+        const NS = "http://www.w3.org/2000/svg", stripes = $("#stripes");
+        for (let k = -9; k <= 9; k++) {
+          const poly = document.createElementNS(NS, "polygon");
+          const t0 = 540 + k * 70, t1 = 540 + (k + 1) * 70, b0 = 540 + k * 300, b1 = 540 + (k + 1) * 300;
+          poly.setAttribute("points", `${t0},0 ${t1},0 ${b1},880 ${b0},880`);
+          poly.setAttribute("fill", k % 2 ? "#2f8a4f" : "#287a45");
+          stripes.appendChild(poly);
+        }
+        tl.fromTo("#stripes", { x: 0 }, { x: -60, duration: 3.5, ease: "power1.out" }, 7.5);
+        tl.fromTo("#flag", { skewY: -6, scaleX: .96 }, { skewY: 6, scaleX: 1.02, duration: .5, ease: "sine.inOut", yoyo: true, repeat: 6 }, 7.5);
+        tl.from("#sun", { y: 80, opacity: .4, duration: 3.5, ease: "sine.out" }, 7.5);
+        // roll in from bottom-left, slowing down, perspective shrink, then drop on the beat (9.5 s)
+        tl.fromTo("#ball", { x: 0, y: 0, scale: 1.25, rotate: 0 }, { x: 830, y: -380, scale: .62, rotate: 900, duration: 1.85, ease: "power3.out" }, 7.6);
+        tl.fromTo("#ball-shadow", { x: 0, y: 0, scale: 1.25 }, { x: 836, y: -404, scale: .6, duration: 1.85, ease: "power3.out" }, 7.6);
+        tl.to("#ball", { y: -348, scale: .42, duration: .1, ease: "power2.in" }, 9.45)
+          .set("#ball, #ball-shadow", { opacity: 0 }, 9.55);
+        const sparks = $("#sparks");
+        for (let i = 0; i < 16; i++) {
+          const s = document.createElement("i"); s.className = "spark"; s.id = "sk" + i; sparks.appendChild(s);
+          const a = (i / 16) * Math.PI * 2, r = 140 + (i % 3) * 50;
+          tl.fromTo(s, { x: 0, y: 0, opacity: 1, scale: 1 }, { x: Math.cos(a) * r, y: Math.sin(a) * r * .55 - 60, opacity: 0, scale: .3, duration: .7, ease: "expo.out", immediateRender: false }, 9.55);
+        }
+        tl.fromTo("#flash", { opacity: .35 }, { opacity: 0, duration: .25, immediateRender: false }, 9.55);
+        tl.fromTo("#cam4", { scale: 1 }, { scale: 1.06, transformOrigin: "68% 67%", duration: 1.45, ease: "sine.out", immediateRender: false }, 9.55);
+        slam("#s4-head .w", 9.5, .09);
+
+        // ---------- S5 (11–14 s): go check ----------
+        show("#s5", 11);
+        hide("#s4", 11);
+        slam("#s5-head .w", 11.0);
+        tl.from("#url", { y: 120, opacity: 0, scale: .9, duration: .45, ease: "expo.out" }, 11.05);
+        const text = "golfkuponger.se";
+        $("#typed").innerHTML = [...text].map((c, i) => `<span class="ty" id="ty${i}">${c}</span>`).join("");
+        [...text].forEach((_, i) => tl.fromTo("#ty" + i, { display: "none" }, { display: "inline", duration: 0.001 }, 11.35 + i * 0.055));
+        tl.to("#caret", { opacity: 0, duration: .01, repeat: 9, yoyo: true, repeatDelay: .25 }, 11.0);
+        tl.fromTo("#cursor5", { x: 0, y: 0 }, { x: -370, y: -595, duration: .6, ease: "power3.inOut" }, 12.25);
+        tl.to("#cursor5", { scale: .86, duration: .08, yoyo: true, repeat: 1 }, 12.9);
+        tl.to("#url", { scale: 1.05, duration: .12, yoyo: true, repeat: 1, ease: "power2.out" }, 12.92);
+        tl.fromTo("#underline", { scaleX: 0 }, { scaleX: 1, duration: .4, ease: "power3.out" }, 13.0);
+        tl.from("#s5-small", { y: 40, opacity: 0, duration: .5, ease: "power2.out" }, 13.05);
+
+        // film grain, deterministic
+        const step = 1 / 24;
+        for (let i = 0; i * step < 14; i++) {
+          const x = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1, y = Math.abs(Math.sin(i * 78.233) * 12543.1234) % 1;
+          tl.set("#fx-grain-tex", { x: (x - .5) * 240, y: (y - .5) * 240 }, i * step);
+        }
+        tl.to({}, { duration: 14 }, 0);
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>
