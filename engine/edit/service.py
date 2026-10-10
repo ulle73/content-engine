@@ -254,8 +254,20 @@ def complete(job_id, token, master: bytes, preview: bytes | None = None, *, warn
             job.cut_spec = {**spec, "render": {k: meta[k] for k in ("duration_s", "loudness_lufs", "master_bytes",
                                                                     "preview_bytes", "hyperframes") if k in meta}}
         job.save()
+    _critique(job, preview or master)
     post_review(job)
     return job
+
+
+def _critique(job: EditJob, video: bytes | None) -> None:
+    """Fail-open AI critique before the Discord card is posted; never blocks delivery."""
+    from . import critic
+
+    try:
+        job.ai_critique = critic.run(job, video)
+        EditJob.objects.filter(pk=job.pk).update(ai_critique=job.ai_critique)
+    except Exception:  # noqa: BLE001 - storing the critique must not fail the delivery either
+        log.exception("Storing the AI critique for edit job %s failed", job.pk)
 
 
 def _store(company, data, spec, suffix=""):
@@ -395,6 +407,7 @@ def serialize(job: EditJob) -> dict:
         "review_id": str(review.pk) if review else None,
         "video_link": video_link(review) if review else None,
         "discord_posted": bool(review and review.discord_message_id),
+        "ai_critique": job.ai_critique or None,
         "dispatched": bool(job.dispatched_at), "dispatch_error": job.dispatch_error or None,
         "created_at": job.created_at.isoformat(), "updated_at": job.updated_at.isoformat(),
     }

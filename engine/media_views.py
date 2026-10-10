@@ -18,6 +18,7 @@ from django.views.decorators.http import require_GET, require_http_methods, requ
 from . import product_catalog
 from .creative_core import ReferenceRole
 from .creative_registry import verified_models
+from .edit import footage
 from .forms import snapshot_company_context
 from .media import (
     ACTIVE,
@@ -73,7 +74,11 @@ def library(request, workspace_id):
     elif filter_value != "all":
         filter_value = "all"
 
-    assets = list(assets.order_by("-created_at")[:120])
+    assets = list(assets.select_related("ad_tags").order_by("-created_at")[:120])
+    for asset in assets:
+        tags = getattr(asset, "ad_tags", None)
+        asset.footage_ids = footage.ids_of(tags.tags) if tags else []
+        asset.tag_description = tags.description if tags else ""
     recent_jobs = list(
         MediaGeneration.objects.filter(run__workspace=request.workspace, status="completed")
         .exclude(motion_render__mode="preview")
@@ -94,8 +99,33 @@ def library(request, workspace_id):
             "studio_token": uuid.uuid4(),
             "storage_usage": registered_usage(request.workspace),
             "catalog": request.workspace.catalog_products.filter(active=True).aggregate(count=Count("pk"), synced=Max("synced_at")),
+            "shot_groups": footage.grouped(request.workspace),
         },
     )
+
+
+def _library_url(workspace_id, filter_value="all", anchor=""):
+    url = reverse("engine:media_library", kwargs={"workspace_id": workspace_id})
+    if filter_value in {"image", "video", "audio", "uploaded", "generated", "logo"}:
+        url += "?" + urlencode({"filter": filter_value})
+    return url + (f"#{anchor}" if anchor else "")
+
+
+@login_required
+@company_required
+@require_POST
+def library_footage(request, workspace_id, asset_id):
+    """Set which shot-list ids (docs/FILMLISTA.md) a clip shows, so production recipes find it."""
+    try:
+        tags = footage.set_tags(request.workspace, asset_id, request.POST.get("footage_ids", ""),
+                                description=request.POST.get("description", ""))
+    except footage.FootageError as exc:
+        messages.error(request, str(exc))
+    else:
+        ids = footage.ids_of(tags.tags)
+        messages.success(request, ("Filmlista-id sparade: " + ", ".join(ids) + ". Recepten hittar nu klippet.")
+                         if ids else "Filmlista-id borttagna från filen.")
+    return redirect(_library_url(workspace_id, request.POST.get("filter", "all")))
 
 
 @login_required
@@ -130,8 +160,17 @@ def library_upload(request, workspace_id):
         if not file or file.size > 80 * 1024 * 1024:
             raise MediaError("Välj en bild (högst 8 MB) eller MP4-video (högst 80 MB).")
         cleanup_expired(request.workspace)
-        store_asset(request.workspace, file.read(), alt_text=request.POST.get("alt_text", ""))
-        messages.success(request, "Filen är sparad i Media och kan väljas i alla framtida utkast.")
+        asset = store_asset(request.workspace, file.read(), alt_text=request.POST.get("alt_text", ""))
+        shot_ids = footage.ids_in_filename(file.name) if asset.kind in {"video", "image"} else []
+        if shot_ids:
+            footage.set_tags(request.workspace, asset.pk, shot_ids, description=request.POST.get("alt_text", ""),
+                             verified=False)
+            messages.success(request, "Filen är sparad i Media. Filnamnet innehåller filmlista-id "
+                             + ", ".join(shot_ids) + " som sattes som tagg, så recepten hittar klippet. "
+                             "Ändra i filens dialog om det är fel.")
+        else:
+            messages.success(request, "Filen är sparad i Media och kan väljas i alla framtida utkast. "
+                             "Märk klipp med filmlista-id i filens dialog så hittar recepten dem.")
     except MediaError as exc:
         messages.error(request, str(exc))
     return redirect("engine:media_library", workspace_id=workspace_id)

@@ -35,6 +35,8 @@ class EditJob(models.Model):
                                       related_name="edit_previews")
     review = models.ForeignKey("engine.Review", null=True, blank=True, on_delete=models.SET_NULL, related_name="edit_jobs")
     discord_error = models.CharField(max_length=300, blank=True)
+    # Cheap vision critique of the finished cut (engine/edit/critic.py): {"status": done/skipped/failed, "score", …}.
+    ai_critique = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

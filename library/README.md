@@ -108,6 +108,14 @@ fungerar med enbart eget material, men det är ett val, inte en regel. `footage_
 en `transition`-post. Påståenden skrivs som `{fact:F4}` och måste finnas i bolagets faktaskill (`faiv-fakta` /
 `golfkuponger-friskvard`) – de visas bara när faktat är verifierat i appens faktabank. Övriga `{platshållare}` är fria.
 
+**Från recept till färdig video:** `engine/edit/planner.py` (MCP `plan_cut_from_recipe` → `render_recipe`) bygger en
+klippspec `cut/v1` ur receptet och mediabanken: klipp vars taggar innehåller scenens filmlista-id (sätts med MCP
+`tag_media`, i mediabibliotekets fildialog, eller automatiskt när filnamnet innehåller id:t, t.ex. `fa-m1_volvo.mp4`),
+produktbilder via `catalog_query`, CTA-grafik som slutkort/slutbild. Det som saknas listas som `missing` (vad som ska
+filmas). Ofullständiga recept går att klippa med `allow_missing`. Ett säkert alternativ i en scens `notes` skrivs som
+`Annars: '…'` – det används när faktat inte är verifierat. Färdiga klipp får en billig AI-granskning (1–10 + tre
+rättningar per scen) på Discord-kortet.
+
 **Model playbooks** (`library/models/<modell>/PLAYBOOK.md`, catalog-id `model.<modell>`): styrkor/svagheter, promptformat,
 parametrar, kameraord, fallgropar och exempel för våra recept, med källor. `library/models/README.md` är routningen
 scentyp → modell (D10). Modellregistret i `engine/creative_registry.py` är sanningen om vad som är tillgängligt.
