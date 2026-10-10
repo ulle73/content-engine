@@ -76,6 +76,7 @@ engine_urls = [
     path("media/storage/", media_views.library_storage, name="media_library_storage"),
     path("media/products/sync/", media_views.sync_products, name="sync_products"),
     path("media/<uuid:asset_id>/delete/", media_views.library_delete, name="media_library_delete"),
+    path("media/<uuid:asset_id>/footage/", media_views.library_footage, name="media_library_footage"),
     path("media/<uuid:asset_id>/file/", media_views.asset_file, name="asset_file"),
     path("runs/<uuid:run_id>/media/", media_views.picker, name="media"),
     path("runs/<uuid:run_id>/media/upload/", media_views.upload, name="media_upload"),

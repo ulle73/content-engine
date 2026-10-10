@@ -100,6 +100,7 @@ mobilen: https://claude.ai/artifact/CMfwKememR8ArFyMqtKwv8 (status ligger i arte
 - Stående 9:16, 4K om möjligt (kan beskäras till 4:5 och 1:1); 30 fps, 60/120 för slow-mo.
 - 1 sekund före och efter varje rörelse. Många korta klipp (3–10 s) slår få långa.
 - Mörker: stativ och låst exponering. Stilla kamera eller långsamma rörelser. Torka av linsen.
-- Ladda upp i mediabiblioteket.
+- Ladda upp i mediabiblioteket. Lägg id:t i filnamnet (t.ex. `fa-m1_volvo.mp4`) så taggas klippet automatiskt, eller välj
+  id i filens dialog. Då hittar recepten klippet själva.
 
 **Undvik:** tydliga ansikten på personer som inte sagt ja, registreringsskyltar, andra företags loggor.

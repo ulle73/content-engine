@@ -164,7 +164,7 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
         {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
     ]
     if images:
-        # Only the assistant adapter supplies bounded, decoded local image data.
+        # Only trusted server code supplies bounded image data (assistant uploads, cut-critic frames).
         request_body["messages"][1]["content"] = [
             {"type": "text", "text": json.dumps(payload, ensure_ascii=False)},
             *[{"type": "image_url", "image_url": {"url": value}} for value in images],
@@ -282,8 +282,18 @@ def route_signature():
     return "openrouter:" + ">".join(analysis_route())
 
 
-def structured_analysis(*, system, payload, schema: type[T], operation="analysis", max_tokens=4000, temperature=0):
-    route = analysis_route()
+def vision_model():
+    """The image-capable tier of the analysis route (Gemini 3.1 Flash-Lite unless configured otherwise)."""
+    return (os.environ.get("OPENROUTER_VISION_MODEL", "").strip()
+            or os.environ.get("OPENROUTER_ANALYSIS_LAST_RESORT_MODEL", "").strip()
+            or "google/gemini-3.1-flash-lite")
+
+
+def structured_analysis(*, system, payload, schema: type[T], operation="analysis", max_tokens=4000, temperature=0,
+                        images=None):
+    """Free preset → GLM → last resort. With `images` (data URLs) only the vision tier is used: the free preset and
+    GLM cannot see images, so trying them would only add latency."""
+    route = [vision_model()] if images else analysis_route()
     errors = []
 
     for model in route:
@@ -299,8 +309,9 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
                 operation=operation,
                 max_tokens=route_max_tokens,
                 temperature=temperature,
-                timeout_seconds=timeout_seconds,
+                timeout_seconds=timeout_seconds if not images else 40,
                 strict_schema=False,
+                images=images,
             )
         except OpenRouterError as exc:
             errors.append((model, exc))

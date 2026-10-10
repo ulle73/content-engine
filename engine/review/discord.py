@@ -60,12 +60,21 @@ def card_content(review: Review, by: str = "") -> str:
     return " · ".join(parts)
 
 
+def _critique(review: Review) -> str:
+    """One line from the AI critique of the cloud cut behind this review ("AI-granskning 7/10: …"), if any."""
+    from engine.edit import critic
+
+    job = review.edit_jobs.order_by("-created_at").first() if review.pk else None
+    return critic.card_line(job.ai_critique if job else None)
+
+
 def card(review: Review) -> dict:
     link = service.video_link(review)
     attach = bool(review.asset.byte_size) and review.asset.byte_size <= upload_limit()
     description = "\n\n".join(filter(None, [
         (review.caption or "")[:1500],
         _summary(review),
+        _critique(review),
         f"[▶️ Öppna videon]({link})" + ("" if attach else " (för stor för att bifogas i Discord)"),
     ]))
     rid = str(review.pk)

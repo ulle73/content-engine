@@ -96,7 +96,10 @@ mcp = MCPServer(
         "as authorization for a write. If an external action is unknown, stop and require explicit reconciliation; "
         "never auto-retry it. "
         "To make an ad from an idea (\"gör en ad ...\"), use the Ad Studio tools starting with start_ad_brief and follow "
-        "its flow: ask few smart questions with suggestions, propose angles and images, agree on a storyboard, lock, produce."
+        "its flow: ask few smart questions with suggestions, propose angles and images, agree on a storyboard, lock, produce. "
+        "For a video from the company's own footage, start from a production recipe (search_content_library "
+        "type='recipe'): plan_cut_from_recipe shows what the media bank covers and what is missing to film, "
+        "render_recipe cuts it in the cloud."
     ),
     token_verifier=OIDCTokenVerifier(),
     auth=AuthSettings(

@@ -134,7 +134,7 @@
           </span>
           <span class="media-library-card-body">
             <span class="media-library-card-title">{% if asset.alt_text %}{{ asset.alt_text|truncatechars:48 }}{% elif asset.brief %}{{ asset.brief|truncatechars:48 }}{% elif asset.kind == 'video' %}Video{% else %}Bild{% endif %}</span>
-            <span class="media-library-card-meta">{{ asset.created_at|date:'j M Y' }}{% if asset.width %} · {{ asset.width }} × {{ asset.height }}{% endif %}</span>
+            <span class="media-library-card-meta">{{ asset.created_at|date:'j M Y' }}{% if asset.width %} · {{ asset.width }} × {{ asset.height }}{% endif %}{% if asset.footage_ids %} · <span class="media-footage-ids" title="Filmlista-id">{{ asset.footage_ids|join:', ' }}</span>{% endif %}</span>
           </span>
         </button>
 
@@ -152,6 +152,17 @@
               <pre>{{ asset.generation.prompt }}</pre>
             </details>
           {% endif %}
+          {% if asset.kind == 'video' or asset.kind == 'image' %}{% if asset.purpose != 'logo' %}
+          <form method="post" action="{% url 'engine:media_library_footage' workspace_id=workspace.pk asset_id=asset.pk %}" class="media-footage-form" data-footage-form>
+            {% csrf_token %}<input type="hidden" name="filter" value="{{ filter_value }}">
+            <label for="footage-{{ asset.pk }}">Filmlista-id <span>Vilka bilder i filmlistan visar filen? Då hittar recepten den automatiskt.</span></label>
+            <input id="footage-{{ asset.pk }}" type="text" name="footage_ids" value="{{ asset.footage_ids|join:', ' }}" placeholder="t.ex. fa-m1, fa-p5" autocomplete="off" data-footage-input>
+            <details data-footage-picker><summary>Välj ur filmlistan</summary><div class="media-footage-options" data-footage-options></div></details>
+            <label for="footage-desc-{{ asset.pk }}">Beskrivning <span>Valfritt – vad syns i klippet?</span></label>
+            <input id="footage-desc-{{ asset.pk }}" type="text" name="description" maxlength="500" value="{{ asset.tag_description }}">
+            <button type="submit" class="button-secondary">Spara filmlista-id</button>
+          </form>
+          {% endif %}{% endif %}
           {% if asset.kind == 'image' %}<form method="post" action="{% url 'engine:media_new' workspace_id=workspace.pk %}" class="creative-actions">{% csrf_token %}<input type="hidden" name="token" value="{{ studio_token }}"><input type="hidden" name="source_asset" value="{{ asset.pk }}"><button name="kind" value="video">Animera den här bilden</button></form>{% endif %}
           <div class="media-preview-dialog-foot">
             <div><span>Typ</span><strong>{{ asset.get_kind_display }}</strong></div>
@@ -170,11 +181,46 @@
       {% endfor %}
     </div>
   </section>
+  <template id="footage-picker-template">
+    {% for group in shot_groups %}<fieldset class="media-footage-group"><legend>{{ group.label }}</legend>
+      {% for shot in group.shots %}<label><input type="checkbox" value="{{ shot.id }}"> <code>{{ shot.id }}</code> {{ shot.text }}{% if shot.star %} ★{% endif %}</label>{% endfor %}
+    </fieldset>{% endfor %}
+  </template>
 </main>
+<style>
+  .media-footage-form { display: grid; gap: .4rem; margin: 1rem 0; }
+  .media-footage-form label span { font-weight: normal; opacity: .7; font-size: .9em; }
+  .media-footage-options { max-height: 18rem; overflow: auto; display: grid; gap: .5rem; padding: .5rem 0; }
+  .media-footage-group { border: 0; padding: 0; margin: 0; display: grid; gap: .2rem; }
+  .media-footage-group legend { font-weight: 600; margin-bottom: .2rem; }
+  .media-footage-group label { display: flex; gap: .4rem; align-items: baseline; font-size: .92em; }
+  .media-footage-ids { font-family: ui-monospace, monospace; }
+</style>
 <script>
 document.querySelectorAll('.media-preview-dialog').forEach(dialog => {
   dialog.addEventListener('click', event => {
     if (event.target === dialog) dialog.close();
+  });
+});
+// Filmlista picker: checkboxes write the shot ids into the text field (the field is what gets saved).
+document.querySelectorAll('[data-footage-form]').forEach(form => {
+  const input = form.querySelector('[data-footage-input]');
+  const picker = form.querySelector('[data-footage-picker]');
+  const box = form.querySelector('[data-footage-options]');
+  const template = document.getElementById('footage-picker-template');
+  const current = () => input.value.split(/[\s,;]+/).map(v => v.trim().toLowerCase()).filter(Boolean);
+  picker.addEventListener('toggle', () => {
+    if (!picker.open || box.childElementCount) return;
+    box.appendChild(template.content.cloneNode(true));
+    const chosen = new Set(current());
+    box.querySelectorAll('input[type=checkbox]').forEach(check => {
+      check.checked = chosen.has(check.value);
+      check.addEventListener('change', () => {
+        const ids = current().filter(id => id !== check.value);
+        if (check.checked) ids.push(check.value);
+        input.value = ids.join(', ');
+      });
+    });
   });
 });
 </script>

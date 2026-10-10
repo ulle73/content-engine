@@ -5,6 +5,8 @@ os.environ.setdefault("SECRET_KEY", "isolated-test-secret-only")
 os.environ.setdefault("APP_URL", "http://127.0.0.1:8765")
 os.environ.setdefault("MCP_AUTH_ISSUER", "http://127.0.0.1:8765")
 os.environ.setdefault("MCP_RESOURCE_URL", "http://127.0.0.1:8765/mcp")
+# The cut critic makes a paid vision call when a cloud cut completes; tests enable it explicitly with mocks.
+os.environ["EDIT_AI_CRITIC"] = "0"
 
 from .settings import *
 
