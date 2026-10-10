@@ -128,6 +128,11 @@ def clean_kit(data: dict) -> dict:
         if not re.fullmatch(r"[a-z0-9-]{1,60}", value):
             raise ValueError("fact_skill: ogiltigt skillnamn.")
         out["fact_skill"] = value
+    outro = str(data.get("outro") or "").strip()
+    if outro:
+        if not re.fullmatch(r"[a-z0-9-]{1,40}", outro):
+            raise ValueError("outro: ange slutbildens namn, t.ex. spotlight, eller none för ingen slutbild.")
+        out["outro"] = outro
     return out
 
 

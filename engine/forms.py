@@ -32,8 +32,10 @@ class BrandForm(forms.ModelForm):
     brand_landing_url = forms.URLField(label="Webbadress i annonser", required=False, max_length=300, assume_scheme="https")
     brand_skills = forms.CharField(label="Skills för bolaget", required=False, max_length=400, help_text="Kommaseparerade namn från skills/, t.ex. faiv-brand, faiv-extraljus.")
     brand_fact_skill = forms.CharField(label="Skill som fyller faktabanken", required=False, max_length=60)
+    brand_outro = forms.CharField(label="Slutbild", required=False, max_length=40,
+                                  help_text="Klipps in sist i varje video, t.ex. spotlight. Skriv none för ingen slutbild. Tomt = bolagets standard.")
 
-    BRAND_FIELDS = ("background", "foreground", "accent", "font_family", "landing_url", "skills", "fact_skill")
+    BRAND_FIELDS = ("background", "foreground", "accent", "font_family", "landing_url", "skills", "fact_skill", "outro")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

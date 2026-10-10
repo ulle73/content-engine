@@ -254,8 +254,18 @@ def validate(company, raw) -> tuple[dict, list[str]]:
             raise CutSpecError("cta.url ska börja med https://")
         cta = {"text": _text(cta.get("text"), "cta.text", maximum=80, required=True), "url": url,
                "duration_s": _number(cta.get("duration_s"), "cta.duration_s", low=1, high=6, default=CTA_DEFAULT_S)}
+    from . import outros
+
+    outro = outros.outro_for(company, spec["format"])
+    if outro and cta:
+        warnings.append("Slutkortet (cta) ersätts av bolagets slutbild.")
+        cta = None
+    if cta:
         total += cta["duration_s"]
+    if outro:
+        total += outro["duration_s"]
     spec["cta"] = cta
+    spec["outro"] = outro
     if total > MAX_TOTAL_S + 1e-6:
         raise CutSpecError(f"Videon blir {total:.1f} s. Max är {MAX_TOTAL_S:.0f} s inklusive slutkortet.")
     spec["duration_s"] = round(total, 3)
