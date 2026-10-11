@@ -35,6 +35,9 @@ MAX_ATTEMPTS = 3
 ACTIVE = ("queued", "claimed", "rendering")
 MASTER_MAX_BYTES = 80 * 1024 * 1024
 PREVIEW_MAX_BYTES = int(9.5 * 1024 * 1024)
+# What the renderer reports (edit-renderer/src/render.js), kept on the job as cut_spec["render"].
+RENDER_META_KEYS = ("duration_s", "cut_s", "outro", "loudness_lufs", "master_bytes", "preview_bytes", "hyperframes",
+                    "beats", "sfx", "typography", "qa")
 WORKFLOW = "edit-render.yml"
 REDISPATCH_AFTER = timedelta(minutes=30)
 FAIL_MESSAGES = {
@@ -251,10 +254,12 @@ def complete(job_id, token, master: bytes, preview: bytes | None = None, *, warn
         job.lease_expires_at = None
         job.warnings = list(dict.fromkeys([*job.warnings, *_clean_warnings(warnings)]))
         if isinstance(meta, dict):
-            job.cut_spec = {**spec, "render": {k: meta[k] for k in ("duration_s", "loudness_lufs", "master_bytes",
-                                                                    "preview_bytes", "hyperframes") if k in meta}}
+            job.cut_spec = {**spec, "render": {k: meta[k] for k in RENDER_META_KEYS if k in meta}}
+            review.manifest = build_manifest(job.cut_spec)
+            review.save(update_fields=["manifest"])
         job.save()
     _critique(job, preview or master)
+    _gate(job)
     post_review(job)
     return job
 
@@ -268,6 +273,29 @@ def _critique(job: EditJob, video: bytes | None) -> None:
         EditJob.objects.filter(pk=job.pk).update(ai_critique=job.ai_critique)
     except Exception:  # noqa: BLE001 - storing the critique must not fail the delivery either
         log.exception("Storing the AI critique for edit job %s failed", job.pk)
+
+
+def _gate(job: EditJob) -> None:
+    """Hold back weak cuts from Discord (engine/edit/gate.py); a gate error lets the cut through."""
+    from . import gate
+
+    try:
+        job.quality_gate = gate.assess(job.cut_spec, job.ai_critique)
+        EditJob.objects.filter(pk=job.pk).update(quality_gate=job.quality_gate)
+    except Exception:  # noqa: BLE001 - the gate must not fail the delivery
+        log.exception("Quality gate for edit job %s failed", job.pk)
+
+
+def send_anyway(company, job_id) -> EditJob:
+    """Post a cut the quality gate held back to the Discord review anyway (the owner's call)."""
+    job = get_job(company, job_id)
+    if job.status != "done" or not job.review:
+        raise EditError("Bara färdiga klipp kan skickas till granskning.")
+    if (job.quality_gate or {}).get("passed") is False:
+        job.quality_gate = {**job.quality_gate, "override": timezone.now().isoformat()}
+        EditJob.objects.filter(pk=job.pk).update(quality_gate=job.quality_gate)
+    post_review(job)
+    return job
 
 
 def _store(company, data, spec, suffix=""):
@@ -284,8 +312,10 @@ def post_review(job: EditJob) -> bool:
     from engine.review import discord
     from engine.review.service import ReviewError
 
+    from . import gate
+
     review = job.review
-    if not review or review.discord_message_id:
+    if not review or review.discord_message_id or gate.held_back(job):
         return True
     try:
         discord.send(review)
@@ -318,6 +348,7 @@ def recover(*, send_discord=True, redispatch=True) -> dict:
     if send_discord:
         pending = (EditJob.objects.filter(status="done", review__isnull=False, review__discord_message_id="",
                                           review__status="pending", finished_at__gte=now - timedelta(days=7))
+                   .exclude(quality_gate__passed=False, quality_gate__override__isnull=True)
                    .select_related("review__company", "review__asset")[:10])
         for job in pending:
             stats["discord"] += int(post_review(job))
@@ -341,6 +372,9 @@ def build_manifest(spec: dict) -> dict:
         global_items.append({"id": spec["recipe_id"], "type": "template", "label": f"Recept {spec['recipe_id']}"})
     if spec.get("music_asset_id"):
         global_items.append({"id": spec["music_asset_id"], "type": "music", "label": "Musik"})
+    # The renderer snaps scene boundaries to the music's beats; the manifest follows the rendered times.
+    snapped = {s.get("after"): float(s["to"]) for s in ((spec.get("render") or {}).get("beats") or {}).get("snaps") or []
+               if isinstance(s, dict) and isinstance(s.get("to"), (int, float))}
     scenes, clock = [], 0.0
     for scene in spec["scenes"]:
         items = []
@@ -356,7 +390,7 @@ def build_manifest(spec: dict) -> dict:
         items.append({"id": scene["asset_id"], "type": "asset",
                       "label": f"{'Videoklipp' if scene.get('asset_kind') == 'video' else 'Bild'} {scene['id']}",
                       "params": {"trim_start_s": scene.get("trim_start_s", 0), "fit": scene.get("fit", "cover")}})
-        end = clock + float(scene["duration_s"])
+        end = snapped.get(scene["id"], clock + float(scene["duration_s"]))
         scenes.append({"id": scene["id"], "start": clock, "end": end, "purpose": scene.get("purpose", ""),
                        "text": scene.get("text", ""), "items": items})
         clock = end
@@ -393,9 +427,13 @@ NEXT_STEP = {
 def serialize(job: EditJob) -> dict:
     from engine.review.service import video_link
 
+    from . import gate
+
     review = job.review
     step = NEXT_STEP[job.status]
-    if job.status == "done" and review and not review.discord_message_id:
+    if job.status == "done" and gate.held_back(job):
+        step = gate.status_line(job)
+    elif job.status == "done" and review and not review.discord_message_id:
         step = "Klar. Discord-posten misslyckades och görs om automatiskt: " + (job.discord_error or "okänt fel")
     return {
         "job_id": str(job.pk), "status": job.status, "status_label": job.get_status_display(), "next_step": step,
@@ -408,6 +446,8 @@ def serialize(job: EditJob) -> dict:
         "video_link": video_link(review) if review else None,
         "discord_posted": bool(review and review.discord_message_id),
         "ai_critique": job.ai_critique or None,
+        "quality_gate": job.quality_gate or None,
+        "render": job.cut_spec.get("render") or None,
         "dispatched": bool(job.dispatched_at), "dispatch_error": job.dispatch_error or None,
         "created_at": job.created_at.isoformat(), "updated_at": job.updated_at.isoformat(),
     }
