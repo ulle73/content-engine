@@ -27,7 +27,7 @@ function coverageSpec(format = '9:16') {
     asset_id: i % 2 ? 'img' : 'vid', asset_kind: i % 2 ? 'image' : 'video', trim_start_s: i % 2 ? 0 : 0.5,
     fit: i % 3 === 2 ? 'contain' : 'cover', text: `Rad ${i + 1} med *betoning* åäö`, text_style: `cut.text.${style}`,
     text_position: null, audio: i === 2 ? 'keep' : i === 0 ? 'mute' : null,
-    effects: [effects[i % effects.length], effects[(i + 7) % effects.length]].map((e) => `cut.effect.${e}`),
+    effects: effects.filter((_, k) => k % styles.length === i).map((e) => `cut.effect.${e}`),
     transition_in: i ? `cut.transition.${transitions[i % transitions.length]}` : null,
   }));
   scenes[1].effects.push('hyperframes.registry.confetti');

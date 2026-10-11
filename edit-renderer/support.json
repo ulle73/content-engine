@@ -1,101 +1,195 @@
 {
-  "version": 1,
-  "about": "Which Content Library ids the generic cut template renders natively. Read by engine/edit/spec.py (warnings when a job is created) and edit-renderer/src/compose.js. Each native treatment also accepts its own id, e.g. cut.transition.fade. Unknown or unsupported ids are skipped with a warning, never an error.",
+  "version": 2,
+  "about": "Which Content Library ids the generic cut template renders natively. Read by engine/edit/spec.py (warnings when a job is created) and edit-renderer/src/compose.js. Each native treatment also accepts its own id, e.g. cut.transition.fade. Effect entries may carry \"sfx\" (a synthesized sound, edit-renderer/src/sfx.js) or \"text_style\" (a caption look applied to the scene text when text_style is empty). Unknown or unsupported ids are skipped with a warning, never an error.",
   "transitions": {
     "cut": {
       "label": "Hårt klipp",
       "duration": 0,
-      "ids": ["ext.content-engine-motion.transition.cut", "motion-studio.transition.hard-cut-on-drop", "hyperframes.registry.match-cut"]
+      "ids": [
+        "ext.content-engine-motion.transition.cut",
+        "motion-studio.transition.hard-cut-on-drop",
+        "hyperframes.registry.match-cut"
+      ]
     },
     "fade": {
       "label": "Mjuk övertoning",
       "duration": 0.5,
-      "ids": ["ext.content-engine-motion.transition.fade", "hyperframes.registry.fade-through", "hyperframes.registry.transitions-dissolve",
-              "nextphase.long.transition-dissolve", "hyperframes.registry.domain-warp-dissolve", "hyperframes.registry.cross-warp-morph",
-              "hf-skeletons.shader.cross-warp-morph", "hf-skeletons.shader.domain-warp"]
+      "ids": [
+        "ext.content-engine-motion.transition.fade",
+        "hyperframes.registry.fade-through",
+        "hyperframes.registry.transitions-dissolve",
+        "nextphase.long.transition-dissolve",
+        "hyperframes.registry.domain-warp-dissolve",
+        "hyperframes.registry.cross-warp-morph",
+        "hf-skeletons.shader.cross-warp-morph",
+        "hf-skeletons.shader.domain-warp"
+      ]
     },
     "blur": {
       "label": "Oskärpeövergång",
       "duration": 0.5,
-      "ids": ["ext.content-engine-motion.transition.blur", "hyperframes.registry.transitions-blur"]
+      "ids": [
+        "ext.content-engine-motion.transition.blur",
+        "hyperframes.registry.transitions-blur"
+      ]
     },
     "flash": {
       "label": "Blixt genom vitt",
       "duration": 0.36,
-      "ids": ["hyperframes.registry.flash-through-white", "hf-skeletons.shader.flash-through-white", "ext.content-engine-motion.transition.flash",
-              "hyperframes.registry.editorial-flash-overlay", "nextphase.long.transition-coral-flash", "live-carousel.engine.inverted-flash"]
+      "ids": [
+        "hyperframes.registry.flash-through-white",
+        "hf-skeletons.shader.flash-through-white",
+        "ext.content-engine-motion.transition.flash",
+        "hyperframes.registry.editorial-flash-overlay",
+        "nextphase.long.transition-coral-flash",
+        "live-carousel.engine.inverted-flash"
+      ]
     },
     "whip": {
       "label": "Whip pan",
       "duration": 0.36,
-      "ids": ["hyperframes.registry.whip-pan", "hf-skeletons.shader.whip-pan", "hyperframes.registry.whip-pan-cut", "nextphase.long.transition-whip-pan",
-              "ext.content-engine-motion.transition.whip"]
+      "ids": [
+        "hyperframes.registry.whip-pan",
+        "hf-skeletons.shader.whip-pan",
+        "hyperframes.registry.whip-pan-cut",
+        "nextphase.long.transition-whip-pan",
+        "ext.content-engine-motion.transition.whip"
+      ]
     },
     "zoom": {
       "label": "Zoom igenom",
       "duration": 0.45,
-      "ids": ["hyperframes.registry.cinematic-zoom", "hf-skeletons.shader.cinematic-zoom", "hyperframes.registry.zoom-through-transition",
-              "motion-studio.transition.zoom-through", "ext.content-engine-motion.transition.zoom", "hyperframes.registry.transitions-scale",
-              "nextphase.short.parallax-zoom", "hyperframes.registry.parallax-zoom"]
+      "ids": [
+        "hyperframes.registry.cinematic-zoom",
+        "hf-skeletons.shader.cinematic-zoom",
+        "hyperframes.registry.zoom-through-transition",
+        "motion-studio.transition.zoom-through",
+        "ext.content-engine-motion.transition.zoom",
+        "hyperframes.registry.transitions-scale",
+        "nextphase.short.parallax-zoom",
+        "hyperframes.registry.parallax-zoom"
+      ]
     },
     "push": {
       "label": "Skjut uppåt",
       "duration": 0.5,
-      "ids": ["ext.content-engine-motion.transition.push", "nextphase.long.transition-push", "hyperframes.registry.transitions-push",
-              "hyperframes.registry.page-slide", "motion-studio.transition.push-through-match-cut"]
+      "ids": [
+        "ext.content-engine-motion.transition.push",
+        "nextphase.long.transition-push",
+        "hyperframes.registry.transitions-push",
+        "hyperframes.registry.page-slide",
+        "motion-studio.transition.push-through-match-cut"
+      ]
     },
     "wipe": {
       "label": "Wipe med accentkant",
       "duration": 0.6,
-      "ids": ["ext.content-engine-motion.transition.wipe", "hyperframes.registry.directional-wipe", "nextphase.long.chapter-wipe",
-              "ext.content-engine-motion.transition.diagonal", "hyperframes.registry.transitions-cover", "nextphase.vibecode.paper-wipe",
-              "hyperframes.registry.curtain-reveal", "hyperframes.registry.panel-reveal"]
+      "ids": [
+        "ext.content-engine-motion.transition.wipe",
+        "hyperframes.registry.directional-wipe",
+        "nextphase.long.chapter-wipe",
+        "ext.content-engine-motion.transition.diagonal",
+        "hyperframes.registry.transitions-cover",
+        "nextphase.vibecode.paper-wipe",
+        "hyperframes.registry.curtain-reveal",
+        "hyperframes.registry.panel-reveal",
+        "hyperframes.registry.before-after-wipe"
+      ]
     },
     "iris": {
       "label": "Iris",
       "duration": 0.6,
-      "ids": ["hyperframes.registry.iris-reveal", "ext.content-engine-motion.transition.iris", "hyperframes.registry.sdf-iris",
-              "hf-skeletons.shader.sdf-iris", "motion-studio.transition.liquid-iris", "hyperframes.registry.transitions-radial"]
+      "ids": [
+        "hyperframes.registry.iris-reveal",
+        "ext.content-engine-motion.transition.iris",
+        "hyperframes.registry.sdf-iris",
+        "hf-skeletons.shader.sdf-iris",
+        "motion-studio.transition.liquid-iris",
+        "hyperframes.registry.transitions-radial"
+      ]
     },
     "light-leak": {
       "label": "Ljusläcka",
       "duration": 0.8,
-      "ids": ["hyperframes.registry.light-leak", "hf-skeletons.shader.light-leak", "nextphase.motiongraphics.light-leak",
-              "motion-studio.transition.light-leak-crossfade", "hyperframes.registry.organic-light-leak-overlay", "hyperframes.registry.transitions-light"]
+      "ids": [
+        "hyperframes.registry.light-leak",
+        "hf-skeletons.shader.light-leak",
+        "nextphase.motiongraphics.light-leak",
+        "motion-studio.transition.light-leak-crossfade",
+        "hyperframes.registry.organic-light-leak-overlay",
+        "hyperframes.registry.transitions-light"
+      ]
     },
     "glitch": {
       "label": "Glitch",
       "duration": 0.3,
-      "ids": ["hyperframes.registry.glitch", "hf-skeletons.shader.glitch", "hyperframes.registry.chromatic-radial-split",
-              "hf-skeletons.shader.chromatic-split", "hyperframes.registry.chromatic-aberration-wipe", "hyperframes.registry.transitions-distortion"]
+      "ids": [
+        "hyperframes.registry.glitch",
+        "hf-skeletons.shader.glitch",
+        "hyperframes.registry.chromatic-radial-split",
+        "hf-skeletons.shader.chromatic-split",
+        "hyperframes.registry.chromatic-aberration-wipe",
+        "hyperframes.registry.transitions-distortion"
+      ]
+    },
+    "speed-ramp": {
+      "label": "Hastighetsmatchat klipp (fart in, hårt klipp, fart ut)",
+      "duration": 0.4,
+      "ids": [
+        "hyperframes.registry.cut-the-curve"
+      ]
     }
   },
   "effects": {
     "ken-burns": {
       "label": "Ken Burns",
-      "ids": ["hf-skeletons.pattern.ken-burns", "hyperframes.registry.pan-stations", "ext.content-engine-motion.effect.parallax"]
+      "ids": [
+        "hf-skeletons.pattern.ken-burns",
+        "hyperframes.registry.pan-stations",
+        "ext.content-engine-motion.effect.parallax"
+      ]
     },
     "push-in": {
       "label": "Långsam inzoomning",
-      "ids": ["hyperframes.registry.push-in", "nextphase.long.camera-slow-push", "hyperframes.registry.yt-camera-move", "animate.effect.camera"]
+      "ids": [
+        "hyperframes.registry.push-in",
+        "nextphase.long.camera-slow-push",
+        "hyperframes.registry.yt-camera-move",
+        "animate.effect.camera"
+      ]
     },
     "pull-back": {
       "label": "Utzoomning",
-      "ids": ["hyperframes.registry.pull-back-reveal", "nextphase.motiongraphics.camera-pullback", "hyperframes.registry.parallax-unzoom"]
+      "ids": [
+        "hyperframes.registry.pull-back-reveal",
+        "nextphase.motiongraphics.camera-pullback",
+        "hyperframes.registry.parallax-unzoom"
+      ]
     },
     "punch-in": {
       "label": "Punch-in",
-      "ids": ["nextphase.long.camera-face-punch", "hyperframes.registry.ui-focus-zoom", "hyperframes.registry.beat-accent"]
+      "ids": [
+        "nextphase.long.camera-face-punch",
+        "hyperframes.registry.ui-focus-zoom"
+      ]
     },
     "drift": {
       "label": "Handhållen drift",
-      "ids": ["nextphase.long.camera-handheld-drift", "nextphase.motiongraphics.camera-drift", "hyperframes.registry.drift-hold",
-              "hf-skeletons.pattern.breathing-float"]
+      "ids": [
+        "nextphase.long.camera-handheld-drift",
+        "nextphase.motiongraphics.camera-drift",
+        "hyperframes.registry.drift-hold",
+        "hf-skeletons.pattern.breathing-float"
+      ]
     },
     "shake": {
       "label": "Kameraskak",
-      "ids": ["hyperframes.registry.camera-shake", "live-carousel.engine.spring-kick-shake", "live-carousel.photo.camera-push-shake",
-              "hyperframes.registry.shutter-slam"]
+      "ids": [
+        "hyperframes.registry.camera-shake",
+        "live-carousel.engine.spring-kick-shake",
+        "live-carousel.photo.camera-push-shake",
+        "hyperframes.registry.shutter-slam"
+      ]
     },
     "dark-to-light": {
       "label": "Mörker till ljus",
@@ -103,118 +197,375 @@
     },
     "focus-rack": {
       "label": "Skärpedrag",
-      "ids": ["hyperframes.registry.focus-rack", "hyperframes.registry.focus-swap", "hyperframes.registry.focus-blur-resolve"]
+      "ids": [
+        "hyperframes.registry.focus-rack",
+        "hyperframes.registry.focus-swap",
+        "hyperframes.registry.focus-blur-resolve"
+      ]
     },
     "grain": {
       "label": "Filmkorn",
-      "ids": ["hyperframes.registry.grain-overlay", "hf-skeletons.pattern.css-grain", "ext.content-engine-motion.effect.grain",
-              "live-carousel.engine.film-grain", "nextphase.short.grain-overlay"]
+      "ids": [
+        "hyperframes.registry.grain-overlay",
+        "hf-skeletons.pattern.css-grain",
+        "ext.content-engine-motion.effect.grain",
+        "live-carousel.engine.film-grain",
+        "nextphase.short.grain-overlay"
+      ]
     },
     "vignette": {
       "label": "Vinjett",
-      "ids": ["hyperframes.registry.vignette", "ext.content-engine-motion.effect.vignette", "ext.content-engine-motion.effect.shadow"]
+      "ids": [
+        "hyperframes.registry.vignette",
+        "ext.content-engine-motion.effect.vignette",
+        "ext.content-engine-motion.effect.shadow"
+      ]
     },
     "light-sweep": {
       "label": "Ljussvep",
-      "ids": ["hyperframes.registry.light-sweep-pass", "hyperframes.registry.gloss-sweep", "live-carousel.photo.shine-sweep"]
+      "ids": [
+        "hyperframes.registry.light-sweep-pass",
+        "hyperframes.registry.gloss-sweep",
+        "live-carousel.photo.shine-sweep"
+      ]
     },
     "leak-overlay": {
       "label": "Ljusläcka i bild",
-      "ids": ["live-carousel.photo.light-leak", "live-carousel.photo.motes"]
+      "ids": [
+        "live-carousel.photo.light-leak",
+        "live-carousel.photo.motes"
+      ]
     },
     "glow": {
       "label": "Glödande text",
-      "ids": ["ext.content-engine-motion.effect.glow"]
+      "ids": [
+        "ext.content-engine-motion.effect.glow"
+      ]
     },
     "grade-warm": {
       "label": "Varm filmgradering",
-      "ids": ["nextphase.persa.grade", "persa-short.grade.persa-grade", "nextphase.short.grade-persa-svg", "nextphase.zak.plate-grade"]
+      "ids": [
+        "nextphase.persa.grade",
+        "persa-short.grade.persa-grade",
+        "nextphase.short.grade-persa-svg",
+        "nextphase.zak.plate-grade"
+      ]
     },
     "grade-noir": {
       "label": "Svartvitt noir",
-      "ids": ["live-carousel.theme.noir"]
+      "ids": [
+        "live-carousel.theme.noir"
+      ]
     },
     "grade-duotone": {
       "label": "Duoton i varumärkets färger",
-      "ids": ["ext.content-engine-motion.effect.duotone"]
+      "ids": [
+        "ext.content-engine-motion.effect.duotone"
+      ]
     },
     "grade-cool": {
       "label": "Kall kobolt-ton",
-      "ids": ["live-carousel.theme.cobalt"]
+      "ids": [
+        "live-carousel.theme.cobalt"
+      ]
     },
     "grade-forest": {
       "label": "Skogsgrön ton",
-      "ids": ["live-carousel.theme.forest"]
+      "ids": [
+        "live-carousel.theme.forest"
+      ]
     },
     "grade-tomato": {
       "label": "Varm tomatton",
-      "ids": ["live-carousel.theme.tomato"]
+      "ids": [
+        "live-carousel.theme.tomato"
+      ]
+    },
+    "beat-punch": {
+      "label": "Puls på taktslagen (zoom + ljusblink på ettorna)",
+      "ids": [
+        "hyperframes.registry.beat-accent",
+        "hyperframes.registry.beat-freeze-cut"
+      ]
+    },
+    "logo-sting": {
+      "label": "Logo-sting (loggan smäller in med ring och impakt)",
+      "ids": [
+        "hyperframes.registry.logo-sting"
+      ]
+    },
+    "logo-reveal": {
+      "label": "Logga blur-reveal",
+      "ids": [
+        "nextphase.short.logo-blur-reveal"
+      ]
+    },
+    "caption-chunk": {
+      "label": "Captions i korta fraser (2–4 ord, hårdklipp)",
+      "text_style": "chunk",
+      "ids": [
+        "nextphase.zak.caption"
+      ]
+    },
+    "caption-words": {
+      "label": "Captions ord för ord",
+      "text_style": "caption",
+      "ids": [
+        "nextphase.short.caption-weight-shift",
+        "nextphase.short.caption-parallax"
+      ]
+    },
+    "caption-marker": {
+      "label": "Captions med markeringspenna",
+      "text_style": "highlight",
+      "ids": [
+        "nextphase.short.caption-highlighted"
+      ]
+    },
+    "sfx-whoosh": {
+      "label": "Ljud: whoosh",
+      "sfx": "whoosh",
+      "ids": [
+        "motion-studio.sound.whoosh",
+        "ext.content-engine-motion.audio.whoosh"
+      ]
+    },
+    "sfx-swish": {
+      "label": "Ljud: snabbt svep",
+      "sfx": "swish",
+      "ids": [
+        "motion-studio.sound.paper"
+      ]
+    },
+    "sfx-impact": {
+      "label": "Ljud: filmisk impact",
+      "sfx": "impact",
+      "ids": [
+        "motion-studio.sound.impact",
+        "ext.content-engine-motion.audio.impact"
+      ]
+    },
+    "sfx-boom": {
+      "label": "Ljud: boom/sub-drop",
+      "sfx": "boom",
+      "ids": [
+        "motion-studio.sound.boom",
+        "motion-studio.sound.subdrop"
+      ]
+    },
+    "sfx-riser": {
+      "label": "Ljud: riser in i nästa scen",
+      "sfx": "riser",
+      "ids": [
+        "motion-studio.sound.riser",
+        "ext.content-engine-motion.audio.rise"
+      ]
+    },
+    "sfx-swell": {
+      "label": "Ljud: reverse swell",
+      "sfx": "swell",
+      "ids": [
+        "motion-studio.sound.swell"
+      ]
+    },
+    "sfx-pop": {
+      "label": "Ljud: UI-pop",
+      "sfx": "pop",
+      "ids": [
+        "motion-studio.sound.pop",
+        "motion-studio.sound.blip",
+        "ext.content-engine-motion.audio.pluck"
+      ]
+    },
+    "sfx-tick": {
+      "label": "Ljud: tick",
+      "sfx": "tick",
+      "ids": [
+        "motion-studio.sound.tick",
+        "ext.content-engine-motion.audio.tick"
+      ]
+    },
+    "sfx-click": {
+      "label": "Ljud: klick",
+      "sfx": "click",
+      "ids": [
+        "motion-studio.sound.key",
+        "motion-studio.sound.glitch"
+      ]
+    },
+    "sfx-snap": {
+      "label": "Ljud: snap/slutare",
+      "sfx": "snap",
+      "ids": [
+        "motion-studio.sound.snap",
+        "motion-studio.sound.shutter"
+      ]
+    },
+    "sfx-chime": {
+      "label": "Ljud: chime",
+      "sfx": "chime",
+      "ids": [
+        "motion-studio.sound.chime",
+        "ext.content-engine-motion.audio.chime",
+        "ext.content-engine-motion.audio.sting"
+      ]
+    },
+    "sfx-shimmer": {
+      "label": "Ljud: shimmer",
+      "sfx": "shimmer",
+      "ids": [
+        "motion-studio.sound.shimmer"
+      ]
+    },
+    "sfx-tapestop": {
+      "label": "Ljud: tape stop",
+      "sfx": "tapestop",
+      "ids": [
+        "motion-studio.sound.tapestop"
+      ]
+    },
+    "sfx-room-tone": {
+      "label": "Ljud: rumston",
+      "sfx": "room-tone",
+      "ids": [
+        "motion-studio.sound.room-tone"
+      ]
     }
   },
   "text": {
     "rise": {
       "label": "Ord reser sig ur mask",
-      "ids": ["hyperframes.registry.per-word-rise", "ext.content-engine-motion.text.kinetic-words", "nextphase.motiongraphics.word-build",
-              "hyperframes.registry.kinetic-center-build", "hyperframes.registry.staggered-fade-up", "ext.content-engine-motion.text.mask-rise",
-              "hyperframes.registry.shared-axis-y"]
+      "ids": [
+        "hyperframes.registry.per-word-rise",
+        "ext.content-engine-motion.text.kinetic-words",
+        "nextphase.motiongraphics.word-build",
+        "hyperframes.registry.kinetic-center-build",
+        "hyperframes.registry.staggered-fade-up",
+        "ext.content-engine-motion.text.mask-rise",
+        "hyperframes.registry.shared-axis-y"
+      ]
     },
     "line-reveal": {
       "label": "Radvis avtäckning",
-      "ids": ["ext.content-engine-motion.text.line-reveal", "hyperframes.registry.line-by-line-slide", "hyperframes.registry.svg-mask-reveal",
-              "hyperframes.registry.titlecard-calm"]
+      "ids": [
+        "ext.content-engine-motion.text.line-reveal",
+        "hyperframes.registry.line-by-line-slide",
+        "hyperframes.registry.svg-mask-reveal",
+        "hyperframes.registry.titlecard-calm"
+      ]
     },
     "slam": {
       "label": "Rubrik-slam",
-      "ids": ["hyperframes.registry.headline-slam", "nextphase.persa.slam-opener", "hyperframes.registry.char-slam-explode",
-              "hyperframes.registry.mk-emphasis-type", "persa-short.type.title-stack"]
+      "ids": [
+        "hyperframes.registry.headline-slam",
+        "nextphase.persa.slam-opener",
+        "hyperframes.registry.char-slam-explode",
+        "hyperframes.registry.mk-emphasis-type",
+        "persa-short.type.title-stack"
+      ]
     },
     "blur-in": {
       "label": "Mjuk oskärpa in",
-      "ids": ["hyperframes.registry.blur-in", "hyperframes.registry.soft-blur-in", "ext.content-engine-motion.text.blur-reveal",
-              "hyperframes.registry.per-word-crossfade", "nextphase.motiongraphics.device-blur-swap"]
+      "ids": [
+        "hyperframes.registry.blur-in",
+        "hyperframes.registry.soft-blur-in",
+        "ext.content-engine-motion.text.blur-reveal",
+        "hyperframes.registry.per-word-crossfade",
+        "nextphase.motiongraphics.device-blur-swap"
+      ]
     },
     "typewriter": {
       "label": "Skrivmaskin",
-      "ids": ["hyperframes.registry.typewriter", "ext.content-engine-motion.text.typewriter", "live-carousel.engine.typing-caret",
-              "hyperframes.registry.streaming-text", "hyperframes.registry.typed-prompt"]
+      "ids": [
+        "hyperframes.registry.typewriter",
+        "ext.content-engine-motion.text.typewriter",
+        "live-carousel.engine.typing-caret",
+        "hyperframes.registry.streaming-text",
+        "hyperframes.registry.typed-prompt"
+      ]
     },
     "tracking-in": {
       "label": "Spärrning in",
-      "ids": ["hyperframes.registry.tracking-in", "ext.content-engine-motion.text.tracking"]
+      "ids": [
+        "hyperframes.registry.tracking-in",
+        "ext.content-engine-motion.text.tracking"
+      ]
     },
     "cascade": {
       "label": "Bokstavskaskad",
-      "ids": ["hf-skeletons.pattern.character-stagger", "ext.content-engine-motion.text.letter-cascade", "hyperframes.registry.bottom-up-letters",
-              "hyperframes.registry.top-down-letters"]
+      "ids": [
+        "hf-skeletons.pattern.character-stagger",
+        "ext.content-engine-motion.text.letter-cascade",
+        "hyperframes.registry.bottom-up-letters",
+        "hyperframes.registry.top-down-letters"
+      ]
     },
     "highlight": {
       "label": "Markeringspenna",
-      "ids": ["hyperframes.registry.marker-highlight", "hf-skeletons.pattern.highlight-sweep", "ext.content-engine-motion.text.word-highlight",
-              "hyperframes.registry.inline-highlight", "persa-short.type.marker-line"]
+      "ids": [
+        "hyperframes.registry.marker-highlight",
+        "hf-skeletons.pattern.highlight-sweep",
+        "ext.content-engine-motion.text.word-highlight",
+        "hyperframes.registry.inline-highlight",
+        "persa-short.type.marker-line",
+        "nextphase.short.caption-highlighted"
+      ]
     },
     "shimmer": {
       "label": "Glans över text",
-      "ids": ["hyperframes.registry.text-shimmer", "hyperframes.registry.shimmer-sweep"]
+      "ids": [
+        "hyperframes.registry.text-shimmer",
+        "hyperframes.registry.shimmer-sweep"
+      ]
     },
     "extrusion": {
       "label": "3D-extruderad rubrik",
-      "ids": ["live-carousel.photo.extrusion-headline", "hyperframes.registry.extruded-logo"]
+      "ids": [
+        "live-carousel.photo.extrusion-headline",
+        "hyperframes.registry.extruded-logo"
+      ]
     },
     "lower-third": {
       "label": "Namnskylt (lower third)",
-      "ids": ["nextphase.long.lower-third", "hyperframes.registry.lower-third-bild", "hyperframes.registry.lt-accent-underline",
-              "hyperframes.registry.lt-bold-block", "hyperframes.registry.lt-clean-bar", "hyperframes.registry.lt-color-block",
-              "hyperframes.registry.lt-dark-card", "hyperframes.registry.lt-kicker-name", "hyperframes.registry.lt-mask-reveal",
-              "hyperframes.registry.lt-side-rule", "hyperframes.registry.lt-soft-pill", "hyperframes.registry.lt-stack-bars"]
+      "ids": [
+        "nextphase.long.lower-third",
+        "hyperframes.registry.lower-third-bild",
+        "hyperframes.registry.lt-accent-underline",
+        "hyperframes.registry.lt-bold-block",
+        "hyperframes.registry.lt-clean-bar",
+        "hyperframes.registry.lt-color-block",
+        "hyperframes.registry.lt-dark-card",
+        "hyperframes.registry.lt-kicker-name",
+        "hyperframes.registry.lt-mask-reveal",
+        "hyperframes.registry.lt-side-rule",
+        "hyperframes.registry.lt-soft-pill",
+        "hyperframes.registry.lt-stack-bars"
+      ]
     },
     "scramble": {
       "label": "Bokstavsscramble",
-      "ids": ["hyperframes.registry.scramble-reveal", "hyperframes.registry.matrix-decode", "ext.content-engine-motion.text.split-flap",
-              "hyperframes.registry.split-flap-board"]
+      "ids": [
+        "hyperframes.registry.scramble-reveal",
+        "hyperframes.registry.matrix-decode",
+        "ext.content-engine-motion.text.split-flap",
+        "hyperframes.registry.split-flap-board"
+      ]
     },
     "caption": {
       "label": "Ord för ord",
-      "ids": ["persa-short.type.word-caption", "hyperframes.registry.kinetic-type-swap", "hyperframes.registry.line-swap"]
+      "ids": [
+        "persa-short.type.word-caption",
+        "hyperframes.registry.kinetic-type-swap",
+        "hyperframes.registry.line-swap",
+        "nextphase.short.caption-weight-shift",
+        "nextphase.short.caption-parallax"
+      ]
+    },
+    "chunk": {
+      "label": "Korta fraser (2–4 ord, hårdklipp)",
+      "ids": [
+        "nextphase.zak.caption"
+      ]
     }
   }
 }
