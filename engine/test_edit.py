@@ -55,7 +55,7 @@ class EditTestCase(TestCase):
         env = mock.patch.dict("os.environ", {"EDIT_WORKER_TOKEN": TOKEN}, clear=False)
         env.start()
         self.addCleanup(env.stop)
-        for name in ("GITHUB_DISPATCH_TOKEN", "CONTENT_N8N_DISCORD_URL", "CONTENT_N8N_SECRET"):
+        for name in ("GITHUB_DISPATCH_TOKEN", "CONTENT_N8N_DISCORD_URL", "CONTENT_N8N_SECRET", "PEXELS_API_KEY"):
             patcher = mock.patch.dict("os.environ", {name: ""})
             patcher.start()
             self.addCleanup(patcher.stop)

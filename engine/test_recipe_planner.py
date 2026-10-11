@@ -439,3 +439,110 @@ class CriticTests(EditTestCase):
         line = critic.card_line({"status": "done", "score": 6, "summary": "Ok.", "fixes": [
             {"scene_id": "s1", "item_id": "", "fix": "Kortare krok."}]})
         self.assertEqual(line, "🤖 **AI-granskning 6/10:** Ok. Först: Kortare krok. (s1)")
+
+
+def pexels_video(video_id, seconds=8, width=1080, height=1920):
+    return {"id": video_id, "duration": seconds, "url": f"https://www.pexels.com/video/{video_id}/",
+            "user": {"name": "Fotograf"},
+            "video_files": [
+                {"file_type": "video/mp4", "width": width, "height": height,
+                 "link": f"https://videos.pexels.com/video-files/{video_id}/hd.mp4"},
+                {"file_type": "video/mp4", "width": 3840 * 2, "height": 2160 * 2,
+                 "link": f"https://videos.pexels.com/video-files/{video_id}/8k.mp4"},
+                {"file_type": "video/mp4", "width": 1080, "height": 1920, "link": "https://evil.example/x.mp4"},
+            ]}
+
+
+class StockTests(EditTestCase):
+    """Free Pexels clips stand in for mood/environment shots that have not been filmed yet."""
+
+    def setUp(self):
+        super().setUp()
+        MediaAsset.objects.filter(pk__in=[self.clip.pk, self.still.pk]).delete()
+        env = mock.patch.dict("os.environ", {"PEXELS_API_KEY": "test-key", "EDIT_STOCK": "1"})
+        env.start()
+        self.addCleanup(env.stop)
+        self.requests = []
+
+    def pexels(self, videos):
+        import httpx
+
+        def handler(request):
+            self.requests.append(str(request.url))
+            if request.url.host == "api.pexels.com":
+                self.assertEqual(request.headers["Authorization"], "test-key")
+                return httpx.Response(200, json={"videos": videos})
+            return httpx.Response(200, content=movie(4.0, size=(54, 96)))
+
+        return httpx.Client(transport=httpx.MockTransport(handler))
+
+    def test_queries_only_cover_mood_shots(self):
+        from .edit import stock
+
+        self.assertEqual(stock.query_for(["fa-m4", "fa-n2"]), ("fa-n2", "moose warning road sign"))
+        self.assertIsNone(stock.query_for(["fa-m1"]))  # product proof never comes from stock
+        self.assertIsNone(stock.query_for(["fa-h1", "gk-b2", "gk-o1"]))  # customers, brand screens, match cuts
+        self.assertTrue(set(stock.queries()) <= set(footage.shots()))
+        chosen = stock.pick_file(pexels_video(1), "9:16")
+        self.assertTrue(chosen["link"].endswith("/hd.mp4"))
+        self.assertIsNone(stock.pick_file(pexels_video(1), "16:9"))  # portrait only for a portrait search
+
+    def test_plan_lists_stock_as_pending_and_render_downloads_it(self):
+        from .edit import stock
+
+        plan = planner.plan_cut(self.company, "faiv-winter-mood")
+        pending = {p["scene"]: p for p in plan["pending_downloads"]}
+        self.assertEqual(pending["s1"]["footage_id"], "fa-n1")
+        self.assertEqual(pending["s3"]["query"], "northern lights")
+        self.assertNotIn("s4", pending)  # fa-m2 (light on in snow) is product proof
+        self.assertIn("s4", {m["scene"] for m in plan["missing"]})
+        self.assertTrue(any("Pexels" in n and "Filma fa-n1" in n for n in plan["notes"]))
+        self.assertFalse(self.requests)  # planning alone never calls Pexels
+
+        videos = [pexels_video(11), pexels_video(12), pexels_video(13, seconds=1), pexels_video(14)]
+        with mock.patch.object(stock, "_client", side_effect=lambda: self.pexels(videos)):
+            plan = planner.plan_cut(self.company, "faiv-winter-mood", materialize=True)
+        s1, s3 = scene(plan, "s1"), scene(plan, "s3")
+        self.assertNotEqual(s1["asset_id"], s3["asset_id"])
+        asset = MediaAsset.objects.get(pk=s1["asset_id"])
+        self.assertEqual((asset.kind, asset.provider), ("video", "pexels"))
+        self.assertEqual(asset.ad_tags.tags, ["fa-n1"])
+        self.assertEqual(asset.ad_tags.roles, ["footage", "stock"])
+        self.assertIn("Fotograf", asset.ad_tags.source)
+        self.assertFalse(any("evil.example" in u or "8k" in u for u in self.requests))
+        self.assertIn("Pexels", next(c["why"] for c in plan["choices"] if c["scene"] == "s1"))
+
+        # Next time the downloaded clip is reused without a new download, and own film of the shot wins over it.
+        self.requests.clear()
+        plan = planner.plan_cut(self.company, "faiv-winter-mood")
+        self.assertEqual(scene(plan, "s1")["asset_id"], s1["asset_id"])
+        own = clip(self.company, 6.0, shots=["fa-n1"])
+        plan = planner.plan_cut(self.company, "faiv-winter-mood")
+        self.assertEqual(scene(plan, "s1")["asset_id"], str(own.pk))
+
+    def test_stock_film_beats_an_own_still_of_a_mood_shot(self):
+        from .edit import stock
+
+        still = clip(self.company, 0, shots=["fa-n3"], kind="image")
+        with mock.patch.object(stock, "_client", side_effect=lambda: self.pexels([pexels_video(i) for i in (21, 22, 23)])):
+            plan = planner.plan_cut(self.company, "faiv-winter-mood", materialize=True)
+        self.assertNotEqual(scene(plan, "s3")["asset_id"], str(still.pk))
+        self.assertTrue(any("bara en stillbild" in n for n in plan["notes"]))
+
+    def test_without_key_nothing_changes(self):
+        with mock.patch.dict("os.environ", {"PEXELS_API_KEY": ""}):
+            plan = planner.plan_cut(self.company, "faiv-winter-mood")
+        self.assertFalse(plan["pending_downloads"])
+        self.assertIn("s1", {m["scene"] for m in plan["missing"]})
+
+    def test_pexels_errors_fall_back_to_missing(self):
+        import httpx
+
+        from .edit import stock
+
+        def failing():
+            return httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(429)))
+
+        with mock.patch.object(stock, "_client", side_effect=failing):
+            plan = planner.plan_cut(self.company, "faiv-winter-mood", materialize=True)
+        self.assertIn("s1", {m["scene"] for m in plan["missing"]})

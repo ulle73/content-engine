@@ -53,6 +53,9 @@ services:
         value: auto
       - key: HIGGSFIELD_API_KEY_GK
         sync: false
+      # Free stock video (pexels.com/api) for mood shots without own footage (engine/edit/stock.py).
+      - key: PEXELS_API_KEY
+        sync: false
       - key: HIGGSFIELD_API_KEY
         sync: false
       - key: HIGGSFIELD_API_SECRET
