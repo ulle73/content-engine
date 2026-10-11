@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /* FAIV "Sprängskiss" – spec/feature callouts for a grille light kit. 12 s at 120 BPM (beat = 0.5 s), code only.
+         TEXT: component names/descriptions live in the CALLOUTS array in the script and in the HTML (ids h-*, end-*).
+         Labels are generic component names – check that they match the actual kit before publishing.
+         PRODUCT PHOTO: #product-slot (end card) holds a code-drawn grille by default. Replace with catalog image:
+           <img src="assets/product.png"> inside #product-slot (transparent PNG cut-out) and delete the <svg> in it. */
+      @font-face { font-family: "Anton"; src: url("assets/fonts/anton.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 500; src: url("assets/fonts/inter-500.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url("assets/fonts/inter-700.woff2") format("woff2"); }
+      :root { --graphite: #2d2d2d; --g2: #1d1e20; --ink: #0e0f10; --red: #ff1a1a; --white: #ffffff; --line: rgba(255,255,255,.14); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden;
+        background: radial-gradient(ellipse 90% 60% at 50% 48%, #2d2d2d 0%, #1b1c1e 55%, #0e0f10 100%); }
+      #grid { position: absolute; inset: 0; opacity: 0;
+        background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 60px 60px; -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 50%, #000 30%, transparent 85%); mask-image: radial-gradient(ellipse 75% 60% at 50% 50%, #000 30%, transparent 85%); }
+      .head { position: absolute; left: 80px; right: 160px; font-family: "Anton", sans-serif; font-size: 150px; line-height: .98;
+        color: var(--white); text-transform: uppercase; text-shadow: 0 8px 40px rgba(0,0,0,.5); }
+      .head .r { color: var(--red); }
+      .w { display: inline-block; }
+      .line { display: block; }
+      .hud { position: absolute; left: 84px; top: 262px; font: 700 30px/1 Inter, sans-serif; letter-spacing: .2em; color: rgba(255,255,255,.7); text-transform: uppercase; }
+      .hud i { display: inline-block; width: 14px; height: 14px; background: var(--red); margin-right: 16px; }
+      #h1 { top: 320px; }
+      #prog { position: absolute; left: 84px; top: 316px; width: 600px; height: 10px; display: flex; gap: 10px; opacity: 0; }
+      #prog b { flex: 1; background: rgba(255,255,255,.18); position: relative; overflow: hidden; }
+      #prog b i { position: absolute; inset: 0; background: var(--red); transform-origin: 0 50%; transform: scaleX(0); }
+      #count { position: absolute; left: 84px; top: 350px; font: 400 120px/1 "Anton", sans-serif; color: var(--white); opacity: 0; letter-spacing: .02em; }
+      #count span { color: rgba(255,255,255,.35); }
+
+      #stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; }
+      .part { position: absolute; overflow: visible; }
+      #axis { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      #scan { position: absolute; left: 120px; top: 760px; width: 840px; height: 6px; background: var(--red); box-shadow: 0 0 24px 6px rgba(255,26,26,.6); opacity: 0; }
+      .badge { position: absolute; width: 64px; height: 64px; border-radius: 50%; background: var(--red); color: #fff; font: 700 28px/64px Inter, sans-serif; text-align: center; opacity: 0; box-shadow: 0 0 0 8px rgba(255,26,26,.18); }
+      #leaders { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+      .lab { position: absolute; left: 90px; right: 160px; opacity: 0; }
+      .lab .n { font: 400 64px/1 "Anton", sans-serif; color: var(--red); margin-right: 18px; }
+      .lab .t { font: 400 96px/1 "Anton", sans-serif; color: #fff; text-transform: uppercase; }
+      .lab .d { display: block; margin-top: 14px; font: 500 40px/1.25 Inter, sans-serif; color: rgba(255,255,255,.78); }
+      #flare { position: absolute; left: 140px; top: 700px; width: 800px; height: 400px; border-radius: 50%; opacity: 0;
+        background: radial-gradient(ellipse, rgba(255,255,255,.9), rgba(255,246,226,.35) 30%, transparent 65%); mix-blend-mode: screen; }
+      #streak { position: absolute; left: -200px; top: 889px; width: 1480px; height: 22px; border-radius: 50%; opacity: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.9) 40%, #fff 50%, rgba(255,255,255,.9) 60%, transparent); filter: blur(4px); mix-blend-mode: screen; }
+      #h4 { top: 320px; }
+
+      /* end card */
+      #end { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse 80% 60% at 50% 45%, #2d2d2d 0%, #151617 60%, #0b0c0d 100%); }
+      #end-kicker { position: absolute; left: 84px; top: 300px; font: 700 34px/1 Inter, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--red); }
+      #end-head { top: 350px; font-size: 170px; }
+      #product-slot { position: absolute; left: 160px; top: 760px; width: 760px; height: 220px; }
+      #product-slot > * { width: 100%; height: 100%; display: block; object-fit: contain; }
+      #end-tag { position: absolute; left: 84px; right: 160px; top: 1080px; font: 700 52px/1.2 Inter, sans-serif; color: #fff; }
+      #end-url { position: absolute; left: 84px; top: 1190px; padding: 0 40px; height: 96px; border-radius: 999px; background: var(--red);
+        display: flex; align-items: center; font: 700 46px Inter, sans-serif; color: #fff; }
+      #end-where { position: absolute; left: 84px; top: 1320px; font: 500 36px Inter, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.62); }
+      #end-mark { position: absolute; right: 160px; top: 1205px; font: 400 76px/1 "Anton", sans-serif; letter-spacing: .14em; color: #fff; }
+
+      #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 95; pointer-events: none; }
+      #fx-vig { position: absolute; inset: 0; pointer-events: none; z-index: 90; background: radial-gradient(ellipse 80% 72% at 50% 50%, transparent 58%, rgba(0,0,0,.5) 100%); }
+      #fx-grain { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 100; }
+      #fx-grain-tex { position: absolute; left: -25%; top: -25%; width: 150%; height: 150%; opacity: .07; mix-blend-mode: overlay;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 300px 300px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="12" data-width="1080" data-height="1920" data-fps="30">
+      <div id="grid"></div>
+
+      <div id="stage">
+        <svg id="axis" viewBox="0 0 1080 1920"><path id="axis-path" d="M540 440 L540 1420" stroke="rgba(255,255,255,.35)" stroke-width="3" stroke-dasharray="14 12" fill="none" opacity="0"/></svg>
+        <!-- parts are drawn back to front: relay, harness, brackets, grille, LED bar -->
+        <svg class="part" id="p4" viewBox="0 0 300 120" style="left:390px; top:1270px; width:300px; height:120px">
+          <defs><linearGradient id="box" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b3d42"/><stop offset="1" stop-color="#17181b"/></linearGradient></defs>
+          <rect x="40" y="16" width="220" height="92" rx="14" fill="url(#box)" stroke="#5c5f66" stroke-width="3"/>
+          <rect x="62" y="36" width="96" height="10" rx="5" fill="#5c5f66"/><rect x="62" y="56" width="70" height="10" rx="5" fill="#45484e"/>
+          <circle cx="210" cy="62" r="24" fill="#111" stroke="#ff1a1a" stroke-width="4"/><circle cx="210" cy="62" r="8" fill="#ff1a1a"/>
+          <rect x="70" y="104" width="12" height="16" fill="#b9bcc2"/><rect x="100" y="104" width="12" height="16" fill="#b9bcc2"/><rect x="130" y="104" width="12" height="16" fill="#b9bcc2"/><rect x="160" y="104" width="12" height="16" fill="#b9bcc2"/>
+        </svg>
+        <svg class="part" id="p3" viewBox="0 0 760 110" style="left:160px; top:1085px; width:760px; height:110px">
+          <path d="M60 60 C 160 10, 240 100, 380 55 C 520 10, 600 100, 700 55" stroke="#0b0b0c" stroke-width="16" fill="none" stroke-linecap="round"/>
+          <path d="M60 52 C 160 2, 240 92, 380 47 C 520 2, 600 92, 700 47" stroke="#ff1a1a" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M60 66 C 160 16, 240 106, 380 61 C 520 16, 600 106, 700 61" stroke="#9a9da3" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <rect x="20" y="34" width="56" height="44" rx="8" fill="#26272a" stroke="#5c5f66" stroke-width="3"/>
+          <rect x="350" y="30" width="62" height="40" rx="10" fill="#26272a" stroke="#ff1a1a" stroke-width="3"/>
+          <rect x="690" y="30" width="56" height="44" rx="8" fill="#26272a" stroke="#5c5f66" stroke-width="3"/><rect x="740" y="40" width="14" height="24" rx="3" fill="#b9bcc2"/>
+        </svg>
+        <svg class="part" id="p2" viewBox="0 0 760 90" style="left:160px; top:915px; width:760px; height:90px">
+          <defs><linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d6d9de"/><stop offset=".5" stop-color="#8b8f96"/><stop offset="1" stop-color="#5b5f66"/></linearGradient></defs>
+          <path d="M40 10 L150 10 L150 30 L70 30 L70 80 L40 80 Z" fill="url(#steel)"/>
+          <path d="M720 10 L610 10 L610 30 L690 30 L690 80 L720 80 Z" fill="url(#steel)"/>
+          <rect x="320" y="20" width="120" height="28" rx="6" fill="url(#steel)"/>
+          <circle cx="110" cy="20" r="6" fill="#2a2b2e"/><circle cx="650" cy="20" r="6" fill="#2a2b2e"/><circle cx="350" cy="34" r="6" fill="#2a2b2e"/><circle cx="410" cy="34" r="6" fill="#2a2b2e"/>
+        </svg>
+        <svg class="part" id="p0" viewBox="0 0 760 220" style="left:160px; top:450px; width:760px; height:220px">
+          <defs>
+            <linearGradient id="gril" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4d53"/><stop offset=".5" stop-color="#26282c"/><stop offset="1" stop-color="#141517"/></linearGradient>
+            <pattern id="hex" width="24" height="16" patternUnits="userSpaceOnUse"><path d="M0 8 L12 0 L24 8 L12 16 Z" fill="#0d0e10" stroke="#3a3d43" stroke-width="2"/></pattern>
+          </defs>
+          <path d="M40 20 Q40 0 70 0 L690 0 Q720 0 724 20 L760 180 Q762 220 720 220 L40 220 Q-2 220 0 180 Z" fill="url(#gril)"/>
+          <path d="M70 26 L690 26 L720 186 Q720 196 708 196 L52 196 Q40 196 40 186 Z" fill="url(#hex)"/>
+          <rect x="76" y="81" width="608" height="58" rx="29" fill="#050506" stroke="#55585f" stroke-width="3"/>
+          <path d="M70 10 L690 10" stroke="#fff" stroke-opacity=".3" stroke-width="3"/>
+        </svg>
+        <svg class="part" id="p1" viewBox="0 0 600 60" style="left:240px; top:750px; width:600px; height:60px">
+          <defs><filter id="ledglow" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect x="2" y="4" width="596" height="52" rx="26" fill="#1a1b1e" stroke="#6a6d74" stroke-width="3"/>
+          <g id="leds-off"></g><g id="leds-on" filter="url(#ledglow)"></g>
+        </svg>
+        <div class="badge" id="b0" style="left:60px; top:528px">01</div>
+        <div class="badge" id="b1" style="left:150px; top:748px">02</div>
+        <div class="badge" id="b2" style="left:60px; top:928px">03</div>
+        <div class="badge" id="b3" style="left:60px; top:1108px">04</div>
+        <div class="badge" id="b4" style="left:300px; top:1298px">05</div>
+      </div>
+      <div id="scan"></div>
+      <div id="flare"></div><div id="streak"></div>
+
+      <svg id="leaders" viewBox="0 0 1080 1920"></svg>
+      <div id="labels"></div>
+
+      <div class="hud" id="hud"><i></i>FAIV · Sprängskiss</div>
+      <div id="prog"><b><i></i></b><b><i></i></b><b><i></i></b><b><i></i></b><b><i></i></b></div>
+      <div id="count">01<span>/05</span></div>
+      <div class="head" id="h1"><span class="line"><span class="w">Vad</span> <span class="w">sitter</span></span><span class="line"><span class="w">i</span> <span class="w">ett</span></span><span class="line"><span class="w r">grillkit?</span></span></div>
+      <div class="head" id="h4"><span class="line"><span class="w">Allt</span> <span class="w">på</span></span><span class="line"><span class="w r">plats.</span></span></div>
+
+      <section id="end">
+        <div id="end-kicker">Grillkit · extraljus · arbetsljus</div>
+        <div class="head" id="end-head"><span class="w">Grillkit</span></div>
+        <div id="product-slot"><svg viewBox="0 0 760 220"><use href="#p0-art"/></svg></div>
+        <div id="end-tag">Vi bygger din bil på ditt sätt.</div>
+        <div id="end-url">faiv.se</div>
+        <div id="end-mark">FAIV</div>
+        <div id="end-where">Montering i Kungälv</div>
+      </section>
+
+      <div id="flash"></div>
+      <div id="fx-vig"></div>
+      <div id="fx-grain"><div id="fx-grain-tex"></div></div>
+    </div>
+
+    <script>
+      (function () {
+        const B = 0.5; // one beat at 120 BPM
+        const tl = gsap.timeline({ paused: true });
+        const $ = (s) => document.querySelector(s);
+        const NS = "http://www.w3.org/2000/svg";
+        const el = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; };
+        const rnd = (i, s) => { const x = Math.sin(i * 12.9898 + s * 78.233) * 43758.5453; return x - Math.floor(x); };
+        const slam = (sel, at, stagger = 0.1) => tl.fromTo(sel, { y: 110, scale: 1.2, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: .4, stagger, ease: "back.out(2)" }, at);
+
+        // ---------- the five components (exploded centre y in stage space) ----------
+        // EDIT HERE: name + one short line each. Generic component names – match them to the real kit.
+        const CALLOUTS = [
+          { id: "p0", y: 560, h: 220, n: "01", t: "Grill", d: "Formen följer bilens front", ax: 820 },
+          { id: "p1", y: 780, h: 60, n: "02", t: "LED-ramp", d: "Ljuset sitter i grillen", ax: 760 },
+          { id: "p2", y: 960, h: 90, n: "03", t: "Fästen", d: "Håller allt på plats", ax: 830 },
+          { id: "p3", y: 1140, h: 110, n: "04", t: "Kablage", d: "Kopplas till bilens el", ax: 560 },
+          { id: "p4", y: 1330, h: 120, n: "05", t: "Relä", d: "Styr strömmen till ljuset", ax: 660 },
+        ];
+        const ASSEMBLED = { p0: 900, p1: 900, p2: 900, p3: 940, p4: 950 };
+        const S = 1.35, FOCUS_Y = 860;
+
+        // LEDs
+        const off = $("#leds-off"), on = $("#leds-on"), N = 22, order = [];
+        for (let i = 0; i < N; i++) {
+          const x = 24 + i * 25.5;
+          el("rect", { x, y: 16, width: 16, height: 28, rx: 5, fill: "#3b3e45" }, off);
+          el("rect", { x, y: 16, width: 16, height: 28, rx: 5, fill: "#fffaf0", id: "led" + i, opacity: 0 }, on);
+          order.push(i);
+        }
+        order.sort((a, b) => Math.abs(a - (N - 1) / 2) - Math.abs(b - (N - 1) / 2));
+        // end-card product: reuse the grille artwork (replace #product-slot content with a catalog photo)
+        const art = $("#p0").cloneNode(true); art.removeAttribute("id"); art.removeAttribute("class"); art.removeAttribute("style");
+        $("#product-slot").innerHTML = ""; $("#product-slot").appendChild(art);
+        const bar = $("#p1").cloneNode(true); bar.removeAttribute("id"); bar.removeAttribute("class");
+        bar.setAttribute("style", "position:absolute; left:80px; top:81px; width:600px; height:58px");
+        bar.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+        bar.querySelectorAll("rect[opacity]").forEach((n) => n.setAttribute("opacity", "1"));
+        bar.querySelector("g[filter]") && bar.querySelector("g[filter]").setAttribute("filter", "url(#ledglow)");
+        $("#product-slot").style.position = "absolute"; $("#product-slot").appendChild(bar);
+
+        // leaders + labels (screen space, used while the camera is focused on a part)
+        const leaders = $("#leaders"), labels = $("#labels");
+        CALLOUTS.forEach((c, i) => {
+          const ay = FOCUS_Y + c.h * S * .22, ly = FOCUS_Y + c.h * S / 2 + 70;
+          const len = (ly - ay) + (c.ax - 90) + 10;
+          el("circle", { cx: c.ax, cy: ay, r: 12, fill: "#ff1a1a", id: "ld" + i, opacity: 0 }, leaders);
+          el("path", { d: `M${c.ax} ${ay} L${c.ax} ${ly} L90 ${ly}`, stroke: "#ff1a1a", "stroke-width": 4, fill: "none", id: "lp" + i,
+            "stroke-dasharray": len, "stroke-dashoffset": len }, leaders);
+          const lab = document.createElement("div");
+          lab.className = "lab"; lab.id = "lab" + i; lab.style.top = (ly + 26) + "px";
+          lab.innerHTML = `<span class="n">${c.n}</span><span class="t">${c.t}</span><span class="d">${c.d}</span>`;
+          labels.appendChild(lab);
+        });
+
+        // ---------- 0–2 s: hook, assembled kit, scan ----------
+        tl.fromTo("#grid", { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 1.2, ease: "power2.out" }, 0);
+        tl.fromTo("#hud", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: .3 }, 0.05);
+        slam("#h1 .w", 0.0, .1);
+        CALLOUTS.forEach((c) => tl.set("#" + c.id, { y: ASSEMBLED[c.id] - c.y }, 0));
+        tl.fromTo("#stage", { scale: .86, x: 75.6, y: 150 }, { scale: 1, x: 0, y: 0, duration: 1.9, ease: "power2.out" }, 0);
+        tl.fromTo("#scan", { opacity: 0, y: 0 }, { opacity: 1, y: 0, duration: .1 }, .6)
+          .to("#scan", { y: 280, duration: .9, ease: "sine.inOut" }, .6)
+          .to("#scan", { opacity: 0, duration: .15 }, 1.5);
+        tl.to("#h1", { y: -500, opacity: 0, duration: .25, ease: "power3.in" }, 1.8);
+
+        // ---------- 2.0 s (beat 4): EXPLODE ----------
+        CALLOUTS.forEach((c, i) => tl.to("#" + c.id, { y: 0, duration: .6, ease: "expo.out" }, 2.0 + Math.abs(i - 2) * .04));
+        tl.to("#stage", { keyframes: [{ x: -12, y: 8 }, { x: 10, y: -6 }, { x: 0, y: 0 }], duration: .24, ease: "none" }, 2.0);
+        tl.fromTo("#flash", { opacity: .35 }, { opacity: 0, duration: .25, immediateRender: false }, 2.0);
+        tl.fromTo("#axis-path", { opacity: 0 }, { opacity: 1, duration: .3, immediateRender: false }, 2.2);
+        CALLOUTS.forEach((c, i) => tl.fromTo("#b" + i, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: .25, ease: "back.out(3)", immediateRender: false }, 2.4 + i * .08));
+        tl.fromTo("#prog", { opacity: 0 }, { opacity: 1, duration: .2, immediateRender: false }, 2.6);
+        tl.fromTo("#count", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .25, immediateRender: false }, 2.6);
+
+        // ---------- 3.0–8.0 s: one callout every 2 beats ----------
+        CALLOUTS.forEach((c, i) => {
+          const at = 3.0 + i * 2 * B;
+          tl.to("#stage", { scale: S, x: 540 - 540 * S, y: FOCUS_Y - c.y * S, duration: .45, ease: "power3.inOut" }, at - .2);
+          CALLOUTS.forEach((o, j) => tl.to("#" + o.id, { opacity: j === i ? 1 : .22, duration: .3 }, at - .15));
+          tl.to(".badge", { opacity: 0, duration: .15 }, at - .2);
+          tl.to("#prog b:nth-child(" + (i + 1) + ") i", { scaleX: 1, duration: .3, ease: "power2.out" }, at);
+          tl.set("#count", { innerHTML: `${c.n}<span>/05</span>` }, at);
+          tl.fromTo("#count", { scale: 1.25 }, { scale: 1, duration: .25, ease: "back.out(2)", immediateRender: false }, at);
+          tl.fromTo("#ld" + i, { opacity: 0, scale: 0, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: .15, immediateRender: false }, at + .1);
+          tl.to("#lp" + i, { strokeDashoffset: 0, duration: .3, ease: "power2.out" }, at + .12);
+          tl.fromTo("#lab" + i, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: .3, ease: "power3.out", immediateRender: false }, at + .28);
+          tl.to(`#lab${i}, #lp${i}, #ld${i}`, { opacity: 0, duration: .15 }, at + 2 * B - .22);
+        });
+
+        // ---------- 8.0 s: pull back, 8.5 s (beat 17): IMPLODE + light ----------
+        tl.to("#stage", { scale: 1, x: 0, y: 0, duration: .45, ease: "power3.inOut" }, 7.85);
+        CALLOUTS.forEach((c) => tl.to("#" + c.id, { opacity: 1, duration: .25 }, 7.9));
+        tl.to("#prog, #count", { opacity: 0, duration: .2 }, 7.9);
+        tl.to("#axis-path", { opacity: 0, duration: .2 }, 8.3);
+        CALLOUTS.forEach((c, i) => tl.to("#" + c.id, { y: ASSEMBLED[c.id] - c.y, duration: .35, ease: "power4.in" }, 8.15 + (4 - i) * .02));
+        tl.to("#stage", { keyframes: [{ x: -16, y: 10 }, { x: 12, y: -8 }, { x: -6, y: 4 }, { x: 0, y: 0 }], duration: .3, ease: "none" }, 8.5);
+        order.forEach((i, k) => tl.fromTo("#led" + i, { opacity: 0 }, { opacity: 1, duration: .04, immediateRender: false }, 8.75 + k * .009));
+        tl.fromTo("#flare", { opacity: 0, scale: .3 }, { opacity: 1, scale: 1, duration: .3, ease: "expo.out", immediateRender: false }, 8.75)
+          .to("#flare", { opacity: .55, duration: .8 }, 9.1);
+        tl.fromTo("#streak", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .35, ease: "expo.out", immediateRender: false }, 8.75);
+        tl.fromTo("#flash", { opacity: .6 }, { opacity: 0, duration: .3, immediateRender: false }, 8.75);
+        tl.to("#grid", { opacity: .35, duration: .4 }, 8.75);
+        slam("#h4 .w", 8.9, .1);
+        tl.to("#stage", { scale: 1.08, x: -43.2, y: -72, duration: 1.1, ease: "sine.out" }, 8.9);
+
+        // ---------- 10–12 s: end card ----------
+        tl.fromTo("#end", { opacity: 0 }, { opacity: 1, duration: .2, immediateRender: false }, 10.0);
+        tl.fromTo("#end-kicker", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: .3, immediateRender: false }, 10.0);
+        slam("#end-head .w", 10.05);
+        tl.fromTo("#product-slot", { x: 900, opacity: 0 }, { x: 0, opacity: 1, duration: .45, ease: "expo.out", immediateRender: false }, 10.25);
+        tl.fromTo("#end-tag", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .35, immediateRender: false }, 10.6);
+        tl.fromTo("#end-url", { scale: .7, opacity: 0 }, { scale: 1, opacity: 1, duration: .3, ease: "back.out(2)", immediateRender: false }, 11.0);
+        tl.fromTo("#end-mark", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: .3, immediateRender: false }, 11.0);
+        tl.fromTo("#end-where", { opacity: 0 }, { opacity: 1, duration: .3, immediateRender: false }, 11.2);
+
+        const step = 1 / 24;
+        for (let i = 0; i * step < 12; i++) tl.set("#fx-grain-tex", { x: (rnd(i, 31) - .5) * 240, y: (rnd(i, 32) - .5) * 240 }, i * step);
+        tl.to({}, { duration: 12 }, 0);
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

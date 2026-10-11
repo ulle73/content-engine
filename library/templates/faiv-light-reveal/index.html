@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /* FAIV "Mörker → ljus" – 12 s at 120 BPM (beat = 0.5 s). Every pixel drawn in code.
+         TEXT: edit the words in the HTML below (ids s1-*, s2-*, s3-*, s4-*, s5-*).
+         PRODUCT PHOTO: #product-slot holds a code-drawn light bar by default. Replace with catalog image:
+           <img id="product-photo" src="assets/product.png"> (transparent PNG cut-out, ~900 px wide) inside #product-slot
+           and delete the <svg id="bar"> – the timeline animates #product-slot, not the svg. */
+      @font-face { font-family: "Anton"; src: url("assets/fonts/anton.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 500; src: url("assets/fonts/inter-500.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url("assets/fonts/inter-700.woff2") format("woff2"); }
+      :root { --graphite: #2d2d2d; --ink: #0b0c0e; --red: #ff1a1a; --white: #ffffff; --warm: #fff3d6; --cool: #e9f2ff; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--ink); }
+      .scene { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
+      .head { position: absolute; left: 80px; right: 160px; font-family: "Anton", sans-serif; font-size: 150px; line-height: .98;
+        color: var(--white); text-transform: uppercase; letter-spacing: .01em; text-shadow: 0 8px 40px rgba(0,0,0,.55); }
+      .head .r { color: var(--red); }
+      .w { display: inline-block; }
+      .line { display: block; }
+      .sub { position: absolute; left: 84px; right: 160px; font: 500 46px/1.3 Inter, sans-serif; color: rgba(255,255,255,.78); }
+      .hud { position: absolute; font: 700 30px/1 Inter, sans-serif; letter-spacing: .18em; color: rgba(233,242,255,.72); text-transform: uppercase; }
+      .hud i { display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: var(--red); margin-right: 16px; box-shadow: 0 0 18px var(--red); }
+      .chip { position: absolute; padding: 18px 28px; border-radius: 14px; font: 700 40px/1 Inter, sans-serif; letter-spacing: .08em;
+        text-transform: uppercase; color: var(--white); background: rgba(18,18,20,.72); border: 2px solid rgba(255,255,255,.22); opacity: 0; }
+      .chip b { color: var(--red); }
+
+      /* S1/S2 – car front at night */
+      #s12 { background: radial-gradient(ellipse 120% 70% at 50% 75%, #121823 0%, #07090d 60%, #030405 100%); }
+      #cam { position: absolute; inset: 0; transform-origin: 50% 63%; }
+      #sky-stars { position: absolute; left: 0; top: 0; width: 1080px; height: 900px; }
+      #treeline { position: absolute; left: 0; top: 760px; width: 1080px; height: 360px; }
+      #road { position: absolute; left: 0; top: 1300px; width: 1080px; height: 620px; }
+      #car { position: absolute; left: 90px; top: 820px; width: 900px; height: 620px; }
+      #pool { position: absolute; left: 40px; top: 1340px; width: 1000px; height: 420px; border-radius: 50%; opacity: 0;
+        background: radial-gradient(ellipse at 50% 30%, rgba(255,246,222,.55) 0%, rgba(255,240,205,.18) 45%, transparent 70%); filter: blur(10px); }
+      #bloom { position: absolute; left: 140px; top: 805px; width: 800px; height: 800px; border-radius: 50%; opacity: 0;
+        background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,248,230,.85) 9%, rgba(255,240,210,.35) 26%, rgba(255,240,210,0) 62%); mix-blend-mode: screen; }
+      #streak { position: absolute; left: -200px; top: 1195px; width: 1480px; height: 22px; border-radius: 50%; opacity: 0;
+        background: linear-gradient(90deg, transparent, rgba(220,235,255,.9) 35%, #fff 50%, rgba(220,235,255,.9) 65%, transparent); filter: blur(4px); mix-blend-mode: screen; }
+      #streak2 { position: absolute; left: 140px; top: 1170px; width: 800px; height: 70px; border-radius: 50%; opacity: 0;
+        background: radial-gradient(ellipse, rgba(255,255,255,.65), transparent 70%); filter: blur(8px); mix-blend-mode: screen; }
+      #dark { position: absolute; inset: 0; background: #020305; opacity: .62; pointer-events: none; }
+      #snow { position: absolute; inset: 0; opacity: .35; }
+      .flake { position: absolute; border-radius: 50%; background: #fff; }
+      #s1-hud { left: 84px; top: 262px; }
+      #s1-head { top: 330px; }
+      #s1-sub { top: 805px; }
+      #s2-head { top: 300px; }
+      #leader { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+      #chip-grill { left: 400px; top: 712px; }
+
+      /* S3 – chase view, cones on the road */
+      #s3 { background: linear-gradient(180deg, #030407 0%, #070a10 34%, #0b0f15 37%, #0c1016 100%); }
+      #map { position: absolute; inset: 0; transform-origin: 50% 70%; }
+      #world { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      #cones { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; mix-blend-mode: screen; }
+      #cone-low { transform-origin: 540px 1460px; }
+      #cone-kit { transform-origin: 540px 1460px; }
+      #rear { position: absolute; left: 250px; top: 1400px; width: 580px; height: 430px; }
+      #moose { position: absolute; left: 600px; top: 740px; width: 330px; height: 242px; }
+      #glint { position: absolute; left: 633px; top: 813px; width: 34px; height: 12px; opacity: 0; }
+      #glint i { position: absolute; top: 0; width: 11px; height: 11px; border-radius: 50%; background: #fff; box-shadow: 0 0 16px 6px rgba(255,250,210,.9); }
+      #s3-sub { top: 300px; font-weight: 700; font-size: 60px; color: rgba(255,243,214,.92); }
+      #s3-head { top: 320px; font-size: 158px; }
+      #chip-low { left: 610px; top: 1150px; }
+      #chip-kit { left: 84px; top: 1000px; }
+
+      /* S4 – product */
+      #s4 { background: radial-gradient(ellipse 90% 55% at 50% 52%, #24262b 0%, #131417 55%, #08090a 100%); }
+      #s4-head { top: 300px; font-size: 190px; }
+      #s4-sub { top: 520px; }
+      #redline { position: absolute; left: 84px; top: 500px; width: 220px; height: 10px; background: var(--red); transform-origin: 0 50%; }
+      #product-slot { position: absolute; left: 60px; top: 860px; width: 960px; height: 260px; }
+      #product-slot > * { width: 100%; height: 100%; display: block; object-fit: contain; }
+      #product-refl { position: absolute; left: 60px; top: 1130px; width: 960px; height: 260px; opacity: .22; transform: scaleY(-1);
+        -webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,.9), transparent 70%); mask-image: linear-gradient(0deg, rgba(0,0,0,.9), transparent 70%); }
+      #spec { position: absolute; left: 60px; top: 860px; width: 960px; height: 260px; overflow: hidden; mix-blend-mode: screen; }
+      #spec i { position: absolute; top: -40px; left: -300px; width: 160px; height: 340px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); }
+      #glow4 { position: absolute; left: 40px; top: 760px; width: 1000px; height: 460px; border-radius: 50%; opacity: 0;
+        background: radial-gradient(ellipse, rgba(255,248,232,.45), rgba(255,248,232,0) 65%); mix-blend-mode: screen; }
+      #chip-a { left: 84px; top: 1290px; }
+      #chip-b { left: 84px; top: 1394px; }
+
+      /* S5 – end card */
+      #s5 { background: radial-gradient(ellipse 80% 60% at 50% 45%, #2d2d2d 0%, #17181a 60%, #0b0c0e 100%); }
+      #mark { position: absolute; left: 0; right: 0; top: 640px; text-align: center; font: 400 300px/1 "Anton", sans-serif; letter-spacing: .14em;
+        color: var(--white); padding-left: .14em; }
+      #mark .l { display: inline-block; }
+      #mark-bar { position: absolute; left: 270px; top: 975px; width: 540px; height: 12px; background: var(--red); transform-origin: 50% 50%; }
+      #mark-sweep { position: absolute; left: 0; top: 620px; width: 1080px; height: 340px; overflow: hidden; mix-blend-mode: overlay; }
+      #mark-sweep i { position: absolute; top: 0; left: -400px; width: 260px; height: 340px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent); transform: skewX(-18deg); }
+      #tag { position: absolute; left: 80px; right: 80px; top: 1040px; text-align: center; font: 700 56px/1.2 Inter, sans-serif; color: var(--white); }
+      #url { position: absolute; left: 340px; top: 1180px; width: 400px; height: 96px; border-radius: 999px; border: 3px solid rgba(255,255,255,.85);
+        display: flex; align-items: center; justify-content: center; font: 700 44px Inter, sans-serif; color: var(--white); letter-spacing: .02em; }
+      #where { position: absolute; left: 0; right: 0; top: 1320px; text-align: center; font: 500 36px Inter, sans-serif; color: rgba(255,255,255,.62); letter-spacing: .12em; text-transform: uppercase; }
+
+      #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 95; pointer-events: none; }
+      #fx-vig { position: absolute; inset: 0; pointer-events: none; z-index: 90; background: radial-gradient(ellipse 80% 72% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%); }
+      #fx-grain { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 100; }
+      #fx-grain-tex { position: absolute; left: -25%; top: -25%; width: 150%; height: 150%; opacity: .09; mix-blend-mode: overlay;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 300px 300px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="12" data-width="1080" data-height="1920" data-fps="30">
+
+      <!-- S1 + S2: the same car front, dark (0–2.5 s) then lit (2.5–5 s) -->
+      <section class="scene" id="s12">
+        <div id="cam">
+          <svg id="sky-stars" viewBox="0 0 1080 900"></svg>
+          <svg id="treeline" viewBox="0 0 1080 360" preserveAspectRatio="none"></svg>
+          <svg id="road" viewBox="0 0 1080 620" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="asphalt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c0f14"/><stop offset="1" stop-color="#050608"/></linearGradient>
+              <linearGradient id="bank" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a3442"/><stop offset="1" stop-color="#151b24"/></linearGradient>
+            </defs>
+            <rect width="1080" height="620" fill="url(#asphalt)"/>
+            <path d="M0 0 L120 0 L0 260 Z" fill="url(#bank)"/>
+            <path d="M1080 0 L960 0 L1080 260 Z" fill="url(#bank)"/>
+          </svg>
+          <div id="pool"></div>
+          <svg id="car" viewBox="0 0 900 620">
+            <defs>
+              <linearGradient id="paint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3d43"/><stop offset=".45" stop-color="#26282c"/><stop offset="1" stop-color="#141517"/></linearGradient>
+              <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2433"/><stop offset=".6" stop-color="#0b0f16"/><stop offset="1" stop-color="#07090c"/></linearGradient>
+              <linearGradient id="rim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8fa6c8" stop-opacity=".0"/><stop offset=".5" stop-color="#b9cbe6" stop-opacity=".75"/><stop offset="1" stop-color="#8fa6c8" stop-opacity="0"/></linearGradient>
+              <pattern id="mesh" width="18" height="12" patternUnits="userSpaceOnUse"><path d="M0 6 L9 0 L18 6 L9 12 Z" fill="none" stroke="#2c2f35" stroke-width="2"/></pattern>
+              <filter id="ledglow" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <ellipse cx="450" cy="598" rx="440" ry="24" fill="#000" opacity=".7"/>
+            <rect x="66" y="452" width="120" height="146" rx="22" fill="#08090a"/>
+            <rect x="714" y="452" width="120" height="146" rx="22" fill="#08090a"/>
+            <path d="M200 254 L262 96 Q272 72 302 70 L598 70 Q628 72 638 96 L700 254 Z" fill="url(#glass)"/>
+            <path d="M262 96 Q272 72 302 70 L598 70 Q628 72 638 96" fill="none" stroke="url(#rim)" stroke-width="4"/>
+            <path d="M150 214 L196 202 L204 236 L156 244 Z" fill="#1b1c1f"/><path d="M750 214 L704 202 L696 236 L744 244 Z" fill="#1b1c1f"/>
+            <path d="M92 306 Q100 262 160 252 L740 252 Q800 262 808 306 L846 424 L54 424 Z" fill="url(#paint)"/>
+            <path d="M160 252 L740 252" stroke="url(#rim)" stroke-width="5"/>
+            <path d="M300 258 L380 300 M600 258 L520 300" stroke="#1a1b1e" stroke-width="3" opacity=".7"/>
+            <path d="M60 414 Q40 424 42 472 L50 546 Q56 572 92 574 L808 574 Q844 572 850 546 L858 472 Q860 424 840 414 Z" fill="url(#paint)"/>
+            <path d="M60 414 L840 414" stroke="url(#rim)" stroke-width="4"/>
+            <path d="M96 300 L292 322 L286 348 L112 334 Z" fill="#101215"/><path d="M804 300 L608 322 L614 348 L788 334 Z" fill="#101215"/>
+            <path d="M104 312 L280 330" stroke="#6b7a90" stroke-width="3" opacity=".55"/><path d="M796 312 L620 330" stroke="#6b7a90" stroke-width="3" opacity=".55"/>
+            <rect x="270" y="318" width="360" height="168" rx="34" fill="#0d0e10"/>
+            <rect x="270" y="318" width="360" height="168" rx="34" fill="url(#mesh)"/>
+            <rect x="270" y="318" width="360" height="168" rx="34" fill="none" stroke="#3b3f46" stroke-width="5"/>
+            <rect x="292" y="376" width="316" height="30" rx="15" fill="#16181b" stroke="#2f3238" stroke-width="3"/>
+            <g id="leds-off"></g>
+            <g id="leds-on" filter="url(#ledglow)"></g>
+            <rect x="370" y="506" width="160" height="42" rx="6" fill="#1a1b1e" stroke="#2a2c30" stroke-width="2"/>
+            <path d="M120 520 L230 520 M670 520 L780 520" stroke="#0e0f11" stroke-width="10" stroke-linecap="round"/>
+          </svg>
+          <div id="snow"></div>
+          <div id="streak2"></div>
+          <div id="bloom"></div>
+          <div id="streak"></div>
+        </div>
+        <div id="dark"></div>
+        <svg id="leader" viewBox="0 0 1080 1920"><path id="leader-path" d="M700 1205 L700 812 L760 790" fill="none" stroke="#ffffff" stroke-width="4" stroke-dasharray="460" stroke-dashoffset="460"/><circle id="leader-dot" cx="700" cy="1205" r="10" fill="#ff1a1a" opacity="0"/></svg>
+        <div class="hud" id="s1-hud"><i></i>Natt · Landsväg</div>
+        <div class="head" id="s1-head"><span class="line"><span class="w">Så</span> <span class="w">här</span></span><span class="line"><span class="w r">mörkt</span></span><span class="line"><span class="w">är</span> <span class="w">det.</span></span></div>
+        <div class="sub" id="s1-sub">Inga gatlampor. Ingen måne.</div>
+        <div class="head" id="s2-head"><span class="line"><span class="w">Och</span> <span class="w">så</span> <span class="w">här</span></span><span class="line"><span class="w">med</span> <span class="w r">rätt</span></span><span class="line"><span class="w r">ljus.</span></span></div>
+        <div class="chip" id="chip-grill"><b>●</b> Grillkit · LED i grillen</div>
+      </section>
+
+      <!-- S3: chase view, low beam vs grille kit (5–8 s) -->
+      <section class="scene" id="s3">
+        <div id="map">
+          <svg id="world" viewBox="0 0 1080 1920"></svg>
+          <svg id="cones" viewBox="0 0 1080 1920">
+            <defs>
+              <linearGradient id="gLow" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff1cf" stop-opacity=".85"/><stop offset=".7" stop-color="#ffe9b8" stop-opacity=".25"/><stop offset="1" stop-color="#ffe9b8" stop-opacity="0"/></linearGradient>
+              <linearGradient id="gKit" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity=".9"/><stop offset=".55" stop-color="#eef5ff" stop-opacity=".5"/><stop offset=".92" stop-color="#eef5ff" stop-opacity=".12"/><stop offset="1" stop-color="#eef5ff" stop-opacity="0"/></linearGradient>
+              <filter id="soft"><feGaussianBlur stdDeviation="14"/></filter>
+            </defs>
+            <g id="cone-kit" opacity="0"><polygon points="380,1460 700,1460 1080,760 0,760" fill="url(#gKit)" filter="url(#soft)"/></g>
+            <g id="cone-low"><polygon points="430,1460 650,1460 790,1110 290,1110" fill="url(#gLow)" filter="url(#soft)"/></g>
+          </svg>
+          <svg id="moose" viewBox="0 0 300 220">
+            <path d="M40 92 C30 92 22 84 26 76 L52 52 L66 40 L78 46 L96 60 C120 40 150 30 180 34 C215 38 245 44 262 58 C272 66 272 82 266 92 L262 104 L268 196 L258 198 L248 120 L238 118 L240 196 L230 198 L222 120 C200 126 160 126 130 120 L124 196 L114 198 L110 124 L102 122 L100 196 L90 198 L86 118 C82 110 80 104 78 98 L70 110 L66 100 L58 96 C52 98 46 98 40 92 Z" fill="#050506"/>
+            <path d="M64 42 C50 30 36 26 22 30 L18 22 L28 22 L24 14 L34 18 L34 8 L42 16 L46 6 L52 18 C58 24 64 32 70 38 Z" fill="#050506"/>
+            <path d="M72 40 C80 26 94 18 110 18 L116 10 L118 20 L128 14 L126 26 C112 30 92 36 76 44 Z" fill="#050506"/>
+          </svg>
+          <div id="glint"><i style="left:0"></i><i style="left:17px"></i></div>
+          <svg id="rear" viewBox="0 0 580 430">
+            <defs>
+              <linearGradient id="rpaint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2c31"/><stop offset="1" stop-color="#101113"/></linearGradient>
+              <filter id="tailglow" x="-30%" y="-200%" width="160%" height="500%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <rect x="40" y="300" width="100" height="120" rx="18" fill="#060607"/><rect x="440" y="300" width="100" height="120" rx="18" fill="#060607"/>
+            <path d="M120 120 L160 30 Q168 14 190 12 L390 12 Q412 14 420 30 L460 120 Z" fill="#0a0d12"/>
+            <path d="M160 30 Q168 14 190 12 L390 12 Q412 14 420 30" fill="none" stroke="#9fb2cf" stroke-opacity=".35" stroke-width="3"/>
+            <path d="M40 140 Q46 118 90 116 L490 116 Q534 118 540 140 L556 330 Q556 360 520 362 L60 362 Q24 360 24 330 Z" fill="url(#rpaint)"/>
+            <g filter="url(#tailglow)"><rect x="44" y="160" width="160" height="22" rx="8" fill="#ff1a1a"/><rect x="376" y="160" width="160" height="22" rx="8" fill="#ff1a1a"/><rect x="204" y="166" width="172" height="8" rx="4" fill="#ff1a1a" opacity=".8"/></g>
+            <rect x="215" y="230" width="150" height="40" rx="5" fill="#16171a"/>
+          </svg>
+        </div>
+        <div class="sub" id="s3-sub">Med bara halvljus …</div>
+        <div class="head" id="s3-head"><span class="line"><span class="w">Se</span> <span class="w">mer</span></span><span class="line"><span class="w">av</span> <span class="w r">vägen.</span></span></div>
+        <div class="chip" id="chip-low">Halvljus</div>
+        <div class="chip" id="chip-kit"><b>+</b> Grillkit</div>
+      </section>
+
+      <!-- S4: product (8–10 s) -->
+      <section class="scene" id="s4">
+        <div class="head" id="s4-head"><span class="w">Grillkit</span></div>
+        <div id="redline"></div>
+        <div class="sub" id="s4-sub"><span class="line">Ljuset sitter i grillen.</span><span class="line">Bilen ser ut som den ska.</span></div>
+        <div id="glow4"></div>
+        <div id="product-refl"></div>
+        <div id="product-slot">
+          <svg id="bar" viewBox="0 0 960 260">
+            <defs>
+              <linearGradient id="housing" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4d54"/><stop offset=".5" stop-color="#1f2125"/><stop offset="1" stop-color="#0d0e10"/></linearGradient>
+              <linearGradient id="lens" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2f36"/><stop offset="1" stop-color="#121418"/></linearGradient>
+              <filter id="ledglow4" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <path d="M40 70 Q40 40 80 38 L880 38 Q920 40 920 70 L930 170 Q930 210 890 212 L70 212 Q30 210 30 170 Z" fill="url(#housing)"/>
+            <rect x="70" y="78" width="820" height="96" rx="40" fill="url(#lens)" stroke="#5a5e66" stroke-width="3"/>
+            <g id="cells-off"></g>
+            <g id="cells-on" filter="url(#ledglow4)"></g>
+            <path d="M80 50 L880 50" stroke="#ffffff" stroke-opacity=".35" stroke-width="3"/>
+            <rect x="0" y="118" width="40" height="16" rx="4" fill="#26282c"/><rect x="920" y="118" width="40" height="16" rx="4" fill="#26282c"/>
+          </svg>
+        </div>
+        <div id="spec"><i></i></div>
+        <div class="chip" id="chip-a"><b>●</b> Extraljus · grillkit · arbetsljus</div>
+        <div class="chip" id="chip-b"><b>●</b> Montering i Kungälv</div>
+      </section>
+
+      <!-- S5: end card (10–12 s) -->
+      <section class="scene" id="s5">
+        <div id="mark"><span class="l">F</span><span class="l">A</span><span class="l">I</span><span class="l">V</span></div>
+        <div id="mark-sweep"><i></i></div>
+        <div id="mark-bar"></div>
+        <div id="tag">Vi bygger din bil på ditt sätt.</div>
+        <div id="url">faiv.se</div>
+        <div id="where">Montering i Kungälv</div>
+      </section>
+
+      <div id="flash"></div>
+      <div id="fx-vig"></div>
+      <div id="fx-grain"><div id="fx-grain-tex"></div></div>
+    </div>
+
+    <script>
+      (function () {
+        const B = 0.5; // one beat at 120 BPM
+        const tl = gsap.timeline({ paused: true });
+        const $ = (s) => document.querySelector(s);
+        const NS = "http://www.w3.org/2000/svg";
+        const el = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; };
+        const rnd = (i, s) => { const x = Math.sin(i * 12.9898 + s * 78.233) * 43758.5453; return x - Math.floor(x); };
+        const show = (id, at) => tl.set(id, { opacity: 1 }, at);
+        const hide = (id, at) => tl.set(id, { opacity: 0 }, at);
+        const slam = (sel, at, stagger = 0.1) => tl.fromTo(sel, { y: 110, scale: 1.2, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: .4, stagger, ease: "back.out(2)" }, at);
+        const pop = (sel, at) => tl.fromTo(sel, { y: 30, scale: .85, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: .3, ease: "back.out(2.4)", immediateRender: false }, at);
+        const out = (sel, at, d = .2) => tl.to(sel, { y: -60, opacity: 0, duration: d, ease: "power2.in" }, at);
+
+        // ---------- build: stars, pines, LEDs, snow ----------
+        const stars = $("#sky-stars");
+        for (let i = 0; i < 70; i++) el("circle", { cx: rnd(i, 1) * 1080, cy: rnd(i, 2) * 860, r: .8 + rnd(i, 3) * 1.6, fill: "#cfdcf0", opacity: .15 + rnd(i, 4) * .45 }, stars);
+        const trees = $("#treeline");
+        el("rect", { x: 0, y: 300, width: 1080, height: 60, fill: "#05070a" }, trees);
+        for (let i = 0; i < 46; i++) {
+          const x = i * 24 + rnd(i, 5) * 14 - 10, h = 120 + rnd(i, 6) * 200, w = 40 + rnd(i, 7) * 34, base = 330;
+          el("path", { d: `M${x} ${base} L${x + w / 2} ${base - h} L${x + w} ${base} Z`, fill: i % 3 ? "#06080c" : "#080b10" }, trees);
+        }
+        const ledsOff = $("#leds-off"), ledsOn = $("#leds-on");
+        const N = 18, order = [];
+        for (let i = 0; i < N; i++) {
+          const x = 306 + i * 16.6;
+          el("rect", { x, y: 384, width: 11, height: 14, rx: 3, fill: "#3a3d44" }, ledsOff);
+          el("rect", { x, y: 384, width: 11, height: 14, rx: 3, fill: "#fffaf0", class: "led", id: "led" + i, opacity: 0 }, ledsOn);
+          order.push(i);
+        }
+        order.sort((a, b) => Math.abs(a - (N - 1) / 2) - Math.abs(b - (N - 1) / 2));
+        const snow = $("#snow");
+        for (let i = 0; i < 90; i++) {
+          const f = document.createElement("i");
+          f.className = "flake"; f.id = "fl" + i;
+          const size = 3 + rnd(i, 8) * 7, near = size > 8;
+          f.style.width = f.style.height = size + "px";
+          f.style.left = (rnd(i, 9) * 1100 - 10) + "px"; f.style.top = "0px";
+          f.style.opacity = (near ? .9 : .35 + rnd(i, 10) * .5).toFixed(2);
+          if (near) f.style.filter = "blur(2px)";
+          snow.appendChild(f);
+          const y0 = rnd(i, 11) * 2400 - 600, speed = 70 + size * 22;
+          tl.fromTo(f, { y: y0, x: 0 }, { y: y0 + speed * 5, x: (rnd(i, 12) - .5) * 120, duration: 5, ease: "none" }, 0);
+        }
+
+        // ---------- S1 (0–2.5 s): darkness ----------
+        show("#s12", 0);
+        tl.fromTo("#cam", { scale: 1.12, y: 40 }, { scale: 1.07, y: 0, duration: 2.5, ease: "power2.out" }, 0);
+        // the red word flickers like a dying bulb – motion from frame 0
+        tl.to("#s1-head .r", { keyframes: [{ opacity: .35 }, { opacity: 1 }, { opacity: .5 }, { opacity: 1 }, { opacity: .25 }, { opacity: .9 }, { opacity: 1 }], duration: 1.1, ease: "none" }, .7);
+        tl.to("#s12", { keyframes: [{ x: -10, y: 4 }, { x: 8, y: -3 }, { x: 0, y: 0 }], duration: .18, ease: "none" }, .18);
+        pop("#s1-hud", 0.05);
+        slam("#s1-head .w", 0.0, .09);
+        tl.fromTo("#s1-sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .4, ease: "power2.out" }, 1.25);
+        tl.to("#s1-head, #s1-sub, #s1-hud", { x: -8, duration: .05, yoyo: true, repeat: 5, ease: "none" }, 2.05);
+        tl.to("#dark", { opacity: .74, duration: .4, ease: "power2.in" }, 2.05);
+        out("#s1-head, #s1-sub, #s1-hud", 2.38, .12);
+
+        // ---------- S2 (2.5–5 s): ignite on the beat ----------
+        const IGN = 2.5;
+        order.forEach((i, k) => tl.fromTo("#led" + i, { opacity: 0 }, { opacity: 1, duration: .04, immediateRender: false }, IGN + k * .008));
+        tl.fromTo("#bloom", { scale: .15, opacity: 0 }, { scale: 1, opacity: 1, duration: .28, ease: "expo.out", immediateRender: false }, IGN)
+          .to("#bloom", { scale: .82, opacity: .78, duration: 1.2, ease: "sine.out" }, IGN + .3);
+        tl.fromTo("#streak", { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: .32, ease: "expo.out", immediateRender: false }, IGN)
+          .to("#streak", { opacity: .65, duration: 1, ease: "sine.out" }, IGN + .35);
+        tl.fromTo("#streak2", { opacity: 0 }, { opacity: 1, duration: .2, immediateRender: false }, IGN);
+        tl.fromTo("#flash", { opacity: .75 }, { opacity: 0, duration: .35, ease: "power2.out", immediateRender: false }, IGN);
+        tl.to("#dark", { opacity: .12, duration: .45, ease: "power3.out" }, IGN);
+        tl.to("#snow", { opacity: 1, duration: .3 }, IGN);
+        tl.fromTo("#pool", { opacity: 0, scaleX: .5 }, { opacity: 1, scaleX: 1, duration: .5, ease: "expo.out", immediateRender: false }, IGN);
+        tl.to("#cam", { keyframes: [{ x: -16, y: 10 }, { x: 14, y: -8 }, { x: -9, y: 5 }, { x: 6, y: -3 }, { x: 0, y: 0 }], duration: .36, ease: "none" }, IGN);
+        tl.fromTo("#cam", { scale: 1.07 }, { scale: 1.16, duration: 2.2, ease: "sine.out", immediateRender: false }, IGN);
+        slam("#s2-head .w", IGN + .25, .08);
+        tl.to("#leader-path", { strokeDashoffset: 0, duration: .45, ease: "power2.inOut" }, 3.75);
+        tl.fromTo("#leader-dot", { opacity: 0, scale: 0, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: .2, immediateRender: false }, 3.7);
+        pop("#chip-grill", 4.15);
+        tl.to("#cam", { scale: 3.2, duration: .3, ease: "power3.in" }, 4.7);
+        tl.to("#s2-head, #chip-grill, #leader", { opacity: 0, duration: .15 }, 4.75);
+        tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: .2, ease: "power2.in", immediateRender: false }, 4.8);
+        hide("#s12", 5.0);
+
+        // ---------- S3 (5–8 s): chase view, cones ----------
+        const world = $("#world"), VY = 760;
+        const grad = el("linearGradient", { id: "skyG", x1: 0, y1: 0, x2: 0, y2: 1 }, el("defs", {}, world));
+        el("stop", { offset: 0, "stop-color": "#020305" }, grad); el("stop", { offset: 1, "stop-color": "#0b1018" }, grad);
+        el("rect", { width: 1080, height: VY, fill: "url(#skyG)" }, world);
+        for (let i = 0; i < 40; i++) el("circle", { cx: rnd(i, 21) * 1080, cy: rnd(i, 22) * 600, r: .8 + rnd(i, 23) * 1.4, fill: "#cfdcf0", opacity: .12 + rnd(i, 24) * .4 }, world);
+        el("rect", { y: VY, width: 1080, height: 1920 - VY, fill: "#10151c" }, world); // snow field
+        el("polygon", { points: `540,${VY} 40,1920 1040,1920`, fill: "#0a0c10" }, world); // road
+        for (let k = 0; k < 9; k++) {
+          const t0 = Math.pow((k + .2) / 9, 2.2), t1 = Math.pow((k + .55) / 9, 2.2);
+          const y0 = VY + t0 * (1920 - VY), y1 = VY + t1 * (1920 - VY), w0 = 3 + t0 * 14, w1 = 3 + t1 * 14;
+          el("polygon", { points: `${540 - w0},${y0} ${540 + w0},${y0} ${540 + w1},${y1} ${540 - w1},${y1}`, fill: "#d9d2bf", opacity: .55 }, world);
+        }
+        for (let i = 0; i < 60; i++) {
+          const side = i % 2 ? 1 : -1, x = 540 + side * (60 + rnd(i, 25) * 500), h = 40 + rnd(i, 26) * 110, w = 22 + rnd(i, 27) * 26;
+          if (Math.abs(x - 540) < 90) continue;
+          el("path", { d: `M${x - w / 2} ${VY + 4} L${x} ${VY - h} L${x + w / 2} ${VY + 4} Z`, fill: i % 3 ? "#040507" : "#06080b" }, world);
+        }
+        const postsLit = el("g", { id: "posts-lit", filter: "url(#postglow)" }, world);
+        const pf = el("filter", { id: "postglow", x: "-200%", y: "-50%", width: "500%", height: "200%" }, world.querySelector("defs"));
+        el("feGaussianBlur", { stdDeviation: 4, result: "b" }, pf); const pm = el("feMerge", {}, pf); el("feMergeNode", { in: "b" }, pm); el("feMergeNode", { in: "SourceGraphic" }, pm);
+        let pi = 0;
+        for (const t of [.05, .1, .17, .27, .42, .62, .9]) {
+          for (const side of [-1, 1]) {
+            const y = VY + t * (1920 - VY), half = 30 + t * (500 - 30) + 22 + t * 60, x = 540 + side * half, h = 16 + t * 150, w = 3 + t * 20;
+            el("rect", { x: x - w / 2, y: y - h, width: w, height: h, fill: "#2f343c" }, world);
+            const g = el("g", { id: "post" + pi, opacity: 0 }, postsLit);
+            el("rect", { x: x - w / 2, y: y - h, width: w, height: h, fill: "#dfe4ea" }, g);
+            el("rect", { x: x - w / 2, y: y - h + h * .1, width: w, height: Math.max(4, h * .16), fill: "#111" }, g);
+            el("rect", { x: x - w * .3, y: y - h + h * .13, width: w * .6, height: Math.max(3, h * .1), fill: "#fff7c2" }, g);
+            tl.fromTo("#post" + pi, { opacity: 0 }, { opacity: 1, duration: .08, immediateRender: false }, 6.0 + (1 - t) * .45);
+            pi++;
+          }
+        }
+        show("#s3", 5.0);
+        tl.fromTo("#map", { scale: 1.7, y: -200 }, { scale: 1, y: 0, duration: .7, ease: "expo.out", immediateRender: false }, 5.0);
+        tl.fromTo("#flash", { opacity: .8 }, { opacity: 0, duration: .3, immediateRender: false }, 5.0);
+        tl.fromTo("#cone-low", { scaleY: 0 }, { scaleY: 1, duration: .45, ease: "expo.out", immediateRender: false }, 5.15);
+        tl.fromTo("#s3-sub", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: .3 }, 5.2);
+        pop("#chip-low", 5.5);
+        tl.fromTo("#moose", { opacity: .12 }, { opacity: .12, duration: .1 }, 5.0).to("#moose", { opacity: 1, duration: .35, ease: "power2.out" }, 6.1);
+        // the grille kit cone throws on beat 12 (6.0 s)
+        tl.fromTo("#cone-kit", { scaleY: .25, opacity: 0 }, { scaleY: 1, opacity: 1, duration: .5, ease: "expo.out", immediateRender: false }, 6.0);
+        tl.to("#cone-low", { opacity: .5, duration: .3 }, 6.0);
+        tl.to("#s3-sub, #chip-low", { opacity: 0, duration: .15 }, 5.95);
+        tl.to("#map", { keyframes: [{ x: -10, y: 6 }, { x: 8, y: -5 }, { x: -4, y: 2 }, { x: 0, y: 0 }], duration: .28, ease: "none" }, 6.0);
+        tl.fromTo("#map", { scale: 1 }, { scale: 1.05, duration: 2, ease: "sine.inOut", immediateRender: false }, 6.0);
+        slam("#s3-head .w", 6.25, .09);
+        tl.fromTo("#glint", { opacity: 0, scale: .4 }, { opacity: 1, scale: 1, duration: .15, ease: "back.out(3)", immediateRender: false }, 6.5)
+          .to("#glint", { opacity: .7, duration: .2, yoyo: true, repeat: 3 }, 6.7);
+        pop("#chip-kit", 6.75);
+        tl.to("#map", { y: 1200, filter: "blur(16px)", duration: .25, ease: "power3.in" }, 7.75);
+        tl.to("#s3-head, #chip-kit", { y: -400, opacity: 0, duration: .22, ease: "power3.in" }, 7.78);
+        hide("#s3", 8.0);
+
+        // ---------- S4 (8–10 s): product ----------
+        const cellsOff = $("#cells-off"), cellsOn = $("#cells-on"), M = 22, corder = [];
+        for (let i = 0; i < M; i++) {
+          const x = 104 + i * 34.6;
+          el("rect", { x, y: 98, width: 22, height: 56, rx: 8, fill: "#3b3f47" }, cellsOff);
+          el("rect", { x, y: 98, width: 22, height: 56, rx: 8, fill: "#fffbf2", "data-cell": i, opacity: 0 }, cellsOn);
+          corder.push(i);
+        }
+        corder.sort((a, b) => Math.abs(a - (M - 1) / 2) - Math.abs(b - (M - 1) / 2));
+        $("#product-refl").innerHTML = $("#product-slot").innerHTML.replace(/id="/g, 'data-x="');
+        show("#s4", 8.0);
+        tl.fromTo("#product-slot, #product-refl", { x: 900, filter: "blur(18px)" }, { x: 0, filter: "blur(0px)", duration: .45, ease: "expo.out", immediateRender: false }, 8.0);
+        slam("#s4-head .w", 8.0);
+        tl.fromTo("#redline", { scaleX: 0 }, { scaleX: 1, duration: .35, ease: "power3.out" }, 8.25);
+        tl.fromTo("#s4-sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .4 }, 8.35);
+        corder.forEach((i, k) => tl.fromTo(`[data-cell="${i}"]`, { opacity: 0 }, { opacity: 1, duration: .04, immediateRender: false }, 8.5 + Math.floor(k / 2) * .022));
+        tl.fromTo("#glow4", { opacity: 0, scaleX: .4 }, { opacity: 1, scaleX: 1, duration: .4, ease: "expo.out", immediateRender: false }, 8.5);
+        tl.fromTo("#spec i", { x: 0 }, { x: 1500, duration: .7, ease: "power2.inOut", immediateRender: false }, 8.9);
+        tl.fromTo("#product-slot", { scale: 1 }, { scale: 1.04, duration: 1.5, ease: "sine.out", immediateRender: false }, 8.5);
+        pop("#chip-a", 9.0);
+        pop("#chip-b", 9.25);
+        tl.to("#s4 > *", { scale: .92, opacity: 0, duration: .2, ease: "power2.in" }, 9.8);
+        hide("#s4", 10.0);
+
+        // ---------- S5 (10–12 s): end card ----------
+        show("#s5", 10.0);
+        tl.fromTo("#mark .l", { y: 140, opacity: 0, scale: 1.3 }, { y: 0, opacity: 1, scale: 1, duration: .4, stagger: B / 4, ease: "back.out(1.8)" }, 10.0);
+        tl.fromTo("#mark-bar", { scaleX: 0 }, { scaleX: 1, duration: .4, ease: "expo.out" }, 10.5);
+        tl.fromTo("#tag", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .4 }, 10.6);
+        tl.fromTo("#url", { scale: .7, opacity: 0 }, { scale: 1, opacity: 1, duration: .35, ease: "back.out(2)" }, 11.0);
+        tl.fromTo("#where", { opacity: 0 }, { opacity: 1, duration: .4 }, 11.15);
+        tl.fromTo("#mark-sweep i", { x: 0 }, { x: 1900, duration: .8, ease: "power2.inOut", immediateRender: false }, 11.0);
+        tl.fromTo("#s5", { scale: 1.04 }, { scale: 1, duration: 2, ease: "sine.out", immediateRender: false }, 10.0);
+
+        // film grain, deterministic
+        const step = 1 / 24;
+        for (let i = 0; i * step < 12; i++) tl.set("#fx-grain-tex", { x: (rnd(i, 31) - .5) * 240, y: (rnd(i, 32) - .5) * 240 }, i * step);
+        tl.to({}, { duration: 12 }, 0);
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>
