@@ -304,7 +304,40 @@ function textHtml(s, fmt, format, fonts, analysis) {
   };
 }
 
-function logoHtml(s, logoName, fmt) {
+/** Relative luminance (WCAG) of a #rrggbb colour, or null. */
+function hexLum(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '').trim());
+  if (!m) return null;
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/**
+ * How the logo is shown: on a light plate when it is dark and the brand background is dark (a black wordmark
+ * vanishes on the end card), and never scaled past 2× its pixels (a 149 px header logo goes soft at 600 px).
+ * logo: {width, height, lum} from legibility.logoStats, or null when unknown.
+ */
+export function logoFit(logo, brand, warnings = []) {
+  const bg = hexLum(brand.background) ?? 0.02;
+  const plate = Boolean(logo && bg < 0.2 && logo.lum < 0.45);
+  const scale = 2;
+  if (logo && logo.width < 400) {
+    warnings.push(`Loggan är bara ${logo.width}×${logo.height} px och visas högst ${scale}× så att den inte blir `
+      + 'suddig. Ladda upp en större PNG (minst 1000 px bred) eller en SVG-export.');
+  }
+  return { plate, maxW: logo ? logo.width * scale : Infinity, maxH: logo ? logo.height * scale : Infinity };
+}
+
+/** <img> for the logo inside its box, capped by the box and by logoFit; on a plate when logoFit asks for one. */
+function logoImg(logoName, boxW, boxH, look) {
+  const w = Math.round(Math.min(boxW, look?.maxW ?? Infinity));
+  const h = Math.round(Math.min(boxH, look?.maxH ?? Infinity));
+  const img = `<img src="assets/${logoName}" alt="" style="max-width: ${w}px; max-height: ${h}px">`;
+  return look?.plate ? `<div class="logo-plate">${img}</div>` : img;
+}
+
+function logoHtml(s, logoName, fmt, look) {
   const kind = s.natives.includes('logo-sting') ? 'sting' : s.natives.includes('logo-reveal') ? 'reveal' : null;
   if (!kind || !logoName) return '';
   const { W, H, safe } = fmt;
@@ -312,10 +345,10 @@ function logoHtml(s, logoName, fmt) {
   // Above centered text, centered otherwise.
   const top = s.style && s.position === 'center' ? safe.top + 20 : Math.round(H * 0.36);
   return `<div id="LG-${s.id}" class="logo-fx logo-${kind}" style="top: ${top}px">`
-    + `<div id="LR-${s.id}" class="logo-ring"></div><img src="assets/${logoName}" alt="" style="max-width: ${maxW}px; max-height: ${Math.round(H * 0.12)}px"></div>`;
+    + `<div id="LR-${s.id}" class="logo-ring"></div>${logoImg(logoName, maxW, H * 0.12, look)}</div>`;
 }
 
-function sceneHtml(s, fmt, format, music, fonts, analysis, look, logoName) {
+function sceneHtml(s, fmt, format, music, fonts, analysis, look, logoName, logoLook) {
   const n = s.natives;
   const grade = s.grade ? ` ${s.grade}` : look ? ' look' : '';
   const tint = s.grade && s.grade !== 'grade-noir' ? `<div class="tint tint-${s.grade.slice(6)}"></div>` : '';
@@ -344,7 +377,7 @@ function sceneHtml(s, fmt, format, music, fonts, analysis, look, logoName) {
             ${mediaHtml(s, music)}
           </div></div></div></div></div>
           ${overlays}
-          ${logoHtml(s, logoName, fmt)}
+          ${logoHtml(s, logoName, fmt, logoLook)}
           ${textBlock}
         </div>
         ${extras}
@@ -352,13 +385,13 @@ function sceneHtml(s, fmt, format, music, fonts, analysis, look, logoName) {
   return { html, text };
 }
 
-function endHtml(e, fmt, format, spec, brand, logoName, fonts) {
+function endHtml(e, fmt, format, spec, brand, logoName, fonts, logoLook) {
   const { W, H, safe } = fmt;
   const maxW = W - safe.left - safe.right;
   const list = words(spec.cta.text);
   const host = String(spec.cta.url || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
   const logo = logoName
-    ? `<div id="ELW-${e.id}" class="end-logo"><img src="assets/${logoName}" alt="" style="max-width: ${Math.round(maxW * 0.7)}px; max-height: ${Math.round(H * 0.16)}px"></div>`
+    ? `<div id="ELW-${e.id}" class="end-logo">${logoImg(logoName, maxW * 0.7, H * 0.16, logoLook)}</div>`
     : `<div id="ELW-${e.id}" class="end-word">${esc(brand.name || '')}</div>`;
   e.text = textSpec('rise', 'center', fmt, format, fonts, { at: e.textAt + 0.25, maxH: Math.round((H - safe.top - safe.bottom) * 0.3), legible: { mode: 'own' } });
   return `
@@ -534,6 +567,9 @@ function css(fmt, brand, fonts, faces) {
         display: flex; flex-direction: column; align-items: center; justify-content: center; gap: ${Math.round(Math.min(W, H) * 0.055)}px; }
       .end-logo { display: flex; justify-content: center; }
       .end-logo img { display: block; object-fit: contain; }
+      .logo-plate { display: inline-flex; padding: 22px 30px; border-radius: 22px; background: #ffffff;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35); }
+      .logo-plate img { display: block; object-fit: contain; }
       .end-word { font-family: var(--font-text); font-weight: 700; font-size: 72px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg); }
       .txt-end { width: 100%; display: flex; justify-content: center; }
       .txt-end .tb { text-shadow: none; }
@@ -579,7 +615,7 @@ export function planSfx(seq, total, { outro = false, auto = true } = {}) {
  * beats: beat grid (beats.js) to snap to; analysis: {sceneId: luminance stats} (legibility.js); outro: a brand outro
  * follows the cut (adds a riser). Returns {dir, total, warnings, config, timing, sfx, intent}.
  */
-export function compose({ spec, brand = {}, files, outDir, logoId = null, beats = null, analysis = null, outro = false, autoSfx = true }) {
+export function compose({ spec, brand = {}, files, outDir, logoId = null, logo = null, beats = null, analysis = null, outro = false, autoSfx = true }) {
   const warnings = [];
   const format = FORMATS[spec.format] ? spec.format : '9:16';
   const fmt = FORMATS[format];
@@ -600,8 +636,9 @@ export function compose({ spec, brand = {}, files, outDir, logoId = null, beats 
   const logoName = logoId && prepared[logoId] ? prepared[logoId].name : null;
   const { scenes, endcard, total, timing } = plan(spec, prepared, warnings, { grid: music ? beats : null, logo: Boolean(logoName) });
   const look = brand.look !== 'none';
-  const parts = scenes.map((s) => sceneHtml(s, fmt, format, music, faces, analysis, look, logoName));
-  const endPart = endcard ? endHtml(endcard, fmt, format, spec, brand, logoName, faces) : '';
+  const logoLook = logoName ? logoFit(logo, brand, warnings) : null;
+  const parts = scenes.map((s) => sceneHtml(s, fmt, format, music, faces, analysis, look, logoName, logoLook));
+  const endPart = endcard ? endHtml(endcard, fmt, format, spec, brand, logoName, faces, logoLook) : '';
   const seq = endcard ? [...scenes, endcard] : scenes;
   const grid = music ? beats : null;
   const sfx = planSfx(seq, total, { outro, auto: autoSfx && brand.sfx !== false });

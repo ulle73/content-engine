@@ -1,0 +1,60 @@
+name: Company Assets
+# Manual: fetch a company's logo from its own website (auto-discovered, or a given URL) and make it the official logo,
+# and optionally import the company's own photo/film from its website into the media bank with shot-list ids.
+on:
+  workflow_dispatch:
+    inputs:
+      company:
+        description: Bolag
+        default: FAIV
+      logo_url:
+        description: Loggans adress ("auto" = hitta på bolagets webbplats, tomt = hoppa över)
+        default: auto
+      media_url:
+        description: Bolagets egen film/bild att importera (valfritt)
+        default: ''
+      shots:
+        description: Filmlista-id för importen, kommaseparerade (t.ex. fa-v2)
+        default: ''
+      description:
+        description: Vad som syns i importen
+        default: ''
+permissions:
+  contents: read
+jobs:
+  assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: ${{ secrets.CONTENT_DATABASE_URL }}
+      SECRET_KEY: ${{ secrets.CONTENT_DJANGO_SECRET }}
+      POSTIZ_ENCRYPTION_SECRET: ${{ secrets.CONTENT_POSTIZ_ENCRYPTION_SECRET }}
+      R2_ENDPOINT_URL: ${{ secrets.CONTENT_R2_ENDPOINT_URL }}
+      R2_BUCKET_NAME: ${{ secrets.CONTENT_R2_BUCKET_NAME }}
+      R2_ACCESS_KEY_ID: ${{ secrets.CONTENT_R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.CONTENT_R2_SECRET_ACCESS_KEY }}
+      MEDIA_STORAGE: r2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python manage.py migrate --check
+      - name: Logo
+        if: inputs.logo_url != ''
+        env:
+          COMPANY: ${{ inputs.company }}
+          LOGO_URL: ${{ inputs.logo_url }}
+        run: |
+          if [ "$LOGO_URL" = "auto" ]; then python manage.py fetch_logo --company "$COMPANY"
+          else python manage.py fetch_logo --company "$COMPANY" --url "$LOGO_URL"; fi
+      - name: Media
+        if: inputs.media_url != ''
+        env:
+          COMPANY: ${{ inputs.company }}
+          MEDIA_URL: ${{ inputs.media_url }}
+          SHOTS: ${{ inputs.shots }}
+          DESCRIPTION: ${{ inputs.description }}
+        run: python manage.py import_media --company "$COMPANY" --url "$MEDIA_URL" --shots "$SHOTS" --description "$DESCRIPTION"

@@ -93,3 +93,29 @@ export async function sampleScenes(scenes, fmt) {
   }
   return out;
 }
+
+/**
+ * Logo facts for the end card: natural size and the alpha-weighted mean luminance of its visible pixels (0 black –
+ * 1 white). A dark logo on a dark brand background gets a light plate; a small logo is never blown up past 2×.
+ */
+export async function logoStats(path) {
+  const probe = await new Promise((resolvePromise) => {
+    const child = spawn('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height',
+      '-of', 'csv=p=0', path], { windowsHide: true });
+    let out = '';
+    child.stdout.on('data', (c) => { out += c; });
+    child.on('error', () => resolvePromise(null));
+    child.on('close', (code) => resolvePromise(code === 0 ? out.trim() : null));
+  });
+  const [width, height] = String(probe || '').split(',').map(Number);
+  const raw = await grab(['-i', path, '-frames:v', '1', '-vf', 'scale=64:64', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-']);
+  if (!raw || !width || !height) return null;
+  let weight = 0, sum = 0;
+  for (let i = 0; i + 3 < raw.length; i += 4) {
+    const a = raw[i + 3] / 255;
+    sum += a * (0.2126 * raw[i] + 0.7152 * raw[i + 1] + 0.0722 * raw[i + 2]) / 255;
+    weight += a;
+  }
+  return { width, height, lum: weight ? Math.round((sum / weight) * 1000) / 1000 : 1,
+           coverage: Math.round((weight / (raw.length / 4)) * 1000) / 1000 };
+}

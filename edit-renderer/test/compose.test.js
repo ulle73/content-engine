@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 
-import { compose, FORMATS, readSeconds, sceneReadSeconds, words } from '../src/compose.js';
+import { compose, FORMATS, logoFit, readSeconds, sceneReadSeconds, words } from '../src/compose.js';
 import { lint } from '../src/render.js';
 import { resolve, SUPPORT } from '../src/support.js';
 
@@ -108,4 +108,18 @@ test('text stays on screen long enough to be read (12 cps, ≥ 5/6 s per piece)'
   assert.ok(video.end - video.start <= 1.5 + 0.01, 'a clip is never stretched past its end');
   assert.ok(result.warnings.some((w) => /s1: texten behöver .* klippet räcker/.test(w)));
   assert.ok(result.warnings.some((w) => /s2: förlängd från 1,2 till .* hinner läsas \(12 tecken\/s\)/.test(w)));
+});
+
+test('a dark, small logo goes on a light plate and is never blown up past 2×', () => {
+  const dark = { width: 149, height: 48, lum: 0.18 };
+  const warnings = [];
+  const fit = logoFit(dark, { background: '#0b0b0d' }, warnings);
+  assert.deepEqual(fit, { plate: true, maxW: 298, maxH: 96 });
+  assert.match(warnings[0], /149×48 px/);
+  assert.equal(logoFit({ width: 1200, height: 400, lum: 0.9 }, { background: '#0b0b0d' }).plate, false);  // white logo
+  assert.equal(logoFit(dark, { background: '#f7f3ea' }).plate, false);  // light end card
+  const out = mkdtempSync(join(tmpdir(), 'logo-'));
+  const html = compose({ spec: coverageSpec(), brand, files, outDir: out, logoId: 'logo', logo: dark }).html
+    ?? readFileSync(join(out, 'index.html'), 'utf8');
+  assert.match(html, /class="end-logo"><div class="logo-plate"><img src="assets\/[^"]+" alt="" style="max-width: 298px; max-height: 96px">/);
 });
