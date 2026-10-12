@@ -336,7 +336,8 @@ CRITIQUE = critic.CutCritique(
 class CriticTests(EditTestCase):
     def setUp(self):
         super().setUp()
-        env = mock.patch.dict("os.environ", {"EDIT_AI_CRITIC": "1", "OPENROUTER_API_KEY": "test-key"})
+        env = mock.patch.dict("os.environ", {"EDIT_AI_CRITIC": "1", "OPENROUTER_API_KEY": "test-key",
+                                             "EDIT_GATE_MAX_STILL_SHARE": "1"})
         env.start()
         self.addCleanup(env.stop)
 
@@ -546,3 +547,91 @@ class StockTests(EditTestCase):
         with mock.patch.object(stock, "_client", side_effect=failing):
             plan = planner.plan_cut(self.company, "faiv-winter-mood", materialize=True)
         self.assertIn("s1", {m["scene"] for m in plan["missing"]})
+
+
+class GateTests(EditTestCase):
+    """The quality gate holds weak cuts back from Discord: AI score under 7 or mostly still images."""
+
+    deliver = CriticTests.deliver
+
+    def setUp(self):
+        super().setUp()
+        env = mock.patch.dict("os.environ", {"EDIT_AI_CRITIC": "1", "OPENROUTER_API_KEY": "test-key",
+                                             "EDIT_GATE_MAX_STILL_SHARE": "0.5"})
+        env.start()
+        self.addCleanup(env.stop)
+
+    def critique(self, score):
+        return lambda **_: (CRITIQUE.model_copy(update={"score": score}), {"model": "m", "cost_usd": 0})
+
+    def test_assess(self):
+        from .edit import gate
+
+        spec = {"scenes": [{"duration_s": 2, "asset_kind": "video"}, {"duration_s": 3, "asset_kind": "image"}]}
+        self.assertEqual(gate.still_share(spec), 0.6)
+        result = gate.assess(spec, {"status": "done", "score": 6})
+        self.assertFalse(result["passed"])
+        self.assertEqual(len(result["reasons"]), 2)
+        self.assertIn("6/10", result["reasons"][0])
+        self.assertIn("60 %", result["reasons"][1])
+        film = {"scenes": [{"duration_s": 4, "asset_kind": "video"}, {"duration_s": 1, "asset_kind": "image"}]}
+        self.assertTrue(gate.assess(film, {"status": "done", "score": 7})["passed"])
+        self.assertTrue(gate.assess(film, {"status": "failed"})["passed"])  # no critique: judged on stills only
+        with mock.patch.dict("os.environ", {"EDIT_QUALITY_GATE": "0"}):
+            self.assertTrue(gate.assess(spec, {"status": "done", "score": 2})["passed"])
+
+    def test_low_score_is_held_back_until_sent_anyway(self):
+        with mock.patch.dict("os.environ", {"EDIT_GATE_MAX_STILL_SHARE": "1"}), \
+                mock.patch("engine.openrouter.structured_analysis", side_effect=self.critique(5)):
+            job, send = self.deliver()
+        send.assert_not_called()
+        self.assertEqual(job.status, "done")
+        self.assertFalse(job.quality_gate["passed"])
+        data = service.serialize(job)
+        self.assertIn("Behöver omtag", data["next_step"])
+        self.assertIn("5/10", data["next_step"])
+        self.assertIn("Större text", data["next_step"])
+        self.assertFalse(data["discord_posted"])
+        with mock.patch("engine.review.discord.send") as later:
+            self.assertEqual(service.recover(redispatch=False)["discord"], 0)
+            later.assert_not_called()
+            later.side_effect = lambda review: Review.objects.filter(pk=review.pk).update(discord_message_id="9")
+            job = service.send_anyway(self.company, job.pk)
+            later.assert_called_once()
+        self.assertTrue(job.quality_gate["override"])
+        job.review.refresh_from_db()
+        self.assertTrue(service.serialize(job)["discord_posted"])
+
+    def test_mostly_stills_is_held_back_even_with_a_good_score(self):
+        with mock.patch("engine.openrouter.structured_analysis", side_effect=self.critique(8)):
+            job, send = self.deliver()
+        send.assert_not_called()
+        self.assertIn("stillbilder", " ".join(job.quality_gate["reasons"]))
+
+    def test_render_meta_is_kept_and_manifest_follows_snapped_beats(self):
+        with mock.patch("engine.openrouter.structured_analysis", side_effect=self.critique(8)), \
+                mock.patch.dict("os.environ", {"EDIT_GATE_MAX_STILL_SHARE": "1"}):
+            job = service.create_job(self.company, self.spec())
+            payload = self.client.post("/internal/edit/claim/", json.dumps({"worker_id": "w", "job_id": str(job.pk)}),
+                                       content_type="application/json", **AUTH).json()["job"]
+            meta = {"duration_s": 7.4, "qa": {"black_s": 0, "loudness_lufs": -14.1}, "sfx": ["impact@0"],
+                    "beats": {"bpm": 120, "snaps": [{"after": "s1", "from": 2.0, "to": 1.9, "delta": -0.1}]},
+                    "unknown": "dropped"}
+            with mock.patch("engine.review.discord.send") as send:
+                send.side_effect = lambda review: Review.objects.filter(pk=review.pk).update(discord_message_id="1")
+                self.client.post(f"/internal/edit/output/{job.pk}/",
+                                 {"file": SimpleUploadedFile("m.mp4", movie(3.0), "video/mp4"), "meta": json.dumps(meta)},
+                                 HTTP_X_EDIT_LEASE=payload["lease"], **AUTH)
+        job.refresh_from_db()
+        render = service.serialize(job)["render"]
+        self.assertEqual(render["qa"]["loudness_lufs"], -14.1)
+        self.assertEqual(render["beats"]["bpm"], 120)
+        self.assertNotIn("unknown", render)
+        scenes = job.review.manifest["scenes"]
+        self.assertEqual((scenes[0]["end"], scenes[1]["start"]), (1.9, 1.9))
+        send.assert_called_once()
+
+    def test_send_anyway_tool_is_registered(self):
+        from engine import mcp_server
+
+        self.assertIsNotNone(mcp_server.mcp._tool_manager.get_tool("send_cut_for_review"))

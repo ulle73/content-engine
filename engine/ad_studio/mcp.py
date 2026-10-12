@@ -20,7 +20,7 @@ FLOW = (
     "Video av eget material går snabbast via receptet: plan_cut_from_recipe (gratis, inga sidoeffekter) väljer "
     "klipp ur mediabanken per scen (filmlista-id som fa-m1/gk-o1), fyller text med bara verifierade fakta och "
     "tillämpar ägarens lärdomar. Visa planen och listan `missing` (vad som ska filmas/laddas upp och taggas med "
-    "tag_media). När planen är klar: render_recipe (klipper i molnet, postas i Discord med AI-granskning), följ med "
+    "tag_media). När planen är klar: render_recipe (klipper i molnet, postas i Discord med AI-granskning; under 7/10 eller mest stillbilder hålls den tillbaka som 'behöver omtag' – rätta enligt quality_gate och ai_critique), följ med "
     "get_cut_job. Justera via overrides i stället för att skriva klippspecen för hand; render_cut bara för specialfall. "
     "Stilen är fri; brand-skillen är ett utgångsläge, inte regler. "
     "Läs alltid list_lessons först: det är ägarens tidigare betyg och kommentarer (t.ex. 'undvik glitch-övergången'). "

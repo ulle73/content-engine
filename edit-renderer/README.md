@@ -24,6 +24,16 @@ Claude/ChatGPT ─ MCP render_cut ─► content-engine (Render)          GitHub
 - **Återhämtning**: jobb vars lease gått ut köas om (max 3 försök). Misslyckad Discord-post fäller aldrig jobbet;
   den görs om vid nästa claim (på Render, där `APP_URL` stämmer).
 
+## Kvalitetsgrind
+
+Efter AI-granskningen (`engine/edit/critic.py`) avgör `engine/edit/gate.py` om klippet går till Discord som klart.
+Det hålls tillbaka som **behöver omtag** när AI-betyget är under `EDIT_GATE_MIN_SCORE` (7) eller när mer än
+`EDIT_GATE_MAX_STILL_SHARE` (0,5) av scentiden är stillbilder. Skälen och kritikens första rättning syns i
+`get_cut_job` (`quality_gate`, `next_step`). En granskning som inte kunde köras stoppar inget. Ägaren kan ändå skicka
+klippet med MCP-verktyget `send_cut_for_review`. `EDIT_QUALITY_GATE=0` stänger av grinden. Renderarens mätdata
+(`beats`, `sfx`, `typography`, `qa`) sparas i `cut_spec.render`, och granskningsmanifestet använder de beat-synkade
+scentiderna.
+
 ## Master och förhandsvisning (valt)
 
 Mastern (≤ 80 MB, x264 CRF 18 `slow`, bitratetak efter längd, AAC 192k, `+faststart`) sparas alltid som
