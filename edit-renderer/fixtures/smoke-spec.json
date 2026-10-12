@@ -16,7 +16,7 @@
      "text_position": null, "audio": null,
      "effects": ["hyperframes.registry.push-in", "nextphase.persa.grade"], "transition_in": "hyperframes.registry.flash-through-white"},
     {"id": "s3", "purpose": "proof", "duration_s": 3.0, "asset_id": "0a6f0f0e-0000-4000-8000-00000000000c", "asset_kind": "video",
-     "trim_start_s": 1.0, "fit": "cover", "text": "Över *400 klubbar*", "text_style": "hyperframes.registry.marker-highlight",
+     "trim_start_s": 1.0, "fit": "cover", "text": "Golf på *300+ klubbar*", "text_style": "hyperframes.registry.marker-highlight",
      "text_position": null, "audio": null,
      "effects": ["nextphase.long.camera-handheld-drift", "hyperframes.registry.light-sweep-pass"], "transition_in": "hyperframes.registry.whip-pan"},
     {"id": "s4", "purpose": "benefit", "duration_s": 2.6, "asset_id": "0a6f0f0e-0000-4000-8000-00000000000d", "asset_kind": "image",

@@ -39,7 +39,8 @@ def register(mcp, company_for, safe_call):
         """Plan the recipe (as plan_cut_from_recipe, but product images are downloaded into the media bank) and send
         the cut to the cloud renderer. Refuses when scenes lack material unless allow_missing=true (then those scenes
         are left out). Returns {"plan", "job"}; follow the job with get_cut_job. When done it is posted to the
-        company's Discord review channel with an AI critique line. Free (GitHub Actions)."""
+        company's Discord review channel with an AI critique line, unless the quality gate holds it back (AI score
+        under 7 or mostly still images; see quality_gate in get_cut_job). Free (GitHub Actions)."""
         company = company_for(company_ref)
         plan, job = safe_call(planner.render_recipe, company, recipe_id, format=format, overrides=overrides,
                               allow_missing=allow_missing)
@@ -66,7 +67,8 @@ def register(mcp, company_for, safe_call):
         """Cut a finished video in the cloud (HyperFrames on GitHub Actions, free) from media already in the
         company's media bank. Prefer render_recipe / plan_cut_from_recipe, which build this spec from a recipe;
         use render_cut for hand-made or adjusted specs (e.g. the spec returned by plan_cut_from_recipe). When it is done it is stored in the media bank and posted to the company's Discord
-        review channel automatically. Returns the job; poll with get_cut_job (rendering takes ~3–10 min).
+        review channel automatically, unless the quality gate holds it back (AI score under 7 or more than half of
+        the scene time still images). Prefer video clips over still images. Returns the job; poll with get_cut_job (rendering takes ~3–10 min).
 
         cut_spec (schema "cut/v1"):
         {"schema": "cut/v1", "format": "9:16"|"4:5"|"1:1"|"16:9", "fps": 30, "title": "…", "caption": "post text",
@@ -90,6 +92,17 @@ def register(mcp, company_for, safe_call):
     def get_cut_job(company_ref: str, job_id: str) -> dict:
         """Status of a cloud cut job: queued → claimed → rendering → done/failed, with warnings, error,
         output_asset_id (master), preview_asset_id, review_id, the video link once it is posted for review, and
-        ai_critique (score 1–10, hook, legibility, pacing, brand fit, top 3 fixes per scene/library id) when done."""
+        ai_critique (score 1–10, hook, legibility, pacing, brand fit, top 3 fixes per scene/library id) when done,
+        quality_gate ({"passed", "reasons"}: held back from Discord when passed=false; fix and render again, or
+        send_cut_for_review on the user's request) and render (beats, sfx, typography, technical qa)."""
         company = company_for(company_ref)
         return service.serialize(safe_call(service.get_job, company, job_id))
+
+    @mcp.tool(title="Send held-back cut for review", annotations=write)
+    @database_tool
+    def send_cut_for_review(company_ref: str, job_id: str) -> dict:
+        """Post a finished cut that the quality gate held back (quality_gate.passed=false: AI score under 7 or mostly
+        still images) to the Discord review anyway. Only on the user's explicit request; otherwise fix what
+        quality_gate.reasons and ai_critique.fixes say and render again."""
+        company = company_for(company_ref)
+        return service.serialize(safe_call(service.send_anyway, company, job_id))

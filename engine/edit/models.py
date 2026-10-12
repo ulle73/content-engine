@@ -37,6 +37,8 @@ class EditJob(models.Model):
     discord_error = models.CharField(max_length=300, blank=True)
     # Cheap vision critique of the finished cut (engine/edit/critic.py): {"status": done/skipped/failed, "score", …}.
     ai_critique = models.JSONField(default=dict, blank=True)
+    # Quality gate (engine/edit/gate.py): {"passed", "reasons", "score", "still_share", "override"?, …}.
+    quality_gate = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -181,6 +181,13 @@ class DispatchAndLimitTests(EditTestCase):
 
 
 class WorkerApiTests(EditTestCase):
+    def setUp(self):
+        super().setUp()
+        # The fixture cut is 60 % still image; the quality gate is covered in test_recipe_planner.GateTests.
+        env = mock.patch.dict("os.environ", {"EDIT_GATE_MAX_STILL_SHARE": "1"})
+        env.start()
+        self.addCleanup(env.stop)
+
     def post(self, path, data=None, **extra):
         return self.client.post(f"/internal/edit/{path}", json.dumps(data or {}), content_type="application/json",
                                 **{**AUTH, **extra})
