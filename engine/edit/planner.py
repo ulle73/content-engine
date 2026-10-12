@@ -8,6 +8,8 @@ Per scene:
   footage / ai_video / ai_image → media-bank clips whose AssetTags.tags contain the shot id (docs/FILMLISTA.md, e.g.
       "fa-m1"), else whose description matches the shot text; least recently used first (EditJob history), never the
       same file twice unless the recipe asks for the same shot again (then the clip continues where it left off).
+      Mood/environment shots without own film (or with only a still) get a free Pexels clip (engine/edit/stock.py),
+      listed in pending_downloads and fetched on render; own footage of the shot always wins over it.
   product_image → product_catalog.search(catalog_query), first image (downloaded only when materialize=True).
   graphic → the final CTA scene becomes the template's end card (or is replaced by the brand outro); other graphic
       scenes use a media-bank graphic (role end_card/background) or the company logo on the brand background.
@@ -26,7 +28,7 @@ from datetime import date
 from django.db.models import Q
 from django.utils import timezone
 
-from . import footage
+from . import footage, stock
 from . import spec as cut_spec
 
 RECIPES = cut_spec.RECIPES
@@ -286,6 +288,9 @@ class Planner:
                 why.append("beskrivningen matchar (" + ", ".join(sorted(overlap)[:4]) + ")")
             if tags and tags.verified:
                 score += 0.5
+            if stock.is_stock(asset):
+                score -= 6  # own footage of the same shot always wins over a stand-in stock clip
+                why.append("stockklipp")
             if asset.kind == "video":
                 score += 1
                 length = float(asset.duration_seconds or 0)
@@ -330,6 +335,10 @@ class Planner:
         shot_ids = scene.get("footage_ids") or []
         fresh = [c for c in candidates if str(c[1].pk) not in self.used]
         for score, asset, why in fresh:
+            if asset.kind == "image" and stock.query_for(shot_ids):
+                moving = self.pick_stock(scene, instead_of_still=True)  # moving film first, even if it is stock
+                if moving:
+                    return moving
             placed = self._place(scene, asset, why, shot=next(iter(shot_ids), None))
             if placed:
                 return placed
@@ -341,8 +350,42 @@ class Planner:
                     self.notes.append(f"Scen {scene['id']}: samma klipp som en tidigare scen används (samma filmlista-"
                                       "id), med senare startpunkt. Ladda upp fler tagningar för variation.")
                     return placed
+        moving = self.pick_stock(scene)
+        if moving:
+            return moving
         self._missing(scene)
         return None
+
+    def pick_stock(self, scene, *, instead_of_still=False):
+        """A free Pexels clip for a mood/environment shot that has no own film yet (engine/edit/stock.py)."""
+        hit = stock.query_for(scene.get("footage_ids"))
+        if not hit:
+            return None
+        shot, query = hit
+        why = f"stockklipp från Pexels för {shot} (\"{query}\") tills egen film finns"
+        note = (f"Scen {scene['id']}: " + ("bara en stillbild fanns" if instead_of_still else "ingen egen film fanns")
+                + f" för {shot} ({footage.text(shot)}), så ett fritt stockklipp från Pexels används. Filma {shot} "
+                "och tagga det, så ersätter det stockklippet.")
+        for asset in self.pool:
+            tags = getattr(asset, "ad_tags", None)
+            if (asset.kind == "video" and stock.is_stock(asset) and str(asset.pk) not in self.used
+                    and shot in footage.ids_of(tags.tags if tags else [])):
+                placed = self._place(scene, asset, why, shot=shot)
+                if placed:
+                    self.notes.append(note)
+                    return placed
+        if not stock.enabled():
+            return None
+        if not self.materialize:
+            self.pending.append({"scene": scene["id"], "stock": stock.PROVIDER, "footage_id": shot, "query": query})
+            self.notes.append(note + " Klippet hämtas när render_recipe körs.")
+            return {"pending": True}
+        asset = stock.fetch(self.company, shot, query, fmt=self.format, min_duration=float(scene["duration_s"]),
+                            skip=set(self.used))
+        placed = self._place(scene, asset, why, shot=shot) if asset else None
+        if placed:
+            self.notes.append(note)
+        return placed
 
     def _missing(self, scene, hint=None):
         shot_ids = [i for i in scene.get("footage_ids") or [] if isinstance(i, str)]

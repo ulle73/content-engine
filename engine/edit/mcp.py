@@ -21,7 +21,8 @@ def register(mcp, company_for, safe_call):
         (search_content_library type='recipe'; the id without the "recipe." prefix, e.g. faiv-dark-to-light-reveal)
         and the company's media bank. No side effects, free. Returns {"ready", "spec" (cut/v1 for render_cut),
         "missing": [{"scene", "footage_ids", "hint"}] (what to film/upload and tag, with shot ids from the shot list),
-        "pending_downloads" (product images fetched on render), "choices" (which file per scene and why), "notes"
+        "pending_downloads" (product images and free Pexels stand-in clips for unfilmed mood shots, fetched
+        on render), "choices" (which file per scene and why), "notes"
         (fact safety, lessons from the owner's reviews that were applied, shortened scenes), "warnings"}.
         Show the user the missing list in plain Swedish and ask them to film/upload; tag uploads with tag_media.
         Facts ({fact:Fn}) only appear when verified in the fact bank; otherwise the recipe's safe wording is used.
