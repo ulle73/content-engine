@@ -621,6 +621,14 @@ def plan_cut(company, recipe_id, *, format="9:16", overrides=None, materialize=F
         if carry and source != "graphic" and "duration_s" not in change:
             scene["duration_s"] = round(min(float(scene["duration_s"]) + carry["duration_s"],
                                             max(float(scene["duration_s"]), CARRY_MAX_S)), 2)
+        if raw_text and source != "graphic" and "duration_s" not in change:
+            shown = " ".join(filter(None, [carry and carry["text"],
+                                           plan.resolve_text(raw_text, where=where, notes_text=scene.get("notes", ""))]))
+            need = cut_spec.read_seconds(shown)
+            if need > float(scene["duration_s"]) + 0.05:
+                plan.notes.append(f"{where}: förlängd från {scene['duration_s']:g} till {need:g} s så att texten hinner "
+                                  f"läsas ({cut_spec.READ_CPS:g} tecken/s).")
+                scene["duration_s"] = need
         if source == "graphic" and scene["id"] == last and scene.get("purpose") == "cta" and "asset_id" not in change:
             if outro:
                 plan.notes.append(f"{where} (CTA-grafik) ersätts av bolagets slutbild ({outro['label']}, "
