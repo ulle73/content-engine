@@ -60,6 +60,26 @@ def is_stock(asset) -> bool:
     return asset.provider == PROVIDER or bool(tags and "stock" in (tags.roles or []))
 
 
+def judging() -> bool:
+    return bool(os.environ.get("OPENROUTER_API_KEY", "").strip()) and os.environ.get("EDIT_STOCK_JUDGE", "1") != "0"
+
+
+def min_judge() -> int:
+    try:
+        return int(os.environ.get("EDIT_STOCK_MIN_JUDGE", "6"))
+    except ValueError:
+        return 6
+
+
+def acceptable(asset) -> bool:
+    """A stored stock clip may be reused when the judge passed it, or when no judge is available to ask."""
+    if not judging():
+        return True
+    tags = getattr(asset, "ad_tags", None)
+    judged = [h.get("judge") for h in (tags.highlights if tags else []) or [] if isinstance(h, dict)]
+    return any(isinstance(j, int) and j >= min_judge() for j in judged)
+
+
 def _orientation(fmt: str) -> str:
     return "landscape" if fmt == "16:9" else "portrait"
 
@@ -124,24 +144,28 @@ class Pick(BaseModel):
     why: str = Field(description="En kort mening på svenska om den bästa bilden")
 
 
-JUDGE = ("Du väljer b-roll till en svensk social annons (Reels/TikTok). Du får en beskrivning av scenen och en bild ur "
-         "varje kandidatklipp, i ordning. Betygsätt varje bild: passar den scenen och ser den ut som äkta, snygg film "
-         "(naturligt ljus, tydligt motiv, ingen stockfoto-pose, inga vattenstämplar, ingen text i bilden, ingen "
-         "uppenbar AI)? Var ärlig; 7 betyder fullt användbart.")
+JUDGE = ("Du väljer b-roll till en svensk social annons (Reels/TikTok). Du får filmens idé och stämning, en "
+         "beskrivning av scenen och en bild ur varje kandidatklipp, i ordning. Betygsätt varje bild för sig: visar den "
+         "exakt det scenen beskriver, i filmens årstid, ljus och miljö (svensk/nordisk), och ser den ut som äkta, "
+         "snygg film (naturligt ljus, tydligt motiv, ingen stockfoto-pose, inga vattenstämplar, ingen text i bilden, "
+         "ingen uppenbar AI)? Fel motiv (t.ex. en annan skylt än den som efterfrågas), fel årstid eller tid på dygnet, "
+         "eller uppenbart utländsk miljö ger högst 3. Var sträng; 7 betyder fullt användbart.")
 
 
-def judge(scene: str, frames: list[bytes]) -> dict | None:
-    """One cheap vision call scoring each candidate frame against the scene. None when it cannot be asked."""
+def judge(scene: str, frames: list[bytes], *, context: str = "") -> dict | None:
+    """One cheap vision call scoring each candidate frame against the scene and the film's mood. None when it cannot
+    be asked."""
     import base64
 
-    if not os.environ.get("OPENROUTER_API_KEY", "").strip() or os.environ.get("EDIT_STOCK_JUDGE", "1") == "0":
+    if not judging():
         return None
     from engine.openrouter import OpenRouterError, structured_analysis
 
     images = ["data:image/jpeg;base64," + base64.b64encode(f).decode("ascii") for f in frames]
     try:
-        result, meta = structured_analysis(system=JUDGE, payload={"scene": scene, "candidates": len(frames)},
-                                           schema=Pick, operation="stock_pick", max_tokens=300, images=images)
+        result, meta = structured_analysis(system=JUDGE, schema=Pick, operation="stock_pick", max_tokens=300,
+                                           payload={"film": context, "scene": scene, "candidates": len(frames)},
+                                           images=images)
     except OpenRouterError as exc:
         log.info("Stock judge failed: %s", exc)
         return None
@@ -151,13 +175,17 @@ def judge(scene: str, frames: list[bytes]) -> dict | None:
             "cost_usd": meta.get("cost_usd")}
 
 
-def fetch(company, shot: str, query: str, *, fmt: str, min_duration: float, skip=(), client=None, scene: str = ""):
+def fetch(company, shot: str, query: str, *, fmt: str, min_duration: float, skip=(), client=None, scene: str = "",
+          context: str = ""):
     """Like the best editors: look at several candidates, keep the best one and only its best window.
 
     Up to EDIT_STOCK_CANDIDATES (3) unused search hits are downloaded small and scored (engine/edit/shots.py:
     sharpness, exposure, motion, no cut inside the window); a vision model scores one frame from each best window
-    (final score 40 % technique, 60 % judge). Only the winner is downloaded in full quality into the media bank,
-    with its best window in AssetTags.highlights. None when nothing usable was found.
+    against the scene and the film's idea and mood (`context`). Candidates the judge scores under
+    EDIT_STOCK_MIN_JUDGE (6) are dropped: a missing scene is better than a wrong one (a summer bus-stop sign in a
+    Swedish winter-night film). The final score is 40 % technique, 60 % judge. Only the winner is downloaded in full
+    quality into the media bank, with its best window and judge score in AssetTags.highlights. None when nothing
+    usable was found.
     """
     from engine.ad_studio.models import AssetTags
     from engine.media import describe_file
@@ -175,9 +203,11 @@ def fetch(company, shot: str, query: str, *, fmt: str, min_duration: float, skip
             asset_id = uuid.uuid5(uuid.NAMESPACE_URL, f"{company.pk}:pexels:{video['id']}:{fmt}")
             if str(asset_id) in skip:
                 continue
-            existing = MediaAsset.objects.filter(pk=asset_id, company=company).first()
+            existing = MediaAsset.objects.filter(pk=asset_id, company=company).select_related("ad_tags").first()
             if existing:
-                return existing
+                if acceptable(existing):
+                    return existing
+                continue  # downloaded before but not passed by the judge
             small = pick_file(video, fmt, small=True)
             data = _download(client, small["link"]) if small else None
             window = shots.best_window(shots.analyze(data), min_duration, dark_ok=dark_ok) if data else None
@@ -190,11 +220,16 @@ def fetch(company, shot: str, query: str, *, fmt: str, min_duration: float, skip
                 break
         if not candidates:
             return None
-        frames = [c["frame"] for c in candidates]
-        verdict = judge(scene or query, frames) if len(candidates) > 1 and all(frames) else None
+        frames, looked = [c["frame"] for c in candidates], len(candidates)
+        verdict = judge(scene or query, frames, context=context) if all(frames) else None
         if verdict:
             for c, judged in zip(candidates, verdict["scores"]):
+                c["judge"] = judged
                 c["score"] = round(0.4 * c["window"]["score"] + 0.6 * judged, 2)
+            candidates = [c for c in candidates if c["judge"] >= min_judge()]
+            if not candidates:
+                log.info("Pexels %r: no candidate passed the judge (%s).", query, verdict["scores"])
+                return None
         for c in sorted(candidates, key=lambda c: -c["score"]):
             video, asset_id = c["video"], c["asset_id"]
             data = _download(client, pick_file(video, fmt)["link"])
@@ -213,13 +248,14 @@ def fetch(company, shot: str, query: str, *, fmt: str, min_duration: float, skip
                 pk=asset_id, company=company, storage_backend=backend, storage_key=key, byte_size=len(data),
                 origin="uploaded", provider=PROVIDER, alt_text=f"Stockklipp: {query}"[:500], purpose="content",
                 brief=(f"Pexels {video.get('url', '')} – tillfälligt för {shot} tills egen film finns. Valt bland "
-                       f"{len(candidates)} kandidater, betyg {c['score']}/10"
+                       f"{looked} kandidater, betyg {c['score']}/10"
                        + (f": {verdict['why']}" if verdict else ".")),
                 sha256=hashlib.sha256(data).hexdigest(), **metadata)
             AssetTags.objects.update_or_create(asset=asset, defaults={
                 "description": f"Stockklipp ({query})"[:500], "tags": [shot], "roles": ["footage", "stock"],
                 "source": f"Pexels: {author}, {video.get('url', '')}"[:200], "verified": False,
-                "highlights": [{k: c["window"][k] for k in ("start", "end", "score")}]})
+                "highlights": [{**{k: c["window"][k] for k in ("start", "end", "score")},
+                                **({"judge": c["judge"]} if "judge" in c else {})}]})
             return asset
     except (httpx.HTTPError, ValueError, StockError) as exc:
         log.warning("Pexels search %r failed: %s", query, exc)
