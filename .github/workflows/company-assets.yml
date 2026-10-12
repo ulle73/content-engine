@@ -10,6 +10,9 @@ on:
       logo_url:
         description: Loggans adress ("auto" = hitta på bolagets webbplats, tomt = hoppa över)
         default: auto
+      logo_file:
+        description: Loggfil i repot, går före logo_url (t.ex. library/brands/faiv/logo.png)
+        default: ''
       media_url:
         description: Bolagets egen film/bild att importera (valfritt)
         default: ''
@@ -43,12 +46,14 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python manage.py migrate --check
       - name: Logo
-        if: inputs.logo_url != ''
+        if: inputs.logo_url != '' || inputs.logo_file != ''
         env:
           COMPANY: ${{ inputs.company }}
           LOGO_URL: ${{ inputs.logo_url }}
+          LOGO_FILE: ${{ inputs.logo_file }}
         run: |
-          if [ "$LOGO_URL" = "auto" ]; then python manage.py fetch_logo --company "$COMPANY"
+          if [ -n "$LOGO_FILE" ]; then python manage.py fetch_logo --company "$COMPANY" --file "$LOGO_FILE"
+          elif [ "$LOGO_URL" = "auto" ]; then python manage.py fetch_logo --company "$COMPANY"
           else python manage.py fetch_logo --company "$COMPANY" --url "$LOGO_URL"; fi
       - name: Media
         if: inputs.media_url != ''

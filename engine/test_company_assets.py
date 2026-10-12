@@ -102,3 +102,14 @@ class CompanyAssetTests(EditTestCase):
         self.assertIn("fa-v2", asset.ad_tags.tags)
         self.assertIn("footage", asset.ad_tags.roles)
         self.assertEqual(self.requests.count(url), 1)
+
+    def test_logo_from_a_repo_file(self):
+        call_command("fetch_logo", company="faiv", file="library/brands/faiv/logo.png", stdout=io.StringIO())
+        self.company.refresh_from_db()
+        logo = self.company.official_logo
+        self.assertEqual((logo.kind, logo.purpose, logo.width), ("image", "logo", 1707))
+        with Image.open(io.BytesIO(branding.read_logo(logo))) as image:
+            self.assertEqual(image.mode, "RGBA")
+            self.assertEqual(image.getpixel((5, 5))[3], 0)  # the baked-in white background is gone
+        with self.assertRaisesRegex(CommandError, "Hittar ingen loggfil"):
+            call_command("fetch_logo", company="faiv", file="../secrets.png", stdout=io.StringIO())
