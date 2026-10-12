@@ -7,6 +7,7 @@ import base64
 import hashlib
 import io
 import json
+import re
 from datetime import timedelta
 
 from django.db import transaction
@@ -25,6 +26,14 @@ from . import registry, templates
 from .contracts import CONTRACT_VERSION, ActionRequest, Proposal, TurnRequest
 
 LEASE_SECONDS = 120
+_YES = r"(ja+|japp|jajamen|jo|ok(ej|ay)?|kör( på| igång)?|gör det|yes|go|absolut|självklart|bekräfta(r|t)?|godkänn(er)?|generera|skapa( den| filmen| videon)?)"
+_DELEGATE = r"(välj (du|själv)|du (väljer|bestämmer|får välja)|bestäm (du|själv)|välj (du )?((vad|det) som är )?(ansett )?bäst|det du tycker är bäst)"
+DELEGATION = re.compile(rf"^\s*(({_YES}|{_DELEGATE})[\s,.!]*)+$", re.IGNORECASE)
+
+
+def delegates(message):
+    """'ja', 'kör', 'välj du vad som är bäst' – the user wants a result, not more questions."""
+    return len(message) <= 120 and bool(DELEGATION.match(message))
 
 
 def digest(value):
@@ -100,7 +109,25 @@ clip_duration_seconds anger uttrycklig längd per klipp eller övergång. Fråga
 brief beskriver hela resultatet. Exakt logga och grafisk text monteras efteråt med originalmaterial.
 För text: skriv ett faktiskt caption-utkast. För alla flöden: answer är en kort förklaring, brief är fullständig arbetsbeskrivning.
 Svara även på frågor om det aktuella arbetet. Då behålls tidigare plan och frågor används om nästa steg är oklart.
+Vad som går att köra: video är ETT AI-klipp – en scen på några sekunder; håll brief (eller clip_brief) under 900 tecken
+och beskriv bara den scenen. En film i flera scener kräver sequence och minst två bifogade bilder i ordning; utan bilder,
+föreslå motion (animerad text) eller ett enda AI-klipp. Om locked_workflow finns är arbetsflödet bestämt: planera för det.
+Fråga bara om det som verkligen hindrar planen från att köras, och föreslå hellre ett rimligt standardval än att fråga.
+Om användaren svarar ja, kör, gör det, välj du eller liknande: ställ inga fler frågor. Gör rimliga val och skriv kort i answer vilka.
+Om previous_plan_status.blocked finns kunde förra planen inte köras: upprepa aldrig samma upplägg. Ändra det så att det
+går att köra, eller förklara kort och konkret vad användaren behöver göra.
 """
+
+
+def locked_workflow(request, template):
+    """The workflow fixed by the user's explicit choice, the Motion model or the template; None = the model decides."""
+    if request.model == "remotion":
+        return "motion"
+    if request.workflow != "auto":
+        return request.workflow
+    if template and template["kind"] != "auto":
+        return template["kind"]
+    return None
 
 
 def send_turn(company, user, conversation_id, data):
@@ -157,10 +184,17 @@ def send_turn(company, user, conversation_id, data):
             "template": templates.render(template, {"brief": request.message, "company_name": company.name, **company_context}),
             "workflows": registry.catalog(),
             "attachments": [{"role": role, "kind": asset.kind, "label": asset.alt_text[:300], "brief": asset.brief[:500]} for role, asset in assets.items()],
+            "locked_workflow": locked_workflow(request, template),
+            "previous_plan_status": {"blocked": (previous_plan.spec.get("blocked") or "") if previous_plan else "",
+                                     "open_questions": [item.get("text", "") for item in (previous.response.get("questions") or [])] if previous else []},
         }
         proposal, usage = structured_assistant(system=SYSTEM, payload=payload, schema=Proposal, images=image_inputs(assets))
         proposal = Proposal.model_validate(proposal)
-        workflow = "motion" if request.model == "remotion" else request.workflow if request.workflow != "auto" else (template["kind"] if template and template["kind"] != "auto" else proposal.workflow)
+        if proposal.questions and delegates(request.message):
+            # The user asked us to decide; open questions would only block the plan again.
+            note = "\n\nDu bad mig välja, så jag har gjort rimliga val i stället för att fråga mer."
+            proposal = proposal.model_copy(update={"questions": [], "answer": (proposal.answer + note)[:1800]})
+        workflow = locked_workflow(request, template) or proposal.workflow
         if request.model and request.model != "remotion" and workflow not in {"image", "video", "sequence"}:
             raise ValueError("Den valda bild-/videomodellen kan inte användas för detta arbetsflöde. Välj Auto eller Bild/AI-video.")
         spec = {"version": CONTRACT_VERSION, "workflow": workflow, "brief": proposal.brief,
@@ -193,7 +227,10 @@ def send_turn(company, user, conversation_id, data):
             locked = AssistantTurn.objects.select_for_update().get(pk=turn.pk)
             if conversation.revision != turn.revision or locked.status != "planning":
                 raise ValueError("Detta svar kom efter att samtalet ändrades. Läs in senaste versionen.")
-            locked.response, locked.usage = proposal.model_dump(mode="json"), usage
+            response = proposal.model_dump(mode="json")
+            if spec.get("blocked"):
+                response["answer"] += "\n\nPlanen kan inte köras ännu: " + spec["blocked"]
+            locked.response, locked.usage = response, usage
             locked.status, locked.finished_at = "completed", timezone.now()
             locked.save(update_fields=["response", "usage", "status", "finished_at"])
             AssistantPlan.objects.create(turn=locked, spec=spec, fingerprint=digest(spec))
