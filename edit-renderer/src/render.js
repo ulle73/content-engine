@@ -8,7 +8,7 @@ import { beatError, detectBeats } from './beats.js';
 import { judgeCheck, parseCheck } from './check.js';
 import { FORMATS, compose } from './compose.js';
 import { JobError, finish, probe, run } from './finish.js';
-import { sampleScenes, textBand } from './legibility.js';
+import { logoStats, sampleScenes, textBand } from './legibility.js';
 import { technicalQa } from './qa.js';
 
 export const HYPERFRAMES = `hyperframes@${process.env.HYPERFRAMES_VERSION || '0.8.140'}`;
@@ -105,9 +105,11 @@ export async function renderCut({ spec, brand = {}, files, workDir, logoId = nul
   }
   // Automatic SFX need a bed to sit under (music or kept clip sound); alone, loudness normalization would blow them up.
   const keepsSound = spec.scenes.some((s) => s.audio === 'keep' && sceneFiles[s.asset_id]?.hasAudio);
+  let logo = null;
+  if (logoId && files[logoId]?.path) logo = await logoStats(files[logoId].path).catch(() => null);
   let composed;
   try {
-    composed = compose({ spec, brand, files: sceneFiles, outDir: project, logoId, beats, analysis, outro: Boolean(outro),
+    composed = compose({ spec, brand, files: sceneFiles, outDir: project, logoId, logo, beats, analysis, outro: Boolean(outro),
       autoSfx: !flagOff('EDIT_AUTO_SFX') && (Boolean(musicFile) || keepsSound) });
   } catch (err) {
     throw new JobError('compose_failed', err.message);
