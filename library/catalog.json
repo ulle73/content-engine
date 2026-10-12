@@ -1,7 +1,7 @@
 {
  "version": 1,
- "generated": "2026-10-10",
- "count": 1445,
+ "generated": "2026-10-12",
+ "count": 1446,
  "verified": 335,
  "by_type": {
   "background": 60,
@@ -10,7 +10,7 @@
   "effect": 242,
   "grade": 10,
   "model": 5,
-  "prompt": 345,
+  "prompt": 346,
   "recipe": 12,
   "scene": 186,
   "skill": 60,
@@ -33154,6 +33154,47 @@
     "brand"
    ],
    "path": "library/prompts/downloaded/style-master-sheet.md",
+   "status": "unverified"
+  },
+  {
+   "kit": "ljud",
+   "kit_title": "Ljudregler för video",
+   "source": {
+    "name": "content-engine (egen sammanställning av professionella källor, se skills/ljud)",
+    "url": "",
+    "license": "Repository LICENSE (egen text)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs innan ljud väljs eller mixas; följ arbetsgången i avsnitt 8.",
+   "notes": "",
+   "verified_at": null,
+   "preview": null,
+   "id": "prompts.ljud.regler",
+   "name": "Ljud i video: regler och arbetsgång",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Hårda regler (bara riktiga ljud, få ljud, ljudprovning, filmen ska fungera utan ljud), ljudkarta, hierarki och nivåer, -14 LUFS / -1 dBTP, synk (ljud aldrig före bild), musik till bild (takt, fraser, backtiming, stems), lager i ljudeffekter, mobilhögtalare, källor och licenser för reklam, mätkommandon.",
+   "tags": [
+    "ljud",
+    "sound",
+    "audio",
+    "musik",
+    "music",
+    "sfx",
+    "ljudeffekter",
+    "mixning",
+    "loudness",
+    "lufs",
+    "synk",
+    "licens",
+    "regler"
+   ],
+   "path": "skills/ljud/SKILL.md",
    "status": "unverified"
   },
   {

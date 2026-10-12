@@ -31,7 +31,7 @@ Självsäker, praktisk, rak och kunnig – en verkstad som vet vad den gör. Kor
 - **Riktiga bilar, riktiga vägar**, gärna kundens bil efter montering. Före/efter.
 - **Detaljer från verkstaden**: händer som monterar, kablage, grillen som lyfts av – hantverk som bygger förtroende.
 - **Drönare/följebil** bakom bilen när ljuset slår på, ljuskäglan som skär genom dimma.
-- Ljud: motor, klick när ljuset slår på, natt-ambiens.
+- Ljud: motor, klick när ljuset slår på, natt-ambiens. Regler och källor: `skills/ljud`.
 
 ## Färger (från faiv.se, utgångsläge)
 Grafit `#2d2d2d`, vit `#ffffff`, signalröd `#ff1a1a` som accent. Ljuset självt (varmvitt/gult) är den andra accenten.

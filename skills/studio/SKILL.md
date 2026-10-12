@@ -54,11 +54,16 @@ vinklar och faktabank).
 **Fakta:** påståenden i reklam ska komma från faktabanken (`golfkuponger-friskvard`). Säg till
 om något är overifierat.
 
+**Ljud:** följ `skills/ljud` för all musik, alla ljudeffekter och all mixning. Hårda regler: bara riktiga
+ljud (aldrig ljudeffekter syntetiserade i kod), få ljud, ljudprovning innan något spikas (AI:n kan inte
+lyssna), -14 LUFS och topp ≤ -1 dBTP vid leverans, leverera musik och effekter som separata stems.
+
 ## 5. Kritikloop innan leverans
 
 Rendera en kontaktkarta (en bild per beat), en mobilvy (~360 px bred) och strip runt snabba
 moment. Titta på dem. Sätt poäng 1–10 på: krok första 2 s, läsbarhet på mobil, rörelsekvalitet,
-variation (något nytt var 2–4 s), komposition, varumärke, ljudsynk. Fixa de tre sämsta, upprepa
+variation (något nytt var 2–4 s), komposition, varumärke, ljud (hierarki, synk och nivåer enligt
+`skills/ljud`). Fixa de tre sämsta, upprepa
 tills allt är 8+. Mall: `library/prompts/motion-studio-playbook/` (kritikloop).
 
 ## 6. Låt biblioteket växa
