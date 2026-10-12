@@ -1,4 +1,4 @@
-name: Company Assets
+name: Brand Assets
 # Manual: fetch a company's logo from its own website (auto-discovered, or a given URL) and make it the official logo,
 # and optionally import the company's own photo/film from its website into the media bank with shot-list ids.
 on:
@@ -19,7 +19,7 @@ on:
       shots:
         description: Filmlista-id för importen, kommaseparerade (t.ex. fa-v2)
         default: ''
-      description:
+      media_description:
         description: Vad som syns i importen
         default: ''
 permissions:
@@ -61,5 +61,5 @@ jobs:
           COMPANY: ${{ inputs.company }}
           MEDIA_URL: ${{ inputs.media_url }}
           SHOTS: ${{ inputs.shots }}
-          DESCRIPTION: ${{ inputs.description }}
+          DESCRIPTION: ${{ inputs.media_description }}
         run: python manage.py import_media --company "$COMPANY" --url "$MEDIA_URL" --shots "$SHOTS" --description "$DESCRIPTION"
