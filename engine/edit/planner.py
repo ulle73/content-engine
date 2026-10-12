@@ -271,6 +271,8 @@ class Planner:
             if lesson:
                 self._apply(lesson, f"Hoppade över material som ägaren ogillat ({lesson.target_label or asset.pk}).")
                 continue
+            if stock.is_stock(asset) and not stock.acceptable(asset):
+                continue  # a stock clip the judge never passed (or failed)
             tags = getattr(asset, "ad_tags", None)
             tag_ids = footage.ids_of(tags.tags if tags else [])
             score, why = 0.0, []
@@ -382,7 +384,7 @@ class Planner:
         for asset in self.pool:
             tags = getattr(asset, "ad_tags", None)
             if (asset.kind == "video" and stock.is_stock(asset) and str(asset.pk) not in self.used
-                    and shot in footage.ids_of(tags.tags if tags else [])):
+                    and shot in footage.ids_of(tags.tags if tags else []) and stock.acceptable(asset)):
                 placed = self._place(scene, asset, why, shot=shot)
                 if placed:
                     self.notes.append(note)
@@ -394,11 +396,16 @@ class Planner:
             self.notes.append(note + " Klippet hämtas när render_recipe körs.")
             return {"pending": True}
         described = ". ".join(filter(None, [footage.text(shot), scene.get("camera"), scene.get("purpose")]))
+        film = ". ".join(filter(None, [self.recipe.get("title"), self.recipe.get("hook"),
+                                       self.recipe.get("why_it_works")]))
         asset = stock.fetch(self.company, shot, query, fmt=self.format, min_duration=float(scene["duration_s"]),
-                            skip=set(self.used), scene=described)
+                            skip=set(self.used), scene=described, context=film)
         placed = self._place(scene, asset, why, shot=shot) if asset else None
         if placed:
             self.notes.append(note)
+        elif stock.judging():
+            self.notes.append(f"Scen {scene['id']}: inget stockklipp för {shot} höll måttet (fel motiv, årstid eller "
+                              "miljö), så scenen saknas hellre än att visa fel bild.")
         return placed
 
     def _missing(self, scene, hint=None):

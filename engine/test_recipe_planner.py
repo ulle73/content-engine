@@ -530,7 +530,7 @@ class StockTests(EditTestCase):
     def test_queries_only_cover_mood_shots(self):
         from .edit import stock
 
-        self.assertEqual(stock.query_for(["fa-m4", "fa-n2"]), ("fa-n2", "moose warning road sign"))
+        self.assertEqual(stock.query_for(["fa-m4", "fa-n2"]), ("fa-n2", "moose warning road sign snow"))
         self.assertIsNone(stock.query_for(["fa-m1"]))  # product proof never comes from stock
         self.assertIsNone(stock.query_for(["fa-h1", "gk-b2", "gk-o1"]))  # customers, brand screens, match cuts
         self.assertTrue(set(stock.queries()) <= set(footage.shots()))
@@ -794,13 +794,42 @@ class StockSelectionTests(EditTestCase):
         first = call.call_args_list[0].kwargs  # s1; later scenes judge the clips that are left
         self.assertEqual(len(first["images"]), 3)
         self.assertIn("Vinterväg", first["payload"]["scene"])
+        self.assertIn("Vintermörker", first["payload"]["film"])  # judged against the film's mood, not just the shot
         highlight = asset.ad_tags.highlights[0]
+        self.assertEqual(highlight["judge"], 9)
         self.assertGreaterEqual(highlight["start"], 0.9)  # after the cut at 1.0 s
         self.assertEqual(s1["trim_start_s"], highlight["start"])
         self.assertIn("bästa fönstret", next(c["why"] for c in plan["choices"] if c["scene"] == "s1"))
         full = [p for p in self.downloads if p.endswith("/hd.mp4")]
         self.assertIn("/video-files/32/hd.mp4", full)
         self.assertNotIn("/video-files/31/hd.mp4", full)  # losers are only downloaded small
+
+    def test_a_missing_scene_beats_a_wrong_one(self):
+        from .edit import stock
+
+        clips = {51: textured(6.0, seed=10), 52: textured(6.0, seed=11)}
+        wrong = stock.Pick(scores=[3, 2], why="Busshållplatsskylt i sommarsol, inte en älgskylt i vinter.")
+        with mock.patch.object(stock, "_client", side_effect=self.pexels(clips)), \
+                mock.patch("engine.openrouter.structured_analysis", return_value=(wrong, {})):
+            plan = planner.plan_cut(self.company, "faiv-winter-mood", materialize=True)
+        self.assertIn("s1", {m["scene"] for m in plan["missing"]})
+        self.assertFalse(plan["spec"]["scenes"])
+        self.assertTrue(any("hellre än att visa fel bild" in n for n in plan["notes"]))
+        self.assertFalse([p for p in self.downloads if p.endswith("/hd.mp4")])
+
+    def test_a_stock_clip_the_judge_never_passed_is_not_reused(self):
+        from .edit import stock
+
+        old = clip(self.company, 6.0, shots=["fa-n1"])
+        MediaAsset.objects.filter(pk=old.pk).update(provider="pexels")  # picked before the judge existed
+        AssetTags.objects.filter(asset=old).update(roles=["footage", "stock"])
+        good = stock.Pick(scores=[8], why="Snöig nattväg.")
+        with mock.patch.object(stock, "_client", side_effect=self.pexels({61: textured(6.0, seed=12)})), \
+                mock.patch("engine.openrouter.structured_analysis", return_value=(good, {})):
+            plan = planner.plan_cut(self.company, "faiv-winter-mood", materialize=True)
+        self.assertEqual(scene(plan, "s1")["asset_id"], str(stock_id(self.company, 61)))
+        with mock.patch.dict("os.environ", {"OPENROUTER_API_KEY": ""}):  # no judge to ask: old picks stay usable
+            self.assertTrue(stock.acceptable(MediaAsset.objects.select_related("ad_tags").get(pk=old.pk)))
 
     def test_without_judge_technique_decides(self):
         from .edit import stock
