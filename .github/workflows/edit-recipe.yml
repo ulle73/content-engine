@@ -1,0 +1,52 @@
+name: Edit Recipe Test
+# Manual test cut of a production recipe: plans it from the company's media bank (free Pexels stock for unfilmed
+# mood shots), renders it on "Edit Render", waits, and uploads the master + plan/critique/gate report as an artifact.
+on:
+  workflow_dispatch:
+    inputs:
+      company:
+        description: Bolag
+        default: FAIV
+      recipe:
+        description: Recept-id (library/recipes)
+        default: faiv-winter-mood
+      format:
+        description: Format
+        default: '9:16'
+permissions:
+  contents: read
+  actions: write
+jobs:
+  recipe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DATABASE_URL: ${{ secrets.CONTENT_DATABASE_URL }}
+      SECRET_KEY: ${{ secrets.CONTENT_DJANGO_SECRET }}
+      POSTIZ_ENCRYPTION_SECRET: ${{ secrets.CONTENT_POSTIZ_ENCRYPTION_SECRET }}
+      R2_ENDPOINT_URL: ${{ secrets.CONTENT_R2_ENDPOINT_URL }}
+      R2_BUCKET_NAME: ${{ secrets.CONTENT_R2_BUCKET_NAME }}
+      R2_ACCESS_KEY_ID: ${{ secrets.CONTENT_R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.CONTENT_R2_SECRET_ACCESS_KEY }}
+      MEDIA_STORAGE: r2
+      APP_URL: http://127.0.0.1:8765
+      GITHUB_DISPATCH_TOKEN: ${{ github.token }}
+      PEXELS_API_KEY: ${{ secrets.CONTENT_PEXELS_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.CONTENT_OPENROUTER_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python manage.py migrate --check
+      - run: >-
+          python manage.py edit_recipe --company "${{ inputs.company }}" --recipe "${{ inputs.recipe }}"
+          --format "${{ inputs.format }}" --wait 1200 --out out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: recipe-test
+          path: out/
+          retention-days: 7
