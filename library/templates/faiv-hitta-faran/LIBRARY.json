@@ -1,0 +1,53 @@
+{
+  "kit": "faiv",
+  "title": "FAIV – Hitta faran (extraljus, mörker → ljus)",
+  "source": {
+    "name": "FAIV (egen produktion)",
+    "url": "",
+    "license": "Bilder och logga: FAIV:s material. Stressmusik: ACE-Step (eget). Mixkit-låt och Mixkit-effekter hämtas av fetch_assets.py (Mixkit Free License, ej i mallen). Pixabay-effekter (Pixabay Content License). Anybody/Inter (SIL OFL)."
+  },
+  "items": [
+    {
+      "id": "faiv.template.hitta-faran",
+      "name": "Hitta faran: mörker → extraljus med spel, reveal, slider och slutkort (9:16, ~39 s)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "python",
+      "description": "Tittaren letar efter ett dolt rådjur i mörkret med helljus (timer + tic-tac i musikens takt, 2 rundor), sedan tänds extraljusen: strålen skjuter längs vägen och fläktar ut i skogen med bloom och kameraskak, 'DÄR.' med fokusram och ögonglimt, ljusstråle-slider helljus/extraljus med SAMMA VÄG / SAMMA RÅDJUR / HELT ANNAN SIKT, räkneverk '50 METER' (90 km/h, 2 s), 'SE MER. TIDIGARE.' och slutkort där bakljusens röda glöd blir loggans cirkel. Läsregeln stoppar renderingen, låten är kalibrerad så att klick → SE MER. är 8 takter. Godkänd av ägaren 2026-10-12.",
+      "tags": [
+        "faiv",
+        "extraljus",
+        "före-efter",
+        "before-after",
+        "mörker-till-ljus",
+        "reveal",
+        "slider",
+        "rådjur",
+        "viltolycka",
+        "hitta-faran",
+        "natt",
+        "slutkort",
+        "logga",
+        "ljudprovning",
+        "verifierad"
+      ],
+      "path": "library/templates/faiv-hitta-faran/README.md",
+      "use": "cp -r library/templates/faiv-hitta-faran work/<namn> && cd work/<namn> && ./make.sh. Byt bilder i src/ och koordinater i render.py/prep.py för ny bil eller väg; tider och texter i render.py; ljudval i audio.py (CHOICE).",
+      "requires": [
+        "python",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-12",
+      "preview": {
+        "video": "library/previews/faiv.template.hitta-faran.mp4",
+        "still": "library/previews/faiv.template.hitta-faran.jpg"
+      },
+      "notes": "Följer skills/video-regler och skills/ljud. Manus med alla tider: MANUS.md."
+    }
+  ]
+}

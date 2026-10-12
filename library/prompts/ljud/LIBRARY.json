@@ -1,0 +1,29 @@
+{
+  "kit": "ljud",
+  "title": "Ljudregler för video",
+  "source": {
+    "name": "content-engine (egen sammanställning av professionella källor, se skills/ljud)",
+    "url": "",
+    "license": "Repository LICENSE (egen text)"
+  },
+  "items": [
+    {
+      "id": "prompts.ljud.regler",
+      "name": "Ljud i video: regler och arbetsgång",
+      "type": "prompt",
+      "medium": "text",
+      "formats": ["any"],
+      "engine": "none",
+      "description": "Hårda regler (bara riktiga ljud, få ljud, ljudprovning, filmen ska fungera utan ljud), ljudkarta, hierarki och nivåer, -14 LUFS / -1 dBTP, synk (ljud aldrig före bild), musik till bild (takt, fraser, backtiming, stems), lager i ljudeffekter, mobilhögtalare, källor och licenser för reklam, mätkommandon.",
+      "tags": ["ljud", "sound", "audio", "musik", "music", "sfx", "ljudeffekter", "mixning", "loudness", "lufs", "synk", "licens", "regler"],
+      "path": "skills/ljud/SKILL.md",
+      "use": "Läs innan ljud väljs eller mixas; följ arbetsgången i avsnitt 8.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    }
+  ]
+}

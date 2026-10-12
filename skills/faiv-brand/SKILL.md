@@ -31,10 +31,23 @@ Självsäker, praktisk, rak och kunnig – en verkstad som vet vad den gör. Kor
 - **Riktiga bilar, riktiga vägar**, gärna kundens bil efter montering. Före/efter.
 - **Detaljer från verkstaden**: händer som monterar, kablage, grillen som lyfts av – hantverk som bygger förtroende.
 - **Drönare/följebil** bakom bilen när ljuset slår på, ljuskäglan som skär genom dimma.
-- Ljud: motor, klick när ljuset slår på, natt-ambiens.
+- Ljud: motor, klick när ljuset slår på, natt-ambiens. Regler och källor: `skills/ljud`.
 
 ## Färger (från faiv.se, utgångsläge)
 Grafit `#2d2d2d`, vit `#ffffff`, signalröd `#ff1a1a` som accent. Ljuset självt (varmvitt/gult) är den andra accenten.
+
+## Godkänt av ägaren (FAIV "Hitta faran", 2026-10-12)
+- **Mall:** `faiv.template.hitta-faran` (`library/templates/faiv-hitta-faran/`) – mörker → ljus med "hitta faran"-spel,
+  ljusreveal, fokusram, före/efter-slider och slutkort. Börja där för extraljus-film.
+- **Typsnitt:** Anybody (bredd 115, vikt 800) för rubriker – ligger nära loggans breda ordbild; Inter för brödtext.
+- **Färg:** vit text på mörkt, loggans röda som enda accent (enstaka ord, siffror, understrykning).
+- **Slutkort:** riktiga loggan, "Extraljus för svenska vägar.", "Hitta rätt ljus på **FAIV.se**" med en tunn röd
+  understrykning (liten mjuk båge) som ritas fram. Tyst.
+- **Ljud:** tändljud = skarp brytare + brytare med basstöt + filmiskt svep; diskret teknikklick för fokusramen;
+  whoosh på slidern; tic-tac under nedräkning. Musik: Mixkit "Driving Ambition" (100 BPM) efter tändningen,
+  stressande puls före. Inga syntade ljud.
+- **Dolt rådjur/faror:** syns lätt för tydligt – rådjurszonen dämpad 0,55 godkändes (0,4 och 0,48 för tydligt).
+- Ta bort bilmärkens text och emblem i bild.
 
 ## Referenser
 Se Content Library och `work/references/` (Baja Designs natt-drönare, RIGID dag→natt, Ekstralys studio-reveal,

@@ -1,0 +1,7 @@
+Filerna hämtas av ../fetch_assets.py (ligger inte i mallen).
+Mixkit Sound Effects Free License (https://mixkit.co/license/#sfxFree) – fritt i reklam online/sociala medier.
+Får INTE vidaredistribueras som lösa ljud, i verktyg eller mallar -> ligger bara i work/, aldrig i library/.
+Hämtat 2026-10-12 från https://assets.mixkit.co/active_storage/sfx/<id>/<id>-preview.mp3
+1808 electric-switch | 2301 quick-bass-switch | 2579 light-switch-sound | 3180 machine-activation-short
+2602 electronics-power-up | 1143 cinematic-whoosh-deep-impact | 1436 camera-auto-focus | 1437 camera-lens-autofocus
+2859 computer-digital-lock | 2857 gear-fast-lock-tap | 2847 data-scaner | 3124 modern-technology-select | 2589 shot-light-energy-flowing
