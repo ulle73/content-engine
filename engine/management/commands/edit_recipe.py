@@ -42,7 +42,8 @@ class Command(BaseCommand):
         deadline = time.monotonic() + max(0, options["wait"])
         while options["wait"] and time.monotonic() < deadline:
             job = EditJob.objects.select_related("company", "review").get(pk=job.pk)
-            if job.status in {"done", "failed"}:
+            # "done" is saved before the AI critique and the quality gate; wait for the gate's verdict too.
+            if job.status == "failed" or (job.status == "done" and job.quality_gate):
                 break
             time.sleep(15)
         job = EditJob.objects.select_related("company", "review", "output_asset").get(pk=job.pk)

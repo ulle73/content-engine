@@ -141,6 +141,16 @@ class PlannerTests(EditTestCase):
         self.assertEqual(scene(plan, "s3")["trim_start_s"], 3.0)  # continues where s1 ended (lights on)
         self.assertTrue(any("samma klipp" in n for n in plan["notes"]))
 
+    def test_text_of_a_missing_scene_moves_to_the_next_scene(self):
+        clip(self.company, 6.0, shots=["fa-n1"])
+        clip(self.company, 8.0, shots=["fa-n3"])  # no fa-n2: s2 ("Det är inte älgen …") has no material
+        plan = planner.plan_cut(self.company, "faiv-winter-mood")
+        self.assertEqual([s["id"] for s in plan["spec"]["scenes"]], ["s1", "s3"])
+        s3 = scene(plan, "s3")
+        self.assertEqual(s3["text"], "Det är inte älgen du ska oroa dig för. Det är att du inte ser den.")
+        self.assertEqual(s3["duration_s"], 5.0)  # takes over s2's screen time too
+        self.assertTrue(any("texten från s2" in n for n in plan["notes"]))
+
     def test_short_clip_shortens_scene_and_stills_get_motion(self):
         clip(self.company, 1.2, shots=["fa-m1"])
         still = clip(self.company, 0, shots=["fa-p5"], kind="image")

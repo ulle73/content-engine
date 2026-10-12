@@ -61,21 +61,32 @@ export function words(text) {
   return out;
 }
 
-/** Caption chunks: 2–3 words (≤ 16 characters), never ending on a function word or a bare number. */
+/**
+ * Caption chunks: 2–3 words (≤ 16 characters), never ending on a function word or a bare number unless the chunk
+ * would pass 4 words / 22 characters, always ending at a sentence end, and never a lone word at the end of a line
+ * of thought ("Det är att du inte ser / den.").
+ */
 export function chunkWords(list) {
   const out = [];
   let cur = [];
   const len = (arr) => arr.reduce((s, w) => s + w.text.length, 0) + Math.max(0, arr.length - 1);
+  const ends = (w) => /[.!?:;…]["”»)]*$/.test(w.text);
   for (const w of list) {
-    if (cur.length && (cur.length >= 3 || len([...cur, w]) > 16) && !isGlue(cur[cur.length - 1].text)) {
-      out.push(cur);
-      cur = [];
+    if (cur.length) {
+      const last = cur[cur.length - 1];
+      const full = cur.length >= 3 || len([...cur, w]) > 16;
+      const hard = cur.length >= 4 || len([...cur, w]) > 22;
+      if (ends(last) || hard || (full && !isGlue(last.text))) {
+        out.push(cur);
+        cur = [];
+      }
     }
     cur.push(w);
   }
   if (cur.length) {
     // Fold a lone trailing word into the previous chunk when it still reads as one phrase.
-    if (cur.length === 1 && out.length && len([...out[out.length - 1], ...cur]) <= 20) out[out.length - 1].push(...cur);
+    const prev = out[out.length - 1];
+    if (cur.length === 1 && prev && !ends(prev[prev.length - 1]) && len([...prev, ...cur]) <= 22) prev.push(...cur);
     else out.push(cur);
   }
   return out;

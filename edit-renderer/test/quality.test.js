@@ -137,6 +137,11 @@ test('type scale and brand fonts', () => {
   assert.match(resolveBrandFonts('Comic Neue').warning, /Comic Neue/);
   assert.deepEqual(chunkWords(words('Boka din golf på två minuter idag')).map((c) => c.map((w) => w.text).join(' ')),
     ['Boka din golf', 'på två minuter idag']);
+  const chunks = (s) => chunkWords(words(s)).map((c) => c.map((w) => w.text).join(' '));
+  // Never across a sentence end, never one runaway glue chunk, never a lone last word.
+  assert.deepEqual(chunks('Det är inte älgen du ska oroa dig för. Det är att du inte ser den.'),
+    ['Det är inte älgen', 'du ska oroa', 'dig för.', 'Det är att du', 'inte ser den.']);
+  assert.ok(chunks('Det är att du inte ser den.').every((c) => c.split(' ').length > 1));
 });
 
 // ------------------------------------------------------------------ safe zones

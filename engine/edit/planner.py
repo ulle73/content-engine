@@ -42,6 +42,7 @@ OVERRIDE_KEYS = {"title", "caption", "placeholders", "product_id", "product_quer
                  "music_volume", "fps"}
 CAMERA_EFFECTS = {"ken-burns", "push-in", "pull-back", "punch-in", "drift", "shake"}
 STILL_MOTION = "hyperframes.registry.push-in"
+CARRY_MAX_S = 6.0  # longest a scene gets when it takes over the text and time of scenes left out
 STOP = {"samma", "eller", "från", "efter", "under", "över", "utan", "med", "som", "och", "för", "till", "inte", "bara",
         "scen", "scenen", "klipp", "klippet", "bild", "bilden", "video", "the", "with", "and"}
 
@@ -603,6 +604,9 @@ def plan_cut(company, recipe_id, *, format="9:16", overrides=None, materialize=F
     for unknown in sorted(set(scene_overrides) - known_ids):
         raise PlanError(f"overrides.scenes.{unknown}: receptet har ingen sådan scen ({', '.join(sorted(known_ids))}).")
     scenes, cta = [], None
+    # Text of scenes left out for lack of material moves to the next placed scene (which gets their screen time
+    # too), so a line split over two scenes still reads as one sentence.
+    carry = None
     last = recipe["scenes"][-1]["id"] if recipe["scenes"] else None
     for scene in recipe["scenes"]:
         where = f"Scen {scene['id']}"
@@ -613,6 +617,10 @@ def plan_cut(company, recipe_id, *, format="9:16", overrides=None, materialize=F
         scene = {**scene, "duration_s": change.get("duration_s") or scene["duration_s"]}
         raw_text = change["text"] if "text" in change else scene.get("text", "")
         source = scene.get("source")
+        base = float(scene["duration_s"])
+        if carry and source != "graphic" and "duration_s" not in change:
+            scene["duration_s"] = round(min(float(scene["duration_s"]) + carry["duration_s"],
+                                            max(float(scene["duration_s"]), CARRY_MAX_S)), 2)
         if source == "graphic" and scene["id"] == last and scene.get("purpose") == "cta" and "asset_id" not in change:
             if outro:
                 plan.notes.append(f"{where} (CTA-grafik) ersätts av bolagets slutbild ({outro['label']}, "
@@ -643,8 +651,18 @@ def plan_cut(company, recipe_id, *, format="9:16", overrides=None, materialize=F
         else:
             placed = plan.pick_footage(scene)
         if not placed or placed.get("pending"):
+            left = plan.resolve_text(raw_text, where=where, notes_text=scene.get("notes", "")) if not placed else ""
+            if left:
+                carry = {"text": " ".join(filter(None, [carry and carry["text"], left])),
+                         "duration_s": (carry["duration_s"] if carry else 0) + base,
+                         "from": [*(carry["from"] if carry else []), scene["id"]]}
             continue
         text = plan.resolve_text(raw_text, where=where, notes_text=scene.get("notes", ""))
+        if carry and source != "graphic":
+            text = " ".join(filter(None, [carry["text"], text]))
+            plan.notes.append(f"{where}: texten från {', '.join(carry['from'])} (som saknar material) visas här så att "
+                              "meningen hänger ihop, och scenen förlängs.")
+            carry = None
         text_style, effects, transition = plan.items(scene, has_text=bool(text), is_still=placed["kind"] == "image"
                                                      and source != "graphic")
         out = {
@@ -659,6 +677,8 @@ def plan_cut(company, recipe_id, *, format="9:16", overrides=None, materialize=F
         if "fit" in change:
             out["fit"] = change["fit"]
         scenes.append(out)
+    if carry:
+        plan.notes.append(f"Texten från {', '.join(carry['from'])} kom inte med: ingen senare scen har material.")
     if scenes:
         scenes[0]["transition_in"] = None
     for lesson in plan.aspects[:8]:
