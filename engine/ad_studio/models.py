@@ -45,6 +45,8 @@ class AssetTags(models.Model):
     mood = models.CharField(max_length=60, blank=True)
     source = models.CharField(max_length=200, blank=True)  # e.g. "Epassi-portal", "eget foto"
     verified = models.BooleanField(default=False)
+    # Best windows of a video clip, best first: [{"start", "end", "score" 0–10}] (engine/edit/shots.py).
+    highlights = models.JSONField(default=list, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def search_text(self) -> str:

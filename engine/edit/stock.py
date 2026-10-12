@@ -21,6 +21,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import httpx
+from pydantic import BaseModel, Field
 
 log = logging.getLogger(__name__)
 
@@ -69,9 +70,11 @@ def _file_ok(link: str) -> bool:
     return url.scheme == "https" and any(host == h or host.endswith("." + h) for h in FILE_HOSTS)
 
 
-def pick_file(video: dict, fmt: str) -> dict | None:
-    """The mp4 rendition closest to 1080 on the short side, in the right orientation, never above 4K."""
+def pick_file(video: dict, fmt: str, *, small: bool = False) -> dict | None:
+    """The mp4 rendition closest to 1080 on the short side (small=True: the smallest one of at least 360, for
+    scoring), in the right orientation, never above 4K."""
     portrait = _orientation(fmt) == "portrait"
+    target, floor = (360, 360) if small else (1080, 720)
     files = []
     for f in video.get("video_files") or []:
         width, height = int(f.get("width") or 0), int(f.get("height") or 0)
@@ -79,7 +82,8 @@ def pick_file(video: dict, fmt: str) -> dict | None:
             continue
         if (height >= width) != portrait or max(width, height) > 3840:
             continue
-        files.append((abs(min(width, height) - 1080) + (1000 if min(width, height) < 720 else 0), f))
+        short = min(width, height)
+        files.append((abs(short - target) + (1000 if short < floor else 0), f))
     return min(files, key=lambda x: x[0])[1] if files else None
 
 
@@ -97,16 +101,76 @@ def search(query: str, *, fmt: str, min_duration: float, client: httpx.Client) -
     return [v for v in videos if float(v.get("duration") or 0) >= min_duration and pick_file(v, fmt)]
 
 
-def fetch(company, shot: str, query: str, *, fmt: str, min_duration: float, skip=(), client=None):
-    """Download the best matching clip into the media bank and tag it; None when nothing usable was found."""
+def candidate_count() -> int:
+    try:
+        return max(1, min(5, int(os.environ.get("EDIT_STOCK_CANDIDATES", "3"))))
+    except ValueError:
+        return 3
+
+
+def _download(client, link: str) -> bytes | None:
+    try:
+        response = client.get(link)
+    except httpx.HTTPError as exc:
+        log.warning("Pexels download failed: %s", exc)
+        return None
+    data = response.content
+    return data if response.status_code == 200 and data and len(data) <= MAX_BYTES else None
+
+
+class Pick(BaseModel):
+    scores: list[int] = Field(description="Betyg 1–10 per bild i samma ordning: passar scenen och ser ut som riktig, "
+                                          "snygg film (inte stockig, inte AI, inte kitschig)")
+    why: str = Field(description="En kort mening på svenska om den bästa bilden")
+
+
+JUDGE = ("Du väljer b-roll till en svensk social annons (Reels/TikTok). Du får en beskrivning av scenen och en bild ur "
+         "varje kandidatklipp, i ordning. Betygsätt varje bild: passar den scenen och ser den ut som äkta, snygg film "
+         "(naturligt ljus, tydligt motiv, ingen stockfoto-pose, inga vattenstämplar, ingen text i bilden, ingen "
+         "uppenbar AI)? Var ärlig; 7 betyder fullt användbart.")
+
+
+def judge(scene: str, frames: list[bytes]) -> dict | None:
+    """One cheap vision call scoring each candidate frame against the scene. None when it cannot be asked."""
+    import base64
+
+    if not os.environ.get("OPENROUTER_API_KEY", "").strip() or os.environ.get("EDIT_STOCK_JUDGE", "1") == "0":
+        return None
+    from engine.openrouter import OpenRouterError, structured_analysis
+
+    images = ["data:image/jpeg;base64," + base64.b64encode(f).decode("ascii") for f in frames]
+    try:
+        result, meta = structured_analysis(system=JUDGE, payload={"scene": scene, "candidates": len(frames)},
+                                           schema=Pick, operation="stock_pick", max_tokens=300, images=images)
+    except OpenRouterError as exc:
+        log.info("Stock judge failed: %s", exc)
+        return None
+    if len(result.scores) < len(frames):
+        return None
+    return {"scores": [max(1, min(10, int(v))) for v in result.scores[:len(frames)]], "why": result.why[:200],
+            "cost_usd": meta.get("cost_usd")}
+
+
+def fetch(company, shot: str, query: str, *, fmt: str, min_duration: float, skip=(), client=None, scene: str = ""):
+    """Like the best editors: look at several candidates, keep the best one and only its best window.
+
+    Up to EDIT_STOCK_CANDIDATES (3) unused search hits are downloaded small and scored (engine/edit/shots.py:
+    sharpness, exposure, motion, no cut inside the window); a vision model scores one frame from each best window
+    (final score 40 % technique, 60 % judge). Only the winner is downloaded in full quality into the media bank,
+    with its best window in AssetTags.highlights. None when nothing usable was found.
+    """
     from engine.ad_studio.models import AssetTags
     from engine.media import describe_file
     from engine.media_storage import MediaError, put
     from engine.models import MediaAsset
 
+    from . import shots
+
     own = client is None
     client = client or _client()
+    dark_ok = any(word in query for word in ("night", "dark", "northern lights", "evening"))
     try:
+        candidates = []
         for video in search(query, fmt=fmt, min_duration=min_duration, client=client):
             asset_id = uuid.uuid5(uuid.NAMESPACE_URL, f"{company.pk}:pexels:{video['id']}:{fmt}")
             if str(asset_id) in skip:
@@ -114,14 +178,27 @@ def fetch(company, shot: str, query: str, *, fmt: str, min_duration: float, skip
             existing = MediaAsset.objects.filter(pk=asset_id, company=company).first()
             if existing:
                 return existing
-            chosen = pick_file(video, fmt)
-            try:
-                response = client.get(chosen["link"])
-            except httpx.HTTPError as exc:
-                log.warning("Pexels download %s failed: %s", video.get("id"), exc)
+            small = pick_file(video, fmt, small=True)
+            data = _download(client, small["link"]) if small else None
+            window = shots.best_window(shots.analyze(data), min_duration, dark_ok=dark_ok) if data else None
+            if window is None:
                 continue
-            data = response.content
-            if response.status_code != 200 or not data or len(data) > MAX_BYTES:
+            frame = shots.frame_jpeg(data, (window["start"] + window["end"]) / 2)
+            candidates.append({"video": video, "asset_id": asset_id, "window": window, "frame": frame,
+                               "score": window["score"]})
+            if len(candidates) >= candidate_count():
+                break
+        if not candidates:
+            return None
+        frames = [c["frame"] for c in candidates]
+        verdict = judge(scene or query, frames) if len(candidates) > 1 and all(frames) else None
+        if verdict:
+            for c, judged in zip(candidates, verdict["scores"]):
+                c["score"] = round(0.4 * c["window"]["score"] + 0.6 * judged, 2)
+        for c in sorted(candidates, key=lambda c: -c["score"]):
+            video, asset_id = c["video"], c["asset_id"]
+            data = _download(client, pick_file(video, fmt)["link"])
+            if not data:
                 continue
             try:
                 metadata = describe_file(data)
@@ -135,11 +212,14 @@ def fetch(company, shot: str, query: str, *, fmt: str, min_duration: float, skip
             asset = MediaAsset.objects.create(
                 pk=asset_id, company=company, storage_backend=backend, storage_key=key, byte_size=len(data),
                 origin="uploaded", provider=PROVIDER, alt_text=f"Stockklipp: {query}"[:500], purpose="content",
-                brief=f"Pexels {video.get('url', '')} – tillfälligt för {shot} tills egen film finns"[:2000],
+                brief=(f"Pexels {video.get('url', '')} – tillfälligt för {shot} tills egen film finns. Valt bland "
+                       f"{len(candidates)} kandidater, betyg {c['score']}/10"
+                       + (f": {verdict['why']}" if verdict else ".")),
                 sha256=hashlib.sha256(data).hexdigest(), **metadata)
             AssetTags.objects.update_or_create(asset=asset, defaults={
                 "description": f"Stockklipp ({query})"[:500], "tags": [shot], "roles": ["footage", "stock"],
-                "source": f"Pexels: {author}, {video.get('url', '')}"[:200], "verified": False})
+                "source": f"Pexels: {author}, {video.get('url', '')}"[:200], "verified": False,
+                "highlights": [{k: c["window"][k] for k in ("start", "end", "score")}]})
             return asset
     except (httpx.HTTPError, ValueError, StockError) as exc:
         log.warning("Pexels search %r failed: %s", query, exc)

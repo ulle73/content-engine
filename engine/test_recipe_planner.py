@@ -1,11 +1,14 @@
 """Recipe → cut spec planner, shot-list tagging, the recipe MCP tools and the AI critic of finished cuts."""
 
+import io
 import json
 from types import SimpleNamespace
 from unittest import mock
 
+import av
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from PIL import Image
 
 from .ad_studio.models import AdFact, AssetTags
 from .edit import critic, footage, planner, service
@@ -371,16 +374,62 @@ class CriticTests(EditTestCase):
                                             "fix": "Större text och mindre grade."})
         self.assertEqual(data["fixes"][1]["scene_id"], "global")  # unknown scene ids are not trusted
         self.assertEqual(data["fixes"][1]["item_id"], "")
-        self.assertTrue(1 <= len(seen["images"]) <= critic.FRAMES)
-        self.assertTrue(seen["images"][0].startswith("data:image/jpeg;base64,"))
-        self.assertEqual(seen["payload"]["frames"][0]["scene_id"], "s1")
+        self.assertEqual(data["input"], "video")  # the model watches the whole cut with sound
+        self.assertEqual(len(seen["videos"]), 1)
+        self.assertTrue(seen["videos"][0].startswith("data:video/mp4;base64,"))
+        self.assertNotIn("images", seen)
         self.assertEqual(seen["payload"]["recipe"]["id"], "faiv-dark-to-light-reveal")
         self.assertIn("scenes", seen["payload"]["manifest"])
+        self.assertIn("0–2 s", seen["system"])  # the rubric
+        self.assertEqual(data["footage"]["score"], 5)  # aspects the model left out are marked unjudged
         card = discord.card(job.review)
         self.assertIn("AI-granskning 7/10", card["message"]["embeds"][0]["description"])
         self.assertIn("Större text", card["message"]["embeds"][0]["description"])
         self.assertEqual(service.serialize(job)["ai_critique"]["score"], 7)
         send.assert_called_once()
+
+    def test_frames_when_the_video_is_refused_or_too_large(self):
+        from .openrouter import OpenRouterError
+
+        calls = []
+
+        def video_refused(**kwargs):
+            calls.append(kwargs)
+            if kwargs.get("videos"):
+                raise OpenRouterError("Modellen tar inte emot video.", status_code=400)
+            return CRITIQUE, {"model": "m", "cost_usd": 0.0001}
+
+        with mock.patch("engine.openrouter.structured_analysis", side_effect=video_refused):
+            job, _ = self.deliver()
+        self.assertEqual(len(calls), 2)
+        self.assertEqual((job.ai_critique["status"], job.ai_critique["input"]), ("done", "frames"))
+        self.assertTrue(calls[1]["images"][0].startswith("data:image/jpeg;base64,"))
+        self.assertEqual(calls[1]["payload"]["frames"][0]["scene_id"], "s1")
+
+        calls.clear()
+        with mock.patch.dict("os.environ", {"EDIT_CRITIC_VIDEO_MAX_MB": "0.000001"}), \
+                mock.patch("engine.openrouter.structured_analysis", side_effect=video_refused):
+            job, _ = self.deliver()
+        self.assertEqual(len(calls), 1)  # too large for the video route: straight to frames
+        self.assertEqual(job.ai_critique["input"], "frames")
+
+    def test_openrouter_sends_video_parts_to_the_video_model(self):
+        from . import openrouter
+
+        sent = {}
+
+        def post(url, **kwargs):
+            sent.update(kwargs["json"])
+            return SimpleNamespace(status_code=200, json=lambda: {
+                "model": "g", "choices": [{"message": {"content": CRITIQUE.model_dump_json()}}]})
+
+        with mock.patch.object(openrouter.httpx, "post", side_effect=post), \
+                mock.patch.dict("os.environ", {"OPENROUTER_VIDEO_MODEL": "google/gemini-3.1-flash"}):
+            openrouter.structured_analysis(system="s", payload={}, schema=critic.CutCritique,
+                                           videos=["data:video/mp4;base64,AAAA"])
+        self.assertEqual(sent["model"], "google/gemini-3.1-flash")
+        parts = sent["messages"][1]["content"]
+        self.assertEqual(parts[1], {"type": "video_url", "video_url": {"url": "data:video/mp4;base64,AAAA"}})
 
     def test_critic_fails_open(self):
         from .openrouter import OpenRouterError
@@ -635,3 +684,134 @@ class GateTests(EditTestCase):
         from engine import mcp_server
 
         self.assertIsNotNone(mcp_server.mcp._tool_manager.get_tool("send_cut_for_review"))
+
+
+def textured(seconds=4.0, *, size=(180, 320), speed=1, blur=0.0, cut_at=None, frozen=False, brightness=1.0, seed=1):
+    """A clip of drifting random texture (reads like handheld footage to the shot scorer)."""
+    import numpy as np
+    from PIL import ImageFilter
+
+    rng = np.random.default_rng(seed)
+
+    def scenery():  # soft blobs with fine detail on top: shifts a little per frame like a slow camera move
+        blobs = Image.fromarray(rng.integers(0, 255, (size[1] // 8, size[0] // 8, 3), dtype=np.uint8))
+        blobs = np.asarray(blobs.resize((size[0] * 2, size[1] * 2), Image.Resampling.BICUBIC), dtype=np.int16)
+        detail = rng.integers(-30, 30, blobs.shape, dtype=np.int16)
+        return (blobs + detail).clip(0, 255).astype(np.uint8)
+
+    base, other = scenery(), (scenery() * 0.4).astype(np.uint8)  # the second shot is a darker scene
+    out = io.BytesIO()
+    fps = 10
+    with av.open(out, mode="w", format="mp4") as container:
+        stream = container.add_stream("libx264", rate=fps)
+        stream.width, stream.height, stream.pix_fmt = size[0], size[1], "yuv420p"
+        for i in range(int(seconds * fps)):
+            src = other if cut_at is not None and i / fps >= cut_at else base
+            shift = 0 if frozen else i * speed
+            crop = src[shift % size[1]:shift % size[1] + size[1], shift % size[0]:shift % size[0] + size[0]]
+            image = Image.fromarray((crop * brightness).clip(0, 255).astype("uint8")).filter(
+                ImageFilter.GaussianBlur(blur)) if blur or brightness != 1.0 else Image.fromarray(crop)
+            for packet in stream.encode(av.VideoFrame.from_image(image)):
+                container.mux(packet)
+        for packet in stream.encode():
+            container.mux(packet)
+    return out.getvalue()
+
+
+class ShotScoringTests(EditTestCase):
+    def test_moving_sharp_footage_beats_frozen_blurred_and_dark(self):
+        from .edit import shots
+
+        def score(data, **kw):
+            return shots.best_window(shots.analyze(data), 2.0, **kw)["score"]
+
+        good = score(textured())
+        self.assertGreater(good, score(textured(frozen=True)))
+        self.assertGreater(good, score(textured(blur=4)))
+        self.assertGreater(good, score(textured(brightness=0.25)))
+        self.assertGreater(score(textured(brightness=0.25), dark_ok=True), score(textured(brightness=0.25)))
+        self.assertEqual(shots.analyze(b"not a video"), {})
+        self.assertIsNone(shots.best_window({}, 2.0))
+
+    def test_best_window_skips_the_cut_between_two_shots(self):
+        from .edit import shots
+
+        analysis = shots.analyze(textured(5.0, cut_at=2.0))
+        self.assertTrue(shots.cuts(analysis))
+        window = shots.best_window(analysis, 2.0)
+        self.assertFalse(window["cut_inside"])
+        self.assertTrue(window["start"] >= 1.9 or window["end"] <= 2.1, window)
+        self.assertFalse(shots.cuts(shots.analyze(textured(5.0, speed=6))))  # fast movement is not a cut
+        self.assertIsNotNone(shots.frame_jpeg(textured(), 1.0))
+
+
+class StockSelectionTests(EditTestCase):
+    """Several stock candidates are scored; only the winner is downloaded in full and placed at its best window."""
+
+    def setUp(self):
+        super().setUp()
+        MediaAsset.objects.filter(pk__in=[self.clip.pk, self.still.pk]).delete()
+        env = mock.patch.dict("os.environ", {"PEXELS_API_KEY": "test-key", "EDIT_STOCK": "1",
+                                             "OPENROUTER_API_KEY": "test-key", "EDIT_STOCK_CANDIDATES": "3"})
+        env.start()
+        self.addCleanup(env.stop)
+        self.downloads = []
+
+    def pexels(self, clips):
+        import httpx
+
+        videos = []
+        for video_id in clips:
+            video = pexels_video(video_id)
+            video["video_files"].append({"file_type": "video/mp4", "width": 360, "height": 640,
+                                         "link": f"https://videos.pexels.com/video-files/{video_id}/sd.mp4"})
+            videos.append(video)
+
+        def handler(request):
+            if request.url.host == "api.pexels.com":
+                return httpx.Response(200, json={"videos": videos})
+            video_id = int(request.url.path.split("/")[2])
+            self.downloads.append(request.url.path)
+            return httpx.Response(200, content=clips[video_id])
+
+        return lambda: httpx.Client(transport=httpx.MockTransport(handler))
+
+    def test_judge_and_technique_pick_the_winner_and_its_best_window(self):
+        from .edit import stock
+
+        clips = {31: textured(6.0, frozen=True, seed=3), 32: textured(6.0, cut_at=1.0, seed=4),
+                 33: textured(6.0, blur=4, seed=5), 34: textured(6.0, seed=6)}
+        verdict = stock.Pick(scores=[4, 9, 6], why="Tydligast och mest äkta.")
+        with mock.patch.object(stock, "_client", side_effect=self.pexels(clips)), \
+                mock.patch("engine.openrouter.structured_analysis", return_value=(verdict, {"cost_usd": 0.0001})) as call:
+            plan = planner.plan_cut(self.company, "faiv-winter-mood", materialize=True)
+        s1 = scene(plan, "s1")
+        asset = MediaAsset.objects.get(pk=s1["asset_id"])
+        self.assertEqual(asset.pk, stock_id(self.company, 32))
+        self.assertIn("Valt bland 3 kandidater", asset.brief)
+        self.assertIn("Tydligast", asset.brief)
+        first = call.call_args_list[0].kwargs  # s1; later scenes judge the clips that are left
+        self.assertEqual(len(first["images"]), 3)
+        self.assertIn("Vinterväg", first["payload"]["scene"])
+        highlight = asset.ad_tags.highlights[0]
+        self.assertGreaterEqual(highlight["start"], 0.9)  # after the cut at 1.0 s
+        self.assertEqual(s1["trim_start_s"], highlight["start"])
+        self.assertIn("bästa fönstret", next(c["why"] for c in plan["choices"] if c["scene"] == "s1"))
+        full = [p for p in self.downloads if p.endswith("/hd.mp4")]
+        self.assertIn("/video-files/32/hd.mp4", full)
+        self.assertNotIn("/video-files/31/hd.mp4", full)  # losers are only downloaded small
+
+    def test_without_judge_technique_decides(self):
+        from .edit import stock
+
+        clips = {41: textured(6.0, frozen=True, seed=7), 42: textured(6.0, seed=8), 43: textured(6.0, blur=4, seed=9)}
+        with mock.patch.dict("os.environ", {"OPENROUTER_API_KEY": ""}), \
+                mock.patch.object(stock, "_client", side_effect=self.pexels(clips)):
+            plan = planner.plan_cut(self.company, "faiv-winter-mood", materialize=True)
+        self.assertEqual(scene(plan, "s1")["asset_id"], str(stock_id(self.company, 42)))
+
+
+def stock_id(company, video_id, fmt="9:16"):
+    import uuid
+
+    return uuid.uuid5(uuid.NAMESPACE_URL, f"{company.pk}:pexels:{video_id}:{fmt}")
