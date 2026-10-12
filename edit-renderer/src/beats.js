@@ -263,7 +263,8 @@ export function snapScenes(scenes, grid, { tolerance = 0.3, minScene = 0.8, tota
     }
     cands.push(list);
   }
-  const minFor = (i) => Math.min(durations[i], Math.max(minScene, 0));
+  // A scene never shrinks below its own minimum (e.g. the time its text needs to be read).
+  const minFor = (i) => Math.min(durations[i], Math.max(minScene, Number(scenes[i].min) || 0, 0));
   const maxFor = (i) => (Number.isFinite(scenes[i].max) ? Math.max(scenes[i].max, durations[i]) : Infinity);
   // DP over boundaries.
   let prevCost = [0];

@@ -138,8 +138,29 @@ class PlannerTests(EditTestCase):
         plan = planner.plan_cut(self.company, "faiv-dark-to-light-reveal")
         self.assertEqual(scene(plan, "s1")["asset_id"], str(only.pk))
         self.assertEqual(scene(plan, "s3")["asset_id"], str(only.pk))
-        self.assertEqual(scene(plan, "s3")["trim_start_s"], 3.0)  # continues where s1 ended (lights on)
+        s1 = scene(plan, "s1")
+        self.assertEqual(scene(plan, "s3")["trim_start_s"],  # continues where s1 ended (lights on)
+                         round(s1["trim_start_s"] + s1["duration_s"], 2))
         self.assertTrue(any("samma klipp" in n for n in plan["notes"]))
+
+    def test_text_of_a_missing_scene_moves_to_the_next_scene(self):
+        clip(self.company, 6.0, shots=["fa-n1"])
+        clip(self.company, 8.0, shots=["fa-n3"])  # no fa-n2: s2 ("Det är inte älgen …") has no material
+        plan = planner.plan_cut(self.company, "faiv-winter-mood")
+        self.assertEqual([s["id"] for s in plan["spec"]["scenes"]], ["s1", "s3"])
+        s3 = scene(plan, "s3")
+        self.assertEqual(s3["text"], "Det är inte älgen du ska oroa dig för. Det är att du inte ser den.")
+        # Takes over s2's screen time (5 s) and gets the reading time for both lines: 66 characters / 12 cps + 0.6 s.
+        self.assertEqual(s3["duration_s"], 6.1)
+        self.assertTrue(any("hinner läsas" in n for n in plan["notes"]))
+        self.assertTrue(any("texten från s2" in n for n in plan["notes"]))
+
+    def test_reading_time(self):
+        from .edit import spec as cut_spec
+
+        self.assertEqual(cut_spec.read_seconds(""), 0.0)
+        self.assertEqual(cut_spec.read_seconds("Ja."), round(5 / 6 + 0.6, 2))  # never under 5/6 s on screen
+        self.assertEqual(cut_spec.read_seconds("Det är inte älgen du ska oroa dig för."), 3.77)  # 38 chars / 12 + 0.6
 
     def test_short_clip_shortens_scene_and_stills_get_motion(self):
         clip(self.company, 1.2, shots=["fa-m1"])

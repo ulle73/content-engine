@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 
-import { compose, FORMATS, words } from '../src/compose.js';
+import { compose, FORMATS, readSeconds, sceneReadSeconds, words } from '../src/compose.js';
 import { lint } from '../src/render.js';
 import { resolve, SUPPORT } from '../src/support.js';
 
@@ -23,7 +23,7 @@ const effects = Object.keys(SUPPORT.effects);
 /** One scene per text style, cycling through every transition and every effect: the whole template in one film. */
 function coverageSpec(format = '9:16') {
   const scenes = styles.map((style, i) => ({
-    id: `s${i + 1}`, purpose: i === 0 ? 'hook' : 'body', duration_s: 1.6,
+    id: `s${i + 1}`, purpose: i === 0 ? 'hook' : 'body', duration_s: 3.1,
     asset_id: i % 2 ? 'img' : 'vid', asset_kind: i % 2 ? 'image' : 'video', trim_start_s: i % 2 ? 0 : 0.5,
     fit: i % 3 === 2 ? 'contain' : 'cover', text: `Rad ${i + 1} med *betoning* åäö`, text_style: `cut.text.${style}`,
     text_position: null, audio: i === 2 ? 'keep' : i === 0 ? 'mute' : null,
@@ -60,7 +60,7 @@ for (const format of Object.keys(FORMATS)) {
     const out = join(tmp, format.replace(':', 'x'));
     const spec = coverageSpec(format);
     const result = compose({ spec, brand, files, outDir: out, logoId: 'logo' });
-    const total = styles.length * 1.6 + 2.5;
+    const total = styles.length * 3.1 + 2.5;
     assert.equal(result.total, Math.round(total * 1000) / 1000);
     const html = readFileSync(join(out, 'index.html'), 'utf8');
     const { W, H } = FORMATS[format];
@@ -90,3 +90,22 @@ for (const format of Object.keys(FORMATS)) {
     }
   });
 }
+
+test('text stays on screen long enough to be read (12 cps, ≥ 5/6 s per piece)', () => {
+  assert.equal(readSeconds(''), 0);
+  assert.equal(readSeconds('Ja.'), 5 / 6);
+  assert.equal(readSeconds('Det är inte älgen du ska oroa dig för.'), 38 / 12);
+  const spec = coverageSpec();
+  spec.scenes = spec.scenes.slice(0, 2).map((s) => ({ ...s, duration_s: 1.2, text_style: 'cut.text.chunk',
+    text: 'Det är inte älgen du ska oroa dig för. Det är att du inte ser den.' }));
+  spec.scenes[0].trim_start_s = 4.5;  // only 1.5 s of the 6 s clip left
+  const out = mkdtempSync(join(tmpdir(), 'read-'));
+  const result = compose({ spec, brand, files, outDir: out, logoId: 'logo' });
+  const [video, still] = result.config.scenes;
+  const need = sceneReadSeconds(spec.scenes[1].text, 'chunk');
+  assert.ok(need > 5);
+  assert.ok(Math.abs((still.end - still.start) - need) < 0.01, 'a still is lengthened to the full reading time');
+  assert.ok(video.end - video.start <= 1.5 + 0.01, 'a clip is never stretched past its end');
+  assert.ok(result.warnings.some((w) => /s1: texten behöver .* klippet räcker/.test(w)));
+  assert.ok(result.warnings.some((w) => /s2: förlängd från 1,2 till .* hinner läsas \(12 tecken\/s\)/.test(w)));
+});

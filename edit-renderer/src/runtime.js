@@ -14,6 +14,28 @@
   const BEATS = C.beats ? C.beats.times.map((b) => ({ t: b[0], down: b[1] === 1 })) : [];
   const layoutReport = [];
 
+  /**
+   * Start times for text pieces shown one after another (caption chunks, word-by-word captions) inside `avail`
+   * seconds from `t0`: every piece gets at least its reading time (characters / cps, never under `minPiece`), spare
+   * time is shared by length, and a swap moves onto a nearby beat only when no piece gets too little time.
+   */
+  function readSchedule(texts, t0, avail, minPiece) {
+    const R = C.read || { cps: 12, minEvent: 5 / 6 };
+    const need = texts.map((s) => Math.max(minPiece ?? R.minEvent, String(s).trim().length / R.cps));
+    const sum = need.reduce((a, b) => a + b, 0);
+    const scale = sum > 0 ? Math.max(1, avail / sum) : 1;
+    const starts = [];
+    let at = t0;
+    need.forEach((n, i) => {
+      starts.push(at);
+      at += sum > avail ? (avail * n) / sum : n * Math.min(scale, 1.6);
+      if (i === need.length - 1) return;
+      const beat = BEATS.find((b) => Math.abs(b.t - at) <= 0.12);
+      if (beat && beat.t - starts[i] >= n) at = beat.t;
+    });
+    return starts;
+  }
+
   /** Beat-quantized step for n staggered hits inside `avail` seconds (falls back to `fallback`). */
   function beatStep(n, avail, fallback) {
     if (!C.beats || n < 2) return fallback;
@@ -454,25 +476,25 @@
         break;
       }
       case 'caption': {
-        const per = beatStep(words.length, avail * 1.5, avail / Math.max(1, words.length));
+        // Word by word, each word on screen for its reading time (≥ 0.3 s, BBC), swapped on a beat when it fits.
+        const starts = readSchedule(words.map((w) => w.textContent), t0, avail, 0.3);
         tl.set(words, { opacity: 0 }, 0);
         words.forEach((w, i) => {
-          const at = t0 + i * per;
-          tl.set(w, { opacity: 1 }, at);
-          tl.fromTo(w, { scale: 1.18 }, { scale: 1, duration: 0.14, ease: E.enter }, at);
-          if (i < words.length - 1) tl.set(w, { opacity: 0 }, at + per);
+          tl.set(w, { opacity: 1 }, starts[i]);
+          tl.fromTo(w, { scale: 1.18 }, { scale: 1, duration: 0.14, ease: E.enter }, starts[i]);
+          if (i < words.length - 1) tl.set(w, { opacity: 0 }, starts[i + 1]);
         });
         break;
       }
       case 'chunk': {
-        // 2–4 word phrases swapped on a single frame (on the beat with music); no shadow tricks, no box.
+        // 2–4 word phrases swapped on a single frame; each stays for its reading time (12 cps, ≥ 5/6 s), on a beat
+        // when it fits. No shadow tricks, no box.
         const cks = all(tb, '.ck');
-        const per = beatStep(cks.length, avail * 1.5, avail / Math.max(1, cks.length));
+        const starts = readSchedule(cks.map((ck) => ck.textContent), t0, avail);
         tl.set(cks, { opacity: 0 }, 0);
         cks.forEach((ck, i) => {
-          const at = t0 + i * per;
-          tl.set(ck, { opacity: 1 }, at);
-          if (i < cks.length - 1) tl.set(ck, { opacity: 0 }, at + per);
+          tl.set(ck, { opacity: 1 }, starts[i]);
+          if (i < cks.length - 1) tl.set(ck, { opacity: 0 }, starts[i + 1]);
         });
         break;
       }

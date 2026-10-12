@@ -32,6 +32,7 @@ const DEFAULT_BRAND = { background: '#111814', foreground: '#ffffff', accent: '#
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const r3 = (n) => Math.round(n * 1000) / 1000;
+const fmtS = (n) => (Math.round(n * 10) / 10).toFixed(1).replace(".", ",");
 const hex = (c, fallback) => (/^#[0-9a-fA-F]{6}$/.test(String(c || '')) ? String(c).toLowerCase() : fallback);
 
 function rgb(h) {
@@ -61,21 +62,32 @@ export function words(text) {
   return out;
 }
 
-/** Caption chunks: 2–3 words (≤ 16 characters), never ending on a function word or a bare number. */
+/**
+ * Caption chunks: 2–3 words (≤ 16 characters), never ending on a function word or a bare number unless the chunk
+ * would pass 4 words / 22 characters, always ending at a sentence end, and never a lone word at the end of a line
+ * of thought ("Det är att du inte ser / den.").
+ */
 export function chunkWords(list) {
   const out = [];
   let cur = [];
   const len = (arr) => arr.reduce((s, w) => s + w.text.length, 0) + Math.max(0, arr.length - 1);
+  const ends = (w) => /[.!?:;…]["”»)]*$/.test(w.text);
   for (const w of list) {
-    if (cur.length && (cur.length >= 3 || len([...cur, w]) > 16) && !isGlue(cur[cur.length - 1].text)) {
-      out.push(cur);
-      cur = [];
+    if (cur.length) {
+      const last = cur[cur.length - 1];
+      const full = cur.length >= 3 || len([...cur, w]) > 16;
+      const hard = cur.length >= 4 || len([...cur, w]) > 22;
+      if (ends(last) || hard || (full && !isGlue(last.text))) {
+        out.push(cur);
+        cur = [];
+      }
     }
     cur.push(w);
   }
   if (cur.length) {
     // Fold a lone trailing word into the previous chunk when it still reads as one phrase.
-    if (cur.length === 1 && out.length && len([...out[out.length - 1], ...cur]) <= 20) out[out.length - 1].push(...cur);
+    const prev = out[out.length - 1];
+    if (cur.length === 1 && prev && !ends(prev[prev.length - 1]) && len([...prev, ...cur]) <= 22) prev.push(...cur);
     else out.push(cur);
   }
   return out;
@@ -97,6 +109,37 @@ function wordsHtml(list, style) {
     return chunkWords(list).map((c) => `<span class="ck">${c.map((w) => wordHtml(w, k++, style, mark)).join(' ')}</span>`).join('');
   }
   return list.map((w, i) => wordHtml(w, i, style, mark)).join(' ');
+}
+
+/**
+ * Reading time. Swedish TV subtitles follow 12 characters per second, spaces and punctuation included (SVT: one line
+ * 2–4 s, two lines 4–6 s); Netflix's Swedish ceiling is 17 cps and no text event is shorter than 5/6 s; BBC: at least
+ * ~0.3 s per word. Viewers of an ad also watch the picture, so the default is the Swedish 12 cps.
+ * EDIT_READ_CPS overrides it.
+ */
+export const READ = {
+  cps: Number(process.env.EDIT_READ_CPS) > 0 ? Number(process.env.EDIT_READ_CPS) : 12,
+  minEvent: 5 / 6,
+  // Entrance after the transition (~0.15–0.4 s) and the clean exit before the next scene (~0.3 s).
+  overhead: 0.6,
+};
+
+/** Seconds one piece of on-screen text needs to be read (spaces and punctuation count, *emphasis* marks do not). */
+export function readSeconds(text) {
+  const chars = String(text || '').replace(/\*/g, '').trim().length;
+  return chars ? Math.max(READ.minEvent, chars / READ.cps) : 0;
+}
+
+/** Seconds a scene needs for its text in a given style (chunk captions are read piece by piece). */
+export function sceneReadSeconds(text, style) {
+  const list = words(text);
+  if (!list.length) return 0;
+  let pieces;
+  if (style === 'chunk') pieces = chunkWords(list).map((c) => c.map((w) => w.text).join(' '));
+  else if (style === 'caption') pieces = list.map((w) => w.text);
+  else pieces = [list.map((w) => w.text).join(' ')];
+  const minPiece = style === 'caption' ? 0.3 : READ.minEvent;  // word by word: BBC's ~0.3 s per word
+  return pieces.reduce((s, p) => s + Math.max(minPiece, p.length / READ.cps), 0) + READ.overhead;
 }
 
 function sfxOf(native) {
@@ -135,17 +178,33 @@ function plan(spec, files, warnings, { grid, logo }) {
       style = style || captionLook || (s.purpose === 'hook' ? 'slam' : 'rise');
     }
     const trim = Number(s.trim_start_s || 0);
+    const maxDuration = file.kind === 'video' && file.duration ? Math.max(0.5, file.duration - trim) : undefined;
+    // Text must stay long enough to be read: lengthen the scene (as far as the clip allows) instead of rushing it.
+    let duration = Number(s.duration_s);
+    const need = s.text ? r3(sceneReadSeconds(s.text, style)) : 0;
+    if (need > duration + 0.05) {
+      const longer = r3(Math.min(need, maxDuration ?? need));
+      if (longer > duration + 0.05) {
+        warnings.push(`${where}: förlängd från ${fmtS(duration)} till ${fmtS(longer)} s så att texten hinner läsas `
+          + `(${READ.cps} tecken/s).`);
+        duration = longer;
+      }
+      if (need > longer + 0.05) {
+        warnings.push(`${where}: texten behöver ${fmtS(need)} s men klippet räcker till ${fmtS(longer)} s. Korta texten `
+          + 'eller välj ett längre klipp.');
+      }
+    }
     return {
-      id: s.id, idx, duration: Number(s.duration_s), transition, natives, camera, grade: grades[0] || null, style,
-      kind: file.kind, file, source: s,
-      maxDuration: file.kind === 'video' && file.duration ? Math.max(0.5, file.duration - trim) : undefined,
+      id: s.id, idx, duration, transition, natives, camera, grade: grades[0] || null, style,
+      kind: file.kind, file, source: s, minDuration: Math.min(need, duration),
+      maxDuration,
       position: style === 'lower-third' ? 'bottom' : s.text_position || (s.purpose === 'hook' || s.purpose === 'cta' ? 'center' : 'bottom'),
     };
   });
   // Beat sync: move scene boundaries (and with them the transitions) onto the music's beats.
   let timing = null;
   if (grid) {
-    const snapped = snapScenes(raw.map((r) => ({ id: r.id, duration: r.duration, max: r.maxDuration })), grid);
+    const snapped = snapScenes(raw.map((r) => ({ id: r.id, duration: r.duration, max: r.maxDuration, min: r.minDuration })), grid);
     snapped.durations.forEach((d, i) => { raw[i].duration = d; });
     timing = snapped;
   }
@@ -163,7 +222,8 @@ function plan(spec, files, warnings, { grid, logo }) {
   });
   let endcard = null;
   if (spec.cta) {
-    const duration = Number(spec.cta.duration_s || 2.5);
+    // The end card holds logo, line and url: give the line its reading time (the url pill is read as one word).
+    const duration = Math.max(Number(spec.cta.duration_s || 2.5), r3(sceneReadSeconds(spec.cta.text, 'rise') + 0.4));
     endcard = { id: 'cta', idx: scenes.length, isEnd: true, start: r3(clock), end: r3(clock + duration),
                 transition: { type: 'fade', d: 0.6, cut: false } };
     clock += duration;
@@ -545,7 +605,7 @@ export function compose({ spec, brand = {}, files, outDir, logoId = null, beats 
   const grid = music ? beats : null;
   const sfx = planSfx(seq, total, { outro, auto: autoSfx && brand.sfx !== false });
   const config = {
-    W: fmt.W, H: fmt.H, total, format, zones: PLATFORM_ZONES[format],
+    W: fmt.W, H: fmt.H, total, format, zones: PLATFORM_ZONES[format], read: { cps: READ.cps, minEvent: READ.minEvent },
     beats: grid ? { period: grid.period, times: grid.beats.filter((b) => b.t <= total + 0.01).map((b) => [b.t, b.down ? 1 : 0]) } : null,
     scenes: scenes.map((s, i) => ({
       id: s.id, idx: s.idx, start: s.start, end: s.end, winStart: s.winStart, winEnd: s.winEnd, textAt: s.textAt,
