@@ -23,7 +23,7 @@ const effects = Object.keys(SUPPORT.effects);
 /** One scene per text style, cycling through every transition and every effect: the whole template in one film. */
 function coverageSpec(format = '9:16') {
   const scenes = styles.map((style, i) => ({
-    id: `s${i + 1}`, purpose: i === 0 ? 'hook' : 'body', duration_s: 3.1,
+    id: `s${i + 1}`, purpose: i === 0 ? 'hook' : 'body', duration_s: 3.4,
     asset_id: i % 2 ? 'img' : 'vid', asset_kind: i % 2 ? 'image' : 'video', trim_start_s: i % 2 ? 0 : 0.5,
     fit: i % 3 === 2 ? 'contain' : 'cover', text: `Rad ${i + 1} med *betoning* åäö`, text_style: `cut.text.${style}`,
     text_position: null, audio: i === 2 ? 'keep' : i === 0 ? 'mute' : null,
@@ -60,7 +60,7 @@ for (const format of Object.keys(FORMATS)) {
     const out = join(tmp, format.replace(':', 'x'));
     const spec = coverageSpec(format);
     const result = compose({ spec, brand, files, outDir: out, logoId: 'logo' });
-    const total = styles.length * 3.1 + 2.5;
+    const total = styles.length * 3.4 + 2.5;
     assert.equal(result.total, Math.round(total * 1000) / 1000);
     const html = readFileSync(join(out, 'index.html'), 'utf8');
     const { W, H } = FORMATS[format];
