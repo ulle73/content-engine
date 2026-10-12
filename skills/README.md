@@ -8,6 +8,7 @@ Kunskap som AI:n läser innan den skapar något. Få men djupa.
 | `ad-studio` | Hur idésamtalet leds: förslag före frågor, mall för första svaret, exempel, storyboardregler, kvalitetsgranskning med poäng |
 | `golfkuponger-brand` | Bildspråk, färger, typografi, safe zones, rörelse, ton |
 | `golfkuponger-friskvard` | Faktabank (med verifieringsstatus), köpvägar, säsong, frågor, vinklar, storyboard-mönster |
+| `video-regler` | Rätt första gången: beslutsrunda före bygget, husregler för text/bild/slutkort/ljud, QA, lärdomslogg |
 | `ljud` | Regler och arbetsgång för ljud i video: musik, ljudeffekter, mixning, loudness, synk, licenser och källor |
 
 Flödet: idésamtal → `engine/ad_studio/brief.py` (`AdBrief`) fylls stegvis → `lock()` → produktion läser bara den låsta briefen.

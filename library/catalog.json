@@ -1,8 +1,8 @@
 {
  "version": 1,
  "generated": "2026-10-12",
- "count": 1446,
- "verified": 335,
+ "count": 1448,
+ "verified": 336,
  "by_type": {
   "background": 60,
   "caption": 29,
@@ -10,12 +10,12 @@
   "effect": 242,
   "grade": 10,
   "model": 5,
-  "prompt": 346,
+  "prompt": 347,
   "recipe": 12,
   "scene": 186,
   "skill": 60,
   "sound": 47,
-  "template": 99,
+  "template": 100,
   "text": 127,
   "tool": 82,
   "transition": 119
@@ -9871,6 +9871,55 @@
     "responsiv"
    ],
    "path": ".claude/skills/animate/templates/piece/piece.json",
+   "status": "verified"
+  },
+  {
+   "kit": "faiv",
+   "kit_title": "FAIV – Hitta faran (extraljus, mörker → ljus)",
+   "source": {
+    "name": "FAIV (egen produktion)",
+    "url": "",
+    "license": "Bilder och logga: FAIV:s material. Stressmusik: ACE-Step (eget). Mixkit-låt och Mixkit-effekter hämtas av fetch_assets.py (Mixkit Free License, ej i mallen). Pixabay-effekter (Pixabay Content License). Anybody/Inter (SIL OFL)."
+   },
+   "cost": "free",
+   "requires": [
+    "python",
+    "ffmpeg"
+   ],
+   "use": "cp -r library/templates/faiv-hitta-faran work/<namn> && cd work/<namn> && ./make.sh. Byt bilder i src/ och koordinater i render.py/prep.py för ny bil eller väg; tider och texter i render.py; ljudval i audio.py (CHOICE).",
+   "notes": "Följer skills/video-regler och skills/ljud. Manus med alla tider: MANUS.md.",
+   "verified_at": "2026-10-12",
+   "preview": {
+    "video": "library/previews/faiv.template.hitta-faran.mp4",
+    "still": "library/previews/faiv.template.hitta-faran.jpg"
+   },
+   "id": "faiv.template.hitta-faran",
+   "name": "Hitta faran: mörker → extraljus med spel, reveal, slider och slutkort (9:16, ~39 s)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "python",
+   "description": "Tittaren letar efter ett dolt rådjur i mörkret med helljus (timer + tic-tac i musikens takt, 2 rundor), sedan tänds extraljusen: strålen skjuter längs vägen och fläktar ut i skogen med bloom och kameraskak, 'DÄR.' med fokusram och ögonglimt, ljusstråle-slider helljus/extraljus med SAMMA VÄG / SAMMA RÅDJUR / HELT ANNAN SIKT, räkneverk '50 METER' (90 km/h, 2 s), 'SE MER. TIDIGARE.' och slutkort där bakljusens röda glöd blir loggans cirkel. Läsregeln stoppar renderingen, låten är kalibrerad så att klick → SE MER. är 8 takter. Godkänd av ägaren 2026-10-12.",
+   "tags": [
+    "faiv",
+    "extraljus",
+    "före-efter",
+    "before-after",
+    "mörker-till-ljus",
+    "reveal",
+    "slider",
+    "rådjur",
+    "viltolycka",
+    "hitta-faran",
+    "natt",
+    "slutkort",
+    "logga",
+    "ljudprovning",
+    "verifierad"
+   ],
+   "path": "library/templates/faiv-hitta-faran/README.md",
    "status": "verified"
   },
   {
@@ -33612,6 +33661,44 @@
     "golfkuponger"
    ],
    "path": "library/prompts/motion-studio-playbook/05-xml-spec.md",
+   "status": "unverified"
+  },
+  {
+   "kit": "video-regler",
+   "kit_title": "Video – rätt första gången",
+   "source": {
+    "name": "content-engine (egna lärdomar från beställarens feedback)",
+    "url": "",
+    "license": "Repository LICENSE (egen text)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs innan en video byggs; gör beslutsrundan (avsnitt 2) före full rendering.",
+   "notes": "",
+   "verified_at": null,
+   "preview": null,
+   "id": "prompts.video-regler",
+   "name": "Video: rätt första gången (beslutsrunda, husregler, QA, lärdomar)",
+   "type": "prompt",
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "description": "Beslutsrunda före full rendering (manus från läsregeln, kontaktkarta i mobilstorlek, subjektiva nivåer som varianter, ljudprovning, färdigt slutkort), husregler (läsregel med stopp, en textposition, dämpa bara zonen, mild vinjett, slutkort tätt och rent, ljud enligt skills/ljud), QA före leverans och en lärdomslogg.",
+   "tags": [
+    "regler",
+    "kvalitet",
+    "qa",
+    "beslutsrunda",
+    "läsregel",
+    "textplacering",
+    "slutkort",
+    "lärdomar",
+    "rätt första gången",
+    "video"
+   ],
+   "path": "skills/video-regler/SKILL.md",
    "status": "unverified"
   },
   {

@@ -21,6 +21,7 @@ första gången. Bara en människa kan verifiera. Källa: faiv.se och @f.a.i.v.a
 | F7 | Lumen grillkit Mercedes Vito 2018–2024: 7 599 kr | Instagram-inlägg | ⚠️ Priser ändras – verifiera |
 | F8 | 10 % rabatt på första beställningen vid nyhetsbrevsregistrering | faiv.se popup | ⚠️ Verifiera att erbjudandet gäller |
 | F9 | Vi monterar – verkstad i Kareby/Kungälv, Göteborgsområdet | faiv.se sidfot | ⚠️ Verifiera adress/område |
+| F10 | I 90 km/h färdas bilen 25 meter per sekund – 50 meter på 2 sekunder | Räknat: 90 / 3,6 = 25 m/s (allmän fysik, inte en produktegenskap) | ⚠️ Räknat – bekräfta formuleringen |
 
 ### Säkra formuleringar utan verifiering
 - "Vi bygger din bil på ditt sätt."
@@ -40,5 +41,6 @@ första gången. Bara en människa kan verifiera. Källa: faiv.se och @f.a.i.v.a
 | Av → på | "Så här mörkt är det. Och så här ser det ut med rätt ljus." | Bästa produktbeviset som finns |
 | Grillkitet | "Din Tesla – fast som den borde sett ut från fabrik." | Utseende + funktion, fordonsspecifikt |
 | Älgen | "Det är inte älgen du ska oroa dig för. Det är att du inte ser den." | Säkerhet, säsong |
+| Hitta faran | "Hitta faran." → "Såg du det?" → ljuset tänds → "Där." | Tittaren spelar med; mall `faiv.template.hitta-faran` |
 | Verkstaden | "Från ritning till montering på en dag." (verifiera) | Hantverk och förtroende |
 | Arbetsdagen | "Servicebilen som jobbar lika hårt som du." | B2B, arbetsfordon |

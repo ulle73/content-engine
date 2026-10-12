@@ -1,0 +1,5 @@
+# Genereras/hämtas i kopian under work/ – ska aldrig in i library/
+build/
+out/
+sfx-mixkit/*.mp3
+music/driving-ambition.mp3

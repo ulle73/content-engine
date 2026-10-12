@@ -1,0 +1,92 @@
+---
+name: video-regler
+description: Rätt första gången för video, reels och animerade annonser – beslutsrunda före bygget, husregler för text, bild, slutkort och ljud som gäller utan att fråga, QA före leverans och en logg över lärdomar från beställarens feedback. Använd ALLTID när en video ska byggas eller ändras, tillsammans med studio.
+---
+
+# Video – rätt första gången
+
+FAIV "Hitta faran" (2026-10-12) tog ett tjugotal ändringsrundor efter första leveransen. Nästan alla var
+**smakbeslut som upptäcktes ett i taget efter rendering**: textens tempo och höjd, hur mörk bilden skulle vara,
+vilka ljud och vilken musik, slutkortets tempo och streck. Därför:
+
+1. **En beslutsrunda före bygget** – alla smakbeslut samtidigt, med varianter att jämföra.
+2. **Husregler** som gäller utan att fråga (lärdomarna nedan).
+3. **QA** som stoppar fel automatiskt innan leverans.
+4. **Feedback blir regel direkt**, så samma sak aldrig behöver sägas två gånger.
+
+## 1. Före allt
+
+- Läs `skills/studio`, bolagets **brand-skill** och **faktaskill** (t.ex. `faiv-brand` + `faiv-fakta`,
+  `golfkuponger-brand` + `golfkuponger-friskvard`) innan första förslaget.
+- Sök i biblioteket. Finns en verifierad mall för samma idé (t.ex. `faiv.template.hitta-faran` för mörker → ljus,
+  före/efter med extraljus), börja i den. Den har redan alla beslut nedan inbyggda.
+
+## 2. Beslutsrundan – en runda innan full rendering
+
+Bygg ett beslutsunderlag och låt beställaren svara i **ett** meddelande (t.ex. "B, mörker 2, musik 1, H1, S5, ok slutkort"):
+
+1. **Manus och tidslinje räknade från läsregeln** → den verkliga längden. Blir filmen längre än önskat: föreslå
+   textkortningar nu, inte efter leverans (FAIV-filmen gick från 24 till 39 s när läsregeln infördes i efterhand).
+2. **Kontaktkarta i mobilstorlek** (en bild per beat, ~360 px bred) med texten på sina riktiga platser.
+3. **Subjektiva nivåer som varianter sida vid sida** – synlighet för något dolt, gradering, mörker, hur tydlig en
+   effekt är: tre nivåer i mobilstorlek. Bestäm aldrig en sådan nivå själv; den hamnar fel åt något håll.
+4. **Ljudkarta och ljudprovning** enligt `skills/ljud`: musik (2–3 kandidater i sitt sammanhang, eller fråga om
+   beställaren har en låt) och 3–6 numrerade kandidater per nyckelmoment.
+5. **Slutkortet** färdigt: logga, rader, tajming och markering.
+
+Först därefter full rendering. Efter leveransen ska bara finjusteringar återstå.
+
+## 3. Husregler (gäller utan att fråga)
+
+### Text
+- **Läsregeln:** varje textbit syns minst max(5/6 s, tecken/12) + 0,9 s; text som läses i följd i en scen får
+  lästiden för all text tillsammans, räknat från första biten (som `engine/edit/spec.py`). Gäller även i egna
+  renderare – bygg in en kontroll som **stoppar renderingen** när regeln bryts.
+- **En textposition:** all text utom slutkortet har första raden på samma höjd (9:16: överkant, y ≈ 300), följande
+  rader direkt under. Text som hoppar mellan topp, mitt och botten upplevs rörig. Slutkortet är centrerat.
+- Håll texten inom safe zones (9:16: ~220 px överst, ~400 px nederst) och utanför motivets viktiga delar.
+- Textanimationer: fade, lätt scale-in, tracking som dras ihop. Inga överdrivna övergångar.
+
+### Bild
+- **Något som ska vara svårt att se** (dolt rådjur, detalj): dämpa bara zonen runt det och kalibrera nivån med
+  varianter (2.3). Mörka inte ner hela bilden eller sidorna. FAIV-rådjuret: 0,4 och 0,48 syntes för tydligt, 0,55 godkändes.
+- **Vinjett** högst ~15 % i hörnen.
+- Ta bort **andra varumärken** (märkestext och emblem på bilar, produkter) i reklam.
+- Före/efter-bilder: kontrollera att de ligger exakt linjerade (korrelation/skillnad) och ändra aldrig innehållet.
+
+### Slutkort
+- Bolagets **riktiga logga**, aldrig en textersättning.
+- Alla rader in tätt efter varandra (≤ ~0,5 s emellan) – ingen lång väntan på URL:en.
+- Markering och understrykning: **ren, tunn, en liten mjuk båge**, som ritas fram. Ingen slarvig penseltextur.
+- Slutkortet får vara tyst. Musiken klingar ut vid övergången till slutkortet om inget annat sägs.
+
+### Ljud
+- Allt i `skills/ljud`: bara riktiga ljud, ljudprovning, effekter som accenter, -14 LUFS, stems.
+
+### Leverans
+- Film + stems (musik och effekter separat) + **manus** (`MANUS.md`: tidslinje med tider, text, bild, effekt,
+  ljud, källor och licenser). Manuset skrivs från renderarens egna tider, inte ur minnet.
+
+## 4. QA före leverans
+
+Automatiskt i bygget: läsregeln, samma texthöjd, ljudsynk (ljud aldrig före bild – mät ansatsen vid varje
+nyckelmoment), att musiken slutar där den ska, loudness (-14 LUFS, topp ≤ -1 dBTP), längd.
+Sedan kritikloopen i `skills/studio` (kontaktkarta, mobilvy, strips runt snabba moment).
+Säg alltid vad som **inte** är kontrollerat, t.ex. "jag har inte lyssnat".
+
+## 5. Feedback blir regel – direkt
+
+När beställaren rättar något som gäller fler filmer än denna: skriv in det **i samma session** här, i
+`skills/ljud` eller i bolagets brand-skill, med datum och film. Spara en godkänd film som mall i
+`library/templates/<namn>/` (med `LIBRARY.json`, förhandsvisning och `status: verified`).
+
+## 6. Lärdomslogg
+
+| Datum | Film | Beställarens feedback | Regel |
+|---|---|---|---|
+| 2026-10-12 | FAIV Hitta faran | "Texten rör sig väl fort" | Läsregeln i alla renderare, med stopp (3, Text) |
+| 2026-10-12 | FAIV Hitta faran | Mörka bilden "omöjlig" att se, sedan för tydlig i två steg | Kalibrera synlighet med varianter; dämpa bara zonen (2.3, 3 Bild) |
+| 2026-10-12 | FAIV Hitta faran | Texten än överst, än nederst, än i mitten | En textposition utom slutkortet (3, Text) |
+| 2026-10-12 | FAIV Hitta faran | URL:en på slutkortet kom för sent; strecket "slarvigt" | Slutkortsrader tätt; ren tunn båge (3, Slutkort) |
+| 2026-10-12 | FAIV Hitta faran | Syntljud "konstiga", ljud saknades på nyckelmoment, musiken skulle sluta vid loggan | `skills/ljud`; ljudkarta och provning i beslutsrundan (2.4) |
+| 2026-10-12 | FAIV Hitta faran | "Detta tog alldeles för mycket edit" | Beslutsrunda före bygget (2), mall `faiv.template.hitta-faran` |

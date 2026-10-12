@@ -70,6 +70,7 @@ class FaivSkillTests(TestCase):
     def test_faiv_fact_skill_seeds_bank(self):
         user = get_user_model().objects.create_user("owner2", password="x")
         faiv = Company.objects.create(owner=user, name="FAIV", brand={"fact_skill": "faiv-fakta", "skills": ["faiv-brand", "faiv-fakta"]})
-        self.assertEqual(service.seed_facts(faiv), 9)
+        self.assertEqual(service.seed_facts(faiv), 10)
         self.assertTrue(faiv.ad_facts.filter(claim__icontains="grillkit").exists())
+        self.assertTrue(faiv.ad_facts.filter(claim__icontains="90 km/h").exists())
         self.assertFalse(faiv.ad_facts.filter(status="verified").exists())

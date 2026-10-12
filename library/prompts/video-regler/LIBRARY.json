@@ -1,0 +1,42 @@
+{
+  "kit": "video-regler",
+  "title": "Video – rätt första gången",
+  "source": {
+    "name": "content-engine (egna lärdomar från beställarens feedback)",
+    "url": "",
+    "license": "Repository LICENSE (egen text)"
+  },
+  "items": [
+    {
+      "id": "prompts.video-regler",
+      "name": "Video: rätt första gången (beslutsrunda, husregler, QA, lärdomar)",
+      "type": "prompt",
+      "medium": "text",
+      "formats": [
+        "any"
+      ],
+      "engine": "none",
+      "description": "Beslutsrunda före full rendering (manus från läsregeln, kontaktkarta i mobilstorlek, subjektiva nivåer som varianter, ljudprovning, färdigt slutkort), husregler (läsregel med stopp, en textposition, dämpa bara zonen, mild vinjett, slutkort tätt och rent, ljud enligt skills/ljud), QA före leverans och en lärdomslogg.",
+      "tags": [
+        "regler",
+        "kvalitet",
+        "qa",
+        "beslutsrunda",
+        "läsregel",
+        "textplacering",
+        "slutkort",
+        "lärdomar",
+        "rätt första gången",
+        "video"
+      ],
+      "path": "skills/video-regler/SKILL.md",
+      "use": "Läs innan en video byggs; gör beslutsrundan (avsnitt 2) före full rendering.",
+      "requires": [],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": null,
+      "preview": null,
+      "notes": ""
+    }
+  ]
+}
