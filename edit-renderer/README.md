@@ -26,7 +26,10 @@ Claude/ChatGPT ─ MCP render_cut ─► content-engine (Render)          GitHub
 
 ## Kvalitetsgrind
 
-Efter AI-granskningen (`engine/edit/critic.py`) avgör `engine/edit/gate.py` om klippet går till Discord som klart.
+AI-granskningen (`engine/edit/critic.py`) tittar på hela videon med ljud (Gemini via OpenRouter, `OPENROUTER_VIDEO_MODEL`;
+större än `EDIT_CRITIC_VIDEO_MAX_MB` = 14 eller om modellen vägrar video: 8 bildrutor) och bedömer mot en checklista
+(krok 0–2 s, äkta rörlig film, tempo, text, ljud, CTA och receptets qa-lista), med en beskrivning innan betyget.
+Sedan avgör `engine/edit/gate.py` om klippet går till Discord som klart.
 Det hålls tillbaka som **behöver omtag** när AI-betyget är under `EDIT_GATE_MIN_SCORE` (7) eller när mer än
 `EDIT_GATE_MAX_STILL_SHARE` (0,5) av scentiden är stillbilder. Skälen och kritikens första rättning syns i
 `get_cut_job` (`quality_gate`, `next_step`). En granskning som inte kunde köras stoppar inget. Ägaren kan ändå skicka

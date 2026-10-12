@@ -1,9 +1,15 @@
-"""AI critique of a finished cloud cut: ~8 small frames + the review manifest + the recipe → one cheap vision call.
+"""AI critique of a finished cloud cut: the whole video with sound + the review manifest + the recipe → one vision call.
+
+The model watches the full cut (Gemini via OpenRouter, openrouter.video_model()), because a handful of frames misses
+pacing, sound, text timing and the hook. A video above EDIT_CRITIC_VIDEO_MAX_MB, or a model that refuses video, falls
+back to ~8 frames. It describes what it sees and hears before it scores, and scores against a rubric: the owner's
+taste (moving film first, no template look or cheap effects), what wins on Reels/TikTok (offer or product within
+0–2 s, native feel, ~1 s shots, readable text, sound, CTA) and the recipe's own QA list.
 
 Runs once per EditJob when the renderer delivers (engine/edit/service.complete), before the Discord card is posted,
 and is fail-open: no key, a provider error, an undecodable video or EDIT_AI_CRITIC=0 only stores a status on the job.
-Delivery is never blocked. The result is stored in EditJob.ai_critique, shown as one line on the Discord card and
-returned by get_cut_job.
+The score feeds the quality gate (engine/edit/gate.py). The result is stored in EditJob.ai_critique, shown as one line
+on the Discord card and returned by get_cut_job.
 """
 
 from __future__ import annotations
@@ -22,7 +28,8 @@ log = logging.getLogger(__name__)
 FRAMES = 8
 FRAME_PX = 512
 DECODE_BUDGET_S = 20.0
-VERSION = "cut-critic/1"
+VERSION = "cut-critic/2"
+VIDEO_MAX_MB = 14.0
 
 
 class Fix(BaseModel):
@@ -36,23 +43,41 @@ class Aspect(BaseModel):
     note: str = Field(description="En kort mening på svenska")
 
 
+def _unjudged() -> Aspect:
+    return Aspect(score=5, note="Ej bedömt.")
+
+
 class CutCritique(BaseModel):
+    observations: str = Field(default="", description="Först: vad du ser och hör, kort och i tidsordning (krok, "
+                                                      "scener, text, ljud, slut). Max 6 meningar på svenska.")
     score: int = Field(ge=1, le=10, description="Helhetsbetyg 1–10 som färdig reklamvideo")
     summary: str = Field(description="En mening på svenska: det viktigaste att veta")
     hook: Aspect = Field(description="Krokens styrka de första 2 sekunderna")
     legibility: Aspect = Field(description="Läsbarhet för text i mobil (storlek, kontrast, säkra zoner, tid på skärm)")
     pacing: Aspect = Field(description="Tempo och klipprytm")
     brand_fit: Aspect = Field(description="Passar varumärket och känns premium")
+    footage: Aspect = Field(default_factory=_unjudged,
+                            description="Äkta rörlig film, inte stillbilder med grafik eller mall-/PowerPoint-känsla")
+    sound: Aspect = Field(default_factory=_unjudged,
+                          description="Musik, effekter och mix; bara om du hör ljudet, annars 5 och 'hörs inte'")
     fixes: list[Fix] = Field(default_factory=list, max_length=3, description="Max 3 konkreta rättningar, viktigast först")
 
 
 SYSTEM = (
-    "Du är en erfaren klippare och reklamgranskare för korta sociala videor (Reels/TikTok). Du får bildrutor ur en "
-    "färdig video (med tidpunkt och scen-id), videons manifest (scener med exakt vilka biblioteksobjekt och "
-    "mediefiler som användes) och ibland receptet den byggdes från. Bedöm som färdig annons: krokens styrka de "
-    "första 2 sekunderna, textens läsbarhet i mobil, tempo och klipprytm samt varumärkespassning. Var ärlig och "
-    "konkret; 7 betyder bra nog att publicera. Föreslå högst 3 rättningar som pekar på scen-id och, när det går, "
-    "på item_id exakt ur manifestet. Hitta inte på detaljer du inte ser. Skriv på svenska."
+    "Du är en erfaren klippare och performance-kreatör för korta sociala annonser (Reels/TikTok, 9:16). Du får den "
+    "färdiga videon med ljud (eller bildrutor ur den med tid och scen-id), videons manifest (scener med exakt vilka "
+    "biblioteksobjekt och mediefiler som användes) och ibland receptet den byggdes från. Beskriv först kort vad du "
+    "ser och hör, betygsätt sedan. Bedöm som färdig annons mot den här checklistan:\n"
+    "1. Krok: syns erbjudandet, produkten eller en människa inom 0–2 s? Stannar man i flödet?\n"
+    "2. Material: äkta rörlig film? Stillbilder med text, mall-, webb- eller PowerPoint-känsla och billiga effekter "
+    "(blixtar, glow, guldsfär, 3D-text, konfetti) drar ner kraftigt. Känns det inbyggt i flödet, inte som reklam?\n"
+    "3. Tempo: klipp ungefär varje sekund (dialog får vara längre), inget förutsägbart tempo, klipp på takten.\n"
+    "4. Text: läsbar i mobil, kort, inom säkra ytor, tillräckligt länge på skärmen, inga stavfel.\n"
+    "5. Ljud: musik och effekter som passar, ingen tystnad, rimlig mix.\n"
+    "6. Slut: tydlig uppmaning (CTA) och avsändare.\n"
+    "Följ också receptets qa-lista om den finns. Var ärlig och sträng: 7 betyder bra nog att publicera, 9–10 ska "
+    "kännas som en toppannons. Föreslå högst 3 rättningar som pekar på scen-id och, när det går, på item_id exakt ur "
+    "manifestet. Hitta inte på detaljer du inte ser eller hör. Skriv på svenska."
 )
 
 
@@ -134,27 +159,47 @@ def _recipe(recipe_id: str) -> dict | None:
             "scenes": [{k: s.get(k) for k in ("id", "purpose", "duration_s", "text", "camera")} for s in recipe["scenes"]]}
 
 
+def video_max_bytes() -> int:
+    try:
+        return int(float(os.environ.get("EDIT_CRITIC_VIDEO_MAX_MB", "") or VIDEO_MAX_MB) * 1024 * 1024)
+    except ValueError:
+        return int(VIDEO_MAX_MB * 1024 * 1024)
+
+
 def critique(job, video: bytes) -> dict:
-    """Ask the vision tier for a critique. Raises on any failure; use run() for the fail-open wrapper."""
-    from engine.openrouter import structured_analysis
+    """Ask the video tier to watch the whole cut, falling back to frames. Raises on any failure; use run() for the
+    fail-open wrapper."""
+    from engine.openrouter import OpenRouterError, structured_analysis
 
     from .service import build_manifest
 
     manifest = build_manifest(job.cut_spec)
     duration = float(job.cut_spec.get("render", {}).get("duration_s") or 0) or _video_duration(video) \
         or float(manifest.get("duration_s") or 0)
-    frames = extract_frames(video, frame_times(duration))
-    if not frames:
-        raise ValueError("Inga bildrutor kunde läsas ur videon.")
-    images = ["data:image/jpeg;base64," + base64.b64encode(jpeg).decode("ascii") for _, jpeg in frames]
     payload = {
         "title": job.cut_spec.get("title", ""), "format": job.cut_spec.get("format"), "duration_s": round(duration, 2),
-        "company": job.company.name,
-        "frames": [{"image": i + 1, "t": t, "scene_id": _scene_at(manifest, t)} for i, (t, _) in enumerate(frames)],
-        "manifest": manifest, "recipe": _recipe(job.recipe_id),
+        "company": job.company.name, "manifest": manifest, "recipe": _recipe(job.recipe_id),
     }
-    result, meta = structured_analysis(system=SYSTEM, payload=payload, schema=CutCritique, operation="cut_critique",
-                                       max_tokens=1200, images=images)
+    result, used, frames = None, "frames", []
+    if len(video) <= video_max_bytes() and os.environ.get("EDIT_CRITIC_VIDEO", "1").strip() not in {"0", "off"}:
+        try:
+            result, meta = structured_analysis(
+                system=SYSTEM, payload={**payload, "input": "Hela videon med ljud bifogas."}, schema=CutCritique,
+                operation="cut_critique", max_tokens=1600,
+                videos=["data:video/mp4;base64," + base64.b64encode(video).decode("ascii")])
+            used = "video"
+        except OpenRouterError as exc:
+            log.info("Video critique for edit job %s failed, falling back to frames: %s", job.pk, exc)
+    if result is None:
+        frames = extract_frames(video, frame_times(duration))
+        if not frames:
+            raise ValueError("Inga bildrutor kunde läsas ur videon.")
+        images = ["data:image/jpeg;base64," + base64.b64encode(jpeg).decode("ascii") for _, jpeg in frames]
+        payload["frames"] = [{"image": i + 1, "t": t, "scene_id": _scene_at(manifest, t)}
+                             for i, (t, _) in enumerate(frames)]
+        payload["input"] = "Bildrutor ur videon bifogas (inget ljud)."
+        result, meta = structured_analysis(system=SYSTEM, payload=payload, schema=CutCritique,
+                                           operation="cut_critique", max_tokens=1600, images=images)
     known = {str(s["id"]) for s in manifest.get("scenes", [])} | {"global"}
     items = {str(i["id"]) for s in manifest.get("scenes", []) for i in s.get("items", [])} \
         | {str(i["id"]) for i in manifest.get("global", [])}
@@ -163,9 +208,11 @@ def critique(job, video: bytes) -> dict:
         fixes.append({"scene_id": fix.scene_id if fix.scene_id in known else "global",
                       "item_id": fix.item_id if fix.item_id in items else "", "fix": fix.fix[:300]})
     return {
-        "status": "done", "version": VERSION, "score": result.score, "summary": result.summary[:300],
+        "status": "done", "version": VERSION, "input": used, "score": result.score, "summary": result.summary[:300],
+        "observations": result.observations[:900],
         "hook": result.hook.model_dump(), "legibility": result.legibility.model_dump(),
-        "pacing": result.pacing.model_dump(), "brand_fit": result.brand_fit.model_dump(), "fixes": fixes,
+        "pacing": result.pacing.model_dump(), "brand_fit": result.brand_fit.model_dump(),
+        "footage": result.footage.model_dump(), "sound": result.sound.model_dump(), "fixes": fixes,
         "frames": len(frames), "model": meta.get("model"), "cost_usd": meta.get("cost_usd"),
         "created_at": timezone.now().isoformat(),
     }

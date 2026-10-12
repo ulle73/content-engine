@@ -113,7 +113,7 @@ def _usage_meta(body, requested_model, operation):
     }
 
 
-def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0, timeout_seconds=35, strict_schema=False, reasoning_effort=None, images=None):
+def _call(model, *, system, payload, schema, operation, max_tokens=4000, temperature=0, timeout_seconds=35, strict_schema=False, reasoning_effort=None, images=None, videos=None):
     api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not api_key:
         raise OpenRouterError(
@@ -163,11 +163,12 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
         {"role": "system", "content": system_message},
         {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
     ]
-    if images:
-        # Only trusted server code supplies bounded image data (assistant uploads, cut-critic frames).
+    if images or videos:
+        # Only trusted server code supplies bounded media (assistant uploads, cut-critic frames or finished cuts).
         request_body["messages"][1]["content"] = [
             {"type": "text", "text": json.dumps(payload, ensure_ascii=False)},
-            *[{"type": "image_url", "image_url": {"url": value}} for value in images],
+            *[{"type": "video_url", "video_url": {"url": value}} for value in videos or []],
+            *[{"type": "image_url", "image_url": {"url": value}} for value in images or []],
         ]
     try:
         response = httpx.post(
@@ -282,6 +283,11 @@ def route_signature():
     return "openrouter:" + ">".join(analysis_route())
 
 
+def video_model():
+    """Model that watches whole videos with sound (Gemini via OpenRouter); defaults to the vision tier."""
+    return os.environ.get("OPENROUTER_VIDEO_MODEL", "").strip() or vision_model()
+
+
 def vision_model():
     """The image-capable tier of the analysis route (Gemini 3.1 Flash-Lite unless configured otherwise)."""
     return (os.environ.get("OPENROUTER_VISION_MODEL", "").strip()
@@ -290,10 +296,11 @@ def vision_model():
 
 
 def structured_analysis(*, system, payload, schema: type[T], operation="analysis", max_tokens=4000, temperature=0,
-                        images=None):
+                        images=None, videos=None):
     """Free preset → GLM → last resort. With `images` (data URLs) only the vision tier is used: the free preset and
-    GLM cannot see images, so trying them would only add latency."""
-    route = [vision_model()] if images else analysis_route()
+    GLM cannot see images, so trying them would only add latency. With `videos` (data:video/mp4 URLs, sound
+    included) only the video tier is used (video_model())."""
+    route = [video_model()] if videos else [vision_model()] if images else analysis_route()
     errors = []
 
     for model in route:
@@ -309,9 +316,10 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
                 operation=operation,
                 max_tokens=route_max_tokens,
                 temperature=temperature,
-                timeout_seconds=timeout_seconds if not images else 40,
+                timeout_seconds=90 if videos else 40 if images else timeout_seconds,
                 strict_schema=False,
                 images=images,
+                videos=videos,
             )
         except OpenRouterError as exc:
             errors.append((model, exc))

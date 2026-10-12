@@ -307,8 +307,13 @@ class Planner:
             length = float(asset.duration_seconds or 0)
             if length:
                 start = self.used.get(str(asset.pk))
+                best = next((h for h in self._highlights(asset) if float(h["start"]) + duration <= length + 0.05),
+                            None)
                 if start is not None and start + duration <= length + 0.05:
                     trim = start
+                elif best and start is None:
+                    trim = float(best["start"])  # the clip's best window (engine/edit/shots.py)
+                    why += f"; bästa fönstret {trim:g}–{trim + duration:g} s"
                 elif length >= duration:
                     trim = min(1.0, length - duration)
                 elif length >= 0.6:
@@ -329,6 +334,14 @@ class Planner:
                              "trim_start_s": _round(trim), "duration_s": _round(duration)})
         return {"asset_id": str(asset.pk), "trim_start_s": _round(trim), "duration_s": _round(duration),
                 "kind": asset.kind}
+
+    @staticmethod
+    def _highlights(asset) -> list[dict]:
+        tags = getattr(asset, "ad_tags", None) if asset.kind == "video" else None
+        try:
+            return [h for h in (tags.highlights if tags else []) or [] if isinstance(h, dict) and "start" in h]
+        except AttributeError:
+            return []
 
     def pick_footage(self, scene):
         candidates = self._rank(scene, self._footage_candidates(scene))
@@ -380,8 +393,9 @@ class Planner:
             self.pending.append({"scene": scene["id"], "stock": stock.PROVIDER, "footage_id": shot, "query": query})
             self.notes.append(note + " Klippet hämtas när render_recipe körs.")
             return {"pending": True}
+        described = ". ".join(filter(None, [footage.text(shot), scene.get("camera"), scene.get("purpose")]))
         asset = stock.fetch(self.company, shot, query, fmt=self.format, min_duration=float(scene["duration_s"]),
-                            skip=set(self.used))
+                            skip=set(self.used), scene=described)
         placed = self._place(scene, asset, why, shot=shot) if asset else None
         if placed:
             self.notes.append(note)
