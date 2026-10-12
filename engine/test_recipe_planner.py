@@ -134,7 +134,7 @@ class PlannerTests(EditTestCase):
         self.assertEqual(scene(plan, "s3")["transition_in"], "motion-studio.transition.hard-cut-on-drop")
 
     def test_single_take_is_reused_with_later_trim(self):
-        only = clip(self.company, 6.0, shots=["fa-m1"])
+        only = clip(self.company, 8.0, shots=["fa-m1"])  # long enough for s1 and s3 with their reading time
         plan = planner.plan_cut(self.company, "faiv-dark-to-light-reveal")
         self.assertEqual(scene(plan, "s1")["asset_id"], str(only.pk))
         self.assertEqual(scene(plan, "s3")["asset_id"], str(only.pk))
@@ -150,8 +150,8 @@ class PlannerTests(EditTestCase):
         self.assertEqual([s["id"] for s in plan["spec"]["scenes"]], ["s1", "s3"])
         s3 = scene(plan, "s3")
         self.assertEqual(s3["text"], "Det är inte älgen du ska oroa dig för. Det är att du inte ser den.")
-        # Takes over s2's screen time (5 s) and gets the reading time for both lines: 66 characters / 12 cps + 0.6 s.
-        self.assertEqual(s3["duration_s"], 6.1)
+        # Takes over s2's screen time (5 s) and gets the reading time for both lines: 66 characters / 12 cps + 0.9 s.
+        self.assertEqual(s3["duration_s"], 6.4)
         self.assertTrue(any("hinner läsas" in n for n in plan["notes"]))
         self.assertTrue(any("texten från s2" in n for n in plan["notes"]))
 
@@ -159,8 +159,8 @@ class PlannerTests(EditTestCase):
         from .edit import spec as cut_spec
 
         self.assertEqual(cut_spec.read_seconds(""), 0.0)
-        self.assertEqual(cut_spec.read_seconds("Ja."), round(5 / 6 + 0.6, 2))  # never under 5/6 s on screen
-        self.assertEqual(cut_spec.read_seconds("Det är inte älgen du ska oroa dig för."), 3.77)  # 38 chars / 12 + 0.6
+        self.assertEqual(cut_spec.read_seconds("Ja."), round(5 / 6 + 0.9, 2))  # never under 5/6 s on screen
+        self.assertEqual(cut_spec.read_seconds("Det är inte älgen du ska oroa dig för."), 4.07)  # 38 chars / 12 + 0.9
 
     def test_short_clip_shortens_scene_and_stills_get_motion(self):
         clip(self.company, 1.2, shots=["fa-m1"])

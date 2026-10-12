@@ -29,11 +29,11 @@ RECIPES = ROOT / "library" / "recipes"
 
 SCHEMA = "cut/v1"
 # Reading time for on-screen text: Swedish TV subtitles use 12 characters per second (spaces and punctuation
-# count; SVT: one line 2–4 s), Netflix never shows a text event shorter than 5/6 s, plus ~0.6 s for the text's entrance
+# count; SVT: one line 2–4 s), Netflix never shows a text event shorter than 5/6 s, plus ~0.9 s for the text's entrance
 # and clean exit. The renderer (edit-renderer/src/compose.js, READ) applies the same rule per caption piece.
 READ_CPS = 12.0
 READ_MIN_S = 5 / 6
-READ_OVERHEAD_S = 0.6
+READ_OVERHEAD_S = 0.9
 FORMATS = {"9:16": (1080, 1920), "4:5": (1080, 1350), "1:1": (1080, 1080), "16:9": (1920, 1080)}
 FPS = {24, 25, 30, 50, 60}
 MAX_TOTAL_S = 90.0

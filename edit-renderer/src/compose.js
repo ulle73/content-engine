@@ -120,8 +120,9 @@ function wordsHtml(list, style) {
 export const READ = {
   cps: Number(process.env.EDIT_READ_CPS) > 0 ? Number(process.env.EDIT_READ_CPS) : 12,
   minEvent: 5 / 6,
-  // Entrance after the transition (~0.15–0.4 s) and the clean exit before the next scene (~0.3 s).
-  overhead: 0.6,
+  // Entrance after the transition (~0.15–0.5 s), the clean exit before the next scene (~0.3 s) and a little air:
+  // measured in the faiv-winter-mood test, 0.6 s left the shortest chunk at 0.75 s, under the 5/6 s floor.
+  overhead: 0.9,
 };
 
 /** Seconds one piece of on-screen text needs to be read (spaces and punctuation count, *emphasis* marks do not). */
