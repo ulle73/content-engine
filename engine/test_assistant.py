@@ -92,6 +92,41 @@ class AssistantTests(TestCase):
         self.assertEqual(result.status_code, 422)
         self.assertEqual(MediaGeneration.objects.count(), 0)
 
+    def test_delegating_answer_drops_questions_so_the_plan_can_run(self):
+        # Production loop 2026-10-12: "välj du vad som är ansett bäst" got new questions, so the plan never became runnable.
+        self.proposal.questions = [Question(text="Har ni egna bilder?", options=[])]
+        plan = self.turn(message="välj du vad som är ansett bäst")
+        self.assertEqual(plan.spec["proposal"]["questions"], [])
+        self.assertIn("Du bad mig välja", plan.turn.response["answer"])
+        self.assertEqual(self.action(plan).status_code, 200)
+
+    def test_instruction_with_content_keeps_needed_questions(self):
+        self.proposal.questions = [Question(text="Vilken röst?", options=["Lugn", "Energisk"])]
+        plan = self.turn(message="kör berättarröst")
+        self.assertEqual(len(plan.spec["proposal"]["questions"]), 1)
+
+    def test_blocked_plan_is_explained_and_the_next_turn_learns_why(self):
+        # Production loop 2026-10-12: a template forced one AI clip, the brief was too long for every model, the
+        # answer still said "Jag har skapat en plan" and every "ja" produced the same blocked plan again.
+        self.proposal.workflow = "sequence"
+        self.proposal.brief = "En produktfilm i tre scener med berättarröst. " + "Scen med golfare på en solig bana. " * 70
+        plan = self.turn(template="product-reel", message="kom på en bra ide")
+        self.assertEqual(plan.spec["workflow"], "video")
+        self.assertIn("för lång", plan.spec["blocked"])
+        self.assertIn("Planen kan inte köras ännu", plan.turn.response["answer"])
+        payload = self.planner.call_args.kwargs["payload"]
+        self.assertEqual(payload["locked_workflow"], "video")
+        self.turn(template="product-reel", message="ja")
+        payload = self.planner.call_args.kwargs["payload"]
+        self.assertIn("för lång", payload["previous_plan_status"]["blocked"])
+
+    def test_no_model_reason_names_the_fix(self):
+        from .assistant.workflows import no_model_reason
+        too_long = "Compiled video prompt is 2350 characters; safe provider ceiling is 1800. Shorten the creative description."
+        self.assertIn("2350 tecken, max 1800", no_model_reason([too_long] * 3, "video"))
+        self.assertIn("kostnadsgränsen", no_model_reason(["Videons längd och upplösning överskrider serverns kostnadsgräns."], "video"))
+        self.assertIn("Ingen verifierad modell", no_model_reason(["Something else"], "video"))
+
     def test_idempotent_message_and_conflicting_replay(self):
         data = self.request()
         first = self.post("assistant_send", data)

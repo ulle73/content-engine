@@ -30,7 +30,7 @@ def recommendation(run, brief, *, kind, source, end_source, shape, budget, recip
 
     from engine.creative_budget import known_video_cost
     from engine.creative_registry import verified_models
-    candidates = []
+    candidates, errors = [], []
     mode = ("image-to-" if source else "text-to-") + kind
     for model in verified_models(kind, mode):
         if model.preview:
@@ -38,18 +38,37 @@ def recommendation(run, brief, *, kind, source, end_source, shape, budget, recip
         try:
             plan = build_plan(run, brief, kind=kind, source=source, end_source=end_source, shape=shape, count=1,
                               priority="quality", recipe_id=recipe_id, model_override=model.model_id)
-        except ValueError:
+        except ValueError as exc:
+            errors.append(str(exc))
             continue
         price = known_video_cost(model.model_id, plan.parameters.get("duration", 0), plan.parameters.get("resolution", "")) if kind == "video" else None
         candidates.append((model, price, plan))
     if not candidates:
-        raise ValueError("Ingen verifierad modell stöder detta material och upplägg. Ändra bilder, längd eller mall.")
+        raise ValueError(no_model_reason(errors, kind))
     affordable = [row for row in candidates if row[1] is not None and row[1] * clip_count <= Decimal(str(budget))]
     pool = affordable or [row for row in candidates if row[1] is None] or candidates
     model, price, best = max(pool, key=lambda row: (row[0].quality_tier, row[0].speed_tier, -row[0].cost_tier, row[0].model_id))
     reason = "Bästa kompatibla modell enligt det verifierade registrets kvalitets- och kapabilitetsprofil. "
     reason += "Prisförslaget ryms inom din budget; aktuellt kontopris kontrolleras före start." if affordable else "Priset behöver verifieras mot din budget före start." if price is None else "Prisförslaget överstiger din budget. Kortare klipp eller högre budget behövs."
     return {"model_id": best.selection.model_id, "model_label": model_label(best.selection.model_id), "reason": reason}
+
+
+PROMPT_TOO_LONG = re.compile(r"prompt is (\d+) characters; safe provider ceiling is (\d+)")
+
+
+def no_model_reason(errors, kind):
+    """Say why no model fits, so the user (and the next planning turn) knows what to change."""
+    lengths = [tuple(map(int, match.groups())) for match in map(PROMPT_TOO_LONG.search, errors) if match]
+    if lengths and len(lengths) >= len(errors) / 2:
+        size, ceiling = min(lengths)
+        if kind == "video":
+            return (f"Beskrivningen är för lång för ett AI-videoklipp ({size} tecken, max {ceiling}). Ett AI-klipp är en enda scen "
+                    "på några sekunder: korta beskrivningen till en scen. För en film i flera scener: bifoga minst två bilder "
+                    "(Flera scener) eller välj Animerat budskap.")
+        return f"Beskrivningen är för lång för bildmodellerna ({size} tecken, max {ceiling}). Korta den."
+    if any("kostnadsgräns" in error for error in errors):
+        return "Inga verifierade modeller klarar detta inom kostnadsgränsen. Välj kortare video eller lägre upplösning."
+    return "Ingen verifierad modell stöder detta material och upplägg. Ändra bilder, längd eller mall."
 
 
 def _run(company, user, spec, *, save=False):

@@ -150,13 +150,16 @@ if (app) {
     byId('assistant-title').textContent=state.title||'Vad vill du skapa?';
     if(conversation) {const nav=document.querySelector('.assistant-projects nav');const url=base+conversation+'/';let current=Array.from(nav.querySelectorAll('a')).find(item=>item.getAttribute('href')===url);if(!current){nav.querySelector('p')?.remove();current=link(state.title,url);nav.prepend(current);}current.textContent=state.title;current.setAttribute('aria-current','page');}
   }
+  // "ja", "kör", "gör det" … till en körbar plan betyder samma sak som knappen "Bekräfta upplägget och optimera".
+  const YES=/^\s*((ja+|japp|jajamen|jo|ok(ej|ay)?|kör( på| igång)?|gör det|yes|go|absolut|självklart|bekräfta(r|t)?|godkänn(er)?|generera|skapa( den| filmen| videon)?)[\s,.!]*)+$/i;
+  function confirmable(plan) { const spec=plan?.spec; return !!(plan?.current&&!spec.blocked&&!spec.proposal.questions?.length&&!spec.review?.over_budget&&!plan.prepared?.kind); }
   function renderPlan() {
     const target=byId('assistant-plan'), turn=[...state.turns].reverse().find(item=>item.plan);
     target.replaceChildren();
     if(!turn) return;
     const plan=turn.plan, spec=plan.spec, review=spec.review||{}, compiled=spec.compiled||{}, prepared=plan.prepared||{}, block=node('div','','assistant-plan-block');
     block.append(node('p','Version '+turn.revision+(plan.current?' · aktuell':' · tidigare plan'),'assistant-version'),node('h3',spec.proposal.title));
-    block.append(node('strong',prepared.kind?'2 · Optimerat och förberett':'1 · Bekräfta att vi förstått dig rätt'));
+    block.append(node('strong',prepared.kind?'2 · Optimerat och förberett':spec.blocked?'1 · Planen behöver justeras – se nedan':spec.proposal.questions?.length?'1 · Svara på frågorna – eller skriv "välj du"':'1 · Bekräfta att vi förstått dig rätt'));
     const meta=node('div','','assistant-plan-meta'); meta.append(node('strong',compiled.model_label||review.model_label||catalog.workflows.find(item=>item.id===spec.workflow)?.label||spec.workflow),node('span',({'portrait':'9:16','square':'1:1','landscape':'16:9'})[spec.options.shape])); block.append(meta);
     const params=compiled.parameters||{};if(params.duration)meta.append(node('span',params.duration+' sekunder'));if(params.resolution)meta.append(node('span',params.resolution));if(params.generate_audio!==undefined)meta.append(node('span',params.generate_audio?'Med genererat ljud':'Utan genererat ljud'));
     block.append(node('p',spec.brief,'assistant-plan-brief'));
@@ -173,7 +176,7 @@ if (app) {
     const cost=turn.usage?.cost_usd; if(cost!==null&&cost!==undefined) block.append(node('p','AI-samtal för detta svar: $'+Number(cost).toFixed(4),'assistant-cost-note'));
     if(!plan.current) block.append(node('p','Ett nyare meddelande finns. Vänta på den nya planen eller försök igen innan du kör.','assistant-plan-notice'));
     else if(spec.proposal.questions?.length) block.append(node('p','Besvara frågorna i samtalet för att färdigställa planen.','assistant-plan-notice'));
-    else if(!spec.blocked&&!review.over_budget&&!prepared.kind) block.append(button('Bekräfta upplägget och optimera',()=>runAction(plan,'prepare'),''));
+    else if(confirmable(plan)) {block.append(button('Bekräfta upplägget och optimera',()=>runAction(plan,'prepare'),''));block.append(node('p','Du kan också svara "ja" i chatten.','assistant-cost-note'));}
     if(prepared.url) block.append(link('Öppna hela projektet →',prepared.url));
     if(plan.budget){const budget=plan.budget;block.append(node('p',budget.verified?'Aktuellt kontrollerat totalpris: $'+Number(budget.total_usd).toFixed(4)+' · Max $'+Number(budget.max_cost_usd).toFixed(2):'Ett verifierat pris saknas. Betald start är spärrad av din maxkostnad.','assistant-plan-notice'));if(budget.over_budget)block.append(node('p','Aktuellt pris överstiger din budget. Ingen generation kan startas. Ändra budget eller upplägg i rutan och skicka igen.','assistant-plan-notice'));}
     if(plan.clips){for(const [index,clip] of plan.clips.entries()){const card=node('div','','assistant-review-asset');card.append(node('strong','Klipp '+(index+1)+' · Bild '+(index+1)+' → '+(index+2)),node('p',statusLabels[clip.status]||clip.status));const optimized=compiled.clips?.[index];if(optimized){const details=node('details');details.append(node('summary','Optimerad prompt för '+optimized.model_label),node('pre',optimized.prompt));card.append(details);}if(clip.usage?.estimate?.usd!==undefined)card.append(node('p','Kontrollerat pris: $'+Number(clip.usage.estimate.usd).toFixed(4)));if(clip.error)card.append(node('p',clip.error,'assistant-plan-notice'));if(plan.current&&clip.can_start)card.append(button('Godkänn och starta klipp '+(index+1),()=>runAction(plan,'start',clip.id),''));if(plan.current&&['queued','starting','running','saving'].includes(clip.status))card.append(button('Avbryt klipp '+(index+1),()=>runAction(plan,'cancel',clip.id)));for(const asset of clip.assets)card.append(media(asset));block.append(card);}if(plan.current)block.append(button('Uppdatera priskontrollen för alla klipp',()=>runAction(plan,'prepare')));if(plan.current&&plan.clips.length&&plan.clips.every(clip=>clip.status==='completed')&&!prepared.finish_project_id)block.append(button('Godkänn klippen och förbered slutfilm',()=>runAction(plan,'compose'),''));}
@@ -223,6 +226,8 @@ if (app) {
   byId('assistant-composer').addEventListener('submit',async event=>{
     event.preventDefault(); if(sending||uploadBusy||actionBusy) return;
     const message=byId('assistant-message').value.trim(); if(!message) return;
+    const latest=[...state.turns].reverse().find(item=>item.plan)?.plan;
+    if(YES.test(message)&&!attachments.length&&confirmable(latest)) {byId('assistant-message').value='';saveDraft();await runAction(latest,'prepare');return;}
     lock(true); feedback('Förbereder svar och plan…');
     try {
       if(!conversation) {const oldKey=storageKey();const data=await api('new/',{key:draftKey}); conversation=data.id; history.replaceState(null,'',base+conversation+'/');try{sessionStorage.removeItem(oldKey);}catch{}saveDraft();}
