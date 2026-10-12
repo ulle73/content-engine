@@ -2,6 +2,7 @@
 
 import io
 import json
+from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
@@ -815,3 +816,18 @@ def stock_id(company, video_id, fmt="9:16"):
     import uuid
 
     return uuid.uuid5(uuid.NAMESPACE_URL, f"{company.pk}:pexels:{video_id}:{fmt}")
+
+
+class EditRecipeCommandTests(EditTestCase):
+    def test_plans_queues_and_writes_the_report(self):
+        from django.core.management import call_command
+
+        clip(self.company, 6.0, shots=["fa-m1"])
+        out = Path(self.tmp.name) / "recipe-out"
+        call_command("edit_recipe", company="faiv", recipe="faiv-dark-to-light-reveal", wait=0, out=str(out),
+                     stdout=io.StringIO())
+        report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+        self.assertEqual(report["plan"]["recipe_id"], "faiv-dark-to-light-reveal")
+        self.assertEqual(report["job"]["status"], "queued")
+        self.assertTrue(report["plan"]["missing"])  # cut anyway (allow_missing) so the test shows what is there
+        self.assertFalse((out / "master.mp4").exists())
