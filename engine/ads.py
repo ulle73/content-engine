@@ -114,6 +114,16 @@ def day(value):
         return None
 
 
+def metrics(row):
+    """Delivery numbers the Ad Library shares (EU reach) and the ad's own Library link. Missing values stay None."""
+    def number(key):
+        value = row.get(key)
+        return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
+
+    return {"eu_total_reach": number("euTotalReach"), "snapshot_url": safe_url(row.get("snapshotUrl")),
+            "created_date": str(day(row.get("adCreationTime")) or "") or None}
+
+
 def normalize(row, account):
     external_id = str(row.get("adArchiveId") or row.get("adId") or "")
     owner = str(row.get("advertiserPageId") or "")
@@ -177,7 +187,8 @@ def collect(request, account, *, reprocess=False):
             if account.page_id and str(row.get("advertiserPageId") or "") not in ("", account.page_id):
                 excluded += 1
                 continue
-            valid.append(normalize(row, account))
+            # Reach stays out of the creative hash and off the ad row: it is stored per observation below.
+            valid.append({**normalize(row, account), "metrics": metrics(row)})
         except (ValueError, TypeError, AttributeError):
             skipped += 1
     capped = len(rows) >= limit
@@ -190,6 +201,7 @@ def collect(request, account, *, reprocess=False):
         created, changed = 0, 0
         before, after = {}, {}
         for item in {i["external_id"]: i for i in valid}.values():
+            observed_metrics = item.pop("metrics", {})
             ad, new = CompetitorAd.objects.get_or_create(
                 account=account,
                 external_id=item["external_id"],
@@ -217,6 +229,7 @@ def collect(request, account, *, reprocess=False):
                     "observed_at": observed,
                     "data": {
                         **item,
+                        "metrics": observed_metrics,
                         "start_date": str(item["start_date"]) if item["start_date"] else None,
                         "end_date": str(item["end_date"]) if item["end_date"] else None,
                     },

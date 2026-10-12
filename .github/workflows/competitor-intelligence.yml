@@ -26,6 +26,9 @@ jobs:
       OPENROUTER_ANALYSIS_MODEL: ${{ vars.OPENROUTER_ANALYSIS_MODEL || '@preset/gk-free' }}
       OPENROUTER_ANALYSIS_FALLBACK_MODEL: ${{ vars.OPENROUTER_ANALYSIS_FALLBACK_MODEL || 'z-ai/glm-5.3-flash' }}
       OPENROUTER_ANALYSIS_LAST_RESORT_MODEL: ${{ vars.OPENROUTER_ANALYSIS_LAST_RESORT_MODEL || 'google/gemini-3.1-flash-lite' }}
+      # Reference videos: the best new competitor ads are broken down daily (engine/references).
+      REFERENCE_VIDEO_MODEL: ${{ vars.REFERENCE_VIDEO_MODEL || 'google/gemini-3.8-flash' }}
+      REFERENCE_DAILY_LIMIT: ${{ vars.REFERENCE_DAILY_LIMIT || '2' }}
       VIRLO_API_KEY: ${{ secrets.CONTENT_VIRLO_KEY }}
       R2_ENDPOINT_URL: ${{ secrets.CONTENT_R2_ENDPOINT_URL }}
       R2_BUCKET_NAME: ${{ secrets.CONTENT_R2_BUCKET_NAME }}

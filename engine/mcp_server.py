@@ -99,7 +99,11 @@ mcp = MCPServer(
         "its flow: ask few smart questions with suggestions, propose angles and images, agree on a storyboard, lock, produce. "
         "For a video from the company's own footage, start from a production recipe (search_content_library "
         "type='recipe'): plan_cut_from_recipe shows what the media bank covers and what is missing to film, "
-        "render_recipe cuts it in the cloud."
+        "render_recipe cuts it in the cloud. "
+        "When the user shares a video link or wants our own version of an ad or reel that works (\"gör en sån här "
+        "för FAIV\"), start with analyze_reference_video (or list_reference_candidates for monitored ads), then "
+        "plan_our_version. Before building any video, read the skills studio, video-regler and ljud with "
+        "read_ad_skill and follow them."
     ),
     token_verifier=OIDCTokenVerifier(),
     auth=AuthSettings(
@@ -798,5 +802,9 @@ register_review_tools(mcp, _company, _safe_call)
 from .edit.mcp import register as register_edit_tools
 
 register_edit_tools(mcp, _company, _safe_call)
+
+from .references.mcp import register as register_reference_tools
+
+register_reference_tools(mcp, _company, _safe_call)
 
 app = build_app()
