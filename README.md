@@ -10,6 +10,12 @@ Företagsunderlag → tre idéer → redigerbara Facebook-/Instagramtexter → u
 
 Säg i ChatGPT/Claude: *"jag vill göra en ad med budskapet …"*. Ad Studio ställer frågor, föreslår vinklar och bilder, bygger storyboard, låser och producerar. Se [docs/ad-studio.md](docs/ad-studio.md).
 
+## Gör vår version av en video som fungerar
+
+Klistra in en videolänk (Meta Ad Library, Instagram, TikTok, YouTube) eller be om de bästa bevakade annonserna:
+*"gör en sån här för FAIV"*. Videon hämtas, mäts (klipp, tempo, ljud) och bryts ner scen för scen, och blir sedan en
+plan för vår version med våra fakta och vårt material. Se [referensvideor](docs/2026-10-13-reference-videos.md).
+
 ## Kom igång i webbläsaren
 
 Öppna appens adress. Om inget konto finns visas **Skapa första administratören** automatiskt. Fyll i e-post, företag och ditt valda lösenord. Du loggas in och kan lägga till fler företag direkt i UI. Inga terminalkommandon eller förskapade lösenord behövs för användaren.

@@ -20,6 +20,22 @@ Fråga bara det som saknas: vad (video, karusell, bild …), var den ska gå (fo
 finns (bilder, logga, skärminspelningar, musik). En referens lyfter resultatet mest – be om en.
 Läs bolagets brand- och faktaskill (`skills/<bolag>-brand`, faktabanken) innan första förslaget.
 
+## 1b. Utgå från en referens som fungerar
+
+Har beställaren en **videolänk** ("gör en sån här för FAIV"), eller ska vi göra vår version av något som går bra hos
+konkurrenterna: börja i referensen, inte i en tom mall.
+
+- **Länk** (Meta Ad Library, Instagram, TikTok, YouTube, Facebook, direktlänk) → MCP `analyze_reference_video`
+  (lokalt: `python manage.py reference_lab --company Faiv --url <länk> --adapt`).
+- **Bevakade annonser** → `list_reference_candidates`: annonser som gått längst (= de tjänar pengar) och störst
+  EU-räckvidd först. Lokalt: `reference_lab --top 3`.
+- Nedbrytningen ger scen för scen med exakta tider (uppmätta, inte gissade): krok, struktur, kamera, text, tal,
+  musik, ljud, tempo och varför den fungerar. Visa kontaktkartan (`view_reference_sheet`).
+- `plan_our_version` gör **vår version** för bolaget: samma grammatik, vår vinkel, bara verifierade fakta, material ur
+  mediabanken eller en konkret inspelningslista, och närmaste recept. Fortsätt sedan i beslutsrundan (avsnitt 4).
+- Vi lånar krok, struktur, rytm, kameraspråk och ljudgrepp – **aldrig** referensens bilder, personer, formuleringar,
+  musik, varumärke eller påståenden.
+
 ## 2. Sök i biblioteket
 
 ```bash

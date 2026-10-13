@@ -1082,3 +1082,6 @@ from .review.models import Lesson, Review, ReviewFeedback  # noqa: F401,E402
 
 # Cloud editing: cut specs rendered with HyperFrames on GitHub Actions (engine/edit, edit-renderer/).
 from .edit.models import EditJob  # noqa: F401,E402
+
+# Reference videos: competitor ads/posts or any URL, measured and broken down to make our own version (engine/references).
+from .references.models import ReferenceVideo  # noqa: F401,E402

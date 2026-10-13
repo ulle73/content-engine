@@ -228,3 +228,42 @@ STAGES = (*STAGES, Stage("ads_import", ads_units), Stage("ads_analysis", ads_ana
 from .market import daily_units as market_units
 
 STAGES = (*STAGES, Stage("market_intelligence", market_units))
+
+
+def breakdown_reference(company, url):
+    from .references import fetch, service
+
+    try:
+        ref = service.process(company, url)
+    except fetch.FetchError as exc:
+        status = "attention" if "429" in str(exc) else "skipped"
+        return Result(status, str(exc)[:300], {"url": url})
+    return Result("success", f"Referens nedbruten: {ref.breakdown.get('summary', '')}"[:300],
+                  {"reference_id": str(ref.pk), "url": url, "cost_usd": str(ref.cost_usd)})
+
+
+def reference_units(company):
+    """Break down the best new competitor ads (running ≥ REFERENCE_MIN_DAYS) so 'our version' is one call away.
+    At most REFERENCE_DAILY_LIMIT per company and day (default 2, 0 turns it off); an ad without video is tried once."""
+    import os
+
+    from .models import DailyStep
+    from .references import service
+
+    limit = int(os.environ.get("REFERENCE_DAILY_LIMIT", "2") or 0)
+    if limit <= 0 or not os.environ.get("OPENROUTER_API_KEY", "").strip():
+        return []
+    min_days = int(os.environ.get("REFERENCE_MIN_DAYS", "14") or 0)
+    tried = set(DailyStep.objects.filter(company=company, stage="reference_breakdown")
+                .exclude(status="attention").values_list("key", flat=True))
+    units = []
+    for row in service.candidates(company, limit=60):
+        if len(units) >= limit:
+            break
+        if row["reference_id"] or row["ad_id"] in tried or row["days_running"] < min_days:
+            continue
+        units.append((row["ad_id"], partial(breakdown_reference, company, row["url"])))
+    return units
+
+
+STAGES = (*STAGES, Stage("reference_breakdown", reference_units))
