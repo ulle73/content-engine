@@ -63,7 +63,7 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 
 ### Slutkort
 - **Har bolaget en färdig slutbild, används den sist i varje film** – även i egna renderare: Golfkuponger
-  `edit-renderer/outros/golfkuponger/spotlight-<format>.mp4` (4 s, originalljud orört). Gör inget eget slutkort då.
+  `edit-renderer/outros/golfkuponger/spotlight-<format>.mp4` (3,1 s, originalljud orört). Gör inget eget slutkort då.
 - Bolagets **riktiga logga**, aldrig en textersättning.
 - Alla rader in tätt efter varandra (≤ ~0,5 s emellan) – ingen lång väntan på URL:en.
 - Markering och understrykning: **ren, tunn, en liten mjuk båge**, som ritas fram. Ingen slarvig penseltextur.
