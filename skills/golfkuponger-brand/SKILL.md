@@ -54,7 +54,7 @@ Grön dominerar, vitt ger luft och guld används sparsamt.
 
 ## Format och safe zones
 
-- **9:16 (Reels och Stories)**: håll text och logga inom de mittersta ~70 % av höjden. Topp ~14 % och botten ~20 % täcks av plattformens UI, och högerkanten av knappar.
+- **9:16 (Reels och Stories)**: håll text, logga och produkt borta från översta ~14 % (270 px), nedersta ~35 % (670 px), ~6 % till vänster och ~14 % till höger. Där ligger profilnamn, bildtext, knappar och CTA.
 - **4:5 / 1:1 (feed)**: mer luft, rubrik i övre tredjedelen.
 - Ofta smart att bygga 9:16 först. Feed-formaten blir bäst som omkomponeringar, inte beskärningar.
 

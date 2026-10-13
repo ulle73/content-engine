@@ -36,14 +36,16 @@ export function dimensions(ratio: string): [number, number] {
         : [1920, 1080];
 }
 export function safe(width: number, height: number) {
+  // 9:16 follows the Reels UI (owner's rule 2026-10-13): top 14 %, bottom 35 %, left 6 %, right 14 % (action rail).
   const portrait = height > width * 1.2;
   const x = width * 0.085;
-  const y = height * (portrait ? 0.12 : 0.09);
+  const y = height * (portrait ? 0.14 : 0.09);
+  const right = width * (portrait ? 0.14 : 0.085);
   return {
     x,
     y,
-    w: width - x * 2,
-    h: height - y - height * (portrait ? 0.17 : 0.1),
+    w: width - x - right,
+    h: height - y - height * (portrait ? 0.35 : 0.1),
     portrait,
   };
 }

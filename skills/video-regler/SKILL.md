@@ -44,7 +44,10 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
   renderare – bygg in en kontroll som **stoppar renderingen** när regeln bryts.
 - **En textposition:** all text utom slutkortet har första raden på samma höjd (9:16: överkant, y ≈ 300), följande
   rader direkt under. Text som hoppar mellan topp, mitt och botten upplevs rörig. Slutkortet är centrerat.
-- Håll texten inom safe zones (9:16: ~220 px överst, ~400 px nederst) och utanför motivets viktiga delar.
+- Håll text, logga och produkt inom safe zones (9:16, 1080×1920): inte i översta ~14 % (270 px), nedersta ~35 %
+  (670 px), ~6 % till vänster eller ~14 % till höger (knapparna). Där ligger Instagrams namn, bildtext, knappar och
+  CTA. Kontrolleras automatiskt i molnklippet (`edit-renderer/src/safezones.js`). Håll också texten utanför motivets
+  viktiga delar.
 - Textanimationer: fade, lätt scale-in, tracking som dras ihop. Inga överdrivna övergångar.
 
 ### Bild

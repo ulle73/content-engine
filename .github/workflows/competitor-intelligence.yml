@@ -29,6 +29,12 @@ jobs:
       # Reference videos: the best new competitor ads are broken down daily (engine/references).
       REFERENCE_VIDEO_MODEL: ${{ vars.REFERENCE_VIDEO_MODEL || 'google/gemini-3.8-flash' }}
       REFERENCE_DAILY_LIMIT: ${{ vars.REFERENCE_DAILY_LIMIT || '2' }}
+      # Idea cards: hits pitched in Discord, at most IDEA_WEEKLY_MAX per company and week (engine/ideas).
+      IDEA_DAILY_LIMIT: ${{ vars.IDEA_DAILY_LIMIT || '2' }}
+      IDEA_WEEKLY_MAX: ${{ vars.IDEA_WEEKLY_MAX || '2' }}
+      IDEA_MIN_FIT: ${{ vars.IDEA_MIN_FIT || '7' }}
+      CONTENT_N8N_DISCORD_URL: ${{ secrets.CONTENT_N8N_DISCORD_URL }}
+      CONTENT_N8N_SECRET: ${{ secrets.CONTENT_N8N_SECRET }}
       VIRLO_API_KEY: ${{ secrets.CONTENT_VIRLO_KEY }}
       R2_ENDPOINT_URL: ${{ secrets.CONTENT_R2_ENDPOINT_URL }}
       R2_BUCKET_NAME: ${{ secrets.CONTENT_R2_BUCKET_NAME }}

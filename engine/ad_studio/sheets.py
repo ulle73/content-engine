@@ -22,8 +22,9 @@ FONT_DIR = Path(__file__).resolve().parent / "fonts"
 
 # 9:16 safe zones (fractions of height/width) used by brand skill and review.
 SAFE_TOP = 0.14
-SAFE_BOTTOM = 0.20
-SAFE_RIGHT = 0.12
+SAFE_BOTTOM = 0.35
+SAFE_LEFT = 0.06
+SAFE_RIGHT = 0.14
 
 
 def _font(size: int, bold: bool = False):
@@ -113,8 +114,9 @@ def _safe_guides(draw, box, color=(255, 196, 0)):
     h, w = y1 - y0, x1 - x0
     _dashed_hline(draw, y0 + int(h * SAFE_TOP), x0, x1, color)
     _dashed_hline(draw, y1 - int(h * SAFE_BOTTOM), x0, x1, color)
-    xr = x1 - int(w * SAFE_RIGHT)
+    xl, xr = x0 + int(w * SAFE_LEFT), x1 - int(w * SAFE_RIGHT)
     for y in range(y0, y1, 20):
+        draw.line([(xl, y), (xl, min(y + 10, y1))], fill=color, width=2)
         draw.line([(xr, y), (xr, min(y + 10, y1))], fill=color, width=2)
 
 

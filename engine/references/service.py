@@ -166,6 +166,11 @@ def plan_our_version(ref: ReferenceVideo, *, angle: str = "", notes: str = "", m
     return entry
 
 
+def number(value: int) -> str:
+    """12 345 → '12 345' (Swedish thousands separator)."""
+    return f"{value:,}".replace(",", " ")
+
+
 def reach(ad: CompetitorAd) -> int | None:
     latest = ad.observations.order_by("-observed_at").values_list("data", flat=True).first() or {}
     return (latest.get("metrics") or {}).get("eu_total_reach")
@@ -183,7 +188,7 @@ def _ad_rows(company, done: dict) -> list[dict]:
         reach_value = reach(ad)
         why = f"Annons som gått i {days} dagar" + (" och fortfarande är aktiv" if ad.is_active else "")
         if reach_value:
-            why += f", {reach_value:,} i EU-räckvidd".replace(",", " ")
+            why += f", {number(reach_value)} i EU-räckvidd"
         rows.append({"kind": "ad", "ad_id": ad.external_id,
                      "advertiser": ad.creative.get("advertiser") or ad.account.name, "days_running": days,
                      "active": ad.is_active, "start_date": str(ad.start_date or ""), "eu_reach": reach_value,
@@ -196,16 +201,17 @@ def _ad_rows(company, done: dict) -> list[dict]:
     return rows
 
 
-def _latest_views(post) -> int | None:
+def _latest(post, metric: str = "views") -> int | None:
     snapshot = max(post.snapshots.all(), key=lambda s: (s.observed_at, s.pk), default=None)
-    return snapshot.views if snapshot else None
+    return getattr(snapshot, metric) if snapshot else None
 
 
 def post_outliers(company, done: dict | None = None, *, min_age_days: int = 2, window_days: int = 60) -> list[dict]:
     """Instagram reels and TikTok videos that reached far more views than their account normally does.
 
     The baseline is the account's median views over its recent videos (at least 4), so a 200 000-view video on an
-    account that usually gets 2 000 stands out, while a big account's average video does not."""
+    account that usually gets 2 000 stands out, while a big account's average video does not. The cheap Instagram
+    scraper returns no views, so an account without them is measured on likes instead."""
     from statistics import median
 
     from engine.models import Competitor
@@ -217,21 +223,25 @@ def post_outliers(company, done: dict | None = None, *, min_age_days: int = 2, w
         posts = list(CompetitorPost.objects.filter(competitor=account, format="reel",
                                                    published_at__gte=now - timedelta(days=window_days))
                      .prefetch_related("snapshots"))
-        views = [(p, _latest_views(p)) for p in posts]
-        views = [(p, v) for p, v in views if v is not None]
+        for metric in ("views", "likes"):
+            views = [(p, _latest(p, metric)) for p in posts]
+            views = [(p, v) for p, v in views if v is not None]
+            if len(views) >= 4:
+                break
         if len(views) < 4:
             continue
+        unit = "visningar" if metric == "views" else "gillningar"
         baseline = median(v for _, v in views) or 1
         for post, value in views:
             ratio = value / baseline
             if ratio < OUTLIER_MIN_RATIO or post.published_at > now - timedelta(days=min_age_days):
                 continue
             platform = "TikTok" if account.platform == "tiktok" else "Instagram"
-            rows.append({"kind": "post", "platform": account.platform, "post_id": post.shortcode,
+            rows.append({"kind": "post", "platform": account.platform, "post_id": post.shortcode, "own": account.own,
                          "advertiser": f"@{account.username}", "views": value, "baseline_views": round(baseline),
-                         "ratio": round(ratio, 1), "published_at": post.published_at.date().isoformat(),
+                         "metric": metric, "ratio": round(ratio, 1), "published_at": post.published_at.date().isoformat(),
                          "headline": (post.caption or "")[:120].replace("\n", " "), "url": post.url, "video_url": "",
-                         "why": f"{platform}: {value:,} visningar, {ratio:.1f}× kontots normala".replace(",", " "),
+                         "why": f"{platform}: {number(value)} {unit}, {ratio:.1f}× kontots normala",
                          "score": ratio,
                          "reference_id": str(done[("post", post.pk)]) if ("post", post.pk) in done else None})
     rows.sort(key=lambda r: r["score"], reverse=True)
