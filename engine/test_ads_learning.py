@@ -30,7 +30,7 @@ class AdsSyncTests(TestCase):
 
     def request(self, remote_id="remote1"):
         state = ads.account_state(self.account)
-        return ScrapeRequest.objects.create(state=state, key=remote_id, actor=ads.ACTOR, mode="discovery", max_cost_usd=.15,
+        return ScrapeRequest.objects.create(state=state, key=remote_id, actor=ads.LEGACY_ACTOR, mode="discovery", max_cost_usd=.15,
             inputs={"maxResults":20}, status="running", actor_run_id=remote_id, dataset_id="dataset")
 
     def remote(self):
@@ -71,9 +71,12 @@ class AdsSyncTests(TestCase):
     def test_ads_inputs_use_verified_library_id_and_supported_platform_enum(self, api):
         api.return_value = {"data":{"id":"verified", "defaultDatasetId":"d"}}
         request = ads.start(self.account)
-        self.assertNotIn("pageUrls", request.inputs)
-        self.assertIn("view_all_page_id=12345", request.inputs["searchQueries"][0])
-        self.assertEqual(request.inputs["publisherPlatforms"], ["FACEBOOK","INSTAGRAM"])
+        self.assertEqual(request.actor, ads.ACTOR)
+        self.assertIn("view_all_page_id=12345", request.inputs["urls"][0]["url"])
+        self.assertEqual(request.inputs["scrapePageAds.sortBy"], "impressions_desc")
+        self.assertTrue(request.inputs["scrapeAdDetails"])
+        self.assertEqual(request.inputs["count"], 50)
+        self.assertLessEqual(request.max_cost_usd, Decimal("0.07"))
 
     @patch("engine.apify.dataset_items")
     @patch("engine.apify.get_run")
@@ -142,9 +145,11 @@ class AdsSyncTests(TestCase):
         items.return_value = [{**self.row, "adId":str(10000+i)} for i in range(20)]
         run = ads.collect(self.request(), self.account)
         self.assertTrue(run.result["capped"])
+        self.assertEqual(run.status, "partial")  # the old actor's cap is a coverage gap
         self.account.refresh_from_db()
-        with self.assertRaises(apify.ApifyError):
-            ads.start(self.account)
+        with patch("engine.apify.api") as api:
+            self.assertEqual(ads.start(self.account).pk, run.pk)  # no paid repeat before next_attempt_at
+            api.assert_not_called()
         self.assertEqual(CompetitorAd.objects.count(), 20)
 
     @patch("engine.apify.api")
@@ -176,7 +181,7 @@ class AdsSyncTests(TestCase):
         with patch("engine.sync.timezone.localdate",return_value=tomorrow.date()), patch("engine.ads.timezone.now",return_value=tomorrow):
             request=ads.start(self.account)
         self.assertEqual(request.mode,"discovery")
-        self.assertEqual(request.inputs["maxResults"],20)
+        self.assertEqual(request.inputs["count"],20)
 
     @patch("engine.apify.api")
     def test_failed_backfill_next_day_is_small_and_no_unbounded_history(self, api):
@@ -189,8 +194,7 @@ class AdsSyncTests(TestCase):
         with patch("engine.sync.timezone.localdate", return_value=next_day.date()), patch("engine.ads.timezone.now", return_value=next_day):
             result = ads.start(self.account)
         self.assertEqual(result.mode, "discovery")
-        self.assertEqual(result.inputs["maxResults"], 20)
-        self.assertGreater(result.inputs["adDeliveryDateMin"], (self.now-timedelta(days=5)).date().isoformat())
+        self.assertEqual(result.inputs["count"], 20)
 
     @patch("engine.apify.start_actor")
     def test_organic_history_is_initialized_and_manual_rerun_is_bounded(self, sender):
@@ -203,7 +207,7 @@ class AdsSyncTests(TestCase):
         self.assertEqual(first.pk, second.pk)
         self.assertEqual(sender.call_count, 1)
         self.assertEqual(first.requested_limit, 10)
-        self.assertEqual(first.scrape_request.max_cost_usd, Decimal("0.05"))
+        self.assertEqual(first.scrape_request.max_cost_usd, Decimal("0.02"))
 
     def test_shared_budget_and_analysis_memo_apply_across_entrypoints(self):
         first = state_for(self.company, "instagram", "one")

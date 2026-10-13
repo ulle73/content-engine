@@ -6,6 +6,9 @@ import httpx
 
 PRIMARY_ACTOR = "esdrasdw/instagram-content-scraper"
 FALLBACK_ACTOR = "apify/instagram-post-scraper"
+# 0.0003 USD per video (2026-10-13); views, likes, comments, shares, video link and caption per video.
+TIKTOK_ACTOR = "apidojo/tiktok-scraper"
+TIKTOK_PRICE_USD = 0.0003
 FIELDS = [
     "ownerUsername",
     "url",
@@ -138,10 +141,20 @@ def instagram_input(username, actor, limit):
     )
 
 
+def tiktok_input(username, limit):
+    return {"startUrls": [f"https://www.tiktok.com/@{username}"], "maxItems": limit}
+
+
+def max_charge(actor, limit):
+    if actor == TIKTOK_ACTOR:
+        return round(limit * TIKTOK_PRICE_USD * 1.2 + 0.005, 3)
+    return 0.02 if actor == PRIMARY_ACTOR else 0.25
+
+
 def start_actor(username, actor=PRIMARY_ACTOR, limit=100, *, inputs=None):
     return api(
         "POST", f"/acts/{actor.replace('/', '~')}/runs", json=inputs if inputs is not None else instagram_input(username, actor, limit),
-        params={"timeout": 300, "maxTotalChargeUsd": 0.05 if actor == PRIMARY_ACTOR else 0.25}
+        params={"timeout": 300, "maxTotalChargeUsd": max_charge(actor, limit)}
     )["data"]
 
 

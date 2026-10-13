@@ -12,7 +12,8 @@ class ReferenceVideo(models.Model):
     """
 
     STATUSES = [("fetched", "Hämtad"), ("measured", "Uppmätt"), ("analyzed", "Nedbruten"), ("failed", "Misslyckades")]
-    KINDS = [("url", "Länk"), ("meta_ad", "Meta-annons"), ("instagram", "Instagram-inlägg")]
+    KINDS = [("url", "Länk"), ("meta_ad", "Meta-annons"), ("instagram", "Instagram-inlägg"),
+             ("tiktok", "TikTok-video")]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company = models.ForeignKey("engine.Company", on_delete=models.CASCADE, related_name="reference_videos")

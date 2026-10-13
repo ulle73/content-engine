@@ -141,18 +141,24 @@ class ContentRun(models.Model):
 
 
 class Competitor(models.Model):
+    PLATFORMS = [("instagram", "Instagram"), ("tiktok", "TikTok")]
+
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="competitors")
     name = models.CharField(max_length=200)
+    platform = models.CharField(max_length=10, choices=PLATFORMS, default="instagram")
     username = models.CharField(max_length=30)
     active = models.BooleanField(default=True)
     last_success_at = models.DateTimeField(null=True)
     last_error = models.CharField(max_length=500, blank=True)
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["company", "username"], name="unique_company_competitor")]
+        constraints = [models.UniqueConstraint(fields=["company", "platform", "username"],
+                                               name="unique_company_platform_competitor")]
 
     @property
     def url(self):
+        if self.platform == "tiktok":
+            return f"https://www.tiktok.com/@{self.username}"
         return f"https://www.instagram.com/{self.username}/"
 
 

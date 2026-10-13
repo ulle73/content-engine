@@ -1,7 +1,7 @@
 {
   "company": "faiv",
   "aliases": ["faiv", "f.a.i.v", "f.a.i.v.", "fordonsanpassning i väst", "fordonsanpassning i väst ab"],
-  "source": "work/references/round-2/FOLLOW-LIST.md (2026-10-09), godkänd av ägaren",
+  "source": "library/follow-lists/FOLLOW-LIST-2026-10-09.md (referensrunda 2), godkänd av ägaren 2026-10-09; sid-id:n kompletterade 2026-10-13",
   "instagram": [
     {"name": "Ljusgiganten.se", "username": "ljusgiganten.se", "why": "Kund-/ambassadörsvideor från förarplatsen i mörker."},
     {"name": "Ekstralys (NO)", "username": "ekstralys.no", "why": "Mest filmiska konkurrenten; säljer Lumen-grillkit."},
@@ -17,18 +17,29 @@
     {"name": "Ljusgiganten.se", "page_id": "117163235108353", "country": "SE"},
     {"name": "Ekstralys", "page_id": "133016172910", "country": "NO"},
     {"name": "Valostore.se", "page_id": "544955162220312", "country": "SE"},
+    {"name": "Gunde och Ferry Svan (Valostore-partner)", "page_id": "101304642418970", "country": "SE"},
     {"name": "Xenonkungen", "page_id": "148068018677367", "country": "SE"},
     {"name": "Crazyride.se", "page_id": "555955787602196", "country": "SE"},
     {"name": "Strands Lighting Division", "page_id": "180589320860", "country": "SE"},
     {"name": "Vparts", "page_id": "117043944993835", "country": "SE"},
     {"name": "Extraljuskungen.se", "page_id": "142879885783949", "country": "SE"},
+    {"name": "Lumise.se", "page_id": "191824684489032", "country": "SE"},
+    {"name": "Mr Tuning", "page_id": "300300126703415", "country": "SE"},
     {"name": "Nordic Lights", "page_id": "265299940315882", "country": "FI"},
+    {"name": "Lazer Lamps", "page_url": "https://www.facebook.com/Lazerlamps/", "country": "SE"},
+    {"name": "Ultra Vision Lighting (AU, grillkit-reveal)", "page_id": "1562640837307369", "country": "AU"},
+    {"name": "RIGID Industries (premiumfilm)", "page_id": "91709717378", "country": "US"},
+    {"name": "Baja Designs (premiumfilm)", "page_id": "114294451966918", "country": "US"},
+    {"name": "Diode Dynamics (premiumfilm)", "page_id": "136575960603", "country": "US"},
     {"name": "FAIV AB (egen sida)", "page_id": "110091915222932", "country": "SE"}
   ],
+  "ad_keywords": [
+    {"name": "Sökord: extraljus (SE, video)", "query": "extraljus", "country": "SE", "media": "video"},
+    {"name": "Sökord: ekstralys (NO, video)", "query": "ekstralys", "country": "NO", "media": "video"}
+  ],
+  "tiktok": [],
   "later": {
-    "tiktok": [],
-    "facebook_pages_without_id": ["https://www.facebook.com/Lumise.se/", "https://www.facebook.com/mrtuning.se/"],
-    "international_formats": ["Ultra Vision Lighting (ad 1399230835177831)", "Lazer Lamps (ad 796590389919781)", "RIGID", "Baja Designs", "Diode Dynamics"]
+    "note": "'grillkit' som sökord ger mest matlagningsannonser; lägg till med annonsörsfilter om det behövs."
   },
   "keywords": ["extraljus", "grillkit", "ledramp", "arbetsljus"]
 }

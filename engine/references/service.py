@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+from datetime import timedelta
 from decimal import Decimal
 
 from django.conf import settings
@@ -21,6 +22,8 @@ from . import adapt, breakdown, fetch, measure
 from .models import ReferenceVideo
 
 INSTAGRAM_POST = re.compile(r"instagram\.com/(?:[^/]+/)?(?:p|reel|reels|tv)/([A-Za-z0-9_-]+)")
+TIKTOK_VIDEO = re.compile(r"tiktok\.com/@[^/]+/video/(\d+)")
+OUTLIER_MIN_RATIO = 2.0  # a post must reach at least twice its account's median views
 
 
 class _Stored:
@@ -45,19 +48,32 @@ def _link_source(company, url: str) -> dict:
         ad = CompetitorAd.objects.filter(account__company=company, external_id=ad_id).select_related("account").first()
         return {"source_kind": "meta_ad", "competitor_ad": ad, "author": ad.account.name if ad else "",
                 "title": ((ad.creative.get("headline") or ad.creative.get("text") or "") if ad else "")[:300]}
-    match = INSTAGRAM_POST.search(url)
-    if match:
-        post = CompetitorPost.objects.filter(competitor__company=company, shortcode=match.group(1)) \
-            .select_related("competitor").first()
-        return {"source_kind": "instagram", "competitor_post": post,
-                "author": post.competitor.username if post else "", "title": (post.caption if post else "")[:300]}
+    for kind, pattern in (("instagram", INSTAGRAM_POST), ("tiktok", TIKTOK_VIDEO)):
+        match = pattern.search(url)
+        if match:
+            post = CompetitorPost.objects.filter(competitor__company=company, competitor__platform=kind,
+                                                 shortcode=match.group(1)).select_related("competitor").first()
+            return {"source_kind": kind, "competitor_post": post,
+                    "author": post.competitor.username if post else "", "title": (post.caption if post else "")[:300]}
     return {"source_kind": "url"}
 
 
-def store(company, url: str) -> ReferenceVideo:
+def _fetch(url: str, video_url: str = "") -> fetch.Fetched:
+    """The direct video link from monitoring first (no Facebook rate limit), then the page itself."""
+    if video_url:
+        try:
+            got = fetch.fetch(video_url)
+            got.source_url = url
+            return got
+        except fetch.FetchError:
+            pass  # signed CDN links expire; the page URL still works
+    return fetch.fetch(url)
+
+
+def store(company, url: str, *, video_url: str = "") -> ReferenceVideo:
     """Fetch the video and keep our own copy. The same file for the same company is stored once."""
     linked = _link_source(company, url)
-    got = fetch.fetch(url)
+    got = _fetch(url, video_url)
     sha = hashlib.sha256(got.data).hexdigest()
     existing = ReferenceVideo.objects.filter(company=company, sha256=sha).first()
     if existing:
@@ -124,9 +140,9 @@ def analyze(ref: ReferenceVideo, *, model: str = "", make_current: bool | None =
     return ref
 
 
-def process(company, url: str, *, model: str = "") -> ReferenceVideo:
+def process(company, url: str, *, model: str = "", video_url: str = "") -> ReferenceVideo:
     """URL → stored, measured and broken down (skips steps already done for the same file)."""
-    ref = store(company, url)
+    ref = store(company, url, video_url=video_url)
     try:
         if not ref.proxy_key:
             measure_reference(ref)
@@ -155,29 +171,96 @@ def reach(ad: CompetitorAd) -> int | None:
     return (latest.get("metrics") or {}).get("eu_total_reach")
 
 
-def candidates(company, *, limit: int = 15, known: dict | None = None) -> list[dict]:
-    """Monitored ads worth studying: long-running (= it works) and wide reach first. Says if already broken down."""
-    done = known if known is not None else dict(
-        ReferenceVideo.objects.filter(company=company, competitor_ad__isnull=False)
-        .values_list("competitor_ad_id", "id"))
+def _ad_rows(company, done: dict) -> list[dict]:
     rows = []
     today = timezone.localdate()
     for ad in CompetitorAd.objects.filter(account__company=company, account__active=True).select_related("account"):
+        fmt = (ad.creative.get("format") or "unknown").lower()
+        if fmt in {"image", "text", "carousel"} and not ad.creative.get("video_url"):
+            continue  # nothing to watch
         end = ad.end_date or (today if ad.is_active else ad.last_seen_at.date())
         days = (end - ad.start_date).days if ad.start_date else 0
-        rows.append({"ad_id": ad.external_id, "advertiser": ad.account.name, "days_running": days,
-                     "active": ad.is_active, "start_date": str(ad.start_date or ""), "eu_reach": reach(ad),
+        reach_value = reach(ad)
+        why = f"Annons som gått i {days} dagar" + (" och fortfarande är aktiv" if ad.is_active else "")
+        if reach_value:
+            why += f", {reach_value:,} i EU-räckvidd".replace(",", " ")
+        rows.append({"kind": "ad", "ad_id": ad.external_id,
+                     "advertiser": ad.creative.get("advertiser") or ad.account.name, "days_running": days,
+                     "active": ad.is_active, "start_date": str(ad.start_date or ""), "eu_reach": reach_value,
                      "headline": (ad.creative.get("headline") or "")[:120],
                      "text": (ad.creative.get("text") or "")[:200].replace("\n", " "),
-                     "url": fetch.ad_library_url(ad.external_id),
-                     "reference_id": str(done[ad.pk]) if ad.pk in done else None})
-    rows.sort(key=lambda r: (r["days_running"] * (2 if r["active"] else 1), r["eu_reach"] or 0), reverse=True)
-    # Breadth first: every advertiser's best ad before anyone's second, so one prolific advertiser can't fill the list.
-    seen, first, rest = set(), [], []
-    for row in rows:
-        (rest if row["advertiser"] in seen else first).append(row)
-        seen.add(row["advertiser"])
-    return (first + rest)[:limit]
+                     "url": fetch.ad_library_url(ad.external_id), "video_url": ad.creative.get("video_url") or "",
+                     "why": why, "score": days * (2 if ad.is_active else 1),
+                     "reference_id": str(done[("ad", ad.pk)]) if ("ad", ad.pk) in done else None})
+    rows.sort(key=lambda r: (r["score"], r["eu_reach"] or 0), reverse=True)
+    return rows
+
+
+def _latest_views(post) -> int | None:
+    snapshot = max(post.snapshots.all(), key=lambda s: (s.observed_at, s.pk), default=None)
+    return snapshot.views if snapshot else None
+
+
+def post_outliers(company, done: dict | None = None, *, min_age_days: int = 2, window_days: int = 60) -> list[dict]:
+    """Instagram reels and TikTok videos that reached far more views than their account normally does.
+
+    The baseline is the account's median views over its recent videos (at least 4), so a 200 000-view video on an
+    account that usually gets 2 000 stands out, while a big account's average video does not."""
+    from statistics import median
+
+    from engine.models import Competitor
+
+    done = done or {}
+    now = timezone.now()
+    rows = []
+    for account in Competitor.objects.filter(company=company, active=True):
+        posts = list(CompetitorPost.objects.filter(competitor=account, format="reel",
+                                                   published_at__gte=now - timedelta(days=window_days))
+                     .prefetch_related("snapshots"))
+        views = [(p, _latest_views(p)) for p in posts]
+        views = [(p, v) for p, v in views if v is not None]
+        if len(views) < 4:
+            continue
+        baseline = median(v for _, v in views) or 1
+        for post, value in views:
+            ratio = value / baseline
+            if ratio < OUTLIER_MIN_RATIO or post.published_at > now - timedelta(days=min_age_days):
+                continue
+            platform = "TikTok" if account.platform == "tiktok" else "Instagram"
+            rows.append({"kind": "post", "platform": account.platform, "post_id": post.shortcode,
+                         "advertiser": f"@{account.username}", "views": value, "baseline_views": round(baseline),
+                         "ratio": round(ratio, 1), "published_at": post.published_at.date().isoformat(),
+                         "headline": (post.caption or "")[:120].replace("\n", " "), "url": post.url, "video_url": "",
+                         "why": f"{platform}: {value:,} visningar, {ratio:.1f}× kontots normala".replace(",", " "),
+                         "score": ratio,
+                         "reference_id": str(done[("post", post.pk)]) if ("post", post.pk) in done else None})
+    rows.sort(key=lambda r: r["score"], reverse=True)
+    return rows
+
+
+def candidates(company, *, limit: int = 15, known: dict | None = None) -> list[dict]:
+    """What is worth making our own version of: monitored video ads that keep running (an ad that runs for months is
+    making money; EU reach next) and posts that beat their account's normal views by the most. Breadth first: each
+    advertiser's best before anyone's second, ads and posts alternating."""
+    if known is None:
+        known = {("ad", a): r for a, r in ReferenceVideo.objects.filter(company=company, competitor_ad__isnull=False)
+                 .values_list("competitor_ad_id", "id")}
+        known.update({("post", p): r for p, r in ReferenceVideo.objects.filter(
+            company=company, competitor_post__isnull=False).values_list("competitor_post_id", "id")})
+
+    def breadth(rows):
+        seen, first, rest = set(), [], []
+        for row in rows:
+            (rest if row["advertiser"] in seen else first).append(row)
+            seen.add(row["advertiser"])
+        return first + rest
+
+    ads_rows, post_rows = breadth(_ad_rows(company, known)), breadth(post_outliers(company, known))
+    mixed = []
+    for i in range(max(len(ads_rows), len(post_rows))):
+        mixed += [r for r in (ads_rows[i] if i < len(ads_rows) else None,
+                              post_rows[i] if i < len(post_rows) else None) if r]
+    return mixed[:limit]
 
 
 def serialize(ref: ReferenceVideo, *, full: bool = False) -> dict:
