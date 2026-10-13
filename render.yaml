@@ -27,7 +27,7 @@ services:
       - key: APIFY_API_TOKEN
         sync: false
       - key: SCRAPER_DAILY_BUDGET_USD
-        value: "1.00"
+        value: "0.50"
       - key: INTELLIGENCE_DAILY_ANALYSES
         value: "12"
       - key: OPENROUTER_API_KEY

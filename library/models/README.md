@@ -27,6 +27,7 @@
 | **Cinemagraph av riktigt foto** (snö som faller kring parkerad bil) | Kling 3.0 Std i2v | Seedance 2.0 i2v | Rör bara miljön; låst kamera. |
 | **Matchklipp/övergång mellan två riktiga bilder** | Seedance 2.5 i2v (`image_url` + `end_image_url`) | Kling 3.0 (`last_image_url`) | Första/sista bild från riktiga klipp; korta (≤ 5 s) övergångar blir mjukast. |
 | **Första/sista bild, komposit** (person + bil + exakt produkt) | gpt-image-2 (edits, flera bilder) | – | Bygg startbilden med det exakta produktfotot; video-modellen animerar sedan. |
+| **Rollbyte på eget grovklipp** (kollega vid bilen → återkommande karaktär, personal i sketch → seriefigur; behåll kamera, rörelse, tajming och vårt eget ljud) | **Genjutsu** (verktygslådan, skill `tool-genjutsu`: djupkarta + SAM 3-mask eller face mesh → Seedance 2.5 Edit via Enhancor) | Seedance 2.5 med karaktärsreferens från noll | Bara på material vi har rätt till – aldrig på någon annans annons eller för att efterlikna en verklig person. Körs lokalt (WSL2) av Claude Code/Codex; inte via ChatGPT/MCP än. Utkast först, 1080p efter godkännande. |
 | **Text, logga, pris, UI** | **HyperFrames (kod)** – aldrig genererat | – | Alla modeller förvanskar liten text och loggor; portal/app-UI är alltid riktiga skärminspelningar. |
 | **Effekter, grafik, övergångar** | HyperFrames-biblioteket (`type=effect/transition/caption`) | – | Gratis, deterministiskt, redigerbart. |
 

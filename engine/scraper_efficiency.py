@@ -16,7 +16,7 @@ def discovery_due(state, now=None):
 
 
 def discovery_limit(state):
-    return state.details.get("discovery_limit", 10 if state.source == "instagram" else 20)
+    return state.details.get("discovery_limit", 10 if state.source in ("instagram", "tiktok") else 20)
 
 
 def record_yield(request, *, returned, before, after, complete, capabilities):
@@ -54,8 +54,8 @@ def record_yield(request, *, returned, before, after, complete, capabilities):
             days = (1,2,4,7)[idle]
             previous = state.details.get("last_new",0)
             busy = new >= 8 and previous >= 8
-            minimum = 10 if state.source == "instagram" else 5
-            limit = (20 if busy else 10) if state.source=="instagram" else max(minimum,min(20,max(len(after)+2,2*max(new,previous)+2)))
+            minimum = 10 if state.source in ("instagram", "tiktok") else 5
+            limit = (20 if busy else 10) if state.source in ("instagram", "tiktok") else max(minimum,min(20,max(len(after)+2,2*max(new,previous)+2)))
             unit_cost = float(locked.cost_usd)/returned if returned and locked.cost_usd is not None else 0
             # Expensive accounts use fewer checks, rather than shrinking below a known useful Ads result set.
             days = min(7,max(days,ceil(unit_cost*limit/.05)))

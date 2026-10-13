@@ -91,6 +91,7 @@ class IntelligenceTests(TestCase):
         self.assertEqual(CompetitorPost.objects.count(), 1)
         self.assertEqual(list(CompetitorSnapshot.objects.values_list("likes", flat=True)), [100, 150])
 
+    @patch.dict("os.environ", {"INSTAGRAM_FALLBACK": "1"})
     @patch("engine.competitors.start_import")
     @patch("engine.apify.dataset_items")
     @patch("engine.apify.api")
@@ -125,6 +126,7 @@ class IntelligenceTests(TestCase):
         )
         self.assertIsNone(momentum([snap(0, 500), snap(0.01, 600)])["growth"])
 
+    @patch.dict("os.environ", {"INSTAGRAM_FALLBACK": "1"})
     @patch("engine.competitors.start_import")
     @patch("engine.apify.dataset_items")
     @patch("engine.apify.api")

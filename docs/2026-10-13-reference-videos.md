@@ -63,3 +63,30 @@ kostar ≈ 0,017–0,024 USD med Flash. Hela jämförelsen inklusive tre "vår v
 Startlistorna i `library/follow-lists/` hade aldrig aktiverats i produktion (FAIV hade 0 konton och 0 annonser).
 Aktiverat: FAIV 9 IG-konton + 10 annonssidor, Golfkuponger 4 IG-konton + 2 annonssidor. Första annonshämtning FAIV:
 132 annonser från 6 sidor (≈ 0,56 USD).
+
+## Bevakning: billigare actors, TikTok och sökord (2026-10-13, andra omgången)
+
+| Källa | Actor | Pris | Vad vi får |
+|---|---|---|---|
+| Meta-annonser (sida, sid-URL eller **sökord**) | `curious_coder/facebook-ads-library-scraper` | 0,00075 USD/annons (förut 0,004 + 0,02/körning) | Topp-annonser sorterade på visningar, **video-/bildlänk**, format, varianter, start/slut, EU-räckvidd |
+| Instagram | `esdrasdw/instagram-content-scraper` | 0,00005 USD/inlägg | Som förut. Den dyra reserven `apify/instagram-post-scraper` körs bara med `INSTAGRAM_FALLBACK=1` |
+| **TikTok** | `apidojo/tiktok-scraper` | 0,0003 USD/video | Visningar, likes, kommentarer, delningar, videolänk |
+
+Verklig kostnad hittills: Golfkuponger 0,07 USD för en hel månad (2 IG-konton); Sänk Dig 2,65 USD/månad, varav 1,89 USD
+från den dyra reserven (bevakningen av Sänk Dig är avstängd – testbolag). `SCRAPER_DAILY_BUDGET_USD` är ett **tak** per
+bolag och dag (nu 0,50), inte förväntad kostnad; en körning reserverar sitt maxbelopp tills den rapporterat verklig kostnad.
+
+**Referenskandidater** (`list_reference_candidates`, dagliga steget) blandar två sorter:
+- annonser med video som gått länge (aktiva väger dubbelt), sedan EU-räckvidd;
+- inlägg (TikTok/Instagram) med flest visningar jämfört med kontots median (minst 2×, minst 2 dagar gamla).
+Varje annonsörs/kontos bästa först. Annonser med videolänk hämtas direkt från länken (ingen 429 från Ad Library).
+
+Startlistorna (`library/follow-lists/*.json`) innehåller nu hela den godkända listan från referensrunda 2: alla
+annonssidor (sid-id framtagna 2026-10-13; resten som sid-URL vars id lärs in), sökorden "extraljus", "ekstralys" och
+"friskvårdsbidrag", och 9 TikTok-konton för Golfkuponger.
+
+## Verktygslådan
+
+Produktionssteg som kräver ett eget open source-verktyg ligger i den delade verktygslådan (`~/.agents/toolbox`, skills
+`tool-*`). Första: **Genjutsu** (`tool-genjutsu`) – rollbyte på eget grovklipp med Seedance 2.5 Edit, se
+`library/models/README.md`. Kräver WSL2 och egna Enhancor-/Replicate-nycklar; körs lokalt, inte via ChatGPT/MCP.
