@@ -53,6 +53,8 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
   bredd i renderaren och sätt textstorleken per block så att den längsta raden fyller safe zone-bredden (~950 px);
   bryt hellre om raden än att krympa texten.
 - Textanimationer: fade, lätt scale-in, tracking som dras ihop. Inga överdrivna övergångar.
+- **Markerade ord (ord i färgad ruta):** ingen textskugga på texten i rutan – en mörk skugga på mörk text mot ljus ruta
+  smetar ut bokstäverna. Rutan ska täcka hela versalhöjden inklusive Å/Ä/Ö-prickar och ringar.
 
 ### Bild
 - **Något som ska vara svårt att se** (dolt rådjur, detalj): dämpa bara zonen runt det och kalibrera nivån med
@@ -101,3 +103,4 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-12 | FAIV Hitta faran | "Detta tog alldeles för mycket edit" | Beslutsrunda före bygget (2), mall `faiv.template.hitta-faran` |
 | 2026-10-13 | GK Årsskiftet | Slutbilden ska vara "slut" på alla klipp vi gör | Bolagets slutbild sist i varje film, även egna renderare (3, Slutkort) |
 | 2026-10-13 | GK Årsskiftet | "Gör allt lite större så man ser det tydligare"; respektera safe zones | Safe zones x 65–1015, y 270–1250 för allt viktigt; text så stor som de tillåter (3, Text) |
+| 2026-10-13 | GK Årsskiftet | "Man ser inte riktigt texten" (mörk text i ljus ruta) | Ingen skugga i markerade rutor; rutan täcker Å-ringen (3, Text) |
