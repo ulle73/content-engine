@@ -29,6 +29,12 @@ Ett mjukt morgonljus över en välskött svensk bana, någon som faktiskt spelar
 - Mättade färger, neonaccenter, tunga filter.
 - Text inbakad i genererade bilder. Text läggs alltid ovanpå i Remotion.
 
+**Tecknat (illustration/animation)** – Jonas 2026-10-13: platt vektor räcker inte, sikta på *premiumillustration*:
+djupgrön bakgrund med mjuka diagonala ljusstrålar och guldstoft/glimtar, ett varmt ljust stenbord med mjuka skuggor
+(ljus uppifrån vänster), föremål med volym (sidbunt, guldkanter, guldringar, papperstextur), guld som accent, riktig
+eld med glöd och gnistor, säsongsdekor i hörnen (höstkvist, granris med guldkulor). Fortfarande tecknat – inga
+fotorealistiska ytor. Exempel: årsskiftesfilmen (`work/gk-arsskifte`, mall när den godkänts).
+
 ## Färger
 
 Tokens kommer från `engine/motion/brand.py` (preset `golfkuponger`), som speglar `gk-design-system.css`. Tokens är standard; avvik när en mall eller idé kräver det (t.ex. experiment-site-temats guld `#D6A536`, kräm `#F8F4EC` och mörkgrönt `#01170F`).
