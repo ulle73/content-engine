@@ -36,5 +36,5 @@ REVIEW: 4 stills before the full render, then the critique loop (09-critique-loo
 
 - Skärminspelningar: spela in i 1080×1920 eller högre; använd `device`-scenen i Motion Engine
   (mall `friskvard-portal-ad` / `friskvard-direct-ad`) om den passar – den gör redan det här.
-- Bevistal som inte är verifierat: skriv om till "kolla med din arbetsgivare" eller visa en riktig
+- Bevistal du är osäker på: fråga beställaren hellre än att gardera budskapet, eller visa en riktig
   skärmbild i stället.

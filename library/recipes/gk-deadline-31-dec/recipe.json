@@ -10,8 +10,8 @@
     "1:1"
   ],
   "duration_s": 15,
-  "hook": "Har du friskvårdsbidrag kvar i år?",
-  "why_it_works": "Okt–dec är högsäsong: bidraget ska användas innan året är slut hos många arbetsgivare. En lugn nedräkning skapar brådska utan att skrika, och golfen nästa säsong är belöningen.",
+  "hook": "Har du 3 000 kr friskvårdsbidrag kvar?",
+  "why_it_works": "Okt–dec är högsäsong: den 31 december försvinner bidraget. En tydlig nedräkning skapar brådska, och golfen nästa säsong är belöningen.",
   "references": [
     {
       "label": "Säsongsbrådska för friskvård (Meta Ads Library)",
@@ -100,7 +100,7 @@
       ],
       "transition_in": "ext.content-engine-motion.transition.cut",
       "camera": "Snö på green eller simulator",
-      "notes": "F6 gäller per arbetsgivare. Utan verifierad formulering: 'Innan årsskiftet – kolla med din arbetsgivare.'"
+      "notes": "F6 rakt och tydligt: '31 december försvinner det.'"
     },
     {
       "id": "s5",
@@ -146,8 +146,8 @@
   "qa": [
     "Krok syns och läses inom 1 s, utan ljud",
     "Humorn landar utan förklaring – testa på någon som inte sett manuset",
-    "Varje faktapåstående på skärm har fact-id från faktabanken och är verifierat; annars säker formulering",
-    "Inga absoluta deadlines ('alla förlorar 31/12') – F6 gäller per arbetsgivare",
+    "Varje faktapåstående på skärm har fact-id från faktabanken; osäker siffra → fråga Jonas, gör inte budskapet svagare",
+    "31 december och 3 000 kr sägs rakt och tydligt (F6, F8) – ingen gardering som 'hos många arbetsgivare' eller 'kolla med HR'",
     "Portal-, app- och kvitto-UI är riktiga skärminspelningar (personuppgifter dolda), aldrig AI",
     "Text inom 9:16-safe zone, max ~8 ord per skärm, läsbar i 360 px mobilvy",
     "Klipp på musikens slag; något nytt händer var 2–4 s",
