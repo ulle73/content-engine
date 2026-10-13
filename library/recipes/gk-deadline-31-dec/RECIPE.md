@@ -37,4 +37,4 @@ s4 kan göras med Kling (snötäckt green, inga personer) om vinterfilm saknas. 
 
 - Oktober (lugn påminnelse) → november (planera) → december (sista chansen) – samma mall, tre tonlägen.
 - Julklapp till dig själv (december) – presentkortet i handen (`gk-b1`).
-- Kombinera med Kenneth (`gk-recurring-character-sketch`) som säsongsavsnitt.
+- Kombinera med Tourleif (`gk-recurring-character-sketch`) som säsongsavsnitt.

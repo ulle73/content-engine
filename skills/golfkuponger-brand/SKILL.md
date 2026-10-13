@@ -29,6 +29,14 @@ Ett mjukt morgonljus över en välskött svensk bana, någon som faktiskt spelar
 - Mättade färger, neonaccenter, tunga filter.
 - Text inbakad i genererade bilder. Text läggs alltid ovanpå i Remotion.
 
+## Tourleif – vår återkommande figur
+
+**Använd alltid Tourleif** när Golfkuponger gör tecknat eller animerat innehåll med en person (Jonas 2026-10-13).
+Tecknad golfare i grön keps med Golfkupongers **riktiga logga** (officiella `logo-final.png`, aldrig ritad eller AI) och
+grön piké med krämvit krage. Uttryck: glad, jublar, förvånad, gråter. Kod, utseenderegler och karaktärsark:
+`library/templates/golfkuponger-tourleif/` (`find.py tourleif`). Nya poser byggs i samma modul och visas för Jonas innan
+de används. Filmade sketcher med skådespelare använder samma namn (receptet `gk-recurring-character-sketch`).
+
 ## Färger
 
 Tokens kommer från `engine/motion/brand.py` (preset `golfkuponger`), som speglar `gk-design-system.css`. Tokens är standard; avvik när en mall eller idé kräver det (t.ex. experiment-site-temats guld `#D6A536`, kräm `#F8F4EC` och mörkgrönt `#01170F`).

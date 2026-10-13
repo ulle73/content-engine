@@ -1,8 +1,8 @@
 {
  "version": 1,
  "generated": "2026-10-13",
- "count": 1448,
- "verified": 336,
+ "count": 1449,
+ "verified": 337,
  "by_type": {
   "background": 60,
   "caption": 29,
@@ -12,7 +12,7 @@
   "model": 5,
   "prompt": 347,
   "recipe": 12,
-  "scene": 186,
+  "scene": 187,
   "skill": 60,
   "sound": 47,
   "template": 100,
@@ -5815,6 +5815,55 @@
     "bevisat"
    ],
    "path": ".claude/skills/animate/grammar/FORMATS.md",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Tourleif (återkommande figur)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; logga: Golfkupongers officiella logo-final.png"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "tourleif(t, { expr: 'glad'|'jublar'|'forvanad'|'grat', x, y, s }) + tourleifDefs() och loggsymbolen #gklogo (se sheet.html). Läs README.md.",
+   "notes": "Gråt-uttrycket godkänt av Jonas ('perfekt') i årsskiftesfilmen; glad, jublar och förvånad är nya 2026-10-13 – visa för Jonas första gången de används.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": "library/previews/golfkuponger.character.tourleif.mp4",
+    "still": "library/previews/golfkuponger.character.tourleif.jpg"
+   },
+   "id": "golfkuponger.character.tourleif",
+   "name": "Tourleif – Golfkupongers återkommande figur",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Tecknad golfare i grön keps med Golfkupongers riktiga logga och grön piké. Fyra animerade uttryck: glad (blinkar), jublar (studsar), förvånad, gråter (snyftar, tårfontäner). Används ALLTID när Golfkuponger gör tecknat innehåll med en person (Jonas 2026-10-13).",
+   "tags": [
+    "tourleif",
+    "figur",
+    "karaktär",
+    "maskot",
+    "återkommande",
+    "golfare",
+    "keps",
+    "logga",
+    "tecknat",
+    "glad",
+    "jublar",
+    "förvånad",
+    "gråt"
+   ],
+   "path": "library/templates/golfkuponger-tourleif/tourleif.js",
    "status": "verified"
   },
   {

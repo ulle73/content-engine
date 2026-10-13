@@ -1,0 +1,29 @@
+{
+  "kit": "golfkuponger",
+  "title": "Golfkuponger – Tourleif (återkommande figur)",
+  "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; logga: Golfkupongers officiella logo-final.png"
+  },
+  "items": [
+    {
+      "id": "golfkuponger.character.tourleif",
+      "name": "Tourleif – Golfkupongers återkommande figur",
+      "type": "scene",
+      "medium": "video",
+      "formats": ["9:16", "4:5", "1:1", "any"],
+      "engine": "html-playwright",
+      "description": "Tecknad golfare i grön keps med Golfkupongers riktiga logga och grön piké. Fyra animerade uttryck: glad (blinkar), jublar (studsar), förvånad, gråter (snyftar, tårfontäner). Används ALLTID när Golfkuponger gör tecknat innehåll med en person (Jonas 2026-10-13).",
+      "tags": ["tourleif", "figur", "karaktär", "maskot", "återkommande", "golfare", "keps", "logga", "tecknat", "glad", "jublar", "förvånad", "gråt"],
+      "path": "library/templates/golfkuponger-tourleif/tourleif.js",
+      "use": "tourleif(t, { expr: 'glad'|'jublar'|'forvanad'|'grat', x, y, s }) + tourleifDefs() och loggsymbolen #gklogo (se sheet.html). Läs README.md.",
+      "requires": ["node"],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-13",
+      "preview": {"video": "library/previews/golfkuponger.character.tourleif.mp4", "still": "library/previews/golfkuponger.character.tourleif.jpg"},
+      "notes": "Gråt-uttrycket godkänt av Jonas ('perfekt') i årsskiftesfilmen; glad, jublar och förvånad är nya 2026-10-13 – visa för Jonas första gången de används."
+    }
+  ]
+}
