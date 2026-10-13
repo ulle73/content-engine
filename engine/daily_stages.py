@@ -43,7 +43,7 @@ def competitor_units(company):
     for account in Competitor.objects.filter(company=company, active=True):
         from .sync import state_for, refresh_due
         from .scraper_efficiency import discovery_due
-        state = state_for(company,"instagram",account.username)
+        state = state_for(company,account.platform,account.username)
         if not discovery_due(state) and not refresh_due(state,timezone.now()) and not account.imports.filter(status__in=OPEN_STATUSES).exists():
             continue
         if account.last_success_at and account.last_success_at > timezone.now()-timedelta(hours=23) and not account.imports.filter(status__in=OPEN_STATUSES).exists():
@@ -230,11 +230,11 @@ from .market import daily_units as market_units
 STAGES = (*STAGES, Stage("market_intelligence", market_units))
 
 
-def breakdown_reference(company, url):
+def breakdown_reference(company, url, video_url=""):
     from .references import fetch, service
 
     try:
-        ref = service.process(company, url)
+        ref = service.process(company, url, video_url=video_url)
     except fetch.FetchError as exc:
         status = "attention" if "429" in str(exc) else "skipped"
         return Result(status, str(exc)[:300], {"url": url})
@@ -260,9 +260,10 @@ def reference_units(company):
     for row in service.candidates(company, limit=60):
         if len(units) >= limit:
             break
-        if row["reference_id"] or row["ad_id"] in tried or row["days_running"] < min_days:
+        key = row["ad_id"] if row["kind"] == "ad" else f"{row['platform']}:{row['post_id']}"
+        if row["reference_id"] or key in tried or (row["kind"] == "ad" and row["days_running"] < min_days):
             continue
-        units.append((row["ad_id"], partial(breakdown_reference, company, row["url"])))
+        units.append((key, partial(breakdown_reference, company, row["url"], row.get("video_url", ""))))
     return units
 
 

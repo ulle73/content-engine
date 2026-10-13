@@ -1,6 +1,11 @@
-"""Import only explicit competitor accounts, retaining post identity and real observations."""
+"""Import only explicit competitor accounts (Instagram and TikTok), retaining post identity and real observations.
+
+Instagram: esdrasdw/instagram-content-scraper. Its expensive fallback (apify/instagram-post-scraper, ~35× the price)
+only runs with INSTAGRAM_FALLBACK=1. TikTok: apidojo/tiktok-scraper (0.0003 USD per video).
+"""
 
 import math
+import os
 import re
 from datetime import datetime, timedelta
 from datetime import timezone as utc
@@ -33,6 +38,23 @@ def instagram_username(value):
     }:
         raise ValueError("Ange profilens användarnamn, inte länken till en enskild post.")
     return value
+
+
+def tiktok_username(value):
+    value = value.strip()
+    if "://" in value:
+        parsed = urlparse(value)
+        if parsed.scheme != "https" or parsed.hostname not in {"tiktok.com", "www.tiktok.com"}:
+            raise ValueError("Ange en TikTok-profil med https://www.tiktok.com/@namn eller ett användarnamn.")
+        value = parsed.path.strip("/").split("/")[0]
+    value = value.lstrip("@").lower()
+    if not re.fullmatch(r"[a-z0-9_.]{2,24}", value):
+        raise ValueError("Ange TikTok-profilens användarnamn.")
+    return value
+
+
+def username_for(platform, value):
+    return tiktok_username(value) if platform == "tiktok" else instagram_username(value)
 
 
 def number(value, *, integer=True):
@@ -103,6 +125,45 @@ def normalize(row, actor, username):
     }
 
 
+def normalize_tiktok(row, username):
+    channel = row.get("channel") if isinstance(row.get("channel"), dict) else {}
+    if str(channel.get("username", "")).lower() != username:
+        raise ValueError("Videon tillhör inte det valda kontot.")
+    video_id = str(row.get("id") or "")
+    if not video_id.isdigit():
+        raise ValueError("Videons id saknas.")
+    timestamp = row.get("uploadedAtFormatted")
+    if not timestamp:
+        raise ValueError("Publiceringsdatum saknas.")
+    published = datetime.fromisoformat(str(timestamp).replace("Z", "+00:00"))
+    if published.tzinfo is None:
+        published = published.replace(tzinfo=utc.utc)
+    if published > timezone.now() + timedelta(minutes=15):
+        raise ValueError("Publiceringsdatum ligger i framtiden.")
+    video = row.get("video") if isinstance(row.get("video"), dict) else {}
+    caption = row.get("title")
+    return {
+        "shortcode": video_id,
+        "instagram_id": video_id,
+        "url": f"https://www.tiktok.com/@{username}/video/{video_id}",
+        "published_at": published,
+        "caption": caption if isinstance(caption, str) else "",
+        "format": "reel",
+        "duration_seconds": number(video.get("duration"), integer=False),
+        "slide_count": None,
+        "metrics": {
+            "likes": number(row.get("likes")),
+            "comments": number(row.get("comments")),
+            "views": number(row.get("views")),
+            "view_metric": "tiktok_views",
+        },
+    }
+
+
+def fallback_enabled():
+    return os.environ.get("INSTAGRAM_FALLBACK", "").strip() == "1"
+
+
 def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
     from .sync import dispatch, organic_plan, state_for
     with transaction.atomic():
@@ -118,7 +179,9 @@ def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
             previous = current.imports.filter(started_at__gte=timezone.now()-timedelta(hours=23)).order_by("-started_at").first()
         if previous:
             return previous
-        state = state_for(current.company, "instagram", current.username)
+        if current.platform == "tiktok":
+            actor = apify.TIKTOK_ACTOR
+        state = state_for(current.company, current.platform, current.username)
         mode, limit = organic_plan(current, state)
         from .scraper_efficiency import discovery_due
         if not fallback_of and mode == "discovery" and not discovery_due(state):
@@ -131,13 +194,14 @@ def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
             competitor=current, actor=actor, fallback_of=fallback_of, requested_limit=limit, sync_mode=mode
         )
     try:
-        inputs = apify.instagram_input(current.username, actor, limit)
+        inputs = (apify.tiktok_input(current.username, limit) if actor == apify.TIKTOK_ACTOR
+                  else apify.instagram_input(current.username, actor, limit))
         if actor == apify.FALLBACK_ACTOR:
             inputs["dataDetailLevel"] = "basicData"
             if mode == "discovery" and state.watermark:
                 inputs.update(onlyPostsNewerThan=(state.watermark-timedelta(days=2)).isoformat(), skipPinnedPosts=True)
         request = dispatch(state, actor, mode, inputs,
-            max_cost="0.05" if actor == apify.PRIMARY_ACTOR else "0.25",
+            max_cost=str(apify.max_charge(actor, limit)),
             sender=lambda: apify.start_actor(current.username, actor, limit, inputs=inputs))
     except apify.ApifyError as exc:
         # A POST timeout can mean the paid run did start; never automatically duplicate it.
@@ -184,15 +248,19 @@ def collect_import(run, *, allow_fallback=True):
     if report_error and len(rows) < run.requested_limit * 0.8:
         incomplete = True
     normalized, skipped = [], 0
+    tiktok = run.actor == apify.TIKTOK_ACTOR
     for row in rows:
         try:
-            normalized.append(normalize(row, run.actor, run.competitor.username))
+            normalized.append(normalize_tiktok(row, run.competitor.username) if tiktok
+                              else normalize(row, run.actor, run.competitor.username))
         except (ValueError, TypeError, KeyError, AttributeError):
             skipped += 1
     # A few malformed posts and absent optional metrics do not justify a second paid run.
     # Caption plus at least one public engagement metric is the minimum useful intelligence.
+    # TikTok videos often have no caption; their views are the signal.
     useful = sum(
-        bool(p["caption"].strip()) and any(p["metrics"][k] is not None for k in ("likes", "comments"))
+        (p["metrics"]["views"] is not None) if tiktok
+        else bool(p["caption"].strip()) and any(p["metrics"][k] is not None for k in ("likes", "comments"))
         for p in normalized
     )
     if (not normalized and (rows or report_error or not succeeded)) or skipped > len(rows) * 0.2 or useful < len(normalized) * 0.7:
@@ -273,6 +341,6 @@ def collect_import(run, *, allow_fallback=True):
             from .scraper_efficiency import record_yield
             record_yield(locked.scrape_request, returned=len(rows),before=before,after=after,complete=not incomplete,
                 capabilities={"date_filter":locked.actor==apify.FALLBACK_ACTOR,"cursor":False,"duplicates_possible":True})
-    if incomplete and allow_fallback and run.actor == apify.PRIMARY_ACTOR:
+    if incomplete and allow_fallback and run.actor == apify.PRIMARY_ACTOR and fallback_enabled():
         start_import(run.competitor, actor=apify.FALLBACK_ACTOR, fallback_of=locked)
     return locked

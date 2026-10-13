@@ -36,7 +36,9 @@ def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None, provid
         if existing:
             return existing
         cap = Decimal(max_cost)
-        daily_limit = min(Decimal(os.environ.get("SCRAPER_DAILY_BUDGET_USD", "1.00")), Decimal("10"))
+        # A ceiling per company and day, not the expected spend (typically a few cents); reserved caps count until
+        # a run reports its real cost.
+        daily_limit = min(Decimal(os.environ.get("SCRAPER_DAILY_BUDGET_USD", "0.50")), Decimal("10"))
         spent = sum(
             (r.cost_usd if r.cost_usd is not None else r.max_cost_usd)
             for r in ScrapeRequest.objects.filter(state__company_id=state.company_id, created_at__date=timezone.localdate())

@@ -25,7 +25,11 @@ class FollowListTests(TestCase):
         with patch("engine.follow_lists.start_import") as start:
             result = follow_lists.apply(self.faiv)
         self.assertEqual(result["instagram"], 8)
-        self.assertEqual(result["ad_pages"], 10)
+        self.assertEqual(result["ad_pages"], 20)  # 18 pages + 2 keyword searches
+        self.assertTrue(AdAccount.objects.filter(company=self.faiv, name__startswith="Sökord: extraljus",
+                                                 page_url__contains="q=extraljus").exists())
+        self.assertTrue(AdAccount.objects.filter(company=self.faiv, page_id="",
+                                                 page_url="https://www.facebook.com/Lazerlamps/").exists())
         self.assertEqual(start.call_count, 8)
         self.assertFalse(Competitor.objects.get(company=self.faiv, username="vparts").active)
         self.assertTrue(AdAccount.objects.filter(company=self.faiv, page_id="133016172910", country="NO").exists())
@@ -33,6 +37,18 @@ class FollowListTests(TestCase):
             again = follow_lists.apply(self.faiv)
         self.assertEqual((again["instagram"], again["ad_pages"]), (0, 0))
         self.assertEqual(follow_lists.missing(self.faiv)["instagram"], [])
+        self.assertEqual(follow_lists.missing(self.faiv)["ad_keywords"], [])
+
+    def test_tiktok_accounts_live_next_to_instagram(self):
+        golf = Company.objects.create(owner=self.user, name="Golfkuponger")
+        with patch("engine.follow_lists.start_import"):
+            result = follow_lists.apply(golf)
+        self.assertEqual((result["instagram"], result["tiktok"]), (4, 9))
+        self.assertTrue(Competitor.objects.filter(company=golf, platform="tiktok", username="standregolf").exists())
+        self.assertTrue(Competitor.objects.filter(company=golf, platform="instagram", username="standregolf").exists())
+        self.assertTrue(AdAccount.objects.filter(company=golf, page_url__contains="q=friskv").exists())
+        with patch("engine.follow_lists.start_import"):
+            self.assertEqual(follow_lists.apply(golf)["accounts"], 0)
 
     def test_view_requires_post_and_company_access(self):
         self.client.force_login(self.user)

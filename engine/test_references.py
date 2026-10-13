@@ -244,6 +244,30 @@ class ReferenceServiceTests(TestCase):
                 registered("get_reference")(str(self.company.pk), made["reference_id"])
 
 
+@override_settings(MEDIA_STORAGE="local", LOCAL_HTTP=True, APP_URL="http://127.0.0.1:8765")
+class PostOutlierTests(TestCase):
+    def test_videos_far_above_their_accounts_normal_views_are_candidates(self):
+        from engine.models import Competitor, CompetitorImport, CompetitorPost, CompetitorSnapshot
+
+        user = get_user_model().objects.create_user(username="outlier")
+        company = Company.objects.create(owner=user, name="Golfkuponger")
+        account = Competitor.objects.create(company=company, name="Timeplan", platform="tiktok", username="timeplango")
+        run = CompetitorImport.objects.create(competitor=account, actor="apidojo/tiktok-scraper", status="succeeded")
+        now = timezone.now()
+        for i, views in enumerate((900, 1100, 1000, 1200, 203376, 5000)):
+            post = CompetitorPost.objects.create(
+                competitor=account, shortcode=str(100 + i), url=f"https://www.tiktok.com/@timeplango/video/{100 + i}",
+                published_at=now - timedelta(days=5 + i), format="reel")
+            CompetitorSnapshot.objects.create(post=post, import_run=run, observed_at=now, views=views)
+        rows = service.post_outliers(company)
+        self.assertEqual([r["post_id"] for r in rows], ["104", "105"])
+        self.assertGreater(rows[0]["ratio"], 100)
+        self.assertIn("TikTok", rows[0]["why"])
+        mixed = service.candidates(company)
+        self.assertEqual(mixed[0]["kind"], "post")
+        self.assertEqual(mixed[0]["url"], "https://www.tiktok.com/@timeplango/video/104")
+
+
 class AdMetricsTests(SimpleTestCase):
     def test_reach_is_kept_outside_the_creative(self):
         account = SimpleNamespace(page_id="12345")

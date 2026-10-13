@@ -1,20 +1,38 @@
 {
   "company": "golfkuponger",
   "aliases": ["golfkuponger"],
-  "source": "work/references/round-2/FOLLOW-LIST.md (2026-10-09), godkänd av ägaren",
+  "source": "library/follow-lists/FOLLOW-LIST-2026-10-09.md (referensrunda 2), godkänd av ägaren 2026-10-09; sid-id:n och TikTok kompletterade 2026-10-13",
   "instagram": [
     {"name": "Melkers / ICA Supermarket Rimforsa", "username": "melkersqueensofficial", "why": "Återkommande karaktärer och julkalender – mall för en serie."},
     {"name": "St. André Golf", "username": "standregolf", "why": "Golfsketcher med betalda varumärkessamarbeten."},
     {"name": "Corporate Natalie", "username": "corporatenatalie", "why": "Kontors-/POV-sketcher med partnerannonser."},
     {"name": "Duolingo", "username": "duolingo", "why": "Maskot och påminnelse som underhållning."}
   ],
+  "tiktok": [
+    {"name": "Timeplan", "username": "timeplango", "why": "Svenska kontorsmemes: 192 följare men upp till 328K visningar per video."},
+    {"name": "Melkers / ICA Rimforsa", "username": "melkersqueens", "why": "Julkalender med återkommande karaktärer (12,8M visningar)."},
+    {"name": "Aftonbladet", "username": "aftonbladet", "why": "Gatuintervjuer om pengar och jobb ('Vad har du i lön?')."},
+    {"name": "Coltin Scott Golf", "username": "coltinscottgolf", "why": "Golfhumor med deadline ('wife gives you a deadline')."},
+    {"name": "St. André Golf", "username": "standregolf", "why": "Golfsketcher med varumärkessamarbeten."},
+    {"name": "Corporate Natalie", "username": "corporatenatalie", "why": "Kontors- och POV-sketcher."},
+    {"name": "Duolingo", "username": "duolingo", "why": "Maskoten gör påminnelsen till underhållning."},
+    {"name": "TeeMate", "username": "teemate_app", "why": "Svensk golfapp som testar igenkänningsmemes."},
+    {"name": "Hagabadet", "username": "hagabadet", "why": "Säsongsbudskapet 'friskvårdsbidrag kvar?' och kreatörssamarbeten."}
+  ],
   "ad_pages": [
+    {"name": "Float In Space", "page_id": "100085907209113", "country": "SE"},
     {"name": "Grillkliniken", "page_id": "735544842985326", "country": "SE"},
-    {"name": "Float In Space", "page_id": "100085907209113", "country": "SE"}
+    {"name": "Hälsoresurs", "page_id": "385207961625035", "country": "SE"},
+    {"name": "Epassi Sweden", "page_url": "https://www.facebook.com/EpassiSwe/", "country": "SE"},
+    {"name": "Edenred Sweden", "page_url": "https://www.facebook.com/edenredsweden/", "country": "SE"},
+    {"name": "Hagabadet", "page_url": "https://www.facebook.com/Hagabadet/", "country": "SE"},
+    {"name": "Moverot", "page_url": "https://www.facebook.com/61564911711913/", "country": "SE"}
+  ],
+  "ad_keywords": [
+    {"name": "Sökord: friskvårdsbidrag (SE)", "query": "friskvårdsbidrag", "country": "SE", "media": "all"}
   ],
   "later": {
-    "tiktok": ["timeplango", "melkersqueens", "aftonbladet", "coltinscottgolf", "standregolf", "corporatenatalie", "duolingo", "teemate_app", "hagabadet"],
-    "facebook_pages_without_id": ["https://www.facebook.com/EpassiSwe/", "https://www.facebook.com/halsoresurs/", "https://www.facebook.com/edenredsweden/", "https://www.facebook.com/Hagabadet/", "https://www.facebook.com/61564911711913/"]
+    "note": "Benify, Actiway och Wellnet hade inga aktiva videoannonser 2026-10-09 – kolla igen i november."
   },
   "keywords": ["friskvårdsbidrag", "kontorshumor", "jobbhumor", "golfhumor"]
 }

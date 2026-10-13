@@ -100,7 +100,8 @@ def intelligence(request, workspace_id):
 def apply_follow_list(request, workspace_id):
     """Add the curated start list's missing Instagram accounts and ad pages for this company."""
     result = follow_lists.apply(request.workspace)
-    messages.success(request, f"Startlistan är tillagd: {result['instagram']} Instagramkonton och {result['ad_pages']} annonssidor.")
+    messages.success(request, f"Startlistan är tillagd: {result['instagram']} Instagramkonton, {result['tiktok']} "
+                              f"TikTok-konton och {result['ad_pages']} annonssidor/sökord.")
     for error in result["import_errors"]:
         messages.error(request, f"Kunde inte starta hämtning för {error}")
     return redirect("engine:intelligence", workspace_id=workspace_id)
