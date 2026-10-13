@@ -1,24 +1,24 @@
 {
  "version": 1,
  "generated": "2026-10-13",
- "count": 1448,
- "verified": 336,
+ "count": 1472,
+ "verified": 360,
  "by_type": {
   "background": 60,
   "caption": 29,
   "carousel": 22,
-  "effect": 242,
+  "effect": 243,
   "grade": 10,
   "model": 5,
   "prompt": 347,
   "recipe": 12,
-  "scene": 186,
+  "scene": 187,
   "skill": 60,
-  "sound": 47,
-  "template": 100,
+  "sound": 66,
+  "template": 102,
   "text": 127,
   "tool": 82,
-  "transition": 119
+  "transition": 120
  },
  "items": [
   {
@@ -3731,6 +3731,50 @@
    "status": "verified"
   },
   {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "Funktionerna prohibition() och alarmLights() i src/sf.js; tajming som partStop() i src/scene2.js. Ljud: sound.smack-dov-trumma + sound.larm-anlaggning.",
+   "notes": "Jonas: 'perfekt'. Ingen färdig bild – byggt i kod.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.effect.forbud-larm.jpg"
+   },
+   "id": "golfkuponger.effect.forbud-larm",
+   "name": "Förbudsmärke som slår ner + rött larm",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Kodat förbudsmärke (röd ring + snedstreck, självlysande genomskinligt, skärmbrett) störtar ner från 2,6× och slår i med studs, skak och tryckvåg; bilden får röd ton, två roterande varningsljus och pulserande rött i kanterna ('Tjernobyl'). Passar 'för sent', 'förbjudet', 'det här tas ifrån dig'.",
+   "tags": [
+    "förbud",
+    "förbudsmärke",
+    "stopp",
+    "för sent",
+    "larm",
+    "varning",
+    "rött",
+    "slår ner",
+    "impact",
+    "tjernobyl"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/src/sf.js",
+   "status": "verified"
+  },
+  {
    "kit": "hf-skeletons",
    "kit_title": "HyperFrames skelettmallar, mönster och shaders (Claude Design template-first)",
    "source": {
@@ -6256,6 +6300,50 @@
     "whip"
    ],
    "path": "library/templates/golfkuponger-friskvard-v2/compositions/s5-proof.html",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "cryingGuy(t, cx, cy) i src/sf.js (kräver loggsymbolen #gklogo, se src/scene2.html). Ljud: sound.grat-man.",
+   "notes": "Jonas: 'perfekt'. Loggan är den officiella logo-final.png, aldrig AI.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.scene.grat-golfare.jpg"
+   },
+   "id": "golfkuponger.scene.grat-golfare",
+   "name": "Gråtande golfare med Golfkuponger-keps",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Egen tecknad figur: golfare i grön keps med Golfkupongers riktiga logga, pikétröja, hopknipna ögon, gapande mun, tårfontäner ur ögonen och pölar; snyftar (huvudet hackar, kroppen guppar). Kan bli återkommande karaktär.",
+   "tags": [
+    "gråt",
+    "ledsen",
+    "figur",
+    "karaktär",
+    "golfare",
+    "keps",
+    "logga",
+    "tårar",
+    "tecknat",
+    "maskot"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/src/sf.js",
    "status": "verified"
   },
   {
@@ -9269,6 +9357,110 @@
    "status": "verified"
   },
   {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy music.running-out-of-time work/<film>/sfx/running-out-of-time.wav",
+   "notes": "Starka slag från 2,299 s (lägg den på första texten). Hårt stopp + 0,1 s tystnad före vändpunkten.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/music.running-out-of-time.png"
+   },
+   "id": "music.running-out-of-time",
+   "name": "Musik: Running Out of Time (130 BPM)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Spänning/brådska, tiden rinner ut. Källa: Mixkit musik 77 – Running Out of Time (Ahjay Stelino).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "musik",
+    "spänning",
+    "brådska",
+    "deadline",
+    "tid",
+    "130 bpm"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Spänning/brådska, tiden rinner ut",
+    "source": "Mixkit musik 77 – Running Out of Time (Ahjay Stelino)",
+    "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Starka slag från 2,299 s (lägg den på första texten). Hårt stopp + 0,1 s tystnad före vändpunkten.",
+    "url": "https://assets.mixkit.co/music/77/77.mp3",
+    "md5": "a4de927c43ca7609fa91a7655c702bc0"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy music.under-the-sun work/<film>/sfx/under-the-sun.wav",
+   "notes": "Taktstart 24,232 s i spåret. Tona ut 0,55 s vid irisen/slutbilden.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/music.under-the-sun.png"
+   },
+   "id": "music.under-the-sun",
+   "name": "Musik: Under the Sun (120 BPM)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Lättnad, sol, golf, glatt slut. Källa: Mixkit musik 859 – Under the Sun (Michael Ramir C.).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "musik",
+    "glad",
+    "sol",
+    "golf",
+    "vår",
+    "120 bpm"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Lättnad, sol, golf, glatt slut",
+    "source": "Mixkit musik 859 – Under the Sun (Michael Ramir C.)",
+    "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Taktstart 24,232 s i spåret. Tona ut 0,55 s vid irisen/slutbilden.",
+    "url": "https://assets.mixkit.co/music/859/859.mp3",
+    "md5": "376303e4efe79bc98da66e425aabf306"
+   }
+  },
+  {
    "kit": "nextphase",
    "kit_title": "NextPhase Skill Pack",
    "source": {
@@ -9343,6 +9535,909 @@
    ],
    "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/make-free-sfx.py",
    "status": "verified"
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.bladdring work/<film>/sfx/bladdring.wav",
+   "notes": "Bädd ~-4 dB, tona in/ut 0,4/0,8 s.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.bladdring.png"
+   },
+   "id": "sound.bladdring",
+   "name": "Snabb bläddring",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Många blad i följd (tiden rusar). Källa: Mixkit 1102 – Fast browsing book paging.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "bläddring",
+    "papper",
+    "kalender",
+    "tid",
+    "snabbt"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Många blad i följd (tiden rusar)",
+    "source": "Mixkit 1102 – Fast browsing book paging",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Bädd ~-4 dB, tona in/ut 0,4/0,8 s.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1102/1102-preview.mp3",
+    "md5": "b0ba9431ce674950678ee16c04c11ada"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.boll-i-hal work/<film>/sfx/boll-i-hal.wav",
+   "notes": "Mycket tyst original (-39 dB): placera på ansatsen (~0,4 s in) och nivåsätt ~6 dB över musiken.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.boll-i-hal.png"
+   },
+   "id": "sound.boll-i-hal",
+   "name": "Golfboll i hålet",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Bollen trillar i koppen (putt), mål, lyckat. Källa: Freesound 21878 (inbeeld) – golf_putting.wav.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "golf",
+    "putt",
+    "boll i hål",
+    "kopp",
+    "hole in",
+    "green"
+   ],
+   "path": "library/sounds/files/boll-i-hal_freesound-21878.wav",
+   "status": "verified",
+   "bank": {
+    "role": "Bollen trillar i koppen (putt), mål, lyckat",
+    "source": "Freesound 21878 (inbeeld) – golf_putting.wav",
+    "license": "CC0 (Freesound) – fri användning, ingen attribution",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Mycket tyst original (-39 dB): placera på ansatsen (~0,4 s in) och nivåsätt ~6 dB över musiken.",
+    "file": "library/sounds/files/boll-i-hal_freesound-21878.wav"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.boll-studs work/<film>/sfx/boll-studs.wav",
+   "notes": "Andra studsen 2 dB svagare.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.boll-studs.png"
+   },
+   "id": "sound.boll-studs",
+   "name": "Bollstuds",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Boll som studsar på gräs. Källa: Mixkit 2073 – Game ball tap.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "boll",
+    "studs",
+    "golf",
+    "bounce"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Boll som studsar på gräs",
+    "source": "Mixkit 2073 – Game ball tap",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Andra studsen 2 dB svagare.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2073/2073-preview.mp3",
+    "md5": "df27a3e66ecf2f0b74bf90a4b702c0ce"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.bollsus work/<film>/sfx/bollsus.wav",
+   "notes": "Lägg starten där föremålet syns, toppen landar ~0,17 s senare. Svagare än smällen (~-14 dB).",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.bollsus.png"
+   },
+   "id": "sound.bollsus",
+   "name": "Sus – boll mot kameran",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Kort sus före en träff (topp ~0,17 s in). Källa: Pixabay – whoosh-short.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "sus",
+    "whoosh",
+    "boll",
+    "flyger",
+    "övergång"
+   ],
+   "path": "library/sounds/files/bollsus_pixabay-whoosh-short.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Kort sus före en träff (topp ~0,17 s in)",
+    "source": "Pixabay – whoosh-short",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Lägg starten där föremålet syns, toppen landar ~0,17 s senare. Svagare än smällen (~-14 dB).",
+    "file": "library/sounds/files/bollsus_pixabay-whoosh-short.mp3"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.eld-sprak work/<film>/sfx/eld-sprak.wav",
+   "notes": "Ramp -12 → -2 dB i takt med elden.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.eld-sprak.png"
+   },
+   "id": "sound.eld-sprak",
+   "name": "Eld som sprakar",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något brinner (bädd som växer med elden). Källa: Mixkit 1330 – Campfire crackles.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "eld",
+    "sprak",
+    "brinner",
+    "brinner inne"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Något brinner (bädd som växer med elden)",
+    "source": "Mixkit 1330 – Campfire crackles",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Ramp -12 → -2 dB i takt med elden.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1330/1330-preview.mp3",
+    "md5": "f8bd237ac6f1ad56943836409e495518"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.golftraff work/<film>/sfx/golftraff.wav",
+   "notes": "Skarp transient: lägg ett lågpass ~15,5 kHz före limitern, annars toppar AAC över 0 dB.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.golftraff.png"
+   },
+   "id": "sound.golftraff",
+   "name": "Golfträff",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Klubba träffar bollen, kort skarp träff (även svagt under andra smällar). Källa: Pixabay – golf 14 (freesound_community 94167).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "golf",
+    "slag",
+    "träff",
+    "drive",
+    "klubba",
+    "hit"
+   ],
+   "path": "library/sounds/files/golftraff_pixabay-94167.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Klubba träffar bollen, kort skarp träff (även svagt under andra smällar)",
+    "source": "Pixabay – golf 14 (freesound_community 94167)",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Skarp transient: lägg ett lågpass ~15,5 kHz före limitern, annars toppar AAC över 0 dB.",
+    "file": "library/sounds/files/golftraff_pixabay-94167.mp3"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.grat-man work/<film>/sfx/grat-man.wav --cut",
+   "notes": "23 s med flera attacker: 0,45 s (gråten bryter ut), 12,2 s (kraftigast), 18,4 s (snyftande). ~-8 dB RMS.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.grat-man.png"
+   },
+   "id": "sound.grat-man",
+   "name": "Man gråter",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Gråt, sorg, ledsen figur (tecknat). Källa: Pixabay – Crying man effect (peterpiotr, 450354).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "gråt",
+    "gråter",
+    "ledsen",
+    "sorg",
+    "tårar",
+    "crying",
+    "figur"
+   ],
+   "path": "library/sounds/files/grat-man_pixabay-450354.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Gråt, sorg, ledsen figur (tecknat)",
+    "source": "Pixabay – Crying man effect (peterpiotr, 450354)",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "23 s med flera attacker: 0,45 s (gråten bryter ut), 12,2 s (kraftigast), 18,4 s (snyftande). ~-8 dB RMS.",
+    "file": "library/sounds/files/grat-man_pixabay-450354.mp3",
+    "cut": {
+     "start": 0.45,
+     "dur": 2.0,
+     "fade_in": 0.04,
+     "fade_out": 0.03
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.kalenderblad work/<film>/sfx/kalenderblad.wav",
+   "notes": "~3 dB över musiken.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.kalenderblad.png"
+   },
+   "id": "sound.kalenderblad",
+   "name": "Kalenderblad vänds",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Ett blad/sida vänds lugnt. Källa: Mixkit 1104 – Page turn single.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "papper",
+    "blad",
+    "sida",
+    "kalender",
+    "vänd"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Ett blad/sida vänds lugnt",
+    "source": "Mixkit 1104 – Page turn single",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "~3 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1104/1104-preview.mp3",
+    "md5": "44d69cb5bbf8eb789255e9972d58ebff"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.kassettknapp work/<film>/sfx/kassettknapp.wav",
+   "notes": "Redan utklippt (0,46 s). ~-8 dB RMS.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.kassettknapp.png"
+   },
+   "id": "sound.kassettknapp",
+   "name": "Kassettknapp (paus/play)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Paus och play, knapptryck, bandspelare. Källa: Freesound 423870 – Cassette Tape Button.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "kassett",
+    "knapp",
+    "paus",
+    "play",
+    "klick",
+    "bandspelare",
+    "vhs"
+   ],
+   "path": "library/sounds/files/kassettknapp_freesound-423870.wav",
+   "status": "verified",
+   "bank": {
+    "role": "Paus och play, knapptryck, bandspelare",
+    "source": "Freesound 423870 – Cassette Tape Button",
+    "license": "CC0 (Freesound) – fri användning, ingen attribution",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Redan utklippt (0,46 s). ~-8 dB RMS.",
+    "file": "library/sounds/files/kassettknapp_freesound-423870.wav"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.klocktick work/<film>/sfx/klocktick.wav --cut",
+   "notes": "Kort svans (0,3 s) så det blir tyst när det ska.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.klocktick.png"
+   },
+   "id": "sound.klocktick",
+   "name": "Klocktick",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Tiden går, nedräkning (ett tick per händelse). Källa: Mixkit 1061 – Clock ticker single.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "klocka",
+    "tick",
+    "tid",
+    "nedräkning"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Tiden går, nedräkning (ett tick per händelse)",
+    "source": "Mixkit 1061 – Clock ticker single",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Kort svans (0,3 s) så det blir tyst när det ska.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1061/1061-preview.mp3",
+    "md5": "2e88a77537a7e2f41db906b0da95c121",
+    "cut": {
+     "start": "onset",
+     "dur": 0.3,
+     "fade_out": 0.08
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.larm-anlaggning work/<film>/sfx/larm-anlaggning.wav --cut",
+   "notes": "Loopa utdraget. ~-12 dB under smällen; sänk 18 dB när något annat ska höras (t.ex. gråt).",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.larm-anlaggning.png"
+   },
+   "id": "sound.larm-anlaggning",
+   "name": "Larm – anläggning (Tjernobyl)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Larm/varning när något går fel: förbud, för sent, katastrof. Källa: Mixkit 999 – Facility alarm sound.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "larm",
+    "alarm",
+    "varning",
+    "tjernobyl",
+    "kontrollrum",
+    "siren",
+    "för sent",
+    "förbud"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Larm/varning när något går fel: förbud, för sent, katastrof",
+    "source": "Mixkit 999 – Facility alarm sound",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Loopa utdraget. ~-12 dB under smällen; sänk 18 dB när något annat ska höras (t.ex. gråt).",
+    "url": "https://assets.mixkit.co/active_storage/sfx/999/999-preview.mp3",
+    "md5": "e79d0df00656856e7bffe31fcb19bf6e",
+    "cut": {
+     "start": "onset",
+     "dur": 4.0,
+     "fade_out": 0.4
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.papper-glid work/<film>/sfx/papper-glid.wav",
+   "notes": "I nivå med musiken.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.papper-glid.png"
+   },
+   "id": "sound.papper-glid",
+   "name": "Papper glider/vänds",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Kort/kupong vänds eller glider. Källa: Mixkit 1530 – Paper slide.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "papper",
+    "kort",
+    "kupong",
+    "vänd",
+    "glid"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Kort/kupong vänds eller glider",
+    "source": "Mixkit 1530 – Paper slide",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "I nivå med musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1530/1530-preview.mp3",
+    "md5": "7bb8baa5d61a2a6ae97e63572fc03b01"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.papper-riv work/<film>/sfx/papper-riv.wav",
+   "notes": "Utklipp 0,33 s. Ersatte en skarp golfträff som smäll ('för oskönt'). ~-11 dB RMS.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.papper-riv.png"
+   },
+   "id": "sound.papper-riv",
+   "name": "Papper rivs isär",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något slås igenom/rivs sönder, papper som rivs. Källa: Freesound 342541 – Fast Paper Rip.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "papper",
+    "riva",
+    "rip",
+    "tear",
+    "kalender",
+    "smäll igenom"
+   ],
+   "path": "library/sounds/files/papper-riv_freesound-342541.wav",
+   "status": "verified",
+   "bank": {
+    "role": "Något slås igenom/rivs sönder, papper som rivs",
+    "source": "Freesound 342541 – Fast Paper Rip",
+    "license": "CC0 (Freesound) – fri användning, ingen attribution",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Utklipp 0,33 s. Ersatte en skarp golfträff som smäll ('för oskönt'). ~-11 dB RMS.",
+    "file": "library/sounds/files/papper-riv_freesound-342541.wav"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.papper-snabbriv work/<film>/sfx/papper-snabbriv.wav",
+   "notes": "Par med klocktick, 1–3 dB över musiken.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.papper-snabbriv.png"
+   },
+   "id": "sound.papper-snabbriv",
+   "name": "Blad rivs av",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Ett kalenderblad rivs av (de sista dagarna). Källa: Mixkit 2384 – Paper quick slice.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "riva",
+    "blad",
+    "kalender",
+    "papper"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Ett kalenderblad rivs av (de sista dagarna)",
+    "source": "Mixkit 2384 – Paper quick slice",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Par med klocktick, 1–3 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2384/2384-preview.mp3",
+    "md5": "ffc673f08ad2154b9a4f465953160a24"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.smack-dov-trumma work/<film>/sfx/smack-dov-trumma.wav --cut",
+   "notes": "Hjältljud: filmens starkaste (~-3 dB RMS). Musiken tvärdör samtidigt.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.smack-dov-trumma.png"
+   },
+   "id": "sound.smack-dov-trumma",
+   "name": "Smäll – dov trumma",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något tungt slår ner (förbudsmärke, stämpel, dom). Källa: Mixkit 565 – Hard horror hit drum.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "smäll",
+    "impact",
+    "slår ner",
+    "trumma",
+    "förbudsmärke",
+    "stämpel",
+    "hit"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Något tungt slår ner (förbudsmärke, stämpel, dom)",
+    "source": "Mixkit 565 – Hard horror hit drum",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Hjältljud: filmens starkaste (~-3 dB RMS). Musiken tvärdör samtidigt.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/565/565-preview.mp3",
+    "md5": "37a7a7369adca9ccb13be5d672bbc9af",
+    "cut": {
+     "start": "onset",
+     "pre": 0.005,
+     "dur": 1.4,
+     "fade_out": 0.3
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.spola-tillbaka work/<film>/sfx/spola-tillbaka.wav --cut",
+   "notes": "Byggs upp 0,5 s, jämn till 4 s. 2 s-utdraget täcker en spolning. Nivå ~-9 dB RMS (mitt i).",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.spola-tillbaka.png"
+   },
+   "id": "sound.spola-tillbaka",
+   "name": "Spola tillbaka (bandspelare)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Spola tillbaka / rewind-övergång, VHS, tillbakablick. Källa: Mixkit 1088 – Tape rewind cinematic transition.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "spola tillbaka",
+    "rewind",
+    "vhs",
+    "kassett",
+    "band",
+    "övergång",
+    "baklänges"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Spola tillbaka / rewind-övergång, VHS, tillbakablick",
+    "source": "Mixkit 1088 – Tape rewind cinematic transition",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Byggs upp 0,5 s, jämn till 4 s. 2 s-utdraget täcker en spolning. Nivå ~-9 dB RMS (mitt i).",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1088/1088-preview.mp3",
+    "md5": "b0bc07cba750cc0854178dd2466191f2",
+    "cut": {
+     "start": 0.0,
+     "dur": 2.05,
+     "fade_in": 0.03,
+     "fade_out": 0.15
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.tandsticka work/<film>/sfx/tandsticka.wav --cut",
+   "notes": "",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.tandsticka.png"
+   },
+   "id": "sound.tandsticka",
+   "name": "Tändsticka",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något tänds/börjar brinna. Källa: Mixkit 2590 – Fire match lighting.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "eld",
+    "tänd",
+    "tändsticka",
+    "brinner"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Något tänds/börjar brinna",
+    "source": "Mixkit 2590 – Fire match lighting",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2590/2590-preview.mp3",
+    "md5": "31121d5fe4a46b48c98a8a3bd3680c4d",
+    "cut": {
+     "start": 0.0,
+     "dur": 1.6,
+     "fade_out": 0.5
+    }
+   }
   },
   {
    "kit": "animate",
@@ -10107,6 +11202,107 @@
     "brand"
    ],
    "path": "library/templates/golfkuponger-outro/build.py",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "ffmpeg",
+    "python"
+   ],
+   "use": "cp -r library/templates/golfkuponger-arsskifte work/<namn> && cd work/<namn> && ./make.sh v1",
+   "notes": "Godkänd av Jonas 2026-10-13. Ljud ur ljudbanken (fetch_assets.py). Tider och läsregel: MANUS.md.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.arsskifte.mp4",
+    "still": "library/previews/golfkuponger.template.arsskifte.jpg"
+   },
+   "id": "golfkuponger.template.arsskifte",
+   "name": "Årsskiftet – rivkalendern (9:16, 21,5 s)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Tecknad premiumillustration: bordskalender på stenbord river blad okt → dec (bladen faller ur bild), friskvårdsbidraget som grönt presentkort brinner, 31 december rött, golfbollen slår hål i kalendern och hålet växer till en vårbana där kortet blir en golfkupong och bollen går i koppen; iris → slutbild. Text: Vad händer med ditt friskvårdsbidrag vid årsskiftet? / Har du friskvårdsbidrag kvar? / Den 31 december brinner det inne. / Använd friskvården till golf i tid.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "årsskifte",
+    "31 december",
+    "kalender",
+    "nedräkning",
+    "brinner inne",
+    "tecknat",
+    "illustration",
+    "premium",
+    "eld",
+    "golfboll",
+    "hål",
+    "reveal",
+    "reels"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/README.md",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "ffmpeg",
+    "python"
+   ],
+   "use": "cp -r library/templates/golfkuponger-arsskifte work/<namn> && cd work/<namn> && ./make.sh spola",
+   "notes": "Godkänd av Jonas 2026-10-13. Ljudval låsta: larm L3, smäll M2, knapp P1, gråt G1, rivljud R1, putt K1. Tider: MANUS-spola.md.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.arsskifte-spola.mp4",
+    "still": "library/previews/golfkuponger.transition.spola-tillbaka.jpg"
+   },
+   "id": "golfkuponger.template.arsskifte-spola",
+   "name": "Årsskiftet – spola tillbaka (9:16, 32,9 s)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Varv 1: 1 nov → nyår, kortet brinner upp helt, bollen igenom 31 → golfbana i 3 s ('ååh, golf') – bollen stannar på koppens kant – förbudsmärket slår ner med rött larm (FÖR SENT.), gråtande golfare med Golfkupongers logga på kepsen, ❚❚ paus (Det här behöver inte hända dig.), ◀◀ hela filmen baklänges med VHS-tracking till 13 november, ▶, två lugna blad, bollen igenom 15 november och samma lyckliga slut. Bara stora tecken mitt i bild, ingen OSD-text.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "årsskifte",
+    "spola tillbaka",
+    "rewind",
+    "vhs",
+    "paus",
+    "play",
+    "förbudsmärke",
+    "för sent",
+    "larm",
+    "gråt",
+    "tecknat",
+    "storytelling",
+    "före/efter",
+    "reels"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/README.md",
    "status": "verified"
   },
   {
@@ -12025,6 +13221,50 @@
     "kronologi"
    ],
    "path": ".claude/skills/animate/kit/morph.js",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "partPause/partRewind/partPlay i src/scene2.js; ikoner i src/sf.js. Ljud: sound.kassettknapp (paus/play) + sound.spola-tillbaka.",
+   "notes": "Lärdom: markera var spolningen stannar (▶ över stillastående bild, sedan lugna steg).",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.arsskifte-spola.mp4",
+    "still": "library/previews/golfkuponger.transition.spola-tillbaka.jpg"
+   },
+   "id": "golfkuponger.transition.spola-tillbaka",
+   "name": "❚❚ → ◀◀ → ▶ (filmen baklänges, VHS)",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Paus fryser bilden i grått med stor ❚❚; spolningen spelar hela filmen baklänges (deterministisk renderare) med VHS-tracking, skanlinjer och stor solid ◀◀; landar på en tydlig bild, stor ▶ och filmen spelar vidare. Inga OSD-texter, bara stora tecken mitt i bild.",
+   "tags": [
+    "spola tillbaka",
+    "rewind",
+    "paus",
+    "play",
+    "vhs",
+    "tracking",
+    "baklänges",
+    "tillbakablick",
+    "övergång",
+    "andra chansen"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/src/scene2.js",
    "status": "verified"
   },
   {
