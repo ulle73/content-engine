@@ -55,6 +55,8 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - Före/efter-bilder: kontrollera att de ligger exakt linjerade (korrelation/skillnad) och ändra aldrig innehållet.
 
 ### Slutkort
+- **Har bolaget en färdig slutbild, används den sist i varje film** – även i egna renderare: Golfkuponger
+  `edit-renderer/outros/golfkuponger/spotlight-<format>.mp4` (4 s, originalljud orört). Gör inget eget slutkort då.
 - Bolagets **riktiga logga**, aldrig en textersättning.
 - Alla rader in tätt efter varandra (≤ ~0,5 s emellan) – ingen lång väntan på URL:en.
 - Markering och understrykning: **ren, tunn, en liten mjuk båge**, som ritas fram. Ingen slarvig penseltextur.
@@ -90,3 +92,4 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-12 | FAIV Hitta faran | URL:en på slutkortet kom för sent; strecket "slarvigt" | Slutkortsrader tätt; ren tunn båge (3, Slutkort) |
 | 2026-10-12 | FAIV Hitta faran | Syntljud "konstiga", ljud saknades på nyckelmoment, musiken skulle sluta vid loggan | `skills/ljud`; ljudkarta och provning i beslutsrundan (2.4) |
 | 2026-10-12 | FAIV Hitta faran | "Detta tog alldeles för mycket edit" | Beslutsrunda före bygget (2), mall `faiv.template.hitta-faran` |
+| 2026-10-13 | GK Årsskiftet | Slutbilden ska vara "slut" på alla klipp vi gör | Bolagets slutbild sist i varje film, även egna renderare (3, Slutkort) |

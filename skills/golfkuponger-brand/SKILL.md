@@ -95,7 +95,14 @@ Användaren beskriver ofta tonen med vardagsord ("lite rolig och fräck", "seri�
 
 ## Slutkort
 
-Djupgrön bakgrund, logga centrerad (officiell logga via `company.official_logo`, aldrig AI-genererad), en rad nytta och `Golfkuponger.se`. 2 sekunder.
+**Alla Golfkuponger-klipp slutar med slutbilden Spotlight** (beslut av Jonas 2026-10-09, bekräftat 2026-10-13):
+`edit-renderer/outros/golfkuponger/spotlight-<9x16|4x5|1x1>.mp4`, 4 s – svingande guldlogga på mörkgrönt, "Mer golf.
+Fler upplevelser." och originalljudet orört. Molnklippet lägger på den automatiskt (`engine/edit/outros.py`); i egna
+renderare (HyperFrames, Remotion, Python, `/animate` …) klipps den in sist av dig. Gör inget eget slutkort ovanpå eller
+före den – låt filmens sista bild gå över i mörkgrönt (#0c140f, slutbildens första bildruta), så öppnar den sig ur mörkret.
+
+Utan slutbilden (bara om beställaren ber om det): djupgrön bakgrund, officiell logga centrerad (`company.official_logo`,
+aldrig AI-genererad), en rad nytta och `Golfkuponger.se`. 2 sekunder.
 
 ## Snabbgranskning (frivillig checklista)
 
