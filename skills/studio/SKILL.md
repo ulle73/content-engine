@@ -96,5 +96,7 @@ tills allt är 8+. Mall: `library/prompts/motion-studio-playbook/` (kritikloop).
 
 Blev resultatet bra: spara det som ny mall i `library/templates/<namn>/` med förhandsvisning
 och en post i `LIBRARY.json` (`status: verified`), kör `build_catalog.py`. Nästa gång börjar
-någon därifrån. Rättade beställaren något som gäller fler filmer: skriv in det som regel i
+någon därifrån. **Godkända ljud** (även musik och ljud beställaren skickat) sparas i ljudbanken `library/sounds/`
+(se `skills/ljud`), och mallen hämtar dem därifrån. Återanvändbara delar (en figur, en effekt, en övergång) får egna
+poster i mallens `LIBRARY.json` så att de hittas med `find.py`. Rättade beställaren något som gäller fler filmer: skriv in det som regel i
 `skills/video-regler` (lärdomsloggen), `skills/ljud` eller brand-skillen i samma session.
