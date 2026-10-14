@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Anton; src: url(../../../edit-renderer/fonts/anton.woff2); }
+  @font-face { font-family: Inter; font-weight: 700; src: url(../../../edit-renderer/fonts/inter-700.woff2); }
+  html, body { margin: 0; background: #0c140f; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+  .lbl { position: absolute; width: 540px; text-align: center; font-family: Inter; font-weight: 700; font-size: 34px; letter-spacing: 6px; color: #F3D27A; }
+  .name { position: absolute; top: 40px; width: 1080px; text-align: center; font-family: Anton; font-size: 120px; color: #F8F4EC; letter-spacing: 4px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg width="0" height="0" style="position:absolute"><defs><symbol id="gklogo" viewBox="0 0 960 912"><image id="gklogoImg" width="960" height="912"/></symbol></defs></svg>
+  <svg id="svg" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="name">CHEFEN</div>
+  <div class="lbl" style="left:0;top:1010px">OVETANDE</div><div class="lbl" style="left:540px;top:1010px">SKEPTISK</div>
+  <div class="lbl" style="left:0;top:1840px">NÖJD</div><div class="lbl" style="left:540px;top:1840px">NÖJD + KEPS</div>
+</div>
+<script src="../golfkuponger-tourleif/tourleif.js"></script>
+<script src="chefen.js"></script>
+<script>
+  // Karaktärsark för Chefen. render_sheet.mjs sätter window.GK_LOGO (officiella loggan) och anropar draw(t).
+  function draw(t) {
+    document.getElementById('gklogoImg').setAttribute('href', window.GK_LOGO);
+    const bg = `<defs>${tourleifDefs()}${chefenDefs()}<radialGradient id="bg" cx="40%" cy="30%" r="90%"><stop offset="0" stop-color="#1f5a3e"/><stop offset="1" stop-color="#061a12"/></radialGradient></defs>
+      <rect width="1080" height="1920" fill="url(#bg)"/>`;
+    const cells = [[{ expr: 'ovetande' }, 270, 600], [{ expr: 'skeptisk' }, 810, 600], [{ expr: 'nojd', thumbY: 1150 }, 270, 1430], [{ expr: 'nojd', cap: true, thumbY: 1150 }, 810, 1430]];
+    document.getElementById('svg').innerHTML = bg + cells.map(([o, x, y]) => chefen(t, { ...o, x, y, s: 0.5 })).join('');
+  }
+</script>
+</body>
+</html>

@@ -16,6 +16,10 @@ MIXKIT_MUSIC = "Mixkit Stock Music Free License (reklam ok; får inte ligga i ma
 CC0 = "CC0 (Freesound) – fri användning, ingen attribution"
 PIXABAY = "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud"
 FILM = "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13"
+FILM2 = "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14"
+# Ljud som används i flera filmer eller bara i en senare film (id -> användning)
+USED_IN = {k: FILM + "; " + FILM2 for k in ("sound.smack-dov-trumma", "sound.klocktick", "sound.papper-glid", "sound.bollsus", "music.under-the-sun")}
+NEW2 = {"music.comical", "sound.bekraftelse", "sound.dorr-knarr", "sound.syrsor", "sound.mejlnotis", "sound.mobiltryck", "sound.tangenter"}
 
 # id, namn, roll (när det passar), sökord, källa, licens, file|url, md5, cut, nivåtips
 S = [
@@ -29,7 +33,7 @@ S = [
      "Mixkit 999 – Facility alarm sound", MIXKIT, None, "https://assets.mixkit.co/active_storage/sfx/999/999-preview.mp3",
      "e79d0df00656856e7bffe31fcb19bf6e", {"start": "onset", "dur": 4.0, "fade_out": 0.4},
      "Loopa utdraget. ~-12 dB under smällen; sänk 18 dB när något annat ska höras (t.ex. gråt)."),
-    ("sound.smack-dov-trumma", "Smäll – dov trumma", "Något tungt slår ner (förbudsmärke, stämpel, dom)",
+    ("sound.smack-dov-trumma", "Smäll – dov trumma", "Något tungt slår ner (förbudsmärke, GODKÄNT-stämpel, dom)",
      ["smäll", "impact", "slår ner", "trumma", "förbudsmärke", "stämpel", "hit"],
      "Mixkit 565 – Hard horror hit drum", MIXKIT, None, "https://assets.mixkit.co/active_storage/sfx/565/565-preview.mp3",
      "37a7a7369adca9ccb13be5d672bbc9af", {"start": "onset", "pre": 0.005, "dur": 1.4, "fade_out": 0.3},
@@ -89,6 +93,31 @@ S = [
      ["musik", "spänning", "brådska", "deadline", "tid", "130 bpm"], "Mixkit musik 77 – Running Out of Time (Ahjay Stelino)", MIXKIT_MUSIC, None,
      "https://assets.mixkit.co/music/77/77.mp3", "a4de927c43ca7609fa91a7655c702bc0", None,
      "Starka slag från 2,299 s (lägg den på första texten). Hårt stopp + 0,1 s tystnad före vändpunkten."),
+    ("music.comical", "Musik: Comical (140 BPM)", "Lekfull, smygande, humor – fräcka/roliga filmer",
+     ["musik", "rolig", "humor", "fräck", "smyg", "lekfull", "140 bpm"], "Mixkit musik 2 – Comical (Ahjay Stelino)", MIXKIT_MUSIC, None,
+     "https://assets.mixkit.co/music/2/2.mp3", "ab405ddcf2a9fa42d2e6e1e1a8e48783", None,
+     "Taktstart 0,244 s. Hårt stopp + tick-tack före en vändpunkt (stämpeln), sedan glad musik."),
+    ("sound.bekraftelse", "Bekräftelse – klart/köpt", "Något lyckas: köp genomfört, grön bock, godkänt i mobilen",
+     ["bekräftelse", "klart", "köpt", "bock", "checkmark", "lyckat", "ui"], "Mixkit 2867 – Confirmation tone", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/2867/2867-preview.mp3", "38c2f8a1123edfdde20382437cf1c32f", None,
+     "Lägg på när bocken ritas klart. ~3 dB över musiken."),
+    ("sound.dorr-knarr", "Dörr som knarrar upp", "En dörr öppnas (gärna till något tomt/oväntat)",
+     ["dörr", "knarr", "öppnar", "creak", "tomt"], "Mixkit 195 – Creaky door open", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/195/195-preview.mp3", "3fe48c3ef4fa47b500c140535d6b5f6c", None,
+     "Utan musik under – tystnaden efteråt är poängen. ~-12 dB RMS."),
+    ("sound.syrsor", "Syrsor – pinsam tystnad", "Komisk tystnad: ingenting här, ingen svarar",
+     ["syrsor", "tystnad", "pinsamt", "tomt", "humor", "crickets"], "Mixkit 1788 – Summer crickets loop", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/1788/1788-preview.mp3", "11a22e229a0a2a8188e9324a0f030ed0",
+     {"start": 1.0, "dur": 2.3, "fade_in": 0.25, "fade_out": 0.4}, "Svagt (~-16 dB RMS), direkt efter en dörr eller en fråga."),
+    ("sound.mejlnotis", "Mejlnotis", "Ett mejl/meddelande kommer (kvitto, bekräftelse)",
+     ["mejl", "notis", "meddelande", "kvitto", "pdf", "mobil"], "Mixkit 2354 – Message pop alert", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3", "189686648f6f0f20c5dbb1b342d00b09", None, "~1 dB över musiken."),
+    ("sound.mobiltryck", "Tryck på mobilskärm", "Fingret trycker på en knapp i mobilen",
+     ["tryck", "tap", "klick", "mobil", "knapp", "ui"], "Pixabay – click-soft", PIXABAY, "library/sounds/files/mobiltryck_pixabay-click-soft.mp3", None, None,
+     "Lägg på varje tryck, ~2 dB över musiken."),
+    ("sound.tangenter", "Skriver på mobilen", "Någon skriver (namn, sökord) – ~1 s",
+     ["skriver", "tangenter", "typing", "mobil", "formulär"], "Pixabay – typing", PIXABAY, "library/sounds/files/tangenter_pixabay-typing.mp3", None,
+     {"start": "onset", "dur": 1.0, "fade_in": 0.01, "fade_out": 0.08}, "I nivå med musiken."),
     ("music.under-the-sun", "Musik: Under the Sun (120 BPM)", "Lättnad, sol, golf, glatt slut",
      ["musik", "glad", "sol", "golf", "vår", "120 bpm"], "Mixkit musik 859 – Under the Sun (Michael Ramir C.)", MIXKIT_MUSIC, None,
      "https://assets.mixkit.co/music/859/859.mp3", "376303e4efe79bc98da66e425aabf306", None,
@@ -103,7 +132,8 @@ def main():
         if len(row) == 10:  # lokal fil: (..., file, None, cut, tips)
             row = row[:7] + (None, None) + row[8:]
         sid, name, role, tags, source, lic, file, url, md5, cut, tips = row
-        bank = {"role": role, "source": source, "license": lic, "used_in": FILM, "level": tips}
+        used = USED_IN.get(sid, FILM2 if sid in NEW2 else FILM)
+        bank = {"role": role, "source": source, "license": lic, "used_in": used, "level": tips}
         if file:
             bank["file"] = file
         else:
@@ -116,7 +146,7 @@ def main():
             "description": f"{role}. Källa: {source}.", "tags": ["ljud", "godkänt", "ljudbank"] + tags,
             "path": file or "library/sounds/sounds.py",
             "use": f"python library/sounds/sounds.py copy {sid} work/<film>/sfx/{sid.split('.')[-1]}.wav" + (" --cut" if cut else ""),
-            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-10-13",
+            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-10-14" if sid in NEW2 else "2026-10-13",
             "preview": {"video": None, "still": still}, "notes": tips, "bank": bank,
         }
         out.append(item)

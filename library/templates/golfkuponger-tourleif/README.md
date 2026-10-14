@@ -2,6 +2,7 @@
 
 Beslut av Jonas 2026-10-13: **Tourleif används alltid** när Golfkuponger gör tecknat/animerat innehåll med en person.
 Han debuterade som den gråtande golfaren i årsskiftesfilmen (spola tillbaka-versionen) och fick sitt namn samma dag.
+Motspelare: **Chefen** (`library/templates/golfkuponger-chefen/`).
 
 ![Tourleif](../../previews/golfkuponger.character.tourleif.jpg)
 
@@ -21,6 +22,8 @@ Han debuterade som den gråtande golfaren i årsskiftesfilmen (spola tillbaka-ve
 | Jublar | `jublar` | Studsar | Golf! Kupongen, bollen i hål, vinst |
 | Förvånad | `forvanad` | Blinkar | "Vänta…", insikt, vändpunkt |
 | Gråter | `grat` | Snyftar, tårfontäner, pölar | För sent, bidraget brann inne |
+| Lurig | `lurig` | Sidoblick, ett ögonbryn uppe, snett flin | Smyger, har en plan ("chefen vet inte om det än") |
+| Blinkar | `blinkar` | Blinkar åt kameran var 2:a sekund | Delar en hemlighet med tittaren |
 
 ## Använd honom
 

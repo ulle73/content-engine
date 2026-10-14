@@ -1,0 +1,29 @@
+{
+  "kit": "golfkuponger",
+  "title": "Golfkuponger – Chefen (Tourleifs motspelare)",
+  "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material"
+  },
+  "items": [
+    {
+      "id": "golfkuponger.character.chefen",
+      "name": "Chefen – Tourleifs återkommande motspelare",
+      "type": "scene",
+      "medium": "video",
+      "formats": ["9:16", "4:5", "1:1", "any"],
+      "engine": "html-playwright",
+      "description": "Tecknad chef: flint med gråa tinningar, glasögon, mustasch, marinblå kavaj, grön slips. Uttryck: ovetande (dricker kaffe), skeptisk (ena ögonbrynet uppe), nöjd (ler, tummen upp); valfri Golfkuponger-keps. Debut i 'Låt chefen betala din golf'.",
+      "tags": ["chefen", "chef", "figur", "karaktär", "återkommande", "arbetsgivare", "hr", "tecknat", "tourleif", "motspelare"],
+      "path": "library/templates/golfkuponger-chefen/chefen.js",
+      "use": "chefen(t, { expr: 'ovetande'|'skeptisk'|'nojd', x, y, s, cap, mug, thumbK, thumbY }) + chefenDefs() (med cap även tourleifDefs() och #gklogo). Läs README.md.",
+      "requires": ["node"],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {"video": "library/previews/golfkuponger.character.chefen.mp4", "still": "library/previews/golfkuponger.character.chefen.jpg"},
+      "notes": "Godkänd av Jonas 2026-10-14 i filmen 'Låt chefen betala din golf'."
+    }
+  ]
+}

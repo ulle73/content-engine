@@ -2,7 +2,7 @@
 // Grön golfkeps med Golfkupongers RIKTIGA logga (symbol #gklogo, byggd från logo-final.png – aldrig AI), grön piké med
 // krämvit krage, varm hudton. Ritas som SVG i 1080×1920-koordinater med huvudets mitt i (540, 890) i normalskala.
 //
-//   tourleif(t, { expr: 'glad' | 'jublar' | 'forvanad' | 'grat', x: 540, y: 860, s: 1 })
+//   tourleif(t, { expr: 'glad' | 'jublar' | 'forvanad' | 'grat' | 'lurig' | 'blinkar', x: 540, y: 860, s: 1 })
 //
 // t = sekunder (blinkningar, snyftningar, tårflöde är deterministiska). Kräver i sidan:
 //   <svg width="0" height="0"><defs><symbol id="gklogo" viewBox="0 0 960 912"><image id="gklogoImg" width="960" height="912"/></symbol></defs></svg>
@@ -59,6 +59,19 @@ function tourleif(t, o = {}) {
   } else if (expr === 'forvanad') {
     s += `<g stroke="#3a2412" stroke-linecap="round" fill="none"><path d="M405,846 Q452,816 500,836" stroke-width="13"/><path d="M675,846 Q628,816 580,836" stroke-width="13"/></g>
       ${openEyes(true)}${cheeks}<ellipse cx="540" cy="1050" rx="34" ry="42" fill="#5B1717"/><ellipse cx="540" cy="1072" rx="20" ry="10" fill="#E2656B"/>`;
+  } else if (expr === 'lurig') {
+    s += `<g stroke="#3a2412" stroke-linecap="round" fill="none"><path d="M405,872 Q452,860 500,868" stroke-width="13"/><path d="M580,848 Q628,820 675,840" stroke-width="13"/></g>
+      <ellipse cx="452" cy="918" rx="26" ry="15" fill="#fff" stroke="#3a2412" stroke-width="4"/><ellipse cx="628" cy="912" rx="26" ry="21" fill="#fff" stroke="#3a2412" stroke-width="4"/>
+      <path d="M424,906 Q452,898 480,906" stroke="#3a2412" stroke-width="6" fill="none"/>
+      <circle cx="468" cy="920" r="11" fill="#2b1a10"/><circle cx="644" cy="914" r="12" fill="#2b1a10"/>${cheeks}
+      <path d="M468,1032 Q560,1064 624,1000" stroke="#5B1717" stroke-width="11" fill="none" stroke-linecap="round"/>`;
+  } else if (expr === 'blinkar') {
+    const w = Math.max(0, Math.sin(Math.min(1, (t % 2) / 0.35) * Math.PI));
+    s += `<g stroke="#3a2412" stroke-linecap="round" fill="none"><path d="M405,862 Q452,846 500,858" stroke-width="13"/><path d="M580,${f(864 + 12 * w)} Q628,${f(850 + 12 * w)} 675,${f(866 + 12 * w)}" stroke-width="13"/></g>
+      <ellipse cx="452" cy="912" rx="26" ry="30" fill="#fff" stroke="#3a2412" stroke-width="4"/><circle cx="455" cy="915" r="14" fill="#2b1a10"/><circle cx="460" cy="909" r="4" fill="#fff"/>
+      ${w > 0.5 ? `<path d="M602,914 Q628,932 654,914" stroke="#3a2412" stroke-width="9" fill="none" stroke-linecap="round"/>`
+        : `<ellipse cx="628" cy="912" rx="26" ry="${f(30 * (1 - w))}" fill="#fff" stroke="#3a2412" stroke-width="4"/><circle cx="631" cy="915" r="${f(14 * (1 - w))}" fill="#2b1a10"/>`}${cheeks}
+      <path d="M468,1022 Q550,1072 624,1008" stroke="#5B1717" stroke-width="11" fill="none" stroke-linecap="round"/>`;
   } else { // grat
     const flow = (t * 220) % 120;
     s += `<g stroke="#3a2412" stroke-linecap="round" fill="none">
@@ -82,4 +95,4 @@ function tourleif(t, o = {}) {
   return s + '</g></g>';
 }
 
-if (typeof window !== 'undefined') window.TOURLEIF = { tourleif, tourleifDefs, expressions: ['glad', 'jublar', 'forvanad', 'grat'] };
+if (typeof window !== 'undefined') window.TOURLEIF = { tourleif, tourleifDefs, expressions: ['glad', 'jublar', 'forvanad', 'grat', 'lurig', 'blinkar'] };

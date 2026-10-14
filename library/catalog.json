@@ -1,21 +1,21 @@
 {
  "version": 1,
  "generated": "2026-10-14",
- "count": 1473,
- "verified": 361,
+ "count": 1484,
+ "verified": 372,
  "by_type": {
   "background": 60,
   "caption": 29,
   "carousel": 22,
-  "effect": 243,
+  "effect": 244,
   "grade": 10,
   "model": 5,
   "prompt": 347,
   "recipe": 12,
-  "scene": 188,
+  "scene": 190,
   "skill": 60,
-  "sound": 66,
-  "template": 102,
+  "sound": 73,
+  "template": 103,
   "text": 127,
   "tool": 82,
   "transition": 120
@@ -3775,6 +3775,48 @@
    "status": "verified"
   },
   {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Ingen portal? Låt chefen betala din golf",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; skärmar från golfkuponger.se; kvittot anonymiserat; ljud per ljudbankens licenser"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "stamp(cx, cy, k, rot) i src/chef.js (k 0→1 = landning). Ljud: sound.smack-dov-trumma.",
+   "notes": "",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.effect.godkant-stampel.jpg"
+   },
+   "id": "golfkuponger.effect.godkant-stampel",
+   "name": "GODKÄNT-stämpel som slår ner",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Grön gummistämpel 'GODKÄNT' med grov färg störtar ner från 2,4× och slår i med skak och tryckvåg – den positiva spegelbilden av förbudsmärket.",
+   "tags": [
+    "godkänt",
+    "stämpel",
+    "ok",
+    "beviljat",
+    "chefen",
+    "slår ner",
+    "impact",
+    "grön"
+   ],
+   "path": "library/templates/golfkuponger-chefen-betalar/src/chef.js",
+   "status": "verified"
+  },
+  {
    "kit": "hf-skeletons",
    "kit_title": "HyperFrames skelettmallar, mönster och shaders (Claude Design template-first)",
    "source": {
@@ -5863,6 +5905,52 @@
   },
   {
    "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Chefen (Tourleifs motspelare)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "chefen(t, { expr: 'ovetande'|'skeptisk'|'nojd', x, y, s, cap, mug, thumbK, thumbY }) + chefenDefs() (med cap även tourleifDefs() och #gklogo). Läs README.md.",
+   "notes": "Godkänd av Jonas 2026-10-14 i filmen 'Låt chefen betala din golf'.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": "library/previews/golfkuponger.character.chefen.mp4",
+    "still": "library/previews/golfkuponger.character.chefen.jpg"
+   },
+   "id": "golfkuponger.character.chefen",
+   "name": "Chefen – Tourleifs återkommande motspelare",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Tecknad chef: flint med gråa tinningar, glasögon, mustasch, marinblå kavaj, grön slips. Uttryck: ovetande (dricker kaffe), skeptisk (ena ögonbrynet uppe), nöjd (ler, tummen upp); valfri Golfkuponger-keps. Debut i 'Låt chefen betala din golf'.",
+   "tags": [
+    "chefen",
+    "chef",
+    "figur",
+    "karaktär",
+    "återkommande",
+    "arbetsgivare",
+    "hr",
+    "tecknat",
+    "tourleif",
+    "motspelare"
+   ],
+   "path": "library/templates/golfkuponger-chefen/chefen.js",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
    "kit_title": "Golfkuponger – Tourleif (återkommande figur)",
    "source": {
     "name": "Golfkuponger (egen produktion)",
@@ -5873,8 +5961,8 @@
    "requires": [
     "node"
    ],
-   "use": "tourleif(t, { expr: 'glad'|'jublar'|'forvanad'|'grat', x, y, s }) + tourleifDefs() och loggsymbolen #gklogo (se sheet.html). Läs README.md.",
-   "notes": "Gråt-uttrycket godkänt av Jonas ('perfekt') i årsskiftesfilmen; glad, jublar och förvånad är nya 2026-10-13 – visa för Jonas första gången de används.",
+   "use": "tourleif(t, { expr: 'glad'|'jublar'|'forvanad'|'grat'|'lurig'|'blinkar', x, y, s }) + tourleifDefs() och loggsymbolen #gklogo (se sheet.html). Läs README.md.",
+   "notes": "Gråt-uttrycket godkänt av Jonas ('perfekt') i årsskiftesfilmen; glad, jublar, förvånad (2026-10-13) och lurig, blinkar (godkända i 'Låt chefen betala din golf' 2026-10-14).",
    "verified_at": "2026-10-13",
    "preview": {
     "video": "library/previews/golfkuponger.character.tourleif.mp4",
@@ -5891,7 +5979,7 @@
     "any"
    ],
    "engine": "html-playwright",
-   "description": "Tecknad golfare i grön keps med Golfkupongers riktiga logga och grön piké. Fyra animerade uttryck: glad (blinkar), jublar (studsar), förvånad, gråter (snyftar, tårfontäner). Används ALLTID när Golfkuponger gör tecknat innehåll med en person (Jonas 2026-10-13).",
+   "description": "Tecknad golfare i grön keps med Golfkupongers riktiga logga och grön piké. Sex animerade uttryck: glad, jublar (studsar), förvånad, gråter (snyftar, tårfontäner), lurig, blinkar (åt kameran). Används ALLTID när Golfkuponger gör tecknat innehåll med en person (Jonas 2026-10-13).",
    "tags": [
     "tourleif",
     "figur",
@@ -5905,7 +5993,9 @@
     "glad",
     "jublar",
     "förvånad",
-    "gråt"
+    "gråt",
+    "lurig",
+    "blinkar"
    ],
    "path": "library/templates/golfkuponger-tourleif/tourleif.js",
    "status": "verified"
@@ -6393,6 +6483,49 @@
     "maskot"
    ],
    "path": "library/templates/golfkuponger-arsskifte/src/sf.js",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Ingen portal? Låt chefen betala din golf",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; skärmar från golfkuponger.se; kvittot anonymiserat; ljud per ljudbankens licenser"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "partPhone/phoneScreen/tap i src/chef-film.js; fånga skärmar med capture_flow.mjs (trycker aldrig Betala). Ljud: sound.mobiltryck, sound.tangenter, sound.bekraftelse, sound.mejlnotis.",
+   "notes": "Bilder som ritas om varje bildruta måste ligga som fasta <symbol> (laddas en gång) – annars hinner de inte visas.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.scene.mobilflode-riktig-sajt.jpg"
+   },
+   "id": "golfkuponger.scene.mobilflode-riktig-sajt",
+   "name": "Mobilflöde med riktiga skärmar (kameran följer fingret)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Tecknad mobil som visar riktiga helsidesbilder från sajten: tryck med krusning, mjuk scroll, sidbyte, inzoomning när något skrivs, panorering till knappen, grön bock och mejlnotis. Kameran håller varje tryck inom safe zones. Inget gränssnitt ritas om.",
+   "tags": [
+    "mobil",
+    "skärminspelning",
+    "köpflöde",
+    "kassa",
+    "tryck",
+    "scroll",
+    "ui",
+    "bevis",
+    "golfkuponger.se"
+   ],
+   "path": "library/templates/golfkuponger-chefen-betalar/src/chef-film.js",
    "status": "verified"
   },
   {
@@ -9418,6 +9551,59 @@
     "ffmpeg",
     "python"
    ],
+   "use": "python library/sounds/sounds.py copy music.comical work/<film>/sfx/comical.wav",
+   "notes": "Taktstart 0,244 s. Hårt stopp + tick-tack före en vändpunkt (stämpeln), sedan glad musik.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/music.comical.png"
+   },
+   "id": "music.comical",
+   "name": "Musik: Comical (140 BPM)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Lekfull, smygande, humor – fräcka/roliga filmer. Källa: Mixkit musik 2 – Comical (Ahjay Stelino).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "musik",
+    "rolig",
+    "humor",
+    "fräck",
+    "smyg",
+    "lekfull",
+    "140 bpm"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Lekfull, smygande, humor – fräcka/roliga filmer",
+    "source": "Mixkit musik 2 – Comical (Ahjay Stelino)",
+    "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Taktstart 0,244 s. Hårt stopp + tick-tack före en vändpunkt (stämpeln), sedan glad musik.",
+    "url": "https://assets.mixkit.co/music/2/2.mp3",
+    "md5": "ab405ddcf2a9fa42d2e6e1e1a8e48783"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
    "use": "python library/sounds/sounds.py copy music.running-out-of-time work/<film>/sfx/running-out-of-time.wav",
    "notes": "Starka slag från 2,299 s (lägg den på första texten). Hårt stopp + 0,1 s tystnad före vändpunkten.",
    "verified_at": "2026-10-13",
@@ -9503,7 +9689,7 @@
     "role": "Lättnad, sol, golf, glatt slut",
     "source": "Mixkit musik 859 – Under the Sun (Michael Ramir C.)",
     "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
-    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
     "level": "Taktstart 24,232 s i spåret. Tona ut 0,55 s vid irisen/slutbilden.",
     "url": "https://assets.mixkit.co/music/859/859.mp3",
     "md5": "376303e4efe79bc98da66e425aabf306"
@@ -9584,6 +9770,59 @@
    ],
    "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/make-free-sfx.py",
    "status": "verified"
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.bekraftelse work/<film>/sfx/bekraftelse.wav",
+   "notes": "Lägg på när bocken ritas klart. ~3 dB över musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.bekraftelse.png"
+   },
+   "id": "sound.bekraftelse",
+   "name": "Bekräftelse – klart/köpt",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något lyckas: köp genomfört, grön bock, godkänt i mobilen. Källa: Mixkit 2867 – Confirmation tone.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "bekräftelse",
+    "klart",
+    "köpt",
+    "bock",
+    "checkmark",
+    "lyckat",
+    "ui"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Något lyckas: köp genomfört, grön bock, godkänt i mobilen",
+    "source": "Mixkit 2867 – Confirmation tone",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Lägg på när bocken ritas klart. ~3 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2867/2867-preview.mp3",
+    "md5": "38c2f8a1123edfdde20382437cf1c32f"
+   }
   },
   {
    "kit": "sounds",
@@ -9782,9 +10021,60 @@
     "role": "Kort sus före en träff (topp ~0,17 s in)",
     "source": "Pixabay – whoosh-short",
     "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
-    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
     "level": "Lägg starten där föremålet syns, toppen landar ~0,17 s senare. Svagare än smällen (~-14 dB).",
     "file": "library/sounds/files/bollsus_pixabay-whoosh-short.mp3"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.dorr-knarr work/<film>/sfx/dorr-knarr.wav",
+   "notes": "Utan musik under – tystnaden efteråt är poängen. ~-12 dB RMS.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.dorr-knarr.png"
+   },
+   "id": "sound.dorr-knarr",
+   "name": "Dörr som knarrar upp",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "En dörr öppnas (gärna till något tomt/oväntat). Källa: Mixkit 195 – Creaky door open.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "dörr",
+    "knarr",
+    "öppnar",
+    "creak",
+    "tomt"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "En dörr öppnas (gärna till något tomt/oväntat)",
+    "source": "Mixkit 195 – Creaky door open",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Utan musik under – tystnaden efteråt är poängen. ~-12 dB RMS.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/195/195-preview.mp3",
+    "md5": "3fe48c3ef4fa47b500c140535d6b5f6c"
    }
   },
   {
@@ -10093,7 +10383,7 @@
     "role": "Tiden går, nedräkning (ett tick per händelse)",
     "source": "Mixkit 1061 – Clock ticker single",
     "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
-    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
     "level": "Kort svans (0,3 s) så det blir tyst när det ska.",
     "url": "https://assets.mixkit.co/active_storage/sfx/1061/1061-preview.mp3",
     "md5": "2e88a77537a7e2f41db906b0da95c121",
@@ -10176,6 +10466,109 @@
     "ffmpeg",
     "python"
    ],
+   "use": "python library/sounds/sounds.py copy sound.mejlnotis work/<film>/sfx/mejlnotis.wav",
+   "notes": "~1 dB över musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.mejlnotis.png"
+   },
+   "id": "sound.mejlnotis",
+   "name": "Mejlnotis",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Ett mejl/meddelande kommer (kvitto, bekräftelse). Källa: Mixkit 2354 – Message pop alert.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "mejl",
+    "notis",
+    "meddelande",
+    "kvitto",
+    "pdf",
+    "mobil"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Ett mejl/meddelande kommer (kvitto, bekräftelse)",
+    "source": "Mixkit 2354 – Message pop alert",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "~1 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3",
+    "md5": "189686648f6f0f20c5dbb1b342d00b09"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.mobiltryck work/<film>/sfx/mobiltryck.wav",
+   "notes": "Lägg på varje tryck, ~2 dB över musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.mobiltryck.png"
+   },
+   "id": "sound.mobiltryck",
+   "name": "Tryck på mobilskärm",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Fingret trycker på en knapp i mobilen. Källa: Pixabay – click-soft.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "tryck",
+    "tap",
+    "klick",
+    "mobil",
+    "knapp",
+    "ui"
+   ],
+   "path": "library/sounds/files/mobiltryck_pixabay-click-soft.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Fingret trycker på en knapp i mobilen",
+    "source": "Pixabay – click-soft",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Lägg på varje tryck, ~2 dB över musiken.",
+    "file": "library/sounds/files/mobiltryck_pixabay-click-soft.mp3"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
    "use": "python library/sounds/sounds.py copy sound.papper-glid work/<film>/sfx/papper-glid.wav",
    "notes": "I nivå med musiken.",
    "verified_at": "2026-10-13",
@@ -10208,7 +10601,7 @@
     "role": "Kort/kupong vänds eller glider",
     "source": "Mixkit 1530 – Paper slide",
     "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
-    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
     "level": "I nivå med musiken.",
     "url": "https://assets.mixkit.co/active_storage/sfx/1530/1530-preview.mp3",
     "md5": "7bb8baa5d61a2a6ae97e63572fc03b01"
@@ -10343,7 +10736,7 @@
     "any"
    ],
    "engine": "python",
-   "description": "Något tungt slår ner (förbudsmärke, stämpel, dom). Källa: Mixkit 565 – Hard horror hit drum.",
+   "description": "Något tungt slår ner (förbudsmärke, GODKÄNT-stämpel, dom). Källa: Mixkit 565 – Hard horror hit drum.",
    "tags": [
     "ljud",
     "godkänt",
@@ -10359,10 +10752,10 @@
    "path": "library/sounds/sounds.py",
    "status": "verified",
    "bank": {
-    "role": "Något tungt slår ner (förbudsmärke, stämpel, dom)",
+    "role": "Något tungt slår ner (förbudsmärke, GODKÄNT-stämpel, dom)",
     "source": "Mixkit 565 – Hard horror hit drum",
     "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
-    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
     "level": "Hjältljud: filmens starkaste (~-3 dB RMS). Musiken tvärdör samtidigt.",
     "url": "https://assets.mixkit.co/active_storage/sfx/565/565-preview.mp3",
     "md5": "37a7a7369adca9ccb13be5d672bbc9af",
@@ -10446,6 +10839,64 @@
     "ffmpeg",
     "python"
    ],
+   "use": "python library/sounds/sounds.py copy sound.syrsor work/<film>/sfx/syrsor.wav --cut",
+   "notes": "Svagt (~-16 dB RMS), direkt efter en dörr eller en fråga.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.syrsor.png"
+   },
+   "id": "sound.syrsor",
+   "name": "Syrsor – pinsam tystnad",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Komisk tystnad: ingenting här, ingen svarar. Källa: Mixkit 1788 – Summer crickets loop.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "syrsor",
+    "tystnad",
+    "pinsamt",
+    "tomt",
+    "humor",
+    "crickets"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Komisk tystnad: ingenting här, ingen svarar",
+    "source": "Mixkit 1788 – Summer crickets loop",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Svagt (~-16 dB RMS), direkt efter en dörr eller en fråga.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1788/1788-preview.mp3",
+    "md5": "11a22e229a0a2a8188e9324a0f030ed0",
+    "cut": {
+     "start": 1.0,
+     "dur": 2.3,
+     "fade_in": 0.25,
+     "fade_out": 0.4
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
    "use": "python library/sounds/sounds.py copy sound.tandsticka work/<film>/sfx/tandsticka.wav --cut",
    "notes": "",
    "verified_at": "2026-10-13",
@@ -10485,6 +10936,62 @@
      "start": 0.0,
      "dur": 1.6,
      "fade_out": 0.5
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.tangenter work/<film>/sfx/tangenter.wav --cut",
+   "notes": "I nivå med musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.tangenter.png"
+   },
+   "id": "sound.tangenter",
+   "name": "Skriver på mobilen",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Någon skriver (namn, sökord) – ~1 s. Källa: Pixabay – typing.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "skriver",
+    "tangenter",
+    "typing",
+    "mobil",
+    "formulär"
+   ],
+   "path": "library/sounds/files/tangenter_pixabay-typing.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Någon skriver (namn, sökord) – ~1 s",
+    "source": "Pixabay – typing",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "I nivå med musiken.",
+    "file": "library/sounds/files/tangenter_pixabay-typing.mp3",
+    "cut": {
+     "start": "onset",
+     "dur": 1.0,
+     "fade_in": 0.01,
+     "fade_out": 0.08
     }
    }
   },
@@ -11352,6 +11859,56 @@
     "reels"
    ],
    "path": "library/templates/golfkuponger-arsskifte/README.md",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Ingen portal? Låt chefen betala din golf",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; skärmar från golfkuponger.se; kvittot anonymiserat; ljud per ljudbankens licenser"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "ffmpeg",
+    "python"
+   ],
+   "use": "cp -r library/templates/golfkuponger-chefen-betalar work/<namn> && cd work/<namn> && ./make.sh",
+   "notes": "Godkänd av Jonas 2026-10-14 (M1, C1, ST1). F2 bekräftad: vem som helst kan köpa direkt, kvitto som pdf på mejlen.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.chefen-betalar.mp4",
+    "still": "library/previews/golfkuponger.template.chefen-betalar.jpg"
+   },
+   "id": "golfkuponger.template.chefen-betalar",
+   "name": "Ingen portal? Låt chefen betala din golf (9:16, 26,9 s)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Fräck tecknad film med Tourleif och Chefen: dörren FÖRMÅNSPORTAL leder till en tegelvägg (syrsor), Tourleif köper direkt på golfkuponger.se i mobilen (riktiga skärmar: start → paket 2 000 kr → kassa, 'Tourleif' skrivs, Betala), grön bock, pdf-kvittot (riktigt, anonymiserat) med 'Underlag för friskvårdsbidrag', chefen läser skeptiskt, GODKÄNT-stämpeln slår ner, alla på golfbanan. Text: Ingen förmånsportal på jobbet? / Köp direkt på golfkuponger.se / Kvittot kommer som pdf. / Låt chefen betala din golf. / Friskvårdsbidraget: chefen betalar. Du spelar.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "direktköp",
+    "ingen portal",
+    "kvitto",
+    "pdf",
+    "chefen",
+    "tourleif",
+    "fräck",
+    "humor",
+    "tecknat",
+    "mobil",
+    "skärminspelning",
+    "godkänt",
+    "reels"
+   ],
+   "path": "library/templates/golfkuponger-chefen-betalar/README.md",
    "status": "verified"
   },
   {

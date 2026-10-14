@@ -16,8 +16,9 @@
   <svg width="0" height="0" style="position:absolute"><defs><symbol id="gklogo" viewBox="0 0 960 912"><image id="gklogoImg" width="960" height="912"/></symbol></defs></svg>
   <svg id="svg" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
   <div class="name">TOURLEIF</div>
-  <div class="lbl" style="left:0;top:1010px">GLAD</div><div class="lbl" style="left:540px;top:1010px">JUBLAR</div>
-  <div class="lbl" style="left:0;top:1840px">FÖRVÅNAD</div><div class="lbl" style="left:540px;top:1840px">GRÅTER</div>
+  <div class="lbl" style="left:0;top:770px">GLAD</div><div class="lbl" style="left:540px;top:770px">JUBLAR</div>
+  <div class="lbl" style="left:0;top:1320px">FÖRVÅNAD</div><div class="lbl" style="left:540px;top:1320px">GRÅTER</div>
+  <div class="lbl" style="left:0;top:1870px">LURIG</div><div class="lbl" style="left:540px;top:1870px">BLINKAR</div>
 </div>
 <script src="tourleif.js"></script>
 <script>
@@ -26,8 +27,8 @@
     document.getElementById('gklogoImg').setAttribute('href', window.GK_LOGO);
     const bg = `<defs>${tourleifDefs()}<radialGradient id="bg" cx="40%" cy="30%" r="90%"><stop offset="0" stop-color="#1f5a3e"/><stop offset="1" stop-color="#061a12"/></radialGradient></defs>
       <rect width="1080" height="1920" fill="url(#bg)"/>`;
-    const cells = [['glad', 270, 600], ['jublar', 810, 600], ['forvanad', 270, 1430], ['grat', 810, 1430]];
-    document.getElementById('svg').innerHTML = bg + cells.map(([e, x, y]) => tourleif(t, { expr: e, x, y, s: 0.5 })).join('');
+    const cells = [['glad', 270, 470], ['jublar', 810, 470], ['forvanad', 270, 1020], ['grat', 810, 1020], ['lurig', 270, 1570], ['blinkar', 810, 1570]];
+    document.getElementById('svg').innerHTML = bg + cells.map(([e, x, y]) => tourleif(t, { expr: e, x, y, s: 0.42 })).join('');
   }
 </script>
 </body>

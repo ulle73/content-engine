@@ -22,7 +22,7 @@ inte om budskapet till något svagare.
 | # | Påstående | Källa | Status |
 |---|---|---|---|
 | F1 | Golfkuponger finns att köpa i förmånsportaler. Nämnda i repot: Epassi, Benify/Benifex, Söderberg & Partners | `engine/motion/planner.py`, minne | ⚠️ Verifiera exakt aktuell portallista |
-| F2 | Det går att köpa direkt på golfkuponger.se och få kvitto från Golfkuponger, för den som saknar förmånsportal | mall `friskvard-direct-ad` | ⚠️ Verifiera formulering om kvitto/underlag |
+| F2 | Vem som helst kan köpa direkt på golfkuponger.se (ingen portal behövs). Kvittot kommer som pdf på mejlen och kan användas som underlag för friskvårdsbidrag hos arbetsgivaren | Jonas 2026-10-13 + kvittot (pdf) | ✅ Godkänt av Jonas. Rak text ok: "Låt chefen betala din golf" |
 | F3 | Köpvägen i portalen: sök Golfkuponger → välj belopp → koden läggs in i appen | mall `friskvard-portal-ad` | ⚠️ Verifiera mot aktuell portal |
 | F4 | Golf på "300+ klubbar" | mall `friskvard-portal-ad` | ⚠️ Verifiera aktuellt antal |
 | F5 | Kupongerna kan användas "hela nästa säsong" | mall `friskvard-portal-ad` | ⚠️ Verifiera giltighetstid |
@@ -33,6 +33,9 @@ inte om budskapet till något svagare.
 *Startvärden. Banken i appen är det som används.*
 
 ### Bra formuleringar
+
+- "Ingen förmånsportal? Köp direkt på golfkuponger.se." / "Kvittot kommer som pdf." (F2)
+- "Låt chefen betala din golf." / "Friskvårdsbidraget: chefen betalar. Du spelar." (F2, fräck – Jonas 2026-10-13)
 
 - "Den 31 december försvinner ditt friskvårdsbidrag."
 - "3 000 kr kvar? Gör dem till golf."
