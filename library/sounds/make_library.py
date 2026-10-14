@@ -17,6 +17,7 @@ CC0 = "CC0 (Freesound) – fri användning, ingen attribution"
 PIXABAY = "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud"
 FILM = "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13"
 FILM2 = "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14"
+FILM3 = "GK Spelat den här? (alla banor), godkänd av Jonas 2026-10-14"
 # Ljud som används i flera filmer eller bara i en senare film (id -> användning)
 USED_IN = {k: FILM + "; " + FILM2 for k in ("sound.smack-dov-trumma", "sound.klocktick", "sound.papper-glid", "sound.bollsus", "music.under-the-sun")}
 NEW2 = {"music.comical", "sound.bekraftelse", "sound.dorr-knarr", "sound.syrsor", "sound.mejlnotis", "sound.mobiltryck", "sound.tangenter"}
@@ -118,6 +119,10 @@ S = [
     ("sound.tangenter", "Skriver på mobilen", "Någon skriver (namn, sökord) – ~1 s",
      ["skriver", "tangenter", "typing", "mobil", "formulär"], "Pixabay – typing", PIXABAY, "library/sounds/files/tangenter_pixabay-typing.mp3", None,
      {"start": "onset", "dur": 1.0, "fade_in": 0.01, "fade_out": 0.08}, "I nivå med musiken."),
+    ("music.lifes-a-movie", "Musik: Life's a Movie (episk uppbyggnad)", "Episk uppbyggnad med stort lyft – avslöjande, \"alla banor\", final",
+     ["musik", "episk", "uppbyggnad", "lyft", "filmisk", "trailer", "final"], "Mixkit musik 322 – Life's a Movie (Arulo)", MIXKIT_MUSIC, None,
+     "https://assets.mixkit.co/music/322/322.mp3", "0332df41ce154529a58c8f04fa1920cc", None,
+     "Starta 35,0 s in i spåret: tyst del 37–44 s, lyftet vid ~45 s – lägg lyftet på filmens stora avslöjande."),
     ("music.under-the-sun", "Musik: Under the Sun (120 BPM)", "Lättnad, sol, golf, glatt slut",
      ["musik", "glad", "sol", "golf", "vår", "120 bpm"], "Mixkit musik 859 – Under the Sun (Michael Ramir C.)", MIXKIT_MUSIC, None,
      "https://assets.mixkit.co/music/859/859.mp3", "376303e4efe79bc98da66e425aabf306", None,
@@ -132,7 +137,7 @@ def main():
         if len(row) == 10:  # lokal fil: (..., file, None, cut, tips)
             row = row[:7] + (None, None) + row[8:]
         sid, name, role, tags, source, lic, file, url, md5, cut, tips = row
-        used = USED_IN.get(sid, FILM2 if sid in NEW2 else FILM)
+        used = USED_IN.get(sid, FILM3 if sid == "music.lifes-a-movie" else FILM2 if sid in NEW2 else FILM)
         bank = {"role": role, "source": source, "license": lic, "used_in": used, "level": tips}
         if file:
             bank["file"] = file
@@ -146,7 +151,7 @@ def main():
             "description": f"{role}. Källa: {source}.", "tags": ["ljud", "godkänt", "ljudbank"] + tags,
             "path": file or "library/sounds/sounds.py",
             "use": f"python library/sounds/sounds.py copy {sid} work/<film>/sfx/{sid.split('.')[-1]}.wav" + (" --cut" if cut else ""),
-            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-10-14" if sid in NEW2 else "2026-10-13",
+            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-10-14" if sid in NEW2 or sid == "music.lifes-a-movie" else "2026-10-13",
             "preview": {"video": None, "still": still}, "notes": tips, "bank": bank,
         }
         out.append(item)

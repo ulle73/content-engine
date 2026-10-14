@@ -1162,6 +1162,52 @@
       }
     },
     {
+      "id": "music.lifes-a-movie",
+      "name": "Musik: Life's a Movie (episk uppbyggnad)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Episk uppbyggnad med stort lyft – avslöjande, \"alla banor\", final. Källa: Mixkit musik 322 – Life's a Movie (Arulo).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "episk",
+        "uppbyggnad",
+        "lyft",
+        "filmisk",
+        "trailer",
+        "final"
+      ],
+      "path": "library/sounds/sounds.py",
+      "use": "python library/sounds/sounds.py copy music.lifes-a-movie work/<film>/sfx/lifes-a-movie.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.lifes-a-movie.png"
+      },
+      "notes": "Starta 35,0 s in i spåret: tyst del 37–44 s, lyftet vid ~45 s – lägg lyftet på filmens stora avslöjande.",
+      "bank": {
+        "role": "Episk uppbyggnad med stort lyft – avslöjande, \"alla banor\", final",
+        "source": "Mixkit musik 322 – Life's a Movie (Arulo)",
+        "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+        "used_in": "GK Spelat den här? (alla banor), godkänd av Jonas 2026-10-14",
+        "level": "Starta 35,0 s in i spåret: tyst del 37–44 s, lyftet vid ~45 s – lägg lyftet på filmens stora avslöjande.",
+        "url": "https://assets.mixkit.co/music/322/322.mp3",
+        "md5": "0332df41ce154529a58c8f04fa1920cc"
+      }
+    },
+    {
       "id": "music.under-the-sun",
       "name": "Musik: Under the Sun (120 BPM)",
       "type": "sound",

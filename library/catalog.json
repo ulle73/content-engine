@@ -1,8 +1,8 @@
 {
  "version": 1,
  "generated": "2026-10-14",
- "count": 1484,
- "verified": 372,
+ "count": 1485,
+ "verified": 373,
  "by_type": {
   "background": 60,
   "caption": 29,
@@ -14,7 +14,7 @@
   "recipe": 12,
   "scene": 190,
   "skill": 60,
-  "sound": 73,
+  "sound": 74,
   "template": 103,
   "text": 127,
   "tool": 82,
@@ -9589,6 +9589,59 @@
     "level": "Taktstart 0,244 s. Hårt stopp + tick-tack före en vändpunkt (stämpeln), sedan glad musik.",
     "url": "https://assets.mixkit.co/music/2/2.mp3",
     "md5": "ab405ddcf2a9fa42d2e6e1e1a8e48783"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy music.lifes-a-movie work/<film>/sfx/lifes-a-movie.wav",
+   "notes": "Starta 35,0 s in i spåret: tyst del 37–44 s, lyftet vid ~45 s – lägg lyftet på filmens stora avslöjande.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/music.lifes-a-movie.png"
+   },
+   "id": "music.lifes-a-movie",
+   "name": "Musik: Life's a Movie (episk uppbyggnad)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Episk uppbyggnad med stort lyft – avslöjande, \"alla banor\", final. Källa: Mixkit musik 322 – Life's a Movie (Arulo).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "musik",
+    "episk",
+    "uppbyggnad",
+    "lyft",
+    "filmisk",
+    "trailer",
+    "final"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Episk uppbyggnad med stort lyft – avslöjande, \"alla banor\", final",
+    "source": "Mixkit musik 322 – Life's a Movie (Arulo)",
+    "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Spelat den här? (alla banor), godkänd av Jonas 2026-10-14",
+    "level": "Starta 35,0 s in i spåret: tyst del 37–44 s, lyftet vid ~45 s – lägg lyftet på filmens stora avslöjande.",
+    "url": "https://assets.mixkit.co/music/322/322.mp3",
+    "md5": "0332df41ce154529a58c8f04fa1920cc"
    }
   },
   {
