@@ -18,8 +18,11 @@ PIXABAY = "Pixabay Content License – reklam ok, ingen attribution; sprid inte 
 FILM = "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13"
 FILM2 = "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14"
 FILM3 = "GK Spelat den här? (alla banor), godkänd av Jonas 2026-10-14"
+FILM4 = "GK Skriet, 31 december (Munch-hyllning), godkänd av Jonas 2026-10-14"
+NEW4 = {"sound.skrik-man", "sound.eldsus", "sound.svep-luftigt", "sound.svep-snabbt"}
 # Ljud som används i flera filmer eller bara i en senare film (id -> användning)
 USED_IN = {k: FILM + "; " + FILM2 for k in ("sound.smack-dov-trumma", "sound.klocktick", "sound.papper-glid", "sound.bollsus", "music.under-the-sun")}
+USED_IN.update({k: USED_IN.get(k, FILM) + "; GK Skriet" for k in ("sound.papper-riv", "sound.golftraff", "sound.bollsus", "sound.eld-sprak", "music.running-out-of-time", "music.under-the-sun")})
 NEW2 = {"music.comical", "sound.bekraftelse", "sound.dorr-knarr", "sound.syrsor", "sound.mejlnotis", "sound.mobiltryck", "sound.tangenter"}
 
 # id, namn, roll (när det passar), sökord, källa, licens, file|url, md5, cut, nivåtips
@@ -123,6 +126,22 @@ S = [
      ["musik", "episk", "uppbyggnad", "lyft", "filmisk", "trailer", "final"], "Mixkit musik 322 – Life's a Movie (Arulo)", MIXKIT_MUSIC, None,
      "https://assets.mixkit.co/music/322/322.mp3", "0332df41ce154529a58c8f04fa1920cc", None,
      "Starta 35,0 s in i spåret: tyst del 37–44 s, lyftet vid ~45 s – lägg lyftet på filmens stora avslöjande."),
+    ("sound.skrik-man", "Man skriker (Skriet)", "Ett skrik av skräck/panik – komiskt överdrivet, \"för sent\", Skriet-hyllning",
+     ["skrik", "skräck", "panik", "för sent", "munch", "skriet"], "Mixkit 391 – Falling male scream", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/391/391-preview.mp3", "9681ebf6cd21be60dc19975949e6648b", {"start": 0.0, "dur": 1.30, "fade_out": 0.35},
+     "Lägg starten när munnen öppnas. ~-12,5 dB RMS, under musiken A."),
+    ("sound.eldsus", "Eldsus (kort)", "Eld blossar upp – text eller himmel som börjar brinna",
+     ["eld", "brinner", "brinner inne", "fire whoosh", "flamma"], "Mixkit 1345 – Short fire whoosh", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/1345/1345-preview.mp3", "a323c6382097169addbdf74e2283f8cd", {"start": 0.0, "dur": 0.9, "fade_out": 0.4},
+     "~-12,5 dB RMS när texten om att det brinner slår upp."),
+    ("sound.svep-luftigt", "Svep – luftigt (kameran backar)", "Långsamt luftigt svep när kameran backar/zoomar ut",
+     ["svep", "whoosh", "övergång", "zoom ut", "luftigt"], "Mixkit 1474 – Transition windy swoosh", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/1474/1474-preview.mp3", "aa02d9e3365bfe7cb3b84a6e7bb1cdf3", {"start": 0.0, "dur": 1.6, "fade_out": 0.6},
+     "Toppen på rörelsens mitt, ~3,5 dB över musiken."),
+    ("sound.svep-snabbt", "Svep – snabbt (zoom in)", "Snabbt svep när kameran zoomar in mot något",
+     ["svep", "whoosh", "zoom in", "snabb", "övergång"], "Mixkit 1490 – Fast whoosh transition", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/1490/1490-preview.mp3", "63676fdad508b6c600dc89266ba431a0", None,
+     "Toppen ~0,5 s efter rörelsens start, ~3 dB över musiken."),
     ("music.under-the-sun", "Musik: Under the Sun (120 BPM)", "Lättnad, sol, golf, glatt slut",
      ["musik", "glad", "sol", "golf", "vår", "120 bpm"], "Mixkit musik 859 – Under the Sun (Michael Ramir C.)", MIXKIT_MUSIC, None,
      "https://assets.mixkit.co/music/859/859.mp3", "376303e4efe79bc98da66e425aabf306", None,
@@ -137,7 +156,7 @@ def main():
         if len(row) == 10:  # lokal fil: (..., file, None, cut, tips)
             row = row[:7] + (None, None) + row[8:]
         sid, name, role, tags, source, lic, file, url, md5, cut, tips = row
-        used = USED_IN.get(sid, FILM3 if sid == "music.lifes-a-movie" else FILM2 if sid in NEW2 else FILM)
+        used = USED_IN.get(sid, FILM4 if sid in NEW4 else FILM3 if sid == "music.lifes-a-movie" else FILM2 if sid in NEW2 else FILM)
         bank = {"role": role, "source": source, "license": lic, "used_in": used, "level": tips}
         if file:
             bank["file"] = file
@@ -151,7 +170,7 @@ def main():
             "description": f"{role}. Källa: {source}.", "tags": ["ljud", "godkänt", "ljudbank"] + tags,
             "path": file or "library/sounds/sounds.py",
             "use": f"python library/sounds/sounds.py copy {sid} work/<film>/sfx/{sid.split('.')[-1]}.wav" + (" --cut" if cut else ""),
-            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-10-14" if sid in NEW2 or sid == "music.lifes-a-movie" else "2026-10-13",
+            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-10-14" if sid in NEW2 or sid in NEW4 or sid == "music.lifes-a-movie" else "2026-10-13",
             "preview": {"video": None, "still": still}, "notes": tips, "bank": bank,
         }
         out.append(item)
