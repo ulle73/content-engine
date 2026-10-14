@@ -142,8 +142,8 @@
   "qa": [
     "Krok syns och läses inom 1 s, utan ljud",
     "Humorn landar utan förklaring – testa på någon som inte sett manuset",
-    "Varje faktapåstående på skärm har fact-id från faktabanken och är verifierat; annars säker formulering",
-    "Inga absoluta deadlines ('alla förlorar 31/12') – F6 gäller per arbetsgivare",
+    "Varje faktapåstående på skärm har fact-id från faktabanken; osäker siffra → fråga Jonas, gör inte budskapet svagare",
+    "31 december och 3 000 kr sägs rakt och tydligt (F6, F8) – ingen gardering som 'hos många arbetsgivare' eller 'kolla med HR'",
     "Portal-, app- och kvitto-UI är riktiga skärminspelningar (personuppgifter dolda), aldrig AI",
     "Text inom 9:16-safe zone, max ~8 ord per skärm, läsbar i 360 px mobilvy",
     "Klipp på musikens slag; något nytt händer var 2–4 s",

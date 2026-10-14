@@ -30,7 +30,7 @@ Whip pan in i golfen på taktens etta. Låt punchline-bilden stå – klipp inte
 ## Text
 
 Stort namn bakom huvudet i kroken, sedan korta torra rader (`zak.caption`). Inga faktapåståenden behövs – CTA:n är en
-säker formulering (`golfkuponger-friskvard`). Säg inte att bidraget "brinner inne för alla" (F6 gäller per arbetsgivare).
+formulering ur `golfkuponger-friskvard`. "31 december" och "3 000 kr" får sägas rakt ut (F6, F8).
 
 ## Ljud
 
