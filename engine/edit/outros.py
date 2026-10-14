@@ -2,7 +2,8 @@
 
 Files live in edit-renderer/outros/<brand>/<variant>-<9x16|4x5|1x1|16x9>.mp4 (H.264 + AAC, the brand's original logo
 sound untouched). The brand kit key `outro` picks the variant; "none" switches it off. Golfkuponger defaults to
-"spotlight" (chosen by the owner 2026-10-09). When an outro applies it replaces the generic CTA end card.
+"spotlight" (chosen by the owner 2026-10-09; faster tempo, 3.1 s, 2026-10-13). When an outro applies it replaces the
+generic CTA end card.
 """
 
 from __future__ import annotations
@@ -10,7 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2] / "edit-renderer" / "outros"
-DURATION_S = 4.0
+DURATION_S = 3.1
 DEFAULTS = {"golfkuponger": "spotlight"}
 LABELS = {"spotlight": "Slutbild Spotlight (logo + ljud, texten skrivs fram)"}
 

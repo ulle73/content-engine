@@ -29,6 +29,12 @@ Ett mjukt morgonljus över en välskött svensk bana, någon som faktiskt spelar
 - Mättade färger, neonaccenter, tunga filter.
 - Text inbakad i genererade bilder. Text läggs alltid ovanpå i Remotion.
 
+**Tecknat (illustration/animation)** – Jonas 2026-10-13: platt vektor räcker inte, sikta på *premiumillustration*:
+djupgrön bakgrund med mjuka diagonala ljusstrålar och guldstoft/glimtar, ett varmt ljust stenbord med mjuka skuggor
+(ljus uppifrån vänster), föremål med volym (sidbunt, guldkanter, guldringar, papperstextur), guld som accent, riktig
+eld med glöd och gnistor, säsongsdekor i hörnen (höstkvist, granris med guldkulor). Fortfarande tecknat – inga
+fotorealistiska ytor. Exempel: mallen `golfkuponger.template.arsskifte` (`library/templates/golfkuponger-arsskifte`).
+
 ## Tourleif – vår återkommande figur
 
 **Använd alltid Tourleif** när Golfkuponger gör tecknat eller animerat innehåll med en person (Jonas 2026-10-13).
@@ -103,7 +109,14 @@ Användaren beskriver ofta tonen med vardagsord ("lite rolig och fräck", "seri�
 
 ## Slutkort
 
-Djupgrön bakgrund, logga centrerad (officiell logga via `company.official_logo`, aldrig AI-genererad), en rad nytta och `Golfkuponger.se`. 2 sekunder.
+**Alla Golfkuponger-klipp slutar med slutbilden Spotlight** (beslut av Jonas 2026-10-09, bekräftat 2026-10-13):
+`edit-renderer/outros/golfkuponger/spotlight-<9x16|4x5|1x1>.mp4`, 3,1 s – svingande guldlogga på mörkgrönt, "Mer golf.
+Fler upplevelser." och originalljudet orört. Molnklippet lägger på den automatiskt (`engine/edit/outros.py`); i egna
+renderare (HyperFrames, Remotion, Python, `/animate` …) klipps den in sist av dig. Gör inget eget slutkort ovanpå eller
+före den – låt filmens sista bild gå över i mörkgrönt (#0c140f, slutbildens första bildruta), så öppnar den sig ur mörkret.
+
+Utan slutbilden (bara om beställaren ber om det): djupgrön bakgrund, officiell logga centrerad (`company.official_logo`,
+aldrig AI-genererad), en rad nytta och `Golfkuponger.se`. 2 sekunder.
 
 ## Snabbgranskning (frivillig checklista)
 

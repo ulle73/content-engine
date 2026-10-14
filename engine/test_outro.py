@@ -36,11 +36,11 @@ class BrandOutroTests(TestCase):
             self.assertEqual(spec["outro"]["id"], "outro.golfkuponger.spotlight")
             self.assertTrue((outros.ROOT.parent / spec["outro"]["file"]).is_file())
             self.assertIsNone(spec["cta"])
-            self.assertEqual(spec["duration_s"], 6.0)
+            self.assertEqual(spec["duration_s"], 5.1)
             self.assertIn("ersätts av bolagets slutbild", " ".join(warnings))
         manifest = service.build_manifest(spec)
         self.assertEqual(manifest["scenes"][-1]["items"][0]["id"], "outro.golfkuponger.spotlight")
-        self.assertEqual((manifest["scenes"][-1]["start"], manifest["duration_s"]), (2.0, 6.0))
+        self.assertEqual((manifest["scenes"][-1]["start"], manifest["duration_s"]), (2.0, 5.1))
 
     def test_no_outro_for_other_brands_formats_or_when_switched_off(self):
         spec, _ = cut_spec.validate(self.faiv, self.spec(self.faiv))

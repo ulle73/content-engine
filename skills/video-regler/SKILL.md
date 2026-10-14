@@ -44,8 +44,17 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
   renderare – bygg in en kontroll som **stoppar renderingen** när regeln bryts.
 - **En textposition:** all text utom slutkortet har första raden på samma höjd (9:16: överkant, y ≈ 300), följande
   rader direkt under. Text som hoppar mellan topp, mitt och botten upplevs rörig. Slutkortet är centrerat.
-- Håll texten inom safe zones (9:16: ~220 px överst, ~400 px nederst) och utanför motivets viktiga delar.
+- **Safe zones (Reels, 9:16, 1080×1920):** text, logga, produkt och allt annat viktigt (datum, belopp, etiketter) hålls
+  borta från översta ~14 % (270 px), nedersta ~35 % (670 px) och ~6 % (65 px) på vardera sida – alltså inom
+  x 65–1015, y 270–1250. Där ligger profilnamn, bildtext, knappar och CTA. Bara dekor (bakgrund, mark, partiklar) får
+  gå utanför. Kontrollera med hjälplinjer på stillbilderna innan full rendering. Håll också texten utanför motivets
+  viktiga delar.
+- **Så stort som safe zones tillåter:** text och nyckelobjekt ska synas tydligt på mobilen. Mät radernas verkliga
+  bredd i renderaren och sätt textstorleken per block så att den längsta raden fyller safe zone-bredden (~950 px);
+  bryt hellre om raden än att krympa texten.
 - Textanimationer: fade, lätt scale-in, tracking som dras ihop. Inga överdrivna övergångar.
+- **Markerade ord (ord i färgad ruta):** ingen textskugga på texten i rutan – en mörk skugga på mörk text mot ljus ruta
+  smetar ut bokstäverna. Rutan ska täcka hela versalhöjden inklusive Å/Ä/Ö-prickar och ringar.
 
 ### Bild
 - **Något som ska vara svårt att se** (dolt rådjur, detalj): dämpa bara zonen runt det och kalibrera nivån med
@@ -55,6 +64,8 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - Före/efter-bilder: kontrollera att de ligger exakt linjerade (korrelation/skillnad) och ändra aldrig innehållet.
 
 ### Slutkort
+- **Har bolaget en färdig slutbild, används den sist i varje film** – även i egna renderare: Golfkuponger
+  `edit-renderer/outros/golfkuponger/spotlight-<format>.mp4` (3,1 s, originalljud orört). Gör inget eget slutkort då.
 - Bolagets **riktiga logga**, aldrig en textersättning.
 - Alla rader in tätt efter varandra (≤ ~0,5 s emellan) – ingen lång väntan på URL:en.
 - Markering och understrykning: **ren, tunn, en liten mjuk båge**, som ritas fram. Ingen slarvig penseltextur.
@@ -90,3 +101,6 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-12 | FAIV Hitta faran | URL:en på slutkortet kom för sent; strecket "slarvigt" | Slutkortsrader tätt; ren tunn båge (3, Slutkort) |
 | 2026-10-12 | FAIV Hitta faran | Syntljud "konstiga", ljud saknades på nyckelmoment, musiken skulle sluta vid loggan | `skills/ljud`; ljudkarta och provning i beslutsrundan (2.4) |
 | 2026-10-12 | FAIV Hitta faran | "Detta tog alldeles för mycket edit" | Beslutsrunda före bygget (2), mall `faiv.template.hitta-faran` |
+| 2026-10-13 | GK Årsskiftet | Slutbilden ska vara "slut" på alla klipp vi gör | Bolagets slutbild sist i varje film, även egna renderare (3, Slutkort) |
+| 2026-10-13 | GK Årsskiftet | "Gör allt lite större så man ser det tydligare"; respektera safe zones | Safe zones x 65–1015, y 270–1250 för allt viktigt; text så stor som de tillåter (3, Text) |
+| 2026-10-13 | GK Årsskiftet | "Man ser inte riktigt texten" (mörk text i ljus ruta) | Ingen skugga i markerade rutor; rutan täcker Å-ringen (3, Text) |
