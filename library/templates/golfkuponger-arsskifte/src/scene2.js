@@ -20,7 +20,7 @@ const CAL_SHIFT = (M.play + OFF2) - (REW_TO + OFF1); // så att bladen fortsätt
 // Texter (verklig tid). Läsregeln kontrolleras i render.mjs.
 TEXTS.length = 0;
 TEXTS.push(
-  { id: 't1', win: [0.15, 5.4], size: 112, lines: ['VAD HÄNDER MED DITT', 'FRISKVÅRDSBIDRAG', '{VID ÅRSSKIFTET?}'], fg: C.cream, box: C.cream, boxFg: C.deep },
+  { id: 't1', win: [0.15, 5.4], size: 104, lines: ['VAD HÄNDER MED DITT', 'FRISKVÅRDSBIDRAG', '{VID ÅRSSKIFTET?}'], fg: C.cream, box: C.cream, boxFg: C.deep },
   { id: 't3', win: [5.4, 9.05], size: 124, lines: ['DEN {31 DECEMBER}', 'BRINNER DET INNE.'], fg: C.cream, box: C.red, boxFg: C.cream },
   { id: 'sent', win: [12.6, 14.35], size: 160, lines: ['{FÖR SENT.}'], fg: '#ffffff', box: '#E0201B', boxFg: '#ffffff' },
   { id: 'paus', win: [16.5, 20.0], size: 120, lines: ['DET HÄR', 'BEHÖVER INTE', '{HÄNDA DIG.}'], fg: C.cream, box: '#F3D27A', boxFg: '#082f27' },

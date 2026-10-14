@@ -4,11 +4,11 @@
 // ---------- Texter (läsregeln kontrolleras i render.mjs) ----------
 TEXTS.length = 0;
 TEXTS.push(
-  { id: 't1', win: [0.15, 3.6], size: 102, lines: ['INGEN FÖRMÅNSPORTAL', 'PÅ {JOBBET?}'], fg: C.cream, box: '#F3D27A', boxFg: C.deep },
+  { id: 't1', win: [0.15, 3.6], size: 99, lines: ['INGEN FÖRMÅNSPORTAL', 'PÅ {JOBBET?}'], fg: C.cream, box: '#F3D27A', boxFg: C.deep },
   { id: 't2', win: [3.65, 7.1], size: 116, lines: ['KÖP DIREKT PÅ', '{GOLFKUPONGER.SE}'], fg: C.cream, box: '#F3D27A', boxFg: C.deep },
   { id: 't3', win: [10.6, 13.45], size: 120, lines: ['KVITTOT KOMMER', '{SOM PDF.}'], fg: C.cream, box: '#F3D27A', boxFg: C.deep },
-  { id: 't4', win: [13.5, 16.7], size: 124, lines: ['LÅT CHEFEN BETALA', '{DIN GOLF.}'], fg: C.cream, box: '#F3D27A', boxFg: C.deep },
-  { id: 't5', win: [18.5, 23.25], size: 112, lines: ['FRISKVÅRDSBIDRAGET:', 'CHEFEN BETALAR.', '{DU SPELAR.}'], fg: C.deep, box: C.deep, boxFg: C.cream },
+  { id: 't4', win: [13.5, 16.7], size: 120, lines: ['LÅT CHEFEN BETALA', '{DIN GOLF.}'], fg: C.cream, box: '#F3D27A', boxFg: C.deep },
+  { id: 't5', win: [18.5, 23.25], size: 105, lines: ['FRISKVÅRDSBIDRAGET:', 'CHEFEN BETALAR.', '{DU SPELAR.}'], fg: C.deep, box: C.deep, boxFg: C.cream },
 );
 const END = 23.75;
 

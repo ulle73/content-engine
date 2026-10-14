@@ -17,7 +17,7 @@ const TL = {
 };
 // {…} = markerad ruta. Textfönster i verklig tid (efter tidsförskjutningen D nedan).
 const TEXTS = [
-  { id: 't1', win: [0.15, 5.4], size: 112, lines: ['VAD HÄNDER MED DITT', 'FRISKVÅRDSBIDRAG', '{VID ÅRSSKIFTET?}'], fg: C.cream, box: C.cream, boxFg: C.deep },
+  { id: 't1', win: [0.15, 5.4], size: 104, lines: ['VAD HÄNDER MED DITT', 'FRISKVÅRDSBIDRAG', '{VID ÅRSSKIFTET?}'], fg: C.cream, box: C.cream, boxFg: C.deep },
   { id: 't2', win: [5.4, 8.75], size: 116, lines: ['HAR DU', '{FRISKVÅRDSBIDRAG}', 'KVAR?'], fg: C.cream, box: C.gold, boxFg: C.deep },
   { id: 't3', win: [8.75, 12.4], size: 124, lines: ['DEN {31 DECEMBER}', 'BRINNER DET INNE.'], fg: C.cream, box: C.red, boxFg: C.cream },
   { id: 't4', win: [13.95, 17.9], size: 126, lines: ['ANVÄND', 'FRISKVÅRDEN', 'TILL {GOLF I TID.}'], fg: C.deep, box: C.deep, boxFg: C.cream },
@@ -68,8 +68,8 @@ function dateOf(k) { const d = new Date(2026, 9, 1 + k); return { day: d.getDate
 function topPage(t) { let n = 0; while (n < 90 && TEAR[n] <= t) n++; return n; }
 
 // ---------- Layout ----------
-// Safe zones (Reels): allt viktigt inom x 65–1015, y 270–1250.
-const PW = 480, PH = 440, CAL_S = 1.15, HINGE = { x: 450, y: 765 }, DESK_Y = 1175;
+// Safe zones (Reels): allt viktigt inom x 65–929, y 270–1250.
+const PW = 480, PH = 440, CAL_S = 1.15, HINGE = { x: 420, y: 765 }, DESK_Y = 1175;
 
 // Statiska texturer (beräknas en gång).
 const SPECK = (() => { const r = rng(77); let s = ''; for (let i = 0; i < 140; i++) s += `<circle cx="${f1(r() * 180)}" cy="${f1(r() * 180)}" r="${f1(0.6 + r() * 1.6)}" fill="${r() < 0.5 ? '#6d5a40' : '#fff8e8'}" opacity="${(0.15 + r() * 0.35).toFixed(2)}"/>`; return s; })();
@@ -298,7 +298,7 @@ function holeR(t) {
   const a = eOut(prog(t, TL.impact, TL.impact + 0.07)) * 64;
   return a + eIn(prog(t, TL.revealStart, TL.revealEnd)) * 2400;
 }
-const HOLE = { x: 450, y: 765 + 262 * 1.15 };
+const HOLE = { x: 420, y: 765 + 262 * 1.15 };
 function holePath(r, seed) {
   if (r <= 0) return '';
   let d = '';
@@ -372,7 +372,7 @@ function burnAt(t) { return BURN_END * Math.pow(clamp((t - TL.ignite) / (TL.impa
 function flameAt(t) { return sstep(TL.ignite, TL.ignite + 0.5, t) * (0.5 + 0.5 * prog(t, TL.ignite, TL.impact)) * (1 - sstep(TL.impact, TL.impact + 0.14, t)); }
 function blinkAt(t) { let g = 0; for (const p of [5.75, 6.2, 6.65]) g = Math.max(g, Math.exp(-Math.pow((t - p) / 0.11, 2))); return g; }
 
-const NOTE_POS = { x: 800, y: 1148, rot: -6, s: 1.2 };
+const NOTE_POS = { x: 728, y: 1148, rot: -6, s: 1.2 };
 function noteDesk(t) {
   const g = blinkAt(t), sc = 1 + 0.07 * g;
   let s = `<ellipse cx="${NOTE_POS.x + 20}" cy="${NOTE_POS.y + 96}" rx="200" ry="22" fill="#2a1d0c" opacity=".3" filter="url(#blur14)"/>`;

@@ -45,12 +45,13 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - **En textposition:** all text utom slutkortet har första raden på samma höjd (9:16: överkant, y ≈ 300), följande
   rader direkt under. Text som hoppar mellan topp, mitt och botten upplevs rörig. Slutkortet är centrerat.
 - **Safe zones (Reels, 9:16, 1080×1920):** text, logga, produkt och allt annat viktigt (datum, belopp, etiketter) hålls
-  borta från översta ~14 % (270 px), nedersta ~35 % (670 px) och ~6 % (65 px) på vardera sida – alltså inom
-  x 65–1015, y 270–1250. Där ligger profilnamn, bildtext, knappar och CTA. Bara dekor (bakgrund, mark, partiklar) får
+  borta från översta ~14 % (270 px), nedersta ~35 % (670 px), ~6 % (65 px) till vänster och **~14 % (151 px) till höger**
+  – alltså inom x 65–929, y 270–1250. Högerkanten är bred för Facebooks knapprad; vi delar alltid på både Instagram och
+  Facebook (Jonas 2026-10-14). Där ligger profilnamn, bildtext, knappar och CTA. Bara dekor (bakgrund, mark, partiklar) får
   gå utanför. Kontrollera med hjälplinjer på stillbilderna innan full rendering. Håll också texten utanför motivets
   viktiga delar.
 - **Så stort som safe zones tillåter:** text och nyckelobjekt ska synas tydligt på mobilen. Mät radernas verkliga
-  bredd i renderaren och sätt textstorleken per block så att den längsta raden fyller safe zone-bredden (~950 px);
+  bredd i renderaren och sätt textstorleken per block så att den längsta raden fyller safe zone-bredden (~860 px, x 65–929);
   bryt hellre om raden än att krympa texten.
 - Textanimationer: fade, lätt scale-in, tracking som dras ihop. Inga överdrivna övergångar.
 - **Markerade ord (ord i färgad ruta):** ingen textskugga på texten i rutan – en mörk skugga på mörk text mot ljus ruta
@@ -103,4 +104,5 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-12 | FAIV Hitta faran | "Detta tog alldeles för mycket edit" | Beslutsrunda före bygget (2), mall `faiv.template.hitta-faran` |
 | 2026-10-13 | GK Årsskiftet | Slutbilden ska vara "slut" på alla klipp vi gör | Bolagets slutbild sist i varje film, även egna renderare (3, Slutkort) |
 | 2026-10-13 | GK Årsskiftet | "Gör allt lite större så man ser det tydligare"; respektera safe zones | Safe zones x 65–1015, y 270–1250 för allt viktigt; text så stor som de tillåter (3, Text) |
+| 2026-10-14 | GK Chefen betalar | "Det ska vara 14 %, på FB behövdes lite mer, vi delar alltid på både Instagram och FB" | Höger safe zone 14 % (x ≤ 929), vänster 6 % (3, Text) |
 | 2026-10-13 | GK Årsskiftet | "Man ser inte riktigt texten" (mörk text i ljus ruta) | Ingen skugga i markerade rutor; rutan täcker Å-ringen (3, Text) |

@@ -1,7 +1,7 @@
 # Ingen portal? Låt chefen betala din golf – 9:16, 26,9 s (23,75 s film + 3,1 s slutbild)
 
 Tecknad premiumillustration (SVG i Chrome, `src/chef-film.js`), 1080×1920, 30 fps. Läsregeln stoppar renderingen.
-Safe zones: allt viktigt inom x 65–1015, y 270–1250 (kameran i mobilen följer fingret så att varje tryck hamnar där).
+Safe zones: allt viktigt inom x 65–929, y 270–1250 (kameran i mobilen följer fingret så att varje tryck hamnar där).
 
 | Tid (s) | Bild | Text | Ljud |
 |---|---|---|---|

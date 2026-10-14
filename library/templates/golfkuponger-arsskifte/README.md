@@ -46,7 +46,7 @@ Loudness: gain → lågpass 15,5 kHz → limiter (skarpa transienter toppar anna
 ## Lärdomar från den här filmen (står också i skills/video-regler)
 
 - Läsregeln styr längden – texterna avgör tidslinjen, inte tvärtom.
-- Allt viktigt inom safe zones x 65–1015, y 270–1250; texten så stor som de tillåter.
+- Allt viktigt inom safe zones x 65–929, y 270–1250; texten så stor som de tillåter.
 - Ingen textskugga i markerade rutor; rutan täcker Å/Ä/Ö.
 - Rivna blad ska falla ur bild, inte landa och försvinna.
 - Ge tittaren tid att känna det goda ("ååh, golf") innan det tas ifrån en; markera var spolningen stannar.

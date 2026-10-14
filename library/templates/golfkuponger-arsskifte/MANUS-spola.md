@@ -2,7 +2,7 @@
 
 Bygge: `src/scene2.html` + `src/scene2.js` (huvudtidslinje), ritning från `src/scene.js` och `src/sf.js`.
 Bild: `PAGE=scene2.html node render.mjs video out/bild2-9x16.mp4`. Ljud: `python -I audio2.py`. Läsregeln stoppar renderingen.
-Safe zones: allt viktigt inom x 65–1015, y 270–1250. Mitt på skärmen bara stora tecken (❚❚ ◀◀ ▶), ingen OSD-text.
+Safe zones: allt viktigt inom x 65–929, y 270–1250. Mitt på skärmen bara stora tecken (❚❚ ◀◀ ▶), ingen OSD-text.
 
 | Verklig tid (s) | Bild | Text | Ljud |
 |---|---|---|---|

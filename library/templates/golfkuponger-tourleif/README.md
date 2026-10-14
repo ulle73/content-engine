@@ -33,7 +33,7 @@ svg = `<defs>${tourleifDefs()}</defs>` + tourleif(t, { expr: 'jublar', x: 540, y
 ```
 
 Normalskala: huvudets mitt i (540, 890), kroppen ner till y ≈ 1340 – håll ansikte och keps inom safe zones
-(x 65–1015, y 270–1250). Ljud som passar: `sound.grat-man` (gråter), se `library/sounds`.
+(x 65–929, y 270–1250). Ljud som passar: `sound.grat-man` (gråter), se `library/sounds`.
 
 Karaktärsark och rörlig förhandsvisning: `node library/templates/golfkuponger-tourleif/render_sheet.mjs`.
 

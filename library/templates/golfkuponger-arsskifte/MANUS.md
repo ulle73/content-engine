@@ -2,7 +2,7 @@
 
 Tecknad premiumillustration (SVG i Chrome, `src/scene.js`; platt första version i `src/scene-v1-platt.js`), 1080×1920, 30 fps. Djupgrönt med ljusstrålar och guldstoft, stenbord, bordskalender med sidbunt och guldringar, rivna blad landar på bordet, grönt presentkort med guldram brinner, höstkvist → granris med guldkulor i hörnen. Verklig tid nedan (scentid + 0,4 s efter
 bläddringen, `sceneTime`). Läsregeln kontrolleras i `render.mjs` och stoppar renderingen. All text börjar på y = 300.
-Safe zones: allt viktigt inom x 65–1015, y 270–1250 (kontrollerat med hjälplinjer, `out/safe.png`).
+Safe zones: allt viktigt inom x 65–929, y 270–1250 (kontrollerat med hjälplinjer, `out/safe.png`).
 
 | Tid (s) | Bild | Text | Ljud |
 |---|---|---|---|
