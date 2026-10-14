@@ -24,6 +24,7 @@ Motspelare: **Chefen** (`library/templates/golfkuponger-chefen/`).
 | Gråter | `grat` | Snyftar, tårfontäner, pölar | För sent, bidraget brann inne |
 | Lurig | `lurig` | Sidoblick, ett ögonbryn uppe, snett flin | Smyger, har en plan ("chefen vet inte om det än") |
 | Blinkar | `blinkar` | Blinkar åt kameran var 2:a sekund | Delar en hemlighet med tittaren |
+| Skriker | `skriker` | Händerna mot huvudet, avlång mun (`open` 0–1), svajar; tröjan går ut ur bild nedåt | Panik, "för sent", Skriet-hyllning (godkänd 2026-10-14) |
 
 ## Använd honom
 

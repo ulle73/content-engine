@@ -39,7 +39,7 @@ fotorealistiska ytor. Exempel: mallen `golfkuponger.template.arsskifte` (`librar
 
 **Använd alltid Tourleif** när Golfkuponger gör tecknat eller animerat innehåll med en person (Jonas 2026-10-13).
 Tecknad golfare i grön keps med Golfkupongers **riktiga logga** (officiella `logo-final.png`, aldrig ritad eller AI) och
-grön piké med krämvit krage. Uttryck: glad, jublar, förvånad, gråter, lurig, blinkar. Kod, utseenderegler och karaktärsark:
+grön piké med krämvit krage. Uttryck: glad, jublar, förvånad, gråter, lurig, blinkar, skriker. Kod, utseenderegler och karaktärsark:
 `library/templates/golfkuponger-tourleif/` (`find.py tourleif`). Nya poser byggs i samma modul och visas för Jonas innan
 de används. Filmade sketcher med skådespelare använder samma namn (receptet `gk-recurring-character-sketch`).
 
