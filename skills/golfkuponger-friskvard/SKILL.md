@@ -7,37 +7,44 @@ description: Affärskunskap om Golfkuponger och friskvårdsbidraget – köpväg
 
 Den här skillen gör att idéerna blir *Golfkupongers* och inte generiska. Den har två delar: **fakta** (vad vi får säga) och **idémotor** (frågor, vinklar, storyboard-mönster).
 
-## Regel nummer ett: bara verifierade påståenden från faktabanken
+## Fakta: säg det starkt och tydligt
 
-**Faktabanken i appen är sanningen** (Annonser → Faktabank, MCP: `list_ad_facts`). Tabellen nedan är bara startvärden. Den kopieras in i banken som ej verifierad första gången och används sedan inte. Bara en människa kan verifiera eller spärra ett påstående i banken. Du kan föreslå nya med `propose_ad_fact`.
+Reklam ska vara rak. Det som gäller för de allra flesta säger vi som det är – utan gardering, fotnoter eller
+"kolla med din arbetsgivare". **31 december** och **3 000 kr** är budskapet, inte något som ska tonas ned.
 
-Allt som visas eller sägs i en annons och som är ett faktapåstående läggs i `AdBrief.facts` med sitt `fact_id` från banken. Status hämtas därifrån, så du sätter aldrig `verified` själv. Är du osäker, omformulera till något som inte är ett påstående ("kolla med din arbetsgivare") eller fråga Jonas.
+**Faktabanken i appen** (Annonser → Faktabank, MCP: `list_ad_facts`) samlar påståendena. Tabellen nedan är startvärden
+som kopieras in i banken första gången. Jonas verifierar eller spärrar i banken; du kan föreslå nya med `propose_ad_fact`.
+Faktapåståenden i en annons läggs i `AdBrief.facts` med sitt `fact_id`. Är du osäker på en siffra: fråga Jonas – skriv
+inte om budskapet till något svagare.
 
 ### Faktabank
 
 | # | Påstående | Källa | Status |
 |---|---|---|---|
 | F1 | Golfkuponger finns att köpa i förmånsportaler. Nämnda i repot: Epassi, Benify/Benifex, Söderberg & Partners | `engine/motion/planner.py`, minne | ⚠️ Verifiera exakt aktuell portallista |
-| F2 | Det går att köpa direkt på golfkuponger.se och få kvitto från Golfkuponger, för den som saknar förmånsportal | mall `friskvard-direct-ad` | ⚠️ Verifiera formulering om kvitto/underlag |
+| F2 | Vem som helst kan köpa direkt på golfkuponger.se (ingen portal behövs). Kvittot kommer som pdf på mejlen och kan användas som underlag för friskvårdsbidrag hos arbetsgivaren | Jonas 2026-10-13 + kvittot (pdf) | ✅ Godkänt av Jonas. Rak text ok: "Låt chefen betala din golf" |
 | F3 | Köpvägen i portalen: sök Golfkuponger → välj belopp → koden läggs in i appen | mall `friskvard-portal-ad` | ⚠️ Verifiera mot aktuell portal |
 | F4 | Golf på "300+ klubbar" | mall `friskvard-portal-ad` | ⚠️ Verifiera aktuellt antal |
 | F5 | Kupongerna kan användas "hela nästa säsong" | mall `friskvard-portal-ad` | ⚠️ Verifiera giltighetstid |
-| F6 | Friskvårdsbidraget "brinner inne 31/12" | standardhook i mallen | ⚠️ Gäller per arbetsgivare, inte universellt. Se nedan |
+| F6 | Friskvårdsbidraget brinner inne 31 december – säg det rakt: "31 december försvinner det" | Jonas 2026-10-13 | ✅ Godkänt av Jonas. Gäller nästan alla; ingen gardering |
 | F7 | Skattefri nivå och vad som räknas som friskvård | Skatteverket | ❌ Använd inte förrän formulering är verifierad mot Skatteverket och juridiskt OK |
+| F8 | Friskvårdsbidraget: 3 000 kr – visa beloppet rakt, utan "t.ex." | Jonas 2026-10-13 | ✅ Godkänt av Jonas |
 
-*Startvärden. Verifiering sker i faktabanken, inte här.*
+*Startvärden. Banken i appen är det som används.*
 
-### Formuleringar som är säkra utan verifiering
+### Bra formuleringar
 
-- "Kolla hur mycket friskvårdsbidrag du har kvar."
-- "Har du bidrag kvar i år?"
+- "Ingen förmånsportal? Köp direkt på golfkuponger.se." / "Kvittot kommer som pdf." (F2)
+- "Låt chefen betala din golf." / "Friskvårdsbidraget: chefen betalar. Du spelar." (F2, fräck – Jonas 2026-10-13)
+
+- "Den 31 december försvinner ditt friskvårdsbidrag."
+- "3 000 kr kvar? Gör dem till golf."
 - "Gör ditt friskvårdsbidrag till golf."
 - "Sök på Golfkuponger i din förmånsportal." (förutsatt F1)
 
 ### Undvik
 
-- Absoluta deadlines för alla ("alla förlorar sitt bidrag 31/12"). Skriv i stället "för många" eller "hos de flesta", eller "innan årsskiftet" kombinerat med "kolla med din arbetsgivare", om det är verifierat.
-- Skatte- eller juridiska påståenden (F7) utan verifiering.
+- Att gardera bort budskapet ("hos många arbetsgivare", "t.ex. 3 000 kr", "kolla med din arbetsgivare"). Det gör reklamen svag.
 - Jämförelser med namngivna konkurrenter.
 - Att återskapa portal-, app- eller kvitto-UI med AI. Använd riktiga skärminspelningar.
 

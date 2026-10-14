@@ -1,0 +1,65 @@
+{
+  "kit": "golfkuponger",
+  "title": "Golfkuponger – Ingen portal? Låt chefen betala din golf",
+  "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; skärmar från golfkuponger.se; kvittot anonymiserat; ljud per ljudbankens licenser"
+  },
+  "items": [
+    {
+      "id": "golfkuponger.template.chefen-betalar",
+      "name": "Ingen portal? Låt chefen betala din golf (9:16, 26,9 s)",
+      "type": "template",
+      "medium": "video",
+      "formats": ["9:16"],
+      "engine": "html-playwright",
+      "description": "Fräck tecknad film med Tourleif och Chefen: dörren FÖRMÅNSPORTAL leder till en tegelvägg (syrsor), Tourleif köper direkt på golfkuponger.se i mobilen (riktiga skärmar: start → paket 2 000 kr → kassa, 'Tourleif' skrivs, Betala), grön bock, pdf-kvittot (riktigt, anonymiserat) med 'Underlag för friskvårdsbidrag', chefen läser skeptiskt, GODKÄNT-stämpeln slår ner, alla på golfbanan. Text: Ingen förmånsportal på jobbet? / Köp direkt på golfkuponger.se / Kvittot kommer som pdf. / Låt chefen betala din golf. / Friskvårdsbidraget: chefen betalar. Du spelar.",
+      "tags": ["golfkuponger", "friskvård", "direktköp", "ingen portal", "kvitto", "pdf", "chefen", "tourleif", "fräck", "humor", "tecknat", "mobil", "skärminspelning", "godkänt", "reels"],
+      "path": "library/templates/golfkuponger-chefen-betalar/README.md",
+      "use": "cp -r library/templates/golfkuponger-chefen-betalar work/<namn> && cd work/<namn> && ./make.sh",
+      "requires": ["node", "ffmpeg", "python"],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {"video": "library/previews/golfkuponger.template.chefen-betalar.mp4", "still": "library/previews/golfkuponger.template.chefen-betalar.jpg"},
+      "notes": "Godkänd av Jonas 2026-10-14 (M1, C1, ST1). F2 bekräftad: vem som helst kan köpa direkt, kvitto som pdf på mejlen."
+    },
+    {
+      "id": "golfkuponger.scene.mobilflode-riktig-sajt",
+      "name": "Mobilflöde med riktiga skärmar (kameran följer fingret)",
+      "type": "scene",
+      "medium": "video",
+      "formats": ["9:16", "any"],
+      "engine": "html-playwright",
+      "description": "Tecknad mobil som visar riktiga helsidesbilder från sajten: tryck med krusning, mjuk scroll, sidbyte, inzoomning när något skrivs, panorering till knappen, grön bock och mejlnotis. Kameran håller varje tryck inom safe zones. Inget gränssnitt ritas om.",
+      "tags": ["mobil", "skärminspelning", "köpflöde", "kassa", "tryck", "scroll", "ui", "bevis", "golfkuponger.se"],
+      "path": "library/templates/golfkuponger-chefen-betalar/src/chef-film.js",
+      "use": "partPhone/phoneScreen/tap i src/chef-film.js; fånga skärmar med capture_flow.mjs (trycker aldrig Betala). Ljud: sound.mobiltryck, sound.tangenter, sound.bekraftelse, sound.mejlnotis.",
+      "requires": ["node"],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {"video": null, "still": "library/previews/golfkuponger.scene.mobilflode-riktig-sajt.jpg"},
+      "notes": "Bilder som ritas om varje bildruta måste ligga som fasta <symbol> (laddas en gång) – annars hinner de inte visas."
+    },
+    {
+      "id": "golfkuponger.effect.godkant-stampel",
+      "name": "GODKÄNT-stämpel som slår ner",
+      "type": "effect",
+      "medium": "video",
+      "formats": ["9:16", "any"],
+      "engine": "html-playwright",
+      "description": "Grön gummistämpel 'GODKÄNT' med grov färg störtar ner från 2,4× och slår i med skak och tryckvåg – den positiva spegelbilden av förbudsmärket.",
+      "tags": ["godkänt", "stämpel", "ok", "beviljat", "chefen", "slår ner", "impact", "grön"],
+      "path": "library/templates/golfkuponger-chefen-betalar/src/chef.js",
+      "use": "stamp(cx, cy, k, rot) i src/chef.js (k 0→1 = landning). Ljud: sound.smack-dov-trumma.",
+      "requires": ["node"],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {"video": null, "still": "library/previews/golfkuponger.effect.godkant-stampel.jpg"},
+      "notes": ""
+    }
+  ]
+}
