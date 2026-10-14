@@ -102,7 +102,7 @@ mcp = MCPServer(
         "render_recipe cuts it in the cloud. "
         "When the user shares a video link or wants our own version of an ad or reel that works (\"gör en sån här "
         "för FAIV\"), start with analyze_reference_video (or list_reference_candidates for monitored ads), then "
-        "plan_our_version. Before building any video, read the skills studio, video-regler and ljud with "
+        "plan_our_version. Before building any video or carousel, read the skills studio, teknik, video-regler and ljud with "
         "read_ad_skill and follow them."
     ),
     token_verifier=OIDCTokenVerifier(),

@@ -20,7 +20,7 @@ from pathlib import Path
 LIBRARY = Path(__file__).resolve().parents[1]
 ROOT = LIBRARY.parent
 
-TYPES = {"template", "scene", "effect", "transition", "text", "caption", "grade", "background",
+TYPES = {"template", "scene", "effect", "transition", "text", "caption", "grade", "background", "technique",
          "carousel", "skill", "prompt", "sound", "tool", "recipe", "model"}
 MEDIA = {"video", "carousel", "image", "audio", "text"}
 FORMATS = {"9:16", "1:1", "4:5", "16:9", "any"}
@@ -87,7 +87,8 @@ def load_manifests() -> tuple[list[dict], list[str]]:
             for kind in ("video", "still"):
                 if preview.get(kind) and not (ROOT / preview[kind]).exists():
                     problems.append(f"{where} ({item_id}): preview.{kind} finns inte: {preview[kind]}")
-            if item["status"] == "verified" and not preview:
+            # tekniker är godkända genom sitt bevis (länk/egen film); en preview är bra men inget krav
+            if item["status"] == "verified" and not preview and item["type"] != "technique":
                 problems.append(f"{where} ({item_id}): verified kräver en preview")
             items.append({
                 "kit": kit,

@@ -18,13 +18,14 @@ vilka ljud och vilken musik, slutkortets tempo och streck. Därför:
 
 - Läs `skills/studio`, bolagets **brand-skill** och **faktaskill** (t.ex. `faiv-brand` + `faiv-fakta`,
   `golfkuponger-brand` + `golfkuponger-friskvard`) innan första förslaget.
-- Sök i biblioteket. Finns en verifierad mall för samma idé (t.ex. `faiv.template.hitta-faran` för mörker → ljus,
+- Sök i biblioteket – även teknikbanken (`find.py "<idé>" --type technique`, `skills/teknik`). Finns en verifierad mall för samma idé (t.ex. `faiv.template.hitta-faran` för mörker → ljus,
   före/efter med extraljus), börja i den. Den har redan alla beslut nedan inbyggda.
 
 ## 2. Beslutsrundan – en runda innan full rendering
 
 Bygg ett beslutsunderlag och låt beställaren svara i **ett** meddelande (t.ex. "B, mörker 2, musik 1, H1, S5, ok slutkort"):
 
+0. **Valda tekniker** ur teknikbanken (`skills/teknik`): krok, retention/struktur och cta – en rad var om varför.
 1. **Manus och tidslinje räknade från läsregeln** → den verkliga längden. Blir filmen längre än önskat: föreslå
    textkortningar nu, inte efter leverans (FAIV-filmen gick från 24 till 39 s när läsregeln infördes i efterhand).
 2. **Kontaktkarta i mobilstorlek** (en bild per beat, ~360 px bred) med texten på sina riktiga platser.
