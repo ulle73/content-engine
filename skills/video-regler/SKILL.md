@@ -42,8 +42,12 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - **Läsregeln:** varje textbit syns minst max(5/6 s, tecken/12) + 0,9 s; text som läses i följd i en scen får
   lästiden för all text tillsammans, räknat från första biten (som `engine/edit/spec.py`). Gäller även i egna
   renderare – bygg in en kontroll som **stoppar renderingen** när regeln bryts.
-- **En textposition:** all text utom slutkortet har första raden på samma höjd (9:16: överkant, y ≈ 300), följande
-  rader direkt under. Text som hoppar mellan topp, mitt och botten upplevs rörig. Slutkortet är centrerat.
+- **En textposition, mer mot mitten:** all text utom slutkortet har första raden på samma höjd – 9:16: **y ≈ 560**
+  (mitt i bild, inte högst upp; Jonas 2026-10-14), följande rader direkt under. Text som hoppar mellan topp, mitt och
+  botten upplevs rörig. Undantag: när en logga eller ett motiv står mitt i bild ligger texten ovanför det (y ≈ 300).
+  Slutkortet är centrerat.
+- **Etiketter hör ihop med texten:** en etikett (t.ex. plats-ikon + bannamn) ligger centrerad **direkt under**
+  huvudtexten med ett litet mellanrum (~40 px) – inte i en annan del av bilden.
 - **Safe zones (Reels, 9:16, 1080×1920):** text, logga, produkt och allt annat viktigt (datum, belopp, etiketter) hålls
   borta från översta ~14 % (270 px), nedersta ~35 % (670 px), ~6 % (65 px) till vänster och **~14 % (151 px) till höger**
   – alltså inom x 65–929, y 270–1250. Högerkanten är bred för Facebooks knapprad; vi delar alltid på både Instagram och
@@ -105,4 +109,5 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-13 | GK Årsskiftet | Slutbilden ska vara "slut" på alla klipp vi gör | Bolagets slutbild sist i varje film, även egna renderare (3, Slutkort) |
 | 2026-10-13 | GK Årsskiftet | "Gör allt lite större så man ser det tydligare"; respektera safe zones | Safe zones x 65–1015, y 270–1250 för allt viktigt; text så stor som de tillåter (3, Text) |
 | 2026-10-14 | GK Chefen betalar | "Det ska vara 14 %, på FB behövdes lite mer, vi delar alltid på både Instagram och FB" | Höger safe zone 14 % (x ≤ 929), vänster 6 % (3, Text) |
+| 2026-10-14 | GK Spelat den här? | "Text kan generellt vara mer i mitten"; platstexten för långt från huvudtexten | Text y ≈ 560; etikett centrerad direkt under texten (3, Text) |
 | 2026-10-13 | GK Årsskiftet | "Man ser inte riktigt texten" (mörk text i ljus ruta) | Ingen skugga i markerade rutor; rutan täcker Å-ringen (3, Text) |
