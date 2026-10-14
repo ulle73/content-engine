@@ -7,7 +7,12 @@ Lägg till en teknik: en ny rad i TEKNIKER nedan (se skills/teknik), kör
 Fält: id (teknik.<slug>), namn, roll (krok/retention/vändning/bevis/cta/struktur/övergång/text), medium (video/carousel),
 kort (en mening), hur (vad som händer, steg), varför (psykologin), tajming, tecknat (så bygger vi det i kod), filmat
 (så spelar vi in det), golfkuponger (konkret idé för oss), taggar, bevis (källa: länk/kreatör/likes/datum eller egen
-godkänd film), preview (bara egen bild – aldrig kreatörens video/bilder), exempel (våra mallar/filmer som använder den).
+godkänd film), preview (bara egen bild – aldrig kreatörens video/bilder), exempel (våra mallar/filmer som använder den),
+tillagd (datum, standard TILLAGD).
+
+Status: varje teknik som läggs in är godkänd (verified) – Jonas skickar bara bevisade tekniker. Vårt eget utförande
+(video/bilder) är en annan sak: `eget_exempel` säger "ej byggt än" tills en egen film med tekniken godkänts
+(lägg då filmen som bevis med "godkänd" och gärna en preview ur den).
 """
 import json
 from pathlib import Path
@@ -17,7 +22,12 @@ ROOT = HERE.parents[1]
 MAVITA = {"källa": "https://www.instagram.com/reel/DeKwHHlPu0i/", "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
           "likes": 7921, "kommentarer": 79, "datum": "2026-10-06", "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
           "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."}
+YST = {"källa": "https://www.instagram.com/p/Dd6b1iSEWbC/", "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+       "likes": 2020, "kommentarer": 1405, "datum": "2026-09-30", "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+       "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 "
+                   "likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."}
 EGEN = lambda film, datum="2026-10-14": {"källa": film, "kreatör": "Golfkuponger (egen film)", "godkänd": f"Jonas {datum}"}
+TILLAGD = "2026-10-14"
 
 TEKNIKER = [
     # ---------- från referenser ----------
@@ -73,6 +83,98 @@ TEKNIKER = [
          filmat="En inspelningsdag: 5–6 korta tagningar med olika gester mot samma tomma yta.",
          golfkuponger="'GOLF FÖR FRISKVÅRDSBIDRAGET' i sex varianter (dörr, mobil, green, chefen, kupong, cirkel-CTA).",
          taggar=["struktur", "retention", "lista", "lärande", "mönsterbrytning", "sparningar"], bevis=MAVITA),
+    # ---------- @yoursocialteam: visuella karusell-trender (2026-09-30) ----------
+    dict(id="teknik.trendlista-karusell", namn="Numrerad lista-karusell: 'X saker – spara detta'", roll="struktur",
+         medium=["carousel"],
+         kort="Slide 1 lovar en lista och ber om sparning; en sak per slide med stor nummer-etikett, exempelbild och två rader varför; sista slide = CTA.",
+         hur="1) Krok: stor rubrik ('De här … går viralt just nu') + handskriven rad 'spara detta om du …' + en hand som pekar. "
+             "2) Slide 2–7: rosa pill-etikett ('ETT', 'TVÅ' …), stor rubrik, en solfjäder av 3–5 exempelkort, 2–4 rader förklaring. "
+             "3) Sista slide: erbjudandet + 'kommentera ORDET'.",
+         varför="Löftet om en lista gör att man sveper till slutet (svep = tid i inlägget); 'spara detta' ger sparningar, "
+                "som algoritmen väger tungt. Samma layout på varje slide gör den lätt att läsa.",
+         tajming="Karusell: 6–8 slides. Som video: ~2,5–3 s per punkt (läsregeln).",
+         tecknat="Layout i HTML/SVG: pill-etikett, serif-rubrik, kort i solfjäder (rotation -8°…+8°), förklaring i sans. Tourleif kan peka på slide 1.",
+         filmat="Exempelkorten kan vara foton ur mediabanken/klubbilderna.",
+         golfkuponger="'6 banor du måste spela i höst – spara detta om du har friskvårdsbidrag kvar'. Eller '5 sätt att använda friskvårdsbidraget på golf'.",
+         taggar=["struktur", "lista", "listicle", "spara", "sparningar", "karusell", "nummer", "save this"], bevis=YST),
+    dict(id="teknik.kommentera-ordet", namn="CTA: 'Kommentera ORDET så skickar vi …'", roll="cta", medium=["carousel", "video"],
+         kort="Sista slide/sista sekunderna: 'kommentera GOLF så skickar vi X' – en automatisk DM skickar länken till alla som kommenterar.",
+         hur="Ett kort, versalt ord inom citattecken som CTA + vad man får (lista, mall, rabattkod). Kräver auto-DM "
+             "(Meta: automatiska svar/kommentarstrigger eller verktyg som ManyChat).",
+         varför="Kommentarer är den starkaste signalen till algoritmen, och tröskeln är bara ett ord. Beviset: 1405 kommentarer på "
+                "2020 likes (normalt ~3–5 %).",
+         tajming="Sista slide eller sista 2–3 s före slutbilden; ordet stort och i färgruta.",
+         tecknat="Ordet i färgad ruta (samma som {ord} i våra texter); Tourleif håller upp en skylt.",
+         filmat="Avslutningsbild med ordet stort.",
+         golfkuponger="'Kommentera GOLF så skickar vi listan med alla 300+ banor.' Sätt upp auto-DM innan inlägget publiceras.",
+         taggar=["cta", "kommentarer", "engagemang", "dm", "nyckelord", "comment to get", "manychat", "lead"], bevis=YST),
+    dict(id="teknik.sten-sax-pase", namn="Sten, sax, påse – två val", roll="krok", medium=["carousel", "video"],
+         kort="Två händer från var sin sida spelar sten-sax-påse; över varje hand står ett val ('[gör så här]' vs '[gör så här]').",
+         hur="Ljus bakgrund, en hand in från vänster och en från höger, valen som två korta rader ovanför. Nästa slide/sekund: vinnaren.",
+         varför="Alla förstår sten-sax-påse direkt (stark visuell referens) – jämförelsen blir en lek i stället för en reklamtabell.",
+         tajming="Video: hand-in 0,4 s, 'sten, sax …' 3 slag à 0,3 s, resultat ≥ läsregeln.",
+         tecknat="Tourleif-händer (handskar) i tecknad stil; eller Tourleif vs Chefen.",
+         filmat="Två riktiga händer mot en färgad vägg, stativ.",
+         golfkuponger="'[Betala golfen själv]' (sax) vs '[Låt chefen betala]' (sten) – chefens hand vinner.",
+         taggar=["krok", "jämförelse", "val", "händer", "hand core", "sten sax påse", "versus"], bevis=YST),
+    dict(id="teknik.malningsmeme-zoom", namn="Målningsmeme – zooma i en klassisk målning", roll="struktur", medium=["carousel", "video"],
+         kort="En klassisk målning; varje slide zoomar in på en person med en rad som följer blickarna ('I den här bilden …', 'han tittar på …') – sista slide visar produkten.",
+         hur="1) Hela målningen + 'I den här bilden …'. 2–4) Utsnitt på personerna, texten följer vem som tittar på vem. "
+             "5) Produkten i målningen + 'kommentera ORDET'.",
+         varför="Oväntat och lekfullt sätt att visa vad man säljer; igenkänd meme-form + nyfikenhet på vem som tittar på vad.",
+         tajming="5 slides; video: 2–2,5 s per utsnitt med mjuk zoom.",
+         tecknat="Måla om ett verk i public domain i kod eller använd en fri reproduktion (upphovsman död > 70 år) – aldrig en bild med upphovsrätt.",
+         filmat="–", golfkuponger="'I den här bilden … han tittar på henne … hon tittar på greenen … och alla tittar på friskvårdsbidraget som brinner inne 31 dec.' Se även teknik.konstverk-hyllning.",
+         taggar=["struktur", "meme", "konst", "målning", "zoom", "humor", "public domain", "vintage art"], bevis=YST),
+    dict(id="teknik.story-grab", namn="Story Grab – någon tar sig ur Instagram-gränssnittet", roll="krok", medium=["carousel", "video"],
+         kort="Bilden ser ut som Instagram (story-cirklar, användarnamn, låtrad) – personen i bilden sträcker sig upp och tar tag i en story-cirkel.",
+         hur="Rita en story-rad ovanpå ett foto; personens arm/hand ligger ovanpå gränssnittet (maskad) så att hen 'håller' en cirkel.",
+         varför="Ser ut som appen själv men något är fel – stör scrollen och får folk att stanna. Välgjord ser den påkostad ut.",
+         tajming="Karusell: en slide. Video: armen sträcks upp 0,6 s, cirkeln dras ner.",
+         tecknat="Tourleif sträcker sig upp och plockar en story-cirkel med en golfbana. Neutral iOS-känsla, inte pixelkopia.",
+         filmat="Foto där personen sträcker upp armen (frilagd arm ovanpå gränssnittet).",
+         golfkuponger="Story-raden visar fyra banor (Ullna, Bro Hof …); golfaren tar ner Bro Hof-cirkeln: 'Nästa runda?'.",
+         taggar=["krok", "ios core", "gränssnitt", "ui", "story", "fjärde väggen", "scrollstopp"], bevis=YST),
+    dict(id="teknik.folj-linjen", namn="Välj och följ linjen", roll="retention", medium=["carousel", "video"],
+         kort="'Välj en emoji och följ linjen' – trassliga linjer från 3–4 val leder till varsitt svar.",
+         hur="Vänster: emojis/val. Linjer som korsar varandra. Höger: svaren. Kan löpa över två slides.",
+         varför="Tittaren gör något (följer linjen med blicken/fingret) = mer tid på inlägget, som algoritmen belönar; personligt svar.",
+         tajming="Video: varje linje ritas 1–1,5 s, svaret poppar när linjen når fram.",
+         tecknat="SVG-banor med stroke-dashoffset; tre färger.", filmat="–",
+         golfkuponger="'Välj en klubba och följ linjen – där spelar du nästa gång' → tre banor.",
+         taggar=["retention", "interaktiv", "spel", "följ linjen", "labyrint", "tid i inlägget", "interactive carousel"], bevis=YST),
+    dict(id="teknik.svep-for-att-avsloja", namn="Svep för att avslöja", roll="retention", medium=["carousel"],
+         kort="En slide uppmanar 'öppna den!' eller 'håll prickarna och dra' – svaret/belöningen syns först på nästa slide (lyckokaka som öppnas).",
+         hur="Slide A: stängt föremål (lyckokaka, kuvert, present) + 'Svep för att öppna'. Slide B: föremålet öppet + budskapet. "
+             "Variant: en prickad linje som går över kanten till nästa slide.",
+         varför="Nyfikenhet (öppen loop) driver svepet; varje svep räknas som interaktion och tid.",
+         tajming="2 slides; det öppna föremålet på exakt samma plats som det stängda.",
+         tecknat="Samma objekt i två lägen; prickad linje som korsar slidekanten.", filmat="Foto av föremålet stängt/öppet.",
+         golfkuponger="Lyckokaka 'Öppna den!' → lappen: 'Ditt friskvårdsbidrag räcker till golf. Före 31 dec.'",
+         taggar=["retention", "interaktiv", "avslöja", "reveal", "nyfikenhet", "svep", "swipe", "lyckokaka"], bevis=YST),
+    dict(id="teknik.panorama-over-slides", namn="Panorama – någon går genom slidesen", roll="retention", medium=["carousel"],
+         kort="En sammanhängande panoramabild delad i slides; en person/ett föremål vandrar från slide till slide och texten byts.",
+         hur="En bred bild (n × 1080 px) skärs i n slides; motivet placeras så att det korsar skarvarna. Text per slide.",
+         varför="'Hur gjorde de det här?' – sömlöst svep håller kvar tittaren längre (algoritmen gillar det).",
+         tajming="4–6 slides; motivet ska aldrig ha ansiktet exakt på en skarv.",
+         tecknat="Bred SVG-scen som exporteras i bitar.", filmat="Panoramafoto av banan, frilagd golfare.",
+         golfkuponger="Golfaren slår ut på slide 1, bollen flyger över alla slides och landar i koppen på sista (logga + CTA).",
+         taggar=["retention", "panorama", "sömlös", "seamless carousel", "slide crossing", "svep"], bevis=YST),
+    dict(id="teknik.sa-har-nara", namn="'Du är SÅ HÄR nära …'", roll="krok", medium=["carousel", "video"],
+         kort="En hand som nyper ihop tummen och pekfingret, 'Du är SÅ HÄR nära …' – med liten text mellan fingrarna.",
+         hur="Stor rubrik + hand i nypgest från kanten; mellan fingrarna en liten rad som avslutar meningen.",
+         varför="Igenkänd 'hand core'-trend; nära mål = motivation att agera nu.",
+         tajming="Video: handen glider in 0,5 s, fingrarna nyper ihop 0,3 s.",
+         tecknat="Tourleif-hand (handske) som nyper.", filmat="Riktig hand mot pastellbakgrund.",
+         golfkuponger="'Du är SÅ HÄR nära gratis golf' – mellan fingrarna: 'friskvårdsbidraget gäller till 31 dec'.",
+         taggar=["krok", "hand core", "händer", "nära", "fomo", "this close"], bevis=YST),
+    dict(id="teknik.zooma-for-ett-tecken", namn="'Zooma in för ett tecken'", roll="retention", medium=["carousel"],
+         kort="'Zooma in för ett tecken att …' – svaret står pyttelitet (i handen/bollen), så man nyper in för att läsa.",
+         hur="Rubriken uppmanar till zoom; en mycket liten text i bilden ('Gör det!').",
+         varför="Tittaren interagerar fysiskt (zoomar) = längre tid och en liten belöning; delas för att det är kul.",
+         tajming="En slide.", tecknat="Liten text inuti golfbollen/kupongen.", filmat="Foto av hand som håller något litet.",
+         golfkuponger="'Zooma in för ett tecken att boka höstrundan' – i golfbollen: 'Boka nu ⛳'.",
+         taggar=["retention", "zoom", "interaktiv", "dold text", "hand core", "zoom in for a sign"], bevis=YST),
     # ---------- våra egna godkända filmer ----------
     dict(id="teknik.spola-tillbaka-andra-chans", namn="Fel utfall → paus → spola tillbaka → rätt utfall", roll="struktur", medium=["video"],
          kort="Visa först vad som händer om man inte agerar, pausa, spola tillbaka filmen och visa samma situation med rätt val.",
@@ -143,8 +245,7 @@ def bevis(t):
 
 
 def md(t):
-    b = t["bevis"]
-    bev = "\n".join(f"- {k}: {v}" for k, v in b.items())
+    bev = "\n\n".join("\n".join(f"- {k}: {v}" for k, v in b.items()) for b in bevis(t))
     ex = ", ".join(f"`{e}`" for e in t.get("exempel", [])) or "–"
     return f"""# {t['namn']}  (`{t['id']}`)
 
@@ -171,8 +272,17 @@ def md(t):
 ## Bevis
 {bev}
 
+**Tekniken:** godkänd {t.get('tillagd', TILLAGD)} (bevisad – skickad/godkänd av Jonas).
+**Vårt eget exempel:** {eget(t)}
+
 Används i: {ex}
 """
+
+
+def eget(t):
+    """Tekniken är godkänd när den läggs in; vårt eget utförande (video/bilder) godkänns separat."""
+    g = [b for b in bevis(t) if "godkänd" in b]
+    return f"godkänt – {g[0]['källa']} ({g[0]['godkänd']})" if g else "ej byggt än – visa ett utkast och låt beställaren godkänna"
 
 
 def main():
@@ -187,12 +297,11 @@ def main():
             "description": f"[{t['roll']}] {t['kort']} Varför: {t['varför']}",
             "tags": ["teknik", t["roll"]] + t["medium"] + t["taggar"], "path": f"library/techniques/{slug}.md",
             "use": f"Läs library/techniques/{slug}.md. Golfkuponger: {t['golfkuponger']}",
-            "requires": [], "cost": "free", "status": "verified" if prev else "unverified",
-            **({"verified_at": next((b["godkänd"].replace("Jonas ", "") for b in bevis(t) if "godkänd" in b), "")} if prev else {}),
+            "requires": [], "cost": "free", "status": "verified", "verified_at": t.get("tillagd", TILLAGD),
             "preview": {"video": None, "still": prev} if prev else None,
-            "notes": "Bevisad hos andra – bygg en egen demo första gången (då blir den verified)." if not prev else "Godkänd i egen film.",
+            "notes": f"Tekniken är godkänd. Vårt eget exempel: {eget(t)}.",
             "teknik": {"roll": t["roll"], "medium": t["medium"], "tajming": t["tajming"], "bevis": t["bevis"],
-                       "exempel": t.get("exempel", [])},
+                       "eget_exempel": eget(t), "exempel": t.get("exempel", [])},
         })
     data = {"kit": "techniques", "title": "Teknikbanken – bevisade tekniker och metoder",
             "source": {"name": "Content Engine", "url": "", "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"},

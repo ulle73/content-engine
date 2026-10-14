@@ -25,4 +25,7 @@ Hjältar ~2 s/st, bläddring 3 s (0,3 s → 1 bildruta), utzoom 1,75 s.
 - kreatör: Golfkuponger (egen film)
 - godkänd: Jonas 2026-10-14
 
+**Tekniken:** godkänd 2026-10-14 (bevisad – skickad/godkänd av Jonas).
+**Vårt eget exempel:** godkänt – work/gk-banor (Jonas 2026-10-14)
+
 Används i: –

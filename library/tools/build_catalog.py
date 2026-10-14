@@ -87,7 +87,8 @@ def load_manifests() -> tuple[list[dict], list[str]]:
             for kind in ("video", "still"):
                 if preview.get(kind) and not (ROOT / preview[kind]).exists():
                     problems.append(f"{where} ({item_id}): preview.{kind} finns inte: {preview[kind]}")
-            if item["status"] == "verified" and not preview:
+            # tekniker är godkända genom sitt bevis (länk/egen film); en preview är bra men inget krav
+            if item["status"] == "verified" and not preview and item["type"] != "technique":
                 problems.append(f"{where} ({item_id}): verified kräver en preview")
             items.append({
                 "kit": kit,

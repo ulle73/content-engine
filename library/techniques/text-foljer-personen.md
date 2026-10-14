@@ -29,4 +29,7 @@ Golfare går över green, texten 'FÖRSTA RUNDAN = FRISKVÅRD' följer med.
 - lokal_kopia: work/references/instagram-DeKwHHlPu0i/
 - notering: Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud.
 
+**Tekniken:** godkänd 2026-10-14 (bevisad – skickad/godkänd av Jonas).
+**Vårt eget exempel:** ej byggt än – visa ett utkast och låt beställaren godkänna
+
 Används i: –

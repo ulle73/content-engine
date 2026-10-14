@@ -25,4 +25,7 @@ Köp direkt på golfkuponger.se (godkänd).
 - kreatör: Golfkuponger (egen film)
 - godkänd: Jonas 2026-10-14
 
+**Tekniken:** godkänd 2026-10-14 (bevisad – skickad/godkänd av Jonas).
+**Vårt eget exempel:** godkänt – work/gk-chefen (Jonas 2026-10-14)
+
 Används i: `golfkuponger.scene.mobilflode-riktig-sajt`

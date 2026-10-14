@@ -25,4 +25,7 @@ Skriet den 31 december (godkänd). Bara verk där konstnären dog för >70 år s
 - kreatör: Golfkuponger (egen film)
 - godkänd: Jonas 2026-10-14
 
+**Tekniken:** godkänd 2026-10-14 (bevisad – skickad/godkänd av Jonas).
+**Vårt eget exempel:** godkänt – work/gk-konstverk (Jonas 2026-10-14)
+
 Används i: –

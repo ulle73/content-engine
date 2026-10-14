@@ -9,6 +9,6 @@ Snabbstart:
 
 ```bash
 python library/tools/find.py "<idé> krok" --type technique          # inför varje video/karusell
-python -I library/techniques/hamta.py "<länk>"                      # ny teknik från en länk
+.venv/Scripts/python.exe -I library/techniques/hamta.py "<länk>"                      # ny teknik från en länk
 python library/techniques/make_library.py && python library/tools/build_catalog.py
 ```

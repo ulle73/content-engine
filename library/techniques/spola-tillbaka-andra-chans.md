@@ -25,4 +25,7 @@ Använd i Årsskiftet – spola tillbaka; fungerar för alla 'gör det i tid'-bu
 - kreatör: Golfkuponger (egen film)
 - godkänd: Jonas 2026-10-13
 
+**Tekniken:** godkänd 2026-10-14 (bevisad – skickad/godkänd av Jonas).
+**Vårt eget exempel:** godkänt – work/gk-arsskifte (spola) (Jonas 2026-10-13)
+
 Används i: `golfkuponger.template.arsskifte-spola`, `golfkuponger.transition.spola-tillbaka`

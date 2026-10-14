@@ -30,20 +30,22 @@ Gör detta i `skills/studio` steg 2, före förslagen och beslutsrundan.
    Fler tekniker är inte bättre – välj de som passar budskapet. Golfkupongers slutbild ligger ändå alltid sist.
 3. **Motivera i förslaget/beslutsrundan** på en rad per teknik: "Krok: `teknik.ord-knapps-bort` – 'FRISKVÅRD ÄR ~~INTE~~
    GOLF' vänder en vanlig missuppfattning på 2 s." Visa preview om den finns. Låt beställaren byta.
-4. **Bevisad hos andra men inte hos oss** (`unverified`, ingen preview): bygg en snabb stillbild/kort test först och
-   visa den. När beställaren godkänner filmen: lägg en egen preview i `library/previews/teknik.<slug>.jpg`, sätt
-   `preview` i `make_library.py` och lägg filmen i `exempel` – då blir tekniken `verified`.
+4. **Status:** alla tekniker i banken är **godkända** (`verified`) – Jonas skickar bara bevisade tekniker. Vårt
+   **eget utförande** godkänns separat: står `eget_exempel: ej byggt än` så visa ett utkast (stillbild/kort test) i
+   beslutsrundan. När beställaren godkänt filmen: lägg filmen som extra bevis med `"godkänd"`, gärna en egen preview i
+   `library/previews/teknik.<slug>.jpg` och filmens mall i `exempel`.
 5. Hittar du ingen passande teknik: säg det och föreslå närmaste. Uppfinn gärna nytt – och spara det om det godkänns.
 
 ## B. Lägga till tekniker från en länk ("här är en video med en bra teknik")
 
 1. **Hämta och bryt ner** (videon stannar lokalt i `work/references/`, aldrig i git):
    ```bash
-   python -I library/techniques/hamta.py "<länk>"
+   .venv/Scripts/python.exe -I library/techniques/hamta.py "<länk>"
    ```
    Ger `video.mp4`, `meta.json` (kreatör, likes, kommentarer, visningar, datum, längd), `kontaktark.png` (bild var
    0,67 s med tid), `klipp.txt` (bildbyten) och `klipp-NN.png`. Funkar för Instagram, TikTok, YouTube, Facebook och
-   direktlänkar. Kräver inloggning: be användaren ladda ner filen och kör samma steg på filen med ffmpeg.
+   direktlänkar. **Karuseller** (`/p/`-länkar) ger `slide-NN.jpg` / `slide-NN.mp4` (+ `slide-NN-kontakt.png` för
+   videoslides) och ett kontaktark med alla slides. Kräver inloggning: be användaren ladda ner filen och kör samma steg på filen med ffmpeg.
 2. **Titta på riktigt** på kontaktarket och varje klippbild (Read-verktyget på bilderna). Skriv ner klipp för klipp:
    vad händer, när, hur länge, vilken text, vilket ljudgrepp. Läs beskrivningen i meta.json – den förklarar ofta greppet.
 3. **En post per distinkt teknik** – inte en per video. En reel kan ge 1–6 tekniker. Kolla dubbletter först:
@@ -52,7 +54,8 @@ Gör detta i `skills/studio` steg 2, före förslagen och beslutsrundan.
 4. **Skriv in den** som en rad i `TEKNIKER` i `library/techniques/make_library.py` – alla fält: `id`
    (`teknik.<kort-slug>`), `namn`, `roll`, `medium`, `kort`, `hur`, `varför`, `tajming`, `tecknat`, `filmat`,
    `golfkuponger` (konkret idé för oss), `taggar` (svenska + engelska sökord), `bevis` (länk, kreatör, likes,
-   kommentarer, datum, `lokal_kopia`). Ingen `preview` – kreatörens bilder publiceras aldrig hos oss.
+   kommentarer, datum, `lokal_kopia`). Ingen `preview` – kreatörens bilder publiceras aldrig hos oss. Tekniken blir
+   godkänd direkt (`tillagd` = dagens datum); `eget_exempel` visar "ej byggt än" tills en egen film godkänts.
 5. **Generera och kontrollera:**
    ```bash
    python library/techniques/make_library.py && python library/tools/build_catalog.py
