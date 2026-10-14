@@ -55,8 +55,8 @@ En film består av:
 
 ## Ny film från en befintlig
 `../_verktyg/ny-film.sh <ny-mapp> <från-mapp>` → ändra `film.json`, byt filnamnet `FILM=` i `make.sh`, `./make.sh bild`,
-granska QA, lägg till raden i `work/FILMER.md`. Helt nya idéer: börja i `skills/studio` och `skills/video-regler`
-(beslutsrunda med manus och stilbilder innan bygget).
+granska QA, lägg till raden i `work/FILMER.md`. Helt nya idéer: börja i `skills/studio`, välj tekniker
+ur teknikbanken (`skills/teknik`) och följ `skills/video-regler` (beslutsrunda med manus och stilbilder innan bygget).
 
 ## Vanliga fel (lärdomar – undvik)
 - **Ändra inte i `src/film-config.js`** – den skrivs om från film.json vid varje bygge.

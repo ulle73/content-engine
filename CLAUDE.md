@@ -7,6 +7,10 @@ färdiga, snygga mallar och effekter och utgår från dem. Stilen är fri – br
 utgångsläge. Fakta i reklam kommer från faktabanken (`skills/golfkuponger-friskvard`).
 Arbetsfiler och renderingar läggs i `work/` (gitignorerat).
 
+Inför **varje** video och karusell: välj bevisade tekniker (krok, retention, cta) ur teknikbanken enligt **`/teknik`**
+(`skills/teknik/SKILL.md`, `find.py --type technique`). Skickar någon en länk med en bra teknik/metod: lägg in den i
+teknikbanken enligt samma skill (`library/techniques/hamta.py`).
+
 ## Ändra en befintlig film
 Alla filmer ligger som självständiga projekt i `work/<mapp>/` – översikt i `work/FILMER.md`. Följ skillen
 **`/film`** (`skills/film/SKILL.md`): ändra i filmens `film.json`, bygg bara det som behövs (`./make.sh del|ljud|bild`),

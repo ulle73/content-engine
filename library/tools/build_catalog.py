@@ -20,7 +20,7 @@ from pathlib import Path
 LIBRARY = Path(__file__).resolve().parents[1]
 ROOT = LIBRARY.parent
 
-TYPES = {"template", "scene", "effect", "transition", "text", "caption", "grade", "background",
+TYPES = {"template", "scene", "effect", "transition", "text", "caption", "grade", "background", "technique",
          "carousel", "skill", "prompt", "sound", "tool", "recipe", "model"}
 MEDIA = {"video", "carousel", "image", "audio", "text"}
 FORMATS = {"9:16", "1:1", "4:5", "16:9", "any"}
