@@ -42,7 +42,8 @@ En film består av:
 
 ## Regler som alltid gäller (källor: skills/video-regler, skills/ljud, skills/golfkuponger-brand, -friskvard)
 - Läsregeln: varje text syns ≥ max(5/6, tecken/12) + 0,9 s – renderingen stoppar annars.
-- Text 9:16: första raden y ≈ 560 (mot mitten); ovanför en logga/motiv i mitten y ≈ 300. Etiketter centrerade direkt under texten.
+- Text 9:16: varje rad horisontellt centrerad (mitt x ≈ 497 i säkra ytan); första raden y ≈ 560 (mot mitten); ovanför en
+  logga/motiv i mitten y ≈ 300. Etiketter centrerade direkt under texten. QA underkänner ocentrerade rader.
 - Safe zones: allt viktigt inom x 65–929, y 270–1250 (Instagram + Facebook).
 - Fakta bara från faktabanken (31 december, köp direkt + pdf-kvitto, 300+ banor, "Låt chefen betala din golf"). Inga belopp.
 - Ljud: bara riktiga ljud (ljudbanken `library/sounds`), -14 LUFS, topp ≤ -1 dBTP. AI kan inte lyssna – låt Jonas välja.

@@ -42,6 +42,8 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - **Läsregeln:** varje textbit syns minst max(5/6 s, tecken/12) + 0,9 s; text som läses i följd i en scen får
   lästiden för all text tillsammans, räknat från första biten (som `engine/edit/spec.py`). Gäller även i egna
   renderare – bygg in en kontroll som **stoppar renderingen** när regeln bryts.
+- **Texten är alltid horisontellt centrerad** (varje rad), i den säkra ytan x 65–929 – mitten x ≈ 497 i 9:16, så den
+  ser centrerad ut men håller avstånd till knapparna till höger. Aldrig vänster- eller högerställd text (Jonas 2026-10-14).
 - **En textposition, mer mot mitten:** all text utom slutkortet har första raden på samma höjd – 9:16: **y ≈ 560**
   (mitt i bild, inte högst upp; Jonas 2026-10-14), följande rader direkt under. Text som hoppar mellan topp, mitt och
   botten upplevs rörig. Undantag: när en logga eller ett motiv står mitt i bild ligger texten ovanför det (y ≈ 300).
@@ -110,4 +112,5 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-13 | GK Årsskiftet | "Gör allt lite större så man ser det tydligare"; respektera safe zones | Safe zones x 65–1015, y 270–1250 för allt viktigt; text så stor som de tillåter (3, Text) |
 | 2026-10-14 | GK Chefen betalar | "Det ska vara 14 %, på FB behövdes lite mer, vi delar alltid på både Instagram och FB" | Höger safe zone 14 % (x ≤ 929), vänster 6 % (3, Text) |
 | 2026-10-14 | GK Spelat den här? | "Text kan generellt vara mer i mitten"; platstexten för långt från huvudtexten | Text y ≈ 560; etikett centrerad direkt under texten (3, Text) |
+| 2026-10-14 | GK (alla) | "Text ska generellt vara mot mitten och centrerat" | Varje rad horisontellt centrerad i säkra ytan (mitt x ≈ 497); QA kontrollerar (3, Text) |
 | 2026-10-13 | GK Årsskiftet | "Man ser inte riktigt texten" (mörk text i ljus ruta) | Ingen skugga i markerade rutor; rutan täcker Å-ringen (3, Text) |
