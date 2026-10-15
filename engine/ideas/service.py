@@ -65,6 +65,15 @@ def weekly_max() -> int:
     return _int("IDEA_WEEKLY_MAX", 2)
 
 
+RETRIED = "Andra försöket: "
+
+
+def retry_days() -> int:
+    """A failed card (video could not be fetched, AI error) is tried once more after this many days – a fix or a
+    passing provider hiccup must not lose a strong hit for good."""
+    return _int("IDEA_RETRY_DAYS", 2)
+
+
 def daily_breakdowns() -> int:
     """New hits broken down and pitched per company and day (each ≈ 0.02–0.03 USD)."""
     return _int("IDEA_DAILY_LIMIT", 2)
@@ -94,7 +103,10 @@ def hits(company) -> list[dict]:
     """Monitored hits not yet carded, best first: our own posts, then posts by ratio and ads by days running."""
     from engine.references import service as references
 
-    known = set(IdeaCard.objects.filter(company=company).values_list("source_key", flat=True))
+    from django.db.models import Q
+
+    retry = Q(status="failed", created_at__lte=timezone.now() - timedelta(days=retry_days())) & ~Q(error__startswith=RETRIED)
+    known = set(IdeaCard.objects.filter(company=company).exclude(retry).values_list("source_key", flat=True))
     rows = []
     for row in references.candidates(company, limit=200):
         if source_key(row) in known:
@@ -155,7 +167,7 @@ def pitch(card: IdeaCard) -> IdeaCard:
 
 def make_card(company, row: dict) -> IdeaCard:
     """Break the hit down (reusing an earlier breakdown of the same file) and pitch it. Raises on fetch/AI errors,
-    after saving the card as failed so it is not retried every day."""
+    after saving the card as failed: it is tried once more after IDEA_RETRY_DAYS, never every day."""
     from engine.references import service as references
 
     signal = {k: row.get(k) for k in ("kind", "platform", "advertiser", "views", "baseline_views", "metric", "ratio",
@@ -163,6 +175,10 @@ def make_card(company, row: dict) -> IdeaCard:
     card, _ = IdeaCard.objects.update_or_create(
         company=company, source_key=source_key(row),
         defaults={"source_url": row["url"], "own": bool(row.get("own")), "signal": signal, "why": _why(row)[:300]})
+    second_try = card.status == "failed"
+    if second_try:
+        card.status, card.error = "pitched", ""
+        card.save(update_fields=["status", "error"])
     try:
         ref = references.process(company, row["url"], video_url=row.get("video_url", ""))
         card.reference = ref
@@ -170,7 +186,7 @@ def make_card(company, row: dict) -> IdeaCard:
         card.save(update_fields=["reference", "cost_usd"])
         pitch(card)
     except Exception as exc:
-        card.status, card.error = "failed", str(exc)[:500]
+        card.status, card.error = "failed", ((RETRIED if second_try else "") + str(exc))[:500]
         card.save(update_fields=["status", "error"])
         raise
     return card

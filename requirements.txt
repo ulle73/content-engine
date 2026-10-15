@@ -16,4 +16,4 @@ scikit-learn>=1.5,<2
 mcp>=2.0,<2.1
 uvicorn>=0.35,<1
 jsonschema>=4.23,<5
-yt-dlp>=2026.8.19
+yt-dlp[curl-cffi]>=2026.8.19  # curl-cffi: browser impersonation; TikTok refuses datacenter requests without it
