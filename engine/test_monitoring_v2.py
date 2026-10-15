@@ -57,6 +57,7 @@ class InstagramBatchTests(TestCase):
         self.assertEqual(body["resultsLimitPerProfile"], {"ljusgiganten.se": 100, "vparts": 100, "xenonkungen.se": 100})
         self.assertNotIn("_max_items", body)
         self.assertEqual(fake.posts[0]["params"]["maxTotalChargeUsd"], 0.06)  # three 0.02 caps
+        self.assertEqual(fake.posts[0]["params"]["timeout"], 300 + 3 * 90)  # room for every account, not 300 s
         self.assertEqual({r.actor_run_id for r in started}, {"run1"})
         self.assertEqual(ScrapeRequest.objects.filter(actor_run_id="run1").count(), 3)
 

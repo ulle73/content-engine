@@ -146,6 +146,10 @@ def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None, provid
     return request
 
 
+BATCH_TIMEOUT_BASE_S = 300
+BATCH_TIMEOUT_PER_ACCOUNT_S = 90
+
+
 def dispatch_batch(members, actor, inputs, *, period=None, sender=None):
     """One Apify run for several accounts of one company: fewer concurrent runs (the free plan allows 5) and one
     start instead of many. Every account keeps its own ScrapeRequest – ledger, yield, watermark and collection stay
@@ -195,10 +199,13 @@ def dispatch_batch(members, actor, inputs, *, period=None, sender=None):
             requests.append(request)
             result[state.pk] = request
     body = {k: v for k, v in inputs.items() if not k.startswith("_")}
+    # One account takes up to ~30 s (Instagram, 100 posts); the single-run 300 s would cut a batch short.
+    # Time is not billed per se – maxTotalChargeUsd still caps the spend.
+    timeout = min(BATCH_TIMEOUT_BASE_S + BATCH_TIMEOUT_PER_ACCOUNT_S * len(created), 3600)
     try:
         remote = sender() if sender else apify.api(
             "POST", f"/acts/{actor.replace('/', '~')}/runs", json=body,
-            params={"timeout": 300, "maxTotalChargeUsd": float(cap)})["data"]
+            params={"timeout": timeout, "maxTotalChargeUsd": float(cap)})["data"]
         if not remote.get("id") or not remote.get("defaultDatasetId"):
             raise apify.ApifyError("Startsvaret saknar körnings-id.", uncertain=True)
     except Exception as exc:
