@@ -352,7 +352,7 @@ def idea_units(company):
     return [("ideas", work)]
 
 
-STAGES = (*STAGES, Stage("ideas", idea_units))
+STAGES = (*STAGES, Stage("ideas", idea_units, always=True))
 
 
 # Morning start phase: Apify runs take seconds to minutes, so starting them about half an hour before the full run

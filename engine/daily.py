@@ -37,6 +37,9 @@ class Stage:
     factory: object  # company -> iterable of (stable key, zero-argument callable returning Result)
     version: str = "v1"
     requires: tuple = ()  # Future outcomes/training can require successful upstream stages.
+    # Bounded work that still runs once per run after the time budget is spent. Slow stages before it (ad
+    # collection, ad analysis, reference breakdowns) used to use the whole budget, so the last stage never started.
+    always: bool = False
 
 
 def acquire(day):
@@ -135,9 +138,8 @@ def run_daily(*, company_id=None, wait_seconds=720, stages=None, write=lambda me
                         step = step_for(company, stage, key)
                         if step.status in DONE or (step.pk in tried and step.status != "pending"):
                             continue
-                        if not first_pass and time.monotonic() >= deadline:
-                            continue
-                        if wait_seconds > 0 and time.monotonic() >= deadline:
+                        late = time.monotonic() >= deadline and (not first_pass or wait_seconds > 0)
+                        if late and not (stage.always and step.pk not in tried):
                             continue
                         heartbeat(run, token)
                         step.status, step.started_at, step.finished_at = "running", timezone.now(), None

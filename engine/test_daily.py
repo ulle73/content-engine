@@ -20,6 +20,17 @@ class DailyTests(TestCase):
         self.a = Company.objects.create(owner=self.owner, name="A")
         self.b = Company.objects.create(owner=self.owner, name="B")
 
+    def test_an_always_stage_still_runs_once_after_slow_stages_spent_the_budget(self):
+        clock = iter(range(0, 10_000, 100))  # every reading is 100 s later: the 120 s budget is gone at once
+        slow, late, ideas = Mock(return_value=Result()), Mock(return_value=Result()), Mock(return_value=Result())
+        stages = [Stage("slow", lambda c: [("a", slow)]), Stage("late", lambda c: [("b", late)]),
+                  Stage("ideas", lambda c: [("ideas", ideas)], always=True)]
+        with patch("engine.daily.time.monotonic", side_effect=lambda: next(clock)), patch("engine.daily.time.sleep"):
+            run_daily(company_id=self.a.pk, stages=stages, wait_seconds=120)
+        late.assert_not_called()  # ordinary work still respects the budget
+        ideas.assert_called_once()
+        self.assertEqual(DailyStep.objects.get(stage="ideas", key="ideas").status, "success")
+
     def test_failure_isolated_by_item_and_company_success_not_repeated(self):
         fail = Mock(side_effect=RuntimeError("SECRET-this-must-not-be-stored"))
         succeed = Mock(return_value=Result(data={"observation":"saved"}))
