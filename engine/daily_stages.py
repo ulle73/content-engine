@@ -155,7 +155,7 @@ STAGES = (
     Stage("competitor_import", competitor_units),
     Stage("media_collect", media_units),
     Stage("media_cleanup", cleanup_units),
-    Stage("competitor_analysis", analysis_units),
+    Stage("competitor_analysis", analysis_units, parallel=True),
 )
 
 
@@ -280,7 +280,8 @@ def own_learning_units(company):
     return [(key,work)]
 
 
-STAGES = (*STAGES, Stage("ads_import", ads_units), Stage("ads_analysis", ads_analysis_units),
+# Ad collection (a DB round trip per ad) and AI analysis wait on I/O; they run side by side (DAILY_PARALLEL).
+STAGES = (*STAGES, Stage("ads_import", ads_units, parallel=True), Stage("ads_analysis", ads_analysis_units, parallel=True),
     Stage("own_discovery",own_discovery_units),Stage("own_snapshots",own_snapshot_units),
     Stage("own_outcomes",own_learning_units), Stage("learning", learning_units))
 
