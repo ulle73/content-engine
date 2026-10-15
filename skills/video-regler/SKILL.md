@@ -66,7 +66,10 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
   bryt hellre om raden än att krympa texten.
 - Textanimationer: fade, lätt scale-in, tracking som dras ihop. Inga överdrivna övergångar.
 - **Markerade ord (ord i färgad ruta):** ingen textskugga på texten i rutan – en mörk skugga på mörk text mot ljus ruta
-  smetar ut bokstäverna. Rutan ska täcka hela versalhöjden inklusive Å/Ä/Ö-prickar och ringar.
+  smetar ut bokstäverna. Rutan ska täcka hela versalhöjden inklusive Å/Ä/Ö-prickar och ringar: när ordet i rutan
+  har Å, Ä eller Ö höjs rutans överkant 0,17 em (Anton), annars smälter prickarna in i bakgrunden. I filmerna:
+  `top:${/[ÅÄÖ]/i.test(w) ? '-0.17em' : '0'}` på `.box`, och raden flyttas ned 0,08 em (`margin-top` på `.hl`)
+  så att ett litet mellanrum finns kvar mellan raden ovanför och rutans kant. Titta på ett ord med Ä i stillbild före leverans.
 
 ### Bild
 - **Något som ska vara svårt att se** (dolt rådjur, detalj): dämpa bara zonen runt det och kalibrera nivån med
@@ -119,3 +122,4 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-14 | GK Spelat den här? | "Text kan generellt vara mer i mitten"; platstexten för långt från huvudtexten | Text y ≈ 560; etikett centrerad direkt under texten (3, Text) |
 | 2026-10-14 | GK (alla) | "Text ska generellt vara mot mitten och centrerat" | Varje rad horisontellt centrerad i säkra ytan (mitt x ≈ 497) som utgångspunkt; QA kontrollerar, kan stängas av per film (3, Text) |
 | 2026-10-13 | GK Årsskiftet | "Man ser inte riktigt texten" (mörk text i ljus ruta) | Ingen skugga i markerade rutor; rutan täcker Å-ringen (3, Text) |
+| 2026-10-15 | GK Spelat den här? (alla) | "Ä syns dåligt, prickarna smälter in i bakgrunden" – återkommande i alla videor | Rutan höjs 0,17 em när ordet har Å/Ä/Ö och raden flyttas ned 0,08 em (litet mellanrum mot raden ovanför); alla filmer och mallar (3, Text) |

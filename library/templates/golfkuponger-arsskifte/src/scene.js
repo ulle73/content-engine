@@ -532,7 +532,7 @@ function textLayer(t) {
     tx.lines.forEach((ln, i) => {
       const p = eOut(prog(t, a + i * 0.09, a + i * 0.09 + 0.34)), bp = eBack(prog(t, a + i * 0.09 + 0.16, a + i * 0.09 + 0.46));
       const op = p * (1 - out), ty = (1 - p) * 46 - out * 26;
-      const inner = ln.replace(/\{(.+?)\}/g, (_, w) => `<span class="hl"><span class="box" style="background:${tx.box};right:0;transform-origin:left;transform:scaleX(${bp.toFixed(3)});box-shadow:0 6px 14px rgba(0,0,0,.25)"></span><span class="w" style="color:${tx.boxFg}">${w}</span></span>`);
+      const inner = ln.replace(/\{(.+?)\}/g, (_, w) => `<span class="hl" style="margin-top:${/[ÅÄÖ]/i.test(w) ? '0.08em' : '0'}"><span class="box" style="top:${/[ÅÄÖ]/i.test(w) ? '-0.17em' : '0'};background:${tx.box};right:0;transform-origin:left;transform:scaleX(${bp.toFixed(3)});box-shadow:0 6px 14px rgba(0,0,0,.25)"></span><span class="w" style="color:${tx.boxFg}">${w}</span></span>`);
       html += `<span class="line" style="opacity:${op.toFixed(3)};transform:translateY(${f1(ty)}px);text-shadow:${tx.fg === C.cream ? '0 4px 0 rgba(0,0,0,.22), 0 10px 24px rgba(0,0,0,.35)' : 'none'}">${inner}</span>`;
     });
     html += '</div>';
