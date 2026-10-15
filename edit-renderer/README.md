@@ -82,7 +82,7 @@ också anges direkt som `cut.<typ>.<namn>`, t.ex. `cut.effect.dark-to-light`.
   Varumärkets `font_family` mappas dit (serif → Playfair med kursiva betoningsord); okända typsnitt ger en varning.
 - **Läsbarhet** (`src/legibility.js`): bilden under texten samplas (ffmpeg) och texten får skugga, en scrim med
   uträknad styrka eller en platta så att vit text når WCAG-kontrast; `hyperframes check` verifierar kontrasten.
-- **Säkra ytor** (`src/safezones.js`): Reels/TikTok (topp 12 %, botten 22 %, höger 14 %), 4:5, 1:1 och 16:9 har
+- **Säkra ytor** (`src/safezones.js`): Reels/TikTok (topp 14 %, botten 35 %, vänster 6 %, höger 14 %), 4:5, 1:1 och 16:9 har
   egna zoner. Runtime rapporterar uppmätta textboxar (`[cut-layout]`) som jämförs mot zonerna före rendering.
 - **Look**: varumärkets färgmatris (svärta mot bakgrundsfärgen, högdagrar mot accenten), lätt korn och vinjett i
   alla scener (`brand.look = "none"` stänger av), alltid kamerarörelse, tre easing-kurvor.

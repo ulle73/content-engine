@@ -59,7 +59,8 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
   borta från översta ~14 % (270 px), nedersta ~35 % (670 px), ~6 % (65 px) till vänster och **~14 % (151 px) till höger**
   – alltså inom x 65–929, y 270–1250. Högerkanten är bred för Facebooks knapprad; vi delar alltid på både Instagram och
   Facebook (Jonas 2026-10-14). Där ligger profilnamn, bildtext, knappar och CTA. Bara dekor (bakgrund, mark, partiklar) får
-  gå utanför. Kontrollera med hjälplinjer på stillbilderna innan full rendering. Håll också texten utanför motivets
+  gå utanför. Kontrollera med hjälplinjer på stillbilderna innan full rendering; i molnklippet kontrolleras det
+  automatiskt (`edit-renderer/src/safezones.js`). Håll också texten utanför motivets
   viktiga delar.
 - **Så stort som safe zones tillåter:** text och nyckelobjekt ska synas tydligt på mobilen. Mät radernas verkliga
   bredd i renderaren och sätt textstorleken per block så att den längsta raden fyller safe zone-bredden (~860 px, x 65–929);

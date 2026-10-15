@@ -157,7 +157,7 @@
     "Varje faktapåstående på skärm har fact-id från faktabanken; osäker siffra → fråga Jonas, gör inte budskapet svagare",
     "31 december och 3 000 kr sägs rakt och tydligt (F6, F8) – ingen gardering som 'hos många arbetsgivare' eller 'kolla med HR'",
     "Portal-, app- och kvitto-UI är riktiga skärminspelningar (personuppgifter dolda), aldrig AI",
-    "Text inom 9:16-safe zone, max ~8 ord per skärm, läsbar i 360 px mobilvy",
+    "Text, logga och produkt inom 9:16-safe zone (inte översta 14 % eller nedersta 35 %), max ~8 ord per skärm, läsbar i 360 px mobilvy",
     "Klipp på musikens slag; något nytt händer var 2–4 s",
     "AI-klipp: vision-QA – händer, klubbor som inte böjs, ansikte konsekvent, ingen inbränd text",
     "Ljud: −14 LUFS, fungerar även helt utan ljud",

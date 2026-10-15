@@ -147,12 +147,12 @@ test('type scale and brand fonts', () => {
 // ------------------------------------------------------------------ safe zones
 test('platform safe zones: margins cover them and violations are found', () => {
   for (const f of Object.keys(FORMATS)) assert.ok(marginsCoverZones(f), f);
-  assert.equal(PLATFORM_ZONES['9:16'].bottom, 0.22);
+  assert.equal(PLATFORM_ZONES['9:16'].bottom, 0.35);
   assert.deepEqual(checkSafeZones([{ id: 'ok', x: 120, y: 700, w: 700, h: 300 }], '9:16'), []);
   const hits = checkSafeZones([{ id: 'low', x: 120, y: 1400, w: 700, h: 200 }, { id: 'right', x: 300, y: 600, w: 700, h: 100 },
     { id: 'top', x: 200, y: 100, w: 400, h: 100 }], '9:16');
   assert.deepEqual(hits.map((h) => `${h.id}:${h.zone}`).sort(), ['low:bottom', 'right:right', 'top:top']);
-  assert.equal(hits.find((h) => h.id === 'low').px, 1600 - Math.round(1920 * 0.78));
+  assert.equal(hits.find((h) => h.id === 'low').px, 1600 - Math.round(1920 * 0.65));
 });
 
 test('browser check report → safe-zone, contrast and lint warnings', () => {
