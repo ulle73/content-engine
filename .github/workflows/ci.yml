@@ -1,0 +1,171 @@
+name: CI
+# One workflow for pull requests to main. It replaces MCP Verify, Product Flow Verify, Creator acceptance, Ad Studio
+# and Motion Engine CI, which ran the same Django suite several times per push. Private repos on GitHub Free get
+# 2 000 Actions minutes a month, so every job here runs only when the files it checks changed.
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:  # runs every job
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  # A new push to the same pull request cancels the run that is still going.
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      app: ${{ steps.files.outputs.app }}
+      browser: ${{ steps.files.outputs.browser }}
+      motion: ${{ steps.files.outputs.motion }}
+    steps:
+      - id: files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -z "$PR" ]; then printf 'app=true\nbrowser=true\nmotion=true\n' >> "$GITHUB_OUTPUT"; exit 0; fi
+          files=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --jq '.[].filename')
+          echo "$files"
+          has() { echo "$files" | grep -Eq "$1" && echo true || echo false; }
+          # The Django suite also reads library/ and skills/ (catalog, recipes, fact skills), so only these skip it.
+          app=$(echo "$files" | grep -Evq '^(docs/|edit-renderer/|motion-renderer/|\.claude/|README\.md$|THIRD_PARTY_NOTICES\.md$)' && echo true || echo false)
+          browser=$(has '^(templates/|engine/static/|engine/([a-z_]*views|urls|forms|creative_[a-z_]+|operator[a-z_]*)\.py$|scripts/(product_flow_browser|creator_browser_smoke)\.py$|requirements|\.github/workflows/ci\.yml$)')
+          motion=$(has '^(motion-renderer/|engine/motion/|engine/test_motion|engine/(test_)?ad_templates|scripts/(motion_render_smoke|export-motion-schema)\.py$|\.github/workflows/ci\.yml$)')
+          printf 'app=%s\nbrowser=%s\nmotion=%s\n' "$app" "$browser" "$motion" | tee -a "$GITHUB_OUTPUT"
+
+  test:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: content_engine_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      SECRET_KEY: isolated-test-secret
+      POSTIZ_ENCRYPTION_SECRET: isolated-test-postiz
+      APP_URL: http://127.0.0.1:8765
+      MEDIA_STORAGE: local
+      MCP_ALLOW_INSECURE_LOCAL: 'true'
+      MCP_DEV_BEARER_TOKEN: test-only-mcp-token
+      MCP_DEV_USER_EMAIL: operator@example.com
+      TEST_DATABASE_URL: postgres://postgres:isolated-test-only@localhost:5432/content_engine_test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
+      - run: pip install -r requirements-dev.txt
+      - name: Static checks and migration drift
+        run: |
+          python manage.py makemigrations --check --dry-run --settings=engine.test_settings
+          python manage.py check --settings=engine.test_settings
+          APP_URL=http://127.0.0.1:8766 DJANGO_SETTINGS_MODULE=engine.mcp_settings python manage.py check
+          APP_URL=http://127.0.0.1:8766 DJANGO_SETTINGS_MODULE=engine.mcp_settings python -c "from engine.mcp_app import app; assert app is not None"
+          python manage.py collectstatic --noinput --settings=engine.test_settings
+          ruff check engine/ad_studio engine/test_ad_studio.py engine/test_ad_brief.py engine/forms.py engine/creative_budget.py engine/creative_controls.py engine/test_creator.py engine/test_product_flow.py scripts/product_flow_browser.py scripts/creator_browser_smoke.py
+          node --check engine/static/js/creator.js
+          node --check engine/static/js/interface.js
+      # PostgreSQL is what production runs; the suite runs once, here.
+      - run: python manage.py test engine operator_bridge --settings=engine.postgres_test_settings --noinput
+
+  browser:
+    needs: [changes, test]
+    if: needs.changes.outputs.browser == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DJANGO_SETTINGS_MODULE: engine.test_settings
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
+      - run: pip install -r requirements-dev.txt playwright==1.55.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Real Chromium app flows
+        run: |
+          mkdir -p data/product-flow-browser
+          python scripts/product_flow_browser.py 2>&1 | tee data/product-flow-browser/browser-tests.log
+      - name: Creator browser smoke
+        run: python scripts/creator_browser_smoke.py
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-evidence
+          path: |
+            data/product-flow-browser/
+            data/creator-browser/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  motion:
+    needs: changes
+    if: needs.changes.outputs.motion == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      SECRET_KEY: test-only-motion-secret
+      POSTIZ_ENCRYPTION_SECRET: test-only-motion-postiz
+      APP_URL: http://127.0.0.1:8765
+      MEDIA_STORAGE: local
+      DJANGO_SETTINGS_MODULE: engine.test_settings
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: motion-renderer/package-lock.json
+      - run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
+      - run: python -m pip install -r requirements.txt psutil
+      - name: Verify exported MotionSpec schema is committed
+        run: |
+          python scripts/export-motion-schema.py
+          git diff --exit-code -- motion-renderer/spec.schema.json
+      - name: Verify renderer contracts and build
+        working-directory: motion-renderer
+        run: |
+          npm ci
+          npm test
+          npm run typecheck
+          npm run build
+      - name: Ensure Remotion browser
+        working-directory: motion-renderer
+        run: node --input-type=module -e "import {ensureBrowser} from '@remotion/renderer'; await ensureBrowser({logLevel:'info'});"
+      - name: Render and decode representative videos
+        run: python scripts/motion_render_smoke.py
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: motion-ci-evidence
+          path: motion-evidence
+          retention-days: 3
