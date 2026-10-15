@@ -61,12 +61,12 @@ class OpenRouterAnalysisTests(TestCase):
             payload={"caption": "Golf"},
             schema=Classification,
             operation="competitor_analysis",
-            max_tokens=5000,
+            max_tokens=8000,
             temperature=0.2,
         )
         self.assertEqual(parsed.topic, "Kvällsträning")
         request = post.call_args.kwargs["json"]
-        self.assertEqual(request["max_completion_tokens"], 5000)
+        self.assertEqual(request["max_completion_tokens"], 8000)
         self.assertEqual(request["temperature"], 0.2)
         self.assertEqual(request["response_format"]["type"], "json_object")
         self.assertNotIn("require_parameters", request["provider"])
@@ -142,7 +142,8 @@ class OpenRouterAnalysisTests(TestCase):
         self.assertEqual(parsed.topic, "Kvällsträning")
         request = post.call_args.kwargs["json"]
         self.assertEqual(request["temperature"], 0)
-        self.assertEqual(request["max_completion_tokens"], 4000)
+        # Reasoning shares the budget; text routes get at least TEXT_ROUTE_MIN_TOKENS.
+        self.assertEqual(request["max_completion_tokens"], 6000)
 
     @patch.dict(
         os.environ,

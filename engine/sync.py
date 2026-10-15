@@ -26,9 +26,50 @@ def state_for(company, source, key):
     return ScraperState.objects.get_or_create(company=company, source=source, external_key=str(key))[0]
 
 
+FINISHED_RUN = ("SUCCEEDED", "FAILED", "TIMED-OUT", "ABORTED")
+
+
+def daily_limit():
+    return min(Decimal(os.environ.get("SCRAPER_DAILY_BUDGET_USD", "0.50")), Decimal("10"))
+
+
+def spent_today(company_id, settled=None):
+    """Reported cost, else the reserved cap. `settled` holds real costs of finished but uncollected runs."""
+    settled = settled or {}
+    return sum(
+        (settled.get(r.pk, r.cost_usd if r.cost_usd is not None else r.max_cost_usd)
+         for r in ScrapeRequest.objects.filter(state__company_id=company_id, created_at__date=timezone.localdate())),
+        Decimal("0"),
+    )
+
+
+def settled_costs(company_id):
+    """Real cost of today's Apify runs that already finished but are not collected yet.
+
+    An Instagram run is done in seconds, yet its 0.02 USD cap stays reserved until a later pass collects it,
+    so nine of them used to block the day's ad checks. Read-only: collection still records the cost.
+    """
+    settled = {}
+    for request in (ScrapeRequest.objects.filter(state__company_id=company_id, created_at__date=timezone.localdate(),
+                                                 cost_usd=None).exclude(actor_run_id=None)
+                    .exclude(actor_run_id__contains=":")):  # "virlo:…" – other providers report their own cost
+        try:
+            remote = apify.get_run(request.actor_run_id)
+        except apify.ApifyError:
+            continue
+        cost = remote.get("usageTotalUsd")
+        if remote.get("status") in FINISHED_RUN and isinstance(cost, (int, float)) and not isinstance(cost, bool) and cost >= 0:
+            settled[request.pk] = Decimal(str(cost))
+    return settled
+
+
 def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None, provider="apify", period=None):
     now = timezone.now()
     key = fingerprint([state.pk, actor, mode, period or timezone.localdate().isoformat()])
+    limit = daily_limit()
+    settled = {}
+    if spent_today(state.company_id) + Decimal(max_cost) > limit:
+        settled = settled_costs(state.company_id)  # outside the lock: one GET per uncollected run
     with transaction.atomic():
         Company.objects.select_for_update().get(pk=state.company_id)
         state = ScraperState.objects.select_for_update().get(pk=state.pk)
@@ -38,13 +79,11 @@ def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None, provid
         cap = Decimal(max_cost)
         # A ceiling per company and day, not the expected spend (typically a few cents); reserved caps count until
         # a run reports its real cost.
-        daily_limit = min(Decimal(os.environ.get("SCRAPER_DAILY_BUDGET_USD", "0.50")), Decimal("10"))
-        spent = sum(
-            (r.cost_usd if r.cost_usd is not None else r.max_cost_usd)
-            for r in ScrapeRequest.objects.filter(state__company_id=state.company_id, created_at__date=timezone.localdate())
-        )
-        if cap <= 0 or spent + cap > daily_limit:
-            raise apify.ApifyError("Dagens kostnadsgräns för företagets scrapers är nådd. Försök nästa dygn.")
+        spent = spent_today(state.company_id, settled)
+        if cap <= 0 or spent + cap > limit:
+            raise apify.BudgetExceeded(
+                f"Dagens kostnadsgräns för företagets scrapers är nådd ({spent:.3f} av {limit:.2f} USD använt eller "
+                f"reserverat, körningen behöver {cap:.3f}). Försök nästa dygn.")
         request = ScrapeRequest.objects.create(
             state=state, key=key, actor=actor, mode=mode, inputs=inputs, max_cost_usd=cap
         )

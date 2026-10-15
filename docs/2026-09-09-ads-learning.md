@@ -12,7 +12,7 @@ Format, medielänkar och landningssida sparas om källan faktiskt ger dem. AI an
 
 Alla nya scraperintegrationer ska använda `engine.sync.dispatch`, `ScraperState` och `ScrapeRequest`. Inga betalda starter direkt från views, scheduler eller fristående scripts. Sparad reservation skapas under företagslås **före** provider-POST; körningsnyckeln återanvänds över UI och daily. Bekräftade körnings-ID:n återupptas. Timeout/okänd start hålls för manuell kontroll, aldrig automatisk omsändning. Ingen kö eller extra scheduler införs.
 
-`SCRAPER_DAILY_BUDGET_USD` är 1 USD per företag/dygn som standard, hårt begränsad till högst 10. Summan använder rapporterad faktisk kostnad eller reserverat tak tills kostnaden är känd. Providerpriser kan ändras; detta är ett reservationsskydd tillsammans med Apifys `maxTotalChargeUsd`, inte en garanti om extern fakturering. Arbete som inte ryms väntar. Samma princip gäller aktiva och okända körningar. Definitivt avvisad start registreras med noll kostnad.
+`SCRAPER_DAILY_BUDGET_USD` är 0,50 USD per företag/dygn som standard (kod, render.yaml och GitHub-variabeln med samma namn), hårt begränsad till högst 10. Summan använder rapporterad faktisk kostnad eller reserverat tak tills kostnaden är känd; körningar som redan är klara hos Apify räknas med sin verkliga kostnad innan en start nekas. Providerpriser kan ändras; detta är ett reservationsskydd tillsammans med Apifys `maxTotalChargeUsd`, inte en garanti om extern fakturering. Arbete som inte ryms väntar. Samma princip gäller aktiva och okända körningar. Definitivt avvisad start registreras med noll kostnad.
 
 | Källa | Första begränsade urval | Discovery | Äldre status | Tak per körning |
 |---|---|---|---|---|

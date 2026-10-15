@@ -20,6 +20,8 @@ jobs:
       SECRET_KEY: ${{ secrets.CONTENT_DJANGO_SECRET }}
       POSTIZ_ENCRYPTION_SECRET: ${{ secrets.CONTENT_POSTIZ_ENCRYPTION_SECRET }}
       APIFY_API_TOKEN: ${{ secrets.CONTENT_APIFY_TOKEN }}
+      # Scraper ceiling per company and day (engine/sync.dispatch); same default as render.yaml.
+      SCRAPER_DAILY_BUDGET_USD: ${{ vars.SCRAPER_DAILY_BUDGET_USD || '0.50' }}
       OPENAI_API_KEY: ${{ secrets.CONTENT_OPENAI_KEY }}
       # Competitor/market analysis classifies through OpenRouter (engine/signals.py).
       OPENROUTER_API_KEY: ${{ secrets.CONTENT_OPENROUTER_KEY }}

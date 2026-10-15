@@ -7,10 +7,11 @@ from django.utils import timezone
 from django.db.models import Q
 from django.conf import settings
 
+from .apify import ApifyError, BudgetExceeded
 from .competitors import OPEN_STATUSES, collect_import, start_import
 from .daily import Result, Stage
 from .media import advance_job, remove_asset
-from .models import Competitor, MediaAsset, MediaGeneration
+from .models import Competitor, CompetitorImport, MediaAsset, MediaGeneration
 from .signals import analysis_candidates, classification_hash, classify
 
 
@@ -24,7 +25,11 @@ def import_account(account):
         if latest and latest.started_at > timezone.now()-timedelta(hours=23):
             collect_import(latest, allow_fallback=False)
             return Result("attention", "Senaste försöket behöver kontroll; ingen ny betald start inom 23 timmar.", {"import_id": latest.pk})
-        run = start_import(account)
+        try:
+            run = start_import(account)
+        except BudgetExceeded as exc:
+            # The ceiling is policy, not a provider failure: nothing started, tomorrow's run takes it.
+            return Result("blocked", str(exc))
     if not run.actor_run_id:
         return Result("attention", "Apify-starten är obekräftad. Kontrollera körningen i appen före nytt försök.", {"import_id": run.pk})
     result = collect_import(run)
@@ -60,10 +65,27 @@ def analyze_post(post, company):
     return Result(data={"post_id": post.pk, "classification_hash": fingerprint})
 
 
+def imports_running(company):
+    """Collect today's started imports that already finished at Apify; True while a known job still runs.
+
+    Instagram runs are done in seconds, but the import stage is only polled again after a whole pass – which the
+    ad stages can stretch over the full time budget – so waiting on the step status starved the analysis.
+    """
+    runs = CompetitorImport.objects.filter(competitor__company=company, competitor__active=True,
+                                           status__in=OPEN_STATUSES).exclude(actor_run_id=None)
+    for run in runs:
+        try:
+            collect_import(run)
+        except ApifyError:
+            pass  # still counted as running below; the import stage reports it
+    return runs.all().exists()  # a fresh query, not the cache from the loop above
+
+
 def analysis_units(company):
     # Failed imports do not prohibit analysis of already stored observations.
     # Wait only for known active provider jobs, not uncertain starts needing human attention.
-    if company.daily_steps.filter(run__day=timezone.localdate(), stage="competitor_import", status="pending").exists():
+    if (company.daily_steps.filter(run__day=timezone.localdate(), stage="competitor_import", status="pending").exists()
+            and imports_running(company)):
         return [("await_imports", lambda: Result("pending", "Inväntar pågående importer före analys."))]
     return [("await_imports", lambda: Result("skipped", "Inga pågående importer."))] + [
         (f"{p.pk}:{classification_hash(p, company)}", partial(analyze_post, p, company)) for p in analysis_candidates(company)
@@ -120,7 +142,10 @@ def import_ads(account):
     state = ads.account_state(account)
     if state.coverage == "limited":
         return Result("attention", "Annonsurvalet nådde resultatgränsen. Sparat underlag kan användas; kontrollera täckningen i Insikter.")
-    request = ads.start(account)
+    try:
+        request = ads.start(account)
+    except BudgetExceeded as exc:
+        return Result("blocked", str(exc))
     if not request:
         return Result("skipped", "Ingen annonskontroll behövs ännu.")
     if request.status in ("starting", "unknown") and not request.actor_run_id:
@@ -198,7 +223,14 @@ def own_discovery_units(company):
         except InvalidToken as exc:
             raise ValueError("Postiz-kopplingen kunde inte dekrypteras. Kontrollera CONTENT_POSTIZ_ENCRYPTION_SECRET på körvärden.") from exc
     def work():
-        data=discover(company)
+        from .postiz import PostizError
+        try:
+            data=discover(company)
+        except PostizError as exc:
+            if exc.status_code not in (401, 403):
+                raise
+            # A rejected key or lapsed plan needs a person, not a retry; the message is our own text.
+            return Result("attention", str(exc), {"http_status": exc.status_code})
         return Result(data.pop("status","success"),data.get("message","Egna publiceringar kontrollerade."),data)
     return [("published",work)]
 
