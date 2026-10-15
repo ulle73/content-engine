@@ -109,6 +109,29 @@ class IdeaCardTests(TestCase):
         self.assertEqual(IdeaCard.objects.get().status, "failed")
         self.assertEqual(service.hits(self.company), [])
 
+    def test_a_failed_hit_is_tried_once_more_after_two_days_then_never(self):
+        self.account("timeplan", (1000, 1000, 1000, 1000, 9000))
+        with mock.patch("engine.references.service.process", side_effect=RuntimeError("TikTok blockerade")):
+            service.daily(self.company)
+        IdeaCard.objects.update(created_at=timezone.now() - timedelta(days=3))
+        self.assertEqual(len(service.hits(self.company)), 1)  # due for its second try
+
+        with mock.patch("engine.references.service.process", side_effect=RuntimeError("TikTok blockerade")):
+            service.daily(self.company)
+        card = IdeaCard.objects.get()
+        self.assertEqual((card.status, card.error), ("failed", "Andra försöket: TikTok blockerade"))
+        self.assertEqual(service.hits(self.company), [])  # a second failure is final
+
+    def test_a_retried_hit_that_works_is_pitched_and_its_old_error_cleared(self):
+        self.account("timeplan", (1000, 1000, 1000, 1000, 9000))
+        with mock.patch("engine.references.service.process", side_effect=RuntimeError("TikTok blockerade")):
+            service.daily(self.company)
+        IdeaCard.objects.update(created_at=timezone.now() - timedelta(days=3))
+        with mock.patch("engine.references.service.process", return_value=self.reference()),                 mock.patch("engine.openrouter.structured_analysis", side_effect=self.fake_pitch(5)):
+            service.daily(self.company)
+        card = IdeaCard.objects.get()
+        self.assertEqual((card.status, card.error), ("skipped", ""))
+
     def test_skapa_plans_and_answers_with_what_we_must_supply(self):
         card = IdeaCard.objects.create(company=self.company, reference=self.reference(), source_key="instagram:x",
                                        source_url="https://www.instagram.com/reel/x/", why="x", spin="HR-mailet",
