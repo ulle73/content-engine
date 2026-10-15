@@ -37,7 +37,8 @@ En film består av:
      mindre `"storlek"` eller dela raden; utanför safe zone → ändra `"topp"`/`"storlek"`.
 5. **Titta på `out/qa-kontakt.png`** (röda linjer = safe zones x 65–929, y 270–1250) och bocka av den manuella listan i
    QA.md. Öppna bilden och kontrollera på riktigt – rapportera vad du såg, inte "ser bra ut".
-6. **Leverera:** filmens fil (`out/…-9x16.mp4`), vad som ändrats, QA-resultatet, och säg att ljud inte är avlyssnat.
+6. **Leverera:** filmens fil i `resultat/` (`resultat/…-9x16.mp4` – dit kopieras filmen automatiskt när QA har gått
+   igenom; `out/` är arbetsmaterial), vad som ändrats, QA-resultatet, och säg att ljud inte är avlyssnat.
    Uppdatera status i `work/FILMER.md` om något valts/godkänts.
 
 ## Regler som alltid gäller (källor: skills/video-regler, skills/ljud, skills/golfkuponger-brand, -friskvard)
