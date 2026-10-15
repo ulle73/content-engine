@@ -164,13 +164,14 @@ def fallback_enabled():
     return os.environ.get("INSTAGRAM_FALLBACK", "").strip() == "1"
 
 
-def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
-    from .sync import dispatch, organic_plan, state_for
+def _reserve(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
+    """An open or recent import to reuse, or a new CompetitorImport row with its plan (state, mode, limit, actor)."""
+    from .sync import organic_plan, state_for
     with transaction.atomic():
         current = Competitor.objects.select_for_update().get(pk=competitor.pk)
         existing = current.imports.filter(status__in=OPEN_STATUSES).first()
         if existing:
-            return existing
+            return existing, None
         if not current.active:
             raise apify.ApifyError("Kontot är inaktiverat.")
         if fallback_of:
@@ -178,7 +179,7 @@ def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
         else:
             previous = current.imports.filter(started_at__gte=timezone.now()-timedelta(hours=23)).order_by("-started_at").first()
         if previous:
-            return previous
+            return previous, None
         if current.platform == "tiktok":
             actor = apify.TIKTOK_ACTOR
         state = state_for(current.company, current.platform, current.username)
@@ -187,12 +188,23 @@ def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
         if not fallback_of and mode == "discovery" and not discovery_due(state):
             previous = current.imports.order_by("-started_at").first()
             if previous:
-                return previous
+                return previous, None
         if fallback_of:
             mode, limit = fallback_of.sync_mode, fallback_of.requested_limit
         run = CompetitorImport.objects.create(
             competitor=current, actor=actor, fallback_of=fallback_of, requested_limit=limit, sync_mode=mode
         )
+    return run, (current, state, mode, limit, actor)
+
+
+def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
+    run, plan = _reserve(competitor, actor=actor, fallback_of=fallback_of)
+    return run if plan is None else _start_one(run, plan)
+
+
+def _start_one(run, plan):
+    from .sync import dispatch
+    current, state, mode, limit, actor = plan
     try:
         inputs = (apify.tiktok_input(current.username, limit) if actor == apify.TIKTOK_ACTOR
                   else apify.instagram_input(current.username, actor, limit))
@@ -223,6 +235,50 @@ def start_import(competitor, *, actor=apify.PRIMARY_ACTOR, fallback_of=None):
     return run
 
 
+def start_batch(competitors):
+    """One primary-Actor run for all of a company's Instagram accounts that are due (resultsLimitPerProfile keeps
+    each account's own limit). Accounts with an open or recent import keep it. Returns the started imports."""
+    from .sync import dispatch_batch
+    planned = []
+    for competitor in competitors:
+        if competitor.platform != "instagram":
+            continue
+        run, plan = _reserve(competitor)
+        if plan is not None:
+            planned.append((run, plan))
+    if len(planned) < 2:
+        return [_start_one(run, plan) for run, plan in planned]  # a batch of one is an ordinary start
+    limits = {current.username: limit for _, (current, _, _, limit, _) in planned}
+    inputs = {**apify.instagram_input(next(iter(limits)), apify.PRIMARY_ACTOR, max(limits.values())),
+              "directUrls": list(limits), "resultsLimitPerProfile": limits,
+              "_max_items": sum(limit + 1 for limit in limits.values())}
+    members = [(state, mode, apify.instagram_input(current.username, actor, limit),
+                str(apify.max_charge(actor, limit))) for _, (current, state, mode, limit, actor) in planned]
+    try:
+        requests = dispatch_batch(members, apify.PRIMARY_ACTOR, inputs)
+    except apify.ApifyError as exc:
+        for run, (_, state, mode, _, actor) in planned:
+            run.status = "unknown" if exc.uncertain else "failed"
+            run.scrape_request = state.requests.filter(actor=actor, mode=mode).order_by("-created_at").first()
+            run.error = ("Starten kunde inte bekräftas. Kontrollera Apify och koppla körnings-id innan ett nytt försök."
+                         if exc.uncertain else str(exc))
+            run.save(update_fields=["status", "error", "scrape_request"])
+        raise
+    started = []
+    for run, (_, state, *_rest) in planned:
+        request = requests[state.pk]
+        run.scrape_request, run.actor_run_id, run.dataset_id = request, request.actor_run_id, request.dataset_id
+        run.status = request.status if request.status in OPEN_STATUSES else "failed"
+        run.save(update_fields=["scrape_request", "actor_run_id", "dataset_id", "status"])
+        started.append(run)
+    return started
+
+
+def _owned_by(row, username):
+    handle = str(row.get("usuario") or row.get("ownerUsername") or "").lstrip("@").lower()
+    return handle == username or urlparse(row.get("inputUrl", "")).path.strip("/").lower() == username
+
+
 def collect_import(run, *, allow_fallback=True):
     if run.status not in OPEN_STATUSES or not run.actor_run_id:
         if run.status not in OPEN_STATUSES and run.scrape_request_id:
@@ -243,7 +299,14 @@ def collect_import(run, *, allow_fallback=True):
         report = apify.api("GET", f"/key-value-stores/{remote['defaultKeyValueStoreId']}/records/OUTPUT")
         entries = [u for u in report.get("users", []) if u.get("user", "").lower() == run.competitor.username]
         report_error = not report.get("ok") or not entries or any(u.get("erro") for u in entries)
-    rows = apify.dataset_items(remote["defaultDatasetId"])
+    batch = (run.scrape_request.inputs.get("batch") if run.scrape_request_id else None) or {}
+    if batch:
+        # A shared run: read it all (cached per process) and keep this account's rows.
+        every_row = apify.dataset_items(remote["defaultDatasetId"], max_items=int(batch.get("max_items") or 5000),
+                                        cache=True)
+        rows = [row for row in every_row if isinstance(row, dict) and _owned_by(row, run.competitor.username)]
+    else:
+        rows = apify.dataset_items(remote["defaultDatasetId"])
     # An error on the very last page is tolerable when nearly all requested data arrived.
     if report_error and len(rows) < run.requested_limit * 0.8:
         incomplete = True
@@ -311,6 +374,9 @@ def collect_import(run, *, allow_fallback=True):
         )
         locked.finished_at = observed_at
         locked.cost_usd = remote.get("usageTotalUsd")
+        if batch:
+            from .sync import batch_share
+            locked.cost_usd = batch_share(run.scrape_request, len(rows), len(every_row), remote.get("usageTotalUsd"))
         locked.item_count = len(normalized)
         locked.skipped_count = skipped
         locked.error = (

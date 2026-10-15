@@ -3,3 +3,6 @@
   <a href="{% url 'engine:intelligence' workspace_id=workspace.pk %}?channel=paid"{% if channel == 'paid' and request.resolver_match.url_name != 'market_intelligence' %} aria-current="page"{% endif %}>Annonser</a>
   <a href="{% url 'engine:market_intelligence' workspace_id=workspace.pk %}"{% if request.resolver_match.url_name == 'market_intelligence' %} aria-current="page"{% endif %}>Marknaden</a>
 </nav>
+{% if not workspace.profile.strip or not workspace.current.strip %}
+  <div class="import-status-card" role="status"><span>Analysen är pausad: Företagsprofil och Aktuellt saknas, så inga inlägg eller annonser analyseras och inga idékort skapas.</span> <a href="{% url 'engine:settings' workspace_id=workspace.pk %}#readiness">Fyll i →</a></div>
+{% endif %}

@@ -15,6 +15,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--company", help="Only this company UUID.")
         parser.add_argument("--wait-seconds", type=int, default=720, help="Shared time budget; 0 runs one pass without polling.")
+        parser.add_argument("--phase", choices=("full", "start"), default="full",
+                            help="start: only start the day's scrapes (one pass, no waiting) so a full run later "
+                                 "finds them finished; full: everything, resuming the same day's ledger.")
 
     def handle(self, **options):
         if options["wait_seconds"] < 0:
@@ -26,8 +29,13 @@ class Command(BaseCommand):
                 raise CommandError("--company must be a company UUID.")
             if not Company.objects.filter(pk=company_id).exists():
                 raise CommandError("Company not found.")
+        stages, wait_seconds = None, options["wait_seconds"]
+        if options["phase"] == "start":
+            from engine.daily_stages import START_STAGES
+            stages, wait_seconds = START_STAGES, 0
         try:
-            run = run_daily(company_id=options["company"], wait_seconds=options["wait_seconds"], write=self.stdout.write)
+            run = run_daily(company_id=options["company"], wait_seconds=wait_seconds, stages=stages,
+                            write=self.stdout.write)
         except AlreadyRunning as exc:
             self.stdout.write(str(exc))
             return
@@ -43,6 +51,8 @@ class Command(BaseCommand):
         if os.environ.get("GITHUB_STEP_SUMMARY"):
             with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as file:
                 file.write(summary)
+        if options["phase"] == "start":
+            return  # pending scrapes are the point of this phase; the full run collects them
         if run.status == "partial":
             self.stdout.write("::warning title=Daily partial success::Completed work was saved. Check company Settings and rerun incomplete items.")
         elif run.status == "failed":

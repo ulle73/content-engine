@@ -83,6 +83,32 @@
           </div>
         </section>
 
+        <section class="settings-section settings-card" id="readiness">
+          <div class="settings-section-head settings-card-head">
+            <div>
+              <span class="settings-section-kicker">Bevakning → idékort</span>
+              <h2>Redo för bevakning</h2>
+              <p class="small">{% if readiness_open %}{{ readiness_open }} punkt{{ readiness_open|pluralize:"er" }} kvar innan bevakningen ger fulla idéförslag.{% else %}Allt som bevakningen behöver finns på plats.{% endif %}</p>
+            </div>
+          </div>
+          <div class="settings-section-body settings-card-body settings-card-body-flush">
+            <div class="settings-option-list">
+              {% for item in readiness %}
+              <a class="settings-option" href="{{ item.url }}">
+                <span class="settings-option-copy">
+                  <strong>{{ item.label }}</strong>
+                  <span>{{ item.detail }}</span>
+                </span>
+                <span class="settings-option-meta">
+                  {% if item.ok %}<span class="settings-state success">Klart</span>{% else %}<span class="settings-state warning">Saknas</span>{% endif %}
+                  <span class="settings-option-arrow" aria-hidden="true">›</span>
+                </span>
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+
         <section class="settings-section settings-card settings-brand-card" id="brand">
           <div class="settings-section-head settings-card-head">
             <div>
