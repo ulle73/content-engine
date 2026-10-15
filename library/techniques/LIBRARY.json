@@ -1,0 +1,1189 @@
+{
+  "kit": "techniques",
+  "title": "Teknikbanken – bevisade tekniker och metoder",
+  "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+  },
+  "items": [
+    {
+      "id": "teknik.ord-knapps-bort",
+      "name": "Ett ord knäpps bort och vänder budskapet",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[krok] En rad med ett negerande ord ('INTE') står i bild – en gest knäpper bort ordet och budskapet vänder. Varför: Tittaren hinner läsa påståendet och blir överraskad när det ändras – en mikroförvåning de första 2 sekunderna som skapar nyfikenhet. Fysisk interaktion med text känns 'gjord för dig'.",
+      "tags": [
+        "teknik",
+        "krok",
+        "video",
+        "carousel",
+        "hook",
+        "krok",
+        "text",
+        "gest",
+        "negation",
+        "överraskning",
+        "kinetisk typografi"
+      ],
+      "path": "library/techniques/ord-knapps-bort.md",
+      "use": "Läs library/techniques/ord-knapps-bort.md. Golfkuponger: 'FRISKVÅRD ÄR INTE GOLF' → INTE knäpps bort → 'FRISKVÅRD ÄR GOLF'. Eller 'GOLF ÄR INTE FÖR ALLA' → 'GOLF ÄR FÖR ALLA'.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "krok",
+        "medium": [
+          "video",
+          "carousel"
+        ],
+        "tajming": "Raden ≥ läsregeln (~2 s) innan ordet åker; bortknäppet 0,2–0,3 s; ny rad står 1–1,5 s.",
+        "bevis": {
+          "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+          "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+          "likes": 7921,
+          "kommentarer": 79,
+          "datum": "2026-10-06",
+          "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+          "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.text-poppar-pa-gest",
+      "name": "Text poppar upp på en gest",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[krok] Texten dyker upp exakt när personen knäpper/pekar/klappar – som om gesten skapade den. Varför: Orsak–verkan fångar ögat; tittaren förstår direkt vart den ska titta och att videon är 'gjord'.",
+      "tags": [
+        "teknik",
+        "krok",
+        "video",
+        "hook",
+        "krok",
+        "text",
+        "gest",
+        "pop",
+        "studs"
+      ],
+      "path": "library/techniques/text-poppar-pa-gest.md",
+      "use": "Läs library/techniques/text-poppar-pa-gest.md. Golfkuponger: Hook: knäpp → '3 SAKER OM FRISKVÅRDSBIDRAGET'. Eller pekar → 'VISSTE DU DET HÄR?'",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "krok",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Texten in inom 1–2 bildrutor efter gesten; studs 0,25 s; ljud på samma bildruta (aldrig före).",
+        "bevis": {
+          "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+          "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+          "likes": 7921,
+          "kommentarer": 79,
+          "datum": "2026-10-06",
+          "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+          "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.bilden-trycks-isar",
+      "name": "Bilden trycks isär med händerna",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[retention] Personen 'trycker' bildens kanter inåt/utåt med händerna – svarta kanter kommer in och texten står mellan händerna. Varför: Bryter bildens 'fjärde vägg' – oväntad formändring som återställer uppmärksamheten mitt i videon (retention).",
+      "tags": [
+        "teknik",
+        "retention",
+        "video",
+        "retention",
+        "övergång",
+        "fjärde väggen",
+        "beskärning",
+        "gest"
+      ],
+      "path": "library/techniques/bilden-trycks-isar.md",
+      "use": "Läs library/techniques/bilden-trycks-isar.md. Golfkuponger: Mitt i en tipsfilm: händerna trycker isär → 'DETTA MISSAR ALLA'.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "retention",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Rörelsen 0,4–0,6 s; håll 1,5–2 s; släpp tillbaka.",
+        "bevis": {
+          "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+          "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+          "likes": 7921,
+          "kommentarer": 79,
+          "datum": "2026-10-06",
+          "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+          "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.text-foljer-personen",
+      "name": "Texten följer med personen",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[retention] Texten sitter fast vid personen (bröstet, bredvid huvudet) och följer med när hen går in i bild eller rör sig. Varför: Texten blir en del av scenen i stället för ett lager ovanpå – ser påkostat ut och håller blicken på personen.",
+      "tags": [
+        "teknik",
+        "retention",
+        "video",
+        "retention",
+        "tracking",
+        "spårning",
+        "text",
+        "rörelse",
+        "embedded captions"
+      ],
+      "path": "library/techniques/text-foljer-personen.md",
+      "use": "Läs library/techniques/text-foljer-personen.md. Golfkuponger: Golfare går över green, texten 'FÖRSTA RUNDAN = FRISKVÅRD' följer med.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "retention",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Hela promenaden 2–4 s; texten läsbar hela tiden (läsregeln).",
+        "bevis": {
+          "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+          "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+          "likes": 7921,
+          "kommentarer": 79,
+          "datum": "2026-10-06",
+          "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+          "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.cirkel-cta-redigeringsvy",
+      "name": "Avslutning: cirkel + CTA i redigeringsvy",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[cta] Bilden krymper till en cirkel med ansiktet; CTA:n ('spara & följ') skrivs fram i en textruta med markeringshandtag och muspekare. Varför: Ser ut som att man tittar in i redigeringen – ärligt/'creator'-känsla som gör CTA:n mindre säljig; cirkeln personifierar avsändaren.",
+      "tags": [
+        "teknik",
+        "cta",
+        "video",
+        "cta",
+        "avslutning",
+        "follow",
+        "spara",
+        "redigering",
+        "muspekare",
+        "cirkel"
+      ],
+      "path": "library/techniques/cirkel-cta-redigeringsvy.md",
+      "use": "Läs library/techniques/cirkel-cta-redigeringsvy.md. Golfkuponger: Cirkel med Tourleif: 'SPARA & FÖLJ FÖR FLER GOLFTIPS' – före slutbilden.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "cta",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Krympning 0,5 s; CTA ≥ läsregeln; klick sist.",
+        "bevis": {
+          "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+          "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+          "likes": 7921,
+          "kommentarer": 79,
+          "datum": "2026-10-06",
+          "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+          "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.samma-rad-ny-lek",
+      "name": "Samma rad – ny visuell lek var 2–3 s",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[struktur] Hela videon upprepar samma korta rad, men varje klipp visar ett nytt sätt att animera den. Varför: Tittaren vill se 'nästa trick' – tydlig mönsterbrytning var 2–3 s utan att budskapet blir rörigt. Bra för sparningar (lärande).",
+      "tags": [
+        "teknik",
+        "struktur",
+        "video",
+        "struktur",
+        "retention",
+        "lista",
+        "lärande",
+        "mönsterbrytning",
+        "sparningar"
+      ],
+      "path": "library/techniques/samma-rad-ny-lek.md",
+      "use": "Läs library/techniques/samma-rad-ny-lek.md. Golfkuponger: 'GOLF FÖR FRISKVÅRDSBIDRAGET' i sex varianter (dörr, mobil, green, chefen, kupong, cirkel-CTA).",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "struktur",
+        "medium": [
+          "video"
+        ],
+        "tajming": "6 klipp à 2–4 s (snitt ~3 s); samma textstil genom hela.",
+        "bevis": {
+          "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+          "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+          "likes": 7921,
+          "kommentarer": 79,
+          "datum": "2026-10-06",
+          "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+          "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.trendlista-karusell",
+      "name": "Numrerad lista-karusell: 'X saker – spara detta'",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[struktur] Slide 1 lovar en lista och ber om sparning; en sak per slide med stor nummer-etikett, exempelbild och två rader varför; sista slide = CTA. Varför: Löftet om en lista gör att man sveper till slutet (svep = tid i inlägget); 'spara detta' ger sparningar, som algoritmen väger tungt. Samma layout på varje slide gör den lätt att läsa.",
+      "tags": [
+        "teknik",
+        "struktur",
+        "carousel",
+        "struktur",
+        "lista",
+        "listicle",
+        "spara",
+        "sparningar",
+        "karusell",
+        "nummer",
+        "save this"
+      ],
+      "path": "library/techniques/trendlista-karusell.md",
+      "use": "Läs library/techniques/trendlista-karusell.md. Golfkuponger: '6 banor du måste spela i höst – spara detta om du har friskvårdsbidrag kvar'. Eller '5 sätt att använda friskvårdsbidraget på golf'.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "struktur",
+        "medium": [
+          "carousel"
+        ],
+        "tajming": "Karusell: 6–8 slides. Som video: ~2,5–3 s per punkt (läsregeln).",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.kommentera-ordet",
+      "name": "CTA: 'Kommentera ORDET så skickar vi …'",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[cta] Sista slide/sista sekunderna: 'kommentera GOLF så skickar vi X' – en automatisk DM skickar länken till alla som kommenterar. Varför: Kommentarer är den starkaste signalen till algoritmen, och tröskeln är bara ett ord. Beviset: 1405 kommentarer på 2020 likes (normalt ~3–5 %).",
+      "tags": [
+        "teknik",
+        "cta",
+        "carousel",
+        "video",
+        "cta",
+        "kommentarer",
+        "engagemang",
+        "dm",
+        "nyckelord",
+        "comment to get",
+        "manychat",
+        "lead"
+      ],
+      "path": "library/techniques/kommentera-ordet.md",
+      "use": "Läs library/techniques/kommentera-ordet.md. Golfkuponger: 'Kommentera GOLF så skickar vi listan med alla 300+ banor.' Sätt upp auto-DM innan inlägget publiceras.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "cta",
+        "medium": [
+          "carousel",
+          "video"
+        ],
+        "tajming": "Sista slide eller sista 2–3 s före slutbilden; ordet stort och i färgruta.",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.sten-sax-pase",
+      "name": "Sten, sax, påse – två val",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[krok] Två händer från var sin sida spelar sten-sax-påse; över varje hand står ett val ('[gör så här]' vs '[gör så här]'). Varför: Alla förstår sten-sax-påse direkt (stark visuell referens) – jämförelsen blir en lek i stället för en reklamtabell.",
+      "tags": [
+        "teknik",
+        "krok",
+        "carousel",
+        "video",
+        "krok",
+        "jämförelse",
+        "val",
+        "händer",
+        "hand core",
+        "sten sax påse",
+        "versus"
+      ],
+      "path": "library/techniques/sten-sax-pase.md",
+      "use": "Läs library/techniques/sten-sax-pase.md. Golfkuponger: '[Betala golfen själv]' (sax) vs '[Låt chefen betala]' (sten) – chefens hand vinner.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "krok",
+        "medium": [
+          "carousel",
+          "video"
+        ],
+        "tajming": "Video: hand-in 0,4 s, 'sten, sax …' 3 slag à 0,3 s, resultat ≥ läsregeln.",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.malningsmeme-zoom",
+      "name": "Målningsmeme – zooma i en klassisk målning",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[struktur] En klassisk målning; varje slide zoomar in på en person med en rad som följer blickarna ('I den här bilden …', 'han tittar på …') – sista slide visar produkten. Varför: Oväntat och lekfullt sätt att visa vad man säljer; igenkänd meme-form + nyfikenhet på vem som tittar på vad.",
+      "tags": [
+        "teknik",
+        "struktur",
+        "carousel",
+        "video",
+        "struktur",
+        "meme",
+        "konst",
+        "målning",
+        "zoom",
+        "humor",
+        "public domain",
+        "vintage art"
+      ],
+      "path": "library/techniques/malningsmeme-zoom.md",
+      "use": "Läs library/techniques/malningsmeme-zoom.md. Golfkuponger: 'I den här bilden … han tittar på henne … hon tittar på greenen … och alla tittar på friskvårdsbidraget som brinner inne 31 dec.' Se även teknik.konstverk-hyllning.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "struktur",
+        "medium": [
+          "carousel",
+          "video"
+        ],
+        "tajming": "5 slides; video: 2–2,5 s per utsnitt med mjuk zoom.",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.story-grab",
+      "name": "Story Grab – någon tar sig ur Instagram-gränssnittet",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[krok] Bilden ser ut som Instagram (story-cirklar, användarnamn, låtrad) – personen i bilden sträcker sig upp och tar tag i en story-cirkel. Varför: Ser ut som appen själv men något är fel – stör scrollen och får folk att stanna. Välgjord ser den påkostad ut.",
+      "tags": [
+        "teknik",
+        "krok",
+        "carousel",
+        "video",
+        "krok",
+        "ios core",
+        "gränssnitt",
+        "ui",
+        "story",
+        "fjärde väggen",
+        "scrollstopp"
+      ],
+      "path": "library/techniques/story-grab.md",
+      "use": "Läs library/techniques/story-grab.md. Golfkuponger: Story-raden visar fyra banor (Ullna, Bro Hof …); golfaren tar ner Bro Hof-cirkeln: 'Nästa runda?'.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "krok",
+        "medium": [
+          "carousel",
+          "video"
+        ],
+        "tajming": "Karusell: en slide. Video: armen sträcks upp 0,6 s, cirkeln dras ner.",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.folj-linjen",
+      "name": "Välj och följ linjen",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[retention] 'Välj en emoji och följ linjen' – trassliga linjer från 3–4 val leder till varsitt svar. Varför: Tittaren gör något (följer linjen med blicken/fingret) = mer tid på inlägget, som algoritmen belönar; personligt svar.",
+      "tags": [
+        "teknik",
+        "retention",
+        "carousel",
+        "video",
+        "retention",
+        "interaktiv",
+        "spel",
+        "följ linjen",
+        "labyrint",
+        "tid i inlägget",
+        "interactive carousel"
+      ],
+      "path": "library/techniques/folj-linjen.md",
+      "use": "Läs library/techniques/folj-linjen.md. Golfkuponger: 'Välj en klubba och följ linjen – där spelar du nästa gång' → tre banor.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "retention",
+        "medium": [
+          "carousel",
+          "video"
+        ],
+        "tajming": "Video: varje linje ritas 1–1,5 s, svaret poppar när linjen når fram.",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.svep-for-att-avsloja",
+      "name": "Svep för att avslöja",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[retention] En slide uppmanar 'öppna den!' eller 'håll prickarna och dra' – svaret/belöningen syns först på nästa slide (lyckokaka som öppnas). Varför: Nyfikenhet (öppen loop) driver svepet; varje svep räknas som interaktion och tid.",
+      "tags": [
+        "teknik",
+        "retention",
+        "carousel",
+        "retention",
+        "interaktiv",
+        "avslöja",
+        "reveal",
+        "nyfikenhet",
+        "svep",
+        "swipe",
+        "lyckokaka"
+      ],
+      "path": "library/techniques/svep-for-att-avsloja.md",
+      "use": "Läs library/techniques/svep-for-att-avsloja.md. Golfkuponger: Lyckokaka 'Öppna den!' → lappen: 'Ditt friskvårdsbidrag räcker till golf. Före 31 dec.'",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "retention",
+        "medium": [
+          "carousel"
+        ],
+        "tajming": "2 slides; det öppna föremålet på exakt samma plats som det stängda.",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.panorama-over-slides",
+      "name": "Panorama – någon går genom slidesen",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[retention] En sammanhängande panoramabild delad i slides; en person/ett föremål vandrar från slide till slide och texten byts. Varför: 'Hur gjorde de det här?' – sömlöst svep håller kvar tittaren längre (algoritmen gillar det).",
+      "tags": [
+        "teknik",
+        "retention",
+        "carousel",
+        "retention",
+        "panorama",
+        "sömlös",
+        "seamless carousel",
+        "slide crossing",
+        "svep"
+      ],
+      "path": "library/techniques/panorama-over-slides.md",
+      "use": "Läs library/techniques/panorama-over-slides.md. Golfkuponger: Golfaren slår ut på slide 1, bollen flyger över alla slides och landar i koppen på sista (logga + CTA).",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "retention",
+        "medium": [
+          "carousel"
+        ],
+        "tajming": "4–6 slides; motivet ska aldrig ha ansiktet exakt på en skarv.",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.sa-har-nara",
+      "name": "'Du är SÅ HÄR nära …'",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[krok] En hand som nyper ihop tummen och pekfingret, 'Du är SÅ HÄR nära …' – med liten text mellan fingrarna. Varför: Igenkänd 'hand core'-trend; nära mål = motivation att agera nu.",
+      "tags": [
+        "teknik",
+        "krok",
+        "carousel",
+        "video",
+        "krok",
+        "hand core",
+        "händer",
+        "nära",
+        "fomo",
+        "this close"
+      ],
+      "path": "library/techniques/sa-har-nara.md",
+      "use": "Läs library/techniques/sa-har-nara.md. Golfkuponger: 'Du är SÅ HÄR nära gratis golf' – mellan fingrarna: 'friskvårdsbidraget gäller till 31 dec'.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "krok",
+        "medium": [
+          "carousel",
+          "video"
+        ],
+        "tajming": "Video: handen glider in 0,5 s, fingrarna nyper ihop 0,3 s.",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.zooma-for-ett-tecken",
+      "name": "'Zooma in för ett tecken'",
+      "type": "technique",
+      "medium": "carousel",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[retention] 'Zooma in för ett tecken att …' – svaret står pyttelitet (i handen/bollen), så man nyper in för att läsa. Varför: Tittaren interagerar fysiskt (zoomar) = längre tid och en liten belöning; delas för att det är kul.",
+      "tags": [
+        "teknik",
+        "retention",
+        "carousel",
+        "retention",
+        "zoom",
+        "interaktiv",
+        "dold text",
+        "hand core",
+        "zoom in for a sign"
+      ],
+      "path": "library/techniques/zooma-for-ett-tecken.md",
+      "use": "Läs library/techniques/zooma-for-ett-tecken.md. Golfkuponger: 'Zooma in för ett tecken att boka höstrundan' – i golfbollen: 'Boka nu ⛳'.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "retention",
+        "medium": [
+          "carousel"
+        ],
+        "tajming": "En slide.",
+        "bevis": {
+          "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+          "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+          "likes": 2020,
+          "kommentarer": 1405,
+          "datum": "2026-09-30",
+          "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+          "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.spola-tillbaka-andra-chans",
+      "name": "Fel utfall → paus → spola tillbaka → rätt utfall",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[struktur] Visa först vad som händer om man inte agerar, pausa, spola tillbaka filmen och visa samma situation med rätt val. Varför: Förlustaversion först (känslan), sedan lösningen – tittaren upplever konsekvensen och lättnaden. Spolningen är ett visuellt wow.",
+      "tags": [
+        "teknik",
+        "struktur",
+        "video",
+        "struktur",
+        "spola tillbaka",
+        "rewind",
+        "andra chansen",
+        "före/efter",
+        "förlustaversion"
+      ],
+      "path": "library/techniques/spola-tillbaka-andra-chans.md",
+      "use": "Läs library/techniques/spola-tillbaka-andra-chans.md. Golfkuponger: Använd i Årsskiftet – spola tillbaka; fungerar för alla 'gör det i tid'-budskap.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {
+        "video": null,
+        "still": "library/previews/golfkuponger.transition.spola-tillbaka.jpg"
+      },
+      "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-arsskifte (spola) (Jonas 2026-10-13).",
+      "teknik": {
+        "roll": "struktur",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Varv 1 ~10 s, paus 3,5 s (läsregeln), spolning 2 s, markera landningen ~1 s.",
+        "bevis": {
+          "källa": "work/gk-arsskifte (spola)",
+          "kreatör": "Golfkuponger (egen film)",
+          "godkänd": "Jonas 2026-10-13"
+        },
+        "eget_exempel": "godkänt – work/gk-arsskifte (spola) (Jonas 2026-10-13)",
+        "exempel": [
+          "golfkuponger.template.arsskifte-spola",
+          "golfkuponger.transition.spola-tillbaka"
+        ]
+      }
+    },
+    {
+      "id": "teknik.las-golf-tas-ifran",
+      "name": "Ge det goda – ta det ifrån en",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[vändning] Låt tittaren känna det goda (golfbanan, 2–3 s, 'ååh golf') innan det tas ifrån hen med ett hårt stopp. Varför: Kontrasten gör förlusten fysisk; utan den sköna stunden först blir stoppet bara ett stopp.",
+      "tags": [
+        "teknik",
+        "vändning",
+        "video",
+        "vändning",
+        "förlust",
+        "stopp",
+        "förbud",
+        "kontrast",
+        "för sent"
+      ],
+      "path": "library/techniques/las-golf-tas-ifran.md",
+      "use": "Läs library/techniques/las-golf-tas-ifran.md. Golfkuponger: Allt som brinner inne/tar slut: årsskiftet, kampanjslut.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {
+        "video": null,
+        "still": "library/previews/golfkuponger.effect.forbud-larm.jpg"
+      },
+      "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-arsskifte (spola) (Jonas 2026-10-14).",
+      "teknik": {
+        "roll": "vändning",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Det goda ≥ 2,5–3 s (Jonas: 'ååh golf'), stoppet slår ner på 0,25 s.",
+        "bevis": {
+          "källa": "work/gk-arsskifte (spola)",
+          "kreatör": "Golfkuponger (egen film)",
+          "godkänd": "Jonas 2026-10-14"
+        },
+        "eget_exempel": "godkänt – work/gk-arsskifte (spola) (Jonas 2026-10-14)",
+        "exempel": [
+          "golfkuponger.effect.forbud-larm"
+        ]
+      }
+    },
+    {
+      "id": "teknik.dorr-till-ingenting",
+      "name": "Dörren till ingenting",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[krok] En dörr/knapp märkt med det tittaren väntar sig ('FÖRMÅNSPORTAL') öppnas – bakom finns bara en tegelvägg och syrsor. Varför: Igenkänd frustration som humor; tystnaden (syrsor) är skämtet och gör lösningen efteråt välkommen.",
+      "tags": [
+        "teknik",
+        "krok",
+        "video",
+        "carousel",
+        "krok",
+        "humor",
+        "tomt",
+        "syrsor",
+        "frustration",
+        "problem"
+      ],
+      "path": "library/techniques/dorr-till-ingenting.md",
+      "use": "Läs library/techniques/dorr-till-ingenting.md. Golfkuponger: 'Ingen förmånsportal på jobbet?' (godkänd).",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {
+        "video": null,
+        "still": "library/previews/teknik.dorr-till-ingenting.jpg"
+      },
+      "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-chefen (Jonas 2026-10-14).",
+      "teknik": {
+        "roll": "krok",
+        "medium": [
+          "video",
+          "carousel"
+        ],
+        "tajming": "Öppning 0,6 s, tom vägg + syrsor ~2 s, sedan lösningen.",
+        "bevis": {
+          "källa": "work/gk-chefen",
+          "kreatör": "Golfkuponger (egen film)",
+          "godkänd": "Jonas 2026-10-14"
+        },
+        "eget_exempel": "godkänt – work/gk-chefen (Jonas 2026-10-14)",
+        "exempel": [
+          "golfkuponger.template.chefen-betalar"
+        ]
+      }
+    },
+    {
+      "id": "teknik.riktigt-flode-i-mobil",
+      "name": "Riktigt köpflöde i en tecknad mobil",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[bevis] Visa det riktiga flödet (sajtens skärmar) i en tecknad mobil – kameran följer fingret, zoomar när något skrivs. Varför: Bevisar att det är enkelt ('så här gör du') utan att hitta på gränssnitt; tecknad ram håller ihop stilen.",
+      "tags": [
+        "teknik",
+        "bevis",
+        "video",
+        "bevis",
+        "så gör du",
+        "ui",
+        "mobil",
+        "köpflöde",
+        "enkelt"
+      ],
+      "path": "library/techniques/riktigt-flode-i-mobil.md",
+      "use": "Läs library/techniques/riktigt-flode-i-mobil.md. Golfkuponger: Köp direkt på golfkuponger.se (godkänd).",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {
+        "video": null,
+        "still": "library/previews/golfkuponger.scene.mobilflode-riktig-sajt.jpg"
+      },
+      "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-chefen (Jonas 2026-10-14).",
+      "teknik": {
+        "roll": "bevis",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Ett steg per 0,6–1,2 s; tryck alltid inom safe zones.",
+        "bevis": {
+          "källa": "work/gk-chefen",
+          "kreatör": "Golfkuponger (egen film)",
+          "godkänd": "Jonas 2026-10-14"
+        },
+        "eget_exempel": "godkänt – work/gk-chefen (Jonas 2026-10-14)",
+        "exempel": [
+          "golfkuponger.scene.mobilflode-riktig-sajt"
+        ]
+      }
+    },
+    {
+      "id": "teknik.vagg-av-allt",
+      "name": "Från en till alla – väggen",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[bevis] Börja på ett exempel, bläddra allt snabbare, zooma ut till en vägg av ALLA (banor/produkter) som bildar loggan. Varför: Mängd visad i stället för påstådd ('300+') – överväldigande på ett bra sätt, och loggan knyter ihop allt.",
+      "tags": [
+        "teknik",
+        "bevis",
+        "video",
+        "carousel",
+        "bevis",
+        "mängd",
+        "mosaik",
+        "vägg",
+        "utzoom",
+        "alla",
+        "logga"
+      ],
+      "path": "library/techniques/vagg-av-allt.md",
+      "use": "Läs library/techniques/vagg-av-allt.md. Golfkuponger: 'Spelat den här?' (godkänd).",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {
+        "video": null,
+        "still": "library/previews/teknik.vagg-av-allt.jpg"
+      },
+      "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-banor (Jonas 2026-10-14).",
+      "teknik": {
+        "roll": "bevis",
+        "medium": [
+          "video",
+          "carousel"
+        ],
+        "tajming": "Hjältar ~2 s/st, bläddring 3 s (0,3 s → 1 bildruta), utzoom 1,75 s.",
+        "bevis": {
+          "källa": "work/gk-banor",
+          "kreatör": "Golfkuponger (egen film)",
+          "godkänd": "Jonas 2026-10-14"
+        },
+        "eget_exempel": "godkänt – work/gk-banor (Jonas 2026-10-14)",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.fragor-som-krok",
+      "name": "'Spelat den här? Eller den här?'",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[krok] Direkta ja/nej-frågor över starka bilder, en per 2 s – tittaren svarar tyst i huvudet och fastnar. Varför: Frågor aktiverar tittaren (självtest); igenkänning ('den har jag spelat!') ger kommentarer.",
+      "tags": [
+        "teknik",
+        "krok",
+        "video",
+        "carousel",
+        "krok",
+        "fråga",
+        "engagemang",
+        "kommentarer",
+        "igenkänning"
+      ],
+      "path": "library/techniques/fragor-som-krok.md",
+      "use": "Läs library/techniques/fragor-som-krok.md. Golfkuponger: 'Spelat den här?' (godkänd).",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {
+        "video": null,
+        "still": "library/previews/teknik.spelat-den-har-fragor.jpg"
+      },
+      "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-banor (Jonas 2026-10-14).",
+      "teknik": {
+        "roll": "krok",
+        "medium": [
+          "video",
+          "carousel"
+        ],
+        "tajming": "Läsregeln per fråga (~2 s); panorering 0,24 s.",
+        "bevis": {
+          "källa": "work/gk-banor",
+          "kreatör": "Golfkuponger (egen film)",
+          "godkänd": "Jonas 2026-10-14"
+        },
+        "eget_exempel": "godkänt – work/gk-banor (Jonas 2026-10-14)",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.konstverk-hyllning",
+      "name": "Hyllning till ett känt konstverk",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5",
+        "1:1"
+      ],
+      "engine": "none",
+      "description": "[krok] Återskapa ett känt (fritt) konstverk med vår figur – igenkänningen stoppar scrollen, sedan bryts verket upp till verkligheten. Varför: Omedelbar igenkänning + överraskning (vår figur i verket); delbart.",
+      "tags": [
+        "teknik",
+        "krok",
+        "video",
+        "carousel",
+        "krok",
+        "konst",
+        "parodi",
+        "igenkänning",
+        "delbart",
+        "public domain"
+      ],
+      "path": "library/techniques/konstverk-hyllning.md",
+      "use": "Läs library/techniques/konstverk-hyllning.md. Golfkuponger: Skriet den 31 december (godkänd). Bara verk där konstnären dog för >70 år sedan.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "preview": {
+        "video": null,
+        "still": "library/previews/teknik.konstverk-hyllning.jpg"
+      },
+      "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-konstverk (Jonas 2026-10-14).",
+      "teknik": {
+        "roll": "krok",
+        "medium": [
+          "video",
+          "carousel"
+        ],
+        "tajming": "Verket 5–6 s med text, rivningen på ett ljudslag.",
+        "bevis": {
+          "källa": "work/gk-konstverk",
+          "kreatör": "Golfkuponger (egen film)",
+          "godkänd": "Jonas 2026-10-14"
+        },
+        "eget_exempel": "godkänt – work/gk-konstverk (Jonas 2026-10-14)",
+        "exempel": []
+      }
+    }
+  ]
+}

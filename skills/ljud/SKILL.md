@@ -108,6 +108,18 @@ Ordning, starkast först: **tal → hjältljudet i huvudmomentet → musik → �
 
 Spara alltid källa, licens och id i en `SOURCES.txt` bredvid ljudfilerna. Läs licensen på källans egen sida innan första användningen.
 
+### Ljudbanken – börja här, spara hit (Jonas 2026-10-13)
+
+`library/sounds/` är banken med **godkända** ljud: roll ("när passar det"), sökord, källa, licens, exakt godkänt
+utdrag (`cut`) och nivåtips per ljud. Sök först där: `python library/tools/find.py "<moment>" --type sound` eller
+`python library/sounds/sounds.py list`, och hämta med `python library/sounds/sounds.py copy <id> work/<film>/sfx/<namn>.wav [--cut]`.
+
+**Varje ljud beställaren godkänner sparas i banken i samma session** – även musik och ljud hen själv skickat:
+lägg till en rad i `library/sounds/make_library.py` (id `sound.<vad-det-är>`, roll, sökord, källa, licens, fil eller url+md5,
+utdrag, nivåtips, vilken film) och kör den (skriver `LIBRARY.json` + vågformsbild), sedan `build_catalog.py`.
+CC0, Pixabay och eget material läggs i `library/sounds/files/`. **Mixkit läggs aldrig i git** – bara url + md5; `sounds.py`
+hämtar till `library/sounds/.cache/` (gitignorerat). Ljud som underkändes sparas inte (nämn dem i filmens `SOURCES.txt`).
+
 ## 8. Arbetsgång
 
 1. **Ljudkarta** per beat (känsla, vad ljudet gör, tystnad).

@@ -18,13 +18,14 @@ vilka ljud och vilken musik, slutkortets tempo och streck. Därför:
 
 - Läs `skills/studio`, bolagets **brand-skill** och **faktaskill** (t.ex. `faiv-brand` + `faiv-fakta`,
   `golfkuponger-brand` + `golfkuponger-friskvard`) innan första förslaget.
-- Sök i biblioteket. Finns en verifierad mall för samma idé (t.ex. `faiv.template.hitta-faran` för mörker → ljus,
+- Sök i biblioteket – även teknikbanken (`find.py "<idé>" --type technique`, `skills/teknik`). Finns en verifierad mall för samma idé (t.ex. `faiv.template.hitta-faran` för mörker → ljus,
   före/efter med extraljus), börja i den. Den har redan alla beslut nedan inbyggda.
 
 ## 2. Beslutsrundan – en runda innan full rendering
 
 Bygg ett beslutsunderlag och låt beställaren svara i **ett** meddelande (t.ex. "B, mörker 2, musik 1, H1, S5, ok slutkort"):
 
+0. **Valda tekniker** ur teknikbanken (`skills/teknik`): krok, retention/struktur och cta – en rad var om varför.
 1. **Manus och tidslinje räknade från läsregeln** → den verkliga längden. Blir filmen längre än önskat: föreslå
    textkortningar nu, inte efter leverans (FAIV-filmen gick från 24 till 39 s när läsregeln infördes i efterhand).
 2. **Kontaktkarta i mobilstorlek** (en bild per beat, ~360 px bred) med texten på sina riktiga platser.
@@ -42,13 +43,31 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - **Läsregeln:** varje textbit syns minst max(5/6 s, tecken/12) + 0,9 s; text som läses i följd i en scen får
   lästiden för all text tillsammans, räknat från första biten (som `engine/edit/spec.py`). Gäller även i egna
   renderare – bygg in en kontroll som **stoppar renderingen** när regeln bryts.
-- **En textposition:** all text utom slutkortet har första raden på samma höjd (9:16: överkant, y ≈ 300), följande
-  rader direkt under. Text som hoppar mellan topp, mitt och botten upplevs rörig. Slutkortet är centrerat.
-- Håll text, logga och produkt inom safe zones (9:16, 1080×1920): inte i översta ~14 % (270 px), nedersta ~35 %
-  (670 px), ~6 % till vänster eller ~14 % till höger (knapparna). Där ligger Instagrams namn, bildtext, knappar och
-  CTA. Kontrolleras automatiskt i molnklippet (`edit-renderer/src/safezones.js`). Håll också texten utanför motivets
+> **Textplacering är en utgångspunkt, inte en strikt regel** (Jonas 2026-10-14): utgå från punkterna nedan om inget
+> annat bestäms för filmen. Bestämmer beställaren något annat (t.ex. vänsterställd text eller text högst upp) gäller det
+> – skriv beslutet i filmens `film.json` (`"beslut"`) och stäng av motsvarande kontroll med `"qa_av"`.
+
+- **Texten är horisontellt centrerad** (varje rad), i den säkra ytan x 65–929 – mitten x ≈ 497 i 9:16, så den
+  ser centrerad ut men håller avstånd till knapparna till höger.
+- **En textposition, mer mot mitten:** all text utom slutkortet har första raden på samma höjd – 9:16: **y ≈ 560**
+  (mitt i bild, inte högst upp; Jonas 2026-10-14), följande rader direkt under. Text som hoppar mellan topp, mitt och
+  botten upplevs rörig. Undantag: när en logga eller ett motiv står mitt i bild ligger texten ovanför det (y ≈ 300).
+  Slutkortet är centrerat.
+- **Etiketter hör ihop med texten:** en etikett (t.ex. plats-ikon + bannamn) ligger centrerad **direkt under**
+  huvudtexten med ett litet mellanrum (~40 px) – inte i en annan del av bilden.
+- **Safe zones (Reels, 9:16, 1080×1920):** text, logga, produkt och allt annat viktigt (datum, belopp, etiketter) hålls
+  borta från översta ~14 % (270 px), nedersta ~35 % (670 px), ~6 % (65 px) till vänster och **~14 % (151 px) till höger**
+  – alltså inom x 65–929, y 270–1250. Högerkanten är bred för Facebooks knapprad; vi delar alltid på både Instagram och
+  Facebook (Jonas 2026-10-14). Där ligger profilnamn, bildtext, knappar och CTA. Bara dekor (bakgrund, mark, partiklar) får
+  gå utanför. Kontrollera med hjälplinjer på stillbilderna innan full rendering; i molnklippet kontrolleras det
+  automatiskt (`edit-renderer/src/safezones.js`). Håll också texten utanför motivets
   viktiga delar.
+- **Så stort som safe zones tillåter:** text och nyckelobjekt ska synas tydligt på mobilen. Mät radernas verkliga
+  bredd i renderaren och sätt textstorleken per block så att den längsta raden fyller safe zone-bredden (~860 px, x 65–929);
+  bryt hellre om raden än att krympa texten.
 - Textanimationer: fade, lätt scale-in, tracking som dras ihop. Inga överdrivna övergångar.
+- **Markerade ord (ord i färgad ruta):** ingen textskugga på texten i rutan – en mörk skugga på mörk text mot ljus ruta
+  smetar ut bokstäverna. Rutan ska täcka hela versalhöjden inklusive Å/Ä/Ö-prickar och ringar.
 
 ### Bild
 - **Något som ska vara svårt att se** (dolt rådjur, detalj): dämpa bara zonen runt det och kalibrera nivån med
@@ -58,6 +77,8 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - Före/efter-bilder: kontrollera att de ligger exakt linjerade (korrelation/skillnad) och ändra aldrig innehållet.
 
 ### Slutkort
+- **Har bolaget en färdig slutbild, används den sist i varje film** – även i egna renderare: Golfkuponger
+  `edit-renderer/outros/golfkuponger/spotlight-<format>.mp4` (3,1 s, originalljud orört). Gör inget eget slutkort då.
 - Bolagets **riktiga logga**, aldrig en textersättning.
 - Alla rader in tätt efter varandra (≤ ~0,5 s emellan) – ingen lång väntan på URL:en.
 - Markering och understrykning: **ren, tunn, en liten mjuk båge**, som ritas fram. Ingen slarvig penseltextur.
@@ -93,3 +114,9 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-12 | FAIV Hitta faran | URL:en på slutkortet kom för sent; strecket "slarvigt" | Slutkortsrader tätt; ren tunn båge (3, Slutkort) |
 | 2026-10-12 | FAIV Hitta faran | Syntljud "konstiga", ljud saknades på nyckelmoment, musiken skulle sluta vid loggan | `skills/ljud`; ljudkarta och provning i beslutsrundan (2.4) |
 | 2026-10-12 | FAIV Hitta faran | "Detta tog alldeles för mycket edit" | Beslutsrunda före bygget (2), mall `faiv.template.hitta-faran` |
+| 2026-10-13 | GK Årsskiftet | Slutbilden ska vara "slut" på alla klipp vi gör | Bolagets slutbild sist i varje film, även egna renderare (3, Slutkort) |
+| 2026-10-13 | GK Årsskiftet | "Gör allt lite större så man ser det tydligare"; respektera safe zones | Safe zones x 65–1015, y 270–1250 för allt viktigt; text så stor som de tillåter (3, Text) |
+| 2026-10-14 | GK Chefen betalar | "Det ska vara 14 %, på FB behövdes lite mer, vi delar alltid på både Instagram och FB" | Höger safe zone 14 % (x ≤ 929), vänster 6 % (3, Text) |
+| 2026-10-14 | GK Spelat den här? | "Text kan generellt vara mer i mitten"; platstexten för långt från huvudtexten | Text y ≈ 560; etikett centrerad direkt under texten (3, Text) |
+| 2026-10-14 | GK (alla) | "Text ska generellt vara mot mitten och centrerat" | Varje rad horisontellt centrerad i säkra ytan (mitt x ≈ 497) som utgångspunkt; QA kontrollerar, kan stängas av per film (3, Text) |
+| 2026-10-13 | GK Årsskiftet | "Man ser inte riktigt texten" (mörk text i ljus ruta) | Ingen skugga i markerade rutor; rutan täcker Å-ringen (3, Text) |

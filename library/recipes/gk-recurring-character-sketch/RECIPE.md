@@ -4,11 +4,11 @@
 
 ## Idén
 
-En återkommande kontorskaraktär – arbetsnamn **Kenneth på ekonomi** (`{karaktär}`) – som har friskvårdsbidrag kvar.
+En återkommande kontorskaraktär – **Tourleif** (`{karaktär}`; Jonas 2026-10-13 – samma namn som den tecknade figuren i `library/templates/golfkuponger-tourleif/`) – som har friskvårdsbidrag kvar.
 Varje år. Deadpan, igenkänning, sedan golfen som punchline. Karaktären kommer tillbaka i nya avsnitt (som Duolingo-ugglan,
 Timeplans kontorssketcher eller en julkalender): publiken börjar vänta på honom.
 
-**Krok:** Kenneth stirrar rakt in i kameran utan min. Stor text bakom huvudet: *"Det här är {karaktär}."*
+**Krok:** Tourleif stirrar rakt in i kameran utan min. Stor text bakom huvudet: *"Det här är {karaktär}."*
 
 ## Scen för scen
 
@@ -19,7 +19,7 @@ Timeplans kontorssketcher eller en julkalender): publiken börjar vänta på hon
 | s3 eskalering | 5–8 | `gk-k5`, `gk-k2` | Regn mot fönstret, tittar på klockan. *"Varje år."* → **frysbild** + tape stop. |
 | s4 vändning | 8–10,5 | `gk-k6` | Notis från HR glider in (liquid glass, HTML – aldrig AI-UI). Chime. |
 | s5 punchline | 10,5–14,5 | `gk-g1` | Whip pan → slow-mo-utslag. *"I år blev det golf."* Ljusläcka. |
-| s6 knorr | 14,5–17 | `gk-g8`, `gk-r2` | Kompisar skrattar; Kenneth tittar in i kameran en sista gång (om filmat). |
+| s6 knorr | 14,5–17 | `gk-g8`, `gk-r2` | Kompisar skrattar; Tourleif tittar in i kameran en sista gång (om filmat). |
 | s7 cta | 17–20 | grafik | *"Gör ditt friskvårdsbidrag till golf."* Guld sparsamt på mörkgrönt. |
 
 ## Klipprytm och komik
@@ -41,12 +41,12 @@ s5 (`bo-3`). −14 LUFS; fungerar utan ljud tack vare texten.
 
 | Scen | Modell | |
 |---|---|---|
-| s1 | Veo 3.1 | Kenneth säger en replik med läppsynk. **Svenska är odokumenterat** – provkör, annars tyst klipp + inspelad röst. |
-| s5 | Seedance | Kenneth på banan från karaktärsark (gpt-image-2) som referens. Kontrollera att klubban inte böjs. |
+| s1 | Veo 3.1 | Tourleif säger en replik med läppsynk. **Svenska är odokumenterat** – provkör, annars tyst klipp + inspelad röst. |
+| s5 | Seedance | Tourleif på banan från karaktärsark (gpt-image-2) som referens. Kontrollera att klubban inte böjs. |
 
 Bästa vägen är en riktig skådis/kollega (samtycke) i alla avsnitt – AI bara för miljöer eller omöjliga scener.
 
 ## Avsnittsidéer (samma mall)
 
-1. Kenneth bokar "friskvård" = ny kontorsstol. 2. Kenneth i december (koppla till `gk-deadline-31-dec`).
-3. Kenneth upptäcker förmånsportalen (`{fact:F1}`). 4. Kenneths första golfrunda. 5. Kenneth lär HR spela golf.
+1. Tourleif bokar "friskvård" = ny kontorsstol. 2. Tourleif i december (koppla till `gk-deadline-31-dec`).
+3. Tourleif upptäcker förmånsportalen (`{fact:F1}`). 4. Tourleifs första golfrunda. 5. Tourleif lär HR spela golf.

@@ -22,3 +22,6 @@ motion-evidence/
 # Content library: local work output and venv
 work/
 library/.venv/
+
+# Ljudbanken: Mixkit-ljud hämtas hit (får inte ligga i mallar/verktyg)
+library/sounds/.cache/

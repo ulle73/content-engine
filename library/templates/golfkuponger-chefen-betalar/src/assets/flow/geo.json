@@ -1,0 +1,41 @@
+{
+ "yellow": {
+  "x": 18,
+  "y": 402.390625,
+  "width": 354,
+  "height": 49
+ },
+ "homeScroll0": 0,
+ "afterYellowUrl": "https://golfkuponger.se/#gk-belopp",
+ "afterYellowScroll": 1740,
+ "buyCount": 6,
+ "buy": {
+  "x": 65,
+  "y": 651.015625,
+  "width": 260,
+  "height": 56
+ },
+ "checkoutUrl": "https://golfkuponger.se/checkouts/cn/hWNHvoOcjHR8Wy4uveZLVhiw/sv-se?_r=AQABkitx66inNC7SDb4uxbAqKRJyDTSnJj7Waa5s6kSdTn0B8vxT",
+ "first": {
+  "x": 15,
+  "y": 912.640625,
+  "width": 360,
+  "height": 47
+ },
+ "firstScroll": 0,
+ "firstAfter": {
+  "x": 15,
+  "y": 129.640625,
+  "width": 360,
+  "height": 47
+ },
+ "scrollAfter": 783,
+ "pay": {
+  "x": 14,
+  "y": 678.640625,
+  "width": 362,
+  "height": 49.59375
+ },
+ "payText": "Betala nu\n2 000,00 kr",
+ "docH": 1627
+}

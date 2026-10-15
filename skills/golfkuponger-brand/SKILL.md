@@ -29,6 +29,23 @@ Ett mjukt morgonljus över en välskött svensk bana, någon som faktiskt spelar
 - Mättade färger, neonaccenter, tunga filter.
 - Text inbakad i genererade bilder. Text läggs alltid ovanpå i Remotion.
 
+**Tecknat (illustration/animation)** – Jonas 2026-10-13: platt vektor räcker inte, sikta på *premiumillustration*:
+djupgrön bakgrund med mjuka diagonala ljusstrålar och guldstoft/glimtar, ett varmt ljust stenbord med mjuka skuggor
+(ljus uppifrån vänster), föremål med volym (sidbunt, guldkanter, guldringar, papperstextur), guld som accent, riktig
+eld med glöd och gnistor, säsongsdekor i hörnen (höstkvist, granris med guldkulor). Fortfarande tecknat – inga
+fotorealistiska ytor. Exempel: mallen `golfkuponger.template.arsskifte` (`library/templates/golfkuponger-arsskifte`).
+
+## Tourleif – vår återkommande figur
+
+**Använd alltid Tourleif** när Golfkuponger gör tecknat eller animerat innehåll med en person (Jonas 2026-10-13).
+Tecknad golfare i grön keps med Golfkupongers **riktiga logga** (officiella `logo-final.png`, aldrig ritad eller AI) och
+grön piké med krämvit krage. Uttryck: glad, jublar, förvånad, gråter, lurig, blinkar, skriker. Kod, utseenderegler och karaktärsark:
+`library/templates/golfkuponger-tourleif/` (`find.py tourleif`). Nya poser byggs i samma modul och visas för Jonas innan
+de används. Filmade sketcher med skådespelare använder samma namn (receptet `gk-recurring-character-sketch`).
+
+**Chefen** är Tourleifs återkommande motspelare när en film behöver en chef, HR eller arbetsgivare (Jonas 2026-10-14):
+flint, glasögon, mustasch, marinblå kavaj, grön slips; ovetande, skeptisk, nöjd. `library/templates/golfkuponger-chefen/`.
+
 ## Färger
 
 Tokens kommer från `engine/motion/brand.py` (preset `golfkuponger`), som speglar `gk-design-system.css`. Tokens är standard; avvik när en mall eller idé kräver det (t.ex. experiment-site-temats guld `#D6A536`, kräm `#F8F4EC` och mörkgrönt `#01170F`).
@@ -95,7 +112,14 @@ Användaren beskriver ofta tonen med vardagsord ("lite rolig och fräck", "seri�
 
 ## Slutkort
 
-Djupgrön bakgrund, logga centrerad (officiell logga via `company.official_logo`, aldrig AI-genererad), en rad nytta och `Golfkuponger.se`. 2 sekunder.
+**Alla Golfkuponger-klipp slutar med slutbilden Spotlight** (beslut av Jonas 2026-10-09, bekräftat 2026-10-13):
+`edit-renderer/outros/golfkuponger/spotlight-<9x16|4x5|1x1>.mp4`, 3,1 s – svingande guldlogga på mörkgrönt, "Mer golf.
+Fler upplevelser." och originalljudet orört. Molnklippet lägger på den automatiskt (`engine/edit/outros.py`); i egna
+renderare (HyperFrames, Remotion, Python, `/animate` …) klipps den in sist av dig. Gör inget eget slutkort ovanpå eller
+före den – låt filmens sista bild gå över i mörkgrönt (#0c140f, slutbildens första bildruta), så öppnar den sig ur mörkret.
+
+Utan slutbilden (bara om beställaren ber om det): djupgrön bakgrund, officiell logga centrerad (`company.official_logo`,
+aldrig AI-genererad), en rad nytta och `Golfkuponger.se`. 2 sekunder.
 
 ## Snabbgranskning (frivillig checklista)
 

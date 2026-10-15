@@ -1,24 +1,25 @@
 {
  "version": 1,
- "generated": "2026-10-13",
- "count": 1448,
- "verified": 336,
+ "generated": "2026-10-15",
+ "count": 1512,
+ "verified": 400,
  "by_type": {
   "background": 60,
   "caption": 29,
   "carousel": 22,
-  "effect": 242,
+  "effect": 244,
   "grade": 10,
   "model": 5,
   "prompt": 347,
   "recipe": 12,
-  "scene": 186,
+  "scene": 190,
   "skill": 60,
-  "sound": 47,
-  "template": 100,
+  "sound": 78,
+  "technique": 23,
+  "template": 103,
   "text": 127,
   "tool": 82,
-  "transition": 119
+  "transition": 120
  },
  "items": [
   {
@@ -3731,6 +3732,92 @@
    "status": "verified"
   },
   {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "Funktionerna prohibition() och alarmLights() i src/sf.js; tajming som partStop() i src/scene2.js. Ljud: sound.smack-dov-trumma + sound.larm-anlaggning.",
+   "notes": "Jonas: 'perfekt'. Ingen färdig bild – byggt i kod.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.effect.forbud-larm.jpg"
+   },
+   "id": "golfkuponger.effect.forbud-larm",
+   "name": "Förbudsmärke som slår ner + rött larm",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Kodat förbudsmärke (röd ring + snedstreck, självlysande genomskinligt, skärmbrett) störtar ner från 2,6× och slår i med studs, skak och tryckvåg; bilden får röd ton, två roterande varningsljus och pulserande rött i kanterna ('Tjernobyl'). Passar 'för sent', 'förbjudet', 'det här tas ifrån dig'.",
+   "tags": [
+    "förbud",
+    "förbudsmärke",
+    "stopp",
+    "för sent",
+    "larm",
+    "varning",
+    "rött",
+    "slår ner",
+    "impact",
+    "tjernobyl"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/src/sf.js",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Ingen portal? Låt chefen betala din golf",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; skärmar från golfkuponger.se; kvittot anonymiserat; ljud per ljudbankens licenser"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "stamp(cx, cy, k, rot) i src/chef.js (k 0→1 = landning). Ljud: sound.smack-dov-trumma.",
+   "notes": "",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.effect.godkant-stampel.jpg"
+   },
+   "id": "golfkuponger.effect.godkant-stampel",
+   "name": "GODKÄNT-stämpel som slår ner",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Grön gummistämpel 'GODKÄNT' med grov färg störtar ner från 2,4× och slår i med skak och tryckvåg – den positiva spegelbilden av förbudsmärket.",
+   "tags": [
+    "godkänt",
+    "stämpel",
+    "ok",
+    "beviljat",
+    "chefen",
+    "slår ner",
+    "impact",
+    "grön"
+   ],
+   "path": "library/templates/golfkuponger-chefen-betalar/src/chef.js",
+   "status": "verified"
+  },
+  {
    "kit": "hf-skeletons",
    "kit_title": "HyperFrames skelettmallar, mönster och shaders (Claude Design template-first)",
    "source": {
@@ -5819,6 +5906,105 @@
   },
   {
    "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Chefen (Tourleifs motspelare)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "chefen(t, { expr: 'ovetande'|'skeptisk'|'nojd', x, y, s, cap, mug, thumbK, thumbY }) + chefenDefs() (med cap även tourleifDefs() och #gklogo). Läs README.md.",
+   "notes": "Godkänd av Jonas 2026-10-14 i filmen 'Låt chefen betala din golf'.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": "library/previews/golfkuponger.character.chefen.mp4",
+    "still": "library/previews/golfkuponger.character.chefen.jpg"
+   },
+   "id": "golfkuponger.character.chefen",
+   "name": "Chefen – Tourleifs återkommande motspelare",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Tecknad chef: flint med gråa tinningar, glasögon, mustasch, marinblå kavaj, grön slips. Uttryck: ovetande (dricker kaffe), skeptisk (ena ögonbrynet uppe), nöjd (ler, tummen upp); valfri Golfkuponger-keps. Debut i 'Låt chefen betala din golf'.",
+   "tags": [
+    "chefen",
+    "chef",
+    "figur",
+    "karaktär",
+    "återkommande",
+    "arbetsgivare",
+    "hr",
+    "tecknat",
+    "tourleif",
+    "motspelare"
+   ],
+   "path": "library/templates/golfkuponger-chefen/chefen.js",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Tourleif (återkommande figur)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; logga: Golfkupongers officiella logo-final.png"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "tourleif(t, { expr: 'glad'|'jublar'|'forvanad'|'grat'|'lurig'|'blinkar'|'skriker', x, y, s }) + tourleifDefs() och loggsymbolen #gklogo (se sheet.html). Läs README.md.",
+   "notes": "Gråt-uttrycket godkänt av Jonas ('perfekt') i årsskiftesfilmen; glad, jublar, förvånad (2026-10-13) och lurig, blinkar (godkända i 'Låt chefen betala din golf' 2026-10-14).",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": "library/previews/golfkuponger.character.tourleif.mp4",
+    "still": "library/previews/golfkuponger.character.tourleif.jpg"
+   },
+   "id": "golfkuponger.character.tourleif",
+   "name": "Tourleif – Golfkupongers återkommande figur",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Tecknad golfare i grön keps med Golfkupongers riktiga logga och grön piké. Sju animerade uttryck: glad, jublar (studsar), förvånad, gråter (snyftar, tårfontäner), lurig, blinkar (åt kameran), skriker (Skriet-posen, händerna mot huvudet). Används ALLTID när Golfkuponger gör tecknat innehåll med en person (Jonas 2026-10-13).",
+   "tags": [
+    "tourleif",
+    "figur",
+    "karaktär",
+    "maskot",
+    "återkommande",
+    "golfare",
+    "keps",
+    "logga",
+    "tecknat",
+    "glad",
+    "jublar",
+    "förvånad",
+    "gråt",
+    "lurig",
+    "blinkar",
+    "skriker",
+    "panik"
+   ],
+   "path": "library/templates/golfkuponger-tourleif/tourleif.js",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
    "kit_title": "Golfkuponger – egna mallar",
    "source": {
     "name": "Golfkuponger (egen produktion)",
@@ -6256,6 +6442,93 @@
     "whip"
    ],
    "path": "library/templates/golfkuponger-friskvard-v2/compositions/s5-proof.html",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "cryingGuy(t, cx, cy) i src/sf.js (kräver loggsymbolen #gklogo, se src/scene2.html). Ljud: sound.grat-man.",
+   "notes": "Jonas: 'perfekt'. Loggan är den officiella logo-final.png, aldrig AI.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.scene.grat-golfare.jpg"
+   },
+   "id": "golfkuponger.scene.grat-golfare",
+   "name": "Gråtande golfare med Golfkuponger-keps",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Egen tecknad figur: golfare i grön keps med Golfkupongers riktiga logga, pikétröja, hopknipna ögon, gapande mun, tårfontäner ur ögonen och pölar; snyftar (huvudet hackar, kroppen guppar). Kan bli återkommande karaktär.",
+   "tags": [
+    "gråt",
+    "ledsen",
+    "figur",
+    "karaktär",
+    "golfare",
+    "keps",
+    "logga",
+    "tårar",
+    "tecknat",
+    "maskot"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/src/sf.js",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Ingen portal? Låt chefen betala din golf",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; skärmar från golfkuponger.se; kvittot anonymiserat; ljud per ljudbankens licenser"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "partPhone/phoneScreen/tap i src/chef-film.js; fånga skärmar med capture_flow.mjs (trycker aldrig Betala). Ljud: sound.mobiltryck, sound.tangenter, sound.bekraftelse, sound.mejlnotis.",
+   "notes": "Bilder som ritas om varje bildruta måste ligga som fasta <symbol> (laddas en gång) – annars hinner de inte visas.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.scene.mobilflode-riktig-sajt.jpg"
+   },
+   "id": "golfkuponger.scene.mobilflode-riktig-sajt",
+   "name": "Mobilflöde med riktiga skärmar (kameran följer fingret)",
+   "type": "scene",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Tecknad mobil som visar riktiga helsidesbilder från sajten: tryck med krusning, mjuk scroll, sidbyte, inzoomning när något skrivs, panorering till knappen, grön bock och mejlnotis. Kameran håller varje tryck inom safe zones. Inget gränssnitt ritas om.",
+   "tags": [
+    "mobil",
+    "skärminspelning",
+    "köpflöde",
+    "kassa",
+    "tryck",
+    "scroll",
+    "ui",
+    "bevis",
+    "golfkuponger.se"
+   ],
+   "path": "library/templates/golfkuponger-chefen-betalar/src/chef-film.js",
    "status": "verified"
   },
   {
@@ -9269,6 +9542,216 @@
    "status": "verified"
   },
   {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy music.comical work/<film>/sfx/comical.wav",
+   "notes": "Taktstart 0,244 s. Hårt stopp + tick-tack före en vändpunkt (stämpeln), sedan glad musik.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/music.comical.png"
+   },
+   "id": "music.comical",
+   "name": "Musik: Comical (140 BPM)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Lekfull, smygande, humor – fräcka/roliga filmer. Källa: Mixkit musik 2 – Comical (Ahjay Stelino).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "musik",
+    "rolig",
+    "humor",
+    "fräck",
+    "smyg",
+    "lekfull",
+    "140 bpm"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Lekfull, smygande, humor – fräcka/roliga filmer",
+    "source": "Mixkit musik 2 – Comical (Ahjay Stelino)",
+    "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Taktstart 0,244 s. Hårt stopp + tick-tack före en vändpunkt (stämpeln), sedan glad musik.",
+    "url": "https://assets.mixkit.co/music/2/2.mp3",
+    "md5": "ab405ddcf2a9fa42d2e6e1e1a8e48783"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy music.lifes-a-movie work/<film>/sfx/lifes-a-movie.wav",
+   "notes": "Starta 35,0 s in i spåret: tyst del 37–44 s, lyftet vid ~45 s – lägg lyftet på filmens stora avslöjande.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/music.lifes-a-movie.png"
+   },
+   "id": "music.lifes-a-movie",
+   "name": "Musik: Life's a Movie (episk uppbyggnad)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Episk uppbyggnad med stort lyft – avslöjande, \"alla banor\", final. Källa: Mixkit musik 322 – Life's a Movie (Arulo).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "musik",
+    "episk",
+    "uppbyggnad",
+    "lyft",
+    "filmisk",
+    "trailer",
+    "final"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Episk uppbyggnad med stort lyft – avslöjande, \"alla banor\", final",
+    "source": "Mixkit musik 322 – Life's a Movie (Arulo)",
+    "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Spelat den här? (alla banor), godkänd av Jonas 2026-10-14",
+    "level": "Starta 35,0 s in i spåret: tyst del 37–44 s, lyftet vid ~45 s – lägg lyftet på filmens stora avslöjande.",
+    "url": "https://assets.mixkit.co/music/322/322.mp3",
+    "md5": "0332df41ce154529a58c8f04fa1920cc"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy music.running-out-of-time work/<film>/sfx/running-out-of-time.wav",
+   "notes": "Starka slag från 2,299 s (lägg den på första texten). Hårt stopp + 0,1 s tystnad före vändpunkten.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/music.running-out-of-time.png"
+   },
+   "id": "music.running-out-of-time",
+   "name": "Musik: Running Out of Time (130 BPM)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Spänning/brådska, tiden rinner ut. Källa: Mixkit musik 77 – Running Out of Time (Ahjay Stelino).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "musik",
+    "spänning",
+    "brådska",
+    "deadline",
+    "tid",
+    "130 bpm"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Spänning/brådska, tiden rinner ut",
+    "source": "Mixkit musik 77 – Running Out of Time (Ahjay Stelino)",
+    "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Skriet",
+    "level": "Starka slag från 2,299 s (lägg den på första texten). Hårt stopp + 0,1 s tystnad före vändpunkten.",
+    "url": "https://assets.mixkit.co/music/77/77.mp3",
+    "md5": "a4de927c43ca7609fa91a7655c702bc0"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy music.under-the-sun work/<film>/sfx/under-the-sun.wav",
+   "notes": "Taktstart 24,232 s i spåret. Tona ut 0,55 s vid irisen/slutbilden.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/music.under-the-sun.png"
+   },
+   "id": "music.under-the-sun",
+   "name": "Musik: Under the Sun (120 BPM)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Lättnad, sol, golf, glatt slut. Källa: Mixkit musik 859 – Under the Sun (Michael Ramir C.).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "musik",
+    "glad",
+    "sol",
+    "golf",
+    "vår",
+    "120 bpm"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Lättnad, sol, golf, glatt slut",
+    "source": "Mixkit musik 859 – Under the Sun (Michael Ramir C.)",
+    "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14; GK Skriet",
+    "level": "Taktstart 24,232 s i spåret. Tona ut 0,55 s vid irisen/slutbilden.",
+    "url": "https://assets.mixkit.co/music/859/859.mp3",
+    "md5": "376303e4efe79bc98da66e425aabf306"
+   }
+  },
+  {
    "kit": "nextphase",
    "kit_title": "NextPhase Skill Pack",
    "source": {
@@ -9343,6 +9826,2789 @@
    ],
    "path": "library/kits/nextphase/skills/nextphase-short-editing/scripts/make-free-sfx.py",
    "status": "verified"
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.bekraftelse work/<film>/sfx/bekraftelse.wav",
+   "notes": "Lägg på när bocken ritas klart. ~3 dB över musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.bekraftelse.png"
+   },
+   "id": "sound.bekraftelse",
+   "name": "Bekräftelse – klart/köpt",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något lyckas: köp genomfört, grön bock, godkänt i mobilen. Källa: Mixkit 2867 – Confirmation tone.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "bekräftelse",
+    "klart",
+    "köpt",
+    "bock",
+    "checkmark",
+    "lyckat",
+    "ui"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Något lyckas: köp genomfört, grön bock, godkänt i mobilen",
+    "source": "Mixkit 2867 – Confirmation tone",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Lägg på när bocken ritas klart. ~3 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2867/2867-preview.mp3",
+    "md5": "38c2f8a1123edfdde20382437cf1c32f"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.bladdring work/<film>/sfx/bladdring.wav",
+   "notes": "Bädd ~-4 dB, tona in/ut 0,4/0,8 s.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.bladdring.png"
+   },
+   "id": "sound.bladdring",
+   "name": "Snabb bläddring",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Många blad i följd (tiden rusar). Källa: Mixkit 1102 – Fast browsing book paging.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "bläddring",
+    "papper",
+    "kalender",
+    "tid",
+    "snabbt"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Många blad i följd (tiden rusar)",
+    "source": "Mixkit 1102 – Fast browsing book paging",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Bädd ~-4 dB, tona in/ut 0,4/0,8 s.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1102/1102-preview.mp3",
+    "md5": "b0ba9431ce674950678ee16c04c11ada"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.boll-i-hal work/<film>/sfx/boll-i-hal.wav",
+   "notes": "Mycket tyst original (-39 dB): placera på ansatsen (~0,4 s in) och nivåsätt ~6 dB över musiken.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.boll-i-hal.png"
+   },
+   "id": "sound.boll-i-hal",
+   "name": "Golfboll i hålet",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Bollen trillar i koppen (putt), mål, lyckat. Källa: Freesound 21878 (inbeeld) – golf_putting.wav.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "golf",
+    "putt",
+    "boll i hål",
+    "kopp",
+    "hole in",
+    "green"
+   ],
+   "path": "library/sounds/files/boll-i-hal_freesound-21878.wav",
+   "status": "verified",
+   "bank": {
+    "role": "Bollen trillar i koppen (putt), mål, lyckat",
+    "source": "Freesound 21878 (inbeeld) – golf_putting.wav",
+    "license": "CC0 (Freesound) – fri användning, ingen attribution",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Mycket tyst original (-39 dB): placera på ansatsen (~0,4 s in) och nivåsätt ~6 dB över musiken.",
+    "file": "library/sounds/files/boll-i-hal_freesound-21878.wav"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.boll-studs work/<film>/sfx/boll-studs.wav",
+   "notes": "Andra studsen 2 dB svagare.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.boll-studs.png"
+   },
+   "id": "sound.boll-studs",
+   "name": "Bollstuds",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Boll som studsar på gräs. Källa: Mixkit 2073 – Game ball tap.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "boll",
+    "studs",
+    "golf",
+    "bounce"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Boll som studsar på gräs",
+    "source": "Mixkit 2073 – Game ball tap",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Andra studsen 2 dB svagare.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2073/2073-preview.mp3",
+    "md5": "df27a3e66ecf2f0b74bf90a4b702c0ce"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.bollsus work/<film>/sfx/bollsus.wav",
+   "notes": "Lägg starten där föremålet syns, toppen landar ~0,17 s senare. Svagare än smällen (~-14 dB).",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.bollsus.png"
+   },
+   "id": "sound.bollsus",
+   "name": "Sus – boll mot kameran",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Kort sus före en träff (topp ~0,17 s in). Källa: Pixabay – whoosh-short.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "sus",
+    "whoosh",
+    "boll",
+    "flyger",
+    "övergång"
+   ],
+   "path": "library/sounds/files/bollsus_pixabay-whoosh-short.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Kort sus före en träff (topp ~0,17 s in)",
+    "source": "Pixabay – whoosh-short",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14; GK Skriet",
+    "level": "Lägg starten där föremålet syns, toppen landar ~0,17 s senare. Svagare än smällen (~-14 dB).",
+    "file": "library/sounds/files/bollsus_pixabay-whoosh-short.mp3"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.dorr-knarr work/<film>/sfx/dorr-knarr.wav",
+   "notes": "Utan musik under – tystnaden efteråt är poängen. ~-12 dB RMS.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.dorr-knarr.png"
+   },
+   "id": "sound.dorr-knarr",
+   "name": "Dörr som knarrar upp",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "En dörr öppnas (gärna till något tomt/oväntat). Källa: Mixkit 195 – Creaky door open.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "dörr",
+    "knarr",
+    "öppnar",
+    "creak",
+    "tomt"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "En dörr öppnas (gärna till något tomt/oväntat)",
+    "source": "Mixkit 195 – Creaky door open",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Utan musik under – tystnaden efteråt är poängen. ~-12 dB RMS.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/195/195-preview.mp3",
+    "md5": "3fe48c3ef4fa47b500c140535d6b5f6c"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.eld-sprak work/<film>/sfx/eld-sprak.wav",
+   "notes": "Ramp -12 → -2 dB i takt med elden.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.eld-sprak.png"
+   },
+   "id": "sound.eld-sprak",
+   "name": "Eld som sprakar",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något brinner (bädd som växer med elden). Källa: Mixkit 1330 – Campfire crackles.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "eld",
+    "sprak",
+    "brinner",
+    "brinner inne"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Något brinner (bädd som växer med elden)",
+    "source": "Mixkit 1330 – Campfire crackles",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Skriet",
+    "level": "Ramp -12 → -2 dB i takt med elden.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1330/1330-preview.mp3",
+    "md5": "f8bd237ac6f1ad56943836409e495518"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.eldsus work/<film>/sfx/eldsus.wav --cut",
+   "notes": "~-12,5 dB RMS när texten om att det brinner slår upp.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.eldsus.png"
+   },
+   "id": "sound.eldsus",
+   "name": "Eldsus (kort)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Eld blossar upp – text eller himmel som börjar brinna. Källa: Mixkit 1345 – Short fire whoosh.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "eld",
+    "brinner",
+    "brinner inne",
+    "fire whoosh",
+    "flamma"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Eld blossar upp – text eller himmel som börjar brinna",
+    "source": "Mixkit 1345 – Short fire whoosh",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Skriet, 31 december (Munch-hyllning), godkänd av Jonas 2026-10-14",
+    "level": "~-12,5 dB RMS när texten om att det brinner slår upp.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1345/1345-preview.mp3",
+    "md5": "a323c6382097169addbdf74e2283f8cd",
+    "cut": {
+     "start": 0.0,
+     "dur": 0.9,
+     "fade_out": 0.4
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.golftraff work/<film>/sfx/golftraff.wav",
+   "notes": "Skarp transient: lägg ett lågpass ~15,5 kHz före limitern, annars toppar AAC över 0 dB.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.golftraff.png"
+   },
+   "id": "sound.golftraff",
+   "name": "Golfträff",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Klubba träffar bollen, kort skarp träff (även svagt under andra smällar). Källa: Pixabay – golf 14 (freesound_community 94167).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "golf",
+    "slag",
+    "träff",
+    "drive",
+    "klubba",
+    "hit"
+   ],
+   "path": "library/sounds/files/golftraff_pixabay-94167.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Klubba träffar bollen, kort skarp träff (även svagt under andra smällar)",
+    "source": "Pixabay – golf 14 (freesound_community 94167)",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Skriet",
+    "level": "Skarp transient: lägg ett lågpass ~15,5 kHz före limitern, annars toppar AAC över 0 dB.",
+    "file": "library/sounds/files/golftraff_pixabay-94167.mp3"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.grat-man work/<film>/sfx/grat-man.wav --cut",
+   "notes": "23 s med flera attacker: 0,45 s (gråten bryter ut), 12,2 s (kraftigast), 18,4 s (snyftande). ~-8 dB RMS.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.grat-man.png"
+   },
+   "id": "sound.grat-man",
+   "name": "Man gråter",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Gråt, sorg, ledsen figur (tecknat). Källa: Pixabay – Crying man effect (peterpiotr, 450354).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "gråt",
+    "gråter",
+    "ledsen",
+    "sorg",
+    "tårar",
+    "crying",
+    "figur"
+   ],
+   "path": "library/sounds/files/grat-man_pixabay-450354.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Gråt, sorg, ledsen figur (tecknat)",
+    "source": "Pixabay – Crying man effect (peterpiotr, 450354)",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "23 s med flera attacker: 0,45 s (gråten bryter ut), 12,2 s (kraftigast), 18,4 s (snyftande). ~-8 dB RMS.",
+    "file": "library/sounds/files/grat-man_pixabay-450354.mp3",
+    "cut": {
+     "start": 0.45,
+     "dur": 2.0,
+     "fade_in": 0.04,
+     "fade_out": 0.03
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.kalenderblad work/<film>/sfx/kalenderblad.wav",
+   "notes": "~3 dB över musiken.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.kalenderblad.png"
+   },
+   "id": "sound.kalenderblad",
+   "name": "Kalenderblad vänds",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Ett blad/sida vänds lugnt. Källa: Mixkit 1104 – Page turn single.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "papper",
+    "blad",
+    "sida",
+    "kalender",
+    "vänd"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Ett blad/sida vänds lugnt",
+    "source": "Mixkit 1104 – Page turn single",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "~3 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1104/1104-preview.mp3",
+    "md5": "44d69cb5bbf8eb789255e9972d58ebff"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.kassettknapp work/<film>/sfx/kassettknapp.wav",
+   "notes": "Redan utklippt (0,46 s). ~-8 dB RMS.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.kassettknapp.png"
+   },
+   "id": "sound.kassettknapp",
+   "name": "Kassettknapp (paus/play)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Paus och play, knapptryck, bandspelare. Källa: Freesound 423870 – Cassette Tape Button.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "kassett",
+    "knapp",
+    "paus",
+    "play",
+    "klick",
+    "bandspelare",
+    "vhs"
+   ],
+   "path": "library/sounds/files/kassettknapp_freesound-423870.wav",
+   "status": "verified",
+   "bank": {
+    "role": "Paus och play, knapptryck, bandspelare",
+    "source": "Freesound 423870 – Cassette Tape Button",
+    "license": "CC0 (Freesound) – fri användning, ingen attribution",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Redan utklippt (0,46 s). ~-8 dB RMS.",
+    "file": "library/sounds/files/kassettknapp_freesound-423870.wav"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.klocktick work/<film>/sfx/klocktick.wav --cut",
+   "notes": "Kort svans (0,3 s) så det blir tyst när det ska.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.klocktick.png"
+   },
+   "id": "sound.klocktick",
+   "name": "Klocktick",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Tiden går, nedräkning (ett tick per händelse). Källa: Mixkit 1061 – Clock ticker single.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "klocka",
+    "tick",
+    "tid",
+    "nedräkning"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Tiden går, nedräkning (ett tick per händelse)",
+    "source": "Mixkit 1061 – Clock ticker single",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Kort svans (0,3 s) så det blir tyst när det ska.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1061/1061-preview.mp3",
+    "md5": "2e88a77537a7e2f41db906b0da95c121",
+    "cut": {
+     "start": "onset",
+     "dur": 0.3,
+     "fade_out": 0.08
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.larm-anlaggning work/<film>/sfx/larm-anlaggning.wav --cut",
+   "notes": "Loopa utdraget. ~-12 dB under smällen; sänk 18 dB när något annat ska höras (t.ex. gråt).",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.larm-anlaggning.png"
+   },
+   "id": "sound.larm-anlaggning",
+   "name": "Larm – anläggning (Tjernobyl)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Larm/varning när något går fel: förbud, för sent, katastrof. Källa: Mixkit 999 – Facility alarm sound.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "larm",
+    "alarm",
+    "varning",
+    "tjernobyl",
+    "kontrollrum",
+    "siren",
+    "för sent",
+    "förbud"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Larm/varning när något går fel: förbud, för sent, katastrof",
+    "source": "Mixkit 999 – Facility alarm sound",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Loopa utdraget. ~-12 dB under smällen; sänk 18 dB när något annat ska höras (t.ex. gråt).",
+    "url": "https://assets.mixkit.co/active_storage/sfx/999/999-preview.mp3",
+    "md5": "e79d0df00656856e7bffe31fcb19bf6e",
+    "cut": {
+     "start": "onset",
+     "dur": 4.0,
+     "fade_out": 0.4
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.mejlnotis work/<film>/sfx/mejlnotis.wav",
+   "notes": "~1 dB över musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.mejlnotis.png"
+   },
+   "id": "sound.mejlnotis",
+   "name": "Mejlnotis",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Ett mejl/meddelande kommer (kvitto, bekräftelse). Källa: Mixkit 2354 – Message pop alert.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "mejl",
+    "notis",
+    "meddelande",
+    "kvitto",
+    "pdf",
+    "mobil"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Ett mejl/meddelande kommer (kvitto, bekräftelse)",
+    "source": "Mixkit 2354 – Message pop alert",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "~1 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3",
+    "md5": "189686648f6f0f20c5dbb1b342d00b09"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.mobiltryck work/<film>/sfx/mobiltryck.wav",
+   "notes": "Lägg på varje tryck, ~2 dB över musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.mobiltryck.png"
+   },
+   "id": "sound.mobiltryck",
+   "name": "Tryck på mobilskärm",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Fingret trycker på en knapp i mobilen. Källa: Pixabay – click-soft.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "tryck",
+    "tap",
+    "klick",
+    "mobil",
+    "knapp",
+    "ui"
+   ],
+   "path": "library/sounds/files/mobiltryck_pixabay-click-soft.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Fingret trycker på en knapp i mobilen",
+    "source": "Pixabay – click-soft",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Lägg på varje tryck, ~2 dB över musiken.",
+    "file": "library/sounds/files/mobiltryck_pixabay-click-soft.mp3"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.papper-glid work/<film>/sfx/papper-glid.wav",
+   "notes": "I nivå med musiken.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.papper-glid.png"
+   },
+   "id": "sound.papper-glid",
+   "name": "Papper glider/vänds",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Kort/kupong vänds eller glider. Källa: Mixkit 1530 – Paper slide.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "papper",
+    "kort",
+    "kupong",
+    "vänd",
+    "glid"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Kort/kupong vänds eller glider",
+    "source": "Mixkit 1530 – Paper slide",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "I nivå med musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1530/1530-preview.mp3",
+    "md5": "7bb8baa5d61a2a6ae97e63572fc03b01"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.papper-riv work/<film>/sfx/papper-riv.wav",
+   "notes": "Utklipp 0,33 s. Ersatte en skarp golfträff som smäll ('för oskönt'). ~-11 dB RMS.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.papper-riv.png"
+   },
+   "id": "sound.papper-riv",
+   "name": "Papper rivs isär",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något slås igenom/rivs sönder, papper som rivs. Källa: Freesound 342541 – Fast Paper Rip.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "papper",
+    "riva",
+    "rip",
+    "tear",
+    "kalender",
+    "smäll igenom"
+   ],
+   "path": "library/sounds/files/papper-riv_freesound-342541.wav",
+   "status": "verified",
+   "bank": {
+    "role": "Något slås igenom/rivs sönder, papper som rivs",
+    "source": "Freesound 342541 – Fast Paper Rip",
+    "license": "CC0 (Freesound) – fri användning, ingen attribution",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Skriet",
+    "level": "Utklipp 0,33 s. Ersatte en skarp golfträff som smäll ('för oskönt'). ~-11 dB RMS.",
+    "file": "library/sounds/files/papper-riv_freesound-342541.wav"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.papper-snabbriv work/<film>/sfx/papper-snabbriv.wav",
+   "notes": "Par med klocktick, 1–3 dB över musiken.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.papper-snabbriv.png"
+   },
+   "id": "sound.papper-snabbriv",
+   "name": "Blad rivs av",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Ett kalenderblad rivs av (de sista dagarna). Källa: Mixkit 2384 – Paper quick slice.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "riva",
+    "blad",
+    "kalender",
+    "papper"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Ett kalenderblad rivs av (de sista dagarna)",
+    "source": "Mixkit 2384 – Paper quick slice",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Par med klocktick, 1–3 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2384/2384-preview.mp3",
+    "md5": "ffc673f08ad2154b9a4f465953160a24"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.skrik-man work/<film>/sfx/skrik-man.wav --cut",
+   "notes": "Lägg starten när munnen öppnas. ~-12,5 dB RMS, under musiken A.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.skrik-man.png"
+   },
+   "id": "sound.skrik-man",
+   "name": "Man skriker (Skriet)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Ett skrik av skräck/panik – komiskt överdrivet, \"för sent\", Skriet-hyllning. Källa: Mixkit 391 – Falling male scream.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "skrik",
+    "skräck",
+    "panik",
+    "för sent",
+    "munch",
+    "skriet"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Ett skrik av skräck/panik – komiskt överdrivet, \"för sent\", Skriet-hyllning",
+    "source": "Mixkit 391 – Falling male scream",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Skriet, 31 december (Munch-hyllning), godkänd av Jonas 2026-10-14",
+    "level": "Lägg starten när munnen öppnas. ~-12,5 dB RMS, under musiken A.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/391/391-preview.mp3",
+    "md5": "9681ebf6cd21be60dc19975949e6648b",
+    "cut": {
+     "start": 0.0,
+     "dur": 1.3,
+     "fade_out": 0.35
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.smack-dov-trumma work/<film>/sfx/smack-dov-trumma.wav --cut",
+   "notes": "Hjältljud: filmens starkaste (~-3 dB RMS). Musiken tvärdör samtidigt.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.smack-dov-trumma.png"
+   },
+   "id": "sound.smack-dov-trumma",
+   "name": "Smäll – dov trumma",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något tungt slår ner (förbudsmärke, GODKÄNT-stämpel, dom). Källa: Mixkit 565 – Hard horror hit drum.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "smäll",
+    "impact",
+    "slår ner",
+    "trumma",
+    "förbudsmärke",
+    "stämpel",
+    "hit"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Något tungt slår ner (förbudsmärke, GODKÄNT-stämpel, dom)",
+    "source": "Mixkit 565 – Hard horror hit drum",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13; GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Hjältljud: filmens starkaste (~-3 dB RMS). Musiken tvärdör samtidigt.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/565/565-preview.mp3",
+    "md5": "37a7a7369adca9ccb13be5d672bbc9af",
+    "cut": {
+     "start": "onset",
+     "pre": 0.005,
+     "dur": 1.4,
+     "fade_out": 0.3
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.spola-tillbaka work/<film>/sfx/spola-tillbaka.wav --cut",
+   "notes": "Byggs upp 0,5 s, jämn till 4 s. 2 s-utdraget täcker en spolning. Nivå ~-9 dB RMS (mitt i).",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.spola-tillbaka.png"
+   },
+   "id": "sound.spola-tillbaka",
+   "name": "Spola tillbaka (bandspelare)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Spola tillbaka / rewind-övergång, VHS, tillbakablick. Källa: Mixkit 1088 – Tape rewind cinematic transition.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "spola tillbaka",
+    "rewind",
+    "vhs",
+    "kassett",
+    "band",
+    "övergång",
+    "baklänges"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Spola tillbaka / rewind-övergång, VHS, tillbakablick",
+    "source": "Mixkit 1088 – Tape rewind cinematic transition",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "Byggs upp 0,5 s, jämn till 4 s. 2 s-utdraget täcker en spolning. Nivå ~-9 dB RMS (mitt i).",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1088/1088-preview.mp3",
+    "md5": "b0bc07cba750cc0854178dd2466191f2",
+    "cut": {
+     "start": 0.0,
+     "dur": 2.05,
+     "fade_in": 0.03,
+     "fade_out": 0.15
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.svep-luftigt work/<film>/sfx/svep-luftigt.wav --cut",
+   "notes": "Toppen på rörelsens mitt, ~3,5 dB över musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.svep-luftigt.png"
+   },
+   "id": "sound.svep-luftigt",
+   "name": "Svep – luftigt (kameran backar)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Långsamt luftigt svep när kameran backar/zoomar ut. Källa: Mixkit 1474 – Transition windy swoosh.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "svep",
+    "whoosh",
+    "övergång",
+    "zoom ut",
+    "luftigt"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Långsamt luftigt svep när kameran backar/zoomar ut",
+    "source": "Mixkit 1474 – Transition windy swoosh",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Skriet, 31 december (Munch-hyllning), godkänd av Jonas 2026-10-14",
+    "level": "Toppen på rörelsens mitt, ~3,5 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1474/1474-preview.mp3",
+    "md5": "aa02d9e3365bfe7cb3b84a6e7bb1cdf3",
+    "cut": {
+     "start": 0.0,
+     "dur": 1.6,
+     "fade_out": 0.6
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.svep-snabbt work/<film>/sfx/svep-snabbt.wav",
+   "notes": "Toppen ~0,5 s efter rörelsens start, ~3 dB över musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.svep-snabbt.png"
+   },
+   "id": "sound.svep-snabbt",
+   "name": "Svep – snabbt (zoom in)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Snabbt svep när kameran zoomar in mot något. Källa: Mixkit 1490 – Fast whoosh transition.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "svep",
+    "whoosh",
+    "zoom in",
+    "snabb",
+    "övergång"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Snabbt svep när kameran zoomar in mot något",
+    "source": "Mixkit 1490 – Fast whoosh transition",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Skriet, 31 december (Munch-hyllning), godkänd av Jonas 2026-10-14",
+    "level": "Toppen ~0,5 s efter rörelsens start, ~3 dB över musiken.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1490/1490-preview.mp3",
+    "md5": "63676fdad508b6c600dc89266ba431a0"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.syrsor work/<film>/sfx/syrsor.wav --cut",
+   "notes": "Svagt (~-16 dB RMS), direkt efter en dörr eller en fråga.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.syrsor.png"
+   },
+   "id": "sound.syrsor",
+   "name": "Syrsor – pinsam tystnad",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Komisk tystnad: ingenting här, ingen svarar. Källa: Mixkit 1788 – Summer crickets loop.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "syrsor",
+    "tystnad",
+    "pinsamt",
+    "tomt",
+    "humor",
+    "crickets"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Komisk tystnad: ingenting här, ingen svarar",
+    "source": "Mixkit 1788 – Summer crickets loop",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "Svagt (~-16 dB RMS), direkt efter en dörr eller en fråga.",
+    "url": "https://assets.mixkit.co/active_storage/sfx/1788/1788-preview.mp3",
+    "md5": "11a22e229a0a2a8188e9324a0f030ed0",
+    "cut": {
+     "start": 1.0,
+     "dur": 2.3,
+     "fade_in": 0.25,
+     "fade_out": 0.4
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.tandsticka work/<film>/sfx/tandsticka.wav --cut",
+   "notes": "",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.tandsticka.png"
+   },
+   "id": "sound.tandsticka",
+   "name": "Tändsticka",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Något tänds/börjar brinna. Källa: Mixkit 2590 – Fire match lighting.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "eld",
+    "tänd",
+    "tändsticka",
+    "brinner"
+   ],
+   "path": "library/sounds/sounds.py",
+   "status": "verified",
+   "bank": {
+    "role": "Något tänds/börjar brinna",
+    "source": "Mixkit 2590 – Fire match lighting",
+    "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+    "used_in": "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13",
+    "level": "",
+    "url": "https://assets.mixkit.co/active_storage/sfx/2590/2590-preview.mp3",
+    "md5": "31121d5fe4a46b48c98a8a3bd3680c4d",
+    "cut": {
+     "start": 0.0,
+     "dur": 1.6,
+     "fade_out": 0.5
+    }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.tangenter work/<film>/sfx/tangenter.wav --cut",
+   "notes": "I nivå med musiken.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.tangenter.png"
+   },
+   "id": "sound.tangenter",
+   "name": "Skriver på mobilen",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Någon skriver (namn, sökord) – ~1 s. Källa: Pixabay – typing.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "skriver",
+    "tangenter",
+    "typing",
+    "mobil",
+    "formulär"
+   ],
+   "path": "library/sounds/files/tangenter_pixabay-typing.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Någon skriver (namn, sökord) – ~1 s",
+    "source": "Pixabay – typing",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14",
+    "level": "I nivå med musiken.",
+    "file": "library/sounds/files/tangenter_pixabay-typing.mp3",
+    "cut": {
+     "start": "onset",
+     "dur": 1.0,
+     "fade_in": 0.01,
+     "fade_out": 0.08
+    }
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/bilden-trycks-isar.md. Golfkuponger: Mitt i en tipsfilm: händerna trycker isär → 'DETTA MISSAR ALLA'.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.bilden-trycks-isar",
+   "name": "Bilden trycks isär med händerna",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "none",
+   "description": "[retention] Personen 'trycker' bildens kanter inåt/utåt med händerna – svarta kanter kommer in och texten står mellan händerna. Varför: Bryter bildens 'fjärde vägg' – oväntad formändring som återställer uppmärksamheten mitt i videon (retention).",
+   "tags": [
+    "teknik",
+    "retention",
+    "video",
+    "retention",
+    "övergång",
+    "fjärde väggen",
+    "beskärning",
+    "gest"
+   ],
+   "path": "library/techniques/bilden-trycks-isar.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "retention",
+    "medium": [
+     "video"
+    ],
+    "tajming": "Rörelsen 0,4–0,6 s; håll 1,5–2 s; släpp tillbaka.",
+    "bevis": {
+     "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+     "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+     "likes": 7921,
+     "kommentarer": 79,
+     "datum": "2026-10-06",
+     "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+     "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/cirkel-cta-redigeringsvy.md. Golfkuponger: Cirkel med Tourleif: 'SPARA & FÖLJ FÖR FLER GOLFTIPS' – före slutbilden.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.cirkel-cta-redigeringsvy",
+   "name": "Avslutning: cirkel + CTA i redigeringsvy",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "none",
+   "description": "[cta] Bilden krymper till en cirkel med ansiktet; CTA:n ('spara & följ') skrivs fram i en textruta med markeringshandtag och muspekare. Varför: Ser ut som att man tittar in i redigeringen – ärligt/'creator'-känsla som gör CTA:n mindre säljig; cirkeln personifierar avsändaren.",
+   "tags": [
+    "teknik",
+    "cta",
+    "video",
+    "cta",
+    "avslutning",
+    "follow",
+    "spara",
+    "redigering",
+    "muspekare",
+    "cirkel"
+   ],
+   "path": "library/techniques/cirkel-cta-redigeringsvy.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "cta",
+    "medium": [
+     "video"
+    ],
+    "tajming": "Krympning 0,5 s; CTA ≥ läsregeln; klick sist.",
+    "bevis": {
+     "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+     "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+     "likes": 7921,
+     "kommentarer": 79,
+     "datum": "2026-10-06",
+     "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+     "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/dorr-till-ingenting.md. Golfkuponger: 'Ingen förmånsportal på jobbet?' (godkänd).",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-chefen (Jonas 2026-10-14).",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/teknik.dorr-till-ingenting.jpg"
+   },
+   "id": "teknik.dorr-till-ingenting",
+   "name": "Dörren till ingenting",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[krok] En dörr/knapp märkt med det tittaren väntar sig ('FÖRMÅNSPORTAL') öppnas – bakom finns bara en tegelvägg och syrsor. Varför: Igenkänd frustration som humor; tystnaden (syrsor) är skämtet och gör lösningen efteråt välkommen.",
+   "tags": [
+    "teknik",
+    "krok",
+    "video",
+    "carousel",
+    "krok",
+    "humor",
+    "tomt",
+    "syrsor",
+    "frustration",
+    "problem"
+   ],
+   "path": "library/techniques/dorr-till-ingenting.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "krok",
+    "medium": [
+     "video",
+     "carousel"
+    ],
+    "tajming": "Öppning 0,6 s, tom vägg + syrsor ~2 s, sedan lösningen.",
+    "bevis": {
+     "källa": "work/gk-chefen",
+     "kreatör": "Golfkuponger (egen film)",
+     "godkänd": "Jonas 2026-10-14"
+    },
+    "eget_exempel": "godkänt – work/gk-chefen (Jonas 2026-10-14)",
+    "exempel": [
+     "golfkuponger.template.chefen-betalar"
+    ]
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/folj-linjen.md. Golfkuponger: 'Välj en klubba och följ linjen – där spelar du nästa gång' → tre banor.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.folj-linjen",
+   "name": "Välj och följ linjen",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[retention] 'Välj en emoji och följ linjen' – trassliga linjer från 3–4 val leder till varsitt svar. Varför: Tittaren gör något (följer linjen med blicken/fingret) = mer tid på inlägget, som algoritmen belönar; personligt svar.",
+   "tags": [
+    "teknik",
+    "retention",
+    "carousel",
+    "video",
+    "retention",
+    "interaktiv",
+    "spel",
+    "följ linjen",
+    "labyrint",
+    "tid i inlägget",
+    "interactive carousel"
+   ],
+   "path": "library/techniques/folj-linjen.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "retention",
+    "medium": [
+     "carousel",
+     "video"
+    ],
+    "tajming": "Video: varje linje ritas 1–1,5 s, svaret poppar när linjen når fram.",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/fragor-som-krok.md. Golfkuponger: 'Spelat den här?' (godkänd).",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-banor (Jonas 2026-10-14).",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/teknik.spelat-den-har-fragor.jpg"
+   },
+   "id": "teknik.fragor-som-krok",
+   "name": "'Spelat den här? Eller den här?'",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[krok] Direkta ja/nej-frågor över starka bilder, en per 2 s – tittaren svarar tyst i huvudet och fastnar. Varför: Frågor aktiverar tittaren (självtest); igenkänning ('den har jag spelat!') ger kommentarer.",
+   "tags": [
+    "teknik",
+    "krok",
+    "video",
+    "carousel",
+    "krok",
+    "fråga",
+    "engagemang",
+    "kommentarer",
+    "igenkänning"
+   ],
+   "path": "library/techniques/fragor-som-krok.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "krok",
+    "medium": [
+     "video",
+     "carousel"
+    ],
+    "tajming": "Läsregeln per fråga (~2 s); panorering 0,24 s.",
+    "bevis": {
+     "källa": "work/gk-banor",
+     "kreatör": "Golfkuponger (egen film)",
+     "godkänd": "Jonas 2026-10-14"
+    },
+    "eget_exempel": "godkänt – work/gk-banor (Jonas 2026-10-14)",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/kommentera-ordet.md. Golfkuponger: 'Kommentera GOLF så skickar vi listan med alla 300+ banor.' Sätt upp auto-DM innan inlägget publiceras.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.kommentera-ordet",
+   "name": "CTA: 'Kommentera ORDET så skickar vi …'",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[cta] Sista slide/sista sekunderna: 'kommentera GOLF så skickar vi X' – en automatisk DM skickar länken till alla som kommenterar. Varför: Kommentarer är den starkaste signalen till algoritmen, och tröskeln är bara ett ord. Beviset: 1405 kommentarer på 2020 likes (normalt ~3–5 %).",
+   "tags": [
+    "teknik",
+    "cta",
+    "carousel",
+    "video",
+    "cta",
+    "kommentarer",
+    "engagemang",
+    "dm",
+    "nyckelord",
+    "comment to get",
+    "manychat",
+    "lead"
+   ],
+   "path": "library/techniques/kommentera-ordet.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "cta",
+    "medium": [
+     "carousel",
+     "video"
+    ],
+    "tajming": "Sista slide eller sista 2–3 s före slutbilden; ordet stort och i färgruta.",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/konstverk-hyllning.md. Golfkuponger: Skriet den 31 december (godkänd). Bara verk där konstnären dog för >70 år sedan.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-konstverk (Jonas 2026-10-14).",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/teknik.konstverk-hyllning.jpg"
+   },
+   "id": "teknik.konstverk-hyllning",
+   "name": "Hyllning till ett känt konstverk",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[krok] Återskapa ett känt (fritt) konstverk med vår figur – igenkänningen stoppar scrollen, sedan bryts verket upp till verkligheten. Varför: Omedelbar igenkänning + överraskning (vår figur i verket); delbart.",
+   "tags": [
+    "teknik",
+    "krok",
+    "video",
+    "carousel",
+    "krok",
+    "konst",
+    "parodi",
+    "igenkänning",
+    "delbart",
+    "public domain"
+   ],
+   "path": "library/techniques/konstverk-hyllning.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "krok",
+    "medium": [
+     "video",
+     "carousel"
+    ],
+    "tajming": "Verket 5–6 s med text, rivningen på ett ljudslag.",
+    "bevis": {
+     "källa": "work/gk-konstverk",
+     "kreatör": "Golfkuponger (egen film)",
+     "godkänd": "Jonas 2026-10-14"
+    },
+    "eget_exempel": "godkänt – work/gk-konstverk (Jonas 2026-10-14)",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/las-golf-tas-ifran.md. Golfkuponger: Allt som brinner inne/tar slut: årsskiftet, kampanjslut.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-arsskifte (spola) (Jonas 2026-10-14).",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.effect.forbud-larm.jpg"
+   },
+   "id": "teknik.las-golf-tas-ifran",
+   "name": "Ge det goda – ta det ifrån en",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "none",
+   "description": "[vändning] Låt tittaren känna det goda (golfbanan, 2–3 s, 'ååh golf') innan det tas ifrån hen med ett hårt stopp. Varför: Kontrasten gör förlusten fysisk; utan den sköna stunden först blir stoppet bara ett stopp.",
+   "tags": [
+    "teknik",
+    "vändning",
+    "video",
+    "vändning",
+    "förlust",
+    "stopp",
+    "förbud",
+    "kontrast",
+    "för sent"
+   ],
+   "path": "library/techniques/las-golf-tas-ifran.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "vändning",
+    "medium": [
+     "video"
+    ],
+    "tajming": "Det goda ≥ 2,5–3 s (Jonas: 'ååh golf'), stoppet slår ner på 0,25 s.",
+    "bevis": {
+     "källa": "work/gk-arsskifte (spola)",
+     "kreatör": "Golfkuponger (egen film)",
+     "godkänd": "Jonas 2026-10-14"
+    },
+    "eget_exempel": "godkänt – work/gk-arsskifte (spola) (Jonas 2026-10-14)",
+    "exempel": [
+     "golfkuponger.effect.forbud-larm"
+    ]
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/malningsmeme-zoom.md. Golfkuponger: 'I den här bilden … han tittar på henne … hon tittar på greenen … och alla tittar på friskvårdsbidraget som brinner inne 31 dec.' Se även teknik.konstverk-hyllning.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.malningsmeme-zoom",
+   "name": "Målningsmeme – zooma i en klassisk målning",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[struktur] En klassisk målning; varje slide zoomar in på en person med en rad som följer blickarna ('I den här bilden …', 'han tittar på …') – sista slide visar produkten. Varför: Oväntat och lekfullt sätt att visa vad man säljer; igenkänd meme-form + nyfikenhet på vem som tittar på vad.",
+   "tags": [
+    "teknik",
+    "struktur",
+    "carousel",
+    "video",
+    "struktur",
+    "meme",
+    "konst",
+    "målning",
+    "zoom",
+    "humor",
+    "public domain",
+    "vintage art"
+   ],
+   "path": "library/techniques/malningsmeme-zoom.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "struktur",
+    "medium": [
+     "carousel",
+     "video"
+    ],
+    "tajming": "5 slides; video: 2–2,5 s per utsnitt med mjuk zoom.",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/ord-knapps-bort.md. Golfkuponger: 'FRISKVÅRD ÄR INTE GOLF' → INTE knäpps bort → 'FRISKVÅRD ÄR GOLF'. Eller 'GOLF ÄR INTE FÖR ALLA' → 'GOLF ÄR FÖR ALLA'.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.ord-knapps-bort",
+   "name": "Ett ord knäpps bort och vänder budskapet",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[krok] En rad med ett negerande ord ('INTE') står i bild – en gest knäpper bort ordet och budskapet vänder. Varför: Tittaren hinner läsa påståendet och blir överraskad när det ändras – en mikroförvåning de första 2 sekunderna som skapar nyfikenhet. Fysisk interaktion med text känns 'gjord för dig'.",
+   "tags": [
+    "teknik",
+    "krok",
+    "video",
+    "carousel",
+    "hook",
+    "krok",
+    "text",
+    "gest",
+    "negation",
+    "överraskning",
+    "kinetisk typografi"
+   ],
+   "path": "library/techniques/ord-knapps-bort.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "krok",
+    "medium": [
+     "video",
+     "carousel"
+    ],
+    "tajming": "Raden ≥ läsregeln (~2 s) innan ordet åker; bortknäppet 0,2–0,3 s; ny rad står 1–1,5 s.",
+    "bevis": {
+     "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+     "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+     "likes": 7921,
+     "kommentarer": 79,
+     "datum": "2026-10-06",
+     "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+     "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/panorama-over-slides.md. Golfkuponger: Golfaren slår ut på slide 1, bollen flyger över alla slides och landar i koppen på sista (logga + CTA).",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.panorama-over-slides",
+   "name": "Panorama – någon går genom slidesen",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[retention] En sammanhängande panoramabild delad i slides; en person/ett föremål vandrar från slide till slide och texten byts. Varför: 'Hur gjorde de det här?' – sömlöst svep håller kvar tittaren längre (algoritmen gillar det).",
+   "tags": [
+    "teknik",
+    "retention",
+    "carousel",
+    "retention",
+    "panorama",
+    "sömlös",
+    "seamless carousel",
+    "slide crossing",
+    "svep"
+   ],
+   "path": "library/techniques/panorama-over-slides.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "retention",
+    "medium": [
+     "carousel"
+    ],
+    "tajming": "4–6 slides; motivet ska aldrig ha ansiktet exakt på en skarv.",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/riktigt-flode-i-mobil.md. Golfkuponger: Köp direkt på golfkuponger.se (godkänd).",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-chefen (Jonas 2026-10-14).",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.scene.mobilflode-riktig-sajt.jpg"
+   },
+   "id": "teknik.riktigt-flode-i-mobil",
+   "name": "Riktigt köpflöde i en tecknad mobil",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "none",
+   "description": "[bevis] Visa det riktiga flödet (sajtens skärmar) i en tecknad mobil – kameran följer fingret, zoomar när något skrivs. Varför: Bevisar att det är enkelt ('så här gör du') utan att hitta på gränssnitt; tecknad ram håller ihop stilen.",
+   "tags": [
+    "teknik",
+    "bevis",
+    "video",
+    "bevis",
+    "så gör du",
+    "ui",
+    "mobil",
+    "köpflöde",
+    "enkelt"
+   ],
+   "path": "library/techniques/riktigt-flode-i-mobil.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "bevis",
+    "medium": [
+     "video"
+    ],
+    "tajming": "Ett steg per 0,6–1,2 s; tryck alltid inom safe zones.",
+    "bevis": {
+     "källa": "work/gk-chefen",
+     "kreatör": "Golfkuponger (egen film)",
+     "godkänd": "Jonas 2026-10-14"
+    },
+    "eget_exempel": "godkänt – work/gk-chefen (Jonas 2026-10-14)",
+    "exempel": [
+     "golfkuponger.scene.mobilflode-riktig-sajt"
+    ]
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/sa-har-nara.md. Golfkuponger: 'Du är SÅ HÄR nära gratis golf' – mellan fingrarna: 'friskvårdsbidraget gäller till 31 dec'.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.sa-har-nara",
+   "name": "'Du är SÅ HÄR nära …'",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[krok] En hand som nyper ihop tummen och pekfingret, 'Du är SÅ HÄR nära …' – med liten text mellan fingrarna. Varför: Igenkänd 'hand core'-trend; nära mål = motivation att agera nu.",
+   "tags": [
+    "teknik",
+    "krok",
+    "carousel",
+    "video",
+    "krok",
+    "hand core",
+    "händer",
+    "nära",
+    "fomo",
+    "this close"
+   ],
+   "path": "library/techniques/sa-har-nara.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "krok",
+    "medium": [
+     "carousel",
+     "video"
+    ],
+    "tajming": "Video: handen glider in 0,5 s, fingrarna nyper ihop 0,3 s.",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/samma-rad-ny-lek.md. Golfkuponger: 'GOLF FÖR FRISKVÅRDSBIDRAGET' i sex varianter (dörr, mobil, green, chefen, kupong, cirkel-CTA).",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.samma-rad-ny-lek",
+   "name": "Samma rad – ny visuell lek var 2–3 s",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "none",
+   "description": "[struktur] Hela videon upprepar samma korta rad, men varje klipp visar ett nytt sätt att animera den. Varför: Tittaren vill se 'nästa trick' – tydlig mönsterbrytning var 2–3 s utan att budskapet blir rörigt. Bra för sparningar (lärande).",
+   "tags": [
+    "teknik",
+    "struktur",
+    "video",
+    "struktur",
+    "retention",
+    "lista",
+    "lärande",
+    "mönsterbrytning",
+    "sparningar"
+   ],
+   "path": "library/techniques/samma-rad-ny-lek.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "struktur",
+    "medium": [
+     "video"
+    ],
+    "tajming": "6 klipp à 2–4 s (snitt ~3 s); samma textstil genom hela.",
+    "bevis": {
+     "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+     "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+     "likes": 7921,
+     "kommentarer": 79,
+     "datum": "2026-10-06",
+     "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+     "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/spola-tillbaka-andra-chans.md. Golfkuponger: Använd i Årsskiftet – spola tillbaka; fungerar för alla 'gör det i tid'-budskap.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-arsskifte (spola) (Jonas 2026-10-13).",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/golfkuponger.transition.spola-tillbaka.jpg"
+   },
+   "id": "teknik.spola-tillbaka-andra-chans",
+   "name": "Fel utfall → paus → spola tillbaka → rätt utfall",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "none",
+   "description": "[struktur] Visa först vad som händer om man inte agerar, pausa, spola tillbaka filmen och visa samma situation med rätt val. Varför: Förlustaversion först (känslan), sedan lösningen – tittaren upplever konsekvensen och lättnaden. Spolningen är ett visuellt wow.",
+   "tags": [
+    "teknik",
+    "struktur",
+    "video",
+    "struktur",
+    "spola tillbaka",
+    "rewind",
+    "andra chansen",
+    "före/efter",
+    "förlustaversion"
+   ],
+   "path": "library/techniques/spola-tillbaka-andra-chans.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "struktur",
+    "medium": [
+     "video"
+    ],
+    "tajming": "Varv 1 ~10 s, paus 3,5 s (läsregeln), spolning 2 s, markera landningen ~1 s.",
+    "bevis": {
+     "källa": "work/gk-arsskifte (spola)",
+     "kreatör": "Golfkuponger (egen film)",
+     "godkänd": "Jonas 2026-10-13"
+    },
+    "eget_exempel": "godkänt – work/gk-arsskifte (spola) (Jonas 2026-10-13)",
+    "exempel": [
+     "golfkuponger.template.arsskifte-spola",
+     "golfkuponger.transition.spola-tillbaka"
+    ]
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/sten-sax-pase.md. Golfkuponger: '[Betala golfen själv]' (sax) vs '[Låt chefen betala]' (sten) – chefens hand vinner.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.sten-sax-pase",
+   "name": "Sten, sax, påse – två val",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[krok] Två händer från var sin sida spelar sten-sax-påse; över varje hand står ett val ('[gör så här]' vs '[gör så här]'). Varför: Alla förstår sten-sax-påse direkt (stark visuell referens) – jämförelsen blir en lek i stället för en reklamtabell.",
+   "tags": [
+    "teknik",
+    "krok",
+    "carousel",
+    "video",
+    "krok",
+    "jämförelse",
+    "val",
+    "händer",
+    "hand core",
+    "sten sax påse",
+    "versus"
+   ],
+   "path": "library/techniques/sten-sax-pase.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "krok",
+    "medium": [
+     "carousel",
+     "video"
+    ],
+    "tajming": "Video: hand-in 0,4 s, 'sten, sax …' 3 slag à 0,3 s, resultat ≥ läsregeln.",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/story-grab.md. Golfkuponger: Story-raden visar fyra banor (Ullna, Bro Hof …); golfaren tar ner Bro Hof-cirkeln: 'Nästa runda?'.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.story-grab",
+   "name": "Story Grab – någon tar sig ur Instagram-gränssnittet",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[krok] Bilden ser ut som Instagram (story-cirklar, användarnamn, låtrad) – personen i bilden sträcker sig upp och tar tag i en story-cirkel. Varför: Ser ut som appen själv men något är fel – stör scrollen och får folk att stanna. Välgjord ser den påkostad ut.",
+   "tags": [
+    "teknik",
+    "krok",
+    "carousel",
+    "video",
+    "krok",
+    "ios core",
+    "gränssnitt",
+    "ui",
+    "story",
+    "fjärde väggen",
+    "scrollstopp"
+   ],
+   "path": "library/techniques/story-grab.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "krok",
+    "medium": [
+     "carousel",
+     "video"
+    ],
+    "tajming": "Karusell: en slide. Video: armen sträcks upp 0,6 s, cirkeln dras ner.",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/svep-for-att-avsloja.md. Golfkuponger: Lyckokaka 'Öppna den!' → lappen: 'Ditt friskvårdsbidrag räcker till golf. Före 31 dec.'",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.svep-for-att-avsloja",
+   "name": "Svep för att avslöja",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[retention] En slide uppmanar 'öppna den!' eller 'håll prickarna och dra' – svaret/belöningen syns först på nästa slide (lyckokaka som öppnas). Varför: Nyfikenhet (öppen loop) driver svepet; varje svep räknas som interaktion och tid.",
+   "tags": [
+    "teknik",
+    "retention",
+    "carousel",
+    "retention",
+    "interaktiv",
+    "avslöja",
+    "reveal",
+    "nyfikenhet",
+    "svep",
+    "swipe",
+    "lyckokaka"
+   ],
+   "path": "library/techniques/svep-for-att-avsloja.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "retention",
+    "medium": [
+     "carousel"
+    ],
+    "tajming": "2 slides; det öppna föremålet på exakt samma plats som det stängda.",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/text-foljer-personen.md. Golfkuponger: Golfare går över green, texten 'FÖRSTA RUNDAN = FRISKVÅRD' följer med.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.text-foljer-personen",
+   "name": "Texten följer med personen",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "none",
+   "description": "[retention] Texten sitter fast vid personen (bröstet, bredvid huvudet) och följer med när hen går in i bild eller rör sig. Varför: Texten blir en del av scenen i stället för ett lager ovanpå – ser påkostat ut och håller blicken på personen.",
+   "tags": [
+    "teknik",
+    "retention",
+    "video",
+    "retention",
+    "tracking",
+    "spårning",
+    "text",
+    "rörelse",
+    "embedded captions"
+   ],
+   "path": "library/techniques/text-foljer-personen.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "retention",
+    "medium": [
+     "video"
+    ],
+    "tajming": "Hela promenaden 2–4 s; texten läsbar hela tiden (läsregeln).",
+    "bevis": {
+     "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+     "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+     "likes": 7921,
+     "kommentarer": 79,
+     "datum": "2026-10-06",
+     "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+     "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/text-poppar-pa-gest.md. Golfkuponger: Hook: knäpp → '3 SAKER OM FRISKVÅRDSBIDRAGET'. Eller pekar → 'VISSTE DU DET HÄR?'",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.text-poppar-pa-gest",
+   "name": "Text poppar upp på en gest",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "none",
+   "description": "[krok] Texten dyker upp exakt när personen knäpper/pekar/klappar – som om gesten skapade den. Varför: Orsak–verkan fångar ögat; tittaren förstår direkt vart den ska titta och att videon är 'gjord'.",
+   "tags": [
+    "teknik",
+    "krok",
+    "video",
+    "hook",
+    "krok",
+    "text",
+    "gest",
+    "pop",
+    "studs"
+   ],
+   "path": "library/techniques/text-poppar-pa-gest.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "krok",
+    "medium": [
+     "video"
+    ],
+    "tajming": "Texten in inom 1–2 bildrutor efter gesten; studs 0,25 s; ljud på samma bildruta (aldrig före).",
+    "bevis": {
+     "källa": "https://www.instagram.com/reel/DeKwHHlPu0i/",
+     "kreatör": "Maria Valeria Simonelli (@mavasimonellis)",
+     "likes": 7921,
+     "kommentarer": 79,
+     "datum": "2026-10-06",
+     "lokal_kopia": "work/references/instagram-DeKwHHlPu0i/",
+     "notering": "Utbildande reel om hooks – 6 klipp, snitt 3,1 s per klipp. Vi lånar greppen, aldrig bilder/formuleringar/ljud."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/trendlista-karusell.md. Golfkuponger: '6 banor du måste spela i höst – spara detta om du har friskvårdsbidrag kvar'. Eller '5 sätt att använda friskvårdsbidraget på golf'.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.trendlista-karusell",
+   "name": "Numrerad lista-karusell: 'X saker – spara detta'",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[struktur] Slide 1 lovar en lista och ber om sparning; en sak per slide med stor nummer-etikett, exempelbild och två rader varför; sista slide = CTA. Varför: Löftet om en lista gör att man sveper till slutet (svep = tid i inlägget); 'spara detta' ger sparningar, som algoritmen väger tungt. Samma layout på varje slide gör den lätt att läsa.",
+   "tags": [
+    "teknik",
+    "struktur",
+    "carousel",
+    "struktur",
+    "lista",
+    "listicle",
+    "spara",
+    "sparningar",
+    "karusell",
+    "nummer",
+    "save this"
+   ],
+   "path": "library/techniques/trendlista-karusell.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "struktur",
+    "medium": [
+     "carousel"
+    ],
+    "tajming": "Karusell: 6–8 slides. Som video: ~2,5–3 s per punkt (läsregeln).",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/vagg-av-allt.md. Golfkuponger: 'Spelat den här?' (godkänd).",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: godkänt – work/gk-banor (Jonas 2026-10-14).",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": null,
+    "still": "library/previews/teknik.vagg-av-allt.jpg"
+   },
+   "id": "teknik.vagg-av-allt",
+   "name": "Från en till alla – väggen",
+   "type": "technique",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[bevis] Börja på ett exempel, bläddra allt snabbare, zooma ut till en vägg av ALLA (banor/produkter) som bildar loggan. Varför: Mängd visad i stället för påstådd ('300+') – överväldigande på ett bra sätt, och loggan knyter ihop allt.",
+   "tags": [
+    "teknik",
+    "bevis",
+    "video",
+    "carousel",
+    "bevis",
+    "mängd",
+    "mosaik",
+    "vägg",
+    "utzoom",
+    "alla",
+    "logga"
+   ],
+   "path": "library/techniques/vagg-av-allt.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "bevis",
+    "medium": [
+     "video",
+     "carousel"
+    ],
+    "tajming": "Hjältar ~2 s/st, bläddring 3 s (0,3 s → 1 bildruta), utzoom 1,75 s.",
+    "bevis": {
+     "källa": "work/gk-banor",
+     "kreatör": "Golfkuponger (egen film)",
+     "godkänd": "Jonas 2026-10-14"
+    },
+    "eget_exempel": "godkänt – work/gk-banor (Jonas 2026-10-14)",
+    "exempel": []
+   }
+  },
+  {
+   "kit": "techniques",
+   "kit_title": "Teknikbanken – bevisade tekniker och metoder",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning; referensvideor bara lokalt (work/references)"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs library/techniques/zooma-for-ett-tecken.md. Golfkuponger: 'Zooma in för ett tecken att boka höstrundan' – i golfbollen: 'Boka nu ⛳'.",
+   "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+   "verified_at": "2026-10-14",
+   "preview": null,
+   "id": "teknik.zooma-for-ett-tecken",
+   "name": "'Zooma in för ett tecken'",
+   "type": "technique",
+   "medium": "carousel",
+   "formats": [
+    "9:16",
+    "4:5",
+    "1:1"
+   ],
+   "engine": "none",
+   "description": "[retention] 'Zooma in för ett tecken att …' – svaret står pyttelitet (i handen/bollen), så man nyper in för att läsa. Varför: Tittaren interagerar fysiskt (zoomar) = längre tid och en liten belöning; delas för att det är kul.",
+   "tags": [
+    "teknik",
+    "retention",
+    "carousel",
+    "retention",
+    "zoom",
+    "interaktiv",
+    "dold text",
+    "hand core",
+    "zoom in for a sign"
+   ],
+   "path": "library/techniques/zooma-for-ett-tecken.md",
+   "status": "verified",
+   "teknik": {
+    "roll": "retention",
+    "medium": [
+     "carousel"
+    ],
+    "tajming": "En slide.",
+    "bevis": {
+     "källa": "https://www.instagram.com/p/Dd6b1iSEWbC/",
+     "kreatör": "Your Social Team | Manu Muraro (@yoursocialteam)",
+     "likes": 2020,
+     "kommentarer": 1405,
+     "datum": "2026-09-30",
+     "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
+     "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."
+    },
+    "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+    "exempel": []
+   }
   },
   {
    "kit": "animate",
@@ -10078,7 +13344,7 @@
     "ffmpeg",
     "python"
    ],
-   "use": "Används automatiskt i varje Golfkuponger-klipp (engine/edit/outros.py). Nya varianter: python library/templates/golfkuponger-outro/render.py --variants <namn> --formats 9x16,4x5,1x1, kopiera till edit-renderer/outros/golfkuponger/ (ljudet orört, pan till stereo utan sänkning).",
+   "use": "Används automatiskt i varje Golfkuponger-klipp (engine/edit/outros.py). Nya varianter: python library/templates/golfkuponger-outro/render.py --variants <namn> --formats 9x16,4x5,1x1, snabba upp ×1,29 (bild: samma bildval som de nuvarande filerna, ljud: atempo=1.2903) och kopiera till edit-renderer/outros/golfkuponger/ (ljudet orört, pan till stereo utan sänkning). DURATION_S i engine/edit/outros.py ska vara slutbildens längd.",
    "notes": "Fem andra varianter finns i build.py (klassisk, glod, stralar, stoft, minimal). Logon friställs matematiskt ur svart (alfa = max-kanal), så guldet är identiskt.",
    "verified_at": "2026-10-09",
    "preview": {
@@ -10086,7 +13352,7 @@
     "still": "library/previews/golfkuponger-outro-spotlight.jpg"
    },
    "id": "golfkuponger.outro.spotlight",
-   "name": "Slutbild Spotlight (4 s, 9:16 + 4:5 + 1:1)",
+   "name": "Slutbild Spotlight (3,1 s, 9:16 + 4:5 + 1:1)",
    "type": "template",
    "medium": "video",
    "formats": [
@@ -10095,7 +13361,7 @@
     "1:1"
    ],
    "engine": "hyperframes",
-   "description": "Golfkupongers slutbild som klipps in sist i varje video: originalets svingande logo med originalljudet på mörkgrönt (#0e1f15), scenen öppnas ur mörker med långsam inzoomning, ljussvep och glimt över guldet, \"Mer golf. Fler upplevelser.\" skrivs fram i Caveat Brush med guldpenseldrag. Vald av ägaren 2026-10-09. Färdiga filer i edit-renderer/outros/golfkuponger/ används automatiskt av molnklippningen (brand kit: outro).",
+   "description": "Golfkupongers slutbild som klipps in sist i varje video: originalets svingande logo med originalljudet på mörkgrönt (#0e1f15), scenen öppnas ur mörker med långsam inzoomning, ljussvep och glimt över guldet, \"Mer golf. Fler upplevelser.\" skrivs fram i Caveat Brush med guldpenseldrag. Vald av ägaren 2026-10-09; snabbare tempo (×1,29, 4,0 → 3,1 s, samma bild och ljud, tonhöjd orörd) 2026-10-13. Färdiga filer i edit-renderer/outros/golfkuponger/ används automatiskt av molnklippningen (brand kit: outro).",
    "tags": [
     "golfkuponger",
     "slutbild",
@@ -10107,6 +13373,157 @@
     "brand"
    ],
    "path": "library/templates/golfkuponger-outro/build.py",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "ffmpeg",
+    "python"
+   ],
+   "use": "cp -r library/templates/golfkuponger-arsskifte work/<namn> && cd work/<namn> && ./make.sh v1",
+   "notes": "Godkänd av Jonas 2026-10-13. Ljud ur ljudbanken (fetch_assets.py). Tider och läsregel: MANUS.md.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.arsskifte.mp4",
+    "still": "library/previews/golfkuponger.template.arsskifte.jpg"
+   },
+   "id": "golfkuponger.template.arsskifte",
+   "name": "Årsskiftet – rivkalendern (9:16, 21,5 s)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Tecknad premiumillustration: bordskalender på stenbord river blad okt → dec (bladen faller ur bild), friskvårdsbidraget som grönt presentkort brinner, 31 december rött, golfbollen slår hål i kalendern och hålet växer till en vårbana där kortet blir en golfkupong och bollen går i koppen; iris → slutbild. Text: Vad händer med ditt friskvårdsbidrag vid årsskiftet? / Har du friskvårdsbidrag kvar? / Den 31 december brinner det inne. / Använd friskvården till golf i tid.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "årsskifte",
+    "31 december",
+    "kalender",
+    "nedräkning",
+    "brinner inne",
+    "tecknat",
+    "illustration",
+    "premium",
+    "eld",
+    "golfboll",
+    "hål",
+    "reveal",
+    "reels"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/README.md",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "ffmpeg",
+    "python"
+   ],
+   "use": "cp -r library/templates/golfkuponger-arsskifte work/<namn> && cd work/<namn> && ./make.sh spola",
+   "notes": "Godkänd av Jonas 2026-10-13. Ljudval låsta: larm L3, smäll M2, knapp P1, gråt G1, rivljud R1, putt K1. Tider: MANUS-spola.md.",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.arsskifte-spola.mp4",
+    "still": "library/previews/golfkuponger.transition.spola-tillbaka.jpg"
+   },
+   "id": "golfkuponger.template.arsskifte-spola",
+   "name": "Årsskiftet – spola tillbaka (9:16, 32,9 s)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Varv 1: 1 nov → nyår, kortet brinner upp helt, bollen igenom 31 → golfbana i 3 s ('ååh, golf') – bollen stannar på koppens kant – förbudsmärket slår ner med rött larm (FÖR SENT.), gråtande golfare med Golfkupongers logga på kepsen, ❚❚ paus (Det här behöver inte hända dig.), ◀◀ hela filmen baklänges med VHS-tracking till 13 november, ▶, två lugna blad, bollen igenom 15 november och samma lyckliga slut. Bara stora tecken mitt i bild, ingen OSD-text.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "årsskifte",
+    "spola tillbaka",
+    "rewind",
+    "vhs",
+    "paus",
+    "play",
+    "förbudsmärke",
+    "för sent",
+    "larm",
+    "gråt",
+    "tecknat",
+    "storytelling",
+    "före/efter",
+    "reels"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/README.md",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Ingen portal? Låt chefen betala din golf",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; skärmar från golfkuponger.se; kvittot anonymiserat; ljud per ljudbankens licenser"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "ffmpeg",
+    "python"
+   ],
+   "use": "cp -r library/templates/golfkuponger-chefen-betalar work/<namn> && cd work/<namn> && ./make.sh",
+   "notes": "Godkänd av Jonas 2026-10-14 (M1, C1, ST1). F2 bekräftad: vem som helst kan köpa direkt, kvitto som pdf på mejlen.",
+   "verified_at": "2026-10-14",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.chefen-betalar.mp4",
+    "still": "library/previews/golfkuponger.template.chefen-betalar.jpg"
+   },
+   "id": "golfkuponger.template.chefen-betalar",
+   "name": "Ingen portal? Låt chefen betala din golf (9:16, 26,9 s)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "description": "Fräck tecknad film med Tourleif och Chefen: dörren FÖRMÅNSPORTAL leder till en tegelvägg (syrsor), Tourleif köper direkt på golfkuponger.se i mobilen (riktiga skärmar: start → paket 2 000 kr → kassa, 'Tourleif' skrivs, Betala), grön bock, pdf-kvittot (riktigt, anonymiserat) med 'Underlag för friskvårdsbidrag', chefen läser skeptiskt, GODKÄNT-stämpeln slår ner, alla på golfbanan. Text: Ingen förmånsportal på jobbet? / Köp direkt på golfkuponger.se / Kvittot kommer som pdf. / Låt chefen betala din golf. / Friskvårdsbidraget: chefen betalar. Du spelar.",
+   "tags": [
+    "golfkuponger",
+    "friskvård",
+    "direktköp",
+    "ingen portal",
+    "kvitto",
+    "pdf",
+    "chefen",
+    "tourleif",
+    "fräck",
+    "humor",
+    "tecknat",
+    "mobil",
+    "skärminspelning",
+    "godkänt",
+    "reels"
+   ],
+   "path": "library/templates/golfkuponger-chefen-betalar/README.md",
    "status": "verified"
   },
   {
@@ -12025,6 +15442,50 @@
     "kronologi"
    ],
    "path": ".claude/skills/animate/kit/morph.js",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Årsskiftet (rivkalender + spola tillbaka)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; ljud per ljudbankens licenser (library/sounds); typsnitt Anton, Inter, JetBrains Mono (SIL OFL)"
+   },
+   "cost": "free",
+   "requires": [
+    "node"
+   ],
+   "use": "partPause/partRewind/partPlay i src/scene2.js; ikoner i src/sf.js. Ljud: sound.kassettknapp (paus/play) + sound.spola-tillbaka.",
+   "notes": "Lärdom: markera var spolningen stannar (▶ över stillastående bild, sedan lugna steg).",
+   "verified_at": "2026-10-13",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.arsskifte-spola.mp4",
+    "still": "library/previews/golfkuponger.transition.spola-tillbaka.jpg"
+   },
+   "id": "golfkuponger.transition.spola-tillbaka",
+   "name": "❚❚ → ◀◀ → ▶ (filmen baklänges, VHS)",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Paus fryser bilden i grått med stor ❚❚; spolningen spelar hela filmen baklänges (deterministisk renderare) med VHS-tracking, skanlinjer och stor solid ◀◀; landar på en tydlig bild, stor ▶ och filmen spelar vidare. Inga OSD-texter, bara stora tecken mitt i bild.",
+   "tags": [
+    "spola tillbaka",
+    "rewind",
+    "paus",
+    "play",
+    "vhs",
+    "tracking",
+    "baklänges",
+    "tillbakablick",
+    "övergång",
+    "andra chansen"
+   ],
+   "path": "library/templates/golfkuponger-arsskifte/src/scene2.js",
    "status": "verified"
   },
   {

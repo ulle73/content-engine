@@ -45,7 +45,12 @@ python library/tools/find.py "<ord>" --type template --verified
 python library/tools/find.py "<ord>" --type transition
 python library/tools/find.py "<bolag + idé>" --type recipe    # video: produktionsrecept per bolag
 python library/tools/find.py "<scentyp>" --type model         # vilken AI-modell per scen + promptformat
+python library/tools/find.py "<idé> krok" --type technique    # bevisade tekniker: krok, retention, cta, struktur
 ```
+
+**Tekniker först (obligatoriskt för varje video och karusell):** välj 1 krok + 1 struktur/retention + 1 cta ur
+teknikbanken enligt `skills/teknik` (A) och motivera valet i förslaget. Skickar beställaren en länk med en teknik som
+ska sparas: `skills/teknik` (B).
 
 För **film** börjar du helst i ett recept (`library/recipes/<id>/RECIPE.md` + `recipe.json`): scener med
 filmlista-id:n (`docs/FILMLISTA.md`), effekter, ljud och valfria AI-uppgraderingar per scen. Receptet är ett förslag –
@@ -58,7 +63,7 @@ och **prompts** (`prompt`, t.ex. regissörsbrief och kritikloop). Bläddra visue
 
 ## 3. Föreslå 2–3 kombinationer
 
-Varje förslag: basmall + 2–4 effekter/övergångar + textbehandling + ljud, med id:n och
+Varje förslag: tekniker (krok/retention/cta) + basmall + 2–4 effekter/övergångar + textbehandling + ljud, med id:n och
 förhandsvisningar (`library/previews/…`). Säg varför de passar. Låt användaren välja eller
 blanda. Ingen beställning ska få samma tre förslag – variera stil på riktigt.
 
@@ -96,5 +101,7 @@ tills allt är 8+. Mall: `library/prompts/motion-studio-playbook/` (kritikloop).
 
 Blev resultatet bra: spara det som ny mall i `library/templates/<namn>/` med förhandsvisning
 och en post i `LIBRARY.json` (`status: verified`), kör `build_catalog.py`. Nästa gång börjar
-någon därifrån. Rättade beställaren något som gäller fler filmer: skriv in det som regel i
+någon därifrån. **Godkända ljud** (även musik och ljud beställaren skickat) sparas i ljudbanken `library/sounds/`
+(se `skills/ljud`), och mallen hämtar dem därifrån. Återanvändbara delar (en figur, en effekt, en övergång) får egna
+poster i mallens `LIBRARY.json` så att de hittas med `find.py`. Rättade beställaren något som gäller fler filmer: skriv in det som regel i
 `skills/video-regler` (lärdomsloggen), `skills/ljud` eller brand-skillen i samma session.
