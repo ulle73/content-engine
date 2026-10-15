@@ -1,8 +1,18 @@
 name: Content Engine Daily
 on:
   workflow_dispatch:
+    inputs:
+      phase:
+        description: "full = everything; start = only start the day's scrapes (the full run collects them)"
+        type: choice
+        options: [full, start]
+        default: full
   schedule:
+    # Two phases: start the scrapes, then collect + analyse half an hour later when Apify is done.
+    # GitHub may delay scheduled runs; if both queue up, the newer (full) one replaces the pending start
+    # and simply does everything itself.
     - cron: '17 6 * * *'
+    - cron: '47 6 * * *'
 permissions:
   contents: read
   # Lets the step below start the Edit Render workflow for cut jobs nobody picked up (workflow_dispatch).
@@ -47,6 +57,7 @@ jobs:
       HIGGSFIELD_API_KEY_GK: ${{ secrets.CONTENT_HIGGSFIELD_API_KEY_GK }}
       MEDIA_STORAGE: r2
       APP_URL: http://127.0.0.1:8765
+      PHASE: ${{ (github.event.schedule == '17 6 * * *' || inputs.phase == 'start') && 'start' || 'full' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -57,17 +68,17 @@ jobs:
       - name: Show unapplied migrations (diagnostic)
         run: python manage.py showmigrations --plan | grep -F "[ ]" || echo "All migrations applied."
       - run: python manage.py migrate --check
-      - run: python manage.py run_daily
+      - run: python manage.py run_daily --phase "$PHASE"
       - name: Sync product catalogs from the company webshops
-        if: always()
+        if: always() && env.PHASE == 'full'
         continue-on-error: true
         run: python manage.py sync_products
       - name: Interpret saved review comments into lessons
-        if: always()
+        if: always() && env.PHASE == 'full'
         continue-on-error: true
         run: python manage.py interpret_feedback
       - name: Wake the cloud editor for queued cut jobs
-        if: always()
+        if: always() && env.PHASE == 'full'
         continue-on-error: true
         env:
           GITHUB_DISPATCH_TOKEN: ${{ github.token }}

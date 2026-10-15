@@ -10,6 +10,7 @@ from django.conf import settings
 from .apify import ApifyError, BudgetExceeded
 from .competitors import OPEN_STATUSES, collect_import, start_import
 from .daily import Result, Stage
+from .readiness import PROFILE_MISSING, analysis_ready
 from .media import advance_job, remove_asset
 from .models import Competitor, CompetitorImport, MediaAsset, MediaGeneration
 from .signals import analysis_candidates, classification_hash, classify
@@ -56,7 +57,26 @@ def competitor_units(company):
         # A manual early check must not mark a later-due refresh done for the entire day.
         anchor = account.last_success_at.isoformat() if account.last_success_at else "first"
         units.append((f"{account.pk}:{anchor}", partial(import_account, account)))
+    batchable = [u.args[0] for _, u in units if u.args[0].platform == "instagram"
+                 and not u.args[0].imports.filter(status__in=OPEN_STATUSES).exists()]
+    if len(batchable) >= 2:
+        # Start them together first; each account's own unit then only collects its part of the shared run.
+        units.insert(0, ("batch", partial(start_batch, "instagram", batchable)))
     return units
+
+
+def start_batch(kind, accounts):
+    """One shared Apify run per company (and per country/limit for ads) instead of one run per account."""
+    from . import ads, competitors
+    try:
+        started = (competitors.start_batch if kind == "instagram" else ads.start_batch)(accounts)
+    except BudgetExceeded as exc:
+        return Result("blocked", str(exc))
+    runs = sorted({r.actor_run_id for r in started if r.actor_run_id})
+    if not started:
+        return Result("skipped", "Inget konto behövde en ny hämtning.")
+    return Result(message=f"{len(started)} konton startade i {len(runs)} Apify-körning(ar).",
+                  data={"accounts": len(started), "runs": runs})
 
 
 def analyze_post(post, company):
@@ -87,6 +107,8 @@ def analysis_units(company):
     if (company.daily_steps.filter(run__day=timezone.localdate(), stage="competitor_import", status="pending").exists()
             and imports_running(company)):
         return [("await_imports", lambda: Result("pending", "Inväntar pågående importer före analys."))]
+    if not analysis_ready(company):
+        return [("needs-profile", lambda: Result("attention", PROFILE_MISSING))] if company.competitors.exists() else []
     return [("await_imports", lambda: Result("skipped", "Inga pågående importer."))] + [
         (f"{p.pk}:{classification_hash(p, company)}", partial(analyze_post, p, company)) for p in analysis_candidates(company)
     ]
@@ -175,14 +197,19 @@ def ads_units(company):
                     result.append((step.key, partial(import_ads, account)))
             continue
         result.append((f"{account.pk}:{state.watermark.isoformat() if state.watermark else 'first'}", partial(import_ads, account)))
+    from .ads import batchable
+    pages = [u.args[0] for key, u in result if not key.startswith(("batch",)) and batchable(u.args[0])
+             and not account_state(u.args[0]).requests.filter(status__in=OPEN_STATUSES).exists()]
+    if len(pages) >= 2:
+        result.insert(0, ("batch", partial(start_batch, "ads", pages)))
     return result
 
 
 def ads_analysis_units(company):
     from .ads import classification_hash, classify
     from .models import CompetitorAd
-    if not company.profile.strip() or not company.current.strip():
-        return []
+    if not analysis_ready(company):
+        return [("needs-profile", lambda: Result("attention", PROFILE_MISSING))] if company.ad_accounts.exists() else []
     candidates = CompetitorAd.objects.filter(account__company=company, account__active=True).order_by("-last_seen_at", "-pk")[:100]
     units = []
     for ad in candidates:
@@ -326,3 +353,8 @@ def idea_units(company):
 
 
 STAGES = (*STAGES, Stage("ideas", idea_units))
+
+
+# Morning start phase: Apify runs take seconds to minutes, so starting them about half an hour before the full run
+# lets that run collect finished data instead of spending its time budget waiting.
+START_STAGES = tuple(stage for stage in STAGES if stage.name in ("competitor_import", "ads_import"))

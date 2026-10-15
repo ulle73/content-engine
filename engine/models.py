@@ -167,7 +167,7 @@ class Competitor(models.Model):
 class CompetitorImport(models.Model):
     competitor = models.ForeignKey(Competitor, on_delete=models.CASCADE, related_name="imports")
     actor = models.CharField(max_length=100)
-    actor_run_id = models.CharField(max_length=100, unique=True, null=True)
+    actor_run_id = models.CharField(max_length=100, null=True, db_index=True)  # shared by a batch run
     dataset_id = models.CharField(max_length=100, blank=True)
     status = models.CharField(max_length=20, default="starting")
     started_at = models.DateTimeField(auto_now_add=True)
@@ -885,7 +885,7 @@ class ScrapeRequest(models.Model):
     mode = models.CharField(max_length=20)
     inputs = models.JSONField(default=dict)
     status = models.CharField(max_length=20, default="starting")
-    actor_run_id = models.CharField(max_length=100, unique=True, null=True)
+    actor_run_id = models.CharField(max_length=100, null=True, db_index=True)  # shared by a batch run
     dataset_id = models.CharField(max_length=100, blank=True)
     max_cost_usd = models.DecimalField(max_digits=10, decimal_places=4)
     cost_usd = models.DecimalField(max_digits=12, decimal_places=6, null=True)

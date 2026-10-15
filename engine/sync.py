@@ -49,17 +49,21 @@ def settled_costs(company_id):
     An Instagram run is done in seconds, yet its 0.02 USD cap stays reserved until a later pass collects it,
     so nine of them used to block the day's ad checks. Read-only: collection still records the cost.
     """
-    settled = {}
+    settled, members = {}, {}
     for request in (ScrapeRequest.objects.filter(state__company_id=company_id, created_at__date=timezone.localdate(),
                                                  cost_usd=None).exclude(actor_run_id=None)
-                    .exclude(actor_run_id__contains=":")):  # "virlo:…" – other providers report their own cost
+                    .exclude(actor_run_id__contains=":").order_by("pk")):  # "virlo:…" reports its own cost
+        members.setdefault(request.actor_run_id, []).append(request.pk)
+    for run_id, pks in members.items():
         try:
-            remote = apify.get_run(request.actor_run_id)
+            remote = apify.get_run(run_id)
         except apify.ApifyError:
             continue
         cost = remote.get("usageTotalUsd")
         if remote.get("status") in FINISHED_RUN and isinstance(cost, (int, float)) and not isinstance(cost, bool) and cost >= 0:
-            settled[request.pk] = Decimal(str(cost))
+            # A batch run is shared by several accounts: its cost counts once.
+            settled.update({pk: Decimal("0") for pk in pks})
+            settled[pks[0]] = Decimal(str(cost))
     return settled
 
 
@@ -140,6 +144,98 @@ def dispatch(state, actor, mode, inputs, *, max_cost="0.10", sender=None, provid
         request.result = {"provider": provider, "remote_id": remote["id"]}
     request.save(update_fields=["actor_run_id", "dataset_id", "status", "cost_usd", "result"])
     return request
+
+
+BATCH_TIMEOUT_BASE_S = 300
+BATCH_TIMEOUT_PER_ACCOUNT_S = 90
+
+
+def dispatch_batch(members, actor, inputs, *, period=None, sender=None):
+    """One Apify run for several accounts of one company: fewer concurrent runs (the free plan allows 5) and one
+    start instead of many. Every account keeps its own ScrapeRequest – ledger, yield, watermark and collection stay
+    per account – and they all share the run id. `members` are (state, mode, account_inputs, max_cost); keys of
+    `inputs` starting with "_" are ours and never sent.
+
+    Returns {state.pk: request}; an account with an open or same-day request keeps that one and is not started."""
+    if not members:
+        return {}
+    company_id = members[0][0].company_id
+    if any(state.company_id != company_id for state, *_ in members):
+        raise ValueError("En batch hör till ett företag.")
+    now = timezone.now()
+    day = period or timezone.localdate().isoformat()
+    limit = daily_limit()
+    wanted = sum((Decimal(cap) for *_, cap in members), Decimal("0"))
+    settled = settled_costs(company_id) if spent_today(company_id) + wanted > limit else {}
+    result, created, requests = {}, [], []
+    with transaction.atomic():
+        Company.objects.select_for_update().get(pk=company_id)
+        for state, mode, account_inputs, member_cap in members:
+            state = ScraperState.objects.select_for_update().get(pk=state.pk)
+            key = fingerprint([state.pk, actor, mode, day])
+            existing = state.requests.filter(status__in=OPEN).first() or state.requests.filter(key=key).first()
+            if existing:
+                result[state.pk] = existing
+                continue
+            created.append((state, mode, account_inputs, Decimal(member_cap), key))
+        if not created:
+            return result
+        cap = sum((member[3] for member in created), Decimal("0"))
+        spent = spent_today(company_id, settled)
+        if cap <= 0 or spent + cap > limit:
+            raise apify.BudgetExceeded(
+                f"Dagens kostnadsgräns för företagets scrapers är nådd ({spent:.3f} av {limit:.2f} USD använt eller "
+                f"reserverat, batchen behöver {cap:.3f}). Försök nästa dygn.")
+        batch = {"accounts": len(created), "max_items": inputs.get("_max_items")}
+        for state, mode, account_inputs, member_cap, key in created:
+            request = ScrapeRequest.objects.create(state=state, key=key, actor=actor, mode=mode,
+                                                   inputs={**account_inputs, "batch": batch}, max_cost_usd=member_cap)
+            if mode == "backfill" and not state.backfill_attempted_at:
+                state.backfill_attempted_at = now
+                state.save(update_fields=["backfill_attempted_at"])
+            if mode == "refresh":
+                state.details = {**state.details, "last_refresh_attempt_at": now.isoformat()}
+                state.save(update_fields=["details"])
+            requests.append(request)
+            result[state.pk] = request
+    body = {k: v for k, v in inputs.items() if not k.startswith("_")}
+    # One account takes up to ~30 s (Instagram, 100 posts); the single-run 300 s would cut a batch short.
+    # Time is not billed per se – maxTotalChargeUsd still caps the spend.
+    timeout = min(BATCH_TIMEOUT_BASE_S + BATCH_TIMEOUT_PER_ACCOUNT_S * len(created), 3600)
+    try:
+        remote = sender() if sender else apify.api(
+            "POST", f"/acts/{actor.replace('/', '~')}/runs", json=body,
+            params={"timeout": timeout, "maxTotalChargeUsd": float(cap)})["data"]
+        if not remote.get("id") or not remote.get("defaultDatasetId"):
+            raise apify.ApifyError("Startsvaret saknar körnings-id.", uncertain=True)
+    except Exception as exc:
+        uncertain = exc.uncertain if isinstance(exc, apify.ApifyError) else True
+        safe_error = (str(exc)[:500] if isinstance(exc, apify.ApifyError) else
+                      "Providerstarten kunde inte bekräftas. Kontrollera Apify före nytt försök.")
+        status = "unknown" if uncertain else "failed"
+        for request in requests:
+            request.status, request.result = status, {
+                "error": safe_error, "http_status": getattr(exc, "status_code", None),
+                "error_type": getattr(exc, "error_type", None)}
+            if status == "failed":
+                request.cost_usd = Decimal("0")  # Definitively rejected POST, no Actor run accepted.
+            request.save(update_fields=["status", "result", "cost_usd"])
+        raise apify.ApifyError(safe_error, uncertain=uncertain, status_code=getattr(exc, "status_code", None),
+                               error_type=getattr(exc, "error_type", None)) from exc
+    ScrapeRequest.objects.filter(pk__in=[r.pk for r in requests]).update(
+        actor_run_id=remote["id"], dataset_id=remote["defaultDatasetId"], status="running")
+    for request in requests:
+        request.actor_run_id, request.dataset_id, request.status = remote["id"], remote["defaultDatasetId"], "running"
+    return result
+
+
+def batch_share(request, own_rows, all_rows, total_cost):
+    """An account's part of a shared run's cost, by the rows it got (evenly when the run returned nothing)."""
+    if total_cost is None:
+        return None
+    members = max(1, int((request.inputs.get("batch") or {}).get("accounts") or 1))
+    share = Decimal(own_rows) / Decimal(all_rows) if all_rows else Decimal(1) / members
+    return (Decimal(str(total_cost)) * share).quantize(Decimal("0.000001"))
 
 
 def finish(request, *, status, cost, result, observed_at):
