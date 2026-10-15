@@ -1,6 +1,6 @@
 """Curated start lists of accounts and ad pages to follow per company (library/follow-lists/*.json).
 
-Instagram and TikTok accounts, Meta ad pages (page id, or a page URL whose id is learnt on the first fetch) and Ad
+Instagram and TikTok accounts (`"own": true` marks the company's own account), Meta ad pages (page id, or a page URL whose id is learnt on the first fetch) and Ad
 Library keyword searches (`ad_keywords`, e.g. "friskvårdsbidrag").
 
 A list is matched to a company by its brand kit (`Company.brand["follow_list"]`) or by name alias.
@@ -72,7 +72,8 @@ def apply(company, *, start_imports: bool = True) -> dict:
     for platform in ("instagram", "tiktok"):
         for entry in todo[platform]:
             competitor = Competitor.objects.create(company=company, name=entry["name"][:200], platform=platform,
-                                                   username=username_for(platform, entry["username"]))
+                                                   username=username_for(platform, entry["username"]),
+                                                   own=bool(entry.get("own")))
             added_accounts += 1
             if start_imports:
                 try:

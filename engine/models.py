@@ -147,6 +147,8 @@ class Competitor(models.Model):
     name = models.CharField(max_length=200)
     platform = models.CharField(max_length=10, choices=PLATFORMS, default="instagram")
     username = models.CharField(max_length=30)
+    # The company's own account, scraped like the others: its hits are the strongest templates for new ideas.
+    own = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
     last_success_at = models.DateTimeField(null=True)
     last_error = models.CharField(max_length=500, blank=True)
@@ -1091,3 +1093,6 @@ from .edit.models import EditJob  # noqa: F401,E402
 
 # Reference videos: competitor ads/posts or any URL, measured and broken down to make our own version (engine/references).
 from .references.models import ReferenceVideo  # noqa: F401,E402
+
+# Idea cards: monitored hits pitched in Discord before anything is produced (engine/ideas).
+from .ideas.models import IdeaCard  # noqa: F401,E402

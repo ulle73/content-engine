@@ -72,7 +72,9 @@ SYSTEM = (
     "2. Material: äkta rörlig film? Stillbilder med text, mall-, webb- eller PowerPoint-känsla och billiga effekter "
     "(blixtar, glow, guldsfär, 3D-text, konfetti) drar ner kraftigt. Känns det inbyggt i flödet, inte som reklam?\n"
     "3. Tempo: klipp ungefär varje sekund (dialog får vara längre), inget förutsägbart tempo, klipp på takten.\n"
-    "4. Text: läsbar i mobil, kort, inom säkra ytor, tillräckligt länge på skärmen, inga stavfel.\n"
+    "4. Text: läsbar i mobil, kort, tillräckligt länge på skärmen, inga stavfel. Säkra ytor (9:16): text, logga "
+    "och produkt får inte ligga i översta 14 %, nedersta 35 % eller ytterkanterna (6 % vänster, 14 % höger) – där "
+    "ligger Instagrams namn, bildtext och knappar.\n"
     "5. Ljud: musik och effekter som passar, ingen tystnad, rimlig mix.\n"
     "6. Slut: tydlig uppmaning (CTA) och avsändare.\n"
     "Följ också receptets qa-lista om den finns. Var ärlig och sträng: 7 betyder bra nog att publicera, 9–10 ska "
@@ -185,7 +187,7 @@ def critique(job, video: bytes) -> dict:
         try:
             result, meta = structured_analysis(
                 system=SYSTEM, payload={**payload, "input": "Hela videon med ljud bifogas."}, schema=CutCritique,
-                operation="cut_critique", max_tokens=1600,
+                operation="cut_critique", max_tokens=4000,
                 videos=["data:video/mp4;base64," + base64.b64encode(video).decode("ascii")])
             used = "video"
         except OpenRouterError as exc:

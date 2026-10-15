@@ -284,8 +284,11 @@ def route_signature():
 
 
 def video_model():
-    """Model that watches whole videos with sound (Gemini via OpenRouter); defaults to the vision tier."""
-    return os.environ.get("OPENROUTER_VIDEO_MODEL", "").strip() or vision_model()
+    """Model that watches whole videos with sound (Gemini via OpenRouter). Defaults to the reference breakdown model:
+    the 2026-10-13 comparison showed Flash-Lite missing music and transitions, so it is too weak to judge a cut."""
+    from engine.references.breakdown import default_model
+
+    return os.environ.get("OPENROUTER_VIDEO_MODEL", "").strip() or default_model()
 
 
 def vision_model():

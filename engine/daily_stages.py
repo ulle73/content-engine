@@ -268,3 +268,29 @@ def reference_units(company):
 
 
 STAGES = (*STAGES, Stage("reference_breakdown", reference_units))
+
+
+def idea_units(company):
+    """Pitch new hits (own posts first) and send at most IDEA_WEEKLY_MAX idea cards a week to Discord (engine/ideas).
+    Off with IDEA_DAILY_LIMIT=0 or without an OpenRouter key."""
+    import os
+
+    from .ideas import service
+    from .review.service import ReviewError
+
+    if service.daily_breakdowns() <= 0 or not os.environ.get("OPENROUTER_API_KEY", "").strip():
+        return []
+
+    def work():
+        try:
+            data = service.daily(company)
+        except ReviewError as exc:
+            return Result("attention", f"Idékortet kunde inte skickas: {exc}"[:300])
+        sent = f" Skickat: {data['sent']}." if data["sent"] else " Inget kort skickat."
+        status = "attention" if data["errors"] and not data["pitched"] else "success"
+        return Result(status, f"{len(data['pitched'])} nya idéer bedömda.{sent}"[:300], data)
+
+    return [("ideas", work)]
+
+
+STAGES = (*STAGES, Stage("ideas", idea_units))

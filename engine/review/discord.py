@@ -10,6 +10,9 @@ custom_id protocol:
     ce:ok:<review>      👍 approve          ce:no:<review>        👎 reject
     ce:rate:<review>    1–10 select menu    ce:note:<review>      opens comment modal  → ce:notetext:<review>
     ce:edit:<review>    opens change modal  → ce:edittext:<review>
+
+The same protocol serves idea cards (engine/ideas/discord.py): an id that is not a Review is looked up as an IdeaCard,
+where ce:ok means 👍 Skapa. n8n needs no change.
 """
 
 from __future__ import annotations
@@ -98,24 +101,29 @@ def card(review: Review) -> dict:
     }
 
 
-def send(review: Review, *, client=None) -> Review:
+def post(payload: dict, company, *, client=None) -> dict:
+    """Send one card ({channel_id, message, attachment}) to the n8n publisher. Returns its answer (message_id …)."""
     url = os.environ.get("CONTENT_N8N_DISCORD_URL", "")
-    payload = card(review)
     if not url or not os.environ.get("CONTENT_N8N_SECRET"):
         raise service.ReviewError("Discord-kopplingen är inte konfigurerad (CONTENT_N8N_DISCORD_URL/CONTENT_N8N_SECRET).")
     if not payload["channel_id"]:
-        raise service.ReviewError(f"{review.company.name} har ingen Discord-kanal för granskning.")
+        raise service.ReviewError(f"{company.name} har ingen Discord-kanal för granskning.")
     own = client is None
     client = client or httpx.Client(timeout=120)
     try:
         response = client.post(url, json=payload, headers={"X-Content-Engine-Secret": os.environ["CONTENT_N8N_SECRET"]})
         response.raise_for_status()
-        data = response.json()
+        return response.json()
     except (httpx.HTTPError, ValueError) as exc:
         raise service.ReviewError(f"Kunde inte posta i Discord: {exc}") from exc
     finally:
         if own:
             client.close()
+
+
+def send(review: Review, *, client=None) -> Review:
+    payload = card(review)
+    data = post(payload, review.company, client=client)
     review.discord_channel_id = str(data.get("channel_id") or payload["channel_id"])
     review.discord_message_id = str(data.get("message_id") or data.get("id") or "")
     review.save(update_fields=["discord_channel_id", "discord_message_id"])
@@ -134,7 +142,10 @@ def handle(data: dict) -> dict:
                          f"Be Jonas lägga till ditt Discord-ID: `{user.get('id', '?')}`"}
     review = Review.objects.select_related("company", "asset").filter(pk=review_id).first() if len(review_id) == 36 else None
     if not review:
-        return {"reply": "Videon finns inte längre."}
+        from engine.ideas import discord as idea_discord
+
+        answer = idea_discord.handle(action, review_id, user, data)
+        return answer or {"reply": "Videon finns inte längre."}
     if review.status == "superseded" and action in {"ok", "no", "edit"}:
         return {"reply": "Det finns en nyare version av videon. Granska den i stället."}
     reviewer = {"id": str(user.get("id", "")), "name": str(user.get("name", ""))}

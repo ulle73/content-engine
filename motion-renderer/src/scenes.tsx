@@ -167,7 +167,7 @@ export function SceneContents(c: SceneContext) {
           height="160"
           style={{
             position: "absolute",
-            right: s.x,
+            right: w - s.x - s.w,
             top: s.y + s.h * 0.76,
             opacity: 0.25,
             transform: `rotate(${f * 0.8}deg)`,
