@@ -35,6 +35,10 @@ class ApifyError(Exception):
         self.error_type = error_type
 
 
+class BudgetExceeded(ApifyError):
+    """The company's daily scraper ceiling leaves no room for this run; nothing was started."""
+
+
 def _clean_error_text(value):
     return " ".join(str(value or "").split())[:500]
 

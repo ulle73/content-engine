@@ -152,7 +152,7 @@ Default research price: **$0.50/run**, **$1.50/week/company**, approximately
 calls were made during implementation. Runtime actual cost comes from `X-Cost`;
 missing reports remain unknown and are not shown as a measured zero. Virlo has
 separate totals/rows in the existing cost screen. Unknown requests reserve $0.50
-against the shared `SCRAPER_DAILY_BUDGET_USD` (default $1/company/day).
+against the shared `SCRAPER_DAILY_BUDGET_USD` (default $0.50/company/day).
 
 The reservation is an application estimate, not a Virlo-enforced price cap;
 provider price changes require updating the estimate. Apify's existing provider

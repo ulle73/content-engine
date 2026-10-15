@@ -10,9 +10,24 @@ POST_TYPES = {"draft", "schedule", "now"}
 
 
 class PostizError(Exception):
-    def __init__(self, message, *, uncertain=False):
+    def __init__(self, message, *, uncertain=False, status_code=None):
         super().__init__(message)
         self.uncertain = bool(uncertain)
+        self.status_code = status_code
+
+
+def _rejection(response):
+    """Our own message for a rejected call; Postiz's response body is never passed on."""
+    try:
+        detail = str((response.json() or {}).get("msg") or "")
+    except (ValueError, AttributeError):
+        detail = ""
+    if response.status_code == 401 and "subscription" in detail.lower():
+        # Postiz Cloud answers every public API call with this while the organisation lacks an active plan.
+        return "Postiz-kontot saknar aktivt abonnemang (HTTP 401). Förnya abonnemanget i Postiz eller koppla bort Postiz."
+    if response.status_code == 401:
+        return "Postiz godkänner inte API-nyckeln (HTTP 401). Lägg in en ny nyckel under Anslut Postiz."
+    return f"Postiz svarade med HTTP {response.status_code}. Kontrollera kontot och anslutningen i Postiz."
 
 
 def request(key, method, path, **kwargs):
@@ -25,8 +40,9 @@ def request(key, method, path, **kwargs):
         if response.is_error:
             # A rejected 4xx is definitive. A server-side failure after a POST may have accepted the write.
             raise PostizError(
-                f"Postiz svarade med HTTP {response.status_code}. Kontrollera kontot och anslutningen i Postiz.",
+                _rejection(response),
                 uncertain=mutating and response.status_code >= 500,
+                status_code=response.status_code,
             )
         try:
             return response.json()
