@@ -1,0 +1,65 @@
+{
+  "kit": "golfkuponger",
+  "title": "Golfkuponger – 3D-element i Blender (alfa-klipp att lägga ovanpå filmer)",
+  "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; Blender (GPL, blender.org) används som verktyg, renderingarna är våra; Inter (SIL OFL)"
+  },
+  "items": [
+    {
+      "id": "golfkuponger.blender3d.mall",
+      "name": "3D-element i Blender – titel i guld + golfboll (alfa, 9:16)",
+      "type": "template",
+      "medium": "video",
+      "formats": ["9:16"],
+      "engine": "blender",
+      "description": "Riktig 3D från Blender (headless, Eevee) som genomskinliga klipp att lägga ovanpå Remotion-, HyperFrames- eller FilmCraft-filmer: (1) 3D-rubrik i guld #D6A536 som snurrar in ur djupet med ljussvep, (2) golfboll med riktiga dimplar i studioljus som studsar in och rullar till vila med kontaktskugga. Ett kommando ger PNG-sekvens, ProRes 4444 och WebM VP9 med alfa, MP4-förhandsvisning, magentakontroll och QA (safe zones, läsregel). Exempel i Remotion: bollen rullar in på greenen i Årsskiftet-filmen.",
+      "tags": ["3d", "blender", "alfa", "transparent", "overlay", "guld", "rubrik", "titel", "3d-text", "golfboll", "boll", "studs", "rullar", "studioljus", "prores", "webm", "eevee", "golfkuponger"],
+      "path": "library/templates/golfkuponger-blender-3d/render.py",
+      "use": "python library/templates/golfkuponger-blender-3d/render.py titel|golfboll --out work/<projekt>/3d/<namn> [--test] [--set nyckel=värde]. Lägg <namn>.webm i filmen med <OffthreadVideo transparent> (Remotion) eller <namn>.mov i FilmCraft/Resolve. Läs README.md.",
+      "requires": ["blender", "ffmpeg", "python"],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-16",
+      "preview": {"video": "library/previews/golfkuponger.blender3d.mall.mp4", "still": "library/previews/golfkuponger.blender3d.mall.jpg"},
+      "notes": "Renderad och granskad av agenten 2026-10-16 (bildrutor på magenta, rörelse som video, avkodning av alla filer), inte godkänd av Jonas än. Ljud ingår inte – välj och prova ljud i filmen enligt skills/ljud. Ingen HDRI: studiomiljön är procedurell (inget nedladdat)."
+    },
+    {
+      "id": "golfkuponger.blender3d.titel",
+      "name": "3D-rubrik i guld som snurrar in (Blender, alfa)",
+      "type": "text",
+      "medium": "video",
+      "formats": ["9:16"],
+      "engine": "blender",
+      "description": "Extruderad rubrik i Inter Bold, guldmetall #D6A536 med fas. Snurrar 270° in ur djupet och växer (ease-out, 0,9 s), landar mjukt, ett ljussvep går över guldet, lätt gungning medan den står. Skalas till 800 px bredd inom safe zone (mitt x 497, y 620). Läsregeln stoppar renderingen om texten står för kort. Valfri utgång: snurr ut.",
+      "tags": ["3d-text", "rubrik", "titel", "guld", "metall", "snurr", "spin", "kinetisk", "blender", "alfa", "overlay"],
+      "path": "library/templates/golfkuponger-blender-3d/blender3d.py",
+      "use": "render.py titel --out work/<projekt>/3d/titel --set text=\"MER GOLF\" (nycklar: text, color, font, bredd_px, x, y, spin_deg, exit=spin, glint_energy)",
+      "requires": ["blender", "ffmpeg", "python"],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-16",
+      "preview": {"video": "library/previews/golfkuponger.blender3d.titel.mp4", "still": "library/previews/golfkuponger.blender3d.titel.jpg"},
+      "notes": "Å/Ä/Ö fungerar med Inter. Baksidan syns spegelvänd en kort stund i snurren (avsiktligt, 3D)."
+    },
+    {
+      "id": "golfkuponger.blender3d.golfboll",
+      "name": "Golfboll som studsar in och rullar (Blender, alfa)",
+      "type": "effect",
+      "medium": "video",
+      "formats": ["9:16"],
+      "engine": "blender",
+      "description": "Fotorealistisk golfboll: 336 dimplar formade i geometrin (163 842 hörn), vit lack med klarlack, studioljus med kantljus. Faller in från höger, studsar tre gånger (e = 0,5, lätt squash), rullar utan glidning till vila på x 497, y 960, 420 px diameter. Halvgenomskinlig kontaktskugga som följer med i alfan.",
+      "tags": ["golfboll", "boll", "3d", "studs", "bounce", "rullar", "produkt", "studioljus", "blender", "alfa", "overlay", "skugga"],
+      "path": "library/templates/golfkuponger-blender-3d/blender3d.py",
+      "use": "render.py golfboll --out work/<projekt>/3d/boll (nycklar: x, y, diameter_px, studs_px, studsar, intro, frames, skugga, djup)",
+      "requires": ["blender", "ffmpeg", "python"],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-16",
+      "preview": {"video": "library/previews/golfkuponger.blender3d.golfboll.mp4", "still": "library/previews/golfkuponger.blender3d.golfboll.jpg"},
+      "notes": "Skuggan är ett plan med radiell gradient (Eevee har ingen shadow catcher) – den syns bara där bollen står på en tänkt mark; lägg bollen där filmens mark är (y/diameter_px)."
+    }
+  ]
+}
