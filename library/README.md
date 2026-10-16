@@ -70,7 +70,7 @@ automatiskt när Claude Code körs i repot.
 | `type` | `template` (hel video/karusell) · `scene` · `effect` · `transition` · `text` (textanimation/typografi) · `caption` · `grade` (färgsättning) · `background` · `carousel` · `skill` · `prompt` · `sound` · `tool` · `recipe` (produktionsrecept) · `model` (model playbook) |
 | `medium` | `video` · `carousel` · `image` · `audio` · `text` |
 | `formats` | `9:16` · `1:1` · `4:5` · `16:9` · `any` |
-| `engine` | `hyperframes` · `remotion` · `html-playwright` · `python` · `canvas` · `none` |
+| `engine` | `hyperframes` · `remotion` · `html-playwright` · `python` · `canvas` · `blender` (3D, headless bpy) · `none` |
 | `cost` | `free` · `paid` (ange tjänst i `requires`, t.ex. `api:kie.ai`) |
 | `status` | `verified` (renderad och granskad) · `unverified` · `broken` (beskriv i `notes`) |
 | `preview` | `null` eller `{ "video": "library/previews/<id>.mp4", "still": "library/previews/<id>.jpg" }` |
