@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Teknikbanken · {{ workspace.name }}{% endblock %}
+{% block content %}
+<main class="engine creative-page">
+  <header class="page-header"><div>
+    <p class="eyebrow">Content Library</p>
+    <h1>Teknikbanken</h1>
+    <p class="intro">Klistra in en artikel eller videolänk. Granska teknikerna och välj vilka du vill spara.</p>
+  </div></header>
+  {% include "engine/library_tabs.html" %}
+
+  <section class="creative-panel">
+    <h2>Lägg till tekniker från en länk</h2>
+    <form method="post" class="creative-form">
+      {% csrf_token %}
+      <label for="technique-link">Källänk (HTTPS)</label>
+      <input id="technique-link" name="url" type="url" required maxlength="2000"
+             placeholder="https://how-to-make-realistic-footage.vercel.app/" style="width:100%">
+      <div class="creative-actions"><button name="action" value="suggest" type="submit">Analysera och föreslå</button></div>
+      <p class="small">En mindre AI-kostnad kan uppstå. Inget sparas före ditt godkännande och ingen AI-video genereras.</p>
+    </form>
+  </section>
+
+  {% if batch %}
+  <section class="creative-panel" aria-labelledby="technique-review">
+    <h2 id="technique-review">Granska förslagen</h2>
+    <p><a href="{{ batch.source_url }}" rel="noopener noreferrer" target="_blank">{{ batch.source_url }}</a></p>
+    <p class="small">Kostnad för analys enligt leverantör: {{ batch.analysis_cost_usd }} USD. Nya externa tekniker är hypoteser tills de testats hos oss.</p>
+    {% if batch.status == "review" %}
+    <form method="post">{% csrf_token %}
+      <input type="hidden" name="import_id" value="{{ batch.pk }}">
+      {% for item in batch.suggestions %}
+      <article class="creative-panel">
+        <label>
+          <input type="checkbox" name="selected" value="{{ forloop.counter0 }}" {% if item.duplicate_of %}disabled{% else %}checked{% endif %}>
+          <strong>{{ item.name }}</strong> – {{ item.role }}
+        </label>
+        {% if item.duplicate_of %}<p class="small">Liknar redan {{ item.duplicate_of }} (dublett föreslås inte).</p>{% endif %}
+        <p>{{ item.description }}</p>
+        <p><strong>Så gör vi:</strong> {{ item.how }}</p>
+        <p><strong>Passar när:</strong> {{ item.when }}</p>
+        {% if item.camera_prompt %}<p><strong>Videoprompt:</strong> <code>{{ item.camera_prompt }}</code></p>{% endif %}
+        <p><strong>För {{ workspace.name }}:</strong> {{ item.example }}</p>
+        <p class="small"><strong>Källstöd:</strong> {{ item.evidence }}</p>
+      </article>
+      {% endfor %}
+      <div class="creative-actions"><button name="action" value="approve" type="submit">Godkänn markerade tekniker</button></div>
+    </form>
+    {% else %}
+      <p>Importen är godkänd. {{ batch.saved.count }} tekniker sparades och kan hittas via Content Library.</p>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  <section class="creative-panel">
+    <h2>Sparade tekniker</h2>
+    <p class="small">{{ base_count }} gemensamma tekniker i GitHub + {{ saved|length }} egna tekniker för {{ workspace.name }}.</p>
+    {% for entry in saved %}
+      <p><strong>{{ entry.data.name }}</strong> – {{ entry.data.description }} <span class="small"> · <a href="{{ entry.data.source_url }}" target="_blank" rel="noopener noreferrer">Källa</a></span></p>
+    {% empty %}
+      <p class="small">Inga egna tekniker sparade ännu. De gemensamma teknikerna finns kvar.</p>
+    {% endfor %}
+  </section>
+  {% if batches %}
+  <section class="creative-panel">
+    <h2>Tidigare länkar</h2>
+    {% for entry in batches %}
+      <p><a href="?review={{ entry.pk }}">{{ entry.source_url }}</a> · {{ entry.get_status_display }}</p>
+    {% endfor %}
+  </section>
+  {% endif %}
+</main>
+{% endblock %}

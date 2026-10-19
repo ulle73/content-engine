@@ -1096,3 +1096,6 @@ from .references.models import ReferenceVideo  # noqa: F401,E402
 
 # Idea cards: monitored hits pitched in Discord before anything is produced (engine/ideas).
 from .ideas.models import IdeaCard  # noqa: F401,E402
+
+# Approved per-company techniques extend the static Content Library catalog.
+from .techniques.models import TechniqueImport, StoredTechnique  # noqa: F401,E402
