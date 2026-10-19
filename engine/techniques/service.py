@@ -9,6 +9,7 @@ import ipaddress
 import re
 import socket
 from decimal import Decimal, InvalidOperation
+from uuid import UUID
 from html.parser import HTMLParser
 from urllib.parse import urlsplit, urlunsplit
 
@@ -28,7 +29,7 @@ from .models import StoredTechnique, TechniqueImport
 
 VIDEO_HOSTS = ("youtube.com", "youtu.be", "instagram.com", "tiktok.com", "facebook.com", "fb.watch", "vimeo.com")
 MAX_PAGE_BYTES = 320_000
-MAX_SOURCE_CHARS = 23_000
+MAX_SOURCE_CHARS = 48_000
 ROLES = ("krok", "retention", "vändning", "bevis", "cta", "struktur", "övergång", "text", "kamera")
 
 
@@ -145,13 +146,18 @@ def _page_text(url: str) -> str:
     text = re.sub(r"[ \t]+", " ", text).strip()
     if len(text) < 120:
         raise ValueError("Webbsidan saknar tillräcklig läsbar text. Klistra in en tydligare källänk.")
-    return text[:MAX_SOURCE_CHARS]
+    if len(text) <= MAX_SOURCE_CHARS:
+        return text
+    # Long tutorial pages often put the useful camera techniques after lengthy examples.
+    # Preserve the start and the end, instead of silently losing later sections.
+    return text[:8_000] + "\n[... lång mellandel utelämnad ...]\n" + text[-40_000:]
 
 
 def _source(company, url: str, kind: str):
     if kind == "page":
         return _page_text(url), "", None, Decimal("0")
     ref = ReferenceVideo.objects.filter(company=company, source_url=url, status="analyzed").first()
+    reused = ref is not None
     if ref is None:
         ref = references.process(company, url)
     if not ref.breakdown:
@@ -163,7 +169,7 @@ def _source(company, url: str, kind: str):
                            "purpose": s.get("purpose")} for s in b.get("scenes", [])[:35]],
                "structure": b.get("structure"), "hook": b.get("hook")}
     import json
-    return json.dumps(summary, ensure_ascii=False)[:MAX_SOURCE_CHARS], ref.title, ref, ref.cost_usd
+    return json.dumps(summary, ensure_ascii=False)[:MAX_SOURCE_CHARS], ref.title, ref, (Decimal("0") if reused else ref.cost_usd)
 
 
 def _existing(company):
@@ -245,8 +251,15 @@ def propose(company, user, url: str) -> TechniqueImport:
     )
 
 
+def _batch_uuid(value):
+    try:
+        return UUID(str(value))
+    except (ValueError, TypeError, AttributeError) as exc:
+        raise ValueError("Ogiltigt teknikförslags-id.") from exc
+
+
 def owned(company, batch_id: str) -> TechniqueImport:
-    batch = TechniqueImport.objects.filter(company=company, pk=batch_id).first()
+    batch = TechniqueImport.objects.filter(company=company, pk=_batch_uuid(batch_id)).first()
     if batch is None:
         raise ValueError("Teknikförslaget finns inte för detta företag.")
     return batch
@@ -294,7 +307,7 @@ def _entry(company, batch, suggestion: dict, approver) -> StoredTechnique | None
 
 @transaction.atomic
 def approve(company, user, batch_id: str, selected_indices: list[int]) -> dict:
-    batch = TechniqueImport.objects.select_for_update().filter(company=company, pk=batch_id).first()
+    batch = TechniqueImport.objects.select_for_update().filter(company=company, pk=_batch_uuid(batch_id)).first()
     if batch is None:
         raise ValueError("Teknikförslaget finns inte för detta företag.")
     if batch.status == "approved":
