@@ -84,14 +84,15 @@ def register(mcp, company_for, run_for, user_for, safe_call):
         Propose 2-3 combinations (base template + effects + text + sound) and let the user pick."""
         company = company_for(company_ref)
         return library.search(query, type=type, format=format, medium=medium, kit=kit,
-                              verified_only=verified_only, limit=limit, feedback=lessons.library_feedback(company))
+                              verified_only=verified_only, limit=limit, feedback=lessons.library_feedback(company),
+                              company=company)
 
     @mcp.tool(title="Get content library item", annotations=read)
     @database_tool
     def get_content_library_item(company_ref: str, item_id: str) -> dict:
         """Full details for one Content Library item: how to use it, requirements, cost, preview and file path."""
-        company_for(company_ref)
-        return safe_call(library.get, item_id)
+        company = company_for(company_ref)
+        return safe_call(library.get, item_id, company=company)
 
     @mcp.tool(title="Search products", annotations=read)
     @database_tool
