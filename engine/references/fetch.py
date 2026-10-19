@@ -18,10 +18,14 @@ import httpx
 
 MAX_BYTES = 200 * 1024 * 1024
 AD_LIBRARY = re.compile(r"facebook\.com/ads/library/?\?(?:.*&)?id=(\d+)")
-# One file with picture and sound. The server has no ffmpeg binary (only PyAV), so it cannot merge.
+# One file with picture and sound.
 FORMAT_SINGLE = "best[ext=mp4][vcodec!=none][acodec!=none]/best[vcodec!=none][acodec!=none]/best"
 # With ffmpeg (locally): best video up to 1080p + audio merged to mp4, else the single file.
 FORMAT_MERGED = "bv*[height<=1080][vcodec^=avc1]+ba[ext=m4a]/bv*[height<=1080]+ba/" + FORMAT_SINGLE
+# Without ffmpeg (the server has only PyAV): a combined file when there is one, else video and audio as two files
+# (the comma downloads both) that _remux puts in one mp4. Plain "best" comes last: on YouTube it is a stream-only file.
+FORMAT_SEPARATE = ("best[ext=mp4][vcodec!=none][acodec!=none]/best[vcodec!=none][acodec!=none]/"
+                   "((bv*[height<=1080][vcodec^=avc1]/bv*[height<=1080]),(ba[ext=m4a]/ba))/best")
 # yt-dlp only enables deno as JS runtime by default; node is what is installed locally. YouTube then gives only
 # separate video and audio (DASH) formats: the clients with a combined file need PO tokens (HTTP 403 without).
 JS_RUNTIMES = {"deno": {}, "node": {}}
@@ -84,6 +88,38 @@ def _direct(url: str) -> Fetched | None:
         return None
 
 
+def _remux(paths: list[Path], target: Path) -> Path:
+    """Put the first video stream and the first audio stream from separate files in one mp4, without re-encoding."""
+    import av
+
+    inputs = [av.open(str(path)) for path in paths]
+    try:
+        streams = [s for s in (next((s for c in inputs for s in c.streams.video), None),
+                               next((s for c in inputs for s in c.streams.audio), None)) if s is not None]
+        if not streams:
+            raise FetchError("Den hämtade videon gick inte att läsa.")
+        with av.open(str(target), mode="w", format="mp4") as out:
+            outputs = {s: out.add_stream_from_template(s) for s in streams}
+            demuxers = {s: s.container.demux(s) for s in streams}
+            pending = {s: next(demuxers[s], None) for s in streams}
+            while any(p is not None for p in pending.values()):
+                # Interleave by time: always write the packet that comes first.
+                stream = min((s for s, p in pending.items() if p is not None),
+                             key=lambda s: float((pending[s].dts or 0) * pending[s].time_base))
+                packet = pending[stream]
+                pending[stream] = next(demuxers[stream], None)
+                if packet.dts is None:  # the demuxer's empty flush packet
+                    continue
+                packet.stream = outputs[stream]
+                out.mux(packet)
+    except av.FFmpegError as exc:
+        raise FetchError("Bild och ljud kunde inte slås ihop: " + str(exc)[:200]) from exc
+    finally:
+        for container in inputs:
+            container.close()
+    return target
+
+
 def _yt_dlp(url: str) -> Fetched:
     try:
         import yt_dlp
@@ -92,8 +128,8 @@ def _yt_dlp(url: str) -> Fetched:
     can_merge = bool(shutil.which("ffmpeg"))
     with tempfile.TemporaryDirectory() as tmp:
         options = {
-            "outtmpl": str(Path(tmp) / "video.%(ext)s"),
-            "format": FORMAT_MERGED if can_merge else FORMAT_SINGLE,
+            "outtmpl": str(Path(tmp) / "video.%(format_id)s.%(ext)s"),
+            "format": FORMAT_MERGED if can_merge else FORMAT_SEPARATE,
             "merge_output_format": "mp4", "js_runtimes": JS_RUNTIMES,
             "noplaylist": True, "playlist_items": "1", "max_filesize": MAX_BYTES,
             "quiet": True, "no_warnings": True, "noprogress": True, "retries": 1, "socket_timeout": 30,
@@ -108,9 +144,9 @@ def _yt_dlp(url: str) -> Fetched:
                     from exc
             if "No video formats" in message:
                 raise FetchError("Ingen video hittades på länken (det kan vara en bild- eller textannons).") from exc
-            if "Requested format is not available" in message and not can_merge:
-                raise FetchError("Videon finns bara som separat bild och ljud (som på YouTube) och här finns inget "
-                                 "ffmpeg som kan slå ihop dem. Ladda ner den själv och ladda upp filen.") from exc
+            if "Requested format is not available" in message:
+                raise FetchError("Videon finns inte i något format som kan hämtas härifrån. Ladda ner den själv och "
+                                 "ladda upp filen.") from exc
             if "login" in message.lower() or "cookies" in message.lower():
                 raise FetchError("Sidan kräver inloggning för att visa videon. Ladda ner den själv och ladda upp "
                                  "filen, eller ge en annan länk.") from exc
@@ -118,7 +154,9 @@ def _yt_dlp(url: str) -> Fetched:
         files = [p for p in Path(tmp).iterdir() if p.is_file() and not p.name.endswith(".part")]
         if not files:
             raise FetchError("Ingen video hittades på länken.")
-        path = max(files, key=lambda p: p.stat().st_size)
+        if sum(p.stat().st_size for p in files) > MAX_BYTES:
+            raise FetchError("Videon är större än 200 MB.")
+        path = _remux(files, Path(tmp) / "merged.mp4") if len(files) > 1 else files[0]
         if path.stat().st_size > MAX_BYTES:
             raise FetchError("Videon är större än 200 MB.")
         info = info or {}

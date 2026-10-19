@@ -59,6 +59,20 @@ def synthetic_video(colors=((220, 30, 30), (0, 0, 0), (30, 60, 220)), seconds=(1
     return buf.getvalue()
 
 
+def split_streams(data: bytes, folder: Path) -> tuple[Path, Path]:
+    """Video-only mp4 and audio-only m4a, like YouTube's separate (DASH) formats."""
+    paths = folder / "video.137.mp4", folder / "video.140.m4a"
+    for kind, path in zip(("video", "audio"), paths):
+        with av.open(io.BytesIO(data)) as source, av.open(str(path), mode="w", format="mp4") as out:
+            stream = source.streams.get(**{kind: 0})[0]
+            copy = out.add_stream_from_template(stream)
+            for packet in source.demux(stream):
+                if packet.dts is not None:
+                    packet.stream = copy
+                    out.mux(packet)
+    return paths
+
+
 class MeasureTests(SimpleTestCase):
     @classmethod
     def setUpClass(cls):
@@ -123,16 +137,84 @@ class FetchTests(SimpleTestCase):
 
         url = "https://www.youtube.com/watch?v=x"
         with mock.patch.object(yt_dlp, "YoutubeDL", FakeYDL):
-            with mock.patch.object(fetch.shutil, "which", return_value="/usr/bin/ffmpeg"), \
-                    self.assertRaisesRegex(fetch.FetchError, "kunde inte hämtas"):
-                fetch._yt_dlp(url)
-            with mock.patch.object(fetch.shutil, "which", return_value=None), \
-                    self.assertRaisesRegex(fetch.FetchError, "slå ihop"):
-                fetch._yt_dlp(url)
-        self.assertEqual([o["format"] for o in seen], [fetch.FORMAT_MERGED, fetch.FORMAT_SINGLE])
+            for ffmpeg in ("/usr/bin/ffmpeg", None):
+                with mock.patch.object(fetch.shutil, "which", return_value=ffmpeg), \
+                        self.assertRaisesRegex(fetch.FetchError, "inte i något format"):
+                    fetch._yt_dlp(url)
+        self.assertEqual([o["format"] for o in seen], [fetch.FORMAT_MERGED, fetch.FORMAT_SEPARATE])
         self.assertIn("+", fetch.FORMAT_MERGED)
-        self.assertNotIn("+", fetch.FORMAT_SINGLE)
+        self.assertNotIn("+", fetch.FORMAT_SEPARATE)
         self.assertIn("node", seen[0]["js_runtimes"])
+
+    def test_separate_format_picks_combined_file_else_video_and_audio(self):
+        import yt_dlp
+
+        def fmt(format_id, ext, vcodec, acodec, height=None):
+            return {"format_id": format_id, "ext": ext, "vcodec": vcodec, "acodec": acodec, "height": height,
+                    "url": "https://example.com/" + format_id, "protocol": "https"}
+
+        youtube = [fmt("251", "webm", "none", "opus"), fmt("140", "m4a", "none", "mp4a.40.2"),
+                   fmt("248", "webm", "vp9", "none", 1080), fmt("137", "mp4", "avc1.640028", "none", 1080),
+                   fmt("401", "mp4", "av01.0.12M.08", "none", 2160)]
+        instagram = youtube + [fmt("dash-720", "mp4", "avc1.64001f", "mp4a.40.2", 720)]
+        with yt_dlp.YoutubeDL({"quiet": True}) as ydl:
+            select = ydl.build_format_selector(fetch.FORMAT_SEPARATE)
+
+            def picked(formats):
+                incomplete = all(f["vcodec"] == "none" or f["acodec"] == "none" for f in formats)
+                return [f["format_id"] for f in select({"formats": formats, "incomplete_formats": incomplete,
+                                                         "has_merged_format": False})]
+
+            self.assertEqual(picked(youtube), ["137", "140"])  # H.264 up to 1080p, never the 4K AV1
+            self.assertEqual(picked(instagram), ["dash-720"])  # a combined file wins: nothing to remux
+
+    def _fetch_separate(self, data):
+        """_yt_dlp without ffmpeg where yt-dlp delivers the video and audio of `data` as two files."""
+        import yt_dlp
+        seen = []
+
+        class FakeYDL:
+            def __init__(self, options):
+                seen.append(options)
+                self.folder = Path(options["outtmpl"]).parent
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def extract_info(self, url, download):
+                split_streams(data, self.folder)
+                return {"title": "Separat", "uploader": "Kanal"}
+
+        with mock.patch.object(yt_dlp, "YoutubeDL", FakeYDL), mock.patch.object(fetch.shutil, "which",
+                                                                                 return_value=None):
+            fetched = fetch._yt_dlp("https://www.youtube.com/watch?v=x")
+        self.assertEqual(seen[0]["format"], fetch.FORMAT_SEPARATE)
+        return fetched
+
+    def test_separate_video_and_audio_are_remuxed_without_reencoding(self):
+        original = synthetic_video()
+        fetched = self._fetch_separate(original)
+        self.assertEqual((fetched.mime, fetched.title, fetched.author), ("video/mp4", "Separat", "Kanal"))
+
+        def packets(data, kind):
+            with av.open(io.BytesIO(data)) as container:
+                stream = container.streams.get(**{kind: 0})[0]
+                return stream.codec_context.name, [bytes(p) for p in container.demux(stream) if p.dts is not None]
+
+        for kind in ("video", "audio"):
+            self.assertEqual(packets(fetched.data, kind), packets(original, kind))  # stream copy, bit for bit
+        info = measure.probe(fetched.data)
+        self.assertTrue(info["has_audio"])
+        self.assertAlmostEqual(info["duration_s"], 4.5, delta=0.1)
+
+    def test_separate_streams_respect_max_bytes(self):
+        original = synthetic_video()
+        with mock.patch.object(fetch, "MAX_BYTES", len(original) // 2), \
+                self.assertRaisesRegex(fetch.FetchError, "200 MB"):
+            self._fetch_separate(original)
 
 
 BREAKDOWN = {
