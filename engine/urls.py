@@ -2,7 +2,7 @@ from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import include, path
 
-from . import ads_views, intelligence_views, market_views, media_views, prompt_views, sequence_views, views
+from . import ads_views, intelligence_views, market_views, media_views, prompt_views, sequence_views, technique_views, views
 from .ad_studio import views as ad_views
 from .assistant import views as assistant_views
 from .company_settings import company_settings, costs
@@ -37,6 +37,7 @@ engine_urls = [
     path("intelligence/market/run/", market_views.action, name="market_action"),
     path("intelligence/market/<int:item_id>/feedback/", market_views.feedback, name="market_feedback"),
     path("prompts/", prompt_views.prompt_library, name="prompt_library"),
+    path("techniques/", technique_views.techniques, name="techniques"),
     path("prompts/<uuid:prompt_id>/", prompt_views.prompt_detail, name="prompt_detail"),
     path("prompts/<uuid:prompt_id>/favorite/", prompt_views.prompt_favorite, name="prompt_favorite"),
     path("prompts/<uuid:prompt_id>/archive/", prompt_views.prompt_archive, name="prompt_archive"),
