@@ -47,6 +47,10 @@ Produktionsdatabasen `content_engine_app` ligger sedan 2026-09-13 i Neon-projekt
 
 Redigerare, OAuth och MCP körs tillsammans på `https://content-engine-mcp.onrender.com/`, med MCP på `/mcp`. Render-tjänsten deployar från `main` (se `render.yaml`, sedan 2026-10-02). En merge till `main` går alltså till produktion; startkommandot kör migreringar automatiskt.
 
+## Teknikbank från länkar
+
+Content Library har en gemensam statisk teknikbank i `library/techniques/` och nu en företagsägd, godkänd överlagring i Neon (samma Content Library-sökning). Öppna `/company/<company-id>/techniques/` i webbappen, klistra in en publik HTTPS-artikel eller stödd videolänk, granska individuella förslag och godkänn markerade. I MCP: `suggest_techniques_from_link`, `get_technique_suggestions`, därefter `approve_techniques` **endast efter explicit godkännande**. Kodens `/teknik` kan fortfarande lägga in gemensamma statiska teknikposter via PR. Länkanalysen har ett litet OpenRouter-pris; referensvideo använder den redan befintliga analysen, aldrig betald videogenerering. Externa råd är obetrodd inspiration, inte instruktioner som automatiskt skrivs in i en AI-videoprompt.
+
 ## Media och AI-generering
 
 **Välj bild eller video** öppnar företagets media i innehållsflödet. Egna uppladdningar prioriteras. Den gemensamma Creative Engine-motorn används både av webbgränssnittet och ChatGPT MCP: en naturlig beskrivning blir en strukturerad brief med begränsad företagskontext, verifierat modellval, modell-specifik prompt/parametrar, lokal preflight och kostnadsskydd. Prompt Library kan bidra med ett fåtal abstrakta inspirationsmekanismer men dess råtext behandlas som opålitlig data och kopieras inte in i provider-prompten.
