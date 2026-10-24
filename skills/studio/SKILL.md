@@ -46,6 +46,7 @@ python library/tools/find.py "<ord>" --type transition
 python library/tools/find.py "<bolag + idé>" --type recipe    # video: produktionsrecept per bolag
 python library/tools/find.py "<scentyp>" --type model         # vilken AI-modell per scen + promptformat
 python library/tools/find.py "<idé> krok" --type technique    # bevisade tekniker: krok, retention, cta, struktur
+python library/tools/find.py "3d" --type template              # riktig 3D (Blender): guldrubrik, golfboll – alfa-klipp ovanpå filmen
 ```
 
 **Tekniker först (obligatoriskt för varje video och karusell):** välj 1 krok + 1 struktur/retention + 1 cta ur
