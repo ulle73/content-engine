@@ -84,6 +84,10 @@ class IdeaCardTests(TestCase):
         self.assertEqual(len(first["pitched"]), 3)
         self.assertTrue(first["sent"] and second["sent"])
         self.assertIsNone(third["sent"])  # the week is full
+        self.assertIsNone(second["week_full_until"] and first["week_full_until"])
+        first_sent = IdeaCard.objects.filter(status="sent").order_by("sent_at").first().sent_at
+        self.assertEqual(third["week_full_until"], (first_sent + timedelta(days=7)).isoformat())
+        self.assertEqual(third["waiting"], 1)
         self.assertEqual(len(posted), 2)
         message = posted[0]["message"]
         self.assertIn("ny idé", message["content"])
