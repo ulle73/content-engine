@@ -42,7 +42,8 @@ En film består av:
 
 ## Regler som alltid gäller (källor: skills/video-regler, skills/ljud, skills/golfkuponger-brand, -friskvard)
 - Läsregeln: varje text syns ≥ max(5/6, tecken/12) + 0,9 s – renderingen stoppar annars.
-- Text 9:16 – **utgångspunkt, inte strikt regel**: varje rad horisontellt centrerad (mitt x ≈ 497 i säkra ytan); första
+- Text 9:16 – **utgångspunkt, inte strikt regel**: varje rad, färgad ruta, etikett och logga centrerad på **bildens mitt
+  x 540** med lika marginal (≥ 151 px) båda sidor – aldrig x 497; en färgad ruta står ensam på sin rad; första
   raden y ≈ 560 (mot mitten); ovanför en logga/motiv i mitten y ≈ 300; etiketter centrerade direkt under texten.
   Har beställaren bestämt något annat för filmen gäller det: skriv det i `film.json` som `"beslut"` och stäng av
   kontrollen med `"qa_av": ["centrering"]` (möjliga: `"centrering"`, `"radbredd"`, `"safe-zone"`). Stäng aldrig av en
