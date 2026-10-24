@@ -8,6 +8,7 @@ ad at a time; a 429 is reported as such and never retried in a loop.
 from __future__ import annotations
 
 import re
+import shutil
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,13 @@ import httpx
 
 MAX_BYTES = 200 * 1024 * 1024
 AD_LIBRARY = re.compile(r"facebook\.com/ads/library/?\?(?:.*&)?id=(\d+)")
+# One file with picture and sound. The server has no ffmpeg binary (only PyAV), so it cannot merge.
+FORMAT_SINGLE = "best[ext=mp4][vcodec!=none][acodec!=none]/best[vcodec!=none][acodec!=none]/best"
+# With ffmpeg (locally): best video up to 1080p + audio merged to mp4, else the single file.
+FORMAT_MERGED = "bv*[height<=1080][vcodec^=avc1]+ba[ext=m4a]/bv*[height<=1080]+ba/" + FORMAT_SINGLE
+# yt-dlp only enables deno as JS runtime by default; node is what is installed locally. YouTube then gives only
+# separate video and audio (DASH) formats: the clients with a combined file need PO tokens (HTTP 403 without).
+JS_RUNTIMES = {"deno": {}, "node": {}}
 
 
 class FetchError(ValueError):
@@ -81,11 +89,12 @@ def _yt_dlp(url: str) -> Fetched:
         import yt_dlp
     except ImportError as exc:  # pragma: no cover - dependency is in requirements.txt
         raise FetchError("yt-dlp saknas på servern.") from exc
+    can_merge = bool(shutil.which("ffmpeg"))
     with tempfile.TemporaryDirectory() as tmp:
         options = {
             "outtmpl": str(Path(tmp) / "video.%(ext)s"),
-            # One file with picture and sound; no merging (the server has no ffmpeg binary, only PyAV).
-            "format": "best[ext=mp4][vcodec!=none][acodec!=none]/best[vcodec!=none][acodec!=none]/best",
+            "format": FORMAT_MERGED if can_merge else FORMAT_SINGLE,
+            "merge_output_format": "mp4", "js_runtimes": JS_RUNTIMES,
             "noplaylist": True, "playlist_items": "1", "max_filesize": MAX_BYTES,
             "quiet": True, "no_warnings": True, "noprogress": True, "retries": 1, "socket_timeout": 30,
         }
@@ -99,6 +108,9 @@ def _yt_dlp(url: str) -> Fetched:
                     from exc
             if "No video formats" in message:
                 raise FetchError("Ingen video hittades på länken (det kan vara en bild- eller textannons).") from exc
+            if "Requested format is not available" in message and not can_merge:
+                raise FetchError("Videon finns bara som separat bild och ljud (som på YouTube) och här finns inget "
+                                 "ffmpeg som kan slå ihop dem. Ladda ner den själv och ladda upp filen.") from exc
             if "login" in message.lower() or "cookies" in message.lower():
                 raise FetchError("Sidan kräver inloggning för att visa videon. Ladda ner den själv och ladda upp "
                                  "filen, eller ge en annan länk.") from exc
