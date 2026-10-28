@@ -32,7 +32,7 @@ const REGION = {
   Östersund: 'Norrland', Gävle: 'Norrland', Halmstad: 'Halland', Varberg: 'Halland', Borås: 'Skaraborg & Sjuhärad',
   Skövde: 'Skaraborg & Sjuhärad', Uddevalla: 'Bohuslän & Dalsland', Karlskrona: 'Blekinge',
 };
-const LISTA = 'data/klubbar-sajt-2026-10-21.json';
+const LISTA = 'klubbdata/klubbar-sajt-2026-10-21.json';
 const klubbar = JSON.parse(fs.readFileSync(path.join(HERE, LISTA), 'utf8')).filter(x => x.active && x.anlaggningstyp === 'golfbana');
 const region = K.region || REGION[K.stad] || stopp(`okänd region för ${K.stad} – sätt "region" i annonsen (en av: ${[...new Set(klubbar.map(x => x.region))].join(', ')})`);
 const iRegionen = klubbar.filter(x => x.region === region);

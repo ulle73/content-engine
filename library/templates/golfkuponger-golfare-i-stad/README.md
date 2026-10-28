@@ -54,7 +54,7 @@ Ut: `resultat/<stad>/…_A-still.jpg`, `…_B1-slam.mp4`, `…_B2-snurr.mp4`. Ko
 
 ### Antal klubbar i regionen
 
-Räknas ur golfkuponger.se:s klubblista (`data/klubbar-sajt-2026-10-21.json`): aktiva golfbanor i stadens region, klubben själv
+Räknas ur golfkuponger.se:s klubblista (`klubbdata/klubbar-sajt-2026-10-21.json`): aktiva golfbanor i stadens region, klubben själv
 oräknad, avrundat nedåt till närmaste 5. Stockholmsområdet har 39 → "Kallfors och 35+ andra". Göteborgsområdet har 23
 → "20+". Byt listan när sajten ändras (samma format som i `work/gk-sa-funkar-det/karta/`). Varnar om klubben inte finns i regionen.
 
