@@ -158,6 +158,50 @@ def _scroll_recipe(
     )
 
 
+
+_GOLF_PHOTO_EVALUATION = (
+    "photographic_realism",
+    "human_anatomy",
+    "golf_equipment_geometry",
+    "golf_turf_and_ground",
+    "prompt_adherence",
+    "physical_integration",
+)
+
+
+def _golf_photo_recipe(*, recipe_id: str, name: str, description: str,
+                       scene: str, camera: str, physical_check: str, failure: str) -> CreativeRecipe:
+    """Opt-in, evidence-labelled photo direction; never a mandatory brand style."""
+    return CreativeRecipe(
+        recipe_id=recipe_id,
+        version="1.0.0",
+        name=name,
+        description=description,
+        kinds=("image",),
+        supported_modes=("text-to-image", "image-to-image"),
+        goal_tags=("golf", "natural_photography"),
+        format_tags=("image", "golf_photo"),
+        optional_reference_roles=(ReferenceRole.start_image,),
+        narrative_strategy=(scene,),
+        camera_strategy=(camera,),
+        continuity_strategy=("Keep scale, surface materials, light direction, object contact and shadows physically coherent.",),
+        negative_constraints=("unrequested extra golf equipment", "impossible anatomy or detached equipment"),
+        draft_policy="single_pass",
+        evaluation_rules=_GOLF_PHOTO_EVALUATION,
+        supported_model_families=("openai",),
+        required_model_capabilities=("general_image",),
+        good_result_criteria=("The scene looks like a naturally exposed real golf photograph.", physical_check),
+        bad_result_signals=("A central club, hand, product or ground contact is mechanically impossible.", failure),
+        evidence_sources=(
+            "docs/2026-10-28-golf-image-realism.md",
+            "https://developers.openai.com/api/docs/guides/image-prompting",
+        ),
+        verified_at="2026-10-28",
+        # Golf-specific visual uplift has NOT been established by controlled A/B tests.
+        evidence_level=EvidenceLevel.heuristic,
+    )
+
+
 _RECIPES: tuple[CreativeRecipe, ...] = (
     CreativeRecipe(
         recipe_id="generic_image",
@@ -175,6 +219,52 @@ _RECIPES: tuple[CreativeRecipe, ...] = (
         evidence_sources=("docs/2026-09-22-creative-audit.md",),
         verified_at="2026-09-23",
         evidence_level=EvidenceLevel.verified,
+    ),
+
+    _golf_photo_recipe(
+        recipe_id="golf_photo_golfer",
+        name="Golfare – naturligt foto",
+        description="Documentary-style golfer with believable hands, stance and club geometry.",
+        scene="Show one golfer in a precisely stated stance or static address. Both hands hold one grip; natural wrists and forearms lead into one continuous shaft joined to the correct clubhead at its hosel.",
+        camera="Choose an eye-level three-quarter view with feet, hands, club and ball readable. Natural Scandinavian daylight, unretouched skin and fabric, moderate depth of field.",
+        physical_check="Hands, grip, shaft, clubhead, ball and feet form one plausible physical scene.",
+        failure="Hands merge into the grip or a shaft forks, breaks or joins the wrong club component.",
+    ),
+    _golf_photo_recipe(
+        recipe_id="golf_photo_swing",
+        name="Golfsving – action",
+        description="Sports photograph at one physically plausible, explicitly named swing phase.",
+        scene="Specify one phase of the swing (address, backswing, immediately after impact or follow-through), including ball state, body rotation, weight transfer, feet and one continuous club held by both hands.",
+        camera="Use a clear three-quarter sports-photography angle; full silhouette and club in view, restrained motion softness only where a fast shutter would allow it.",
+        physical_check="The ball, hands, shaft, body weight and feet all agree with the chosen swing phase.",
+        failure="Multiple swing phases are mixed, a hand loses the grip or the ball position contradicts the stated phase.",
+    ),
+    _golf_photo_recipe(
+        recipe_id="golf_photo_course",
+        name="Svensk golfbana – naturtroget",
+        description="Nordic golf landscape with distinct turf zones, seasonal color and optical detail falloff.",
+        scene="Show correctly differentiated living turf: finely cut green, slightly longer collar, fairway, semi-rough and rough only where present; subtle mowing contours, terrain and restrained seasonally plausible variation.",
+        camera="Use a believable landscape viewpoint with Nordic vegetation and ordinary daylight. Resolve grass blades near camera but let distant turf merge naturally into color, mowing pattern and terrain.",
+        physical_check="Visible turf zones, bunker edges, vegetation and distant texture reflect plausible course maintenance and perspective.",
+        failure="Uniform neon-green carpet, horizon-wide individual grass blades or obviously artificial turf borders.",
+    ),
+    _golf_photo_recipe(
+        recipe_id="golf_photo_equipment",
+        name="Golfutrustning – tekniskt foto",
+        description="Equipment-oriented photo with inspectable mechanical parts and connections.",
+        scene="Depict one mechanically coherent club, bag or trolley. Clubs have one grip, one continuous shaft, one hosel and one correct head; stand bags have two plausible legs; three-wheel push trolleys have one front and two rear wheels. Exact commercial products require real product references.",
+        camera="Frame the crucial component joints unobstructed from a practical three-quarter angle. Use readable focus, real material textures and credible contact shadows.",
+        physical_check="All important parts, counts, attachment points, proportions and ground contacts can be followed visually.",
+        failure="A shaft pierces the head, bag supports have impossible attachment points or a trolley has the wrong number of wheels.",
+    ),
+    _golf_photo_recipe(
+        recipe_id="golf_photo_campaign",
+        name="Golfkampanj – naturligt reklamfoto",
+        description="Polished yet believable Nordic golf campaign photograph with optional copy space.",
+        scene="Show one clear golf-related moment, with unstaged gaze and believable person-to-equipment interactions. Keep the golf environment physically coherent and leave copy space only when requested; never invent a real course or product identity.",
+        camera="Use restrained professional editorial composition, natural Scandinavian light and texture, realistic highlights and modest color grading rather than glossy AI-ad styling.",
+        physical_check="The image feels observed rather than staged; anatomy, equipment and turf remain correct.",
+        failure="Plastic skin, unnatural posing, oversaturated glow or an invented brand/product detail.",
     ),
     _scroll_recipe(
         recipe_id="scroll_orbit_hero",
