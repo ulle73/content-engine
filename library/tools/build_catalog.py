@@ -24,7 +24,7 @@ TYPES = {"template", "scene", "effect", "transition", "text", "caption", "grade"
          "carousel", "skill", "prompt", "sound", "tool", "recipe", "model"}
 MEDIA = {"video", "carousel", "image", "audio", "text"}
 FORMATS = {"9:16", "1:1", "4:5", "16:9", "any"}
-ENGINES = {"hyperframes", "remotion", "html-playwright", "python", "canvas", "none"}
+ENGINES = {"hyperframes", "remotion", "html-playwright", "python", "canvas", "blender", "none"}
 COSTS = {"free", "paid"}
 STATUSES = {"verified", "unverified", "broken"}
 REQUIRED = ("id", "name", "type", "medium", "formats", "engine", "description", "tags", "path", "status")
