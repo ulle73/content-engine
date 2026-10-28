@@ -1,6 +1,7 @@
 // Golfare i <stad>? – renderar stillbild, slam och snurr för en annons, med QA.
 //   node rendera.mjs annonser/<stad>.json [--utkast] [--musik <fil> --traff <s>] [--bara-still]
-//   --traff: tiden i musikspåret som ska slå exakt när stadsnamnet landar (B1 0,95 s, B2 1,75 s in i filmen).
+//   --traff: tiden i musikspåret som ska slå exakt när stadsnamnet landar (B1 1,45 s, B2 2,43 s in i filmen);
+//   --traff-b1/--traff-b2 för en variant. Halleluja-kören: --traff 2.48 --traff-b1 1.32 (kören börjar från första tonen i båda).
 //   Musiken fortsätter 0,45 s in i slutbilden och tonar ut där ("musik_in_i_slutbild" i annonsen ändrar det).
 //   Musik ur ljudbanken: python library/sounds/sounds.py copy <id> musik/<namn>.wav (se README för träffpunkter).
 // Ut: resultat/<kod>/<namn>_A-still.jpg, <namn>_B1-slam.mp4, <namn>_B2-snurr.mp4 (filnamn kan styras med "filnamn" i annonsen)
@@ -17,7 +18,7 @@ const arg = n => { const i = process.argv.indexOf(n); return i > 0 ? process.arg
 const stopp = m => { console.log('STOPP:', m); process.exit(1); };
 const KONFIG = process.argv[2]; if (!KONFIG || KONFIG.startsWith('--')) stopp('ange en annons, t.ex. node rendera.mjs annonser/stockholm.json');
 const UTKAST = process.argv.includes('--utkast'), BARA_STILL = process.argv.includes('--bara-still');
-const MUSIK = arg('--musik'), TRAFF = +(arg('--traff') || 0), FPS = 30;
+const MUSIK = arg('--musik'), TRAFF_ALLA = +(arg('--traff') || 0), FPS = 30;
 const K = JSON.parse(fs.readFileSync(KONFIG, 'utf8'));
 const kod = K.stad.toLowerCase().replace(/[åä]/g, 'a').replace(/ö/g, 'o').replace(/[^a-z0-9]+/g, '-');
 const namn = K.namn || `golfare-i-${kod}`;
@@ -44,11 +45,23 @@ const antal = K.antal || (andra >= 5 ? `${Math.floor(andra / 5) * 5}+` : String(
 console.log(`${K.stad}: ${region}, ${iRegionen.length} golfbanor i ${LISTA} → "${K.klubb} och ${antal} andra"`);
 
 // ---- klubbrullen: andra klubbar i regionen med korta namn ("Bro Hof Slott GC" → "Bro Hof Slott"), jämnt spridda i listan
-const kortnamn = n => { let k = n.replace(/\s+AB$/i, '').replace(/\s+(GK|GC)\s+/g, ' '); for (let i = 0; i < 3; i++) k = k.replace(/\s+(Golf\s*&\s*Country\s*Club|Golf\s*&\s*CC|G\s*&\s*CC|G&CC|Golfklubb|Golf\s*Club|Golfbana|Golfbanor|GK|GC|Golf)$/i, ''); return k.trim(); };
+const kortnamn = n => {   // "Bro Hof Slott GC" → "Bro Hof Slott"; genitiv behåller GK/GC ("Djursholms GK", inte "Spela Djursholms")
+  let k = n.replace(/\s+AB$/i, '').replace(/\s+(GK|GC)\s+/g, ' ');
+  for (let i = 0; i < 3; i++) k = k.replace(/\s+(Golf\s*&\s*Sports\s*Club|Golf\s*&\s*Country\s*Club|Golf\s*&\s*CC|G\s*&\s*CC|G&CC|Golfklubb|Golf\s*Club|Golfbana|Golfbanor|Resort|GK|GC|Golf)$/i, '');
+  k = k.trim(); const suff = (n.match(/\b(GK|GC)\b/) || [])[1];
+  return /s$/.test(k) && suff ? `${k} ${suff}` : k;
+};
 const ovriga = [...new Set(iRegionen.filter(x => !x.name.toLowerCase().includes(K.klubb.toLowerCase())).map(x => kortnamn(x.name)))]
   .filter(n => n.length >= 3 && n.length <= 16 && !/[´`'’]/.test(n) && n.toLowerCase() !== K.klubb.toLowerCase());
-const ANTAL_RULLE = Math.min(K.antal_rulle || 12, ovriga.length);
-const klubbrulle = K.klubbrulle || Array.from({ length: ANTAL_RULLE }, (_, i) => ovriga[Math.floor(i * ovriga.length / ANTAL_RULLE)]);
+// stora klubbar i regionen (klubbdata/stora-klubbar.json) är alltid med; vikt 1 hamnar sist, närmast den utvalda klubben.
+// Är listan kort fylls det på med jämnt spridda andra klubbar ur klubblistan.
+const STORA = (JSON.parse(fs.readFileSync(path.join(HERE, 'klubbdata', 'stora-klubbar.json'), 'utf8'))[region] || [])
+  .map(q => iRegionen.find(x => x.name.toLowerCase().includes(q.toLowerCase()))).filter(Boolean)
+  .map(x => kortnamn(x.name)).filter(n => n.toLowerCase() !== K.klubb.toLowerCase() && !K.klubb.toLowerCase().includes(n.toLowerCase()));
+const MINST = K.antal_rulle || 10;
+const fyll = ovriga.filter(n => !STORA.includes(n));
+const extra = Math.max(0, MINST - STORA.length);
+const klubbrulle = K.klubbrulle || [...Array.from({ length: Math.min(extra, fyll.length) }, (_, i) => fyll[Math.floor(i * fyll.length / extra)]), ...[...STORA].reverse()];
 console.log(`klubbrullen: ${klubbrulle.join(', ')} → ${K.klubb}`);
 
 const STADER = ['Göteborg', 'Malmö', 'Uppsala', 'Västerås', 'Örebro', 'Lund', 'Umeå', 'Sundsvall', 'Stockholm'];
@@ -127,6 +140,7 @@ if (!BARA_STILL) for (const v of [1, 2]) {
   // LANGD + MUSIK_IN_I_SLUT (≈ 8 s) – en kort paus innan svingloggans eget ljud (~1,17 s in i slutbilden).
   // Räcker spåret inte dit saktas det ned lite (tonhöjden behålls, högst 12 %) så att träffen ändå hamnar rätt.
   const SLUT = LANGD + (K.musik_in_i_slutbild ?? 0.45);
+  const TRAFF = +(arg(`--traff-b${v}`) ?? TRAFF_ALLA);   // --traff-b1/--traff-b2 gäller en variant
   let tempo = 1, start = 0, fordroj = 0;
   if (MUSIK) {
     const TL = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', path.resolve(MUSIK)]).toString();
@@ -137,7 +151,7 @@ if (!BARA_STILL) for (const v of [1, 2]) {
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-framerate', String(FPS), '-i', path.join(rutor, '%04d.jpg'),
     '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', scen]);
   const musik = MUSIK ? `[2:a]aformat=sample_rates=48000:channel_layouts=stereo,${tempo < 1 ? `atempo=${tempo.toFixed(4)},` : ''}` +
-    `adelay=${Math.round(fordroj * 1000)}:all=1,apad,atrim=0:${SLUT.toFixed(3)},afade=t=out:st=${(SLUT - 0.6).toFixed(3)}:d=0.6,loudnorm=I=-16:TP=-2[m];` : '';
+    `afade=t=in:d=0.03,adelay=${Math.round(fordroj * 1000)}:all=1,apad,atrim=0:${SLUT.toFixed(3)},afade=t=out:st=${(SLUT - 0.6).toFixed(3)}:d=0.6,loudnorm=I=-16:TP=-2[m];` : '';
   const slutljud = `[1:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=${Math.round(LANGD * 1000)}:all=1[o];`;
   const mix = MUSIK ? '[m][o]amix=inputs=2:normalize=0:duration=longest[mx];[mx]' : '[o]';
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', scen, '-i', path.join(HERE, 'assets', 'spotlight-9x16.mp4'),

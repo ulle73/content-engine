@@ -113,12 +113,16 @@ function layout() {
 
 // ---- tidslinje (sekunder). Scenen slutar när knappen har landat – ingen tyst, stillastående tid före slutbilden
 // (Jonas 2026-10-28: "från sekund 7–10 är det helt tyst och bilden står stilla"). Läsregeln kontrolleras i rendera.mjs.
-const SLAG = V === 1 ? [0.15, 0.55, 0.95] : [0.15, 0.15, 1.75];   // ord 1 · ord 2 · stadsnamnet landar
+// FORSPRANG: bilden och musiken får gå en stund innan första ordet slår ner, så att kören hinner börja från en frasstart
+// (Jonas 2026-10-28: "den börjar mitt i en halleluja, låt det gå 0,5 s mer innan texten börjar landa")
+// Per variant så att Halleluja-kören börjar från spårets första ton: B1 0,5 s, B2 0,68 s (andra frasen 2,48 s = landningen)
+const FORSPRANG = (typeof A.forsprang === 'object' ? A.forsprang?.[V] : A.forsprang) ?? (V === 1 ? 0.5 : 0.68);
+const SLAG = (V === 1 ? [0.15, 0.55, 0.95] : [0.15, 0.15, 1.75]).map(x => x + FORSPRANG);   // ord 1 · ord 2 · stadsnamnet landar
 window.FORSTA_TEXT = 0;
 window.LANDNING = SLAG[2];   // stadsnamnet landar – musikens träff läggs här
 const tecken = window.TEXT.join('').length;
 const UNDER_IN = SLAG[2] + 0.75, LOGGA_IN = 0.05, GLANS = SLAG[2] + 0.4;
-const KR0 = UNDER_IN + 0.35, KR1 = 6.4, KNAPP_IN = KR1 + 0.35;   // klubbrullen rullar och landar på den utvalda klubben, sedan knappen
+const KR0 = UNDER_IN + 0.35, KR1 = 6.4 + FORSPRANG, KNAPP_IN = KR1 + 0.35;   // klubbrullen rullar och landar på den utvalda klubben, sedan knappen
 window.LANGD = A.langd || KNAPP_IN + 0.8;   // knappen har poppat och ringen pulserat klart → svingloggan
 // stegschema: varje klubb står still en stund (0,18 s → 0,5 s) och byter med ett snabbt 0,1 s-svep; skalas in i KR0–KR1
 const BYTE = 0.1, STAND = KLUBBAR.slice(0, -1).map((_, i, a) => 0.18 + 0.32 * Math.pow(i / Math.max(1, a.length - 1), 2));
@@ -154,7 +158,7 @@ window.frame = t => {
   slam($('o1'), t, SLAG[0], 1.35); slam($('o2'), t, SLAG[1], V === 1 ? 2.3 : 1.35);
   if (V === 1) slam($('sth'), t, SLAG[2]);
   else if ($('rulle')) {   // rullen: snabb start, bromsar in och landar på stadsnamnet med en liten studs; sedan som v1
-    const ru = $('rulle'), n = STADER.length - 1, h = window.radH, t0 = 0.45, t1 = SLAG[2];
+    const ru = $('rulle'), n = STADER.length - 1, h = window.radH, t0 = SLAG[0] + 0.3, t1 = SLAG[2];
     const p = cl((t - t0) / (t1 - t0)), pos = t < t0 ? 0 : t < t1 ? n * ut3(p) : n;
     const e = t - t1, studsa = e > 0 && e < 0.5 ? Math.sin(e * 18) * Math.exp(-e * 8) * 0.12 : 0;
     const landat = t >= t1 + 0.5;

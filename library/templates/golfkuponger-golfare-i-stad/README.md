@@ -12,7 +12,8 @@ En annons ger tre filer som **bara skiljer sig i rörelse**. Stillbilden är exa
 | **B1 – slam** | Orden slår ner ett i taget med djup och kameraryck, guldglans på staden |
 | **B2 – snurr** | GOLFARE I slår ner, stadsnamnet rullar som en enarmad bandit och landar på staden |
 
-I båda filmerna rullar sedan klubbnamnet i underraden genom ett tolvtal andra klubbar i regionen – varje namn står
+I båda filmerna rullar sedan klubbnamnet i underraden genom regionens **stora klubbar** (`klubbdata/stora-klubbar.json`,
+de viktigaste sist – Bro Hof, Ullna, Arlandastad … i Stockholm) och vid behov fler klubbar ur klubblistan – varje namn står
 still så länge att det hinner läsas, kortare först och längre mot slutet – och landar ~6,4 s på den utvalda klubben,
 som blinkar ljusare guld. Därefter poppar knappen.
 
@@ -51,13 +52,14 @@ Skriv `annonser/<stad>.json`:
 | `rulle` | nej | Städerna som rullar förbi i B2. Standard: åtta andra storstäder |
 | `bana` | nej | Banans namn nere till vänster vid plats-ikonen. Standard: klubbens fulla namn ur klubblistan ("Kallfors GK") |
 | `klubbrulle` | nej | Klubbarna som rullar förbi i underraden. Standard: `antal_rulle` (12) andra golfbanor i regionen ur klubblistan, jämnt spridda, med korta namn ("Bro Hof Slott GC" → "Bro Hof Slott") |
-| `antal_rulle` | nej | Hur många klubbar som rullar förbi (standard 12) |
+| `antal_rulle` | nej | Minsta antal klubbar i rullen (standard 10); fylls på om regionens stora klubbar är färre |
+| `forsprang` | nej | Sekunder innan första ordet slår ner (standard B1 0,5, B2 0,68), t.ex. `{"1": 0.5, "2": 0.68}` |
 | `rad1`, `underrad`, `knapp` | nej | Annan text. `underrad` får innehålla `{klubb}` och `{antal}` |
 | `namn`, `filnamn` | nej | Filnamn. `filnamn` med `{variant}`, t.ex. `"T01_format_{variant}_sthlm"` |
 
 ```bash
 python ../../library/sounds/sounds.py copy sound.hallelujah-kor musik/hallelujah-kor.mp3
-node rendera.mjs annonser/goteborg.json --musik musik/hallelujah-kor.mp3 --traff 2.48
+node rendera.mjs annonser/goteborg.json --musik musik/hallelujah-kor.mp3 --traff 2.48 --traff-b1 1.32
 node rendera.mjs annonser/goteborg.json --bara-still      # bara stillbilden, på några sekunder
 ```
 
@@ -78,7 +80,7 @@ tonhöjden behålls) så att träffen ändå hamnar rätt. Normaliseras till -14
 
 | Ljud (ljudbanken) | `--traff` | Effekt |
 |---|---|---|
-| `sound.hallelujah-kor` (Pixabay, 8,7 s) | `2.48` | Första frasen under rullen, en kort paus precis före, sedan HALLELUJA! när staden landar. **Används i test 01.** |
+| `sound.hallelujah-kor` (Pixabay, 8,7 s) | `2.48`, `--traff-b1 1.32` | Kören börjar från första tonen; i B2 kommer andra frasen exakt när staden landar, i B1 betoningen i första frasen. **Används i test 01.** |
 | `music.hallelujah-handel-1916` (Händel, Oratorio Chorus 1916, public domain) | `6.61` | Orkesterintro under rullen, kören sätter in på landningen. Gammal inspelning med brus |
 
 ## QA i bygget
