@@ -78,8 +78,8 @@ oräknad, avrundat nedåt till närmaste 5. Stockholmsområdet har 39 → "Kallf
 
 ### Musik och träffpunkt
 
-`--traff <s>` är tiden **i musikspåret** som ska slå exakt när stadsnamnet landar (B1 0,95 s, B2 1,75 s in i filmen).
-Skriptet förskjuter spåret per variant och låter musiken fortsätta 0,45 s in i slutbilden, där den tonar ut till ~8 s –
+`--traff <s>` är tiden **i musikspåret** som ska slå exakt när stadsnamnet landar (B1 1,45 s, B2 2,43 s in i filmen).
+Skriptet förskjuter spåret per variant och låter musiken fortsätta 0,95 s in i slutbilden, där den tonar ut –
 en kort paus innan svingloggans eget ljud (~1,17 s in i slutbilden). Räcker spåret inte dit saktas det ned (högst 12 %,
 tonhöjden behålls) så att träffen ändå hamnar rätt. Normaliseras till -14 LUFS (topp ≤ -1,5 dB). `"musik_in_i_slutbild": <s>` ändrar övergången.
 

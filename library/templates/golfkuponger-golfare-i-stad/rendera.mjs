@@ -2,7 +2,7 @@
 //   node rendera.mjs annonser/<stad>.json [--utkast] [--musik <fil> --traff <s>] [--bara-still]
 //   --traff: tiden i musikspåret som ska slå exakt när stadsnamnet landar (B1 1,45 s, B2 2,43 s in i filmen);
 //   --traff-b1/--traff-b2 för en variant. Halleluja-kören: --traff 2.48 --traff-b1 1.32 (kören börjar från första tonen i båda).
-//   Musiken fortsätter 0,45 s in i slutbilden och tonar ut där ("musik_in_i_slutbild" i annonsen ändrar det).
+//   Musiken fortsätter 0,95 s in i slutbilden och tonar ut där ("musik_in_i_slutbild" i annonsen ändrar det).
 //   Musik ur ljudbanken: python library/sounds/sounds.py copy <id> musik/<namn>.wav (se README för träffpunkter).
 // Ut: resultat/<kod>/<namn>_A-still.jpg, <namn>_B1-slam.mp4, <namn>_B2-snurr.mp4 (filnamn kan styras med "filnamn" i annonsen)
 //     out/<kod>/kontaktkarta-B1-slam.jpg, kontaktkarta-B2-snurr.jpg, kontroll-safezone.png
@@ -138,9 +138,9 @@ if (!BARA_STILL) for (const v of [1, 2]) {
   }
   const scen = path.join(OUT, `scen-v${v}.mp4`), fil = `${filnamn(VAR[v])}${UTKAST ? '-utkast' : ''}.mp4`;
   // Musiken: träffpunkten läggs på landningen, och musiken fortsätter in i slutbilden och tonar ut till
-  // LANGD + MUSIK_IN_I_SLUT (≈ 8 s) – en kort paus innan svingloggans eget ljud (~1,17 s in i slutbilden).
+  // LANGD + 0,95 s (≈ 8,6 s) – en kort paus innan svingloggans eget ljud (~1,17 s in i slutbilden).
   // Räcker spåret inte dit saktas det ned lite (tonhöjden behålls, högst 12 %) så att träffen ändå hamnar rätt.
-  const SLUT = LANGD + (K.musik_in_i_slutbild ?? 0.45);
+  const SLUT = LANGD + (K.musik_in_i_slutbild ?? 0.95);   // Jonas 2026-10-28: musiken 0,5 s längre in i slutbilden innan den är tyst
   const TRAFF = +(arg(`--traff-b${v}`) ?? TRAFF_ALLA);   // --traff-b1/--traff-b2 gäller en variant
   let tempo = 1, start = 0, fordroj = 0;
   if (MUSIK) {
