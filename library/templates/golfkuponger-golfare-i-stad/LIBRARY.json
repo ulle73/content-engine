@@ -12,17 +12,50 @@
       "name": "Golfare i <stad>? – stillbild + slam + snurr (9:16, 13,5 s)",
       "type": "template",
       "medium": "video",
-      "formats": ["9:16"],
+      "formats": [
+        "9:16"
+      ],
       "engine": "html-playwright",
-      "description": "Lokal stadsannons i tre format ur samma fil, för A/B-test: stillbild, B1 slam (orden slår ner med 3D-djup, kameraryck, guldglans) och B2 snurr (stadsnamnet rullar som en enarmad bandit och landar på staden). Stillbilden är exakt slutbilden i båda filmerna. Byt stad, klubb, banfoto och beskärning i en json; antalet klubbar i regionen räknas ur sajtens klubblista. Musiken läggs med en träffpunkt så att ett 'Halleluja!' slår när staden landar. Text: GOLFARE I STOCKHOLM? / Spela Kallfors och 35+ andra klubbar i regionen – på friskvårdsbidraget. / Hitta din bana →",
-      "tags": ["golfkuponger", "lokal", "stad", "region", "golfare i", "stockholm", "göteborg", "friskvård", "klubbar", "banfoto", "stillbild", "a/b-test", "slam", "3d-text", "extrusion", "guld", "slotmaskin", "enarmad bandit", "rulle", "halleluja", "reels", "meta"],
+      "description": "Lokal stadsannons i tre format ur samma fil, för A/B-test: stillbild, B1 slam (orden slår ner med 3D-djup, kameraryck, guldglans) och B2 snurr (stadsnamnet rullar som en enarmad bandit och landar på staden). Stillbilden är exakt slutbilden i båda filmerna. Klubbnamnet i underraden rullar genom ett tolvtal klubbar i regionen och landar i guld på den utvalda klubben. Byt stad, klubb, banfoto och beskärning i en json; antalet klubbar i regionen räknas ur sajtens klubblista. Musiken läggs med en träffpunkt så att ett 'Halleluja!' slår när staden landar. Text: GOLFARE I STOCKHOLM? / Spela Kallfors och 35+ andra klubbar i regionen – på friskvårdsbidraget. / Hitta din bana →",
+      "tags": [
+        "golfkuponger",
+        "lokal",
+        "stad",
+        "region",
+        "golfare i",
+        "stockholm",
+        "göteborg",
+        "friskvård",
+        "klubbar",
+        "banfoto",
+        "stillbild",
+        "a/b-test",
+        "slam",
+        "3d-text",
+        "extrusion",
+        "guld",
+        "slotmaskin",
+        "enarmad bandit",
+        "rulle",
+        "halleluja",
+        "reels",
+        "meta",
+        "klubbrulle",
+        "klubbar i regionen"
+      ],
       "path": "library/templates/golfkuponger-golfare-i-stad/README.md",
       "use": "cp -r library/templates/golfkuponger-golfare-i-stad work/golfare-i-stad && cd work/golfare-i-stad && node rendera.mjs annonser/<stad>.json --musik musik/hallelujah-kor.mp3 --traff 2.48",
-      "requires": ["node", "ffmpeg"],
+      "requires": [
+        "node",
+        "ffmpeg"
+      ],
       "cost": "free",
       "status": "verified",
       "verified_at": "2026-10-28",
-      "preview": {"video": "library/previews/golfkuponger.template.golfare-i-stad.mp4", "still": "library/previews/golfkuponger.template.golfare-i-stad.jpg"},
+      "preview": {
+        "video": "library/previews/golfkuponger.template.golfare-i-stad.mp4",
+        "still": "library/previews/golfkuponger.template.golfare-i-stad.jpg"
+      },
       "notes": "Byggd för Meta A/B-test 01 (2026-10-28). Textrörelserna slam och snurr valda av Jonas (en tredje, 'piskar in + guldruta', ströks); musik sound.hallelujah-kor valt av Jonas. Stockholm och Göteborg provkörda."
     }
   ]

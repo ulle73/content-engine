@@ -42,11 +42,21 @@ const andra = iRegionen.length - 1;
 const antal = K.antal || (andra >= 5 ? `${Math.floor(andra / 5) * 5}+` : String(andra));
 console.log(`${K.stad}: ${region}, ${iRegionen.length} golfbanor i ${LISTA} → "${K.klubb} och ${antal} andra"`);
 
+// ---- klubbrullen: andra klubbar i regionen med korta namn ("Bro Hof Slott GC" → "Bro Hof Slott"), jämnt spridda i listan
+const kortnamn = n => { let k = n.replace(/\s+AB$/i, '').replace(/\s+(GK|GC)\s+/g, ' '); for (let i = 0; i < 3; i++) k = k.replace(/\s+(Golf\s*&\s*Country\s*Club|Golf\s*&\s*CC|G\s*&\s*CC|G&CC|Golfklubb|Golf\s*Club|Golfbana|Golfbanor|GK|GC|Golf)$/i, ''); return k.trim(); };
+const ovriga = [...new Set(iRegionen.filter(x => !x.name.toLowerCase().includes(K.klubb.toLowerCase())).map(x => kortnamn(x.name)))]
+  .filter(n => n.length >= 3 && n.length <= 16 && !/[´`'’]/.test(n) && n.toLowerCase() !== K.klubb.toLowerCase());
+const ANTAL_RULLE = Math.min(K.antal_rulle || 12, ovriga.length);
+const klubbrulle = K.klubbrulle || Array.from({ length: ANTAL_RULLE }, (_, i) => ovriga[Math.floor(i * ovriga.length / ANTAL_RULLE)]);
+console.log(`klubbrullen: ${klubbrulle.join(', ')} → ${K.klubb}`);
+
 const STADER = ['Göteborg', 'Malmö', 'Uppsala', 'Västerås', 'Örebro', 'Lund', 'Umeå', 'Sundsvall', 'Stockholm'];
 const ANNONS = {
   stad: K.stad,
   rad1: K.rad1 || 'GOLFARE I',
-  underrad: (K.underrad || 'Spela {klubb} och {antal} andra klubbar i regionen – på friskvårdsbidraget.').replace('{klubb}', K.klubb).replace('{antal}', antal),
+  underrad: (K.underrad || 'Spela {klubb} och {antal} andra klubbar i regionen – på friskvårdsbidraget.').replace('{antal}', antal),
+  klubb: K.klubb,
+  klubbrulle,
   knapp: K.knapp || 'Hitta din bana →',
   rulle: K.rulle || STADER.filter(s => s !== K.stad).slice(0, 8),
   foto: `annonser/${kod}/foto-1080.jpg`,

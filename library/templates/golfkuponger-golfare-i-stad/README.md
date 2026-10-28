@@ -8,11 +8,16 @@ En annons ger tre filer som **bara skiljer sig i rörelse**. Stillbilden är exa
 
 | | Vad händer |
 |---|---|
-| **A – stillbild** | GOLFARE I / STAD? (staden i guld med 3D-djup), underrad, knapp "Hitta din bana →", loggan |
+| **A – stillbild** | GOLFARE I / STAD? (staden i guld med 3D-djup), "Spela **Klubb** och N+ andra …" (klubben i guld), knapp "Hitta din bana →", loggan |
 | **B1 – slam** | Orden slår ner ett i taget med djup och kameraryck, guldglans på staden |
 | **B2 – snurr** | GOLFARE I slår ner, stadsnamnet rullar som en enarmad bandit och landar på staden |
 
-Filmerna är 10,4 s (längre om texten kräver det enligt läsregeln) + Spotlight-slutbilden 3,1 s.
+I båda filmerna rullar sedan klubbnamnet i underraden genom ett tolvtal andra klubbar i regionen – varje namn står
+still så länge att det hinner läsas, kortare först och längre mot slutet – och landar ~6,4 s på den utvalda klubben,
+som blinkar ljusare guld. Därefter poppar knappen.
+
+Filmerna är 10,4 s (längre om texten kräver det enligt läsregeln) + Spotlight-slutbilden 3,1 s. Guldytan i rubriken
+täcker prickar och ringar på Å/Ä/Ö (Göteborg).
 
 ## Ny stad
 
@@ -41,6 +46,8 @@ Skriv `annonser/<stad>.json`:
 | `antal` | nej | Skriv över antalet, t.ex. `"40+"`. Annars räknas det ut (nedan) |
 | `region` | nej | Om staden inte finns i `REGION` i `rendera.mjs`: en av sajtens regioner |
 | `rulle` | nej | Städerna som rullar förbi i B2. Standard: åtta andra storstäder |
+| `klubbrulle` | nej | Klubbarna som rullar förbi i underraden. Standard: `antal_rulle` (12) andra golfbanor i regionen ur klubblistan, jämnt spridda, med korta namn ("Bro Hof Slott GC" → "Bro Hof Slott") |
+| `antal_rulle` | nej | Hur många klubbar som rullar förbi (standard 12) |
 | `rad1`, `underrad`, `knapp` | nej | Annan text. `underrad` får innehålla `{klubb}` och `{antal}` |
 | `namn`, `filnamn` | nej | Filnamn. `filnamn` med `{variant}`, t.ex. `"T01_format_{variant}_sthlm"` |
 
