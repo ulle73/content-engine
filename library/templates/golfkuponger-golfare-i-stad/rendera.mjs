@@ -58,10 +58,10 @@ const ovriga = [...new Set(iRegionen.filter(x => !x.name.toLowerCase().includes(
 const STORA = (JSON.parse(fs.readFileSync(path.join(HERE, 'klubbdata', 'stora-klubbar.json'), 'utf8'))[region] || [])
   .map(q => iRegionen.find(x => x.name.toLowerCase().includes(q.toLowerCase()))).filter(Boolean)
   .map(x => kortnamn(x.name)).filter(n => n.toLowerCase() !== K.klubb.toLowerCase() && !K.klubb.toLowerCase().includes(n.toLowerCase()));
-const MINST = K.antal_rulle || 10;
-const fyll = ovriga.filter(n => !STORA.includes(n));
-const extra = Math.max(0, MINST - STORA.length);
-const klubbrulle = K.klubbrulle || [...Array.from({ length: Math.min(extra, fyll.length) }, (_, i) => fyll[Math.floor(i * fyll.length / extra)]), ...[...STORA].reverse()];
+// rullen visar de N största (standard 5); den största hamnar sist, närmast den utvalda klubben. Fylls på om listan är kort.
+const ANTAL = K.antal_rulle || 5, storst = STORA.slice(0, ANTAL);
+const fyll = ovriga.filter(n => !storst.includes(n)), extra = Math.max(0, ANTAL - storst.length);
+const klubbrulle = K.klubbrulle || [...Array.from({ length: Math.min(extra, fyll.length) }, (_, i) => fyll[Math.floor(i * fyll.length / extra)]), ...[...storst].reverse()];
 console.log(`klubbrullen: ${klubbrulle.join(', ')} → ${K.klubb}`);
 
 const STADER = ['Göteborg', 'Malmö', 'Uppsala', 'Västerås', 'Örebro', 'Lund', 'Umeå', 'Sundsvall', 'Stockholm'];
@@ -108,7 +108,8 @@ for (const v of [1, 2]) {
   console.log(LANGD < krav ? `v${v} VARNING läsregeln: ${n} tecken kräver ${krav.toFixed(2)} s, scenen är ${LANGD} s (kortare enligt beslut)` : `v${v} läsregeln ok (${n} tecken, ${krav.toFixed(2)} s ≤ ${LANGD} s)`);
   for (const [id, r] of Object.entries(m)) {
     const centrerad = id !== 'plats';   // bannamnet är vänsterställt nere till vänster
-    const ok = r.x0 >= 65 && r.x1 <= 929 && r.y0 >= 270 && r.y1 <= 1250 && (!centrerad || Math.abs(r.x0 - (1080 - r.x1)) <= 2);
+    const yMax = id === 'plats' ? 1600 : 1250;   // bannamnet ligger medvetet lägre (beslut Jonas 2026-10-28)
+    const ok = r.x0 >= 65 && r.x1 <= 929 && r.y0 >= 270 && r.y1 <= yMax && (!centrerad || Math.abs(r.x0 - (1080 - r.x1)) <= 2);
     console.log(`v${v} ${ok ? 'ok ' : 'FEL'} ${id.padEnd(7)} x ${r.x0}–${r.x1}  y ${r.y0}–${r.y1}`);
     if (!ok) stopp(`v${v} ${id} utanför safe zones eller inte centrerad`);
   }

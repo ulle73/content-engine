@@ -12,13 +12,14 @@ En annons ger tre filer som **bara skiljer sig i rörelse**. Stillbilden är exa
 | **B1 – slam** | Orden slår ner ett i taget med djup och kameraryck, guldglans på staden |
 | **B2 – snurr** | GOLFARE I slår ner, stadsnamnet rullar som en enarmad bandit och landar på staden |
 
-I båda filmerna rullar sedan klubbnamnet i underraden genom regionens **stora klubbar** (`klubbdata/stora-klubbar.json`,
-de viktigaste sist – Bro Hof, Ullna, Arlandastad … i Stockholm) och vid behov fler klubbar ur klubblistan – varje namn står
+I båda filmerna rullar sedan klubbnamnet i underraden genom regionens **5 största klubbar** (`klubbdata/stora-klubbar.json`,
+den största sist – Djursholms GK, Stockholms GK, Arlandastad, Ullna, Bro Hof i Stockholm), **0,6 s per klubb**, så att
+Halleluja-kören räcker hela vägen (Jonas 2026-10-28) – varje namn står
 still så länge att det hinner läsas, kortare först och längre mot slutet – och landar ~6,4 s på den utvalda klubben,
 som blinkar ljusare guld. Därefter poppar knappen.
 
 Nere till vänster står alltid en plats-ikon och banans namn i litet format, så att man ser vilken bana bilden är
-(Jonas 2026-10-28; inom säkra ytan, botten y 1240). Scenen slutar när knappen har landat (~7,5 s) och klipper direkt till Spotlight-slutbilden (3,1 s), där musiken tonar ut –
+(Jonas 2026-10-28; y 1500 – under säkra ytan, så bildtexten i Reels kan skymma den). Scenen slutar när knappen har landat (~7,5 s) och klipper direkt till Spotlight-slutbilden (3,1 s), där musiken tonar ut –
 totalt ~10,7 s. Ingen tyst, stillastående tid före slutbilden (Jonas 2026-10-28). Läsregeln räknar ~10 s för texten; QA varnar
 men stoppar inte (`"lasregel": "stopp"` i annonsen gör den hård, `"langd": <s>` sätter scenens längd). Guldytan i rubriken
 täcker prickar och ringar på Å/Ä/Ö (Göteborg).
@@ -52,7 +53,9 @@ Skriv `annonser/<stad>.json`:
 | `rulle` | nej | Städerna som rullar förbi i B2. Standard: åtta andra storstäder |
 | `bana` | nej | Banans namn nere till vänster vid plats-ikonen. Standard: klubbens fulla namn ur klubblistan ("Kallfors GK") |
 | `klubbrulle` | nej | Klubbarna som rullar förbi i underraden. Standard: `antal_rulle` (12) andra golfbanor i regionen ur klubblistan, jämnt spridda, med korta namn ("Bro Hof Slott GC" → "Bro Hof Slott") |
-| `antal_rulle` | nej | Minsta antal klubbar i rullen (standard 10); fylls på om regionens stora klubbar är färre |
+| `antal_rulle` | nej | Antal klubbar i rullen (standard 5, de största); fylls på om regionens lista är kortare |
+| `klubb_tid` | nej | Sekunder per klubbnamn i rullen (standard 0,6). Längre rulle = längre film; Halleluja-kören räcker till ~8,7 s |
+| `plats_y` | nej | Var banans namn står (standard y 1500, under säkra ytan – beslut Jonas 2026-10-28) |
 | `forsprang` | nej | Sekunder innan första ordet slår ner (standard B1 0,5, B2 0,68), t.ex. `{"1": 0.5, "2": 0.68}` |
 | `rad1`, `underrad`, `knapp` | nej | Annan text. `underrad` får innehålla `{klubb}` och `{antal}` |
 | `namn`, `filnamn` | nej | Filnamn. `filnamn` med `{variant}`, t.ex. `"T01_format_{variant}_sthlm"` |
