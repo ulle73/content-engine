@@ -1,6 +1,7 @@
 // Golfare i <stad>? – renderar stillbild, slam och snurr för en annons, med QA.
 //   node rendera.mjs annonser/<stad>.json [--utkast] [--musik <fil> --traff <s>] [--bara-still]
 //   --traff: tiden i musikspåret som ska slå exakt när stadsnamnet landar (B1 0,95 s, B2 1,75 s in i filmen).
+//   Musiken fortsätter 0,45 s in i slutbilden och tonar ut där ("musik_in_i_slutbild" i annonsen ändrar det).
 //   Musik ur ljudbanken: python library/sounds/sounds.py copy <id> musik/<namn>.wav (se README för träffpunkter).
 // Ut: resultat/<kod>/<namn>_A-still.jpg, <namn>_B1-slam.mp4, <namn>_B2-snurr.mp4 (filnamn kan styras med "filnamn" i annonsen)
 //     out/<kod>/kontaktkarta-B1-slam.jpg, kontaktkarta-B2-snurr.jpg, kontroll-safezone.png
@@ -120,16 +121,26 @@ if (!BARA_STILL) for (const v of [1, 2]) {
     await p.screenshot({ path: path.join(rutor, `${String(i).padStart(4, '0')}.jpg`), type: 'jpeg', quality: 93 });
   }
   const scen = path.join(OUT, `scen-v${v}.mp4`), fil = `${filnamn(VAR[v])}${UTKAST ? '-utkast' : ''}.mp4`;
-  // musikens träffpunkt läggs på landningen: spåret börjar senare i filmen (fördröjning) eller tidigare i spåret (start)
-  const start = Math.max(0, TRAFF - LANDNING), fordroj = Math.max(0, LANDNING - TRAFF);
-  if (MUSIK) console.log(`${VAR[v]}: musiken ${start ? `från ${start.toFixed(2)} s i spåret` : `börjar ${fordroj.toFixed(2)} s in i filmen`}, träff på ${LANDNING} s`);
-  const ljud = MUSIK ? ['-ss', String(start), '-i', path.resolve(MUSIK)] : ['-f', 'lavfi', '-t', String(LANGD), '-i', 'anullsrc=r=48000:cl=stereo'];
-  const af = MUSIK ? `aformat=sample_rates=48000:channel_layouts=stereo,adelay=${Math.round(fordroj * 1000)}:all=1,apad,atrim=0:${LANGD},` +
-    `afade=t=out:st=${(LANGD - 0.55).toFixed(2)}:d=0.55,loudnorm=I=-16:TP=-2` : 'anull';
-  execFileSync('ffmpeg', ['-v', 'error', '-y', '-framerate', String(FPS), '-i', path.join(rutor, '%04d.jpg'), ...ljud,
-    '-af', af, '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-ar', '48000', '-shortest', scen]);
-  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', scen, '-i', path.join(HERE, 'assets', 'spotlight-9x16.mp4'), '-filter_complex',
-    '[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[v][a];[a]loudnorm=I=-14:TP=-1.5[ao]', '-map', '[v]', '-map', '[ao]',
+  // Musiken: träffpunkten läggs på landningen, och musiken fortsätter in i slutbilden och tonar ut till
+  // LANGD + MUSIK_IN_I_SLUT (≈ 8 s) – en kort paus innan svingloggans eget ljud (~1,17 s in i slutbilden).
+  // Räcker spåret inte dit saktas det ned lite (tonhöjden behålls, högst 12 %) så att träffen ändå hamnar rätt.
+  const SLUT = LANGD + (K.musik_in_i_slutbild ?? 0.45);
+  let tempo = 1, start = 0, fordroj = 0;
+  if (MUSIK) {
+    const TL = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', path.resolve(MUSIK)]).toString();
+    tempo = Math.max(0.88, Math.min(1, (TL - TRAFF) / (SLUT - LANDNING)));
+    start = Math.max(0, TRAFF - tempo * LANDNING); fordroj = Math.max(0, LANDNING - TRAFF / tempo);
+    console.log(`${VAR[v]}: musiken från ${start.toFixed(2)} s i spåret${fordroj ? `, börjar ${fordroj.toFixed(2)} s in` : ''}${tempo < 1 ? `, tempo ${(tempo * 100).toFixed(1)} %` : ''}, träff på ${LANDNING} s, tonar ut till ${SLUT.toFixed(2)} s`);
+  }
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-framerate', String(FPS), '-i', path.join(rutor, '%04d.jpg'),
+    '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', scen]);
+  const musik = MUSIK ? `[2:a]aformat=sample_rates=48000:channel_layouts=stereo,${tempo < 1 ? `atempo=${tempo.toFixed(4)},` : ''}` +
+    `adelay=${Math.round(fordroj * 1000)}:all=1,apad,atrim=0:${SLUT.toFixed(3)},afade=t=out:st=${(SLUT - 0.6).toFixed(3)}:d=0.6,loudnorm=I=-16:TP=-2[m];` : '';
+  const slutljud = `[1:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=${Math.round(LANGD * 1000)}:all=1[o];`;
+  const mix = MUSIK ? '[m][o]amix=inputs=2:normalize=0:duration=longest[mx];[mx]' : '[o]';
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', scen, '-i', path.join(HERE, 'assets', 'spotlight-9x16.mp4'),
+    ...(MUSIK ? ['-ss', start.toFixed(3), '-i', path.resolve(MUSIK)] : []), '-filter_complex',
+    `[0:v][1:v]concat=n=2:v=1:a=0[v];${musik}${slutljud}${mix}loudnorm=I=-14:TP=-1.5[ao]`, '-map', '[v]', '-map', '[ao]',
     '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-movflags', '+faststart', path.join(RES, fil)]);
   execFileSync('ffmpeg', ['-v', 'error', '-i', path.join(RES, fil), '-f', 'null', '-']);   // leveransfilen ska gå att avkoda
   const tider = [0.1, 0.5, 1.0, 1.8, 3.0, 5.0, LANGD - 0.1, LANGD + 1.1];
