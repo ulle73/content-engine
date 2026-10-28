@@ -530,6 +530,19 @@ def preflight(brief: CreativeBrief, model: ModelIntelligence) -> list[PreflightI
             ))
     if brief.reference_media and not model.reference_support:
         issues.append(PreflightIssue(code="reference_unsupported", severity="error", message="Selected model does not support reference media."))
+    if brief.kind == "image" and not brief.reference_media:
+        request = brief.user_intent.casefold()
+        if re.search(r"golf|driver|putter|fairway|golfklubba|golfbana", request) and (
+            re.search(r"\\b(exakt|exakta|exact|identisk|identiska|specific|specifik|specifika|verklig|verkliga)\\b", request)
+            or re.search(r"\\b(?:gk|golfklubb)\\b", request)
+        ):
+            issues.append(PreflightIssue(
+                code="golf_reference_recommended",
+                severity="warning",
+                message="En exakt golfprodukt eller verklig bana bör ha ett riktigt referensfoto. "
+                        "Textgenerering kan inte garantera produkt- eller platskorrekthet.",
+            ))
+
     if brief.audio_intent not in {"", "none"} and (not model.audio_support or not contract or not contract.audio_parameter):
         issues.append(PreflightIssue(code="audio_unsupported", severity="error", message="Selected verified model mode does not support requested audio."))
     if brief.kind == "video" and contract:
@@ -548,6 +561,20 @@ def _context_block(context: CreativeContext) -> str:
 
 def _uses_prompt_section(model: ModelIntelligence, section: str) -> bool:
     return section in model.prompt_sections
+
+
+
+def _golf_photographic_brief(brief: CreativeBrief, context: CreativeContext) -> bool:
+    """Only enrich explicit Golfkuponger golf *photography*, never illustrations."""
+    if brief.kind != "image" or context.company_name.strip().casefold() != "golfkuponger":
+        return False
+    words = " ".join((brief.user_intent, *brief.visual_style, brief.realism)).casefold()
+    if re.search(r"tecknad|illustrat|cartoon|vector|vektor|3d.render|cgi|akvarell|watercolor", words):
+        return False
+    golf = re.search(r"golf|fairway|putt|driver|bunker|green|golfklubba|järnklubba", words)
+    photo = re.search(r"foto|photo|fotograf|photograph|realist|dokumentär|editorial", words)
+    return bool(golf and photo)
+
 
 
 def _recipe_format_direction(recipe) -> str:
@@ -707,6 +734,21 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
     sections = []
     if _uses_prompt_section(model, "USER_INTENT"):
         sections.append(brief.user_intent)
+    if recipe and recipe.recipe_id.startswith("golf_photo_"):
+        # Trusted recipe fields are explicit photo direction, not raw Prompt Library text.
+        if recipe.narrative_strategy:
+            sections.append("GOLF SUBJECT AND PHYSICS: " + " ".join(recipe.narrative_strategy[:2]))
+        if recipe.camera_strategy:
+            sections.append("PHOTOGRAPHY: " + " ".join(recipe.camera_strategy[:2]))
+        if recipe.continuity_strategy:
+            sections.append("PHYSICAL INTEGRATION: " + " ".join(recipe.continuity_strategy[:2]))
+    elif _golf_photographic_brief(brief, context):
+        sections.append(
+            "GOLF PHOTO REALISM: Keep any visible hands, grips, club parts, ball and equipment "
+            "mechanically coherent and correctly scaled. Show natural course turf variation and "
+            "distance-dependent detail, ordinary material textures and credible contact shadows. "
+            "Respect the requested composition and photographic style."
+        )
     # Still-image branding keeps the existing safety invariant: generated pixels
     # never synthesize company logos; the exact official upload is composited later.
     if _uses_prompt_section(model, "BRAND_RENDERING"):
@@ -717,8 +759,11 @@ def compile_prompt(brief: CreativeBrief, context: CreativeContext, model: ModelI
         sections.append("Compose for " + brief.aspect_ratio + ".")
     if brief.preserve and _uses_prompt_section(model, "PRESERVE"):
         sections.append("When editing the reference, preserve exactly: " + ", ".join(brief.preserve) + ".")
-    if brief.forbid and _uses_prompt_section(model, "AVOID"):
-        sections.append("Avoid: " + ", ".join(brief.forbid) + ".")
+    image_avoid = list(brief.forbid)
+    if recipe and recipe.recipe_id.startswith("golf_photo_"):
+        image_avoid.extend(recipe.negative_constraints)
+    if image_avoid and _uses_prompt_section(model, "AVOID"):
+        sections.append("Avoid: " + ", ".join(_dedupe(image_avoid)) + ".")
     if inspiration and _uses_prompt_section(model, "INSPIRATION"):
         sections.append("Use only these abstract inspiration mechanisms, never copied wording: " + ", ".join(inspiration) + ".")
     if _uses_prompt_section(model, "SAFETY"):
