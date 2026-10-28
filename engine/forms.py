@@ -131,7 +131,14 @@ class MediaCreationForm(forms.Form):
         super().__init__(*args, **kwargs)
         from django.db.models import Q
 
-        from .creative_controls import CAMERAS, ENDINGS, MOTIONS, TEMPLATE_LABELS, creation_catalog, recipe_available_for_company
+        from .creative_controls import (
+            CAMERAS,
+            ENDINGS,
+            MOTIONS,
+            TEMPLATE_LABELS,
+            creation_catalog,
+            recipe_available_for_company,
+        )
         from .creative_recipes import registry
         from .media import publishable_assets
         kind = (self.data if self.is_bound else self.initial).get("kind", "image")
