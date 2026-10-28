@@ -157,9 +157,17 @@ TEKNIKER = [
          hur="En bred bild (n × 1080 px) skärs i n slides; motivet placeras så att det korsar skarvarna. Text per slide.",
          varför="'Hur gjorde de det här?' – sömlöst svep håller kvar tittaren längre (algoritmen gillar det).",
          tajming="4–6 slides; motivet ska aldrig ha ansiktet exakt på en skarv.",
-         tecknat="Bred SVG-scen som exporteras i bitar.", filmat="Panoramafoto av banan, frilagd golfare.",
+         tecknat="Bred SVG-scen som exporteras i bitar.",
+         filmat="Riktig bild (som work/gk-panorama): välj en banbild ≥ 5000 px bred med motiv till vänster och mål (flagga) "
+                "till höger, beskär till n × 1080 × 1350 (4 slides = 3,2:1), kolla att ingen person/flagga hamnar på en skarv, "
+                "lägg text på en lugn yta (mörkgrön toning i botten). Kod att kopiera: work/gk-panorama (karusell.json + render.mjs).",
          golfkuponger="Golfaren slår ut på slide 1, bollen flyger över alla slides och landar i koppen på sista (logga + CTA).",
-         taggar=["retention", "panorama", "sömlös", "seamless carousel", "slide crossing", "svep"], bevis=YST),
+         taggar=["retention", "panorama", "sömlös", "seamless carousel", "slide crossing", "svep"],
+         bevis=[YST, EGEN("work/gk-panorama (karusell, Trönnersjö GK)") | {
+             "notering": "Godkänd som exempel på tekniken. MEN bollen och bollbanan (vita prickar + platt boll) var för fula "
+                         "enligt Jonas – gör dem snyggare nästa gång: t.ex. en fotograferad/fotorealistisk boll med skugga och "
+                         "en mjuk, avsmalnande ljusstrimma i stället för prickar."}],
+         preview="library/previews/teknik.panorama-over-slides.jpg"),
     dict(id="teknik.sa-har-nara", namn="'Du är SÅ HÄR nära …'", roll="krok", medium=["carousel", "video"],
          kort="En hand som nyper ihop tummen och pekfingret, 'Du är SÅ HÄR nära …' – med liten text mellan fingrarna.",
          hur="Stor rubrik + hand i nypgest från kanten; mellan fingrarna en liten rad som avslutar meningen.",
