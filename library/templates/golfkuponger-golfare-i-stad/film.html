@@ -103,14 +103,15 @@ function layout() {
   }));
 }
 
-// ---- tidslinje (sekunder). Scenens längd följer läsregeln: all text från första biten, minst 10,4 s
+// ---- tidslinje (sekunder). Scenen slutar när knappen har landat – ingen tyst, stillastående tid före slutbilden
+// (Jonas 2026-10-28: "från sekund 7–10 är det helt tyst och bilden står stilla"). Läsregeln kontrolleras i rendera.mjs.
 const SLAG = V === 1 ? [0.15, 0.55, 0.95] : [0.15, 0.15, 1.75];   // ord 1 · ord 2 · stadsnamnet landar
 window.FORSTA_TEXT = 0;
 window.LANDNING = SLAG[2];   // stadsnamnet landar – musikens träff läggs här
 const tecken = window.TEXT.join('').length;
-window.LANGD = Math.max(10.4, Math.ceil((Math.max(5 / 6, tecken / 12) + 0.9 + 0.25) * 10) / 10);
 const UNDER_IN = SLAG[2] + 0.75, LOGGA_IN = 0.05, GLANS = SLAG[2] + 0.4;
 const KR0 = UNDER_IN + 0.35, KR1 = 6.4, KNAPP_IN = KR1 + 0.35;   // klubbrullen rullar och landar på den utvalda klubben, sedan knappen
+window.LANGD = A.langd || KNAPP_IN + 0.8;   // knappen har poppat och ringen pulserat klart → svingloggan
 // stegschema: varje klubb står still en stund (0,18 s → 0,5 s) och byter med ett snabbt 0,1 s-svep; skalas in i KR0–KR1
 const BYTE = 0.1, STAND = KLUBBAR.slice(0, -1).map((_, i, a) => 0.18 + 0.32 * Math.pow(i / Math.max(1, a.length - 1), 2));
 const SKALA = (KR1 - KR0) / (STAND.reduce((s, x) => s + x, 0) + BYTE * STAND.length);
@@ -171,7 +172,7 @@ window.frame = t => {
   const pl = ut3((t - UNDER_IN) / 0.35); $('under').firstElementChild.style.opacity = pl; $('under').firstElementChild.style.transform = `scaleX(${0.6 + 0.4 * pl})`;
   const k = t < KNAPP_IN ? 0 : studs((t - KNAPP_IN) / 0.45);
   $('knapp').style.opacity = t < KNAPP_IN ? 0 : 1; $('knapp').firstElementChild.style.transform = `scale(${k})`;
-  const rp = cl((t - KNAPP_IN - 0.5) / 0.7); $('ring').style.opacity = rp > 0 && rp < 1 ? 0.8 * (1 - rp) : 0; $('ring').style.transform = `scale(${1 + 0.35 * rp})`;
+  const rp = cl((t - KNAPP_IN - 0.25) / 0.5); $('ring').style.opacity = rp > 0 && rp < 1 ? 0.8 * (1 - rp) : 0; $('ring').style.transform = `scale(${1 + 0.35 * rp})`;
   const lp = ut3((t - LOGGA_IN) / 0.5); $('logga').style.opacity = lp; $('logga').style.transform = `scale(${0.85 + 0.15 * lp})`;
 };
 const bilder = [...document.images].map(i => i.complete && i.naturalWidth ? 1 : new Promise(r => { i.onload = r; i.onerror = r; }));

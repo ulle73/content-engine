@@ -4,7 +4,7 @@
 //   Musik ur ljudbanken: python library/sounds/sounds.py copy <id> musik/<namn>.wav (se README för träffpunkter).
 // Ut: resultat/<kod>/<namn>_A-still.jpg, <namn>_B1-slam.mp4, <namn>_B2-snurr.mp4 (filnamn kan styras med "filnamn" i annonsen)
 //     out/<kod>/kontaktkarta-B1-slam.jpg, kontaktkarta-B2-snurr.jpg, kontroll-safezone.png
-// Stoppar om läsregeln bryts, något ligger utanför safe zones, eller slutlägena i slam och snurr skiljer sig från stillbilden.
+// Varnar om läsregeln bryts (stoppar med "lasregel": "stopp"). Stoppar om något ligger utanför safe zones, eller slutlägena i slam och snurr skiljer sig från stillbilden.
 import fs from 'node:fs'; import path from 'node:path'; import { execFileSync, spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -57,6 +57,7 @@ const ANNONS = {
   underrad: (K.underrad || 'Spela {klubb} och {antal} andra klubbar i regionen – på friskvårdsbidraget.').replace('{antal}', antal),
   klubb: K.klubb,
   klubbrulle,
+  langd: K.langd,
   knapp: K.knapp || 'Hitta din bana →',
   rulle: K.rulle || STADER.filter(s => s !== K.stad).slice(0, 8),
   foto: `annonser/${kod}/foto-1080.jpg`,
@@ -86,8 +87,10 @@ for (const v of [1, 2]) {
   const m = await p.evaluate(() => window.klar);
   const { TEXT, LANGD, FORSTA_TEXT, LANDNING } = await p.evaluate(() => ({ TEXT: window.TEXT, LANGD: window.LANGD, FORSTA_TEXT: window.FORSTA_TEXT, LANDNING: window.LANDNING }));
   const n = TEXT.join('').length, krav = FORSTA_TEXT + Math.max(5 / 6, n / 12) + 0.9;
-  if (LANGD < krav) stopp(`v${v} läsregeln: text till ${krav.toFixed(2)} s krävs, scenen är ${LANGD} s`);
-  console.log(`v${v} läsregeln ok (${n} tecken, ${krav.toFixed(2)} s ≤ ${LANGD} s)`);
+  // Beslut Jonas 2026-10-28: filmen slutar när allt har landat (~7,5 s), inte efter läsregelns ~10 s – varna, stoppa inte.
+  // "lasregel": "stopp" i annonsen gör kontrollen hård igen.
+  if (LANGD < krav && K.lasregel === 'stopp') stopp(`v${v} läsregeln: text till ${krav.toFixed(2)} s krävs, scenen är ${LANGD} s`);
+  console.log(LANGD < krav ? `v${v} VARNING läsregeln: ${n} tecken kräver ${krav.toFixed(2)} s, scenen är ${LANGD} s (kortare enligt beslut)` : `v${v} läsregeln ok (${n} tecken, ${krav.toFixed(2)} s ≤ ${LANGD} s)`);
   for (const [id, r] of Object.entries(m)) {
     const ok = r.x0 >= 65 && r.x1 <= 929 && r.y0 >= 270 && r.y1 <= 1250 && Math.abs(r.x0 - (1080 - r.x1)) <= 2;
     console.log(`v${v} ${ok ? 'ok ' : 'FEL'} ${id.padEnd(7)} x ${r.x0}–${r.x1}  y ${r.y0}–${r.y1}`);

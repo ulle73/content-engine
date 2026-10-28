@@ -16,7 +16,9 @@ I båda filmerna rullar sedan klubbnamnet i underraden genom ett tolvtal andra k
 still så länge att det hinner läsas, kortare först och längre mot slutet – och landar ~6,4 s på den utvalda klubben,
 som blinkar ljusare guld. Därefter poppar knappen.
 
-Filmerna är 10,4 s (längre om texten kräver det enligt läsregeln) + Spotlight-slutbilden 3,1 s. Guldytan i rubriken
+Scenen slutar när knappen har landat (~7,5 s) och klipper direkt till Spotlight-slutbilden (3,1 s), där musiken tonar ut –
+totalt ~10,7 s. Ingen tyst, stillastående tid före slutbilden (Jonas 2026-10-28). Läsregeln räknar ~10 s för texten; QA varnar
+men stoppar inte (`"lasregel": "stopp"` i annonsen gör den hård, `"langd": <s>` sätter scenens längd). Guldytan i rubriken
 täcker prickar och ringar på Å/Ä/Ö (Göteborg).
 
 ## Ny stad
@@ -77,6 +79,6 @@ Skriptet förskjuter spåret per variant, tonar ut vid slutbilden och normaliser
 
 ## QA i bygget
 
-Läsregeln (all text från första biten), safe zones (allt inom y 270–1250, centrerat på x 540 med lika marginal),
+Läsregeln varnar (all text från första biten), safe zones (allt inom y 270–1250, centrerat på x 540 med lika marginal),
 rubriken krymper tills knappen ryms ovanför y 1250, stillbilden = slutbilden i båda filmerna (PSNR), filerna går att avkoda.
 Ej automatiskt: att bilden är snygg i 9:16 med valt `fokus` – titta på `resultat/<stad>/…_A-still.jpg`.
