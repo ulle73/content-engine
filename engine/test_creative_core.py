@@ -154,10 +154,67 @@ class CreativeCoreTests(TestCase):
             "premium_product_reveal", "product_showcase", "hyper_motion_product", "before_after",
             "ugc_testimonial", "ugc_product_demo", "problem_solution_paid_ad",
             "curiosity_hook_paid_ad", "landscape_environment_hero", "luxury_brand_film",
+            "golf_photo_golfer", "golf_photo_swing", "golf_photo_course",
+            "golf_photo_equipment", "golf_photo_campaign",
         }
         self.assertEqual({item.recipe_id for item in entries}, expected)
         self.assertTrue(all(item.version and item.evidence_sources for item in entries))
-        self.assertTrue(all(item.evidence_level in {EvidenceLevel.official, EvidenceLevel.verified} for item in entries))
+        self.assertTrue(all(item.evidence_level in {EvidenceLevel.official, EvidenceLevel.verified}
+                            for item in entries if not item.recipe_id.startswith("golf_photo_")))
+        self.assertTrue(all(item.evidence_level == EvidenceLevel.heuristic
+                            for item in entries if item.recipe_id.startswith("golf_photo_")))
+
+
+    def test_golf_photo_templates_are_scoped_to_golfkuponger(self):
+        from types import SimpleNamespace
+        from .creative_controls import creation_catalog
+        from .forms import MediaCreationForm
+
+        ids = {"golf_photo_golfer", "golf_photo_swing", "golf_photo_course",
+               "golf_photo_equipment", "golf_photo_campaign"}
+        golf_catalog = creation_catalog("image", company=self.company)
+        self.assertEqual(ids, {item["id"] for item in golf_catalog["recipes"]})
+        other_catalog = creation_catalog("image", company=SimpleNamespace(name="FAIV"))
+        self.assertFalse({item["id"] for item in other_catalog["recipes"]} & ids)
+        choices = dict(MediaCreationForm(company=self.company).fields["recipe_id"].choices)
+        self.assertTrue(ids <= set(choices))
+
+    def test_each_golf_photo_template_compiles_into_real_image_prompt(self):
+        requests = {
+            "golf_photo_golfer": "Natural editorial photo of a Swedish golfer addressing a ball.",
+            "golf_photo_swing": "Sports photograph of a golfer immediately after impact.",
+            "golf_photo_course": "Photograph of a Swedish golf fairway in late summer.",
+            "golf_photo_equipment": "Product photograph of a single unbranded golf iron.",
+            "golf_photo_campaign": "Natural commercial golf photograph with copy space.",
+        }
+        for recipe_id, request in requests.items():
+            with self.subTest(recipe=recipe_id):
+                plan = build_plan(self.run, request, kind="image", recipe_id=recipe_id)
+                self.assertEqual(plan.recipe.recipe_id, recipe_id)
+                self.assertEqual(plan.recipe.evidence_level, EvidenceLevel.heuristic)
+                self.assertIn("GOLF SUBJECT AND PHYSICS:", plan.prompt)
+                self.assertIn("PHOTOGRAPHY:", plan.prompt)
+                self.assertIn("PHYSICAL INTEGRATION:", plan.prompt)
+                self.assertIn("Avoid:", plan.prompt)
+                self.assertIn("Never draw, recreate or preserve logos", plan.prompt)
+                self.assertEqual(plan.selection.model_id, "gpt-image-2")
+
+    def test_automatic_golf_realism_does_not_override_illustration_or_other_company(self):
+        photo = build_plan(self.run, "Create a natural editorial photograph of a golfer.", kind="image")
+        self.assertIn("GOLF PHOTO REALISM:", photo.prompt)
+        cartoon = build_plan(self.run, "Create a cartoon illustration of a golf course.", kind="image")
+        self.assertNotIn("GOLF PHOTO REALISM:", cartoon.prompt)
+        self.company.name = "FAIV"
+        self.company.save(update_fields=["name"])
+        other = build_plan(self.run, "Create a photo of a golfer.", kind="image")
+        self.assertNotIn("GOLF PHOTO REALISM:", other.prompt)
+
+    def test_exact_golf_product_without_reference_warns_but_does_not_block(self):
+        request = "Create a realistic photo of exakt samma golfklubba med en driver."
+        no_reference = build_plan(self.run, request, kind="image")
+        self.assertIn("golf_reference_recommended", {i.code for i in no_reference.preflight})
+        with_reference = build_plan(self.run, request, kind="image", source=object())
+        self.assertNotIn("golf_reference_recommended", {i.code for i in with_reference.preflight})
 
     def test_scroll_transition_bridge_requires_both_anchor_roles(self):
         with self.assertRaisesRegex(ValueError, "END_IMAGE"):
