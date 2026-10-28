@@ -43,6 +43,10 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#082f27
 #knapp span{position:relative;display:inline-block;background:#fff;color:#082f27;padding:20px 44px;border-radius:999px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
 #ring{position:absolute;inset:0;border-radius:999px;border:4px solid #fff;opacity:0}
 #logga img{height:118px}
+/* banans namn med plats-ikon, smått nere till vänster i säkra ytan – visar vilken bana bilden är (Jonas 2026-10-28) */
+#plats{position:absolute;left:65px;display:flex;align-items:center;gap:10px;font-family:Inter;font-weight:600;font-size:28px;
+  color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.65),0 0 2px rgba(0,0,0,.5);white-space:nowrap}
+#plats svg{width:26px;height:34px;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
 </style>
 </head>
 <body>
@@ -54,6 +58,7 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#082f27
 <div class="c" id="under"><span></span></div>
 <div class="c" id="knapp"><span><b id="knapptext" style="font-weight:inherit"></b><i id="ring"></i></span></div>
 <div class="c" id="logga"><img src="assets/logo-final.png" alt=""></div>
+<div id="plats"><svg viewBox="0 0 24 32"><path fill="#fff" d="M12 0C5.4 0 0 5.3 0 11.9 0 20.8 12 32 12 32s12-11.2 12-20.1C24 5.3 18.6 0 12 0zm0 16.6a4.8 4.8 0 1 1 0-9.6 4.8 4.8 0 0 1 0 9.6z"/></svg><span id="bana"></span></div>
 <script>
 const A = window.ANNONS;   // { stad, rad1, underrad (med {klubb}), klubb, klubbrulle[], knapp, foto, rulle[] }
 const V = +(new URLSearchParams(location.search).get('v') || 2);
@@ -69,6 +74,7 @@ const GULD = s => `<span class="ord" id="sth" style="position:relative">${s}<spa
 
 $('foto').src = A.foto;
 $('knapptext').textContent = A.knapp;
+$('bana').textContent = A.bana || A.klubb;
 const [ord1, ...resten] = A.rad1.split(' ');
 // v2 byggs först som v1, mäts, och får sedan rullen – så att stadsnamnet landar på exakt samma pixel
 const r = $('rubrik');
@@ -88,7 +94,9 @@ function layout() {
   const kr = $('krulle');   // klubbrullen får den utvalda klubbens bredd i slutläget; bredden glider mellan namnen under rullningen
   window.kw = [...kr.children].map(bredd); window.kh = kr.firstElementChild.offsetHeight; kr.style.width = window.kw.at(-1) + 'px';
   let fs = 220; r.style.fontSize = fs + 'px';
-  while ((w() > 760 || stapla() > 1240) && fs > 60) r.style.fontSize = (--fs) + 'px';
+  // banans namn nere till vänster (botten y 1240); text och knapp måste sluta ovanför den
+  const pl = $('plats'); pl.style.top = (1240 - pl.offsetHeight) + 'px'; const tak = 1240 - pl.offsetHeight - 24;
+  while ((w() > 760 || stapla() > tak) && fs > 60) r.style.fontSize = (--fs) + 'px';
   $('logga').style.top = (top - 30 - $('logga').offsetHeight) + 'px';
   if (V === 2) {
     const ref = $('sth').getBoundingClientRect();
@@ -97,8 +105,8 @@ function layout() {
     window.frame(null);   // slutläget (rullen nere på stadsnamnet) innan den mäts; bara fotot zoomar, så texten påverkas inte
     const nu = $('sth').getBoundingClientRect(); ru.style.left = (ref.left - nu.left) + 'px'; ru.style.top = (ref.top - nu.top) + 'px';
   }
-  window.matt = Object.fromEntries(['rubrik', 'under', 'knapp', 'logga'].map(id => {
-    const el = id === 'rubrik' ? r : $(id).firstElementChild; const b = el.getBoundingClientRect();
+  window.matt = Object.fromEntries(['rubrik', 'under', 'knapp', 'logga', 'plats'].map(id => {
+    const el = id === 'rubrik' || id === 'plats' ? $(id) : $(id).firstElementChild; const b = el.getBoundingClientRect();
     return [id, { x0: Math.round(b.left), x1: Math.round(b.right), y0: Math.round(b.top), y1: Math.round(b.bottom) }];
   }));
 }

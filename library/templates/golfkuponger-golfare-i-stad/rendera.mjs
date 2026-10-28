@@ -57,6 +57,7 @@ const ANNONS = {
   rad1: K.rad1 || 'GOLFARE I',
   underrad: (K.underrad || 'Spela {klubb} och {antal} andra klubbar i regionen – på friskvårdsbidraget.').replace('{antal}', antal),
   klubb: K.klubb,
+  bana: K.bana || (iRegionen.find(x => x.name.toLowerCase().includes(K.klubb.toLowerCase())) || {}).name || K.klubb,
   klubbrulle,
   langd: K.langd,
   knapp: K.knapp || 'Hitta din bana →',
@@ -93,7 +94,8 @@ for (const v of [1, 2]) {
   if (LANGD < krav && K.lasregel === 'stopp') stopp(`v${v} läsregeln: text till ${krav.toFixed(2)} s krävs, scenen är ${LANGD} s`);
   console.log(LANGD < krav ? `v${v} VARNING läsregeln: ${n} tecken kräver ${krav.toFixed(2)} s, scenen är ${LANGD} s (kortare enligt beslut)` : `v${v} läsregeln ok (${n} tecken, ${krav.toFixed(2)} s ≤ ${LANGD} s)`);
   for (const [id, r] of Object.entries(m)) {
-    const ok = r.x0 >= 65 && r.x1 <= 929 && r.y0 >= 270 && r.y1 <= 1250 && Math.abs(r.x0 - (1080 - r.x1)) <= 2;
+    const centrerad = id !== 'plats';   // bannamnet är vänsterställt nere till vänster
+    const ok = r.x0 >= 65 && r.x1 <= 929 && r.y0 >= 270 && r.y1 <= 1250 && (!centrerad || Math.abs(r.x0 - (1080 - r.x1)) <= 2);
     console.log(`v${v} ${ok ? 'ok ' : 'FEL'} ${id.padEnd(7)} x ${r.x0}–${r.x1}  y ${r.y0}–${r.y1}`);
     if (!ok) stopp(`v${v} ${id} utanför safe zones eller inte centrerad`);
   }
