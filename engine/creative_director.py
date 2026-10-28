@@ -533,8 +533,8 @@ def preflight(brief: CreativeBrief, model: ModelIntelligence) -> list[PreflightI
     if brief.kind == "image" and not brief.reference_media:
         request = brief.user_intent.casefold()
         if re.search(r"golf|driver|putter|fairway|golfklubba|golfbana", request) and (
-            re.search(r"\\b(exakt|exakta|exact|identisk|identiska|specific|specifik|specifika|verklig|verkliga)\\b", request)
-            or re.search(r"\\b(?:gk|golfklubb)\\b", request)
+            re.search(r"\b(exakt|exakta|exact|identisk|identiska|specific|specifik|specifika|verklig|verkliga)\b", request)
+            or re.search(r"\b(?:gk|golfklubb)\b", request)
         ):
             issues.append(PreflightIssue(
                 code="golf_reference_recommended",
