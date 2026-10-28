@@ -13,6 +13,10 @@ Målet är att varje annons ska kännas som Golfkuponger utan att loggan behövs
 
 Ett mjukt morgonljus över en välskött svensk bana, någon som faktiskt spelar, och en kort, självklar text som säger vad du får.
 
+## Fotorealistiska golfbilder — särskild guide
+
+För bilder där golfare, utrustning eller banmiljö ska se ut som verkliga fotografier: följ även [golfrealism-guiden](../../docs/2026-10-28-golf-photo-realism-guide.md). Den innehåller fem valbara motivmallar, fysisk kontroll av händer/klubbor, gräszoner, referensstrategi, hard-fail-kriterier och ett föreslaget A/B-test. Använd den endast för fotografiska uppdrag; illustration, humor och andra uttryck ska inte tvingas in i dokumentär realism. Guiden är evidensinformerad men ännu inte validerad i egna generationstester.
+
 ## Bildspråk
 
 **Ja**
