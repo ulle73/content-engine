@@ -1443,6 +1443,102 @@
         "url": "https://assets.mixkit.co/music/859/859.mp3",
         "md5": "376303e4efe79bc98da66e425aabf306"
       }
+    },
+    {
+      "id": "music.hallelujah-handel-1916",
+      "name": "Musik: Händel – Halleluja (Oratorio Chorus, 1916)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Halleluja-kör: uppenbarelse, äntligen, segermoment med glimten i ögat. Källa: Oratorio Chorus – Hallelujah (Händel, Messiah), Edison 1916, Internet Archive EDIS-SRP-0195-06 / Wikimedia Commons.",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "halleluja",
+        "hallelujah",
+        "händel",
+        "messias",
+        "kör",
+        "klassisk",
+        "äntligen",
+        "seger",
+        "humor",
+        "public domain"
+      ],
+      "path": "library/sounds/files/hallelujah-handel-1916_archive-edis-srp-0195-06.ogg",
+      "use": "python library/sounds/sounds.py copy music.hallelujah-handel-1916 work/<film>/sfx/hallelujah-handel-1916.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-28",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.hallelujah-handel-1916.png"
+      },
+      "notes": "Mono, akustisk inspelning från 1916 (brus och knaster hör till). Orkesterintro först; kören sätter in 6,61 s i spåret – lägg den på avslöjandet (golfkuponger-golfare-i-stad: --traff 6.61). Loudnorm till -16 LUFS under bild, -14 totalt.",
+      "bank": {
+        "role": "Halleluja-kör: uppenbarelse, äntligen, segermoment med glimten i ögat",
+        "source": "Oratorio Chorus – Hallelujah (Händel, Messiah), Edison 1916, Internet Archive EDIS-SRP-0195-06 / Wikimedia Commons",
+        "license": "Public domain (Wikimedia Commons: Public Domain Mark 1.0; Edison-inspelning 1916 via Internet Archive EDIS-SRP-0195-06)",
+        "used_in": "GK Golfare i <stad>? (mallen golfkuponger-golfare-i-stad, test 01), skickat av Jonas 2026-10-28",
+        "level": "Mono, akustisk inspelning från 1916 (brus och knaster hör till). Orkesterintro först; kören sätter in 6,61 s i spåret – lägg den på avslöjandet (golfkuponger-golfare-i-stad: --traff 6.61). Loudnorm till -16 LUFS under bild, -14 totalt.",
+        "file": "library/sounds/files/hallelujah-handel-1916_archive-edis-srp-0195-06.ogg"
+      }
+    },
+    {
+      "id": "sound.hallelujah-kor",
+      "name": "Halleluja-kör (kort, 8,7 s)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Kort skrikig halleluja-kör för humoristiska segermoment: något landar, äntligen, bingo. Källa: Pixabay – Hallelujah (freesound_community 88495).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "halleluja",
+        "hallelujah",
+        "kör",
+        "seger",
+        "äntligen",
+        "humor",
+        "meme",
+        "jingel",
+        "stinger"
+      ],
+      "path": "library/sounds/files/hallelujah-kor_pixabay-88495.mp3",
+      "use": "python library/sounds/sounds.py copy sound.hallelujah-kor work/<film>/sfx/hallelujah-kor.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-28",
+      "preview": {
+        "video": null,
+        "still": "library/previews/sound.hallelujah-kor.png"
+      },
+      "notes": "8,7 s, mono 11 kHz (lite dovt). Två fraser: första 0,08–2,0 s, tyst 2,0–2,48 s, andra frasen slår an 2,48 s (tydligaste anslaget). golfkuponger-golfare-i-stad: --traff 2.48 (första frasen under rullen, pausen precis före, andra frasen slår när stadsnamnet landar).",
+      "bank": {
+        "role": "Kort skrikig halleluja-kör för humoristiska segermoment: något landar, äntligen, bingo",
+        "source": "Pixabay – Hallelujah (freesound_community 88495)",
+        "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+        "used_in": "GK Golfare i <stad>? (mallen golfkuponger-golfare-i-stad, test 01), skickat av Jonas 2026-10-28",
+        "level": "8,7 s, mono 11 kHz (lite dovt). Två fraser: första 0,08–2,0 s, tyst 2,0–2,48 s, andra frasen slår an 2,48 s (tydligaste anslaget). golfkuponger-golfare-i-stad: --traff 2.48 (första frasen under rullen, pausen precis före, andra frasen slår när stadsnamnet landar).",
+        "file": "library/sounds/files/hallelujah-kor_pixabay-88495.mp3"
+      }
     }
   ]
 }

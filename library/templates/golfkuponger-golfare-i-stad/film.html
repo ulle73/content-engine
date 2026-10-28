@@ -1,0 +1,149 @@
+<!doctype html>
+<!-- Golfare i <stad>? – stillbild och två rörliga varianter ur samma fil.
+     ?v=1 slam med djup och guld · ?v=2 stadsnamnet snurrar. Innehållet kommer från window.ANNONS (sätts av rendera.mjs).
+     window.frame(t) är en ren funktion av t (sekunder). t = null ger slutläget, som är identiskt i båda varianterna
+     och blir stillbilden – så att stillbild, slam och snurr bara skiljer sig i rörelse. -->
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:Anton;src:url(assets/anton.woff2)}
+@font-face{font-family:Inter;font-weight:600;src:url(assets/inter-600.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(assets/inter-700.woff2)}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#082f27}
+#skak,#kam{position:absolute;inset:0}
+#kam{transform-origin:45% 40%}
+#foto{position:absolute;inset:0;width:1080px;height:1920px}
+#ton{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,20,15,.45) 0%,rgba(4,20,15,.18) 40%,rgba(4,20,15,0) 70%,rgba(4,20,15,.2) 100%)}
+.c{position:absolute;left:151px;right:151px;text-align:center}
+#rubrik{font-family:Anton;line-height:.98;color:#F8F4EC}
+.ord{display:inline-block;white-space:nowrap;--d:0;
+  text-shadow:calc(var(--d)*.12px) calc(var(--d)*.14px) 0 #0d4630,calc(var(--d)*.24px) calc(var(--d)*.28px) 0 #0c412c,
+  calc(var(--d)*.36px) calc(var(--d)*.42px) 0 #0a3b28,calc(var(--d)*.48px) calc(var(--d)*.56px) 0 #093524,
+  calc(var(--d)*.6px) calc(var(--d)*.7px) 0 #072f20,calc(var(--d)*.72px) calc(var(--d)*.84px) 0 #06291b,
+  calc(var(--d)*.84px) calc(var(--d)*.98px) 0 #042317,calc(var(--d)*.96px) calc(var(--d)*1.12px) 0 #031d13,
+  calc(var(--d)*1.08px) calc(var(--d)*1.26px) 0 #02180f,calc(var(--d)*1.2px) calc(var(--d)*1.4px) 0 #01140c,
+  calc(var(--d)*1.6px) calc(var(--d)*2.2px) calc(var(--d)*1.6px) rgba(0,12,6,.55)}
+.guld{position:absolute;left:0;top:0;text-shadow:none;
+  background:linear-gradient(100deg,#C8922A 0%,#F2D27A 38%,#FFF1C4 50%,#F2D27A 62%,#C8922A 100%);background-size:260% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.rad{display:block;position:relative;white-space:nowrap}
+#rulle{position:relative;display:inline-block;vertical-align:top}
+#rulle .namn{display:block;white-space:nowrap}
+#under{font-family:Inter;font-weight:600;color:#fff;font-size:40px;line-height:1.3}
+#under>span{display:inline-block;background:rgba(8,47,39,.82);padding:18px 28px;border-radius:14px}
+#under .w{display:inline-block}
+#knapp{font-family:Inter;font-weight:700;font-size:38px}
+#knapp span{position:relative;display:inline-block;background:#fff;color:#082f27;padding:20px 44px;border-radius:999px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#ring{position:absolute;inset:0;border-radius:999px;border:4px solid #fff;opacity:0}
+#logga img{height:118px}
+</style>
+</head>
+<body>
+<div id="skak">
+  <div id="kam"><img id="foto" alt=""></div>
+  <div id="ton"></div>
+  <div class="c" id="rubrik"></div>
+</div>
+<div class="c" id="under"><span></span></div>
+<div class="c" id="knapp"><span><b id="knapptext" style="font-weight:inherit"></b><i id="ring"></i></span></div>
+<div class="c" id="logga"><img src="assets/logo-final.png" alt=""></div>
+<script>
+const A = window.ANNONS;   // { stad, rad1, underrad, knapp, foto, rulle[] }
+const V = +(new URLSearchParams(location.search).get('v') || 2);
+const $ = id => document.getElementById(id);
+const cl = (x, a = 0, b = 1) => Math.min(Math.max(x, a), b);
+const ut3 = x => 1 - Math.pow(1 - cl(x), 3), in4 = x => Math.pow(cl(x), 4);
+const studs = x => { x = cl(x); const c = 1.70158 * 1.3; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };   // ease-out-back
+const RAD2 = A.stad.toUpperCase() + '?';
+const STADER = [...A.rulle.map(s => s.toUpperCase()), RAD2];
+window.TEXT = [A.rad1 + ' ' + RAD2, A.underrad, A.knapp];
+const GULD = s => `<span class="ord" id="sth" style="position:relative">${s}<span class="guld" id="sthg">${s}</span></span>`;
+
+$('foto').src = A.foto;
+$('knapptext').textContent = A.knapp;
+const [ord1, ...resten] = A.rad1.split(' ');
+// v2 byggs först som v1, mäts, och får sedan rullen – så att stadsnamnet landar på exakt samma pixel
+const r = $('rubrik');
+r.innerHTML = `<span class="rad"><span class="ord" id="o1">${ord1}</span> <span class="ord" id="o2">${resten.join(' ')}</span></span><span class="rad" id="rad2">${GULD(RAD2)}</span>`;
+$('under').firstElementChild.innerHTML = A.underrad.split(' ').map(w => `<span class="w">${w}</span>`).join(' ');
+
+// ---- layout: rubriken fyller safe zone-bredden, första raden y 540, loggan ovanför
+const bredd = el => { const s = document.createRange(); s.selectNodeContents(el); return s.getBoundingClientRect().width; };
+function layout() {
+  // största storlek där bredaste raden ryms (760 px) och knappen slutar ovanför safe zone-gränsen y 1250
+  const top = 540; r.style.top = top + 'px';
+  const w = () => Math.max(bredd($('o1').parentElement), bredd($('sth')));
+  const stapla = () => { let y = top + r.offsetHeight + 44;
+    for (const id of ['under', 'knapp']) { $(id).style.top = y + 'px'; y += $(id).offsetHeight + 44; } return y - 44; };
+  let fs = 220; r.style.fontSize = fs + 'px';
+  while ((w() > 760 || stapla() > 1240) && fs > 60) r.style.fontSize = (--fs) + 'px';
+  $('logga').style.top = (top - 30 - $('logga').offsetHeight) + 'px';
+  if (V === 2) {
+    const ref = $('sth').getBoundingClientRect();
+    $('rad2').innerHTML = '<span id="rulle">' + STADER.slice(0, -1).map(s => `<span class="namn ord">${s}</span>`).join('') + `<span class="namn">${GULD(RAD2)}</span></span>`;
+    const ru = $('rulle'); window.radH = ru.firstElementChild.offsetHeight; ru.style.height = window.radH + 'px'; ru.style.width = ref.width + 'px';
+    window.frame(null);   // slutläget (rullen nere på stadsnamnet) innan den mäts; bara fotot zoomar, så texten påverkas inte
+    const nu = $('sth').getBoundingClientRect(); ru.style.left = (ref.left - nu.left) + 'px'; ru.style.top = (ref.top - nu.top) + 'px';
+  }
+  window.matt = Object.fromEntries(['rubrik', 'under', 'knapp', 'logga'].map(id => {
+    const el = id === 'rubrik' ? r : $(id).firstElementChild; const b = el.getBoundingClientRect();
+    return [id, { x0: Math.round(b.left), x1: Math.round(b.right), y0: Math.round(b.top), y1: Math.round(b.bottom) }];
+  }));
+}
+
+// ---- tidslinje (sekunder). Scenens längd följer läsregeln: all text från första biten, minst 10,4 s
+const SLAG = V === 1 ? [0.15, 0.55, 0.95] : [0.15, 0.15, 1.75];   // ord 1 · ord 2 · stadsnamnet landar
+window.FORSTA_TEXT = 0;
+window.LANDNING = SLAG[2];   // stadsnamnet landar – musikens träff läggs här
+const tecken = window.TEXT.join('').length;
+window.LANGD = Math.max(10.4, Math.ceil((Math.max(5 / 6, tecken / 12) + 0.9 + 0.25) * 10) / 10);
+const UNDER_IN = SLAG[2] + 0.75, KNAPP_IN = UNDER_IN + 1.0, LOGGA_IN = 0.05, GLANS = SLAG[2] + 0.4;
+
+function skakning(t) {   // avklingande kameraryck på varje slag
+  let sx = 0, sy = 0, s = 0;
+  [...new Set(SLAG)].forEach((h, k) => { const dt = t - h; if (dt < 0 || dt > 0.6) return; const e = Math.exp(-dt * 9) * (10 + 6 * k);
+    sx += Math.sin(dt * 61 + k * 3) * e; sy += Math.cos(dt * 53 + k * 5) * e; s += Math.exp(-dt * 14) * 0.02 * (k + 1) / 2; });
+  return `translate(${sx.toFixed(2)}px,${sy.toFixed(2)}px) scale(${(1 + s).toFixed(4)})`;
+}
+const djup = (t, t0, d = 46, vila = 22) => { const q = t - t0; return q < 0 ? 0 : q < 0.09 ? d * ut3(q / 0.09) : vila + (d - vila) * (1 - ut3((q - 0.09) / 0.5)); };
+function slam(el, t, t0, fran = 2.3) {   // ordet faller in och landar på t0; djupet poppar och sätter sig
+  const p = cl((t - (t0 - 0.16)) / 0.16);
+  el.style.opacity = t < t0 - 0.16 ? 0 : 1;
+  el.style.transform = `translateY(${(1 - in4(p)) * -60}px) scale(${fran + (1 - fran) * in4(p)})`;
+  el.style.filter = p > 0 && p < 1 ? `blur(${(1 - p) * 6}px)` : 'none';
+  el.style.setProperty('--d', djup(t, t0));
+}
+
+window.frame = t => {
+  const slut = t == null; if (slut) t = window.LANGD;
+  $('kam').style.transform = `scale(${1 + 0.07 * (t / window.LANGD)})`;
+  $('skak').style.transform = slut ? 'none' : skakning(t);
+  slam($('o1'), t, SLAG[0], 1.35); slam($('o2'), t, SLAG[1], V === 1 ? 2.3 : 1.35);
+  if (V === 1) slam($('sth'), t, SLAG[2]);
+  else if ($('rulle')) {   // rullen: snabb start, bromsar in och landar på stadsnamnet med en liten studs; sedan som v1
+    const ru = $('rulle'), n = STADER.length - 1, h = window.radH, t0 = 0.45, t1 = SLAG[2];
+    const p = cl((t - t0) / (t1 - t0)), pos = t < t0 ? 0 : t < t1 ? n * ut3(p) : n;
+    const e = t - t1, studsa = e > 0 && e < 0.5 ? Math.sin(e * 18) * Math.exp(-e * 8) * 0.12 : 0;
+    const landat = t >= t1 + 0.5;
+    ru.style.opacity = t < t0 ? 0 : 1; ru.style.overflow = landat ? 'visible' : 'hidden';
+    [...ru.children].forEach((el, i) => { el.style.transform = `translateY(${-(pos + studsa) * h}px)`;
+      el.style.filter = t > t0 && t < t1 ? `blur(${4 * (1 - p)}px)` : 'none'; el.style.opacity = landat && i < n ? 0 : 1; });
+    $('sth').style.setProperty('--d', djup(t, t1));
+  }
+  $('sthg').style.opacity = t >= SLAG[2] ? 1 : 0;
+  $('sthg').style.backgroundPosition = `${100 - 100 * ut3((t - GLANS) / 0.6)}% 0`;
+  // underraden ord för ord, knappen poppar med studs och en ring, loggan tonar in
+  [...$('under').querySelectorAll('.w')].forEach((w, i) => { const p = ut3((t - UNDER_IN - 0.15 - i * 0.05) / 0.3);
+    w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 18}px)`; });
+  const pl = ut3((t - UNDER_IN) / 0.35); $('under').firstElementChild.style.opacity = pl; $('under').firstElementChild.style.transform = `scaleX(${0.6 + 0.4 * pl})`;
+  const k = t < KNAPP_IN ? 0 : studs((t - KNAPP_IN) / 0.45);
+  $('knapp').style.opacity = t < KNAPP_IN ? 0 : 1; $('knapp').firstElementChild.style.transform = `scale(${k})`;
+  const rp = cl((t - KNAPP_IN - 0.5) / 0.7); $('ring').style.opacity = rp > 0 && rp < 1 ? 0.8 * (1 - rp) : 0; $('ring').style.transform = `scale(${1 + 0.35 * rp})`;
+  const lp = ut3((t - LOGGA_IN) / 0.5); $('logga').style.opacity = lp; $('logga').style.transform = `scale(${0.85 + 0.15 * lp})`;
+};
+const bilder = [...document.images].map(i => i.complete && i.naturalWidth ? 1 : new Promise(r => { i.onload = r; i.onerror = r; }));
+window.klar = document.fonts.ready.then(() => Promise.all(bilder)).then(() => { layout(); window.frame(null); return window.matt; });
+</script>
+</body>
+</html>

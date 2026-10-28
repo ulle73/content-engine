@@ -20,6 +20,9 @@ FILM2 = "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14"
 FILM3 = "GK Spelat den här? (alla banor), godkänd av Jonas 2026-10-14"
 FILM4 = "GK Skriet, 31 december (Munch-hyllning), godkänd av Jonas 2026-10-14"
 NEW4 = {"sound.skrik-man", "sound.eldsus", "sound.svep-luftigt", "sound.svep-snabbt"}
+FILM6 = "GK Golfare i <stad>? (mallen golfkuponger-golfare-i-stad, test 01), skickat av Jonas 2026-10-28"
+NEW6 = {"music.hallelujah-handel-1916", "sound.hallelujah-kor"}
+PD = "Public domain (Wikimedia Commons: Public Domain Mark 1.0; Edison-inspelning 1916 via Internet Archive EDIS-SRP-0195-06)"
 # Ljud som används i flera filmer eller bara i en senare film (id -> användning)
 USED_IN = {k: FILM + "; " + FILM2 for k in ("sound.smack-dov-trumma", "sound.klocktick", "sound.papper-glid", "sound.bollsus", "music.under-the-sun")}
 USED_IN.update({k: USED_IN.get(k, FILM) + "; GK Skriet" for k in ("sound.papper-riv", "sound.golftraff", "sound.bollsus", "sound.eld-sprak", "music.running-out-of-time", "music.under-the-sun")})
@@ -146,6 +149,17 @@ S = [
      ["musik", "glad", "sol", "golf", "vår", "120 bpm"], "Mixkit musik 859 – Under the Sun (Michael Ramir C.)", MIXKIT_MUSIC, None,
      "https://assets.mixkit.co/music/859/859.mp3", "376303e4efe79bc98da66e425aabf306", None,
      "Taktstart 24,232 s i spåret. Tona ut 0,55 s vid irisen/slutbilden."),
+    ("music.hallelujah-handel-1916", "Musik: Händel – Halleluja (Oratorio Chorus, 1916)", "Halleluja-kör: uppenbarelse, äntligen, segermoment med glimten i ögat",
+     ["musik", "halleluja", "hallelujah", "händel", "messias", "kör", "klassisk", "äntligen", "seger", "humor", "public domain"],
+     "Oratorio Chorus – Hallelujah (Händel, Messiah), Edison 1916, Internet Archive EDIS-SRP-0195-06 / Wikimedia Commons", PD,
+     "library/sounds/files/hallelujah-handel-1916_archive-edis-srp-0195-06.ogg", None, None,
+     "Mono, akustisk inspelning från 1916 (brus och knaster hör till). Orkesterintro först; kören sätter in 6,61 s i spåret – "
+     "lägg den på avslöjandet (golfkuponger-golfare-i-stad: --traff 6.61). Loudnorm till -16 LUFS under bild, -14 totalt."),
+    ("sound.hallelujah-kor", "Halleluja-kör (kort, 8,7 s)", "Kort skrikig halleluja-kör för humoristiska segermoment: något landar, äntligen, bingo",
+     ["halleluja", "hallelujah", "kör", "seger", "äntligen", "humor", "meme", "jingel", "stinger"],
+     "Pixabay – Hallelujah (freesound_community 88495)", PIXABAY, "library/sounds/files/hallelujah-kor_pixabay-88495.mp3", None, None,
+     "8,7 s, mono 11 kHz (lite dovt). Två fraser: första 0,08–2,0 s, tyst 2,0–2,48 s, andra frasen slår an 2,48 s (tydligaste anslaget). "
+     "golfkuponger-golfare-i-stad: --traff 2.48 (första frasen under rullen, pausen precis före, andra frasen slår när stadsnamnet landar)."),
 ]
 
 
@@ -156,7 +170,7 @@ def main():
         if len(row) == 10:  # lokal fil: (..., file, None, cut, tips)
             row = row[:7] + (None, None) + row[8:]
         sid, name, role, tags, source, lic, file, url, md5, cut, tips = row
-        used = USED_IN.get(sid, FILM4 if sid in NEW4 else FILM3 if sid == "music.lifes-a-movie" else FILM2 if sid in NEW2 else FILM)
+        used = USED_IN.get(sid, FILM6 if sid in NEW6 else FILM4 if sid in NEW4 else FILM3 if sid == "music.lifes-a-movie" else FILM2 if sid in NEW2 else FILM)
         bank = {"role": role, "source": source, "license": lic, "used_in": used, "level": tips}
         if file:
             bank["file"] = file
@@ -170,7 +184,7 @@ def main():
             "description": f"{role}. Källa: {source}.", "tags": ["ljud", "godkänt", "ljudbank"] + tags,
             "path": file or "library/sounds/sounds.py",
             "use": f"python library/sounds/sounds.py copy {sid} work/<film>/sfx/{sid.split('.')[-1]}.wav" + (" --cut" if cut else ""),
-            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-10-14" if sid in NEW2 or sid in NEW4 or sid == "music.lifes-a-movie" else "2026-10-13",
+            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-10-28" if sid in NEW6 else "2026-10-14" if sid in NEW2 or sid in NEW4 or sid == "music.lifes-a-movie" else "2026-10-13",
             "preview": {"video": None, "still": still}, "notes": tips, "bank": bank,
         }
         out.append(item)
