@@ -8,7 +8,7 @@ En annons ger tre filer som **bara skiljer sig i rörelse**. Stillbilden är exa
 
 | | Vad händer |
 |---|---|
-| **A – stillbild** | GOLFARE I / STAD? (staden i guld med 3D-djup), "Spela **Klubb** och N+ andra …" (klubben i guld), knapp "Hitta din bana →", loggan |
+| **A – stillbild** | GOLFARE I / STAD? (staden i guld med 3D-djup), "Spela **Klubb** och N+ andra …" (klubben i guld), loggan – blocket centrerat i bilden. Ingen knapp i bilden (Metas egen räcker) |
 | **B1 – slam** | Orden slår ner ett i taget med djup och kameraryck, guldglans på staden |
 | **B2 – snurr** | GOLFARE I slår ner, stadsnamnet rullar som en enarmad bandit och landar på staden |
 
@@ -57,7 +57,9 @@ Skriv `annonser/<stad>.json`:
 | `klubb_tid` | nej | Sekunder per klubbnamn i rullen (standard 0,6). Längre rulle = längre film; Halleluja-kören räcker till ~8,7 s |
 | `plats_y` | nej | Var banans namn står (standard y 1500, under säkra ytan – beslut Jonas 2026-10-28) |
 | `forsprang` | nej | Sekunder innan första ordet slår ner (standard B1 0,5, B2 0,68), t.ex. `{"1": 0.5, "2": 0.68}` |
-| `rad1`, `underrad`, `knapp` | nej | Annan text. `underrad` får innehålla `{klubb}` och `{antal}` |
+| `rad1`, `underrad` | nej | Annan text. `underrad` får innehålla `{klubb}` och `{antal}` |
+| `knapp` | nej | Knapptext i bilden, t.ex. `"Hitta din bana →"`. Standard: ingen knapp (Jonas 2026-10-28; de stora annonsörerna har ingen, Metas egen knapp räcker) |
+| `mitt_y` | nej | Blockets mitt (standard 960 = bildens mitt; flyttas upp om säkra ytan, y 1250, annars passeras) |
 | `namn`, `filnamn` | nej | Filnamn. `filnamn` med `{variant}`, t.ex. `"T01_format_{variant}_sthlm"` |
 
 ```bash

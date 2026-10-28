@@ -16,7 +16,7 @@
         "9:16"
       ],
       "engine": "html-playwright",
-      "description": "Lokal stadsannons i tre format ur samma fil, för A/B-test: stillbild, B1 slam (orden slår ner med 3D-djup, kameraryck, guldglans) och B2 snurr (stadsnamnet rullar som en enarmad bandit och landar på staden). Stillbilden är exakt slutbilden i båda filmerna. Klubbnamnet i underraden rullar genom regionens 5 största klubbar, 0,6 s per klubb (Bro Hof sist i Stockholm) och landar i guld på den utvalda klubben. Byt stad, klubb, banfoto och beskärning i en json; antalet klubbar i regionen räknas ur sajtens klubblista. Musiken läggs med en träffpunkt så att ett 'Halleluja!' slår när staden landar. Text: GOLFARE I STOCKHOLM? / Spela Kallfors och 35+ andra klubbar i regionen – på friskvårdsbidraget. / Hitta din bana →",
+      "description": "Lokal stadsannons i tre format ur samma fil, för A/B-test: stillbild, B1 slam (orden slår ner med 3D-djup, kameraryck, guldglans) och B2 snurr (stadsnamnet rullar som en enarmad bandit och landar på staden). Stillbilden är exakt slutbilden i båda filmerna. Klubbnamnet i underraden rullar genom regionens 5 största klubbar, 0,6 s per klubb (Bro Hof sist i Stockholm) och landar i guld på den utvalda klubben. Byt stad, klubb, banfoto och beskärning i en json; antalet klubbar i regionen räknas ur sajtens klubblista. Musiken läggs med en träffpunkt så att ett 'Halleluja!' slår när staden landar. Text: GOLFARE I STOCKHOLM? / Spela Kallfors och 35+ andra klubbar i regionen – på friskvårdsbidraget. Ingen knapp i bilden; blocket centrerat.",
       "tags": [
         "golfkuponger",
         "lokal",

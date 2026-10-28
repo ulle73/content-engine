@@ -73,7 +73,7 @@ const ANNONS = {
   bana: K.bana || (iRegionen.find(x => x.name.toLowerCase().includes(K.klubb.toLowerCase())) || {}).name || K.klubb,
   klubbrulle,
   langd: K.langd,
-  knapp: K.knapp || 'Hitta din bana →',
+  knapp: K.knapp ?? '',   // ingen knapp i bilden som standard; "knapp": "Hitta din bana →" tar tillbaka den
   rulle: K.rulle || STADER.filter(s => s !== K.stad).slice(0, 8),
   foto: `annonser/${kod}/foto-1080.jpg`,
 };
