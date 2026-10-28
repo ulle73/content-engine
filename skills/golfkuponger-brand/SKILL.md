@@ -29,6 +29,16 @@ Ett mjukt morgonljus över en välskött svensk bana, någon som faktiskt spelar
 - Mättade färger, neonaccenter, tunga filter.
 - Text inbakad i genererade bilder. Text läggs alltid ovanpå i Remotion.
 
+**Fotografiska golfbilder – särskild guide:** När uppdraget gäller ett naturligt golfoto, använd
+[Golfrealism för AI-bilder](../../docs/2026-10-28-golf-image-realism.md) och de fem befintliga
+bildrecepten `golf_photo_*` i Creative Engine (Golfare, Golfsving, Svensk golfbana,
+Golfutrustning, Golfkampanj). Beskriv faktisk hand–grepp–skaft–huvud-relation,
+turfzoner, fotografisk detaljfalloff och fysisk markkontakt i stället för långa
+kvalitetsadjektiv. **Exakta produkter och verkliga golfbanor kräver riktiga referensfoton.**
+Betygsätt realism och golfkorrekthet separat; felbyggd central klubba/hand eller
+förändrad referensprodukt är hard fail. Riktlinjerna är hypoteser för fotorealism,
+inte bevisade A/B-vinster; de får **aldrig** överstyra användarens begäran om illustration.
+
 **Tecknat (illustration/animation)** – Jonas 2026-10-13: platt vektor räcker inte, sikta på *premiumillustration*:
 djupgrön bakgrund med mjuka diagonala ljusstrålar och guldstoft/glimtar, ett varmt ljust stenbord med mjuka skuggor
 (ljus uppifrån vänster), föremål med volym (sidbunt, guldkanter, guldringar, papperstextur), guld som accent, riktig
