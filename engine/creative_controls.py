@@ -37,6 +37,11 @@ ENDINGS = {
 }
 # Presentation names only. Production methods and capabilities remain in recipes.
 TEMPLATE_LABELS = {
+    "golf_photo_golfer": ("Golfare – naturligt foto", "Naturlig uppställning med korrekta händer, grepp och klubba."),
+    "golf_photo_swing": ("Golfsving – action", "En tydlig svingfas med fysiskt rimlig rörelse."),
+    "golf_photo_course": ("Svensk golfbana – naturtroget", "Nordiska golfbanor med levande gräs och rätt avståndsdetalj."),
+    "golf_photo_equipment": ("Golfutrustning – tekniskt foto", "Korrekt mekanik i klubbor, bagar och vagnar."),
+    "golf_photo_campaign": ("Golfkampanj – naturligt reklamfoto", "Fotorealism utan onaturlig reklamestetik."),
     "premium_product_reveal": ("Filmisk reveal", "Visa fram produkten med lugn r\u00f6relse och stabila detaljer."),
     "product_showcase": ("Produkt i fokus", "Utg\u00e5 fr\u00e5n din produktbild och visa det viktiga."),
     "before_after": ("F\u00f6re och efter", "En tydlig f\u00f6r\u00e4ndring mellan dina tv\u00e5 bilder."),
@@ -129,7 +134,14 @@ def apply_controls(brief: CreativeBrief, values: dict | CreativeControls | None)
     return brief.model_copy(update=changes)
 
 
-def creation_catalog(kind: str) -> dict:
+def recipe_available_for_company(recipe, company) -> bool:
+    """Keep specialized Golfkuponger photo choices out of other companies' UI."""
+    return not recipe.recipe_id.startswith("golf_photo_") or bool(
+        company and company.name.strip().casefold() == "golfkuponger"
+    )
+
+
+def creation_catalog(kind: str, company=None) -> dict:
     from .creative_budget import known_video_cost
     models = []
     for model in model_registry():
@@ -154,7 +166,7 @@ def creation_catalog(kind: str) -> dict:
             })
     recipes = []
     for recipe in recipe_registry():
-        if recipe.recipe_id not in TEMPLATE_LABELS or kind not in recipe.kinds:
+        if recipe.recipe_id not in TEMPLATE_LABELS or kind not in recipe.kinds or not recipe_available_for_company(recipe, company):
             continue
         label, description = TEMPLATE_LABELS[recipe.recipe_id]
         recipes.append({"id": recipe.recipe_id, "label": label, "description": description,
