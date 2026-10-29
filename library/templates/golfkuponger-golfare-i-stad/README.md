@@ -88,6 +88,36 @@ tonhöjden behålls) så att träffen ändå hamnar rätt. Normaliseras till -14
 | `sound.hallelujah-kor` (Pixabay, 8,7 s) | `2.48`, `--traff-b1 1.32` | Kören börjar från första tonen; i B2 kommer andra frasen exakt när staden landar, i B1 betoningen i första frasen. **Används i test 01.** |
 | `music.hallelujah-handel-1916` (Händel, Oratorio Chorus 1916, public domain) | `6.61` | Orkesterintro under rullen, kören sätter in på landningen. Gammal inspelning med brus |
 
+## Ny slutscen i stället för svingloggan (komplettering)
+
+Feedback 2026-10-29: loggan i fast form och text i stället för den animerade svingloggan. Jonas godkände båda
+slutbilderna och bad om fyra varianter som **komplement** – originalen med svingloggan finns kvar.
+
+| Variant | Slutscen (4,2 s) |
+|---|---|
+| `slut-portal` | Vår logga i fast form, "SÖK GOLFKUPONGER / i din friskvårdsportal" och de fyra portalloggorna (Benifex, Epassi, Söderberg & Partners, Edenred) |
+| `slut-direkt` | Vår logga i fast form, "INGEN PORTAL? / Köp direkt på golfkuponger.se" |
+| `slut-portal-svinglogga` | Samma text, men den animerade svingloggan (ur `spotlight-9x16.mp4`) i mindre format på loggans plats |
+| `slut-direkt-svinglogga` | Samma text med svingloggan |
+
+Texten animeras som i filmen: rubriken slår ner ord för ord med 3D-djup och skakning, guldglans på det gula ordet,
+underraden tonar upp ord för ord, portalkorten poppar in ett i taget, guldstreck under golfkuponger.se. Musiken går
+över i slutscenen (Jonas: "då kan ljudet gå över i denna slutbilden"): spåret spelar till sitt slut – saktas ned högst
+6 % om det behövs – och sista sekunden får en efterklang som tonar ut vid filmens slut. I svinglogga-varianterna ligger
+svingloggans eget ljud ovanpå.
+
+```bash
+node rendera.mjs annonser/<stad>.json --musik musik/hallelujah-kor.mp3 --traff 2.48 --traff-b1 1.32   # först – ger out/<stad>/scen-v*
+node slutscen.mjs <stad> [<stad> ...]            # alla städer med out/<stad>/scen-v1.mp4 om ingen anges
+```
+
+Ut: `resultat/slutscener/<stad>/golfare-i-<stad>_<B1-slam|B2-snurr>_slut-<variant>.mp4` (8 filmer per stad, slam
+10,9 s och snurr 11,9 s), kontaktkartor i `out/slutscener/`. Slutscenen ritas av `slutbild/slutscen.html`
+(`#portal`, `#direkt`, `#portal-anim`, `#direkt-anim`; `?slut` visar slutläget) – byt text, portaler eller tider där.
+`rendera.mjs` sparar scenens längd, landning och musikens träffpunkt i `out/<stad>/scen-v<v>.json`, så slutscenen hamnar
+rätt även med annan musik eller andra tider. Allt ligger inom safe zones (y 318–1239). Portallistan är faktabankens F1
+(⚠️ verifiera aktuell lista) och loggorna finns bara i 300×200 px.
+
 ## QA i bygget
 
 Läsregeln varnar (all text från första biten), safe zones (allt inom y 270–1250, centrerat på x 540 med lika marginal),

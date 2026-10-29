@@ -151,6 +151,8 @@ if (!BARA_STILL) for (const v of [1, 2]) {
   }
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-framerate', String(FPS), '-i', path.join(rutor, '%04d.jpg'),
     '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', scen]);
+  // tider för slutscen.mjs (ny slutscen i stället för svingloggan): scenens längd, landningen och musikens träffpunkt
+  fs.writeFileSync(path.join(OUT, `scen-v${v}.json`), JSON.stringify({ langd: LANGD, landning: LANDNING, traff: TRAFF, musik: MUSIK ? path.resolve(MUSIK) : null }));
   const musik = MUSIK ? `[2:a]aformat=sample_rates=48000:channel_layouts=stereo,${tempo < 1 ? `atempo=${tempo.toFixed(4)},` : ''}` +
     `afade=t=in:d=0.03,adelay=${Math.round(fordroj * 1000)}:all=1,apad,atrim=0:${SLUT.toFixed(3)},afade=t=out:st=${(SLUT - 0.6).toFixed(3)}:d=0.6,loudnorm=I=-16:TP=-2[m];` : '';
   const slutljud = `[1:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=${Math.round(LANGD * 1000)}:all=1[o];`;

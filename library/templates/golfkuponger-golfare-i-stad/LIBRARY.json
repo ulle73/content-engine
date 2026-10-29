@@ -16,7 +16,7 @@
         "9:16"
       ],
       "engine": "html-playwright",
-      "description": "Lokal stadsannons i tre format ur samma fil, för A/B-test: stillbild, B1 slam (orden slår ner med 3D-djup, kameraryck, guldglans) och B2 snurr (stadsnamnet rullar som en enarmad bandit och landar på staden). Stillbilden är exakt slutbilden i båda filmerna. Klubbnamnet i underraden rullar genom regionens 5 största klubbar, 0,6 s per klubb (Bro Hof sist i Stockholm) och landar i guld på den utvalda klubben. Byt stad, klubb, banfoto och beskärning i en json; antalet klubbar i regionen räknas ur sajtens klubblista. Musiken läggs med en träffpunkt så att ett 'Halleluja!' slår när staden landar. Text: GOLFARE I STOCKHOLM? / Spela Kallfors och 35+ andra klubbar i regionen – på friskvårdsbidraget. Ingen knapp i bilden; blocket centrerat.",
+      "description": "Lokal stadsannons i tre format ur samma fil, för A/B-test: stillbild, B1 slam (orden slår ner med 3D-djup, kameraryck, guldglans) och B2 snurr (stadsnamnet rullar som en enarmad bandit och landar på staden). Stillbilden är exakt slutbilden i båda filmerna. Klubbnamnet i underraden rullar genom regionens 5 största klubbar, 0,6 s per klubb (Bro Hof sist i Stockholm) och landar i guld på den utvalda klubben. Byt stad, klubb, banfoto och beskärning i en json; antalet klubbar i regionen räknas ur sajtens klubblista. Musiken läggs med en träffpunkt så att ett 'Halleluja!' slår när staden landar. Text: GOLFARE I STOCKHOLM? / Spela Kallfors och 35+ andra klubbar i regionen – på friskvårdsbidraget. Ingen knapp i bilden; blocket centrerat. Ny slutscen (portal/köp direkt) finns som eget objekt: golfkuponger.template.golfare-i-stad-slutscen.",
       "tags": [
         "golfkuponger",
         "lokal",
@@ -57,6 +57,53 @@
         "still": "library/previews/golfkuponger.template.golfare-i-stad.jpg"
       },
       "notes": "Byggd för Meta A/B-test 01 (2026-10-28). Textrörelserna slam och snurr valda av Jonas (en tredje, 'piskar in + guldruta', ströks); musik sound.hallelujah-kor valt av Jonas. Stockholm och Göteborg provkörda."
+    },
+    {
+      "id": "golfkuponger.template.golfare-i-stad-slutscen",
+      "name": "Golfare i <stad>? – ny slutscen: portal / köp direkt (fast logga eller mindre svinglogga, 4,2 s)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "html-playwright",
+      "description": "Slutscen i stället för den animerade svingloggan: vår logga i fast form (eller svingloggan i mindre format) med 'SÖK GOLFKUPONGER i din friskvårdsportal' och de fyra portalloggorna (Benifex, Epassi, Söderberg & Partners, Edenred), eller 'INGEN PORTAL? Köp direkt på golfkuponger.se'. Texten slår ner med 3D-djup och guldglans som i filmen, portalkorten poppar in. Musiken går över i slutscenen och klingar ut med efterklang. slutscen.mjs sätter ihop scenerna från rendera.mjs med alla fyra slutscenerna (8 filmer per stad).",
+      "tags": [
+        "golfkuponger",
+        "slutscen",
+        "slutbild",
+        "end card",
+        "cta",
+        "förmånsportal",
+        "friskvårdsportal",
+        "portal",
+        "benifex",
+        "epassi",
+        "edenred",
+        "söderberg & partners",
+        "köp direkt",
+        "golfkuponger.se",
+        "logga",
+        "svinglogga",
+        "friskvård",
+        "halleluja",
+        "reels",
+        "meta"
+      ],
+      "path": "library/templates/golfkuponger-golfare-i-stad/README.md",
+      "use": "cd work/golfare-i-stad && node rendera.mjs annonser/<stad>.json --musik musik/hallelujah-kor.mp3 --traff 2.48 --traff-b1 1.32 && node slutscen.mjs <stad>",
+      "requires": [
+        "node",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-29",
+      "preview": {
+        "video": "library/previews/golfkuponger.template.golfare-i-stad-slutscen.mp4",
+        "still": "library/previews/golfkuponger.template.golfare-i-stad-slutscen.jpg"
+      },
+      "notes": "Feedback + Jonas 2026-10-29: båda slutbilderna godkända, fyra varianter som komplement till originalen med svingloggan. Renderat för Stockholm, Göteborg, Malmö, Uppsala, Linköping och Halmstad (48 filmer i Drive). Ljudet inte avlyssnat av Claude."
     }
   ]
 }
