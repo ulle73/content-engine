@@ -219,15 +219,25 @@ def _call(model, *, system, payload, schema, operation, max_tokens=4000, tempera
         raise OpenRouterError("OpenRouter returnerade ett ogiltigt svar.", status_code=502) from exc
     choices = body.get("choices") if isinstance(body, dict) else None
     message = choices[0].get("message", {}) if isinstance(choices, list) and choices else {}
+    choice = choices[0] if isinstance(choices, list) and choices and isinstance(choices[0], dict) else {}
+    if choice.get("finish_reason") == "length":
+        # Reasoning tokens count against max_completion_tokens. A cut-off answer can still look like JSON
+        # (the reasoning fallback below, or a partly healed object), so it is never parsed.
+        usage = body.get("usage") if isinstance(body.get("usage"), dict) else {}
+        details = usage.get("completion_tokens_details") if isinstance(usage.get("completion_tokens_details"), dict) else {}
+        logger.warning(
+            "OpenRouter answer cut off requested_model=%s response_model=%s max_tokens=%s completion_tokens=%s reasoning_tokens=%s",
+            model, body.get("model"), max_tokens, usage.get("completion_tokens"), details.get("reasoning_tokens"),
+        )
+        raise OpenRouterError("Modellens svar klipptes av vid tokentaket.", status_code=502)
     try:
         parsed = schema.model_validate(_json_object(_content_text(message)))
     except (ValueError, ValidationError, json.JSONDecodeError) as exc:
-        choice = choices[0] if isinstance(choices, list) and choices else {}
         logger.warning(
             "OpenRouter structured validation failed requested_model=%s response_model=%s finish_reason=%s error=%s",
             model,
             body.get("model") if isinstance(body, dict) else "",
-            choice.get("finish_reason") if isinstance(choice, dict) else "",
+            choice.get("finish_reason"),
             str(exc)[:500],
         )
         raise OpenRouterError("Modellen returnerade inte ett giltigt strukturerat svar.", status_code=502) from exc
@@ -284,8 +294,11 @@ def route_signature():
 
 
 def video_model():
-    """Model that watches whole videos with sound (Gemini via OpenRouter); defaults to the vision tier."""
-    return os.environ.get("OPENROUTER_VIDEO_MODEL", "").strip() or vision_model()
+    """Model that watches whole videos with sound (Gemini via OpenRouter). Defaults to the reference breakdown model:
+    the 2026-10-13 comparison showed Flash-Lite missing music and transitions, so it is too weak to judge a cut."""
+    from engine.references.breakdown import default_model
+
+    return os.environ.get("OPENROUTER_VIDEO_MODEL", "").strip() or default_model()
 
 
 def vision_model():
@@ -295,19 +308,29 @@ def vision_model():
             or "google/gemini-3.1-flash-lite")
 
 
+# Text answers here are a few hundred tokens, but reasoning shares the max_completion_tokens budget
+# (openrouter.ai/docs/use-cases/reasoning-tokens). The free preset's models reason 1 100–1 900 tokens whatever
+# effort is asked for, so the cap leaves room for that; it is a ceiling, not spend.
+TEXT_ROUTE_MIN_TOKENS = 6000
+
+
 def structured_analysis(*, system, payload, schema: type[T], operation="analysis", max_tokens=4000, temperature=0,
                         images=None, videos=None):
     """Free preset → GLM → last resort. With `images` (data URLs) only the vision tier is used: the free preset and
     GLM cannot see images, so trying them would only add latency. With `videos` (data:video/mp4 URLs, sound
     included) only the video tier is used (video_model())."""
+    media = bool(images or videos)
     route = [video_model()] if videos else [vision_model()] if images else analysis_route()
     errors = []
 
     for model in route:
         try:
             is_fallback = model != route[0]
-            timeout_seconds = 18 if not is_fallback else 35
-            route_max_tokens = max(max_tokens, 1600) if is_fallback else max_tokens
+            timeout_seconds = 30 if not is_fallback else 35
+            route_max_tokens = max_tokens if media else max(max_tokens, TEXT_ROUTE_MIN_TOKENS)
+            # GLM 5.3 Flash always reasons and defaults to effort "max", which used the whole budget before any
+            # answer. The paid tiers reason at low effort like structured_generation; the free preset ignores it.
+            reasoning_effort = "low" if is_fallback and not media else None
             return _call(
                 model,
                 system=system,
@@ -318,6 +341,7 @@ def structured_analysis(*, system, payload, schema: type[T], operation="analysis
                 temperature=temperature,
                 timeout_seconds=90 if videos else 40 if images else timeout_seconds,
                 strict_schema=False,
+                reasoning_effort=reasoning_effort,
                 images=images,
                 videos=videos,
             )

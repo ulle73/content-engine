@@ -16,7 +16,7 @@ from pydantic import BaseModel
 
 from . import apify
 from .models import AdAccount, AdObservation, CompetitorAd, ScraperState
-from .sync import OPEN, analysis, dispatch, fingerprint, finish, refresh_due, state_for
+from .sync import OPEN, analysis, batch_share, dispatch, dispatch_batch, fingerprint, finish, refresh_due, state_for
 
 ACTOR = "curious_coder/facebook-ads-library-scraper"
 LEGACY_ACTOR = "eiv/meta-ads-library-scraper"
@@ -81,6 +81,42 @@ def account_state(account):
 
 
 def start(account):
+    request, plan = _plan(account)
+    if plan is None:
+        return request
+    state, mode, inputs, max_cost = plan
+    return dispatch(state, ACTOR, mode, inputs, max_cost=max_cost)
+
+
+def batchable(account) -> bool:
+    """A page with a known id: its rows can be told apart from other pages' rows in a shared run."""
+    return account.active and account.page_id.isdigit() and not is_keyword(account) and account.country in COUNTRIES
+
+
+def start_batch(accounts):
+    """Due pages of one company share a run per (country, result limit) – the Actor takes one country and one
+    per-page limit per run. Groups of one are left to the ordinary start. Returns the requests started."""
+    groups = {}
+    for account in accounts:
+        if not batchable(account):
+            continue
+        request, plan = _plan(account)
+        if plan is not None:
+            groups.setdefault((account.country, plan[2]["count"]), []).append((account, plan))
+    started = []
+    for (country, limit), members in groups.items():
+        if len(members) < 2:
+            continue
+        inputs = {**members[0][1][2], "urls": [{"url": library_url(a)} for a, _ in members],
+                  "count": limit * len(members), "_max_items": len(members) * (limit + 31)}
+        requests = dispatch_batch([(state, mode, account_inputs, max_cost)
+                                   for _, (state, mode, account_inputs, max_cost) in members], ACTOR, inputs)
+        started += [r for r in requests.values() if r.status in OPEN]
+    return started
+
+
+def _plan(account):
+    """(request to reuse, None) or (None, (state, mode, inputs, max_cost)) for a new run."""
     if not account.active:
         raise apify.ApifyError("Annonsören är inaktiverad.")
     if account.country not in COUNTRIES:
@@ -90,10 +126,10 @@ def start(account):
     state = account_state(account)
     existing = state.requests.filter(status__in=OPEN).first()
     if existing:
-        return existing
+        return existing, None
     now = timezone.now()
     if state.next_attempt_at and state.next_attempt_at > now:
-        return state.requests.order_by("-created_at").first()
+        return state.requests.order_by("-created_at").first(), None
     if not state.backfill_attempted_at:
         mode, limit = "backfill", 50
     elif state.watermark and refresh_due(state, now):
@@ -102,7 +138,7 @@ def start(account):
         from .scraper_efficiency import discovery_due, discovery_limit
 
         if not discovery_due(state, now):
-            return state.requests.order_by("-created_at").first()
+            return state.requests.order_by("-created_at").first(), None
         mode, limit = "discovery", discovery_limit(state)
     limit = max(limit, 10)  # the actor refuses runs below 10 results
     # Sorted by impressions: the top `limit` ads are the ones Meta shows most – the ones worth studying.
@@ -116,7 +152,7 @@ def start(account):
         "scrapePageAds.countryCode": account.country,
     }
     # Apify stops charging at this cap; the actor may overshoot the limit slightly, extra rows are then cut off.
-    return dispatch(state, ACTOR, mode, inputs, max_cost=f"{limit * 1.3 * PRICE_PER_AD_USD + 0.01:.3f}")
+    return None, (state, mode, inputs, f"{limit * 1.3 * PRICE_PER_AD_USD + 0.01:.3f}")
 
 
 def safe_url(value):
@@ -273,7 +309,13 @@ def collect(request, account, *, reprocess=False):
         return request
     limit = request.inputs.get("count") or request.inputs["maxResults"]
     legacy = request.actor == LEGACY_ACTOR
-    rows = apify.dataset_items(request.dataset_id, max_items=limit + (1 if legacy else 31))
+    batch = request.inputs.get("batch") or {}
+    if batch:
+        # A shared run: read it all once (cached per process) and keep this page's rows.
+        every_row = apify.dataset_items(request.dataset_id, max_items=int(batch.get("max_items") or 2000), cache=True)
+        rows = [row for row in every_row if isinstance(row, dict) and owner(row) == account.page_id]
+    else:
+        rows = apify.dataset_items(request.dataset_id, max_items=limit + (1 if legacy else 31))
     observed = datetime.fromisoformat(remote["finishedAt"].replace("Z", "+00:00"))
     valid, skipped, excluded = [], 0, 0
     owners = {owner(row) for row in rows if isinstance(row, dict) and owner(row)}
@@ -343,7 +385,8 @@ def collect(request, account, *, reprocess=False):
         finish(
             locked,
             status=status,
-            cost=remote.get("usageTotalUsd"),
+            cost=batch_share(locked, len(rows), len(every_row), remote.get("usageTotalUsd")) if batch
+            else remote.get("usageTotalUsd"),
             observed_at=observed,
             result={
                 "new": created,

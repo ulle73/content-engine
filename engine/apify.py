@@ -35,6 +35,10 @@ class ApifyError(Exception):
         self.error_type = error_type
 
 
+class BudgetExceeded(ApifyError):
+    """The company's daily scraper ceiling leaves no room for this run; nothing was started."""
+
+
 def _clean_error_text(value):
     return " ".join(str(value or "").split())[:500]
 
@@ -186,8 +190,23 @@ def _legacy_instagram_aliases(row):
     return aliased
 
 
-def dataset_items(dataset_id, max_items=101):
+_finished_datasets = {}
+
+
+def dataset_items(dataset_id, max_items=101, *, cache=False):
     # Inputs cap each profile at 100 items. Paginate so API defaults cannot silently truncate a run.
+    # A finished run's dataset never changes: a batch read once serves every account in it (`cache`).
+    if cache and (dataset_id, max_items) in _finished_datasets:
+        return list(_finished_datasets[(dataset_id, max_items)])
+    rows = _read_dataset(dataset_id, max_items)
+    if cache:
+        if len(_finished_datasets) >= 8:
+            _finished_datasets.pop(next(iter(_finished_datasets)))
+        _finished_datasets[(dataset_id, max_items)] = rows
+    return list(rows)
+
+
+def _read_dataset(dataset_id, max_items):
     rows = []
     while True:
         limit = min(250, max_items-len(rows))

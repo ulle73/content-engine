@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CATALOG = ROOT / "library" / "catalog.json"
 FIELDS = (("name", 4.0), ("tags", 3.0), ("id", 2.0), ("type", 2.0), ("description", 1.5), ("kit", 1.0), ("use", 0.5))
 PUBLIC_KEYS = ("id", "name", "type", "medium", "formats", "engine", "description", "tags", "kit", "use",
-               "cost", "requires", "status", "preview", "path", "notes", "company")
+               "cost", "requires", "status", "preview", "path", "notes", "company", "source_url", "technique_detail")
 
 
 @lru_cache(maxsize=1)
@@ -24,10 +24,13 @@ def _load(mtime: float) -> list[dict]:
     return json.loads(CATALOG.read_text(encoding="utf-8"))["items"]
 
 
-def items() -> list[dict]:
-    if not CATALOG.exists():
-        return []
-    return _load(CATALOG.stat().st_mtime)
+def items(company=None) -> list[dict]:
+    base = _load(CATALOG.stat().st_mtime) if CATALOG.exists() else []
+    if company is None:
+        return base
+    # The database holds curated company additions, not another library/catalog.json.
+    from engine.techniques.models import StoredTechnique
+    return [*base, *(item.data for item in StoredTechnique.objects.filter(company=company))]
 
 
 def _tokens(text: str) -> list[str]:
@@ -62,12 +65,14 @@ def _public(item: dict) -> dict:
 
 
 def search(query: str = "", *, type: str = "", format: str = "", medium: str = "", kit: str = "",
-           verified_only: bool = False, limit: int = 15, feedback: dict | None = None) -> dict:
+           verified_only: bool = False, limit: int = 15, feedback: dict | None = None,
+           company=None) -> dict:
     """`feedback` (engine.review.lessons.library_feedback) ranks items by what the owner liked/disliked before."""
     limit = max(1, min(int(limit), 50))
     words = _tokens(query)
+    all_items = items(company)
     pool = [
-        i for i in items()
+        i for i in all_items
         if (not type or i["type"] == type)
         and (not medium or i["medium"] == medium)
         and (not kit or i["kit"] == kit)
@@ -85,12 +90,12 @@ def search(query: str = "", *, type: str = "", format: str = "", medium: str = "
         if item["id"] in feedback:
             hit["our_feedback"] = {k: v for k, v in feedback[item["id"]].items() if k != "multiplier"}
         hits.append(hit)
-    return {"total_in_library": len(items()), "matches": len(hits), "results": hits}
+    return {"total_in_library": len(all_items), "matches": len(hits), "results": hits}
 
 
-def get(item_id: str) -> dict:
-    """One item; a recipe also carries its full recipe/v1 document (scenes, shots, AI upgrades, QA)."""
-    for item in items():
+def get(item_id: str, *, company=None) -> dict:
+    """One scoped item; recipes also carry full recipe/v1 data."""
+    for item in items(company):
         if item["id"] == item_id:
             result = _public(item)
             recipe = (ROOT / item["path"]).with_name("recipe.json") if item["type"] == "recipe" else None

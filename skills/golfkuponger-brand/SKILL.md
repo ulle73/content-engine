@@ -13,6 +13,10 @@ Målet är att varje annons ska kännas som Golfkuponger utan att loggan behövs
 
 Ett mjukt morgonljus över en välskött svensk bana, någon som faktiskt spelar, och en kort, självklar text som säger vad du får.
 
+## Fotorealistiska golfbilder — särskild guide
+
+För bilder där golfare, utrustning eller banmiljö ska se ut som verkliga fotografier: följ även [golfrealism-guiden](../../docs/2026-10-28-golf-photo-realism-guide.md). Den innehåller fem valbara motivmallar, fysisk kontroll av händer/klubbor, gräszoner, referensstrategi, hard-fail-kriterier och ett föreslaget A/B-test. Använd den endast för fotografiska uppdrag; illustration, humor och andra uttryck ska inte tvingas in i dokumentär realism. Guiden är evidensinformerad men ännu inte validerad i egna generationstester.
+
 ## Bildspråk
 
 **Ja**
@@ -71,7 +75,7 @@ Grön dominerar, vitt ger luft och guld används sparsamt.
 
 ## Format och safe zones
 
-- **9:16 (Reels och Stories)**: håll text och logga inom de mittersta ~70 % av höjden. Topp ~14 % och botten ~20 % täcks av plattformens UI, och högerkanten av knappar.
+- **9:16 (Reels och Stories)**: håll text, logga och produkt borta från översta ~14 % (270 px), nedersta ~35 % (670 px), ~6 % till vänster och ~14 % till höger. Där ligger profilnamn, bildtext, knappar och CTA.
 - **4:5 / 1:1 (feed)**: mer luft, rubrik i övre tredjedelen.
 - Ofta smart att bygga 9:16 först. Feed-formaten blir bäst som omkomponeringar, inte beskärningar.
 

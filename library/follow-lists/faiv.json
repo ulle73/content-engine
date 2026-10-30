@@ -3,6 +3,7 @@
   "aliases": ["faiv", "f.a.i.v", "f.a.i.v.", "fordonsanpassning i väst", "fordonsanpassning i väst ab"],
   "source": "library/follow-lists/FOLLOW-LIST-2026-10-09.md (referensrunda 2), godkänd av ägaren 2026-10-09; sid-id:n kompletterade 2026-10-13",
   "instagram": [
+    {"name": "FAIV AB (eget konto)", "username": "f.a.i.v.ab", "own": true, "why": "Eget konto: ett eget inlägg som slår våra vanliga blir mall för nästa idé."},
     {"name": "Ljusgiganten.se", "username": "ljusgiganten.se", "why": "Kund-/ambassadörsvideor från förarplatsen i mörker."},
     {"name": "Ekstralys (NO)", "username": "ekstralys.no", "why": "Mest filmiska konkurrenten; säljer Lumen-grillkit."},
     {"name": "Valostore.se", "username": "valostore.se", "why": "Längst körda svenska annonsen; humor med Gunde och Ferry Svan."},

@@ -20,6 +20,75 @@ class DailyTests(TestCase):
         self.a = Company.objects.create(owner=self.owner, name="A")
         self.b = Company.objects.create(owner=self.owner, name="B")
 
+    @patch.dict("os.environ", {"DAILY_PARALLEL": "4"})
+    def test_a_parallel_stage_runs_units_side_by_side_and_the_ledger_records_each(self):
+        import threading
+        import time as real_time
+
+        running, peak, lock = [0], [0], threading.Lock()
+
+        def unit():
+            with lock:
+                running[0] += 1
+                peak[0] = max(peak[0], running[0])
+            real_time.sleep(0.2)
+            with lock:
+                running[0] -= 1
+            return Result(data={"thread": threading.current_thread().name})
+
+        stage = Stage("analysis", lambda c: [(f"u{i}", unit) for i in range(4)], parallel=True)
+        run = run_daily(company_id=self.a.pk, stages=[stage], wait_seconds=0)
+        self.assertEqual(peak[0], 4)
+        self.assertEqual(run.steps.filter(stage="analysis", status="success").exclude(key="__discovery__").count(), 4)
+        self.assertTrue(all(s.result["thread"].startswith("daily-analysis")
+                            for s in run.steps.filter(stage="analysis").exclude(key="__discovery__")))
+
+    @patch.dict("os.environ", {"DAILY_PARALLEL": "4"})
+    def test_the_batch_unit_runs_first_and_alone(self):
+        order = []
+        batch = Mock(side_effect=lambda: order.append("batch") or Result())
+        account = Mock(side_effect=lambda: order.append("account") or Result())
+        stage = Stage("ads_import", lambda c: [("batch", batch), ("p1", account), ("p2", account)], parallel=True)
+        run_daily(company_id=self.a.pk, stages=[stage], wait_seconds=0)
+        self.assertEqual(order, ["batch", "account", "account"])
+
+    @patch.dict("os.environ", {"DAILY_PARALLEL": "2"})
+    def test_units_still_waiting_when_the_budget_runs_out_stay_pending_and_unattempted(self):
+        clock = [0]
+
+        def spend_the_budget():
+            clock[0] = 1000  # the two first units use up the 120 s; the two waiting ones must not start
+            return Result()
+
+        later = Mock(return_value=Result())
+        stage = Stage("analysis", lambda c: [("a", spend_the_budget), ("b", spend_the_budget), ("c", later), ("d", later)],
+                      parallel=True)
+        with patch("engine.daily.time.monotonic", side_effect=lambda: clock[0]), patch("engine.daily.time.sleep"):
+            run_daily(company_id=self.a.pk, stages=[stage], wait_seconds=120)
+        later.assert_not_called()
+        waiting = DailyStep.objects.filter(stage="analysis", key__in=["c", "d"])
+        self.assertEqual({(s.status, s.attempts) for s in waiting}, {("pending", 0)})
+
+    def test_without_daily_parallel_a_parallel_stage_runs_one_at_a_time(self):
+        import threading
+
+        names = []
+        stage = Stage("analysis", lambda c: [(f"u{i}", lambda: names.append(threading.current_thread().name) or Result())
+                                             for i in range(3)], parallel=True)
+        run_daily(company_id=self.a.pk, stages=[stage], wait_seconds=0)
+        self.assertEqual(set(names), {threading.main_thread().name})
+
+    def test_an_always_stage_still_runs_once_after_slow_stages_spent_the_budget(self):
+        clock = iter(range(0, 10_000, 100))  # every reading is 100 s later: the 120 s budget is gone at once
+        slow, late, ideas = Mock(return_value=Result()), Mock(return_value=Result()), Mock(return_value=Result())
+        stages = [Stage("slow", lambda c: [("a", slow)]), Stage("late", lambda c: [("b", late)]),
+                  Stage("ideas", lambda c: [("ideas", ideas)], always=True)]
+        with patch("engine.daily.time.monotonic", side_effect=lambda: next(clock)), patch("engine.daily.time.sleep"):
+            run_daily(company_id=self.a.pk, stages=stages, wait_seconds=120)
+        late.assert_not_called()  # ordinary work still respects the budget
+        ideas.assert_called_once()
+        self.assertEqual(DailyStep.objects.get(stage="ideas", key="ideas").status, "success")
+
     def test_failure_isolated_by_item_and_company_success_not_repeated(self):
         fail = Mock(side_effect=RuntimeError("SECRET-this-must-not-be-stored"))
         succeed = Mock(return_value=Result(data={"observation":"saved"}))

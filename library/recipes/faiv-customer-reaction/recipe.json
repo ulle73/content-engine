@@ -150,7 +150,7 @@
     "Ljuset tänds exakt på musikens slag (±1 bildruta) och klicket hörs",
     "Inga registreringsskyltar, andra företags loggor eller ansikten utan samtycke",
     "Varje påstående på skärm kommer från faktabanken (fact-id) och är verifierat, annars bort",
-    "Text inom 9:16-safe zone (mittersta ~70 % av höjden), läsbar i 360 px mobilvy",
+    "Text, logga och produkt inom 9:16-safe zone (inte översta 14 % eller nedersta 35 %), läsbar i 360 px mobilvy",
     "Produkten är exakt FAIV:s (från produktkatalogen/egen film), aldrig AI-ritad",
     "AI-klipp: vision-QA bildruta för bildruta – produktform, logga, händer, inga påhittade detaljer",
     "Ljud: −14 LUFS, motor/klick/natt-ambiens hörs, fungerar även helt utan ljud",

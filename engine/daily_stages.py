@@ -7,10 +7,12 @@ from django.utils import timezone
 from django.db.models import Q
 from django.conf import settings
 
+from .apify import ApifyError, BudgetExceeded
 from .competitors import OPEN_STATUSES, collect_import, start_import
 from .daily import Result, Stage
+from .readiness import PROFILE_MISSING, analysis_ready
 from .media import advance_job, remove_asset
-from .models import Competitor, MediaAsset, MediaGeneration
+from .models import Competitor, CompetitorImport, MediaAsset, MediaGeneration
 from .signals import analysis_candidates, classification_hash, classify
 
 
@@ -24,7 +26,11 @@ def import_account(account):
         if latest and latest.started_at > timezone.now()-timedelta(hours=23):
             collect_import(latest, allow_fallback=False)
             return Result("attention", "Senaste försöket behöver kontroll; ingen ny betald start inom 23 timmar.", {"import_id": latest.pk})
-        run = start_import(account)
+        try:
+            run = start_import(account)
+        except BudgetExceeded as exc:
+            # The ceiling is policy, not a provider failure: nothing started, tomorrow's run takes it.
+            return Result("blocked", str(exc))
     if not run.actor_run_id:
         return Result("attention", "Apify-starten är obekräftad. Kontrollera körningen i appen före nytt försök.", {"import_id": run.pk})
     result = collect_import(run)
@@ -51,7 +57,26 @@ def competitor_units(company):
         # A manual early check must not mark a later-due refresh done for the entire day.
         anchor = account.last_success_at.isoformat() if account.last_success_at else "first"
         units.append((f"{account.pk}:{anchor}", partial(import_account, account)))
+    batchable = [u.args[0] for _, u in units if u.args[0].platform == "instagram"
+                 and not u.args[0].imports.filter(status__in=OPEN_STATUSES).exists()]
+    if len(batchable) >= 2:
+        # Start them together first; each account's own unit then only collects its part of the shared run.
+        units.insert(0, ("batch", partial(start_batch, "instagram", batchable)))
     return units
+
+
+def start_batch(kind, accounts):
+    """One shared Apify run per company (and per country/limit for ads) instead of one run per account."""
+    from . import ads, competitors
+    try:
+        started = (competitors.start_batch if kind == "instagram" else ads.start_batch)(accounts)
+    except BudgetExceeded as exc:
+        return Result("blocked", str(exc))
+    runs = sorted({r.actor_run_id for r in started if r.actor_run_id})
+    if not started:
+        return Result("skipped", "Inget konto behövde en ny hämtning.")
+    return Result(message=f"{len(started)} konton startade i {len(runs)} Apify-körning(ar).",
+                  data={"accounts": len(started), "runs": runs})
 
 
 def analyze_post(post, company):
@@ -60,11 +85,30 @@ def analyze_post(post, company):
     return Result(data={"post_id": post.pk, "classification_hash": fingerprint})
 
 
+def imports_running(company):
+    """Collect today's started imports that already finished at Apify; True while a known job still runs.
+
+    Instagram runs are done in seconds, but the import stage is only polled again after a whole pass – which the
+    ad stages can stretch over the full time budget – so waiting on the step status starved the analysis.
+    """
+    runs = CompetitorImport.objects.filter(competitor__company=company, competitor__active=True,
+                                           status__in=OPEN_STATUSES).exclude(actor_run_id=None)
+    for run in runs:
+        try:
+            collect_import(run)
+        except ApifyError:
+            pass  # still counted as running below; the import stage reports it
+    return runs.all().exists()  # a fresh query, not the cache from the loop above
+
+
 def analysis_units(company):
     # Failed imports do not prohibit analysis of already stored observations.
     # Wait only for known active provider jobs, not uncertain starts needing human attention.
-    if company.daily_steps.filter(run__day=timezone.localdate(), stage="competitor_import", status="pending").exists():
+    if (company.daily_steps.filter(run__day=timezone.localdate(), stage="competitor_import", status="pending").exists()
+            and imports_running(company)):
         return [("await_imports", lambda: Result("pending", "Inväntar pågående importer före analys."))]
+    if not analysis_ready(company):
+        return [("needs-profile", lambda: Result("attention", PROFILE_MISSING))] if company.competitors.exists() else []
     return [("await_imports", lambda: Result("skipped", "Inga pågående importer."))] + [
         (f"{p.pk}:{classification_hash(p, company)}", partial(analyze_post, p, company)) for p in analysis_candidates(company)
     ]
@@ -111,7 +155,7 @@ STAGES = (
     Stage("competitor_import", competitor_units),
     Stage("media_collect", media_units),
     Stage("media_cleanup", cleanup_units),
-    Stage("competitor_analysis", analysis_units),
+    Stage("competitor_analysis", analysis_units, parallel=True),
 )
 
 
@@ -120,7 +164,10 @@ def import_ads(account):
     state = ads.account_state(account)
     if state.coverage == "limited":
         return Result("attention", "Annonsurvalet nådde resultatgränsen. Sparat underlag kan användas; kontrollera täckningen i Insikter.")
-    request = ads.start(account)
+    try:
+        request = ads.start(account)
+    except BudgetExceeded as exc:
+        return Result("blocked", str(exc))
     if not request:
         return Result("skipped", "Ingen annonskontroll behövs ännu.")
     if request.status in ("starting", "unknown") and not request.actor_run_id:
@@ -150,14 +197,19 @@ def ads_units(company):
                     result.append((step.key, partial(import_ads, account)))
             continue
         result.append((f"{account.pk}:{state.watermark.isoformat() if state.watermark else 'first'}", partial(import_ads, account)))
+    from .ads import batchable
+    pages = [u.args[0] for key, u in result if not key.startswith(("batch",)) and batchable(u.args[0])
+             and not account_state(u.args[0]).requests.filter(status__in=OPEN_STATUSES).exists()]
+    if len(pages) >= 2:
+        result.insert(0, ("batch", partial(start_batch, "ads", pages)))
     return result
 
 
 def ads_analysis_units(company):
     from .ads import classification_hash, classify
     from .models import CompetitorAd
-    if not company.profile.strip() or not company.current.strip():
-        return []
+    if not analysis_ready(company):
+        return [("needs-profile", lambda: Result("attention", PROFILE_MISSING))] if company.ad_accounts.exists() else []
     candidates = CompetitorAd.objects.filter(account__company=company, account__active=True).order_by("-last_seen_at", "-pk")[:100]
     units = []
     for ad in candidates:
@@ -198,7 +250,14 @@ def own_discovery_units(company):
         except InvalidToken as exc:
             raise ValueError("Postiz-kopplingen kunde inte dekrypteras. Kontrollera CONTENT_POSTIZ_ENCRYPTION_SECRET på körvärden.") from exc
     def work():
-        data=discover(company)
+        from .postiz import PostizError
+        try:
+            data=discover(company)
+        except PostizError as exc:
+            if exc.status_code not in (401, 403):
+                raise
+            # A rejected key or lapsed plan needs a person, not a retry; the message is our own text.
+            return Result("attention", str(exc), {"http_status": exc.status_code})
         return Result(data.pop("status","success"),data.get("message","Egna publiceringar kontrollerade."),data)
     return [("published",work)]
 
@@ -221,7 +280,8 @@ def own_learning_units(company):
     return [(key,work)]
 
 
-STAGES = (*STAGES, Stage("ads_import", ads_units), Stage("ads_analysis", ads_analysis_units),
+# Ad collection (a DB round trip per ad) and AI analysis wait on I/O; they run side by side (DAILY_PARALLEL).
+STAGES = (*STAGES, Stage("ads_import", ads_units, parallel=True), Stage("ads_analysis", ads_analysis_units, parallel=True),
     Stage("own_discovery",own_discovery_units),Stage("own_snapshots",own_snapshot_units),
     Stage("own_outcomes",own_learning_units), Stage("learning", learning_units))
 
@@ -268,3 +328,34 @@ def reference_units(company):
 
 
 STAGES = (*STAGES, Stage("reference_breakdown", reference_units))
+
+
+def idea_units(company):
+    """Pitch new hits (own posts first) and send at most IDEA_WEEKLY_MAX idea cards a week to Discord (engine/ideas).
+    Off with IDEA_DAILY_LIMIT=0 or without an OpenRouter key."""
+    import os
+
+    from .ideas import service
+    from .review.service import ReviewError
+
+    if service.daily_breakdowns() <= 0 or not os.environ.get("OPENROUTER_API_KEY", "").strip():
+        return []
+
+    def work():
+        try:
+            data = service.daily(company)
+        except ReviewError as exc:
+            return Result("attention", f"Idékortet kunde inte skickas: {exc}"[:300])
+        sent = f" Skickat: {data['sent']}." if data["sent"] else " Inget kort skickat."
+        status = "attention" if data["errors"] and not data["pitched"] else "success"
+        return Result(status, f"{len(data['pitched'])} nya idéer bedömda.{sent}"[:300], data)
+
+    return [("ideas", work)]
+
+
+STAGES = (*STAGES, Stage("ideas", idea_units, always=True))
+
+
+# Morning start phase: Apify runs take seconds to minutes, so starting them about half an hour before the full run
+# lets that run collect finished data instead of spending its time budget waiting.
+START_STAGES = tuple(stage for stage in STAGES if stage.name in ("competitor_import", "ads_import"))

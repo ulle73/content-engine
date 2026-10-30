@@ -73,12 +73,15 @@ def company_settings(request, workspace_id):
                 kwargs={"workspace_id": company.pk, "run_id": step.result["run_id"], "job_id": step.key},
             )
 
+    from .readiness import checklist
     from .scraper_efficiency import report
 
+    readiness = checklist(company)
     return render(
         request,
         "engine/settings.html",
-        {"workspace": company, "steps": recent, "scraping": report(company)},
+        {"workspace": company, "steps": recent, "scraping": report(company), "readiness": readiness,
+         "readiness_open": sum(not item["ok"] for item in readiness)},
     )
 
 

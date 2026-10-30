@@ -147,6 +147,8 @@ class Competitor(models.Model):
     name = models.CharField(max_length=200)
     platform = models.CharField(max_length=10, choices=PLATFORMS, default="instagram")
     username = models.CharField(max_length=30)
+    # The company's own account, scraped like the others: its hits are the strongest templates for new ideas.
+    own = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
     last_success_at = models.DateTimeField(null=True)
     last_error = models.CharField(max_length=500, blank=True)
@@ -165,7 +167,7 @@ class Competitor(models.Model):
 class CompetitorImport(models.Model):
     competitor = models.ForeignKey(Competitor, on_delete=models.CASCADE, related_name="imports")
     actor = models.CharField(max_length=100)
-    actor_run_id = models.CharField(max_length=100, unique=True, null=True)
+    actor_run_id = models.CharField(max_length=100, null=True, db_index=True)  # shared by a batch run
     dataset_id = models.CharField(max_length=100, blank=True)
     status = models.CharField(max_length=20, default="starting")
     started_at = models.DateTimeField(auto_now_add=True)
@@ -883,7 +885,7 @@ class ScrapeRequest(models.Model):
     mode = models.CharField(max_length=20)
     inputs = models.JSONField(default=dict)
     status = models.CharField(max_length=20, default="starting")
-    actor_run_id = models.CharField(max_length=100, unique=True, null=True)
+    actor_run_id = models.CharField(max_length=100, null=True, db_index=True)  # shared by a batch run
     dataset_id = models.CharField(max_length=100, blank=True)
     max_cost_usd = models.DecimalField(max_digits=10, decimal_places=4)
     cost_usd = models.DecimalField(max_digits=12, decimal_places=6, null=True)
@@ -1091,3 +1093,9 @@ from .edit.models import EditJob  # noqa: F401,E402
 
 # Reference videos: competitor ads/posts or any URL, measured and broken down to make our own version (engine/references).
 from .references.models import ReferenceVideo  # noqa: F401,E402
+
+# Idea cards: monitored hits pitched in Discord before anything is produced (engine/ideas).
+from .ideas.models import IdeaCard  # noqa: F401,E402
+
+# Approved per-company techniques extend the static Content Library catalog.
+from .techniques.models import TechniqueImport, StoredTechnique  # noqa: F401,E402

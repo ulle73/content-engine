@@ -1,7 +1,7 @@
 {
  "version": 1,
- "generated": "2026-10-15",
- "count": 1512,
+ "generated": "2026-10-31",
+ "count": 1600,
  "verified": 400,
  "by_type": {
   "background": 60,
@@ -10,7 +10,7 @@
   "effect": 244,
   "grade": 10,
   "model": 5,
-  "prompt": 347,
+  "prompt": 435,
   "recipe": 12,
   "scene": 190,
   "skill": 60,
@@ -30081,6 +30081,3346 @@
    ],
    "path": "https://github.com/LuxRealGrowth/awesome-astra-video-prompts",
    "status": "unverified"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/0xfemyn/status/2103796337041137833 · Remake: https://skillry.dev/ai-videos/opus-5-5/0xfemyn-137833",
+   "notes": "Skapare @0xfemyn. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.0xfemyn-137833",
+   "name": "15-sekunders motion graphics för en AI-tjänst",
+   "type": "prompt",
+   "description": "Snabb varumärkesfilm för en AI-tjänst med canvas, SVG och CSS-animation. Skarpa övergångar och tydlig identitet i ett kompakt format.",
+   "tags": [
+    "15 sekunder",
+    "ai",
+    "canvas",
+    "css",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "promo",
+    "svg",
+    "varumärkesfilm"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/0xfemyn-137833.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/0xValure/status/2103603025579331584 · Remake: https://skillry.dev/ai-videos/opus-5-5/0xvalure-331584",
+   "notes": "Skapare @0xValure. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.0xvalure-331584",
+   "name": "Logga som blir 10-sekunders reel",
+   "type": "prompt",
+   "description": "Logotypen görs om till en dynamisk reel i en referensfilms anda, med Three.js och canvas. Kort, snygg och betalningsfokuserad.",
+   "tags": [
+    "10 sekunder",
+    "betalning",
+    "canvas",
+    "explainer",
+    "logga",
+    "motion design",
+    "opus-5-5",
+    "reel",
+    "three.js",
+    "threejs",
+    "varumärke"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/0xvalure-331584.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/1littlecoder/status/2103746736980378066 · Remake: https://skillry.dev/ai-videos/opus-5-5/1littlecoder-378066",
+   "notes": "Skapare @1littlecoder. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.1littlecoder-378066",
+   "name": "30-sekunders reklamfilm i Apples 1984-anda",
+   "type": "prompt",
+   "description": "Dystopisk, filmisk reklam som hyllar en AI-modell med tydlig inspiration från den klassiska 1984-annonsen, utan kantramar eller hörntext.",
+   "tags": [
+    "1984",
+    "30 sekunder",
+    "ai",
+    "apple",
+    "canvas",
+    "dystopi",
+    "filmisk",
+    "motion",
+    "opus-5-5",
+    "reklamfilm"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/1littlecoder-378066.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/ajith_io/status/2103469807375208546 · Remake: https://skillry.dev/ai-videos/opus-5-5/ajith-io-208546",
+   "notes": "Skapare @ajith_io. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ajith-io-208546",
+   "name": "40-sekunders showreel för produkten Distilbook",
+   "type": "prompt",
+   "description": "Längre showreel där en produkt presenteras i flera tempoväxlande scener med kinetisk text, vektorgrafik och mjuka animationer.",
+   "tags": [
+    "40 sekunder",
+    "canvas",
+    "css",
+    "gsap",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "produktfilm",
+    "research",
+    "showreel",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ajith-io-208546.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/ajith_io/status/2103800569584562538 · Remake: https://skillry.dev/ai-videos/opus-5-5/ajith-io-562538",
+   "notes": "Skapare @ajith_io. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ajith-io-562538",
+   "name": "40-sekunders showreel med egenkomponerad filmmusik",
+   "type": "prompt",
+   "description": "Drömsk showreel med Three.js och shaders där musiken är komponerad i kod i stor filmmusikanda. Mörk, intensiv stämning kring en produkt.",
+   "tags": [
+    "40 sekunder",
+    "canvas",
+    "explainer",
+    "filmmusik",
+    "intensiv",
+    "komponerad musik",
+    "opus-5-5",
+    "shader",
+    "showreel",
+    "three.js",
+    "threejs"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ajith-io-562538.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/ajith_io/status/2103541149709615243 · Remake: https://skillry.dev/ai-videos/opus-5-5/ajith-io-615243",
+   "notes": "Skapare @ajith_io. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ajith-io-615243",
+   "name": "30-sekunders showreel med partiklar efter referensvideo",
+   "type": "prompt",
+   "description": "Showreel som lånar en referensfilms visuella stil, med partikelsystem och hård rytm. Mörk, cool och högenergisk känsla kring en produkt.",
+   "tags": [
+    "30 sekunder",
+    "canvas",
+    "coolt",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "particles",
+    "partiklar",
+    "produktfilm",
+    "referensstil",
+    "showreel"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ajith-io-615243.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/alex_prompter/status/2103499977632997524 · Remake: https://skillry.dev/ai-videos/opus-5-5/alex-prompter-997524",
+   "notes": "Skapare @alex_prompter. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.alex-prompter-997524",
+   "name": "30-sekunders affärsförklaring i fem scener",
+   "type": "prompt",
+   "description": "Förklaringsfilm på en enda HTML-sida som går från kundens problem via tre steg och ett bevis till företagsnamnet. Fet text, mjuka övergångar och egna färger.",
+   "tags": [
+    "30 sekunder",
+    "affärsfilm",
+    "explainer",
+    "fem scener",
+    "gsap",
+    "html",
+    "opus-5-5",
+    "svg",
+    "varumärke"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/alex-prompter-997524.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/alexalbert__/status/2102466523164274839 · Remake: https://skillry.dev/ai-videos/opus-5-5/alexalbert-274839",
+   "notes": "Skapare @alexalbert__. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.alexalbert-274839",
+   "name": "Market Street i San Francisco före jordbävningen 1906",
+   "type": "prompt",
+   "description": "Rekonstruktion i Blender av gatan dagen innan jordbävningen, byggd på kartor, film och foton. Historiskt noggrann 3D-miljö med byggnader och landmärken.",
+   "tags": [
+    "1906",
+    "3d",
+    "arkitektur",
+    "blender",
+    "canvas",
+    "historia",
+    "jordbävning",
+    "opus-5-5",
+    "rekonstruktion",
+    "san francisco",
+    "shader",
+    "threejs"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/alexalbert-274839.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/AmitSingha89/status/2103737604277780553 · Remake: https://skillry.dev/ai-videos/opus-5-5/amitsingha89-780553",
+   "notes": "Skapare @AmitSingha89. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.amitsingha89-780553",
+   "name": "Förklaringsfilm för förstagångsbesökare på en webbplats",
+   "type": "prompt",
+   "description": "Professionell introduktion som berättar för nya besökare vad en webbplats handlar om. Rena SVG-scener i lugnt tempo.",
+   "tags": [
+    "explainer",
+    "förstagångsbesökare",
+    "introduktion",
+    "onboarding",
+    "opus-5-5",
+    "produktfilm",
+    "professionell",
+    "svg",
+    "webbplats"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/amitsingha89-780553.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/anabology/status/2103534482930491441 · Remake: https://skillry.dev/ai-videos/opus-5-5/anabology-491441",
+   "notes": "Skapare @anabology. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.anabology-491441",
+   "name": "Musikvideo i papperskänsla om singulariteten",
+   "type": "prompt",
+   "description": "Poplåt om allt snabbare AI-framsteg får en ny visuell tolkning: kodritade, papperslika scener med abstrakt formspråk och sångtextens teman som röd tråd.",
+   "tags": [
+    "ai",
+    "ai-image",
+    "animation",
+    "canvas",
+    "motion",
+    "music video",
+    "musikvideo",
+    "opus-5-5",
+    "papper",
+    "pop",
+    "singulariteten"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/anabology-491441.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/ann_nnng/status/2103723183899852885 · Remake: https://skillry.dev/ai-videos/opus-5-5/ann-nnng-852885",
+   "notes": "Skapare @ann_nnng. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ann-nnng-852885",
+   "name": "15-sekunders showreel kring en produkt",
+   "type": "prompt",
+   "description": "Kort motion graphics-film där budskapet skrivs fram efter research om produkten. Tydliga rubriker och rörlig typografi på canvas.",
+   "tags": [
+    "15 sekunder",
+    "canvas",
+    "kinetisk typografi",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "produkt",
+    "promo",
+    "research",
+    "showreel"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ann-nnng-852885.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/AstroTheWizard/status/2103629247751618782 · Remake: https://skillry.dev/ai-videos/opus-5-5/astrothewizard-618782",
+   "notes": "Skapare @AstroTheWizard. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.astrothewizard-618782",
+   "name": "Fotonens resa i sagobokens stil",
+   "type": "prompt",
+   "description": "60 sekunder förklarande kodanimation där en fotons personlighet och en äkta slumpvandring står i centrum. Charmig, sagolik stil med korrekta fakta.",
+   "tags": [
+    "canvas",
+    "charmig",
+    "explainer",
+    "foton",
+    "fysik",
+    "förklaring",
+    "ljus",
+    "opus-5-5",
+    "sagobok",
+    "simulering"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/astrothewizard-618782.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/AxtonLiu/status/2103119648271290566 · Remake: https://skillry.dev/ai-videos/opus-5-5/axtonliu-290566",
+   "notes": "Skapare @AxtonLiu. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.axtonliu-290566",
+   "name": "Mycket detaljerad pelikan som cyklar",
+   "type": "prompt",
+   "description": "Modellens ultimata tolkning av det klassiska testet pelikan på cykel, med maximal detaljrikedom i animation och 3D. Ett estetiskt mästerverk som får ta sin tid.",
+   "tags": [
+    "3d",
+    "animation",
+    "cykel",
+    "detaljrik",
+    "opus-5-5",
+    "pelikan",
+    "shader",
+    "test",
+    "webgl"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/axtonliu-290566.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/bizibeast/status/2103696876130505124 · Remake: https://skillry.dev/ai-videos/opus-5-5/bizibeast-505124",
+   "notes": "Skapare @bizibeast. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.bizibeast-505124",
+   "name": "40-sekunders showreel för en webbtjänst",
+   "type": "prompt",
+   "description": "Researchad showreel med SVG, GSAP och CSS som visar upp en webbtjänst genom rytmiska typografiska scener.",
+   "tags": [
+    "40 sekunder",
+    "css",
+    "gsap",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "research",
+    "showreel",
+    "svg",
+    "webbtjänst"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/bizibeast-505124.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/brainextends/status/2103801834930606193 · Remake: https://skillry.dev/ai-videos/opus-5-5/brainextends-606193",
+   "notes": "Skapare @brainextends. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.brainextends-606193",
+   "name": "Premium musikproduktfilm i Spotify-tema",
+   "type": "prompt",
+   "description": "Polerad 18-sekundersfilm på en nästan svart rundad scen mot grön, atmosfärisk bakgrund. Vit text, gröna accenter, rena ikoner och subtila ljudeffekter.",
+   "tags": [
+    "grön",
+    "motion",
+    "musik",
+    "mörkt tema",
+    "opus-5-5",
+    "produktfilm",
+    "shader",
+    "spotify",
+    "svg",
+    "ui-animation"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/brainextends-606193.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/BThreeAgency/status/2103739079745827092 · Remake: https://skillry.dev/ai-videos/opus-5-5/bthreeagency-827092",
+   "notes": "Skapare @BThreeAgency. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.bthreeagency-827092",
+   "name": "3D-utmärkelse som låses upp med guldpartiklar",
+   "type": "prompt",
+   "description": "Ett solitt 3D-märke vinklar sig mot markören enligt fysikens lagar och firas med guldpartiklar. Snabb och mjuk utan studs, byggd efter en Figma-design.",
+   "tags": [
+    "3d",
+    "badge",
+    "canvas",
+    "css",
+    "figma",
+    "guld",
+    "opus-5-5",
+    "partiklar",
+    "svg",
+    "ui-animation",
+    "utmärkelse"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/bthreeagency-827092.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Filtrera på kategorin i data/videos.json eller på Skillry.",
+   "notes": "Länkat, inte kopierat.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.cat-3d",
+   "name": "Opus 5.5-videor: 3D-scener (117)",
+   "type": "prompt",
+   "description": "Kodade 3D-scener i Three.js/WebGL: objekt, miljöer, kamerafärder och shaders.",
+   "tags": [
+    "opus-5-5",
+    "prompts",
+    "3d",
+    "kodad video"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos#readme"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Filtrera på kategorin i data/videos.json eller på Skillry.",
+   "notes": "Länkat, inte kopierat.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.cat-explainer",
+   "name": "Opus 5.5-videor: Explainers (116)",
+   "type": "prompt",
+   "description": "Kodade förklaringsvideor: processer, data, anatomi, recept och koncept steg för steg.",
+   "tags": [
+    "opus-5-5",
+    "prompts",
+    "explainer",
+    "kodad video"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos#readme"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Filtrera på kategorin i data/videos.json eller på Skillry.",
+   "notes": "Länkat, inte kopierat.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.cat-interactive",
+   "name": "Opus 5.5-videor: Spel och interaktivt (101)",
+   "type": "prompt",
+   "description": "Kodade spel och interaktiva upplevelser som går att spela in som video.",
+   "tags": [
+    "opus-5-5",
+    "prompts",
+    "interactive",
+    "kodad video"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos#readme"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Filtrera på kategorin i data/videos.json eller på Skillry.",
+   "notes": "Länkat, inte kopierat.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.cat-motion",
+   "name": "Opus 5.5-videor: Motion graphics (369)",
+   "type": "prompt",
+   "description": "Kodade motion graphics: kinetisk typografi, partiklar, former och loopar.",
+   "tags": [
+    "opus-5-5",
+    "prompts",
+    "motion",
+    "kodad video"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos#readme"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/ceowinkz/status/2103647124126683602 · Remake: https://skillry.dev/ai-videos/opus-5-5/ceowinkz-683602",
+   "notes": "Skapare @ceowinkz. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ceowinkz-683602",
+   "name": "15-sekunders pitch från Amazon-grossist till varumärke",
+   "type": "prompt",
+   "description": "Säljande film som motiverar varför ett varumärke bör låta en återförsäljare sälja dess produkter på Amazon. Snabb canvas- och SVG-grafik.",
+   "tags": [
+    "15 sekunder",
+    "amazon",
+    "canvas",
+    "e-handel",
+    "försäljning",
+    "grossist",
+    "motion",
+    "opus-5-5",
+    "pitch",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ceowinkz-683602.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/ChatGptAstra/status/2103834787647807540 · Remake: https://skillry.dev/ai-videos/opus-5-5/chatgptastra-807540",
+   "notes": "Skapare @ChatGptAstra. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.chatgptastra-807540",
+   "name": "Abstrakt 15-sekunders motion graphics-film",
+   "type": "prompt",
+   "description": "Kort dynamisk film med en motion designers estetik: rytmiska former, färgfält och snabba övergångar på canvas. Fritt tolkad utan färdigt ämne.",
+   "tags": [
+    "15 sekunder",
+    "abstrakt",
+    "canvas",
+    "design",
+    "dynamisk",
+    "formspråk",
+    "kort",
+    "motion",
+    "motion graphics",
+    "opus-5-5"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/chatgptastra-807540.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/chrisjdimarco/status/2103606498928808196 · Remake: https://skillry.dev/ai-videos/opus-5-5/chrisjdimarco-808196",
+   "notes": "Skapare @chrisjdimarco. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.chrisjdimarco-808196",
+   "name": "60-sekunders film om informerad allmänhet och demokrati",
+   "type": "prompt",
+   "description": "Allvarlig showreel om fri information, ansvarsfull kapitalism och att hålla korruption och maktkoncentration i schack. Kinetisk text och symbolik på canvas.",
+   "tags": [
+    "60 sekunder",
+    "canvas",
+    "demokrati",
+    "kapitalism",
+    "kinetisk typografi",
+    "korruption",
+    "motion",
+    "opus-5-5",
+    "politik",
+    "samhälle"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/chrisjdimarco-808196.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/dale_vaz/status/2103290592679879074 · Remake: https://skillry.dev/ai-videos/opus-5-5/dale-vaz-879074",
+   "notes": "Skapare @dale_vaz. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.dale-vaz-879074",
+   "name": "Handelsterminal som zoomar från en prick ut i rymden",
+   "type": "prompt",
+   "description": "Filmisk resa från en liten prick på svart skärm till flera fönster med diagram och optionskedja, sedan utzoomning till rymden och en mobilvy.",
+   "tags": [
+    "börs",
+    "canvas",
+    "diagram",
+    "filmisk",
+    "fintech",
+    "handelsterminal",
+    "motion",
+    "opus-5-5",
+    "ui",
+    "zoom"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/dale-vaz-879074.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/daniel_mac8/status/2103824976713306214 · Remake: https://skillry.dev/ai-videos/opus-5-5/daniel-mac8-306214",
+   "notes": "Skapare @daniel_mac8. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.daniel-mac8-306214",
+   "name": "Terminal som exploderar i actionscen med Claude-figurer",
+   "type": "prompt",
+   "description": "Animation till ett X-inlägg: en terminal där resonemangsnivån höjs sprängs ut i en actionfilmsscen med små Claude-figurer som klipper video. Lekfull vektorstil.",
+   "tags": [
+    "actionscen",
+    "ai",
+    "animation",
+    "claude code",
+    "gsap",
+    "motion",
+    "opus-5-5",
+    "svg",
+    "terminal",
+    "x-inlägg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/daniel-mac8-306214.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/deedydas/status/2102787937482252537 · Remake: https://skillry.dev/ai-videos/opus-5-5/deedydas-252537",
+   "notes": "Skapare @deedydas. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.deedydas-252537",
+   "name": "Slick och punchy startupfilm om inferens",
+   "type": "prompt",
+   "description": "Modern, snabb film som förklarar vad ett AI-infrastrukturbolag gör. Rena SVG-former och GSAP-övergångar i högt tempo.",
+   "tags": [
+    "ai",
+    "explainer",
+    "gsap",
+    "inferens",
+    "modern",
+    "opus-5-5",
+    "punchy",
+    "startup",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/deedydas-252537.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/doubleunplussed/status/2103697580421181894 · Remake: https://skillry.dev/ai-videos/opus-5-5/doubleunplussed-181894",
+   "notes": "Skapare @doubleunplussed. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.doubleunplussed-181894",
+   "name": "Musikvideo full av AI-kulturreferenser",
+   "type": "prompt",
+   "description": "Renderad musikvideo till en AI-låt som tolkar texten fritt med skämt och snåriga referenser till AI-debattens värld. Roligast för insatta, gjord med canvas.",
+   "tags": [
+    "ai-säkerhet",
+    "animation",
+    "canvas",
+    "humor",
+    "låt",
+    "motion",
+    "musikvideo",
+    "opus-5-5",
+    "popkultur",
+    "referenser"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/doubleunplussed-181894.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/emollick/status/2103688362960019567 · Remake: https://skillry.dev/ai-videos/opus-5-5/emollick-019567",
+   "notes": "Skapare @emollick. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.emollick-019567",
+   "name": "Rekursion förklarad i många stilar",
+   "type": "prompt",
+   "description": "Förklaringsfilm om rekursion som byter helt visuell stil för varje förklaring. Självrefererande, klurig och snabb.",
+   "tags": [
+    "canvas",
+    "explainer",
+    "humor",
+    "opus-5-5",
+    "programmering",
+    "rekursion",
+    "självreferens",
+    "stilbyte",
+    "utbildning"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/emollick-019567.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/ezshine/status/2103501705698750731 · Remake: https://skillry.dev/ai-videos/opus-5-5/ezshine-750731",
+   "notes": "Skapare @ezshine. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ezshine-750731",
+   "name": "Produktpresentation av ett projekts funktioner",
+   "type": "prompt",
+   "description": "Proffsig kampanjfilm som lyfter fram ett projekts olika funktioner med vektorgrafik och GSAP-övergångar, exporterad som bredbilds-MP4.",
+   "tags": [
+    "canvas",
+    "funktioner",
+    "gsap",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "presentation",
+    "produktfilm",
+    "promo",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ezshine-750731.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/felipemoller/status/2103846311149936736 · Remake: https://skillry.dev/ai-videos/opus-5-5/felipemoller-936736",
+   "notes": "Skapare @felipemoller. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.felipemoller-936736",
+   "name": "Vertikal fintechfilm om vardagsutgifter",
+   "type": "prompt",
+   "description": "Elegant 9:16-film där kortbetalningar i mataffär, på bensinmack och restaurang visas steg för steg. Three.js, SVG och GSAP ger en modern, premium känsla.",
+   "tags": [
+    "9:16",
+    "betalning",
+    "fintech",
+    "gsap",
+    "motion",
+    "opus-5-5",
+    "produktfilm",
+    "svg",
+    "three.js",
+    "threejs",
+    "vertikal"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/felipemoller-936736.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Bläddra för inspiration; öppna en post och läs prompten som förebild för vår egen.",
+   "notes": "MIT för repot; prompterna tillhör skaparna och länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "text",
+   "formats": [
+    "any"
+   ],
+   "engine": "none",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.gallery",
+   "name": "Opus 5.5-videor – galleri med remakes (Skillry)",
+   "type": "prompt",
+   "description": "703 prompts för kodade videor gjorda med Claude Opus 5.5; 418 med original bredvid levande remake.",
+   "tags": [
+    "galleri",
+    "inspiration",
+    "prompts",
+    "opus-5-5",
+    "kodad video",
+    "motion"
+   ],
+   "path": "https://skillry.dev/ai-videos/opus-5-5"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/gautam_mer1/status/2103703336780530003 · Remake: https://skillry.dev/ai-videos/opus-5-5/gautam-mer1-530003",
+   "notes": "Skapare @gautam_mer1. Prompt delvis publicerad; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.gautam-mer1-530003",
+   "name": "30-sekunders appfilm i Apple-stil",
+   "type": "prompt",
+   "description": "Ren och elegant film i stil med Apples produktpresentationer, med stora rubriker, mjuka rörelser och tydliga funktionsscener.",
+   "tags": [
+    "30 sekunder",
+    "appfilm",
+    "apple",
+    "canvas",
+    "elegant",
+    "gsap",
+    "minimal",
+    "motion",
+    "opus-5-5",
+    "produktfilm",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/gautam-mer1-530003.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/gouthamjay8/status/2103816261339910269 · Remake: https://skillry.dev/ai-videos/opus-5-5/gouthamjay8-910269",
+   "notes": "Skapare @gouthamjay8. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.gouthamjay8-910269",
+   "name": "SaaS-lanseringsfilm i showreel-stil",
+   "type": "prompt",
+   "description": "Proffsig produktfilm som visar funktioner och fördelar i snabba motion graphics-scener, byggd av riktiga bilder och tillgångar med SVG och GSAP.",
+   "tags": [
+    "funktioner",
+    "gsap",
+    "lansering",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "promo",
+    "saas",
+    "showreel",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/gouthamjay8-910269.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/GroundControl/status/2103678647777230877 · Remake: https://skillry.dev/ai-videos/opus-5-5/groundcontrol-230877",
+   "notes": "Skapare @GroundControl. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.groundcontrol-230877",
+   "name": "Handritad datavisualisering om Japans värmebölja 2026",
+   "type": "prompt",
+   "description": "Tre minuter lång visualisering i pennlik look med lätt kromatisk aberration som jämför årets hetta med tidigare år. Syntmelodi skapad i kod följer temat.",
+   "tags": [
+    "audio",
+    "canvas",
+    "datavisualisering",
+    "japan",
+    "klimat",
+    "kromatisk aberration",
+    "ljud",
+    "motion",
+    "opus-5-5",
+    "penna",
+    "värme"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/groundcontrol-230877.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/henkvaness/status/2103801351993975279 · Remake: https://skillry.dev/ai-videos/opus-5-5/henkvaness-975279",
+   "notes": "Skapare @henkvaness. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.henkvaness-975279",
+   "name": "Utbildningsfilm som sammanfattar en artikel",
+   "type": "prompt",
+   "description": "Artikelns kärna omvandlas till en enkel, lärorik animation med vektorgrafik. Lugn och tydlig förklaring.",
+   "tags": [
+    "animation",
+    "artikel",
+    "enkel",
+    "explainer",
+    "förklaring",
+    "opus-5-5",
+    "sammanfattning",
+    "svg",
+    "utbildning"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/henkvaness-975279.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/heyiammallik/status/2103837803587293397 · Remake: https://skillry.dev/ai-videos/opus-5-5/heyiammallik-293397",
+   "notes": "Skapare @heyiammallik. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.heyiammallik-293397",
+   "name": "30-sekunders portföljfilm med ljud och motion-trender",
+   "type": "prompt",
+   "description": "Film som lyfter en designers portfölj till en proffsig showreel med moderna rörelsetekniker och ljuddesign. Three.js och canvas ger djup och finish.",
+   "tags": [
+    "30 sekunder",
+    "3d",
+    "canvas",
+    "ljuddesign",
+    "motion",
+    "motion design",
+    "opus-5-5",
+    "portfölj",
+    "showreel",
+    "three.js",
+    "threejs"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/heyiammallik-293397.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/HO_BA/status/2103845264649761062 · Remake: https://skillry.dev/ai-videos/opus-5-5/ho-ba-761062",
+   "notes": "Skapare @HO_BA. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ho-ba-761062",
+   "name": "Produktfilm med skärmbilder uppdelade i animerade delar",
+   "type": "prompt",
+   "description": "30 sekunder där skärmdumpar plockas isär till ikoner och UI-element som rör sig var för sig, tajt mot musikens rytm. Produktionskvalitet snarare än demo.",
+   "tags": [
+    "30 sekunder",
+    "canvas",
+    "komponenter",
+    "motion",
+    "motion design",
+    "musik",
+    "opus-5-5",
+    "produktfilm",
+    "skärmbilder",
+    "ui-animation"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ho-ba-761062.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/HowDevelop/status/2103840883812733090 · Remake: https://skillry.dev/ai-videos/opus-5-5/howdevelop-733090",
+   "notes": "Skapare @HowDevelop. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.howdevelop-733090",
+   "name": "Premium lanseringsfilm för ett AI-verktyg för utvecklare",
+   "type": "prompt",
+   "description": "Kort och precis 15-sekundersfilm i keynote-anda som presenterar ett AI-bibliotek för utvecklare. Snabba klipp, överraskande övergångar och polerad grafik.",
+   "tags": [
+    "15 sekunder",
+    "ai",
+    "canvas",
+    "keynote",
+    "lansering",
+    "motion",
+    "opus-5-5",
+    "produktfilm",
+    "tech",
+    "utvecklarverktyg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/howdevelop-733090.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/iamMXFSCHR/status/2103619221296955831 · Remake: https://skillry.dev/ai-videos/opus-5-5/iammxfschr-955831",
+   "notes": "Skapare @iamMXFSCHR. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.iammxfschr-955831",
+   "name": "Viral lanseringsfilm för en inferensstartup",
+   "type": "prompt",
+   "description": "Modern, slick film med trendig musik för ett AI-infrastrukturbolag. GSAP-animation i snabb, punchy rytm som ska väcka uppmärksamhet.",
+   "tags": [
+    "ai",
+    "gsap",
+    "inferens",
+    "lansering",
+    "motion",
+    "motion graphics",
+    "musik",
+    "opus-5-5",
+    "startup",
+    "viral"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/iammxfschr-955831.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/Ishaaqahamed/status/2103837917538107563 · Remake: https://skillry.dev/ai-videos/opus-5-5/ishaaqahamed-107563",
+   "notes": "Skapare @Ishaaqahamed. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "1:1"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ishaaqahamed-107563",
+   "name": "Loopande kvadratisk produktreel med snabb hook",
+   "type": "prompt",
+   "description": "Kvadratisk 15-sekundersfilm som visar varför en produkt är bäst på sitt område, med en krok redan första sekunden och sömlös loop.",
+   "tags": [
+    "canvas",
+    "hook",
+    "kvadratisk",
+    "loop",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "produktreel",
+    "showreel",
+    "sociala medier"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ishaaqahamed-107563.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/itsolelehmann/status/2103124033365762215 · Remake: https://skillry.dev/ai-videos/opus-5-5/itsolelehmann-762215",
+   "notes": "Skapare @itsolelehmann. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.itsolelehmann-762215",
+   "name": "Fyra årstider utanför ett tågfönster",
+   "type": "prompt",
+   "description": "Mysig tågkupé med kaffekopp på bordet medan landskapet utanför byter från vår till vinter. Symmetrisk, pastellfärgad dioramalook i filmisk Wes Anderson-stil.",
+   "tags": [
+    "canvas",
+    "illustration",
+    "landskap",
+    "motion",
+    "mysig",
+    "opus-5-5",
+    "pastell",
+    "tåg",
+    "wes anderson",
+    "årstider"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/itsolelehmann-762215.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/jackfriks/status/2103132260589338762 · Remake: https://skillry.dev/ai-videos/opus-5-5/jackfriks-338762",
+   "notes": "Skapare @jackfriks. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.jackfriks-338762",
+   "name": "Gris som skickar kärleksbrev, vertikal kortfilm",
+   "type": "prompt",
+   "description": "Rolig 9:16-berättelse där en gris lägger kärleksbrev i en brevlåda till sin partner, med ljudeffekter och en lättsam appteaser på slutet.",
+   "tags": [
+    "9:16",
+    "animation",
+    "app",
+    "canvas",
+    "gris",
+    "gsap",
+    "kärleksbrev",
+    "ljudeffekter",
+    "motion",
+    "opus-5-5",
+    "short",
+    "svg",
+    "tecknad"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/jackfriks-338762.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/johnsavage_ai/status/2103792769982427263 · Remake: https://skillry.dev/ai-videos/opus-5-5/johnsavage-ai-427263",
+   "notes": "Skapare @johnsavage_ai. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.johnsavage-ai-427263",
+   "name": "Retro-futuristisk lanseringsfilm med CRT och filmkorn",
+   "type": "prompt",
+   "description": "20-sekundersfilm i bredbild med skärmbrus, filmkorn och CRT-effekt. Three.js och shaders skapar en hypnotisk sci-fi-stämning efter en referensbild.",
+   "tags": [
+    "canvas",
+    "crt",
+    "filmkorn",
+    "futuristisk",
+    "lansering",
+    "motion",
+    "opus-5-5",
+    "retro",
+    "sci-fi",
+    "shader",
+    "three.js",
+    "threejs"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/johnsavage-ai-427263.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/kloss_xyz/status/2103652674336067876 · Remake: https://skillry.dev/ai-videos/opus-5-5/kloss-xyz-067876",
+   "notes": "Skapare @kloss_xyz. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.kloss-xyz-067876",
+   "name": "AI-historiens nyckelögonblick",
+   "type": "prompt",
+   "description": "Tidslinjefilm som går igenom de viktigaste händelserna i artificiell intelligens. SVG och CSS-animation för tydliga årtal och milstolpar.",
+   "tags": [
+    "ai",
+    "canvas",
+    "css",
+    "explainer",
+    "historia",
+    "milstolpar",
+    "opus-5-5",
+    "svg",
+    "tidslinje"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/kloss-xyz-067876.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/kloss_xyz/status/2103664956482941143 · Remake: https://skillry.dev/ai-videos/opus-5-5/kloss-xyz-941143",
+   "notes": "Skapare @kloss_xyz. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "9:16"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.kloss-xyz-941143",
+   "name": "Kaotisk brain rot-video ur en AI-modells synvinkel",
+   "type": "prompt",
+   "description": "Vertikal, hyperrytmisk blandning av snabba klipp, ljud och memeestetik, genererad med Python och ffmpeg. En AI skildrar personligt sin vardag som hjälpreda.",
+   "tags": [
+    "9:16",
+    "audio",
+    "brain rot",
+    "canvas",
+    "ffmpeg",
+    "kaos",
+    "ljuddesign",
+    "llm",
+    "meme",
+    "motion",
+    "opus-5-5",
+    "python"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/kloss-xyz-941143.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/KmAsiff/status/2103810247131549880 · Remake: https://skillry.dev/ai-videos/opus-5-5/kmasiff-549880",
+   "notes": "Skapare @KmAsiff. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.kmasiff-549880",
+   "name": "20-sekunders SaaS-film för ett e-postverifieringsverktyg",
+   "type": "prompt",
+   "description": "Modern film med många tänkbara användningsfall för ett verktyg som kontrollerar e-postadresser. Ren vektorgrafik i stil med YC-filmer och sociala videor.",
+   "tags": [
+    "20 sekunder",
+    "användningsfall",
+    "e-post",
+    "modern",
+    "motion",
+    "opus-5-5",
+    "produktfilm",
+    "saas",
+    "svg",
+    "verifiering"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/kmasiff-549880.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/lester_tyy/status/2103733819568480587 · Remake: https://skillry.dev/ai-videos/opus-5-5/lester-tyy-480587",
+   "notes": "Skapare @lester_tyy. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.lester-tyy-480587",
+   "name": "Produktshowcase i Remotion efter ett webbexperiment",
+   "type": "prompt",
+   "description": "Ett interaktivt webbexperiment tolkas och blir en ren produktvisning med vektorbaserade scener byggda i Remotion.",
+   "tags": [
+    "förklaring",
+    "motion",
+    "opus-5-5",
+    "produktfilm",
+    "produktshowcase",
+    "react",
+    "remotion",
+    "svg",
+    "ui",
+    "webbexperiment"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/lester-tyy-480587.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/LinearUncle/status/2103128559174971663 · Remake: https://skillry.dev/ai-videos/opus-5-5/linearuncle-971663",
+   "notes": "Skapare @LinearUncle. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.linearuncle-971663",
+   "name": "Förklaring av derivatans begrepp med Manim",
+   "type": "prompt",
+   "description": "Lättbegriplig matematikvideo i Manim-stil med exempel som får tittaren att tänka efter. Berättarrösten skapas med edge-tts.",
+   "tags": [
+    "audio",
+    "berättarröst",
+    "derivata",
+    "explainer",
+    "förklaring",
+    "manim",
+    "matematik",
+    "opus-5-5",
+    "svg",
+    "utbildning"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/linearuncle-971663.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/lukasersil/status/2103742861971726495 · Remake: https://skillry.dev/ai-videos/opus-5-5/lukasersil-726495",
+   "notes": "Skapare @lukasersil. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.lukasersil-726495",
+   "name": "15-sekunders showreel som visar teknikbredd",
+   "type": "prompt",
+   "description": "Fartfylld film som blandar kinetisk typografi, 3D, fluider, partiklar, distorsion och kamerarörelser i genomtänkt regi. Three.js, shader och SVG.",
+   "tags": [
+    "15 sekunder",
+    "3d",
+    "canvas",
+    "fluid",
+    "kinetisk typografi",
+    "opus-5-5",
+    "partiklar",
+    "shader",
+    "showreel",
+    "svg",
+    "three.js",
+    "threejs"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/lukasersil-726495.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/Madhav_XO/status/2103605007396524440 · Remake: https://skillry.dev/ai-videos/opus-5-5/madhav-xo-524440",
+   "notes": "Skapare @Madhav_XO. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.madhav-xo-524440",
+   "name": "10 sekunder om användaren i 3D",
+   "type": "prompt",
+   "description": "Personligt porträtt av vad modellen vet om användaren, byggt med Three.js och shaders. Kort, abstrakt och experimentellt.",
+   "tags": [
+    "10 sekunder",
+    "3d",
+    "abstrakt",
+    "canvas",
+    "motion",
+    "opus-5-5",
+    "personlig",
+    "porträtt",
+    "shader",
+    "three.js",
+    "threejs"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/madhav-xo-524440.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/MajorBaguette/status/2103849602826834228 · Remake: https://skillry.dev/ai-videos/opus-5-5/majorbaguette-834228",
+   "notes": "Skapare @MajorBaguette. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.majorbaguette-834228",
+   "name": "30-sekunders presentationsfilm för en produkt",
+   "type": "prompt",
+   "description": "Rak och enkel produktpresentation på canvas som snabbt förklarar ett verktyg i tydliga steg. Ren look med animerad text.",
+   "tags": [
+    "30 sekunder",
+    "canvas",
+    "förklaring",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "presentation",
+    "produktfilm",
+    "promo",
+    "startup"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/majorbaguette-834228.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/manuelogomigo/status/2103614667038052364 · Remake: https://skillry.dev/ai-videos/opus-5-5/manuelogomigo-052364",
+   "notes": "Skapare @manuelogomigo. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.manuelogomigo-052364",
+   "name": "15-sekunders showreel för en tjänst",
+   "type": "prompt",
+   "description": "Kort, intensiv showreel för en produkt med canvas och SVG. Tydlig typografi och snabba övergångar som sticker ut.",
+   "tags": [
+    "15 sekunder",
+    "canvas",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "produkt",
+    "promo",
+    "showreel",
+    "svg",
+    "typografi"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/manuelogomigo-052364.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/marklaunches/status/2103811146411041046 · Remake: https://skillry.dev/ai-videos/opus-5-5/marklaunches-041046",
+   "notes": "Skapare @marklaunches. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.marklaunches-041046",
+   "name": "Känslosam film för en app",
+   "type": "prompt",
+   "description": "Mjuk, berörande appfilm i vektorgrafik och canvas där känslan går före funktionslistan. Lugnt tempo och varma övergångar.",
+   "tags": [
+    "appfilm",
+    "berättelse",
+    "canvas",
+    "känslosam",
+    "mjuk",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "produktfilm",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/marklaunches-041046.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/mdaman010/status/2103845689713111079 · Remake: https://skillry.dev/ai-videos/opus-5-5/mdaman010-111079",
+   "notes": "Skapare @mdaman010. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.mdaman010-111079",
+   "name": "Resa inuti ett AI-datacenter",
+   "type": "prompt",
+   "description": "3D-visualisering av servrar, kylning och dataflöden i ett datacenter för AI. Three.js och shaders gör hallarna och ljusstrålarna levande.",
+   "tags": [
+    "3d",
+    "ai",
+    "datacenter",
+    "opus-5-5",
+    "servrar",
+    "shader",
+    "svg",
+    "teknik",
+    "three.js",
+    "threejs",
+    "visualisering"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/mdaman010-111079.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/melvynx/status/2103714680577638493 · Remake: https://skillry.dev/ai-videos/opus-5-5/melvynx-638493",
+   "notes": "Skapare @melvynx. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.melvynx-638493",
+   "name": "Dynamisk 15-sekunders showreel för en webbplats",
+   "type": "prompt",
+   "description": "Kort och tät showreel som presenterar en webbplats med snabb typografi, formspråk och övergångar i kod. Visar motion designerns bredd.",
+   "tags": [
+    "15 sekunder",
+    "canvas",
+    "gsap",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "promo",
+    "showreel",
+    "svg",
+    "webbplats"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/melvynx-638493.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/MiaAI_lab/status/2103837519615774895 · Remake: https://skillry.dev/ai-videos/opus-5-5/miaai-lab-774895",
+   "notes": "Skapare @MiaAI_lab. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.miaai-lab-774895",
+   "name": "Immersiv wow-upplevelse med shaders",
+   "type": "prompt",
+   "description": "Öppen, ambitiös visuell upplevelse med WebGL och shaders. Siktet är att överraska med något oväntat och djupt, bortom generisk AI-estetik.",
+   "tags": [
+    "abstrakt",
+    "canvas",
+    "generativ konst",
+    "immersiv",
+    "motion",
+    "opus-5-5",
+    "shader",
+    "visuell upplevelse",
+    "webgl",
+    "wow"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/miaai-lab-774895.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/Michaelzsguo/status/2102592355165782312 · Remake: https://skillry.dev/ai-videos/opus-5-5/michaelzsguo-782312",
+   "notes": "Skapare @Michaelzsguo. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.michaelzsguo-782312",
+   "name": "Sandanimation om USA:s 250 år",
+   "type": "prompt",
+   "description": "Tvåminutersberättelse i sand som sakta formar om sig genom USA:s historia, med bakgrundsmusik och ljuddesign. Taktil och finstilt shaderanimation.",
+   "tags": [
+    "250 år",
+    "3d",
+    "animation",
+    "berättelse",
+    "canvas",
+    "historia",
+    "ljuddesign",
+    "opus-5-5",
+    "sand",
+    "shader",
+    "usa"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/michaelzsguo-782312.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/miskinho_/status/2103847584531956105 · Remake: https://skillry.dev/ai-videos/opus-5-5/miskinho-956105",
+   "notes": "Skapare @miskinho_. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.miskinho-956105",
+   "name": "15-sekunders showreel för ett varumärke",
+   "type": "prompt",
+   "description": "Kort showreel med vektoranimerad typografi och skarpa GSAP-övergångar. Hög energi och tydlig identitet.",
+   "tags": [
+    "15 sekunder",
+    "gsap",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "promo",
+    "showreel",
+    "svg",
+    "typografi",
+    "varumärke"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/miskinho-956105.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/monokern/status/2103563538828832979 · Remake: https://skillry.dev/ai-videos/opus-5-5/monokern-832979",
+   "notes": "Skapare @monokern. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.monokern-832979",
+   "name": "Psykedelisk och hypnotisk 20-sekunders showreel",
+   "type": "prompt",
+   "description": "Shaderdriven reel med virvlande färger, flytande former och mönster som drar in tittaren. WebGL-effekter ger en trippig, drömlik stämning.",
+   "tags": [
+    "20 sekunder",
+    "abstrakt",
+    "canvas",
+    "färger",
+    "hypnotisk",
+    "motion",
+    "opus-5-5",
+    "psykedelisk",
+    "shader",
+    "showreel",
+    "webgl"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/monokern-832979.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/moritzkremb/status/2103066071838466494 · Remake: https://skillry.dev/ai-videos/opus-5-5/moritzkremb-466494",
+   "notes": "Skapare @moritzkremb. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.moritzkremb-466494",
+   "name": "Proffsig SaaS-lanseringsfilm i motion graphics",
+   "type": "prompt",
+   "description": "Stilren produktlansering för ett välkänt SaaS, byggd av riktiga bilder och UI-element som rör sig i snabba klipp med fokus på funktioner och nytta.",
+   "tags": [
+    "gsap",
+    "launch video",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "produktlansering",
+    "promo",
+    "saas",
+    "startup",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/moritzkremb-466494.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/__morse/status/2103485566570369333 · Remake: https://skillry.dev/ai-videos/opus-5-5/morse-369333",
+   "notes": "Skapare @__morse. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.morse-369333",
+   "name": "Kvadratisk UI-morph-loop över sju takter",
+   "type": "prompt",
+   "description": "Ett enda element blir knapp, spelare, reglage, flikar, diagram och kommandopalett i snabb följd. Ljust varmgrått, svartvita komponenter och sömlös loop.",
+   "tags": [
+    "120 bpm",
+    "3d",
+    "dribbble",
+    "kvadratisk",
+    "loop",
+    "mikrointeraktioner",
+    "morph",
+    "opus-5-5",
+    "svg",
+    "ui-animation"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/morse-369333.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/Mounnna/status/2103802871934497266 · Remake: https://skillry.dev/ai-videos/opus-5-5/mounnna-497266",
+   "notes": "Skapare @Mounnna. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.mounnna-497266",
+   "name": "Logotyp som byggs av lågpoly-skärvor",
+   "type": "prompt",
+   "description": "Ett trådnät av loggan ritas upp och fylls sedan av kantiga skärvor som flyger in en efter en. Avslutas med appikonen och att varumärkesnamnet skrivs fram.",
+   "tags": [
+    "3d-känsla",
+    "canvas",
+    "logga",
+    "logoreveal",
+    "lågpoly",
+    "motion",
+    "opus-5-5",
+    "varumärke",
+    "wireframe",
+    "övergång"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/mounnna-497266.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/nolkeeg/status/2103841917603635633 · Remake: https://skillry.dev/ai-videos/opus-5-5/nolkeeg-635633",
+   "notes": "Skapare @nolkeeg. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.nolkeeg-635633",
+   "name": "Fritt vald motion graphics-show med partiklar",
+   "type": "prompt",
+   "description": "Modellen väljer själv stil och motiv för att imponera, med partikeleffekter och polerad regi. Tänkt som raka motsatsen till en tråkig powerpoint.",
+   "tags": [
+    "abstrakt",
+    "canvas",
+    "kreativ",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "particles",
+    "partiklar",
+    "show off",
+    "showreel",
+    "visuell"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/nolkeeg-635633.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/pankajkumar_dev/status/2103502614134718609 · Remake: https://skillry.dev/ai-videos/opus-5-5/pankajkumar-dev-718609",
+   "notes": "Skapare @pankajkumar_dev. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.pankajkumar-dev-718609",
+   "name": "Affisch som bryter sig loss ur sin ram",
+   "type": "prompt",
+   "description": "Motion design där en affisch sprängs ut över sina egna kanter och tar plats i rummet. Lekfullt grepp på ram och komposition, ritat på canvas.",
+   "tags": [
+    "affisch",
+    "animation",
+    "canvas",
+    "kreativ",
+    "motion",
+    "motion design",
+    "opus-5-5",
+    "poster",
+    "ram",
+    "övergång"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/pankajkumar-dev-718609.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/pound75423/status/2103722556918464968 · Remake: https://skillry.dev/ai-videos/opus-5-5/pound75423-464968",
+   "notes": "Skapare @pound75423. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.pound75423-464968",
+   "name": "Psykedelisk glitch-musikvideo med klistermärkesfigurer",
+   "type": "prompt",
+   "description": "Beat-synkad musikvideo där karaktärer med vit klistermärkeskant klipps på varje takt mot regnbågsmönster, blixtar och glitch. Kodad i canvas, utan AI-video.",
+   "tags": [
+    "16:9",
+    "beat",
+    "canvas",
+    "css",
+    "glitch",
+    "karaktärer",
+    "motion",
+    "musikvideo",
+    "opus-5-5",
+    "psykedelisk",
+    "regnbåge"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/pound75423-464968.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/prasad_pilla/status/2103728953785496049 · Remake: https://skillry.dev/ai-videos/opus-5-5/prasad-pilla-496049",
+   "notes": "Skapare @prasad_pilla. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.prasad-pilla-496049",
+   "name": "15-sekunders showreel för en AI-startup",
+   "type": "prompt",
+   "description": "Snabb, tuff motion graphics-film för ett AI-bolag med vektoranimerad typografi och logotypmoment i kompakt format.",
+   "tags": [
+    "15 sekunder",
+    "ai",
+    "gsap",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "promo",
+    "showreel",
+    "startup",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/prasad-pilla-496049.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/prasenx/status/2103538744695693512 · Remake: https://skillry.dev/ai-videos/opus-5-5/prasenx-693512",
+   "notes": "Skapare @prasenx. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.prasenx-693512",
+   "name": "Showreel med kodsyntad musik och beat-klipp",
+   "type": "prompt",
+   "description": "Tät 15-sekundersfilm med shadereffekter där ljudspåret är genererat helt i kod och varje klipp sitter exakt på takten. Full HD, 60 bilder per sekund.",
+   "tags": [
+    "60fps",
+    "audio",
+    "beat",
+    "canvas",
+    "ljuddesign",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "shader",
+    "showreel",
+    "syntetiserad musik"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/prasenx-693512.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/rammanq/status/2103788796022034553 · Remake: https://skillry.dev/ai-videos/opus-5-5/rammanq-034553",
+   "notes": "Skapare @rammanq. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.rammanq-034553",
+   "name": "Motion graphics för en investeringsplattform",
+   "type": "prompt",
+   "description": "Livfull film som presenterar en plattform för att följa investeringar. Vektorgrafik och GSAP ger rena diagram, siffror och snabba övergångar.",
+   "tags": [
+    "diagram",
+    "fintech",
+    "gsap",
+    "investering",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "plattform",
+    "produktfilm",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/rammanq-034553.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/RatheeJaisal/status/2103774864742154698 · Remake: https://skillry.dev/ai-videos/opus-5-5/ratheejaisal-154698",
+   "notes": "Skapare @RatheeJaisal. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ratheejaisal-154698",
+   "name": "Snabb lanseringsfilm under 20 sekunder",
+   "type": "prompt",
+   "description": "Fartfylld film som går igenom en produkts nyckelfunktioner i tät ordning, anpassad efter varumärkets utseende. Canvas och SVG.",
+   "tags": [
+    "20 sekunder",
+    "canvas",
+    "funktioner",
+    "lansering",
+    "motion",
+    "opus-5-5",
+    "produktfilm",
+    "snabb",
+    "svg",
+    "varumärke"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ratheejaisal-154698.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/robvjourney/status/2103768390322237474 · Remake: https://skillry.dev/ai-videos/opus-5-5/robvjourney-237474",
+   "notes": "Skapare @robvjourney. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.robvjourney-237474",
+   "name": "Maxad 15-sekunders showreel för ett labbvarumärke",
+   "type": "prompt",
+   "description": "Intensiv film som tar ut svängarna för en webbplats och dess varumärke, med snabba scener på canvas och SVG. Mycket energi på bara 15 sekunder.",
+   "tags": [
+    "15 sekunder",
+    "canvas",
+    "intensiv",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "promo",
+    "showreel",
+    "svg",
+    "varumärke"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/robvjourney-237474.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/Ror_Fly/status/2102853258582880547 · Remake: https://skillry.dev/ai-videos/opus-5-5/ror-fly-880547",
+   "notes": "Skapare @Ror_Fly. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.ror-fly-880547",
+   "name": "Cocktailrecept från tomt glas till färdig drink",
+   "type": "prompt",
+   "description": "Förklarande 30-sekundersfilm där drinken byggs steg för steg i glaset, med ingredienser och mått som text. Rena canvasanimationer.",
+   "tags": [
+    "30 sekunder",
+    "canvas",
+    "cocktail",
+    "dryck",
+    "explainer",
+    "förklaring",
+    "ingredienser",
+    "opus-5-5",
+    "recept"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/ror-fly-880547.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/sab8a/status/2103144778481475686 · Remake: https://skillry.dev/ai-videos/opus-5-5/sab8a-475686",
+   "notes": "Skapare @sab8a. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.sab8a-475686",
+   "name": "Rått talking head-klipp som punchig redigering",
+   "type": "prompt",
+   "description": "Intervjuklipp blir en rolig, rytmisk redigering med undertexter, påklistrad grafik och musik. Sociala medier-känsla med hårda klipp.",
+   "tags": [
+    "ai-bild",
+    "ai-image",
+    "canvas",
+    "grafik",
+    "motion",
+    "musik",
+    "opus-5-5",
+    "redigering",
+    "sociala medier",
+    "talking head",
+    "undertexter"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/sab8a-475686.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/sachaarbonel/status/2103614797501673648 · Remake: https://skillry.dev/ai-videos/opus-5-5/sachaarbonel-673648",
+   "notes": "Skapare @sachaarbonel. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.sachaarbonel-673648",
+   "name": "Produktlanseringsfilm byggd på Pencil-designer",
+   "type": "prompt",
+   "description": "Film gjord utifrån färdiga designer och en royaltyfri låt, efter feedback om lugnare tempo och mer professionell finish. SVG, GSAP och canvas.",
+   "tags": [
+    "canvas",
+    "gsap",
+    "lugnare tempo",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "pencil",
+    "produktlansering",
+    "royaltyfri musik",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/sachaarbonel-673648.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/Sarut0biSasuke/status/2103418429248069973 · Remake: https://skillry.dev/ai-videos/opus-5-5/sarut0bisasuke-069973",
+   "notes": "Skapare @Sarut0biSasuke. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.sarut0bisasuke-069973",
+   "name": "White Russian-recept från tomt glas till färdig drink",
+   "type": "prompt",
+   "description": "Receptfilm på 30 sekunder där drinken byggs i glaset ingrediens för ingrediens med mått på skärmen. Ren canvasgrafik och tydlig text.",
+   "tags": [
+    "30 sekunder",
+    "canvas",
+    "cocktail",
+    "dryck",
+    "explainer",
+    "ingredienser",
+    "opus-5-5",
+    "recept",
+    "white russian"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/sarut0bisasuke-069973.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/songkeys/status/2102743212922384673 · Remake: https://skillry.dev/ai-videos/opus-5-5/songkeys-384673",
+   "notes": "Skapare @songkeys. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.songkeys-384673",
+   "name": "Origami-doodle om mänsklighetens väg till AI",
+   "type": "prompt",
+   "description": "Berättande animation i gulligt, handritat och origamiinspirerat uttryck: civilisationer växer fram, tekniken utvecklas och en AI kläcks. Nästan helt utan text.",
+   "tags": [
+    "ai",
+    "berättelse",
+    "canvas",
+    "civilisation",
+    "doodle",
+    "gullig",
+    "historia",
+    "motion",
+    "opus-5-5",
+    "origami"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/songkeys-384673.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/souravbhar871/status/2103711849703477361 · Remake: https://skillry.dev/ai-videos/opus-5-5/souravbhar871-477361",
+   "notes": "Skapare @souravbhar871. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.souravbhar871-477361",
+   "name": "10-sekunders självporträtt av en AI-modell",
+   "type": "prompt",
+   "description": "Kort och kreativ film där en språkmodell visar vem den är, utan de vanliga ramarna och hörntexterna. Dynamisk canvasgrafik.",
+   "tags": [
+    "10 sekunder",
+    "abstrakt",
+    "ai",
+    "canvas",
+    "kreativ",
+    "minimal",
+    "motion",
+    "motion graphics",
+    "opus-5-5",
+    "självporträtt"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/souravbhar871-477361.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/SPEARwtf/status/2103857153308029058 · Remake: https://skillry.dev/ai-videos/opus-5-5/spearwtf-029058",
+   "notes": "Skapare @SPEARwtf. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.spearwtf-029058",
+   "name": "30-sekunders pitchfilm för ett kryptoprojekt",
+   "type": "prompt",
+   "description": "Pitchvideo i 3D-estetik som med Three.js presenterar ett blockkedjeprojekt kort och slagkraftigt. Mörk techstil med djup och rörlig text.",
+   "tags": [
+    "30 sekunder",
+    "3d",
+    "blockkedja",
+    "canvas",
+    "krypto",
+    "motion",
+    "opus-5-5",
+    "pitch",
+    "tech",
+    "three.js",
+    "threejs"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/spearwtf-029058.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/sudo_kiran/status/2103486573476254201 · Remake: https://skillry.dev/ai-videos/opus-5-5/sudo-kiran-254201",
+   "notes": "Skapare @sudo_kiran. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.sudo-kiran-254201",
+   "name": "30-sekunders produktförklaring av en tjänst",
+   "type": "prompt",
+   "description": "Dynamisk produktförklaring på canvas, SVG och CSS som visar vad tjänsten gör i tydliga steg, i reklaminspirerad motion graphics-stil.",
+   "tags": [
+    "30 sekunder",
+    "canvas",
+    "css",
+    "explainer",
+    "motion graphics",
+    "opus-5-5",
+    "produktfilm",
+    "produktförklaring",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/sudo-kiran-254201.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/sudo_kiran/status/2103761658745335993 · Remake: https://skillry.dev/ai-videos/opus-5-5/sudo-kiran-335993",
+   "notes": "Skapare @sudo_kiran. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.sudo-kiran-335993",
+   "name": "Produktförklaring på 30 sekunder med manus och musik",
+   "type": "prompt",
+   "description": "Förklarande reklamfilm med genomtänkt manus, färger och musik, gjord för att tittas på om och om igen. SVG, CSS och GSAP i tight tempo.",
+   "tags": [
+    "30 sekunder",
+    "canvas",
+    "css",
+    "explainer",
+    "gsap",
+    "manus",
+    "musik",
+    "opus-5-5",
+    "produktförklaring",
+    "svg"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/sudo-kiran-335993.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/tak3sh8/status/2103667481139441895 · Remake: https://skillry.dev/ai-videos/opus-5-5/tak3sh8-441895",
+   "notes": "Skapare @tak3sh8. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.tak3sh8-441895",
+   "name": "Whiteboard-animation om replikasymmetribrytning",
+   "type": "prompt",
+   "description": "Handritad tavelanimation som förklarar ett begrepp inom spinnglasfysik, följd av en version med berättarröst. Canvas och ljud.",
+   "tags": [
+    "audio",
+    "berättarröst",
+    "canvas",
+    "explainer",
+    "fysik",
+    "förklaring",
+    "handritad",
+    "opus-5-5",
+    "spinnglas",
+    "utbildning",
+    "whiteboard"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/tak3sh8-441895.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/TrigLyceee/status/2103804459986161719 · Remake: https://skillry.dev/ai-videos/opus-5-5/triglyceee-161719",
+   "notes": "Skapare @TrigLyceee. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.triglyceee-161719",
+   "name": "Marockos politiska historia sedan självständigheten",
+   "type": "prompt",
+   "description": "Pedagogisk tidslinjefilm som sammanfattar decennier av politik i Marocko. Vektorgrafik och CSS-animation för årtal och nyckelhändelser.",
+   "tags": [
+    "css",
+    "förklaring",
+    "historia",
+    "marocko",
+    "motion",
+    "opus-5-5",
+    "politik",
+    "svg",
+    "tidslinje",
+    "utbildning"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/triglyceee-161719.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/twoclipping/status/2102554209166000267 · Remake: https://skillry.dev/ai-videos/opus-5-5/twoclipping-000267",
+   "notes": "Skapare @twoclipping. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "16:9"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.twoclipping-000267",
+   "name": "Minimalistisk appfilm med riktigt fotage",
+   "type": "prompt",
+   "description": "Högklassig film med mask-reveals, matchklipp, UI med markör och en 3D-karusell av riktiga klipp. En accentfärg, ren sans-serif och klipp som landar på musikens drop.",
+   "tags": [
+    "3d",
+    "3d-karusell",
+    "accentfärg",
+    "appfilm",
+    "css",
+    "matchklipp",
+    "minimalistisk",
+    "opus-5-5",
+    "svg",
+    "ui"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/twoclipping-000267.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/twoclipping/status/2103835273813496100 · Remake: https://skillry.dev/ai-videos/opus-5-5/twoclipping-496100",
+   "notes": "Skapare @twoclipping. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "1:1"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.twoclipping-496100",
+   "name": "Apple-keynote-inspirerad lanseringsfilm i en enda tagning",
+   "type": "prompt",
+   "description": "2D-film där varje scen växer fram ur den förra utan klipp eller toningar. Liquid glass över foton, markör och zoom på varmvit duk, kvadratiskt och i 120 BPM.",
+   "tags": [
+    "120 bpm",
+    "2d",
+    "3d",
+    "apple",
+    "canvas",
+    "keynote",
+    "lansering",
+    "liquid glass",
+    "one take",
+    "opus-5-5",
+    "ui"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/twoclipping-496100.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/verbove/status/2103483957266268381 · Remake: https://skillry.dev/ai-videos/opus-5-5/verbove-268381",
+   "notes": "Skapare @verbove. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.verbove-268381",
+   "name": "UI-film där en enda form förvandlas till alla lägen",
+   "type": "prompt",
+   "description": "Samma form växer, krymper och byter färg och blir knapp, laddare, sökfält och mer, styrd av en markör med riktiga klick. Fjädrande rörelser, 120 BPM och sömlös loop.",
+   "tags": [
+    "120 bpm",
+    "canvas",
+    "explainer",
+    "fjädrar",
+    "loop",
+    "markör",
+    "morph",
+    "opus-5-5",
+    "produktfilm",
+    "ui-animation"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/verbove-268381.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/viktoroddy/status/2103802280617402509 · Remake: https://skillry.dev/ai-videos/opus-5-5/viktoroddy-402509",
+   "notes": "Skapare @viktoroddy. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.viktoroddy-402509",
+   "name": "Lanseringsfilm för webbdesign-AI efter 1 miljon besökare",
+   "type": "prompt",
+   "description": "Firande film för en AI-tjänst som nått en miljon månatliga besökare på åtta månader. Rörlig typografi, siffror och UI-glimtar i modern lanseringsstil.",
+   "tags": [
+    "ai",
+    "canvas",
+    "css",
+    "gsap",
+    "lansering",
+    "milstolpe",
+    "motion",
+    "opus-5-5",
+    "statistik",
+    "svg",
+    "webbdesign"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/viktoroddy-402509.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/wani_shola/status/2103769906638459278 · Remake: https://skillry.dev/ai-videos/opus-5-5/wani-shola-459278",
+   "notes": "Skapare @wani_shola. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.wani-shola-459278",
+   "name": "Showreel för utvecklarrelations-portfölj i Remotion",
+   "type": "prompt",
+   "description": "Verklig webbplats visas i webbläsar- och telefonramar, med chattsvar och mörkt läge i stora, tydliga typografiska scener. Sparsam palett och lugna rörelser.",
+   "tags": [
+    "devrel",
+    "gsap",
+    "mobil",
+    "motion",
+    "opus-5-5",
+    "portfölj",
+    "remotion",
+    "showreel",
+    "svg",
+    "webbläsarram"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/wani-shola-459278.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/Xanderwow_A/status/2103637769012597063 · Remake: https://skillry.dev/ai-videos/opus-5-5/xanderwow-a-597063",
+   "notes": "Skapare @Xanderwow_A. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.xanderwow-a-597063",
+   "name": "Humoristisk minutstrid mellan två AI-profiler",
+   "type": "prompt",
+   "description": "Absurd, actionfylld parodi med handling, explosiva ögonblick och en tydlig vinnare. Fri stil på canvas utan genrebegränsningar.",
+   "tags": [
+    "1 minut",
+    "absurd",
+    "actionkomedi",
+    "animation",
+    "canvas",
+    "humor",
+    "motion",
+    "opus-5-5",
+    "parodi",
+    "strid"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/xanderwow-a-597063.md"
+  },
+  {
+   "kit": "opus55-videos-yihui",
+   "kit_title": "Awesome Opus 5.5 Videos (yihui-dev)",
+   "source": {
+    "name": "yihui-dev/awesome-opus5-5-videos",
+    "url": "https://github.com/yihui-dev/awesome-opus5-5-videos",
+    "license": "MIT (repot); skaparnas prompts, videor och omslag omfattas inte – länkas, kopieras inte"
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Läs prompten som förebild. Original: https://x.com/zheke/status/2103418664854622583 · Remake: https://skillry.dev/ai-videos/opus-5-5/zheke-622583",
+   "notes": "Skapare @zheke. Prompt publicerad i sin helhet; länkas, kopieras inte.",
+   "verified_at": null,
+   "preview": null,
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "canvas",
+   "status": "unverified",
+   "id": "ext.opus55-videos-yihui.zheke-622583",
+   "name": "Showreel med WebGL-shaders och partiklar",
+   "type": "prompt",
+   "description": "Öppen uppmaning att visa vad en motion designer kan: shaders och partikelfält i stora, flytande kompositioner med kraftfulla färger.",
+   "tags": [
+    "abstrakt",
+    "canvas",
+    "motion",
+    "motion design",
+    "opus-5-5",
+    "particles",
+    "partiklar",
+    "shader",
+    "showreel",
+    "visuell",
+    "webgl"
+   ],
+   "path": "https://github.com/yihui-dev/awesome-opus5-5-videos/blob/main/prompts/zheke-622583.md"
   },
   {
    "kit": "pdoomvideo",

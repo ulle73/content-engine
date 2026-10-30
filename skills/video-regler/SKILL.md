@@ -47,8 +47,13 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 > annat bestäms för filmen. Bestämmer beställaren något annat (t.ex. vänsterställd text eller text högst upp) gäller det
 > – skriv beslutet i filmens `film.json` (`"beslut"`) och stäng av motsvarande kontroll med `"qa_av"`.
 
-- **Texten är horisontellt centrerad** (varje rad), i den säkra ytan x 65–929 – mitten x ≈ 497 i 9:16, så den
-  ser centrerad ut men håller avstånd till knapparna till höger.
+- **Allt som är centrerat ligger på bildens mitt, x 540** (Jonas 2026-10-24) – varje textrad, färgad ruta, etikett,
+  logga och slutrad, med **samma marginal på båda sidor: minst 151 px** (högerkantens säkra marginal speglad). Det ger
+  x 151–929 och högst 778 px bredd i 9:16; krymp text eller logga hellre än att flytta mitten. Centrera **aldrig** i den
+  osymmetriska säkra ytan (mitt x ≈ 497): allt hamnar då 43 px åt vänster och ser snett ut.
+  - En **färgad ruta** ska stå ensam på sin rad (`["ÖVER 60"]` i ruta, inte `ÖVER {60}`) – annars är raden centrerad
+    men rutan, som ögat läser, hamnar snett. Räkna in rutans padding i bredden.
+  - **Kontroll:** QA mäter mot x 540 (±12 px). Mät dessutom vänster = höger marginal i en bildruta ur leveransfilen.
 - **En textposition, mer mot mitten:** all text utom slutkortet har första raden på samma höjd – 9:16: **y ≈ 560**
   (mitt i bild, inte högst upp; Jonas 2026-10-14), följande rader direkt under. Text som hoppar mellan topp, mitt och
   botten upplevs rörig. Undantag: när en logga eller ett motiv står mitt i bild ligger texten ovanför det (y ≈ 300).
@@ -59,7 +64,8 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
   borta från översta ~14 % (270 px), nedersta ~35 % (670 px), ~6 % (65 px) till vänster och **~14 % (151 px) till höger**
   – alltså inom x 65–929, y 270–1250. Högerkanten är bred för Facebooks knapprad; vi delar alltid på både Instagram och
   Facebook (Jonas 2026-10-14). Där ligger profilnamn, bildtext, knappar och CTA. Bara dekor (bakgrund, mark, partiklar) får
-  gå utanför. Kontrollera med hjälplinjer på stillbilderna innan full rendering. Håll också texten utanför motivets
+  gå utanför. Kontrollera med hjälplinjer på stillbilderna innan full rendering; i molnklippet kontrolleras det
+  automatiskt (`edit-renderer/src/safezones.js`). Håll också texten utanför motivets
   viktiga delar.
 - **Så stort som safe zones tillåter:** text och nyckelobjekt ska synas tydligt på mobilen. Mät radernas verkliga
   bredd i renderaren och sätt textstorleken per block så att den längsta raden fyller safe zone-bredden (~860 px, x 65–929);
@@ -121,5 +127,6 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-14 | GK Chefen betalar | "Det ska vara 14 %, på FB behövdes lite mer, vi delar alltid på både Instagram och FB" | Höger safe zone 14 % (x ≤ 929), vänster 6 % (3, Text) |
 | 2026-10-14 | GK Spelat den här? | "Text kan generellt vara mer i mitten"; platstexten för långt från huvudtexten | Text y ≈ 560; etikett centrerad direkt under texten (3, Text) |
 | 2026-10-14 | GK (alla) | "Text ska generellt vara mot mitten och centrerat" | Varje rad horisontellt centrerad i säkra ytan (mitt x ≈ 497) som utgångspunkt; QA kontrollerar, kan stängas av per film (3, Text) |
+| 2026-10-24 | FAIV Kör du den här? (alla) | "Det ser så jävla fult ut när det ligger lite off" – text och logga låg 43 px åt vänster | Centrera på bildens mitt x 540 med lika marginal (≥ 151 px) båda sidor, aldrig 497; färgad ruta ensam på sin rad; QA mäter mot 540 (3, Text) |
 | 2026-10-13 | GK Årsskiftet | "Man ser inte riktigt texten" (mörk text i ljus ruta) | Ingen skugga i markerade rutor; rutan täcker Å-ringen (3, Text) |
 | 2026-10-15 | GK Spelat den här? (alla) | "Ä syns dåligt, prickarna smälter in i bakgrunden" – återkommande i alla videor | Rutan höjs 0,17 em när ordet har Å/Ä/Ö och raden flyttas ned 0,08 em (litet mellanrum mot raden ovanför); alla filmer och mallar (3, Text) |

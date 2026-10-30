@@ -1,8 +1,18 @@
 name: Content Engine Daily
 on:
   workflow_dispatch:
+    inputs:
+      phase:
+        description: "full = everything; start = only start the day's scrapes (the full run collects them)"
+        type: choice
+        options: [full, start]
+        default: full
   schedule:
+    # Two phases: start the scrapes, then collect + analyse half an hour later when Apify is done.
+    # GitHub may delay scheduled runs; if both queue up, the newer (full) one replaces the pending start
+    # and simply does everything itself.
     - cron: '17 6 * * *'
+    - cron: '47 6 * * *'
 permissions:
   contents: read
   # Lets the step below start the Edit Render workflow for cut jobs nobody picked up (workflow_dispatch).
@@ -20,6 +30,10 @@ jobs:
       SECRET_KEY: ${{ secrets.CONTENT_DJANGO_SECRET }}
       POSTIZ_ENCRYPTION_SECRET: ${{ secrets.CONTENT_POSTIZ_ENCRYPTION_SECRET }}
       APIFY_API_TOKEN: ${{ secrets.CONTENT_APIFY_TOKEN }}
+      # Scraper ceiling per company and day (engine/sync.dispatch); same default as render.yaml.
+      SCRAPER_DAILY_BUDGET_USD: ${{ vars.SCRAPER_DAILY_BUDGET_USD || '0.50' }}
+      # Ad collection and AI analysis run four at a time (engine/daily.py); fewer Actions minutes per run.
+      DAILY_PARALLEL: ${{ vars.DAILY_PARALLEL || '4' }}
       OPENAI_API_KEY: ${{ secrets.CONTENT_OPENAI_KEY }}
       # Competitor/market analysis classifies through OpenRouter (engine/signals.py).
       OPENROUTER_API_KEY: ${{ secrets.CONTENT_OPENROUTER_KEY }}
@@ -29,6 +43,12 @@ jobs:
       # Reference videos: the best new competitor ads are broken down daily (engine/references).
       REFERENCE_VIDEO_MODEL: ${{ vars.REFERENCE_VIDEO_MODEL || 'google/gemini-3.8-flash' }}
       REFERENCE_DAILY_LIMIT: ${{ vars.REFERENCE_DAILY_LIMIT || '2' }}
+      # Idea cards: hits pitched in Discord, at most IDEA_WEEKLY_MAX per company and week (engine/ideas).
+      IDEA_DAILY_LIMIT: ${{ vars.IDEA_DAILY_LIMIT || '2' }}
+      IDEA_WEEKLY_MAX: ${{ vars.IDEA_WEEKLY_MAX || '2' }}
+      IDEA_MIN_FIT: ${{ vars.IDEA_MIN_FIT || '7' }}
+      CONTENT_N8N_DISCORD_URL: ${{ secrets.CONTENT_N8N_DISCORD_URL }}
+      CONTENT_N8N_SECRET: ${{ secrets.CONTENT_N8N_SECRET }}
       VIRLO_API_KEY: ${{ secrets.CONTENT_VIRLO_KEY }}
       R2_ENDPOINT_URL: ${{ secrets.CONTENT_R2_ENDPOINT_URL }}
       R2_BUCKET_NAME: ${{ secrets.CONTENT_R2_BUCKET_NAME }}
@@ -39,6 +59,7 @@ jobs:
       HIGGSFIELD_API_KEY_GK: ${{ secrets.CONTENT_HIGGSFIELD_API_KEY_GK }}
       MEDIA_STORAGE: r2
       APP_URL: http://127.0.0.1:8765
+      PHASE: ${{ (github.event.schedule == '17 6 * * *' || inputs.phase == 'start') && 'start' || 'full' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -49,17 +70,17 @@ jobs:
       - name: Show unapplied migrations (diagnostic)
         run: python manage.py showmigrations --plan | grep -F "[ ]" || echo "All migrations applied."
       - run: python manage.py migrate --check
-      - run: python manage.py run_daily
+      - run: python manage.py run_daily --phase "$PHASE"
       - name: Sync product catalogs from the company webshops
-        if: always()
+        if: always() && env.PHASE == 'full'
         continue-on-error: true
         run: python manage.py sync_products
       - name: Interpret saved review comments into lessons
-        if: always()
+        if: always() && env.PHASE == 'full'
         continue-on-error: true
         run: python manage.py interpret_feedback
       - name: Wake the cloud editor for queued cut jobs
-        if: always()
+        if: always() && env.PHASE == 'full'
         continue-on-error: true
         env:
           GITHUB_DISPATCH_TOKEN: ${{ github.token }}

@@ -807,4 +807,8 @@ from .references.mcp import register as register_reference_tools
 
 register_reference_tools(mcp, _company, _safe_call)
 
+from .techniques.mcp import register as register_technique_tools
+
+register_technique_tools(mcp, _company, current_django_user, _safe_call)
+
 app = build_app()

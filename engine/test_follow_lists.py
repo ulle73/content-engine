@@ -24,13 +24,14 @@ class FollowListTests(TestCase):
         Competitor.objects.create(company=self.faiv, name="Befintlig", username="vparts", active=False)
         with patch("engine.follow_lists.start_import") as start:
             result = follow_lists.apply(self.faiv)
-        self.assertEqual(result["instagram"], 8)
+        self.assertEqual(result["instagram"], 9)  # 8 others + our own
         self.assertEqual(result["ad_pages"], 20)  # 18 pages + 2 keyword searches
         self.assertTrue(AdAccount.objects.filter(company=self.faiv, name__startswith="Sökord: extraljus",
                                                  page_url__contains="q=extraljus").exists())
         self.assertTrue(AdAccount.objects.filter(company=self.faiv, page_id="",
                                                  page_url="https://www.facebook.com/Lazerlamps/").exists())
-        self.assertEqual(start.call_count, 8)
+        self.assertEqual(start.call_count, 9)
+        self.assertTrue(Competitor.objects.get(company=self.faiv, username="f.a.i.v.ab").own)
         self.assertFalse(Competitor.objects.get(company=self.faiv, username="vparts").active)
         self.assertTrue(AdAccount.objects.filter(company=self.faiv, page_id="133016172910", country="NO").exists())
         with patch("engine.follow_lists.start_import"):
@@ -43,7 +44,7 @@ class FollowListTests(TestCase):
         golf = Company.objects.create(owner=self.user, name="Golfkuponger")
         with patch("engine.follow_lists.start_import"):
             result = follow_lists.apply(golf)
-        self.assertEqual((result["instagram"], result["tiktok"]), (4, 9))
+        self.assertEqual((result["instagram"], result["tiktok"]), (5, 9))
         self.assertTrue(Competitor.objects.filter(company=golf, platform="tiktok", username="standregolf").exists())
         self.assertTrue(Competitor.objects.filter(company=golf, platform="instagram", username="standregolf").exists())
         self.assertTrue(AdAccount.objects.filter(company=golf, page_url__contains="q=friskv").exists())
@@ -57,11 +58,11 @@ class FollowListTests(TestCase):
         with patch("engine.follow_lists.start_import"):
             response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(self.faiv.competitors.count(), 9)
+        self.assertEqual(self.faiv.competitors.count(), 10)
         stranger = get_user_model().objects.create_user("stranger", password="x")
         self.client.force_login(stranger)
         self.assertIn(self.client.post(url).status_code, (302, 403, 404))
-        self.assertEqual(self.faiv.competitors.count(), 9)
+        self.assertEqual(self.faiv.competitors.count(), 10)
 
     def test_intelligence_page_shows_start_list_until_applied(self):
         self.client.force_login(self.user)

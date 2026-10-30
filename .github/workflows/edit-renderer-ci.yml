@@ -8,6 +8,9 @@ on:
       - '.github/workflows/edit-renderer-ci.yml'
 permissions:
   contents: read
+concurrency:
+  group: edit-renderer-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   compose-and-lint:
     runs-on: ubuntu-latest

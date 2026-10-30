@@ -38,6 +38,10 @@ Gör detta i `skills/studio` steg 2, före förslagen och beslutsrundan.
 
 ## B. Lägga till tekniker från en länk ("här är en video med en bra teknik")
 
+**ChatGPT eller webbappen:** använd nu den integrerade granskningsvägen först. ChatGPT: `suggest_techniques_from_link` ger numrerade förslag men sparar ingenting; visa dem och invänta uttryckligt godkännande innan `approve_techniques` med `confirmed=true` och valda nollbaserade index. Webbappen: fliken **Teknikbanken** → klistra in HTTPS-länk → granska → kryssa för → godkänn. Godkända företagstekniker lagras i Neon och syns i samma `search_content_library` som de statiska teknikerna, men ändrar inte GitHub-filerna. Externa performancepåståenden är aldrig automatiskt bevisade.
+
+**Claude Code för gemensamma, versionshanterade tekniker:** använd befintligt manuellt flöde nedan när tekniken ska delas mellan alla företag.
+
 1. **Hämta och bryt ner** (videon stannar lokalt i `work/references/`, aldrig i git):
    ```bash
    .venv/Scripts/python.exe -I library/techniques/hamta.py "<länk>"
