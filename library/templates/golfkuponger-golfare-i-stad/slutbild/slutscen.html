@@ -50,6 +50,9 @@ p{margin:0;font-weight:600}
 </div>
 <script>
 const [VAR, ANIM] = (location.hash.slice(1) || 'portal').split('-');
+// ?h=1350 ger 4:5 (feed): samma innehåll (y 318–1239 i 9:16) centrerat i bildens höjd
+const H = +(new URLSearchParams(location.search).get('h') || 1920), DY = H === 1920 ? 0 : Math.round(H / 2 - 778);
+for (const el of [document.documentElement, document.body]) el.style.height = H + 'px';
 const sc = document.getElementById(VAR); sc.hidden = false;
 if (ANIM) sc.querySelector('.logga').style.visibility = 'hidden';
 // underraden delas i ord som tonar upp ett i taget
@@ -75,7 +78,7 @@ window.frame = t => {
     const e = t - landar[i]; if (e > 0 && e < 0.28) skak += 7 * (1 - e / 0.28) * Math.sin(e * 70);
     const gl = el.querySelector('.glans'); if (gl) gl.style.backgroundPosition = `${100 - 100 * ut3((t - landar[i] - 0.15) / 0.9)}% 0`;
   });
-  sc.parentElement.style.transform = `translate(${skak * 0.6}px,${skak}px)`;
+  sc.parentElement.style.transform = `translate(${skak * 0.6}px,${skak + DY}px)`;
   W.forEach((w, i) => { const p = ut3((t - SUB - i * 0.07) / 0.35); w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 24}px)`; });
   const KT = SUB + W.length * 0.07 + 0.1;
   KORT.forEach((k, i) => { const a = KT + i * 0.11, p = kl((t - a) / 0.38); k.style.opacity = kl((t - a) / 0.12); k.style.transform = `scale(${0.55 + 0.45 * back(p)})`; });

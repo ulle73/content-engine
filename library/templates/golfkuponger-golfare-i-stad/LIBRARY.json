@@ -13,10 +13,11 @@
       "type": "template",
       "medium": "video",
       "formats": [
-        "9:16"
+        "9:16",
+        "4:5"
       ],
       "engine": "html-playwright",
-      "description": "Lokal stadsannons i tre format ur samma fil, för A/B-test: stillbild, B1 slam (orden slår ner med 3D-djup, kameraryck, guldglans) och B2 snurr (stadsnamnet rullar som en enarmad bandit och landar på staden). Stillbilden är exakt slutbilden i båda filmerna. Klubbnamnet i underraden rullar genom regionens 5 största klubbar, 0,6 s per klubb (Bro Hof sist i Stockholm) och landar i guld på den utvalda klubben. Byt stad, klubb, banfoto och beskärning i en json; antalet klubbar i regionen räknas ur sajtens klubblista. Musiken läggs med en träffpunkt så att ett 'Halleluja!' slår när staden landar. Text: GOLFARE I STOCKHOLM? / Spela Kallfors och 35+ andra klubbar i regionen – på friskvårdsbidraget. Ingen knapp i bilden; blocket centrerat. Ny slutscen (portal/köp direkt) finns som eget objekt: golfkuponger.template.golfare-i-stad-slutscen.",
+      "description": "Lokal stadsannons i tre format ur samma fil, för A/B-test: stillbild, B1 slam (orden slår ner med 3D-djup, kameraryck, guldglans) och B2 snurr (stadsnamnet rullar som en enarmad bandit och landar på staden). Stillbilden är exakt slutbilden i båda filmerna. Klubbnamnet i underraden rullar genom regionens 5 största klubbar, 0,6 s per klubb (Bro Hof sist i Stockholm) och landar i guld på den utvalda klubben. Byt stad, klubb, banfoto och beskärning i en json; antalet klubbar i regionen räknas ur sajtens klubblista. Musiken läggs med en träffpunkt så att ett 'Halleluja!' slår när staden landar. Text: GOLFARE I STOCKHOLM? / Spela Kallfors och 35+ andra klubbar i regionen – på friskvårdsbidraget. Ingen knapp i bilden; blocket centrerat. Ny slutscen (portal/köp direkt) finns som eget objekt: golfkuponger.template.golfare-i-stad-slutscen. Bilderna alltid även i 4:5 (--format 4x5 --bara-still, omkomponerad); filmerna i 9:16.",
       "tags": [
         "golfkuponger",
         "lokal",
@@ -41,7 +42,9 @@
         "reels",
         "meta",
         "klubbrulle",
-        "klubbar i regionen"
+        "klubbar i regionen",
+        "4:5",
+        "feed"
       ],
       "path": "library/templates/golfkuponger-golfare-i-stad/README.md",
       "use": "cp -r library/templates/golfkuponger-golfare-i-stad work/golfare-i-stad && cd work/golfare-i-stad && node rendera.mjs annonser/<stad>.json --musik musik/hallelujah-kor.mp3 --traff 2.48 --traff-b1 1.32",
@@ -51,7 +54,7 @@
       ],
       "cost": "free",
       "status": "verified",
-      "verified_at": "2026-10-28",
+      "verified_at": "2026-10-30",
       "preview": {
         "video": "library/previews/golfkuponger.template.golfare-i-stad.mp4",
         "still": "library/previews/golfkuponger.template.golfare-i-stad.jpg"
@@ -64,10 +67,11 @@
       "type": "template",
       "medium": "video",
       "formats": [
-        "9:16"
+        "9:16",
+        "4:5"
       ],
       "engine": "html-playwright",
-      "description": "Slutscen i stället för den animerade svingloggan: vår logga i fast form (eller svingloggan i mindre format) med 'SÖK GOLFKUPONGER i din friskvårdsportal' och de fyra portalloggorna (Benifex, Epassi, Söderberg & Partners, Edenred), eller 'INGEN PORTAL? Köp direkt på golfkuponger.se'. Texten slår ner med 3D-djup och guldglans som i filmen, portalkorten poppar in. Musiken går över i slutscenen och klingar ut med efterklang. slutscen.mjs sätter ihop scenerna från rendera.mjs med alla fyra slutscenerna (8 filmer per stad).",
+      "description": "Slutscen i stället för den animerade svingloggan: vår logga i fast form (eller svingloggan i mindre format) med 'SÖK GOLFKUPONGER i din friskvårdsportal' och de fyra portalloggorna (Benifex, Epassi, Söderberg & Partners, Edenred), eller 'INGEN PORTAL? Köp direkt på golfkuponger.se'. Texten slår ner med 3D-djup och guldglans som i filmen, portalkorten poppar in. Musiken går över i slutscenen och klingar ut med efterklang. slutscen.mjs sätter ihop scenerna från rendera.mjs med alla fyra slutscenerna (8 filmer per stad). Bilderna alltid även i 4:5 (--format 4x5 --bara-still, omkomponerad); filmerna i 9:16.",
       "tags": [
         "golfkuponger",
         "slutscen",
@@ -88,7 +92,9 @@
         "friskvård",
         "halleluja",
         "reels",
-        "meta"
+        "meta",
+        "4:5",
+        "feed"
       ],
       "path": "library/templates/golfkuponger-golfare-i-stad/README.md",
       "use": "cd work/golfare-i-stad && node rendera.mjs annonser/<stad>.json --musik musik/hallelujah-kor.mp3 --traff 2.48 --traff-b1 1.32 && node slutscen.mjs <stad>",
@@ -98,7 +104,7 @@
       ],
       "cost": "free",
       "status": "verified",
-      "verified_at": "2026-10-29",
+      "verified_at": "2026-10-30",
       "preview": {
         "video": "library/previews/golfkuponger.template.golfare-i-stad-slutscen.mp4",
         "still": "library/previews/golfkuponger.template.golfare-i-stad-slutscen.jpg"

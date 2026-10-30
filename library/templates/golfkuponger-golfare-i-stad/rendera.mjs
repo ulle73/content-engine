@@ -19,10 +19,13 @@ const stopp = m => { console.log('STOPP:', m); process.exit(1); };
 const KONFIG = process.argv[2]; if (!KONFIG || KONFIG.startsWith('--')) stopp('ange en annons, t.ex. node rendera.mjs annonser/stockholm.json');
 const UTKAST = process.argv.includes('--utkast'), BARA_STILL = process.argv.includes('--bara-still');
 const MUSIK = arg('--musik'), TRAFF_ALLA = +(arg('--traff') || 0), FPS = 30;
+// --format 4x5 ger feedversionen 1080×1350 (filnamn med _4x5, out/<stad>-4x5/); utan flagga 9:16 (Jonas 2026-10-30: alltid båda)
+const FORMAT = arg('--format') || '9x16'; if (!['9x16', '4x5'].includes(FORMAT)) stopp('--format ska vara 9x16 eller 4x5');
+const H = FORMAT === '4x5' ? 1350 : 1920, SUFFIX = FORMAT === '4x5' ? '_4x5' : '';
 const K = JSON.parse(fs.readFileSync(KONFIG, 'utf8'));
 const kod = K.stad.toLowerCase().replace(/[åä]/g, 'a').replace(/ö/g, 'o').replace(/[^a-z0-9]+/g, '-');
 const namn = K.namn || `golfare-i-${kod}`;
-const filnamn = variant => (K.filnamn || `${namn}_{variant}`).replace('{variant}', variant);   // t.ex. "T01_format_{variant}_sthlm"
+const filnamn = variant => (K.filnamn || `${namn}_{variant}`).replace('{variant}', variant) + SUFFIX;   // t.ex. "T01_format_{variant}_sthlm"
 
 // ---- antal klubbar i regionen ur sajtens klubblista (aktiva golfbanor, klubben själv oräknad, avrundat nedåt till 5)
 const REGION = {
@@ -75,7 +78,10 @@ const ANNONS = {
   langd: K.langd,
   knapp: K.knapp ?? '',   // ingen knapp i bilden som standard; "knapp": "Hitta din bana →" tar tillbaka den
   rulle: K.rulle || STADER.filter(s => s !== K.stad).slice(0, 8),
-  foto: `annonser/${kod}/foto-1080.jpg`,
+  foto: `annonser/${kod}/foto-1080${SUFFIX}.jpg`,
+  hojd: H,
+  plats_y: K.plats_y,
+  mitt_y: H === 1920 ? K.mitt_y : K.mitt_y_4x5,
 };
 
 // ---- bilden: skalas till 1920 px höjd (eller 1080 px bredd) och beskärs till 9:16 med fokus 0–1 (vänster–höger / topp–botten)
@@ -84,17 +90,17 @@ if (!fs.existsSync(BILD)) stopp(`hittar inte bilden ${BILD}`);
 fs.mkdirSync(path.join(HERE, 'annonser', kod), { recursive: true });
 const [bw, bh] = execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', BILD]).toString().trim().split(',').map(Number);
 const fokus = K.fokus ?? 0.5;
-const skala = bw / bh > 1080 / 1920 ? `scale=-2:1920:flags=lanczos,crop=1080:1920:(iw-1080)*${fokus}:0` : `scale=1080:-2:flags=lanczos,crop=1080:1920:0:(ih-1920)*${fokus}`;
+const skala = bw / bh > 1080 / H ? `scale=-2:${H}:flags=lanczos,crop=1080:${H}:(iw-1080)*${fokus}:0` : `scale=1080:-2:flags=lanczos,crop=1080:${H}:0:(ih-${H})*${fokus}`;
 execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', BILD, '-vf', skala, '-q:v', '2', path.join(HERE, ANNONS.foto)]);
 
 // ---- rendera
-const RES = path.join(HERE, 'resultat', kod), OUT = path.join(HERE, 'out', kod);
+const RES = path.join(HERE, 'resultat', kod), OUT = path.join(HERE, 'out', kod + (SUFFIX ? '-4x5' : ''));
 for (const d of [RES, OUT]) fs.mkdirSync(d, { recursive: true });
 const VAR = { 1: 'B1-slam', 2: 'B2-snurr' };
 const b = await launch({ args: ['--allow-file-access-from-files'] });
 const sidor = {};
 for (const v of [1, 2]) {
-  const ctx = await b.newContext({ viewport: { width: 1080, height: 1920 } });
+  const ctx = await b.newContext({ viewport: { width: 1080, height: H } });
   await ctx.addInitScript(a => { window.ANNONS = a; }, ANNONS);
   const p = await ctx.newPage();
   p.on('pageerror', e => stopp(`v${v} sidfel: ${e.message}`));
@@ -108,8 +114,9 @@ for (const v of [1, 2]) {
   console.log(LANGD < krav ? `v${v} VARNING läsregeln: ${n} tecken kräver ${krav.toFixed(2)} s, scenen är ${LANGD} s (kortare enligt beslut)` : `v${v} läsregeln ok (${n} tecken, ${krav.toFixed(2)} s ≤ ${LANGD} s)`);
   for (const [id, r] of Object.entries(m)) {
     const centrerad = id !== 'plats';   // bannamnet är vänsterställt nere till vänster
-    const yMax = id === 'plats' ? 1600 : 1250;   // bannamnet ligger medvetet lägre (beslut Jonas 2026-10-28)
-    const ok = r.x0 >= 65 && r.x1 <= 929 && r.y0 >= 270 && r.y1 <= yMax && (!centrerad || Math.abs(r.x0 - (1080 - r.x1)) <= 2);
+    // 9:16: y 270–1250 (Reels-UI), bannamnet medvetet lägre till y 1600 (beslut Jonas 2026-10-28). 4:5 (feed): 5 % marginal upptill och nedtill
+    const yMin = H === 1920 ? 270 : 68, yMax = H === 1920 ? (id === 'plats' ? 1600 : 1250) : H - 68;
+    const ok = r.x0 >= 65 && r.x1 <= 929 && r.y0 >= yMin && r.y1 <= yMax && (!centrerad || Math.abs(r.x0 - (1080 - r.x1)) <= 2);
     console.log(`v${v} ${ok ? 'ok ' : 'FEL'} ${id.padEnd(7)} x ${r.x0}–${r.x1}  y ${r.y0}–${r.y1}`);
     if (!ok) stopp(`v${v} ${id} utanför safe zones eller inte centrerad`);
   }
@@ -122,9 +129,9 @@ const lik = (/average:(\S+)/.exec(err) || [])[1];
 console.log(`slutläge slam mot snurr: PSNR ${lik} dB`);
 if (lik !== 'inf' && parseFloat(lik) < 45) stopp('slutlägena i slam och snurr skiljer sig – stillbilden blir inte samma som båda');
 execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', path.join(OUT, 'slut-v2.png'), '-q:v', '2', path.join(RES, `${filnamn('A-still')}.jpg`)]);
-await sidor[2].p.evaluate(() => { const d = document.createElement('div');
-  d.style.cssText = 'position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 270px 0 rgba(255,0,0,.25),inset 0 -670px 0 rgba(255,0,0,.25);border-left:151px solid rgba(255,0,0,.25);border-right:151px solid rgba(255,0,0,.25);box-sizing:border-box';
-  document.body.appendChild(d); });
+await sidor[2].p.evaluate(([topp, botten]) => { const d = document.createElement('div');
+  d.style.cssText = `position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 ${topp}px 0 rgba(255,0,0,.25),inset 0 -${botten}px 0 rgba(255,0,0,.25);border-left:151px solid rgba(255,0,0,.25);border-right:151px solid rgba(255,0,0,.25);box-sizing:border-box`;
+  document.body.appendChild(d); }, H === 1920 ? [270, 670] : [68, 68]);
 await sidor[2].p.screenshot({ path: path.join(OUT, 'kontroll-safezone.png') });
 await sidor[2].p.evaluate(() => document.body.lastElementChild.remove());
 console.log(`stillbild klar: resultat/${kod}/${filnamn('A-still')}.jpg`);
@@ -157,7 +164,7 @@ if (!BARA_STILL) for (const v of [1, 2]) {
     `afade=t=in:d=0.03,adelay=${Math.round(fordroj * 1000)}:all=1,apad,atrim=0:${SLUT.toFixed(3)},afade=t=out:st=${(SLUT - 0.6).toFixed(3)}:d=0.6,loudnorm=I=-16:TP=-2[m];` : '';
   const slutljud = `[1:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay=${Math.round(LANGD * 1000)}:all=1[o];`;
   const mix = MUSIK ? '[m][o]amix=inputs=2:normalize=0:duration=longest[mx];[mx]' : '[o]';
-  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', scen, '-i', path.join(HERE, 'assets', 'spotlight-9x16.mp4'),
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', scen, '-i', path.join(HERE, 'assets', `spotlight-${FORMAT}.mp4`),
     ...(MUSIK ? ['-ss', start.toFixed(3), '-i', path.resolve(MUSIK)] : []), '-filter_complex',
     `[0:v][1:v]concat=n=2:v=1:a=0[v];${musik}${slutljud}${mix}loudnorm=I=-14:TP=-1.5[ao]`, '-map', '[v]', '-map', '[ao]',
     '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-movflags', '+faststart', path.join(RES, fil)]);

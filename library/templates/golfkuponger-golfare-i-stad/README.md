@@ -118,6 +118,21 @@ Ut: `resultat/slutscener/<stad>/golfare-i-<stad>_<B1-slam|B2-snurr>_slut-<varian
 rätt även med annan musik eller andra tider. Allt ligger inom safe zones (y 318–1239). Portallistan är faktabankens F1
 (⚠️ verifiera aktuell lista) och loggorna finns bara i 300×200 px.
 
+## 4:5 (feed) – bilderna alltid även i 4:5
+
+Jonas 2026-10-30: alla **bilder** levereras i både 9:16 och 4:5 (filmerna bara i 9:16). `--format 4x5` gör feedversionen
+(1080×1350) av samma annons – omkomponerad, inte beskuren: fotot beskärs om till 4:5 med samma `fokus`, blocket står
+strax ovanför mitten (`mitt_y_4x5`, standard 47 % av höjden), 5 % marginal upptill och nedtill, banans namn nere till
+vänster (~y 1242) och slutbilden är `assets/spotlight-4x5.mp4`.
+
+```bash
+node rendera.mjs annonser/<stad>.json --format 4x5 --bara-still      # stillbilden i 4:5 (standard)
+# filmer i 4:5 går också (utan --bara-still, och node slutscen.mjs <stad> --format 4x5) – bara om det beställs
+```
+
+Ut: samma namn med `_4x5` (`…_A-still_4x5.jpg`, `…_B1-slam_4x5.mp4`, `…_slut-portal_4x5.mp4` …), arbetsfiler i
+`out/<stad>-4x5/`. QA kontrollerar 4:5 mot x 65–929 och y 68–1282.
+
 ## QA i bygget
 
 Läsregeln varnar (all text från första biten), safe zones (allt inom y 270–1250, centrerat på x 540 med lika marginal),

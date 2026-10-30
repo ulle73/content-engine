@@ -60,7 +60,11 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#082f27
 <div class="c" id="logga"><img src="assets/logo-final.png" alt=""></div>
 <div id="plats"><svg viewBox="0 0 24 32"><path fill="#fff" d="M12 0C5.4 0 0 5.3 0 11.9 0 20.8 12 32 12 32s12-11.2 12-20.1C24 5.3 18.6 0 12 0zm0 16.6a4.8 4.8 0 1 1 0-9.6 4.8 4.8 0 0 1 0 9.6z"/></svg><span id="bana"></span></div>
 <script>
-const A = window.ANNONS;   // { stad, rad1, underrad (med {klubb}), klubb, klubbrulle[], knapp, foto, rulle[] }
+const A = window.ANNONS;   // { stad, rad1, underrad (med {klubb}), klubb, klubbrulle[], knapp, foto, rulle[], hojd }
+// format: 1920 = 9:16 (Reels/Stories), 1350 = 4:5 (feed) – samma innehåll, omkomponerat (Jonas 2026-10-30: alltid båda)
+const H = A.hojd || 1920;
+for (const el of [document.documentElement, document.body]) el.style.height = H + 'px';
+document.getElementById('foto').style.height = H + 'px';
 const V = +(new URLSearchParams(location.search).get('v') || 2);
 const $ = id => document.getElementById(id);
 const cl = (x, a = 0, b = 1) => Math.min(Math.max(x, a), b);
@@ -98,10 +102,11 @@ function layout() {
   window.kw = [...kr.children].map(bredd); window.kh = kr.firstElementChild.offsetHeight; kr.style.width = window.kw.at(-1) + 'px';
   let fs = 220; r.style.fontSize = fs + 'px';
   // Jonas 2026-10-28: banans namn längre ner (~y 1500–1550), under säkra ytan – kan delvis skymmas av bildtexten i Reels
-  const pl = $('plats'); pl.style.top = (A.plats_y ?? 1500) + 'px'; const tak = 1240;
+  // 4:5: inget plattforms-UI över bilden – banans namn nere till vänster (y ~1242) och blocket strax ovanför mitten (mer luft upptill)
+  const pl = $('plats'); pl.style.top = (A.plats_y ?? (H === 1920 ? 1500 : H - 108)) + 'px'; const tak = H === 1920 ? 1240 : H - 110;
   while ((w() > 760 || stapla() > tak) && fs > 60) r.style.fontSize = (--fs) + 'px';
   const lh = $('logga').offsetHeight, blockTopp = top - 30 - lh, h = stapla() - blockTopp;
-  const mitt = Math.min(A.mitt_y ?? 960, tak - h / 2);   // blockets mitt: bildens mitt, eller så långt ner som säkra ytan tillåter
+  const mitt = Math.min(A.mitt_y ?? (H === 1920 ? 960 : Math.round(H * 0.47)), tak - h / 2);   // blockets mitt: bildens mitt, eller så långt ner som säkra ytan tillåter
   top += Math.round(mitt - (blockTopp + h / 2)); stapla();
   $('logga').style.top = (top - 30 - lh) + 'px';
   if (V === 2) {
