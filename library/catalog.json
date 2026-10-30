@@ -1,8 +1,8 @@
 {
  "version": 1,
- "generated": "2026-10-15",
- "count": 1512,
- "verified": 400,
+ "generated": "2026-10-30",
+ "count": 1516,
+ "verified": 404,
  "by_type": {
   "background": 60,
   "caption": 29,
@@ -14,9 +14,9 @@
   "recipe": 12,
   "scene": 190,
   "skill": 60,
-  "sound": 78,
+  "sound": 80,
   "technique": 23,
-  "template": 103,
+  "template": 105,
   "text": 127,
   "tool": 82,
   "transition": 120
@@ -9607,6 +9607,62 @@
     "ffmpeg",
     "python"
    ],
+   "use": "python library/sounds/sounds.py copy music.hallelujah-handel-1916 work/<film>/sfx/hallelujah-handel-1916.wav",
+   "notes": "Mono, akustisk inspelning från 1916 (brus och knaster hör till). Orkesterintro först; kören sätter in 6,61 s i spåret – lägg den på avslöjandet (golfkuponger-golfare-i-stad: --traff 6.61). Loudnorm till -16 LUFS under bild, -14 totalt.",
+   "verified_at": "2026-10-28",
+   "preview": {
+    "video": null,
+    "still": "library/previews/music.hallelujah-handel-1916.png"
+   },
+   "id": "music.hallelujah-handel-1916",
+   "name": "Musik: Händel – Halleluja (Oratorio Chorus, 1916)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Halleluja-kör: uppenbarelse, äntligen, segermoment med glimten i ögat. Källa: Oratorio Chorus – Hallelujah (Händel, Messiah), Edison 1916, Internet Archive EDIS-SRP-0195-06 / Wikimedia Commons.",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "musik",
+    "halleluja",
+    "hallelujah",
+    "händel",
+    "messias",
+    "kör",
+    "klassisk",
+    "äntligen",
+    "seger",
+    "humor",
+    "public domain"
+   ],
+   "path": "library/sounds/files/hallelujah-handel-1916_archive-edis-srp-0195-06.ogg",
+   "status": "verified",
+   "bank": {
+    "role": "Halleluja-kör: uppenbarelse, äntligen, segermoment med glimten i ögat",
+    "source": "Oratorio Chorus – Hallelujah (Händel, Messiah), Edison 1916, Internet Archive EDIS-SRP-0195-06 / Wikimedia Commons",
+    "license": "Public domain (Wikimedia Commons: Public Domain Mark 1.0; Edison-inspelning 1916 via Internet Archive EDIS-SRP-0195-06)",
+    "used_in": "GK Golfare i <stad>? (mallen golfkuponger-golfare-i-stad, test 01), skickat av Jonas 2026-10-28",
+    "level": "Mono, akustisk inspelning från 1916 (brus och knaster hör till). Orkesterintro först; kören sätter in 6,61 s i spåret – lägg den på avslöjandet (golfkuponger-golfare-i-stad: --traff 6.61). Loudnorm till -16 LUFS under bild, -14 totalt.",
+    "file": "library/sounds/files/hallelujah-handel-1916_archive-edis-srp-0195-06.ogg"
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
    "use": "python library/sounds/sounds.py copy music.lifes-a-movie work/<film>/sfx/lifes-a-movie.wav",
    "notes": "Starta 35,0 s in i spåret: tyst del 37–44 s, lyftet vid ~45 s – lägg lyftet på filmens stora avslöjande.",
    "verified_at": "2026-10-14",
@@ -10346,6 +10402,60 @@
      "fade_in": 0.04,
      "fade_out": 0.03
     }
+   }
+  },
+  {
+   "kit": "sounds",
+   "kit_title": "Ljudbanken – godkända ljud",
+   "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Per ljud, se bank.license"
+   },
+   "cost": "free",
+   "requires": [
+    "ffmpeg",
+    "python"
+   ],
+   "use": "python library/sounds/sounds.py copy sound.hallelujah-kor work/<film>/sfx/hallelujah-kor.wav",
+   "notes": "8,7 s, mono 11 kHz (lite dovt). Två fraser: första 0,08–2,0 s, tyst 2,0–2,48 s, andra frasen slår an 2,48 s (tydligaste anslaget). golfkuponger-golfare-i-stad: --traff 2.48 (första frasen under rullen, pausen precis före, andra frasen slår när stadsnamnet landar).",
+   "verified_at": "2026-10-28",
+   "preview": {
+    "video": null,
+    "still": "library/previews/sound.hallelujah-kor.png"
+   },
+   "id": "sound.hallelujah-kor",
+   "name": "Halleluja-kör (kort, 8,7 s)",
+   "type": "sound",
+   "medium": "audio",
+   "formats": [
+    "any"
+   ],
+   "engine": "python",
+   "description": "Kort skrikig halleluja-kör för humoristiska segermoment: något landar, äntligen, bingo. Källa: Pixabay – Hallelujah (freesound_community 88495).",
+   "tags": [
+    "ljud",
+    "godkänt",
+    "ljudbank",
+    "halleluja",
+    "hallelujah",
+    "kör",
+    "seger",
+    "äntligen",
+    "humor",
+    "meme",
+    "jingel",
+    "stinger"
+   ],
+   "path": "library/sounds/files/hallelujah-kor_pixabay-88495.mp3",
+   "status": "verified",
+   "bank": {
+    "role": "Kort skrikig halleluja-kör för humoristiska segermoment: något landar, äntligen, bingo",
+    "source": "Pixabay – Hallelujah (freesound_community 88495)",
+    "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+    "used_in": "GK Golfare i <stad>? (mallen golfkuponger-golfare-i-stad, test 01), skickat av Jonas 2026-10-28",
+    "level": "8,7 s, mono 11 kHz (lite dovt). Två fraser: första 0,08–2,0 s, tyst 2,0–2,48 s, andra frasen slår an 2,48 s (tydligaste anslaget). golfkuponger-golfare-i-stad: --traff 2.48 (första frasen under rullen, pausen precis före, andra frasen slår när stadsnamnet landar).",
+    "file": "library/sounds/files/hallelujah-kor_pixabay-88495.mp3"
    }
   },
   {
@@ -13524,6 +13634,124 @@
     "reels"
    ],
    "path": "library/templates/golfkuponger-chefen-betalar/README.md",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Golfare i <stad>? (stillbild, slam, snurr)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; banfoton ur KLUBBAR (godkända för reklam); klubblistan från golfkuponger.se; ljud per ljudbankens licenser"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "ffmpeg"
+   ],
+   "use": "cp -r library/templates/golfkuponger-golfare-i-stad work/golfare-i-stad && cd work/golfare-i-stad && node rendera.mjs annonser/<stad>.json --musik musik/hallelujah-kor.mp3 --traff 2.48 --traff-b1 1.32",
+   "notes": "Byggd för Meta A/B-test 01 (2026-10-28). Textrörelserna slam och snurr valda av Jonas (en tredje, 'piskar in + guldruta', ströks); musik sound.hallelujah-kor valt av Jonas. Stockholm och Göteborg provkörda.",
+   "verified_at": "2026-10-30",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.golfare-i-stad.mp4",
+    "still": "library/previews/golfkuponger.template.golfare-i-stad.jpg"
+   },
+   "id": "golfkuponger.template.golfare-i-stad",
+   "name": "Golfare i <stad>? – stillbild + slam + snurr (9:16, ~10–11 s)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5"
+   ],
+   "engine": "html-playwright",
+   "description": "Lokal stadsannons i tre format ur samma fil, för A/B-test: stillbild, B1 slam (orden slår ner med 3D-djup, kameraryck, guldglans) och B2 snurr (stadsnamnet rullar som en enarmad bandit och landar på staden). Stillbilden är exakt slutbilden i båda filmerna. Klubbnamnet i underraden rullar genom regionens 5 största klubbar, 0,6 s per klubb (Bro Hof sist i Stockholm) och landar i guld på den utvalda klubben. Byt stad, klubb, banfoto och beskärning i en json; antalet klubbar i regionen räknas ur sajtens klubblista. Musiken läggs med en träffpunkt så att ett 'Halleluja!' slår när staden landar. Text: GOLFARE I STOCKHOLM? / Spela Kallfors och 35+ andra klubbar i regionen – på friskvårdsbidraget. Ingen knapp i bilden; blocket centrerat. Ny slutscen (portal/köp direkt) finns som eget objekt: golfkuponger.template.golfare-i-stad-slutscen. Bilderna alltid även i 4:5 (--format 4x5 --bara-still, omkomponerad); filmerna i 9:16.",
+   "tags": [
+    "golfkuponger",
+    "lokal",
+    "stad",
+    "region",
+    "golfare i",
+    "stockholm",
+    "göteborg",
+    "friskvård",
+    "klubbar",
+    "banfoto",
+    "stillbild",
+    "a/b-test",
+    "slam",
+    "3d-text",
+    "extrusion",
+    "guld",
+    "slotmaskin",
+    "enarmad bandit",
+    "rulle",
+    "halleluja",
+    "reels",
+    "meta",
+    "klubbrulle",
+    "klubbar i regionen",
+    "4:5",
+    "feed"
+   ],
+   "path": "library/templates/golfkuponger-golfare-i-stad/README.md",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Golfare i <stad>? (stillbild, slam, snurr)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; banfoton ur KLUBBAR (godkända för reklam); klubblistan från golfkuponger.se; ljud per ljudbankens licenser"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "ffmpeg"
+   ],
+   "use": "cd work/golfare-i-stad && node rendera.mjs annonser/<stad>.json --musik musik/hallelujah-kor.mp3 --traff 2.48 --traff-b1 1.32 && node slutscen.mjs <stad>",
+   "notes": "Feedback + Jonas 2026-10-29: båda slutbilderna godkända, fyra varianter som komplement till originalen med svingloggan. Renderat för Stockholm, Göteborg, Malmö, Uppsala, Linköping och Halmstad (48 filmer i Drive). Ljudet inte avlyssnat av Claude.",
+   "verified_at": "2026-10-30",
+   "preview": {
+    "video": "library/previews/golfkuponger.template.golfare-i-stad-slutscen.mp4",
+    "still": "library/previews/golfkuponger.template.golfare-i-stad-slutscen.jpg"
+   },
+   "id": "golfkuponger.template.golfare-i-stad-slutscen",
+   "name": "Golfare i <stad>? – ny slutscen: portal / köp direkt (fast logga eller mindre svinglogga, 4,2 s)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5"
+   ],
+   "engine": "html-playwright",
+   "description": "Slutscen i stället för den animerade svingloggan: vår logga i fast form (eller svingloggan i mindre format) med 'SÖK GOLFKUPONGER i din friskvårdsportal' och de fyra portalloggorna (Benifex, Epassi, Söderberg & Partners, Edenred), eller 'INGEN PORTAL? Köp direkt på golfkuponger.se'. Texten slår ner med 3D-djup och guldglans som i filmen, portalkorten poppar in. Musiken går över i slutscenen och klingar ut med efterklang. slutscen.mjs sätter ihop scenerna från rendera.mjs med alla fyra slutscenerna (8 filmer per stad). Bilderna alltid även i 4:5 (--format 4x5 --bara-still, omkomponerad); filmerna i 9:16.",
+   "tags": [
+    "golfkuponger",
+    "slutscen",
+    "slutbild",
+    "end card",
+    "cta",
+    "förmånsportal",
+    "friskvårdsportal",
+    "portal",
+    "benifex",
+    "epassi",
+    "edenred",
+    "söderberg & partners",
+    "köp direkt",
+    "golfkuponger.se",
+    "logga",
+    "svinglogga",
+    "friskvård",
+    "halleluja",
+    "reels",
+    "meta",
+    "4:5",
+    "feed"
+   ],
+   "path": "library/templates/golfkuponger-golfare-i-stad/README.md",
    "status": "verified"
   },
   {
