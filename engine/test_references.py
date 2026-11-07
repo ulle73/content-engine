@@ -104,6 +104,36 @@ class FetchTests(SimpleTestCase):
                 fetch.check_url(bad)
         self.assertEqual(fetch.check_url(" https://www.tiktok.com/@a/video/1 "), "https://www.tiktok.com/@a/video/1")
 
+    def test_yt_dlp_merges_only_with_ffmpeg(self):
+        import yt_dlp
+        seen = []
+
+        class FakeYDL:
+            def __init__(self, options):
+                seen.append(options)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def extract_info(self, url, download):
+                raise yt_dlp.utils.DownloadError("ERROR: [youtube] x: Requested format is not available.")
+
+        url = "https://www.youtube.com/watch?v=x"
+        with mock.patch.object(yt_dlp, "YoutubeDL", FakeYDL):
+            with mock.patch.object(fetch.shutil, "which", return_value="/usr/bin/ffmpeg"), \
+                    self.assertRaisesRegex(fetch.FetchError, "kunde inte hämtas"):
+                fetch._yt_dlp(url)
+            with mock.patch.object(fetch.shutil, "which", return_value=None), \
+                    self.assertRaisesRegex(fetch.FetchError, "slå ihop"):
+                fetch._yt_dlp(url)
+        self.assertEqual([o["format"] for o in seen], [fetch.FORMAT_MERGED, fetch.FORMAT_SINGLE])
+        self.assertIn("+", fetch.FORMAT_MERGED)
+        self.assertNotIn("+", fetch.FORMAT_SINGLE)
+        self.assertIn("node", seen[0]["js_runtimes"])
+
 
 BREAKDOWN = {
     "observations": "Mörk väg, sedan tänds ljuset.", "summary": "Mörker till ljus.", "format": "före/efter",
