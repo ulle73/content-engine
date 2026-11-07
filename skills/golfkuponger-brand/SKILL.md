@@ -25,6 +25,7 @@ För bilder där golfare, utrustning eller banmiljö ska se ut som verkliga foto
 - Skandinaviska banor: tallskog, hav, öppna landskap, svenskt väder.
 - Lugnt och luftigt: gott om andrum runt motivet så text får plats.
 - Riktiga skärminspelningar för portal, webb, app och kvitto. Återskapa aldrig UI med AI.
+- **Eget bildarkiv:** allt i `Downloads\golfkuponger\` är godkänt för reklam (Jonas 2026-11-07): banfoton i `KLUBBAR/` (utom `raderade/`), `golfbanor/`, `cards/` och klippen i `VIDEOS/`. Använd riktiga banor därifrån före AI-bilder; varje klubb en gång när en film visar många banor.
 
 **Brukar se billigt ut (undvik om det inte är poängen)**
 - Amerikansk country club-glans, palmer, öken, överdriven lyx.
