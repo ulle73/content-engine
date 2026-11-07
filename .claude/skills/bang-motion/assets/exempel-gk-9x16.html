@@ -1,0 +1,62 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><title>GK × Bang Motion – test 9:16</title>
+<style>
+@font-face{font-family:Anton;src:url(exempel-gk-assets/anton.woff2)}
+@font-face{font-family:Inter;font-weight:600;src:url(exempel-gk-assets/inter-600.woff2)}
+html,body{margin:0;background:#0c140f;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;background:#0c140f;transform-origin:0 0}
+/* en kontinuerlig värld: fotot är världen, kameran (#cam) rör sig hela tiden */
+#cam{position:absolute;inset:0;transform-origin:50% 45%}
+#bana{position:absolute;left:-760px;top:0;height:1920px;width:auto;opacity:1}
+#shade{position:absolute;inset:-300px;background:linear-gradient(180deg,rgba(8,47,39,.55) 0%,rgba(8,47,39,.15) 40%,rgba(8,47,39,.15) 60%,rgba(8,47,39,.7) 100%)}
+/* text centrerad på x 540, lika marginal 151 px; första raden y≈560 */
+.txt{position:absolute;left:151px;width:778px;text-align:center}
+#rubrik{top:520px;font-family:Anton;font-size:150px;line-height:.98;color:#F8F4EC;text-transform:uppercase;text-shadow:0 6px 30px rgba(0,0,0,.35)}
+#rubrik .guld{color:#D6A536}
+#under{top:880px;font-family:Inter;font-weight:600;font-size:44px;line-height:1.3;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+#under b{color:#D6A536}
+#logo{position:absolute;left:340px;top:1130px;width:400px;opacity:0}
+#plats{position:absolute;left:65px;top:1480px;font-family:Inter;font-weight:600;font-size:30px;color:#fff;display:flex;gap:10px;align-items:center;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.wd{display:inline-block;white-space:nowrap}.ch{display:inline-block;will-change:transform,opacity}
+</style></head><body>
+<div id="stage"><div id="cam">
+  <img id="bana" src="exempel-gk-assets/bana.jpg">
+  <div id="shade"></div>
+  <div id="rubrik" class="txt"><span class="wd">GOLFARE I</span><br><span class="wd guld">GÖTEBORG?</span></div>
+  <div id="under" class="txt">Spela <b>Sankt Jörgen</b><br>och fler banor nära dig</div>
+  <img id="logo" src="exempel-gk-assets/logo-final.png">
+</div>
+<div id="plats"><svg width="26" height="32" viewBox="0 0 24 30"><path d="M12 0C5.4 0 0 5.2 0 11.7 0 20.5 12 30 12 30s12-9.5 12-18.3C24 5.2 18.6 0 12 0zm0 16a4.5 4.5 0 110-9 4.5 4.5 0 010 9z" fill="#fff"/></svg>Sankt Jörgen Park Golf</div>
+</div>
+<svg width="0" height="0" style="position:absolute"><defs id="fx"></defs></svg>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+const W=1080,H=1920,DUR=7.4,q=new URLSearchParams(location.search);
+const $=s=>document.querySelector(s);
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);$('#stage').style.transform=`translate(${(innerWidth-W*s)/2}px,${(innerHeight-H*s)/2}px) scale(${s})`}
+addEventListener('resize',fit);fit();
+// riktad rörelseoskärpa (Bang Motion: feGaussianBlur med separat x/y)
+let fc=0;function blurTween(tl,el,at,from,dur,ax=.08,ay=1){const id='mb'+fc++,NS='http://www.w3.org/2000/svg';
+ const f=document.createElementNS(NS,'filter');f.id=id;f.setAttribute('x','-20%');f.setAttribute('y','-50%');f.setAttribute('width','140%');f.setAttribute('height','200%');
+ const g=document.createElementNS(NS,'feGaussianBlur');f.appendChild(g);$('#fx').appendChild(f);const o={v:from};
+ tl.set(el,{filter:`url(#${id})`},at);tl.to(o,{v:0,duration:dur,ease:'power4.out',onUpdate(){g.setAttribute('stdDeviation',`${o.v*ax} ${o.v*ay}`)}},at);tl.set(el,{filter:'none'},at+dur)}
+function split(el){const out=[];el.querySelectorAll('.wd').forEach(w=>{const t=w.textContent;w.textContent='';for(const c of t){const s=document.createElement('span');s.className='ch';s.textContent=c===' '?' ':c;w.appendChild(s);out.push(s)}});return out}
+const chars=split($('#rubrik'));
+const tl=gsap.timeline({paused:true});
+// kameran: kontinuerlig push-in + pan över banan genom hela filmen (aldrig stillastående)
+tl.fromTo('#cam',{scale:1.18,x:60},{scale:1.0,x:-40,duration:DUR,ease:'sine.inOut'},0);
+tl.fromTo('#bana',{x:0},{x:-260,duration:DUR,ease:'none'},0);
+// rubriken reser sig ur scenen tecken för tecken
+tl.fromTo(chars,{opacity:0,yPercent:60,scaleY:1.45},{opacity:1,yPercent:0,scaleY:1,duration:.8,ease:'power4.out',stagger:.035},.25);
+blurTween(tl,'#rubrik',.25,30,1.1);
+// underraden (läsregel: 41 tecken -> 3,5+0,9 s)
+tl.fromTo('#under',{opacity:0,y:40},{opacity:1,y:0,duration:.6,ease:'power3.out'},2.2);
+tl.fromTo('#under b',{color:'#ffffff'},{color:'#D6A536',duration:.4},2.6);
+// texten trycks bakåt i djupet när loggan landar – samma värld, ingen bildbytesövergång
+tl.to(['#rubrik','#under'],{y:-90,duration:1.2,ease:'power2.inOut'},5.3);
+tl.fromTo('#logo',{opacity:0,scale:1.6,y:40},{opacity:1,scale:1,y:-60,duration:.9,ease:'expo.out'},5.5);
+tl.fromTo('#plats',{opacity:0,x:-20},{opacity:1,x:0,duration:.5},.4);
+window.OPENER={W,H,DURATION:DUR,tl,ready:false,seek(t){tl.pause(t,false)}};
+Promise.all([document.fonts.ready,new Promise(r=>{const i=$('#bana');i.complete?r():i.onload=r})]).then(()=>{window.OPENER.ready=true;if(q.has('clean'))return;
+ tl.eventCallback('onComplete',()=>tl.play(0));tl.play(0);
+ addEventListener('keydown',e=>{if(e.key==='r')tl.play(0);if(e.code==='Space')tl.paused()?tl.play():tl.pause()})});
+</script></body></html>

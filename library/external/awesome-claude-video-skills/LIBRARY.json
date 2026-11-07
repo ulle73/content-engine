@@ -144,13 +144,13 @@
         "hyperframes"
       ],
       "path": "https://github.com/bangtutorial/bang-motion",
-      "use": "",
+      "use": "Se kitet bang-motion (.claude/skills/bang-motion/SKILL.md)",
       "requires": [],
       "cost": "free",
       "status": "unverified",
       "verified_at": null,
       "preview": null,
-      "notes": "Licens: MIT · 576 ★ · senast pushad 2026-09-15 · säkerhetsbetyg SAFE (Agent Skills Hub)."
+      "notes": "Licens: MIT · 576 ★ · senast pushad 2026-09-15 · säkerhetsbetyg SAFE (Agent Skills Hub). · Importerad 2026-11-07 som kit library/kits/bang-motion (skill /bang-motion, 53 poster) – använd den i stället."
     },
     {
       "id": "ext.awesome-claude-video-skills.showtime",
