@@ -101,6 +101,10 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 Automatiskt i bygget: läsregeln, samma texthöjd, ljudsynk (ljud aldrig före bild – mät ansatsen vid varje
 nyckelmoment), att musiken slutar där den ska, loudness (-14 LUFS, topp ≤ -1 dBTP), längd.
 Sedan kritikloopen i `skills/studio` (kontaktkarta, mobilvy, strips runt snabba moment).
+Tips (inte spärr): **känns det som ett bildspel?** Kör anti-PPT-testet från Bang Motion
+(`bang-motion.prompt.anti-ppt-test`, `.claude/skills/bang-motion/SKILL.md`): scener som bara tänds/släcks, Ken Burns
+som enda rörelse, tre textnivåer per scen och fade som enda övergång är tecken på det. Bygg om med en
+sammanhängande värld och en kamera som rör sig (2026-11-07).
 Säg alltid vad som **inte** är kontrollerat, t.ex. "jag har inte lyssnat".
 
 ## 5. Feedback blir regel – direkt

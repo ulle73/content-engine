@@ -1,0 +1,1683 @@
+{
+ "kit": "bang-motion",
+ "title": "Bang Motion (filmisk motion graphics i webbläsaren, anti-slides)",
+ "source": {
+  "name": "bangtutorial/bang-motion v1.19.0 (c1aa65e)",
+  "url": "https://github.com/bangtutorial/bang-motion",
+  "license": "MIT"
+ },
+ "items": [
+  {
+   "id": "bang-motion.skill.bang-motion",
+   "name": "Bang Motion – filmisk motion graphics i webbläsaren (skill)",
+   "type": "skill",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "En sammanhängande värld, kamera som rör sig och levande text i stället för bildspel. Openers, promos, kinetisk typografi och sex explainerstilar; en index.html renderas bildruta för bildruta till MP4.",
+   "tags": [
+    "bang-motion",
+    "opener",
+    "promo",
+    "kinetic-typography",
+    "explainer",
+    "anti-slides",
+    "gsap",
+    "three.js",
+    "cinematic",
+    "9:16"
+   ],
+   "path": ".claude/skills/bang-motion/SKILL.md",
+   "use": "Skill /bang-motion – t.ex. 'opener 15 s, kinetisk typografi, Golfare i Malmö?'",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.skill.bang-motion.jpg",
+    "video": "library/previews/bang-motion.skill.bang-motion.mp4"
+   },
+   "notes": "Verifierad 2026-11-07: GK-test 9:16 (assets/exempel-gk-9x16.html) exporterad till 1080×1920 MP4, 222 bildrutor, avkodad och granskad. Originalreferenserna är på indonesiska."
+  },
+  {
+   "id": "bang-motion.starter.opener",
+   "name": "Bang Motion-startfil: Opener (Three.js, kamerarigg, textanimationer)",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Mörk Three.js-scen med stjärnor, rutnät, bloom, kamerarigg och färdiga textanimationer; byggs om efter varumärket.",
+   "tags": [
+    "bang-motion",
+    "opener",
+    "promo",
+    "three.js",
+    "kinetic-typography"
+   ],
+   "path": ".claude/skills/bang-motion/assets/starter-opener.html",
+   "use": "cp .claude/skills/bang-motion/assets/starter-opener.html work/bang-motion/<projekt>/index.html; sätt W=1080,H=1920; run.sh snap/export",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.starter.opener.jpg"
+   },
+   "notes": "Renderad med run.sh snap (t=3 s) och granskad 2026-11-07 – visar startfilens platshållare (GANTI), inte en färdig film."
+  },
+  {
+   "id": "bang-motion.starter.explainer",
+   "name": "Bang Motion-startfil: Explainer: kontinuerlig handling",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Flödande vektorvärld där ett subjekt aldrig lämnar bild och kameran byter vinkel; siffror och kartor lever i världen.",
+   "tags": [
+    "bang-motion",
+    "explainer",
+    "continuous-action",
+    "process",
+    "route"
+   ],
+   "path": ".claude/skills/bang-motion/assets/starter-explainer.html",
+   "use": "cp .claude/skills/bang-motion/assets/starter-explainer.html work/bang-motion/<projekt>/index.html; sätt W=1080,H=1920; run.sh snap/export",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.starter.explainer.jpg"
+   },
+   "notes": "Renderad med run.sh snap (t=3 s) och granskad 2026-11-07 – visar startfilens platshållare (GANTI), inte en färdig film."
+  },
+  {
+   "id": "bang-motion.starter.explainer-kartun",
+   "name": "Bang Motion-startfil: Explainer: tecknat kollage",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Krämfärgat papper, platta illustrationsurklipp, färgpiller och handskrift; kameran glider genom kollaget.",
+   "tags": [
+    "bang-motion",
+    "explainer",
+    "cartoon",
+    "collage",
+    "paper",
+    "education"
+   ],
+   "path": ".claude/skills/bang-motion/assets/starter-explainer-kartun.html",
+   "use": "cp .claude/skills/bang-motion/assets/starter-explainer-kartun.html work/bang-motion/<projekt>/index.html; sätt W=1080,H=1920; run.sh snap/export",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.starter.explainer-kartun.jpg"
+   },
+   "notes": "Renderad med run.sh snap (t=3 s) och granskad 2026-11-07 – visar startfilens platshållare (GANTI), inte en färdig film."
+  },
+  {
+   "id": "bang-motion.starter.explainer-jurnalisme",
+   "name": "Bang Motion-startfil: Explainer: visuell journalistik",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Svart botten, riktiga foton med källtagg, överstrykningspenna och streckade anteckningar.",
+   "tags": [
+    "bang-motion",
+    "explainer",
+    "journalism",
+    "news",
+    "photo",
+    "annotation"
+   ],
+   "path": ".claude/skills/bang-motion/assets/starter-explainer-jurnalisme.html",
+   "use": "cp .claude/skills/bang-motion/assets/starter-explainer-jurnalisme.html work/bang-motion/<projekt>/index.html; sätt W=1080,H=1920; run.sh snap/export",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.starter.explainer-jurnalisme.jpg"
+   },
+   "notes": "Renderad med run.sh snap (t=3 s) och granskad 2026-11-07 – visar startfilens platshållare (GANTI), inte en färdig film."
+  },
+  {
+   "id": "bang-motion.starter.explainer-katalog",
+   "name": "Bang Motion-startfil: Explainer: vit katalog",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Vitt rutnät, produkturklipp, blandad typografi och klotter – för produkter och varumärken.",
+   "tags": [
+    "bang-motion",
+    "explainer",
+    "catalog",
+    "product",
+    "white",
+    "cutout"
+   ],
+   "path": ".claude/skills/bang-motion/assets/starter-explainer-katalog.html",
+   "use": "cp .claude/skills/bang-motion/assets/starter-explainer-katalog.html work/bang-motion/<projekt>/index.html; sätt W=1080,H=1920; run.sh snap/export",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.starter.explainer-katalog.jpg"
+   },
+   "notes": "Renderad med run.sh snap (t=3 s) och granskad 2026-11-07 – visar startfilens platshållare (GANTI), inte en färdig film."
+  },
+  {
+   "id": "bang-motion.starter.explainer-sketsa",
+   "name": "Bang Motion-startfil: Explainer: vintage-skiss",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Sepiapapper, gravyrer, klassisk serif och rostfärgade anteckningar – historia och biografi.",
+   "tags": [
+    "bang-motion",
+    "explainer",
+    "vintage",
+    "sepia",
+    "history",
+    "serif"
+   ],
+   "path": ".claude/skills/bang-motion/assets/starter-explainer-sketsa.html",
+   "use": "cp .claude/skills/bang-motion/assets/starter-explainer-sketsa.html work/bang-motion/<projekt>/index.html; sätt W=1080,H=1920; run.sh snap/export",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.starter.explainer-sketsa.jpg"
+   },
+   "notes": "Renderad med run.sh snap (t=3 s) och granskad 2026-11-07 – visar startfilens platshållare (GANTI), inte en färdig film."
+  },
+  {
+   "id": "bang-motion.starter.explainer-panggung",
+   "name": "Bang Motion-startfil: Explainer: tecknad scen",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "En levande scen per avsnitt, ledade figurer, ingen bildtext; kameran stannar inne i scenen.",
+   "tags": [
+    "bang-motion",
+    "explainer",
+    "cartoon",
+    "characters",
+    "stage",
+    "education"
+   ],
+   "path": ".claude/skills/bang-motion/assets/starter-explainer-panggung.html",
+   "use": "cp .claude/skills/bang-motion/assets/starter-explainer-panggung.html work/bang-motion/<projekt>/index.html; sätt W=1080,H=1920; run.sh snap/export",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.starter.explainer-panggung.jpg"
+   },
+   "notes": "Renderad med run.sh snap (t=3 s) och granskad 2026-11-07 – visar startfilens platshållare (GANTI), inte en färdig film."
+  },
+  {
+   "id": "bang-motion.style.cinematic-dark",
+   "name": "Bang Motion-stil: Cinematic dark",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: nästan svart gradient, partiklar, bloom bara på objekt; fet grotesk; push-through och ljus framför linsen. Passar kreativa verktyg, gaming, tech. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "cinematic-dark"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.style.poster-color-block",
+   "name": "Bang Motion-stil: Poster color-block",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: stora solida färgfält som byts per scen, ultrafet beskuren display-typ; blockwipes, text som slår i bildkanten. Passar appar, musik, event. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "poster-color-block"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.style.editorial-light",
+   "name": "Bang Motion-stil: Editorial light",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: vitt/kräm, luft, hårfina linjer; display-serif + liten grotesk; lugna glid, linjer som ritas. Passar produktivitet, finans, SaaS. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "editorial-light"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.style.paper-print",
+   "name": "Bang Motion-stil: Paper & print",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: papperstextur, kollage, stämplar, tejp; handskrift + serif; föremål som flyger in och landar. Passar utbildning, community, mat. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "paper-print"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.style.retro-analog",
+   "name": "Bang Motion-stil: Retro / analog",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: blekta färger, korn, scanlines; 70–90-talsgeometri; kontrollerad glitch, grov zoom, frys. Passar nostalgi, musik, underhållning. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "retro-analog"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.style.brutalist-mono",
+   "name": "Bang Motion-stil: Brutalist mono",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: svartvitt, hårt rutnät; monospace + condensed; hårda klipp, block som flyttas, blinkande markör. Passar utvecklarverktyg. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "brutalist-mono"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.style.pastel-playful",
+   "name": "Bang Motion-stil: Pastel playful",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: staplade pasteller, stora runda former; tung rundad sans; elastisk studs. Passar barn, hälsa, livsstil. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "pastel-playful"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.style.luxury-dark",
+   "name": "Bang Motion-stil: Luxury dark",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: svart + guld/brons, mjuka skuggor; hög spärrad serif; slow motion, svepande ljus, djup. Passar mode, bil, fastighet. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "luxury-dark"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.style.flat-pop-photo",
+   "name": "Bang Motion-stil: Flat pop med foton",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: neutral ljus bas som växlar med solida varumärkesfält; rundad fet sans + jätteord; urklipp som poppar in, klistermärken. Passar konsumentappar, fintech, e-handel. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "flat-pop-photo"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.style.grainy-gradient",
+   "name": "Bang Motion-stil: Grainy gradient",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Stilriktning: djup bas, mättade glödande former, fint korn; liten ren grotesk; lager som öppnas, kameran genom formen. Passar tech, AI, musik, lanseringar. Härleds ur varumärket via stilbriefen.",
+   "tags": [
+    "bang-motion",
+    "style",
+    "art-direction",
+    "grainy-gradient"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Välj i stilbriefen (ORIGINAL-SKILL.md › Arah gaya); kombinera med ett koncept",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Bara beskrivning (ingen egen kod). Upphovspersonens exempelbilder i library/kits/bang-motion/gallery/ (fiktiva varumärken)."
+  },
+  {
+   "id": "bang-motion.concept.01-one-continuous-shot",
+   "name": "Bang Motion-koncept 1: One continuous shot",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 1: One continuous shot. Passar kreativa verktyg, hårdvara, platser. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.02-ren-typografi",
+   "name": "Bang Motion-koncept 2: Ren typografi",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 2: Ren typografi. Passar starka taglines, event, releaser. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.03-problem-borta",
+   "name": "Bang Motion-koncept 3: Problem → borta",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 3: Problem → borta. Passar produktivitet, verktyg. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.04-fore-efter",
+   "name": "Bang Motion-koncept 4: Före / efter",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 4: Före / efter. Passar redigering, filter, optimering. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.05-resa-inuti-ui-t",
+   "name": "Bang Motion-koncept 5: Resa inuti UI:t",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 5: Resa inuti UI:t. Passar appar med distinkt UI. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.06-produktmakro",
+   "name": "Bang Motion-koncept 6: Produktmakro",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 6: Produktmakro. Passar hårdvara, förpackning, mat & dryck, mode. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.07-objektmetafor",
+   "name": "Bang Motion-koncept 7: Objektmetafor",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 7: Objektmetafor. Passar säkerhet, moln, finans. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.08-levande-siffra",
+   "name": "Bang Motion-koncept 8: Levande siffra",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 8: Levande siffra. Passar milstolpar, prestanda. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.09-en-funktion-helt-demonstrerad",
+   "name": "Bang Motion-koncept 9: En funktion, helt demonstrerad",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 9: En funktion, helt demonstrerad. Passar appar med en tydlig fördel. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.10-diegetisk-fraga-svar",
+   "name": "Bang Motion-koncept 10: Diegetisk fråga → svar",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 10: Diegetisk fråga → svar. Passar AI, sök, support. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.11-rytmiskt-kollage",
+   "name": "Bang Motion-koncept 11: Rytmiskt kollage",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 11: Rytmiskt kollage. Passar musik, livsstil, community. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.12-loggan-som-scen",
+   "name": "Bang Motion-koncept 12: Loggan som scen",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 12: Loggan som scen. Passar varumärken med stark logoform. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.13-objektstafett",
+   "name": "Bang Motion-koncept 13: Objektstafett",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 13: Objektstafett. Passar e-handel, leverans, marknadsplatser. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.14-varumarkessystem-showcase",
+   "name": "Bang Motion-koncept 14: Varumärkessystem-showcase",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 14: Varumärkessystem-showcase. Passar lanseringar, rebrands, communities. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.15-pastaende-hur-resultat",
+   "name": "Bang Motion-koncept 15: Påstående → hur → resultat",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 15: Påstående → hur → resultat. Passar nya funktioner, generativ AI. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.16-levande-ui-ekosystem",
+   "name": "Bang Motion-koncept 16: Levande UI-ekosystem",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 16: Levande UI-ekosystem. Passar B2B SaaS, AI-assistenter, arbetsflöden. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.17-flat-pop-med-foton",
+   "name": "Bang Motion-koncept 17: Flat pop med foton",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 17: Flat pop med foton. Passar konsumentappar, fintech, kampanjer. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.18-genom-gradientformerna",
+   "name": "Bang Motion-koncept 18: Genom gradientformerna",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 18: Genom gradientformerna. Passar tech, AI, säkerhet, premium. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.concept.19-produkttur-med-pastaenden",
+   "name": "Bang Motion-koncept 19: Produkttur med påståenden",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Öppningskoncept (struktur, inte skin) nr 19: Produkttur med påståenden. Passar SaaS, teamverktyg, dashboards. Levereras som principer + menyer för öppning, övergångar och avslut – aldrig manus att kopiera.",
+   "tags": [
+    "bang-motion",
+    "concept",
+    "opener",
+    "structure"
+   ],
+   "path": ".claude/skills/bang-motion/references/opener-konsep.md",
+   "use": "Välj 3 kandidater i stilbriefen, rekommendera 1 (opener-konsep.md › Menu konsep)",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.effect.directional-motion-blur",
+   "name": "Riktad rörelseoskärpa (feGaussianBlur x/y)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "SVG-filter med separat x/y-oskärpa som följer rörelsens riktning; släpps efter tweenen så inget rastreras om varje bildruta.",
+   "tags": [
+    "bang-motion",
+    "blur",
+    "motion-blur",
+    "text-in"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 2",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.skill.bang-motion.jpg",
+    "video": "library/previews/bang-motion.skill.bang-motion.mp4"
+   },
+   "notes": "Används i GK-testet 2026-11-07 (exempel-gk-9x16.html)."
+  },
+  {
+   "id": "bang-motion.text.text-in-family",
+   "name": "Textentréer: inUp/inDown/inLeft/inRight/inDepth/inMask/inWords/typeOn",
+   "type": "text",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Tecken-för-tecken-entréer med scaleY-sträckning och riktad oskärpa, maskavtäckning, ord som fälls upp, deterministisk skrivmaskin.",
+   "tags": [
+    "bang-motion",
+    "kinetic-typography",
+    "text-in",
+    "stagger"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 1, starter-opener.html",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.skill.bang-motion.jpg",
+    "video": "library/previews/bang-motion.skill.bang-motion.mp4"
+   },
+   "notes": "Används i GK-testet 2026-11-07 (exempel-gk-9x16.html)."
+  },
+  {
+   "id": "bang-motion.transition.push-through",
+   "name": "Kamera: push-through",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Kameran trycks in i ett objekt och kommer ut i nästa scen – motiverad övergång i stället för fade.",
+   "tags": [
+    "bang-motion",
+    "camera",
+    "transition",
+    "push"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 3",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.effect.shot-sizes",
+   "name": "Kamera: shotstorlekar mot element",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Kameran går till elementet (närbild → medel → total) så att scenen aldrig står still.",
+   "tags": [
+    "bang-motion",
+    "camera",
+    "framing"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 3b",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.effect.3d-pan-sentence",
+   "name": "3D-panorering längs en mening",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Kameran följer en lång mening i 3D-rummet i stället för att visa den på en gång.",
+   "tags": [
+    "bang-motion",
+    "camera",
+    "3d",
+    "kinetic-typography"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 4",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.transition.transition-menu",
+   "name": "Övergångsmeny (inte svepande block)",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Hierarki för scenövergångar: whip, klipp till instrument, objektburna övergångar, push-through.",
+   "tags": [
+    "bang-motion",
+    "transition",
+    "menu"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 4b–4c, opener-konsep.md › Menu transisi",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.transition.light-leak",
+   "name": "Ljusläcka mellan scener",
+   "type": "transition",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Mjuk ljusläcka som sveper växelvis från vänster/höger över klippet.",
+   "tags": [
+    "bang-motion",
+    "light-leak",
+    "transition",
+    "glow"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 5",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.background.background-motion-menu",
+   "name": "Bakgrundsrörelse – meny",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Andas-kamera, vandrande gradient, flytande blobbar, levande korn, ljussvep, långsamt roterande former, stigande partiklar – rörelse varje sekund utan föremål som korsar bilden.",
+   "tags": [
+    "bang-motion",
+    "background",
+    "ambient",
+    "grain"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 7c",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.background.grainy-gradient",
+   "name": "Grainy gradient-bakgrund",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Djup bas med glödande mättade former och fint filmkorn.",
+   "tags": [
+    "bang-motion",
+    "background",
+    "gradient",
+    "grain"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 7d",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.background.threejs-bg",
+   "name": "Three.js-bakgrund (state-driven)",
+   "type": "background",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Partiklar, rutnät och bloom styrda av tidslinjens tillstånd – deterministiskt och sökbart.",
+   "tags": [
+    "bang-motion",
+    "three.js",
+    "webgl",
+    "background"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 7, architecture.md",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.effect.video-layer",
+   "name": "Video som lager (i enhet, ram, mask)",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "Egna klipp placerade som footage i mobil/laptop/ram/mask, låsta till tidslinjen via seekFrame.",
+   "tags": [
+    "bang-motion",
+    "video",
+    "mockup",
+    "device"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 9b",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.effect.ui-mockup",
+   "name": "UI-mockups och ikonplattor",
+   "type": "effect",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "1:1"
+   ],
+   "engine": "html-playwright",
+   "description": "UI lyft ur produkten och använt i bild; kameran zoomar in där det klickas.",
+   "tags": [
+    "bang-motion",
+    "ui",
+    "saas",
+    "mockup"
+   ],
+   "path": ".claude/skills/bang-motion/references/techniques.md",
+   "use": "Se techniques.md § 8, opener-konsep.md › Animasi UI",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": "Recept i referensen; inte renderat separat."
+  },
+  {
+   "id": "bang-motion.prompt.anti-ppt-test",
+   "name": "Anti-PPT-testet (8 kontroller i koden)",
+   "type": "prompt",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Mekaniskt test före leverans: ≥3 sektioner som tänds/släcks, ingen bärande visuell tråd, 3 textnivåer per scen, Ken Burns som enda rörelse, bara fade-övergångar, fel startfil, miniatyrkamera, mall-skelett. En miss = bygg om.",
+   "tags": [
+    "bang-motion",
+    "qa",
+    "anti-slides",
+    "checklist",
+    "ppt"
+   ],
+   "path": ".claude/skills/bang-motion/references/ORIGINAL-SKILL.md",
+   "use": "Kör före varje leverans (ORIGINAL-SKILL.md › Larangan struktural, anti-ppt.md)",
+   "requires": [],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.tool.vo-pauses",
+   "name": "VO-pauser i webbläsaren (vo-pauses.html)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Hittar meningsgränser/stycken i en speakerfil med Web Audio och ger SEG/PARA för att tajma tidslinjen mot rösten.",
+   "tags": [
+    "bang-motion",
+    "voiceover",
+    "sync",
+    "audio"
+   ],
+   "path": ".claude/skills/bang-motion/scripts/vo-pauses.html",
+   "use": "Öppna i Chrome, välj ljudfil, kopiera SEG/PARA (alt. ffmpeg silencedetect)",
+   "requires": [
+    "chrome"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.tool.kepala-ekspresi",
+   "name": "Uttryck och blink för tecknade huvuden (kepala-ekspresi.py)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Gör glad/orolig/förvånad + blinkvarianter av ett platt tecknat huvud (PNG) lokalt, utan ny generering.",
+   "tags": [
+    "bang-motion",
+    "cartoon",
+    "character",
+    "expression"
+   ],
+   "path": ".claude/skills/bang-motion/scripts/kepala-ekspresi.py",
+   "use": "python kepala-ekspresi.py figur/kepala-namn.png (Pillow, numpy, opencv-python)",
+   "requires": [
+    "python:pillow",
+    "python:numpy",
+    "python:opencv-python"
+   ],
+   "cost": "free",
+   "status": "unverified",
+   "verified_at": null,
+   "preview": null,
+   "notes": ""
+  },
+  {
+   "id": "bang-motion.tool.run",
+   "name": "Rendera Bang Motion-sida: snap/export (run.sh)",
+   "type": "tool",
+   "medium": "video",
+   "formats": [
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Kontrollbilder vid valda sekunder eller full export bildruta för bildruta till MP4 med puppeteer-core och installerad Chrome.",
+   "tags": [
+    "bang-motion",
+    "render",
+    "export",
+    "snapshot"
+   ],
+   "path": ".claude/skills/bang-motion/scripts/run.sh",
+   "use": "bash .claude/skills/bang-motion/scripts/run.sh snap|export <projektmapp> …",
+   "requires": [
+    "chrome",
+    "node",
+    "ffmpeg"
+   ],
+   "cost": "free",
+   "status": "verified",
+   "verified_at": "2026-11-07",
+   "preview": {
+    "still": "library/previews/bang-motion.skill.bang-motion.jpg",
+    "video": "library/previews/bang-motion.skill.bang-motion.mp4"
+   },
+   "notes": "Använd för GK-testet och alla sju startfilerna 2026-11-07."
+  }
+ ]
+}
