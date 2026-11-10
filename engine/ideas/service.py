@@ -196,6 +196,15 @@ def sent_this_week(company) -> int:
     return IdeaCard.objects.filter(company=company, sent_at__gte=timezone.now() - timedelta(days=7)).count()
 
 
+def next_free_slot(company):
+    """When the week has room again: the oldest of the cards filling it turns 7 days old. None = room now."""
+    week = IdeaCard.objects.filter(company=company, sent_at__gte=timezone.now() - timedelta(days=7))
+    filling = list(week.order_by("-sent_at").values_list("sent_at", flat=True)[:weekly_max()])
+    if len(filling) < weekly_max():
+        return None
+    return filling[-1] + timedelta(days=7)
+
+
 def next_to_send(company) -> IdeaCard | None:
     """The best pitched card that clears the bar, if the week still has room. Older than 10 days → skipped."""
     stale = timezone.now() - timedelta(days=10)
@@ -330,5 +339,8 @@ def daily(company) -> dict:
     sent = None
     if card:
         sent = send(card)
+    free = next_free_slot(company)
     return {"pitched": [{"why": c.why, "fit": c.fit, "spin": c.spin} for c in made],
-            "sent": sent.why if sent else None, "errors": errors}
+            "sent": sent.why if sent else None, "errors": errors,
+            "waiting": IdeaCard.objects.filter(company=company, status="pitched", fit__gte=min_fit()).count(),
+            "week_full_until": free.isoformat() if free else None}

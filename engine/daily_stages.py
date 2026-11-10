@@ -1,6 +1,6 @@
 """Register future performance/outcomes/shadow stages here; GitHub only starts run_daily."""
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 from functools import partial
 
 from django.utils import timezone
@@ -346,7 +346,14 @@ def idea_units(company):
             data = service.daily(company)
         except ReviewError as exc:
             return Result("attention", f"Idékortet kunde inte skickas: {exc}"[:300])
-        sent = f" Skickat: {data['sent']}." if data["sent"] else " Inget kort skickat."
+        if data["sent"]:
+            sent = f" Skickat: {data['sent']}."
+        elif data["week_full_until"]:
+            until = timezone.localtime(datetime.fromisoformat(data["week_full_until"]))
+            sent = (f" Inget kort skickat – veckans {service.weekly_max()} kort är redan skickade, nästa går tidigast "
+                    f"{until.day}/{until.month} {until:%H:%M}. {data['waiting']} idéer väntar.")
+        else:
+            sent = f" Inget kort skickat – ingen idé nådde fit {service.min_fit()}."
         status = "attention" if data["errors"] and not data["pitched"] else "success"
         return Result(status, f"{len(data['pitched'])} nya idéer bedömda.{sent}"[:300], data)
 
