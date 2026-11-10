@@ -7,6 +7,11 @@ färdiga, snygga mallar och effekter och utgår från dem. Stilen är fri – br
 utgångsläge. Fakta i reklam kommer från faktabanken (`skills/golfkuponger-friskvard`).
 Arbetsfiler och renderingar läggs i `work/` (gitignorerat).
 
+**Bilder och klipp för Golfkuponger:** allt i `C:\Users\rydqv\Downloads\golfkuponger\` får användas i reklam
+(Jonas 2026-11-07) – `KLUBBAR/` (banfoton per klubb: `godkända-för-reklam` + `scrape`, ~360 klubbar), `golfbanor/`,
+`cards/` och stockklippen i `VIDEOS/`. Undantag: `KLUBBAR/raderade/` används aldrig, och `MOBILAPP/` är konfigfiler,
+inget bildmaterial. Fråga inte om rättigheterna. Kopiera det som en film behöver in i filmens egen mapp under `work/`.
+
 Inför **varje** video och karusell: välj bevisade tekniker (krok, retention, cta) ur teknikbanken enligt **`/teknik`**
 (`skills/teknik/SKILL.md`, `find.py --type technique`). Skickar någon en länk med en bra teknik/metod: lägg in den i
 teknikbanken enligt samma skill (`library/techniques/hamta.py`).
