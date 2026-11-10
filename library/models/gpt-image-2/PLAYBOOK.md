@@ -83,6 +83,19 @@ Avoid: extra text, added logos, watermark, licence plates.
   medium/high kvalitet. **Vår regel: all text läggs i HyperFrames, inte i bilden.**
 - **Iteration:** ren basprompt, en ändring per uppföljning; utforska i `low`, slutför i `medium`/`high`.
 
+## Golfkuponger – fotorealistiska golfbilder
+
+Använd de fem versionerade bildrecepten i `engine/creative_recipes.py` genom **Skapa bild → Mall**:
+Golfare, Golfsving, Svensk golfbana, Golfutrustning och Golfkampanj. Samma rekommendationer finns i
+[Golfrealism för AI-bilder](../../../docs/2026-10-28-golf-image-realism.md).
+Följ användarens stil, bygg fotorealism med synlig geometri och naturliga material,
+och lägg aldrig in overifierade varumärken, produkter eller verkliga golfbanedetaljer.
+
+Dessa recept har evidensnivå **HEURISTIC**: de är anpassade efter dokumentation och
+rapportens hypoteser, men vi har inte genomfört ett kontrollerat A/B-test av golfbilder.
+Modellvalet ändras **inte** automatiskt från den nu verifierade `gpt-image-2`.
+Nuvarande adapter tar en källbild och stöder ingen maskredigering i produktflödet.
+
 ## Startbild för video – tips
 
 - Generera i **målformatet** (9:16) från början – i2v behåller bildens inramning.
