@@ -39,6 +39,10 @@ En film består av:
    QA.md. Öppna bilden och kontrollera på riktigt – rapportera vad du såg, inte "ser bra ut".
 6. **Leverera:** filmens fil (`out/…-9x16.mp4`), vad som ändrats, QA-resultatet, och säg att ljud inte är avlyssnat.
    Uppdatera status i `work/FILMER.md` om något valts/godkänts.
+7. **Godkänd → Drive:** när Jonas har godkänt filen lägger han den i Drive-mappen
+   VIDEOS (GOLFKUPONGER/VIDEOS, GOLFKUPONGER/BILDER eller FAIV). n8n-flödet "CE – Ny fil i Drive → Discord" ser nya filer
+   inom 5 minuter och postar "Ny video i drive: {url}" i Discord #google-drive. Lägg aldrig utkast där – allt i mappen
+   räknas som färdigt.
 
 ## Regler som alltid gäller (källor: skills/video-regler, skills/ljud, skills/golfkuponger-brand, -friskvard)
 - Läsregeln: varje text syns ≥ max(5/6, tecken/12) + 0,9 s – renderingen stoppar annars.
