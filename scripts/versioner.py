@@ -107,9 +107,9 @@ def main(argv=None) -> int:
                     for p in filer:
                         namn = mapp.parent / f".{f['film']}__{v['namn']}__{p.name}"
                         if not namn.exists():
-                            import shutil; shutil.copy2(p, namn)
+                            import shutil; shutil.copyfile(p, namn)
                         r = subprocess.run([sys.executable, str(ROT / "scripts" / "drive_upload.py"), a.mapp, str(namn)])
-                        namn.unlink(missing_ok=True)
+                        os.chmod(namn, 0o666); namn.unlink(missing_ok=True)
                         if r.returncode:
                             raise va.ArkivFel(f"uppladdningen misslyckades: {p}")
                     gp = mapp / "granskning.json"
