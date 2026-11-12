@@ -39,6 +39,15 @@ En film består av:
    QA.md. Öppna bilden och kontrollera på riktigt – rapportera vad du såg, inte "ser bra ut".
 6. **Leverera:** filmens fil (`out/…-9x16.mp4`), vad som ändrats, QA-resultatet, och säg att ljud inte är avlyssnat.
    Uppdatera status i `work/FILMER.md` om något valts/godkänts.
+7. **Versioner (gäller alla filmer):** varje film som visas för Jonas blir en låst version i `work/<film>/versioner/vNN/`
+   (film, poster, kontaktark, byggunderlaget i `kalla/`, meta.json; kommentarer och status i granskning.json).
+   `make.sh` sparar automatiskt – sätt `ANDRING="vad som ändrats"` före bygget. Egna renderare:
+   `python scripts/versioner.py spara <film> <video.mp4> [fler format] -m "vad som ändrats" --av Claude`. Oförändrad film
+   ger ingen ny version. Jonas jämför och kommenterar i Content Engine → `/versioner/` (synkad uppspelning, gardin, A/B,
+   kommentarer på tidpunkt, godkänn). Öppna kommentarer blir nästa uppdrag: `versioner.py uppdrag <film> vNN`. Gå tillbaka
+   till en äldre version: `versioner.py aterstall <film> vNN` (underlaget hamnar i `fran-vNN/`, inget skrivs över).
+   `versioner.py kontroll` listar färdiga filmer som saknar version; `versioner.py samla` arkiverar dem;
+   `versioner.py backup` kopierar granskade versioner till Drive (mapp-id i `GK_DRIVE_VERSIONER_ID`).
 
 ## Regler som alltid gäller (källor: skills/video-regler, skills/ljud, skills/golfkuponger-brand, -friskvard)
 - Läsregeln: varje text syns ≥ max(5/6, tecken/12) + 0,9 s – renderingen stoppar annars.

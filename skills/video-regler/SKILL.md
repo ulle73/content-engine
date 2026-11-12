@@ -93,6 +93,9 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - Allt i `skills/ljud`: bara riktiga ljud, ljudprovning, effekter som accenter, -14 LUFS, stems.
 
 ### Leverans
+- **Varje leverans är en version (Jonas 2026-11-12):** allt som visas för Jonas sparas som låst version i
+  `work/<film>/versioner/` med en rad om vad som ändrats (`scripts/versioner.py spara … -m "…"`, automatiskt i `make.sh`).
+  Skriv aldrig över en version; Jonas jämför versionerna sida vid sida i Content Engine → `/versioner/`.
 - Film + stems (musik och effekter separat) + **manus** (`MANUS.md`: tidslinje med tider, text, bild, effekt,
   ljud, källor och licenser). Manuset skrivs från renderarens egna tider, inte ur minnet.
 
