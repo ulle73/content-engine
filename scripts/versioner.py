@@ -25,6 +25,19 @@ sys.path.insert(0, str(ROT))
 from engine import versionsarkiv as va  # noqa: E402
 
 
+def _las_env() -> None:
+    """GK_DRIVE_VERSIONER_ID m.m. ur .env (som drive_upload.py)."""
+    env = ROT / ".env"
+    if env.exists():
+        for rad in env.read_text(encoding="utf-8").splitlines():
+            if "=" in rad and not rad.lstrip().startswith("#"):
+                k, v = rad.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+
+_las_env()
+
+
 def main(argv=None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
