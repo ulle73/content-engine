@@ -47,7 +47,6 @@ Grafit `#2d2d2d`, vit `#ffffff`, signalröd `#ff1a1a` som accent. Ljuset självt
   whoosh på slidern; tic-tac under nedräkning. Musik: Mixkit "Driving Ambition" (100 BPM) efter tändningen,
   stressande puls före. Inga syntade ljud.
 - **Dolt rådjur/faror:** syns lätt för tydligt – rådjurszonen dämpad 0,55 godkändes (0,4 och 0,48 för tydligt).
-- Ta bort bilmärkens text och emblem i bild.
 
 ## Referenser
 Se Content Library och `work/references/` (Baja Designs natt-drönare, RIGID dag→natt, Ekstralys studio-reveal,

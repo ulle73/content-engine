@@ -1,0 +1,203 @@
+<!doctype html>
+<!-- Golfare i <stad>? – stillbild och två rörliga varianter ur samma fil.
+     ?v=1 slam med djup och guld · ?v=2 stadsnamnet snurrar. Innehållet kommer från window.ANNONS (sätts av rendera.mjs).
+     window.frame(t) är en ren funktion av t (sekunder). t = null ger slutläget, som är identiskt i båda varianterna
+     och blir stillbilden – så att stillbild, slam och snurr bara skiljer sig i rörelse. -->
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:Anton;src:url(assets/anton.woff2)}
+@font-face{font-family:Inter;font-weight:600;src:url(assets/inter-600.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(assets/inter-700.woff2)}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#082f27}
+#skak,#kam{position:absolute;inset:0}
+#kam{transform-origin:45% 40%}
+#foto{position:absolute;inset:0;width:1080px;height:1920px}
+#ton{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,20,15,.45) 0%,rgba(4,20,15,.18) 40%,rgba(4,20,15,0) 70%,rgba(4,20,15,.2) 100%)}
+.c{position:absolute;left:151px;right:151px;text-align:center}
+#rubrik{font-family:Anton;line-height:.98;color:#F8F4EC}
+.ord{display:inline-block;white-space:nowrap;--d:0;
+  text-shadow:calc(var(--d)*.12px) calc(var(--d)*.14px) 0 #0d4630,calc(var(--d)*.24px) calc(var(--d)*.28px) 0 #0c412c,
+  calc(var(--d)*.36px) calc(var(--d)*.42px) 0 #0a3b28,calc(var(--d)*.48px) calc(var(--d)*.56px) 0 #093524,
+  calc(var(--d)*.6px) calc(var(--d)*.7px) 0 #072f20,calc(var(--d)*.72px) calc(var(--d)*.84px) 0 #06291b,
+  calc(var(--d)*.84px) calc(var(--d)*.98px) 0 #042317,calc(var(--d)*.96px) calc(var(--d)*1.12px) 0 #031d13,
+  calc(var(--d)*1.08px) calc(var(--d)*1.26px) 0 #02180f,calc(var(--d)*1.2px) calc(var(--d)*1.4px) 0 #01140c,
+  calc(var(--d)*1.6px) calc(var(--d)*2.2px) calc(var(--d)*1.6px) rgba(0,12,6,.55)}
+/* Guldytan sträcker sig .3em ovanför versalhöjden så att prickar och ringar på Å/Ä/Ö också blir guld (Jonas 2026-10-28:
+   "prickarna över Ö blir vita"); grundtexten under är också guldfärgad om något ändå skulle sticka ut. */
+#sth{color:#D9A93C}
+.guld{position:absolute;left:0;top:-.3em;padding-top:.3em;text-shadow:none;
+  background:linear-gradient(100deg,#C8922A 0%,#F2D27A 38%,#FFF1C4 50%,#F2D27A 62%,#C8922A 100%);background-size:260% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.rad{display:block;position:relative;white-space:nowrap}
+#rulle{position:relative;display:inline-block;vertical-align:top}
+#rulle .namn{display:block;white-space:nowrap}
+#under{font-family:Inter;font-weight:600;color:#fff;font-size:40px;line-height:1.3}
+#under>span{display:inline-block;background:rgba(8,47,39,.82);padding:18px 28px;border-radius:14px}
+#under .w{display:inline-block}
+/* klubbrullen: klubbnamnen i regionen rullar förbi i guld och landar på den utvalda klubben */
+#krulle{display:inline-block;position:relative;overflow:hidden;height:1.3em;vertical-align:bottom;text-align:center}
+#krulle .kn{display:block;white-space:nowrap;color:#F2C75C;font-weight:700}
+#knapp{font-family:Inter;font-weight:700;font-size:38px}
+#knapp span{position:relative;display:inline-block;background:#fff;color:#082f27;padding:20px 44px;border-radius:999px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#ring{position:absolute;inset:0;border-radius:999px;border:4px solid #fff;opacity:0}
+#logga img{height:118px}
+/* banans namn med plats-ikon, smått nere till vänster – visar vilken bana bilden är (Jonas 2026-10-28) */
+#plats{position:absolute;left:65px;display:flex;align-items:center;gap:10px;font-family:Inter;font-weight:600;font-size:28px;
+  color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.65),0 0 2px rgba(0,0,0,.5);white-space:nowrap}
+#plats svg{width:26px;height:34px;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
+</style>
+</head>
+<body>
+<div id="skak">
+  <div id="kam"><img id="foto" alt=""></div>
+  <div id="ton"></div>
+  <div class="c" id="rubrik"></div>
+</div>
+<div class="c" id="under"><span></span></div>
+<div class="c" id="knapp"><span><b id="knapptext" style="font-weight:inherit"></b><i id="ring"></i></span></div>
+<div class="c" id="logga"><img src="assets/logo-final.png" alt=""></div>
+<div id="plats"><svg viewBox="0 0 24 32"><path fill="#fff" d="M12 0C5.4 0 0 5.3 0 11.9 0 20.8 12 32 12 32s12-11.2 12-20.1C24 5.3 18.6 0 12 0zm0 16.6a4.8 4.8 0 1 1 0-9.6 4.8 4.8 0 0 1 0 9.6z"/></svg><span id="bana"></span></div>
+<script>
+const A = window.ANNONS;   // { stad, rad1, underrad (med {klubb}), klubb, klubbrulle[], knapp, foto, rulle[], hojd }
+// format: 1920 = 9:16 (Reels/Stories), 1350 = 4:5 (feed) – samma innehåll, omkomponerat (Jonas 2026-10-30: alltid båda)
+const H = A.hojd || 1920;
+for (const el of [document.documentElement, document.body]) el.style.height = H + 'px';
+document.getElementById('foto').style.height = H + 'px';
+const V = +(new URLSearchParams(location.search).get('v') || 2);
+const $ = id => document.getElementById(id);
+const cl = (x, a = 0, b = 1) => Math.min(Math.max(x, a), b);
+const ut3 = x => 1 - Math.pow(1 - cl(x), 3), in4 = x => Math.pow(cl(x), 4);
+const studs = x => { x = cl(x); const c = 1.70158 * 1.3; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };   // ease-out-back
+const RAD2 = A.stad.toUpperCase() + '?';
+const STADER = [...A.rulle.map(s => s.toUpperCase()), RAD2];
+const KLUBBAR = [...(A.klubbrulle || []), A.klubb];
+const KNAPP = !!A.knapp;   // knappen i bild är borttagen som standard (Jonas 2026-10-28) – Metas egen knapp räcker
+window.TEXT = [A.rad1 + ' ' + RAD2, A.underrad.replace('{klubb}', A.klubb), ...(KNAPP ? [A.knapp] : [])];
+const GULD = s => `<span class="ord" id="sth" style="position:relative">${s}<span class="guld" id="sthg">${s}</span></span>`;
+
+$('foto').src = A.foto;
+$('knapptext').textContent = A.knapp || ''; if (!KNAPP) $('knapp').style.display = 'none';
+$('bana').textContent = A.bana || A.klubb;
+const [ord1, ...resten] = A.rad1.split(' ');
+// v2 byggs först som v1, mäts, och får sedan rullen – så att stadsnamnet landar på exakt samma pixel
+const r = $('rubrik');
+r.innerHTML = `<span class="rad"><span class="ord" id="o1">${ord1}</span> <span class="ord" id="o2">${resten.join(' ')}</span></span><span class="rad" id="rad2">${GULD(RAD2)}</span>`;
+// underraden: "Spela <klubbrulle>" på egen rad, resten radbryts under
+const [fore, efter] = A.underrad.split('{klubb}'), ord = s => s.trim().split(/\s+/).filter(Boolean).map(w => `<span class="w">${w}</span>`).join(' ');
+$('under').firstElementChild.innerHTML = `${ord(fore)} <span class="w"><span id="krulle">${KLUBBAR.map(k => `<span class="kn">${k}</span>`).join('')}</span></span><br>${ord(efter)}`;
+
+// ---- layout: rubriken fyller safe zone-bredden, första raden y 540, loggan ovanför
+const bredd = el => { const s = document.createRange(); s.selectNodeContents(el); return s.getBoundingClientRect().width; };
+function layout() {
+  // största storlek där bredaste raden ryms (760 px) och allt slutar ovanför safe zone-gränsen y 1250;
+  // sedan centreras hela blocket (logga, rubrik, underrad[, knapp]) i bilden, så långt säkra ytan tillåter (Jonas 2026-10-28)
+  let top = 540; r.style.top = top + 'px';
+  const delar = KNAPP ? ['under', 'knapp'] : ['under'];
+  const w = () => Math.max(bredd($('o1').parentElement), bredd($('sth')));
+  const stapla = () => { r.style.top = top + 'px'; let y = top + r.offsetHeight + 44;
+    for (const id of delar) { $(id).style.top = y + 'px'; y += $(id).offsetHeight + 44; } return y - 44; };
+  const kr = $('krulle');   // klubbrullen får den utvalda klubbens bredd i slutläget; bredden glider mellan namnen under rullningen
+  window.kw = [...kr.children].map(bredd); window.kh = kr.firstElementChild.offsetHeight; kr.style.width = window.kw.at(-1) + 'px';
+  let fs = 220; r.style.fontSize = fs + 'px';
+  // Jonas 2026-10-28: banans namn längre ner (~y 1500–1550), under säkra ytan – kan delvis skymmas av bildtexten i Reels
+  // 4:5: inget plattforms-UI över bilden – banans namn nere till vänster (y ~1242) och blocket strax ovanför mitten (mer luft upptill)
+  const pl = $('plats'); pl.style.top = (A.plats_y ?? (H === 1920 ? 1500 : H - 108)) + 'px'; const tak = H === 1920 ? 1240 : H - 110;
+  while ((w() > 760 || stapla() > tak) && fs > 60) r.style.fontSize = (--fs) + 'px';
+  const lh = $('logga').offsetHeight, blockTopp = top - 30 - lh, h = stapla() - blockTopp;
+  const mitt = Math.min(A.mitt_y ?? (H === 1920 ? 960 : Math.round(H * 0.47)), tak - h / 2);   // blockets mitt: bildens mitt, eller så långt ner som säkra ytan tillåter
+  top += Math.round(mitt - (blockTopp + h / 2)); stapla();
+  $('logga').style.top = (top - 30 - lh) + 'px';
+  if (V === 2) {
+    const ref = $('sth').getBoundingClientRect();
+    $('rad2').innerHTML = '<span id="rulle">' + STADER.slice(0, -1).map(s => `<span class="namn ord">${s}</span>`).join('') + `<span class="namn">${GULD(RAD2)}</span></span>`;
+    const ru = $('rulle'); window.radH = ru.firstElementChild.offsetHeight; ru.style.height = window.radH + 'px'; ru.style.width = ref.width + 'px';
+    window.frame(null);   // slutläget (rullen nere på stadsnamnet) innan den mäts; bara fotot zoomar, så texten påverkas inte
+    const nu = $('sth').getBoundingClientRect(); ru.style.left = (ref.left - nu.left) + 'px'; ru.style.top = (ref.top - nu.top) + 'px';
+  }
+  window.matt = Object.fromEntries(['rubrik', 'under', ...(KNAPP ? ['knapp'] : []), 'logga', 'plats'].map(id => {
+    const el = id === 'rubrik' || id === 'plats' ? $(id) : $(id).firstElementChild; const b = el.getBoundingClientRect();
+    return [id, { x0: Math.round(b.left), x1: Math.round(b.right), y0: Math.round(b.top), y1: Math.round(b.bottom) }];
+  }));
+}
+
+// ---- tidslinje (sekunder). Scenen slutar när knappen har landat – ingen tyst, stillastående tid före slutbilden
+// (Jonas 2026-10-28: "från sekund 7–10 är det helt tyst och bilden står stilla"). Läsregeln kontrolleras i rendera.mjs.
+// FORSPRANG: bilden och musiken får gå en stund innan första ordet slår ner, så att kören hinner börja från en frasstart
+// (Jonas 2026-10-28: "den börjar mitt i en halleluja, låt det gå 0,5 s mer innan texten börjar landa")
+// Per variant så att Halleluja-kören börjar från spårets första ton: B1 0,5 s, B2 0,68 s (andra frasen 2,48 s = landningen)
+const FORSPRANG = (typeof A.forsprang === 'object' ? A.forsprang?.[V] : A.forsprang) ?? (V === 1 ? 0.5 : 0.68);
+const SLAG = (V === 1 ? [0.15, 0.55, 0.95] : [0.15, 0.15, 1.75]).map(x => x + FORSPRANG);   // ord 1 · ord 2 · stadsnamnet landar
+window.FORSTA_TEXT = 0;
+window.LANDNING = SLAG[2];   // stadsnamnet landar – musikens träff läggs här
+const tecken = window.TEXT.join('').length;
+const UNDER_IN = SLAG[2] + 0.75, LOGGA_IN = 0.05, GLANS = SLAG[2] + 0.4;
+// klubbrullen: varje klubb visas KLUBB_TID s (0,6 s, varav ett snabbt 0,1 s-svep till nästa) och landar på den utvalda klubben,
+// sedan knappen. 5 klubbar à 0,6 s så att Halleluja-kören räcker hela vägen (Jonas 2026-10-28).
+const KLUBB_TID = A.klubb_tid ?? 0.6, BYTE = 0.1;
+const KR0 = UNDER_IN + 0.35, KR1 = KR0 + (KLUBBAR.length - 1) * KLUBB_TID, KNAPP_IN = KR1 + 0.35;
+function klubbPos(t) {
+  const q = (t - KR0) / KLUBB_TID; if (q <= 0) return 0;
+  const i = Math.floor(q), f = (q - i) * KLUBB_TID, sista = KLUBBAR.length - 1;
+  if (i >= sista) return sista;
+  return f < KLUBB_TID - BYTE ? i : i + ut3((f - (KLUBB_TID - BYTE)) / BYTE);
+}
+window.LANGD = A.langd || KNAPP_IN + 0.8;   // sista klubben har stått ~1,15 s (och ev. knapp poppat) → svingloggan
+
+function skakning(t) {   // avklingande kameraryck på varje slag
+  let sx = 0, sy = 0, s = 0;
+  [...new Set(SLAG)].forEach((h, k) => { const dt = t - h; if (dt < 0 || dt > 0.6) return; const e = Math.exp(-dt * 9) * (10 + 6 * k);
+    sx += Math.sin(dt * 61 + k * 3) * e; sy += Math.cos(dt * 53 + k * 5) * e; s += Math.exp(-dt * 14) * 0.02 * (k + 1) / 2; });
+  return `translate(${sx.toFixed(2)}px,${sy.toFixed(2)}px) scale(${(1 + s).toFixed(4)})`;
+}
+const djup = (t, t0, d = 46, vila = 22) => { const q = t - t0; return q < 0 ? 0 : q < 0.09 ? d * ut3(q / 0.09) : vila + (d - vila) * (1 - ut3((q - 0.09) / 0.5)); };
+function slam(el, t, t0, fran = 2.3) {   // ordet faller in och landar på t0; djupet poppar och sätter sig
+  const p = cl((t - (t0 - 0.16)) / 0.16);
+  el.style.opacity = t < t0 - 0.16 ? 0 : 1;
+  el.style.transform = `translateY(${(1 - in4(p)) * -60}px) scale(${fran + (1 - fran) * in4(p)})`;
+  el.style.filter = p > 0 && p < 1 ? `blur(${(1 - p) * 6}px)` : 'none';
+  el.style.setProperty('--d', djup(t, t0));
+}
+
+window.frame = t => {
+  const slut = t == null; if (slut) t = window.LANGD;
+  $('kam').style.transform = `scale(${1 + 0.07 * (t / window.LANGD)})`;
+  $('skak').style.transform = slut ? 'none' : skakning(t);
+  slam($('o1'), t, SLAG[0], 1.35); slam($('o2'), t, SLAG[1], V === 1 ? 2.3 : 1.35);
+  if (V === 1) slam($('sth'), t, SLAG[2]);
+  else if ($('rulle')) {   // rullen: snabb start, bromsar in och landar på stadsnamnet med en liten studs; sedan som v1
+    const ru = $('rulle'), n = STADER.length - 1, h = window.radH, t0 = SLAG[0] + 0.3, t1 = SLAG[2];
+    const p = cl((t - t0) / (t1 - t0)), pos = t < t0 ? 0 : t < t1 ? n * ut3(p) : n;
+    const e = t - t1, studsa = e > 0 && e < 0.5 ? Math.sin(e * 18) * Math.exp(-e * 8) * 0.12 : 0;
+    const landat = t >= t1 + 0.5;
+    ru.style.opacity = t < t0 ? 0 : 1; ru.style.overflow = landat ? 'visible' : 'hidden';
+    [...ru.children].forEach((el, i) => { el.style.transform = `translateY(${-(pos + studsa) * h}px)`;
+      el.style.filter = t > t0 && t < t1 ? `blur(${4 * (1 - p)}px)` : 'none'; el.style.opacity = landat && i < n ? 0 : 1; });
+    $('sth').style.setProperty('--d', djup(t, t1));
+  }
+  $('sthg').style.opacity = t >= SLAG[2] ? 1 : 0;
+  $('sthg').style.backgroundPosition = `${100 - 100 * ut3((t - GLANS) / 0.6)}% 0`;
+  // underraden ord för ord, knappen poppar med studs och en ring, loggan tonar in
+  [...$('under').querySelectorAll('.w')].forEach((w, i) => { const p = ut3((t - UNDER_IN - 0.15 - i * 0.05) / 0.3);
+    w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 18}px)`; });
+  {   // klubbrullen: stannar på varje klubb (kort först, längre mot slutet) så att namnen hinner läsas, landar med studs
+    const kr = $('krulle'), n = KLUBBAR.length - 1, pos = klubbPos(t);
+    const e = t - KR1, studsa = e > 0 && e < 0.5 ? Math.sin(e * 18) * Math.exp(-e * 8) * 0.12 : 0;
+    const i0 = Math.min(Math.floor(pos), n), i1 = Math.min(i0 + 1, n), f = pos - i0;
+    kr.style.width = (window.kw[i0] + (window.kw[i1] - window.kw[i0]) * f) + 'px';
+    [...kr.children].forEach(el => { el.style.transform = `translateY(${-(pos + studsa) * window.kh}px)`; });
+    const blink = e > 0 && e < 0.6 ? Math.sin(Math.PI * e / 0.6) : 0;   // den utvalda klubben blinkar ljusare guld när den landar
+    kr.lastElementChild.style.color = blink ? `rgb(${242 + 13 * blink},${199 + 50 * blink},${92 + 120 * blink})` : '';
+  }
+  const pl = ut3((t - UNDER_IN) / 0.35); $('under').firstElementChild.style.opacity = pl; $('under').firstElementChild.style.transform = `scaleX(${0.6 + 0.4 * pl})`;
+  const k = t < KNAPP_IN ? 0 : studs((t - KNAPP_IN) / 0.45);
+  $('knapp').style.opacity = t < KNAPP_IN ? 0 : 1; $('knapp').firstElementChild.style.transform = `scale(${k})`;
+  const rp = cl((t - KNAPP_IN - 0.25) / 0.5); $('ring').style.opacity = rp > 0 && rp < 1 ? 0.8 * (1 - rp) : 0; $('ring').style.transform = `scale(${1 + 0.35 * rp})`;
+  const lp = ut3((t - LOGGA_IN) / 0.5); $('logga').style.opacity = lp; $('logga').style.transform = `scale(${0.85 + 0.15 * lp})`;
+};
+const bilder = [...document.images].map(i => i.complete && i.naturalWidth ? 1 : new Promise(r => { i.onload = r; i.onerror = r; }));
+window.klar = document.fonts.ready.then(() => Promise.all(bilder)).then(() => { layout(); window.frame(null); return window.matt; });
+</script>
+</body>
+</html>

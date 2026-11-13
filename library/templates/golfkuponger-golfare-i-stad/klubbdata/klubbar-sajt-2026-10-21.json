@@ -1,0 +1,3608 @@
+[
+  {
+    "name": "Abbekås GK",
+    "city": "Abbekås",
+    "country": "",
+    "url": "https://abbekasgk.se/",
+    "region": "Skåne",
+    "slug": "abbekas-gk",
+    "active": true,
+    "description": "Abbekås GK ligger några hundra meter från havet på Skånes sydkust och har en linksinspirerad bana på sandjord.",
+    "fact_source": "https://abbekasgk.se/kontakt/",
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Albatross GK",
+    "city": "Hisings Backa",
+    "country": "",
+    "url": "https://www.albatrossgolfklubb.se/",
+    "region": "Göteborgsområdet",
+    "slug": "albatross-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ale GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.alegk.com/",
+    "region": "Göteborgsområdet",
+    "slug": "ale-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Alec´s Golf",
+    "city": "",
+    "country": "",
+    "url": "https://www.alecsgolf.se/",
+    "region": "Stockholmsområdet",
+    "slug": "alec-s-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Alingsås GK",
+    "city": "",
+    "country": "",
+    "url": "https://alingsasgk.se/",
+    "region": "Göteborgsområdet",
+    "slug": "alingsas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Allerum Golf",
+    "city": "Allerum",
+    "country": "Sverige",
+    "url": "https://www.allerumgk.nu/",
+    "region": "Skåne",
+    "slug": "allerum-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Allmags GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.allmagsgk.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "allmags-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Alvesta GK",
+    "city": "",
+    "country": "",
+    "url": "https://alvestagolf.se/",
+    "region": "Småland & Öland",
+    "slug": "alvesta-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Araslövs GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.araslovgolf.se/",
+    "region": "Skåne",
+    "slug": "araslovs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Arboga GK",
+    "city": "",
+    "country": "",
+    "url": "https://arbogagk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "arboga-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Arlandastad Golf",
+    "city": "",
+    "country": "",
+    "url": "http://www.arlandastadgolf.se/",
+    "region": "Stockholmsområdet",
+    "slug": "arlandastad-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Arninge GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.arningegk.se/",
+    "region": "Stockholmsområdet",
+    "slug": "arninge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Arninge Golf AB",
+    "city": "Täby",
+    "country": "Sverige",
+    "url": "https://www.arningegk.se",
+    "region": "Stockholmsområdet",
+    "slug": "arninge-golf-ab",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Arvidsjaurs GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.arvidsjaurgolf.se/",
+    "region": "Norrland",
+    "slug": "arvidsjaurs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Arvika GK",
+    "city": "",
+    "country": "",
+    "url": "https://arvikagk.com/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "arvika-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Askersunds GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.askersundsgk.com/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "askersunds-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Avesta GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.avestagk.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "avesta-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Axel oscarson Golf Ab",
+    "city": "",
+    "country": "",
+    "url": "https://www.axeloscarsongolf.com/",
+    "region": "Skåne",
+    "slug": "axel-oscarson-golf-ab",
+    "active": true,
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Barsebäcks G & CC",
+    "city": "",
+    "country": "",
+    "url": "https://barseback.com/",
+    "region": "Skåne",
+    "slug": "barsebacks-g-cc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bedinge GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.bedingegk.com/",
+    "region": "Skåne",
+    "slug": "bedinge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Billeruds GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.billerudsgk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "billeruds-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Billingens GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.billingensgk.r.se/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "billingens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bjurholms GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.bjurholm.se/golfklubb/index.htm",
+    "region": "Norrland",
+    "slug": "bjurholms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bjäre GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.bjaregolfklubb.se",
+    "region": "Skåne",
+    "slug": "bjare-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Björkhagens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.bjgk.se",
+    "region": "Stockholmsområdet",
+    "slug": "bjorkhagens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Björklidens GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.bjorklidensgolfklubb.se/",
+    "region": "Norrland",
+    "slug": "bjorklidens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Björnhults GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.bjornhultsgk.se",
+    "region": "Halland",
+    "slug": "bjornhults-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bodens GK, Sävast",
+    "city": "",
+    "country": "",
+    "url": "http://www.bodengolf.nu/",
+    "region": "Norrland",
+    "slug": "bodens-gk-savast",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bokskogens GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.bokskogen.com",
+    "region": "Skåne",
+    "slug": "bokskogens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bolidens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.bolidensgolfklubb.se",
+    "region": "Norrland",
+    "slug": "bolidens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bollnäs GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.bollnasgk.com/",
+    "region": "Norrland",
+    "slug": "bollnas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Borås GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.borasgolfklubb.com/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "boras-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bosjökloster GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.bosjoklostergk.se",
+    "region": "Skåne",
+    "slug": "bosjokloster-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Botkyrka GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.botkyrkagk.se",
+    "region": "Stockholmsområdet",
+    "slug": "botkyrka-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bredareds GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.bredaredsgk.com/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "bredareds-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bro - Bålsta GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.bbgk.se",
+    "region": "Stockholmsområdet",
+    "slug": "bro-balsta-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bro Hof GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.brohofslott.se/",
+    "region": "Stockholmsområdet",
+    "slug": "bro-hof-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Bråvikens GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.bragk.se/",
+    "region": "Östergötland",
+    "slug": "bravikens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Burviks GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.burvik.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "burviks-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Byxelkroks Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "https://byxelkroksgk.se/",
+    "region": "Småland & Öland",
+    "slug": "byxelkroks-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Båstad GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.bgk.se/",
+    "region": "Skåne",
+    "slug": "bastad-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Böda Sands GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.bodasand.se/gora/golf/",
+    "region": "Småland & Öland",
+    "slug": "boda-sands-gk",
+    "active": true,
+    "website_source": "https://www.bodasand.se/gora/golf/",
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Carlskrona GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.carlskronagk.com/",
+    "region": "Blekinge",
+    "slug": "carlskrona-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Chalmers GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.chgk.se/",
+    "region": "Göteborgsområdet",
+    "slug": "chalmers-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Custom Clubs",
+    "city": "Hisings-Backa",
+    "country": "Sverige",
+    "url": "https://www.customclubs.se/",
+    "region": "Göteborgsområdet",
+    "slug": "custom-clubs",
+    "active": true,
+    "anlaggningstyp": "golfbutik"
+  },
+  {
+    "name": "Dale Harris PRO Gullbringa Golf",
+    "city": "",
+    "country": "",
+    "url": "https://gullbringa.golfstore.se/",
+    "region": "Göteborgsområdet",
+    "slug": "dale-harris-pro-gullbringa-golf",
+    "active": true,
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Dalsjö GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.dalsjo-golf.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "dalsjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Danderyds GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.dangk.com/",
+    "region": "Stockholmsområdet",
+    "slug": "danderyds-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Degeberga - Widtsköfle GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.dwgk.se/",
+    "region": "Skåne",
+    "slug": "degeberga-widtskofle-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Degerfors GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.degerforsgolf.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "degerfors-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Delsjö GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.degk.se/",
+    "region": "Göteborgsområdet",
+    "slug": "delsjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Djursholms GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.dgk.nu/",
+    "region": "Stockholmsområdet",
+    "slug": "djursholms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Drottningholms GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.drgk.nu/",
+    "region": "Stockholmsområdet",
+    "slug": "drottningholms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Dynekilen GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.dynegolf.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "dynekilen-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Eda GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.edagk.com/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "eda-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Edenhof Golf",
+    "city": "Bälinge",
+    "country": "Sverige",
+    "url": "https://golfuppsala.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "edenhof-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ekarnas GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ekarnasgk.se",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "ekarnas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Eksjö GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.eksjogk.nu/",
+    "region": "Småland & Öland",
+    "slug": "eksjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Elisefarm Golf Club",
+    "city": "",
+    "country": "",
+    "url": "http://www.elisefarm.se",
+    "region": "Skåne",
+    "slug": "elisefarm-golf-club",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "ELLBE Golf – Vasatorps Golfshop",
+    "city": "Mörarp",
+    "country": "Sverige",
+    "url": "https://vasatorp.golf/shop-traning/",
+    "region": "Skåne",
+    "slug": "ellbe-golf-vasatorps-golfshop",
+    "active": true,
+    "description": "ELLBE Golf driver Vasatorps Golfshop och erbjuder golflektioner, golfkurser och personlig träning med PGA-tränare vid Vasatorps Golfklubb i Mörarp, utanför Helsingborg.",
+    "fact_source": "https://vasatorp.golf/shop-traning/",
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Emmaboda GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.emmabodagk.se",
+    "region": "Småland & Öland",
+    "slug": "emmaboda-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Enköpings GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.enkopinggolf.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "enkopings-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Eskilstuna GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.eskilstunagk.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "eskilstuna-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Eslövs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.eslovsgk.se",
+    "region": "Skåne",
+    "slug": "eslovs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Fagersta GK",
+    "city": "Fagersta",
+    "country": "Sverige",
+    "url": "https://www.fagerstagk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "fagersta-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Falkenbergs GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.falkenbergsgolfklubb.com/",
+    "region": "Halland",
+    "slug": "falkenbergs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Falköpings GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.falkopingsgk.com/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "falkopings-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Falsterbo GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.falsterbogk.com/",
+    "region": "Skåne",
+    "slug": "falsterbo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Falun - Borlänge GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.fbgk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "falun-borlange-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Finspångs GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.finspong.se/golf/",
+    "region": "Östergötland",
+    "slug": "finspangs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Fjällbacka GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.fjallbacka.com/fjgk/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "fjallbacka-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Flemminge Golf",
+    "city": "",
+    "country": "",
+    "url": "http://www.flemmingegolf.se",
+    "region": "Östergötland",
+    "slug": "flemminge-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Flens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.flensgk.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "flens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Flommens GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.flommensgk.com/",
+    "region": "Skåne",
+    "slug": "flommens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Flädje GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.fladjegk.se/",
+    "region": "Halland",
+    "slug": "fladje-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Fogdö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.fogdogk.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "fogdo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Forsbacka GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.forsbackagk.se",
+    "region": "Bohuslän & Dalsland",
+    "slug": "forsbacka-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Forsgårdens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.forsgarden.se",
+    "region": "Göteborgsområdet",
+    "slug": "forsgardens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Forshaga GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.forshagadejegk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "forshaga-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Friibergh GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.friiberghs.golfklubb.cc/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "friibergh-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Frösåker GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.fgcc.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "frosaker-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Fullerö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.fullerogk.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "fullero-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Funäsdalsfjällens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.funasfjallengolf.se",
+    "region": "Norrland",
+    "slug": "funasdalsfjallens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Furudals Bruk GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.furudalsgolf.com/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "furudals-bruk-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Fågelbro G & CC",
+    "city": "",
+    "country": "",
+    "url": "http://www.fagelbrogolf.se/",
+    "region": "Stockholmsområdet",
+    "slug": "fagelbro-g-cc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Gagnefs GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.gagnefsgk.com",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "gagnefs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Glasrikets GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.glasriketsgk.com/",
+    "region": "Småland & Öland",
+    "slug": "glasrikets-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Golfhallen Söderort",
+    "city": "Handen",
+    "country": "Sverige",
+    "url": "https://golfhallensoderort.se/",
+    "region": "Stockholmsområdet",
+    "slug": "golfhallen-soderort",
+    "active": true,
+    "anlaggningstyp": "inomhusgolf"
+  },
+  {
+    "name": "Golfkuponger - Inlösengaranti (OBS! Endast företagskunder. Ej friskvård)",
+    "city": "",
+    "country": "",
+    "url": "https://www.svenskagolfkuponger.se/",
+    "slug": "golfkuponger-inlosengaranti-obs-endast-foretagskunder-ej-friskvard",
+    "region": "",
+    "active": false,
+    "anlaggningstyp": "intern"
+  },
+  {
+    "name": "Golfservice Marbella",
+    "city": "",
+    "country": "",
+    "url": "https://www.golf-service.se/",
+    "slug": "golfservice-marbella",
+    "region": "",
+    "active": true,
+    "anlaggningstyp": "golfpartner",
+    "visa_i_golfbanor": true
+  },
+  {
+    "name": "Gotska GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.gotskagk.se/",
+    "region": "Småland & Öland",
+    "slug": "gotska-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Gränna GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.grannagk.se",
+    "region": "Småland & Öland",
+    "slug": "granna-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Gräppås GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.grappasgk.se",
+    "region": "Göteborgsområdet",
+    "slug": "grappas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Grönlund GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.gronlundgk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "gronlund-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Gullbringa Golf & CC",
+    "city": "",
+    "country": "",
+    "url": "https://gullbringagolf.se/",
+    "region": "Göteborgsområdet",
+    "slug": "gullbringa-golf-cc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Gumbalde GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.gumbalde.se",
+    "region": "Småland & Öland",
+    "slug": "gumbalde-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Gustavsviks GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.orebrogolf.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "gustavsviks-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Gällivare-Malmbergets GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.gmgk.se",
+    "region": "Norrland",
+    "slug": "gallivare-malmbergets-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Gävle GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.gavlegolf.com/",
+    "region": "Norrland",
+    "slug": "gavle-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Göran Knutsson Golf Academy",
+    "city": "Frösön",
+    "country": "Sverige",
+    "url": "",
+    "region": "Norrland",
+    "slug": "goran-knutsson-golf-academy",
+    "active": true,
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Götaströms GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.gotastromsgk.se/",
+    "region": "Småland & Öland",
+    "slug": "gotastroms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hagge GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.haggegk.com/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "hagge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hallstaviks GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.hallstavikgk.se/",
+    "region": "Stockholmsområdet",
+    "slug": "hallstaviks-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Halmstad GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.hgk.se/",
+    "region": "Halland",
+    "slug": "halmstad-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hammarö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.hammarogk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "hammaro-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Haninge GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.haningegk.se/",
+    "region": "Stockholmsområdet",
+    "slug": "haninge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "HaningeStrand GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.haningestrand.se/",
+    "region": "Stockholmsområdet",
+    "slug": "haningestrand-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Haparanda GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.haparandagk.com",
+    "region": "Norrland",
+    "slug": "haparanda-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Harabäckens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.harabacken.se",
+    "region": "Halland",
+    "slug": "harabackens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hede-Vemdalens GK",
+    "city": "",
+    "country": "",
+    "url": "https://hede-vemdalensgk.se/",
+    "region": "Norrland",
+    "slug": "hede-vemdalens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hedemora GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.hedemoragk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "hedemora-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Helsingborgs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.helsingborgsgk.com",
+    "region": "Skåne",
+    "slug": "helsingborgs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Herrljunga GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.herrljungagk.se",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "herrljunga-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hills Golf & Sports Club",
+    "city": "Mölndal",
+    "country": "Sverige",
+    "url": "https://www.hillsgolfclub.se/",
+    "region": "Göteborgsområdet",
+    "slug": "hills-golf-sports-club",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hofors GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.hoforsgk.se",
+    "region": "Norrland",
+    "slug": "hofors-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hudiksvalls GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.hudiksvallsgk.se",
+    "region": "Norrland",
+    "slug": "hudiksvalls-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hulta Bollebygd Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "https://www.hultagk.se/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "hulta-bollebygd-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hälla GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.hallagolf.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "halla-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Härnösands GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.harnosandgk.se",
+    "region": "Norrland",
+    "slug": "harnosands-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Hässlegårdens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.hggk.se",
+    "region": "Skåne",
+    "slug": "hasslegardens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Högbo GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.hogbogk.com",
+    "region": "Norrland",
+    "slug": "hogbo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Idrefjällens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.idregolf.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "idrefjallens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ingarö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.igk.se",
+    "region": "Stockholmsområdet",
+    "slug": "ingaro-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Isabergs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.isaberggolf.se",
+    "region": "Småland & Öland",
+    "slug": "isabergs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Järvsöbadens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.jarvsogolf.se",
+    "region": "Norrland",
+    "slug": "jarvsobadens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Jönköpings GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.jonkopingsgk.se",
+    "region": "Småland & Öland",
+    "slug": "jonkopings-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Jönåkers GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.jonakersgk.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "jonakers-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kalix Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "https://www.kalixgolfklubb.se",
+    "region": "Norrland",
+    "slug": "kalix-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kallfors GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kallfors.com",
+    "region": "Stockholmsområdet",
+    "slug": "kallfors-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kalmar GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kalmargk.se",
+    "region": "Småland & Öland",
+    "slug": "kalmar-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Karlshamns GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.karlshamnsgk.com",
+    "region": "Blekinge",
+    "slug": "karlshamns-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Karlskoga GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.karlskogagk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "karlskoga-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Karlstad GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.karlstadgk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "karlstad-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kiladalens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kiladalensgk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "kiladalens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kils GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kilsgk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "kils-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kinda Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "https://www.svenskalag.se/kindagolfklubb",
+    "region": "Östergötland",
+    "slug": "kinda-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kinds GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kindsgk.se",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "kinds-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kiruna GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.kirunagolfklubb.com/",
+    "region": "Norrland",
+    "slug": "kiruna-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Klosterfjordens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.klosterfjordensgk.se",
+    "region": "Halland",
+    "slug": "klosterfjordens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Knistad G & CC",
+    "city": "",
+    "country": "",
+    "url": "https://www.knistad.se/golf",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "knistad-g-cc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Koberg GK",
+    "city": "Trollhättan",
+    "country": "Sverige",
+    "url": "https://koberggk.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "koberg-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kristianstads Golfklubb",
+    "city": "Åhus",
+    "country": "Sverige",
+    "url": "https://kristianstadsgk.com/",
+    "region": "Skåne",
+    "slug": "kristianstads-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kristinehamn GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kristinehamnsgk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "kristinehamn-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kumla GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kumlagk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "kumla-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kungsbacka GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kungsbackagk.se",
+    "region": "Göteborgsområdet",
+    "slug": "kungsbacka-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kungälv - Kode GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kkgk.se",
+    "region": "Göteborgsområdet",
+    "slug": "kungalv-kode-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kårsta GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.karstagk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "karsta-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Kävlinge GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.kavlingegk.se",
+    "region": "Skåne",
+    "slug": "kavlinge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Köpings GK",
+    "city": "Köping",
+    "country": "Sverige",
+    "url": "http://www.kopingsgk.nu/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "kopings-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Laholms GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.laholmsgk.se",
+    "region": "Halland",
+    "slug": "laholms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Landeryds GK anläggning Landeryd",
+    "city": "LINKÖPING",
+    "country": "Sverige",
+    "url": "https://www.landeryd.se",
+    "region": "Östergötland",
+    "slug": "landeryds-gk-anlaggning-landeryd",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Landeryds Golfklubb anläggning Vesterby",
+    "city": "LINKÖPING",
+    "country": "Sverige",
+    "url": "https://www.landeryd.se",
+    "region": "Östergötland",
+    "slug": "landeryds-golfklubb-anlaggning-vesterby",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lannalodge AB",
+    "city": "",
+    "country": "",
+    "url": "https://lannalodge.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "lannalodge-ab",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Leksands GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.leksandsgk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "leksands-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lerjedalens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.lerjedalen.se",
+    "region": "Göteborgsområdet",
+    "slug": "lerjedalens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Leråkra GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.lerakragolf.se/",
+    "region": "Blekinge",
+    "slug": "lerakra-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lidingö Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "https://www.lidingogk.se/",
+    "region": "Stockholmsområdet",
+    "slug": "lidingo-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lindesbergs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.lindesbergsgk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "lindesbergs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "LinksGolf Öland",
+    "city": "Degerhamn",
+    "country": "Sverige",
+    "url": "http://www.linksgolfoland.se/",
+    "region": "Småland & Öland",
+    "slug": "linksgolf-oland",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Linköpings Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "http://www.linkopingsgk.se/",
+    "region": "Östergötland",
+    "slug": "linkopings-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ljugarns GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ljugarnsgk.se",
+    "region": "Småland & Öland",
+    "slug": "ljugarns-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ljungbyheds GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ljungbyhedsgk.se",
+    "region": "Skåne",
+    "slug": "ljungbyheds-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ljunghusens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ljgk.se",
+    "region": "Skåne",
+    "slug": "ljunghusens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ljusdals GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.golfiljusdal.nu/",
+    "region": "Norrland",
+    "slug": "ljusdals-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ljusterö GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.ljusterogolf.se/",
+    "region": "Stockholmsområdet",
+    "slug": "ljustero-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Loftahammars Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "https://www.loftahammarsgk.se/",
+    "region": "Småland & Öland",
+    "slug": "loftahammars-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Luleå GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.luleagolf.se/start-extern/",
+    "region": "Norrland",
+    "slug": "lulea-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lunds akademiska GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.lagk.se",
+    "region": "Skåne",
+    "slug": "lunds-akademiska-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lundsbergs GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.golfivarmland.se/golfklubbar/lundsbergs-gk/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "lundsbergs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lundsbrunn GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.lundsbrunngk.com/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "lundsbrunn-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lycke G&CC",
+    "city": "",
+    "country": "",
+    "url": "https://www.lyckegc.se/",
+    "region": "Göteborgsområdet",
+    "slug": "lycke-g-cc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lyckorna GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.lyckornagk.se",
+    "region": "Bohuslän & Dalsland",
+    "slug": "lyckorna-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lycksele GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.lyckselegolf.com",
+    "region": "Norrland",
+    "slug": "lycksele-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lydinge GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.lydinge.com",
+    "region": "Skåne",
+    "slug": "lydinge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lysegårdens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.lysegardensgk.se",
+    "region": "Göteborgsområdet",
+    "slug": "lysegardens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Lysingsbadets Golfbana",
+    "city": "",
+    "country": "",
+    "url": "https://www.lysingbadetsgk.se",
+    "region": "Småland & Öland",
+    "slug": "lysingsbadets-golfbana",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Läckö Golf",
+    "city": "",
+    "country": "",
+    "url": "https://www.lackogk.se",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "lacko-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Malmö Burlöv Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "https://www.malmoburlovgk.se",
+    "region": "Skåne",
+    "slug": "malmo-burlov-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Malungs GK",
+    "city": "",
+    "country": "",
+    "url": "",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "malungs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Mariestads GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.mariestadsgk.se",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "mariestads-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Marks GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.marksgk.se/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "marks-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Matz Evensson Golf Academy -  Frösåker",
+    "city": "Västerås",
+    "country": "Sverige",
+    "url": "https://matzevensson.com/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "matz-evensson-golf-academy-frosaker",
+    "active": true,
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Matz Evensson Golf Academy - Köping",
+    "city": "Köping",
+    "country": "Sverige",
+    "url": "https://matzevensson.com/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "matz-evensson-golf-academy-koping",
+    "active": true,
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Matz Evensson Golf Academy - Orresta",
+    "city": "Västerås",
+    "country": "Sverige",
+    "url": "https://matzevensson.com/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "matz-evensson-golf-academy-orresta",
+    "active": true,
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Melleruds GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.mellerudsgolfklubb.se/sv",
+    "region": "Bohuslän & Dalsland",
+    "slug": "melleruds-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Michael Wigh Golf AB",
+    "city": "",
+    "country": "",
+    "url": "",
+    "region": "Östergötland",
+    "slug": "michael-wigh-golf-ab",
+    "active": true,
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Mjölby GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.mjolbygk.se",
+    "region": "Östergötland",
+    "slug": "mjolby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Mjölkeröds GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.mjolkerodgk.se",
+    "region": "Bohuslän & Dalsland",
+    "slug": "mjolkerods-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Mora GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.moragk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "mora-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Motala GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.motalagk.se",
+    "region": "Östergötland",
+    "slug": "motala-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Mälarbadens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.malarbadensgk.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "malarbadens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Mölle GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.mollegk.se",
+    "region": "Skåne",
+    "slug": "molle-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Mölndals GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.molndalsgk.se",
+    "region": "Göteborgsområdet",
+    "slug": "molndals-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Möre GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.moregk.se",
+    "region": "Småland & Öland",
+    "slug": "more-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Naturligtvis GCC",
+    "city": "",
+    "country": "",
+    "url": "http://www.assartorpsgk.l.se/",
+    "region": "Skåne",
+    "slug": "naturligtvis-gcc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Nicklastorp GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.nigk.se/",
+    "region": "Blekinge",
+    "slug": "nicklastorp-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Nora GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.noragolfklubb.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "nora-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Norrfällsvikens GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.norrfallsvikensgk.com/",
+    "region": "Norrland",
+    "slug": "norrfallsvikens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Norrköping Söderköping Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "https://www.nsgk.se",
+    "region": "Östergötland",
+    "slug": "norrkoping-soderkoping-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Norrmjöle GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.nmgk.se",
+    "region": "Norrland",
+    "slug": "norrmjole-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Norråva Golf",
+    "city": "",
+    "country": "",
+    "url": "https://www.norravagk.se",
+    "region": "Stockholmsområdet",
+    "slug": "norrava-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Norsjö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.norsjogk.se",
+    "region": "Norrland",
+    "slug": "norsjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Nya Johannesberg G & CC",
+    "city": "",
+    "country": "",
+    "url": "https://www.johannesberg.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "nya-johannesberg-g-cc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Nybro GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.nybrogk.se",
+    "region": "Småland & Öland",
+    "slug": "nybro-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Nynäshamns GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.nynashamngk.se",
+    "region": "Stockholmsområdet",
+    "slug": "nynashamns-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "När GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.nrgk.se",
+    "region": "Småland & Öland",
+    "slug": "nar-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Nässjö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.nassjogk.se",
+    "region": "Småland & Öland",
+    "slug": "nassjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Olandsbygdens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.olandsbygdensgk.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "olandsbygdens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Olofströms GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.boagk.se",
+    "region": "Blekinge",
+    "slug": "olofstroms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ombergs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ombergsgolfresort.se",
+    "region": "Östergötland",
+    "slug": "ombergs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Onsjö GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.onsjogk.com/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "onsjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Orresta GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.orrestagolf.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "orresta-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Orust GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.orustgk.org/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "orust-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Oskarshamns GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.oskarhamnsgk.se",
+    "region": "Småland & Öland",
+    "slug": "oskarshamns-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Partille GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.partillegk.se",
+    "region": "Göteborgsområdet",
+    "slug": "partille-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Perstorps GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.perstorpsgk.se",
+    "region": "Skåne",
+    "slug": "perstorps-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Piteå GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.piteagolf.se/",
+    "region": "Norrland",
+    "slug": "pitea-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Reftele Golfklubb",
+    "city": "Reftele",
+    "country": "Sverige",
+    "url": "https://www.reftelegk.com/",
+    "region": "Småland & Öland",
+    "slug": "reftele-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Romeleåsens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ragk.se",
+    "region": "Skåne",
+    "slug": "romeleasens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ronneby GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ronnebygk.se",
+    "region": "Blekinge",
+    "slug": "ronneby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Roslagens GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.roslagensgk.com/",
+    "region": "Stockholmsområdet",
+    "slug": "roslagens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Rossöns GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.rossongk.nu/",
+    "region": "Norrland",
+    "slug": "rossons-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Rya GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.rya.nu",
+    "region": "Skåne",
+    "slug": "rya-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Rydö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.rydogolf.se",
+    "region": "Halland",
+    "slug": "rydo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ryfors GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ryforsgk.se",
+    "region": "Småland & Öland",
+    "slug": "ryfors-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Rättviks GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.rattviksgk.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "rattviks-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "S:t Arild GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.starild.se/",
+    "region": "Skåne",
+    "slug": "s-t-arild-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "S:t Ibb GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.stibb.se",
+    "region": "Skåne",
+    "slug": "s-t-ibb-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sala GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.salagk.se",
+    "region": "Uppsala & Mälardalen",
+    "slug": "sala-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Salems GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.salemsgk.se",
+    "region": "Stockholmsområdet",
+    "slug": "salems-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Saltsjöbadens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.saltsjobadengk.se",
+    "region": "Stockholmsområdet",
+    "slug": "saltsjobadens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Saltsjöbadens Golfshop/Pro Swede Golf AB",
+    "city": "",
+    "country": "",
+    "url": "",
+    "region": "Stockholmsområdet",
+    "slug": "saltsjobadens-golfshop-pro-swede-golf-ab",
+    "active": true,
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Sand Golf Club",
+    "city": "",
+    "country": "",
+    "url": "https://sandgolfclub.se/",
+    "region": "Småland & Öland",
+    "slug": "sand-golf-club",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sankt Jörgen Park Golf",
+    "city": "",
+    "country": "",
+    "url": "https://www.sanktjorgenparkgolf.se",
+    "region": "Göteborgsområdet",
+    "slug": "sankt-jorgen-park-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Saxnäs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.saxnasgolf.se",
+    "region": "Småland & Öland",
+    "slug": "saxnas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Saxå Golfklubb",
+    "city": "Filipstad",
+    "country": "Sverige",
+    "url": "https://www.saxagk.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "saxa-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sigtuna GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.sigtunagk.se",
+    "region": "Stockholmsområdet",
+    "slug": "sigtuna-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sjögärde GK",
+    "city": "",
+    "country": "",
+    "url": "https://sjogarde.se/",
+    "region": "Halland",
+    "slug": "sjogarde-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Skaftö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.skaftogk.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "skafto-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Skepparslövs GK",
+    "city": "",
+    "country": "",
+    "url": "https://skepparslovsgk.se/",
+    "region": "Skåne",
+    "slug": "skepparslovs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Skerike GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.skerikegk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "skerike-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Skinnarebo G & CC",
+    "city": "",
+    "country": "",
+    "url": "https://skinnarebo.se/",
+    "region": "Småland & Öland",
+    "slug": "skinnarebo-g-cc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Skogaby GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.skogabygk.se/",
+    "region": "Halland",
+    "slug": "skogaby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Skön GK",
+    "city": "",
+    "country": "",
+    "url": "http://skongolf.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "skon-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Skövde GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.skovdegk.se/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "skovde-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Slite GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.slitegk.se/",
+    "region": "Småland & Öland",
+    "slug": "slite-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Snöå GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.snoagk.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "snoa-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Solbacka Golfklubb",
+    "city": "",
+    "country": "",
+    "url": "https://www.solbackagk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "solbacka-golfklubb",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sollefteå GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.sollefteagk.se/",
+    "region": "Norrland",
+    "slug": "solleftea-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sollentuna GK",
+    "city": "",
+    "country": "",
+    "url": "https://sollentunagk.se/",
+    "region": "Stockholmsområdet",
+    "slug": "sollentuna-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sotenäs GK",
+    "city": "",
+    "country": "",
+    "url": "https://sotenasgolf.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "sotenas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sparren GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.sparrengolf.se",
+    "region": "Stockholmsområdet",
+    "slug": "sparren-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Spela-Golf.com",
+    "city": "",
+    "country": "",
+    "url": "http://www.spela-golf.com",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "spela-golf-com",
+    "active": true,
+    "anlaggningstyp": "golfpartner"
+  },
+  {
+    "name": "Stenungsunds GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.stenungsundgk.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "stenungsunds-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Stjernfors GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.stjernforsgk.com/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "stjernfors-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Stockholms GK",
+    "city": "",
+    "country": "",
+    "url": "https://stockholmsgolfklubb.se/",
+    "region": "Stockholmsområdet",
+    "slug": "stockholms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Stora Lundby GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.storalundbygk.se/",
+    "region": "Göteborgsområdet",
+    "slug": "stora-lundby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Storsjöbygdens Golf",
+    "city": "",
+    "country": "",
+    "url": "https://www.sbgolf.se/",
+    "region": "Norrland",
+    "slug": "storsjobygdens-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Strandtorps GK",
+    "city": "",
+    "country": "",
+    "url": "https://strandtorpgolf.com/",
+    "region": "Halland",
+    "slug": "strandtorps-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Strängnäs GK",
+    "city": "",
+    "country": "",
+    "url": "https://strangnasgk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "strangnas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Strömsholms GK",
+    "city": "",
+    "country": "",
+    "url": "https://stromsholmsgolf.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "stromsholms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Strömstad GK",
+    "city": "",
+    "country": "",
+    "url": "https://stdgk.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "stromstad-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sundsta Golf",
+    "city": "Norrtälje",
+    "country": "Sverige",
+    "url": "https://www.sundsta.se/golf-norrtalje/",
+    "region": "Stockholmsområdet",
+    "slug": "sundsta-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sundsvalls GK",
+    "city": "",
+    "country": "",
+    "url": "https://sundsvallsgk.se/",
+    "region": "Norrland",
+    "slug": "sundsvalls-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sunne GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.sunnegk.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "sunne-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Surahammars GK",
+    "city": "",
+    "country": "",
+    "url": "https://surahammarsgk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "surahammars-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Svartinge GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.svartingegolf.se/",
+    "region": "Stockholmsområdet",
+    "slug": "svartinge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Svegs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.svegsgk.se/",
+    "region": "Norrland",
+    "slug": "svegs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sälenfjällens GK",
+    "city": "",
+    "country": "",
+    "url": "https://salenfjallensgk.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "salenfjallens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Säters GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.satersgk.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "saters-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Söderby GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.golfuppsala.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "soderby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Söderhamns GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.soderhamnsgk.com/",
+    "region": "Norrland",
+    "slug": "soderhamns-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Söderslätts GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.soderslattsgk.com/",
+    "region": "Skåne",
+    "slug": "soderslatts-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Söderåsens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.soderasensgk.se/",
+    "region": "Skåne",
+    "slug": "soderasens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sölvesborgs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.solvesborgsgk.se/",
+    "region": "Blekinge",
+    "slug": "solvesborgs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sönnertorps GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.sonnertorpgolf.se",
+    "region": "Skåne",
+    "slug": "sonnertorps-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sörfjärdens gk",
+    "city": "",
+    "country": "",
+    "url": "https://sorfjardensgk.se/",
+    "region": "Norrland",
+    "slug": "sorfjardens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Sörfors GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.sorforsgk.se/",
+    "region": "Norrland",
+    "slug": "sorfors-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tegelberga GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.tegelbergagk.se/",
+    "region": "Skåne",
+    "slug": "tegelberga-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Timrå GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.timragk.se/",
+    "region": "Norrland",
+    "slug": "timra-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tjusta Golf",
+    "city": "",
+    "country": "",
+    "url": "https://tjustagolf.se/",
+    "region": "Stockholmsområdet",
+    "slug": "tjusta-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tjörns GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.tjornsgk.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "tjorns-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tobo GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.tobogk.se/",
+    "region": "Småland & Öland",
+    "slug": "tobo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tomelilla GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.tomelillagolf.se/",
+    "region": "Skåne",
+    "slug": "tomelilla-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Torekovs GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.togk.se/",
+    "region": "Skåne",
+    "slug": "torekovs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Torreby GK",
+    "city": "Munkedal",
+    "country": "Sverige",
+    "url": "https://torrebygk.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "torreby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Torsby GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.torsbygolfklubb.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "torsby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Torshälla GK",
+    "city": "",
+    "country": "",
+    "url": "https://torshallagk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "torshalla-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Torslanda GK",
+    "city": "Torslanda",
+    "country": "Sverige",
+    "url": "https://torslandagk.se/",
+    "region": "Göteborgsområdet",
+    "slug": "torslanda-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tortuna GK",
+    "city": "",
+    "country": "",
+    "url": "https://tortunagk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "tortuna-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tranås GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.tranasgk.se",
+    "region": "Småland & Öland",
+    "slug": "tranas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Trelleborgs GK",
+    "city": "",
+    "country": "",
+    "url": "https://trelleborgsgk.se/",
+    "region": "Skåne",
+    "slug": "trelleborgs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Trelleborgs Golf Academy & Shop",
+    "city": "Trelleborg",
+    "country": "Sverige",
+    "url": "http://www.trelleborgsgk.se/shop",
+    "region": "Skåne",
+    "slug": "trelleborgs-golf-academy-shop",
+    "active": true,
+    "anlaggningstyp": "golfakademi"
+  },
+  {
+    "name": "Trosa Golfklubb AB",
+    "city": "Trosa",
+    "country": "Sverige",
+    "url": "https://www.trosagk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "trosa-golfklubb-ab",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Trummenäs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.trummenasgk.se/",
+    "region": "Blekinge",
+    "slug": "trummenas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tureholms GK",
+    "city": "",
+    "country": "",
+    "url": "https://tureholmsngk.se/",
+    "region": "Norrland",
+    "slug": "tureholms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tyresö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.alecsgolf.se/content/20-tyres%C3%B6-golf",
+    "region": "Stockholmsområdet",
+    "slug": "tyreso-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Täby GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.tabygk.se/",
+    "region": "Stockholmsområdet",
+    "slug": "taby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tällbergsbyarnas GK",
+    "city": "",
+    "country": "",
+    "url": "https://tallberggk.com/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "tallbergsbyarnas-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Tönnersjö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.tonnersjogolf.se/",
+    "region": "Halland",
+    "slug": "tonnersjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Töreboda GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.torebodagk.se/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "toreboda-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Uddeholms GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.uddeholmsgk.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "uddeholms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Uddevalla GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.uddevallagk.se/",
+    "region": "Bohuslän & Dalsland",
+    "slug": "uddevalla-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ullna Golf & CC",
+    "city": "",
+    "country": "",
+    "url": "https://ullnagolf.se/",
+    "region": "Stockholmsområdet",
+    "slug": "ullna-gc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ulricehamns GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ulricehamnsgk.se/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "ulricehamns-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Umeå GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.umgk.se/",
+    "region": "Norrland",
+    "slug": "umea-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Uppvidinge GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.uppvidingegk.com/",
+    "region": "Småland & Öland",
+    "slug": "uppvidinge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Upsala GK",
+    "city": "",
+    "country": "",
+    "url": "https://upsalagk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "upsala-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vadstena GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.vadstenagk.nu/",
+    "region": "Östergötland",
+    "slug": "vadstena-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vallda Golf & Country Club",
+    "city": "Vallda",
+    "country": "Sverige",
+    "url": "https://valldagolf.se/",
+    "region": "Göteborgsområdet",
+    "slug": "vallda-golf-country-club",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Valley GK",
+    "city": "",
+    "country": "",
+    "url": "https://valleygk.se/",
+    "region": "Göteborgsområdet",
+    "slug": "valley-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vara-Bjertorp Golf AB",
+    "city": "Kvänum",
+    "country": "Sverige",
+    "url": "https://vara-bjertorpgk.se/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "vara-bjertorp-golf-ab",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Varberg GK Västra",
+    "city": "",
+    "country": "",
+    "url": "https://www.varbergsgk.se/",
+    "region": "Halland",
+    "slug": "varberg-gk-vastra",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Varberg GK Östra",
+    "city": "",
+    "country": "",
+    "url": "https://www.varbergsgk.se/",
+    "region": "Göteborgsområdet",
+    "slug": "varberg-gk-ostra",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vasatorps GK",
+    "city": "",
+    "country": "",
+    "url": "https://vasatorp.golf/",
+    "region": "Skåne",
+    "slug": "vasatorps-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vassunda GK",
+    "city": "",
+    "country": "",
+    "url": "https://vassundagolf.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "vassunda-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Veckefjärdens GK",
+    "city": "",
+    "country": "",
+    "url": "https://veckefjarden.com/",
+    "region": "Norrland",
+    "slug": "veckefjardens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vellinge GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.vellingegk.se/",
+    "region": "Skåne",
+    "slug": "vellinge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vetlanda GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.vetlandagk.com/",
+    "region": "Småland & Öland",
+    "slug": "vetlanda-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vidbynäs GC",
+    "city": "",
+    "country": "",
+    "url": "https://vidbynasgolf.se/",
+    "region": "Stockholmsområdet",
+    "slug": "vidbynas-gc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Viksjö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.viksjogk.se/",
+    "region": "Stockholmsområdet",
+    "slug": "viksjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vinbergs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.vinbergsgolfklubb.se/",
+    "region": "Halland",
+    "slug": "vinbergs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vingåkers GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.vingakersgolf.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "vingakers-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Visby GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.visbygk.com/sv/",
+    "region": "Småland & Öland",
+    "slug": "visby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Visingsö GK",
+    "city": "",
+    "country": "",
+    "url": "https://visingsogk.se/",
+    "region": "Småland & Öland",
+    "slug": "visingso-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Vreta Kloster GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.vkgk.se/",
+    "region": "Östergötland",
+    "slug": "vreta-kloster-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Värnamo GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.varnamogk.se/",
+    "region": "Småland & Öland",
+    "slug": "varnamo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Västerås GK",
+    "city": "",
+    "country": "",
+    "url": "https://vasterasgk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "vasteras-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Växjö GK",
+    "city": "",
+    "country": "",
+    "url": "https://vaxjogk.se/",
+    "region": "Småland & Öland",
+    "slug": "vaxjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Wermdö G & CC",
+    "city": "",
+    "country": "",
+    "url": "https://www.wermdogolf.se/",
+    "region": "Stockholmsområdet",
+    "slug": "wermdo-g-cc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Wiredaholm Golf & CC",
+    "city": "",
+    "country": "",
+    "url": "https://wiredaholm.se/",
+    "region": "Småland & Öland",
+    "slug": "wiredaholm-golf-cc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Wittsjö GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.wittsjogk.se/",
+    "region": "Skåne",
+    "slug": "wittsjo-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Woodlands Country Club",
+    "city": "Örkelljunga",
+    "country": "Sverige",
+    "url": "https://woodlands.se/",
+    "region": "Skåne",
+    "slug": "woodlands-country-club",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ystad GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ystadgk.se/",
+    "region": "Skåne",
+    "slug": "ystad-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Åda GK",
+    "city": "",
+    "country": "",
+    "url": "https://adagolf.se/sv",
+    "region": "Uppsala & Mälardalen",
+    "slug": "ada-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Åkagårdens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.akgk.se/",
+    "region": "Skåne",
+    "slug": "akagardens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Åkersberga GK",
+    "city": "",
+    "country": "",
+    "url": "https://akersbergagk.se/",
+    "region": "Stockholmsområdet",
+    "slug": "akersberga-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Åre GK",
+    "city": "",
+    "country": "",
+    "url": "https://aregolfklubb.com/",
+    "region": "Norrland",
+    "slug": "are-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Årjängs GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.arjangsgk.se/",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "arjangs-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Åsele GK",
+    "city": "",
+    "country": "",
+    "url": "https://aselegk.com/",
+    "region": "Norrland",
+    "slug": "asele-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Åsundsholm Golf & Country Club",
+    "city": "Vegby",
+    "country": "Sverige",
+    "url": "https://asundsholm.se/",
+    "region": "Skaraborg & Sjuhärad",
+    "slug": "asundsholm-golf-country-club",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Åtvidaberg GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.villabaro.se/golf/",
+    "region": "Östergötland",
+    "slug": "atvidaberg-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Älmhults GK",
+    "city": "",
+    "country": "",
+    "url": "https://almhultsgk.se/",
+    "region": "Småland & Öland",
+    "slug": "almhults-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Älvkarleby GK",
+    "city": "",
+    "country": "",
+    "url": "https://alvkarlebygk.com/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "alvkarleby-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ängelholms GK",
+    "city": "",
+    "country": "",
+    "url": "https://angelholmsgk.se/",
+    "region": "Skåne",
+    "slug": "angelholms-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ängsö GK",
+    "city": "",
+    "country": "",
+    "url": "https://angsogolfklubb.com/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "angso-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Äppelgårdens Golf",
+    "city": "",
+    "country": "",
+    "url": "https://www.appelgarden.se/",
+    "region": "Skåne",
+    "slug": "appelgardens-golf",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Ärila GK",
+    "city": "",
+    "country": "",
+    "url": "https://nykopingsgk.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "arila-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Öijared Resort",
+    "city": "Floda",
+    "country": "Sverige",
+    "url": "https://www.oijared.se/",
+    "region": "Göteborgsområdet",
+    "slug": "oijared-resort",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Öjestrand GC",
+    "city": "",
+    "country": "",
+    "url": "https://ojestrandgc.se/",
+    "region": "Norrland",
+    "slug": "ojestrand-gc",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Örbyhus GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.orbyhusgolf.se/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "orbyhus-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Örebro GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.orebrogolf.se",
+    "region": "Värmland, Örebro & Dalarna",
+    "slug": "orebro-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Öregrunds nya GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.oregrundsgk.com/",
+    "region": "Uppsala & Mälardalen",
+    "slug": "oregrunds-nya-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Örestads GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.orestadsgk.com/",
+    "region": "Skåne",
+    "slug": "orestads-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Öresunds GK",
+    "city": "",
+    "country": "",
+    "url": "https://oresundsgk.se/",
+    "region": "Skåne",
+    "slug": "oresunds-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Österlens GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.osterlensgk.com/",
+    "region": "Skåne",
+    "slug": "osterlens-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Östersund-Frösö GK",
+    "city": "",
+    "country": "",
+    "url": "http://www.ofg.nu/",
+    "region": "Norrland",
+    "slug": "ostersund-froso-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Österåkers GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.ostgk.se/",
+    "region": "Stockholmsområdet",
+    "slug": "osterakers-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Östra Göinge GK",
+    "city": "",
+    "country": "",
+    "url": "https://www.oggk.se/",
+    "region": "Skåne",
+    "slug": "ostra-goinge-gk",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  },
+  {
+    "name": "Öviks GK - Puttom",
+    "city": "",
+    "country": "",
+    "url": "http://www.puttom.se/",
+    "region": "Norrland",
+    "slug": "oviks-gk-puttom",
+    "active": true,
+    "anlaggningstyp": "golfbana"
+  }
+]

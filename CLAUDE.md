@@ -21,6 +21,11 @@ Alla filmer ligger som självständiga projekt i `work/<mapp>/` – översikt i 
 **`/film`** (`skills/film/SKILL.md`): ändra i filmens `film.json`, bygg bara det som behövs (`./make.sh del|ljud|bild`),
 läs `out/QA.md` och titta på `out/qa-kontakt.png` innan leverans.
 
+## Versioner
+Varje film som visas för Jonas sparas som en låst version (`work/<film>/versioner/vNN/`) med `python scripts/versioner.py
+spara <film> <video.mp4> -m "vad som ändrats"` (görs automatiskt i `make.sh`). Jonas jämför versioner synkat i Content
+Engine → `/versioner/`. Detaljer i skillen `/film`, punkt 7.
+
 ## Kod
 - Tester: `.venv/Scripts/python.exe manage.py test engine --settings=engine.test_settings`
 - `main` deployas till produktion (Render) – jobba på en branch och öppna PR.

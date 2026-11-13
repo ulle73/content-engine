@@ -40,6 +40,21 @@ En film består av:
 6. **Leverera:** filmens fil i `resultat/` (`resultat/…-9x16.mp4` – dit kopieras filmen automatiskt när QA har gått
    igenom; `out/` är arbetsmaterial), vad som ändrats, QA-resultatet, och säg att ljud inte är avlyssnat.
    Uppdatera status i `work/FILMER.md` om något valts/godkänts.
+7. **Versioner (gäller alla filmer):** varje film som visas för Jonas blir en låst version i `work/<film>/versioner/vNN/`
+   (film, poster, kontaktark, byggunderlaget i `kalla/`, meta.json; kommentarer och status i granskning.json).
+   `make.sh` och `render-platta.mjs` sparar automatiskt – sätt `ANDRING="vad som ändrats"` före bygget. Egna renderare:
+   `python scripts/versioner.py spara <film> <video.mp4> [fler format] -m "vad som ändrats" --av Claude`. Oförändrad film
+   ger ingen ny version. Jonas jämför och kommenterar i Content Engine → `/versioner/` (synkad uppspelning, gardin, A/B,
+   kommentarer på tidpunkt, godkänn). Öppna kommentarer blir nästa uppdrag: `versioner.py uppdrag <film> vNN`. Gå tillbaka
+   till en äldre version: `versioner.py aterstall <film> vNN` (underlaget hamnar i `fran-vNN/`, inget skrivs över).
+   `versioner.py kontroll` listar färdiga filmer som saknar version; `versioner.py samla` arkiverar dem.
+8. **Godkänd → Drive:** när Jonas har godkänt filen lägger han den i Drive-mappen
+   VIDEOS (GOLFKUPONGER/VIDEOS, GOLFKUPONGER/BILDER eller FAIV). n8n-flödet "CE – Ny fil i Drive → Discord" ser nya filer
+   inom 5 minuter och postar "Ny video i drive: {url}" i Discord #google-drive. Lägg aldrig utkast där – allt i mappen
+   räknas som färdigt.
+   Ska Claude lägga filen där: kör `python scripts/drive_upload.py <mapp-id> <fil> [...]` (flödet "CE – Uppladdning
+   till Drive (Claude)" måste vara publicerat). Filen PUT:as direkt till Google; skicka aldrig filer till n8n-webhooks
+   (de blir kvar som `temp` i PostgreSQL – incident 2026-11-05).
 
 ## Regler som alltid gäller (källor: skills/video-regler, skills/ljud, skills/golfkuponger-brand, -friskvard)
 - Läsregeln: varje text syns ≥ max(5/6, tecken/12) + 0,9 s – renderingen stoppar annars.
