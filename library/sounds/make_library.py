@@ -266,6 +266,8 @@ def main():
             "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-11-13" if sid in NEW7 else "2026-10-28" if sid in NEW6 else "2026-10-23" if sid in NEW5 else "2026-10-14" if sid in NEW2 or sid in NEW4 or sid == "music.lifes-a-movie" else "2026-10-13",
             "preview": {"video": None, "still": still}, "notes": tips, "bank": bank,
         }
+        if sid in NEW7:  # topplåtarna är gitignorerade och finns bara på Jonas dator
+            item["local_only"] = True
         out.append(item)
     data = {"kit": "sounds", "title": "Ljudbanken – godkända ljud", "source": {"name": "Content Engine", "url": "",
             "license": "Per ljud, se bank.license"}, "items": out}

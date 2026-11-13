@@ -1732,7 +1732,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 186,9 s, -10,7 LUFS integrerat: normalisera till -14 LUFS före mix (-3,3 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 120 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/ABBA - Money, Money, Money.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.alex-warren-ordinary",
@@ -1782,7 +1783,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 187,0 s, -6,4 LUFS integrerat: normalisera till -14 LUFS före mix (-7,6 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Alex Warren - Ordinary.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.avicii-the-nights",
@@ -1835,7 +1837,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 176,7 s, -7,3 LUFS integrerat: normalisera till -14 LUFS före mix (-6,7 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 126 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Avicii - The Nights.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.benson-boone-beautiful-things",
@@ -1885,7 +1888,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 180,4 s, -6,9 LUFS integrerat: normalisera till -14 LUFS före mix (-7,1 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Benson Boone - Beautiful Things.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.black-eyed-peas-i-gotta-feeling",
@@ -1937,7 +1941,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 289,2 s, -9,8 LUFS integrerat: normalisera till -14 LUFS före mix (-4,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 128 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Black Eyed Peas - I Gotta Feeling.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.black-eyed-peas-pump-it",
@@ -1990,7 +1995,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 213,1 s, -7,3 LUFS integrerat: normalisera till -14 LUFS före mix (-6,7 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 154 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Black Eyed Peas - Pump It.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.chappell-roan-hot-to-go",
@@ -2041,7 +2047,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 184,9 s, -7,8 LUFS integrerat: normalisera till -14 LUFS före mix (-6,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Chappell Roan - HOT TO GO!.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.coldplay-viva-la-vida",
@@ -2092,7 +2099,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 242,4 s, -9,2 LUFS integrerat: normalisera till -14 LUFS före mix (-4,8 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 138 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Coldplay - Viva La Vida.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.dr-dre-snoop-dogg-the-next-episode",
@@ -2144,7 +2152,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 161,5 s, -7,8 LUFS integrerat: normalisera till -14 LUFS före mix (-6,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 96 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Dr. Dre, Snoop Dogg - The Next Episode.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.earth-wind-fire-september",
@@ -2197,7 +2206,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 217,2 s, -9,8 LUFS integrerat: normalisera till -14 LUFS före mix (-4,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 124 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Earth, Wind & Fire - September.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.katy-perry-the-one-that-got-away",
@@ -2249,7 +2259,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 227,4 s, -8,1 LUFS integrerat: normalisera till -14 LUFS före mix (-5,9 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 134 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Katy Perry - The One That Got Away.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.natasha-bedingfield-unwritten",
@@ -2300,7 +2311,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 259,4 s, -9,6 LUFS integrerat: normalisera till -14 LUFS före mix (-4,4 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 100 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Natasha Bedingfield - Unwritten.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.rose-bruno-mars-apt",
@@ -2352,7 +2364,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 170,0 s, -7,4 LUFS integrerat: normalisera till -14 LUFS före mix (-6,6 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/ROSÉ, Bruno Mars - APT..mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.sabrina-carpenter-espresso",
@@ -2404,7 +2417,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 175,5 s, -7,3 LUFS integrerat: normalisera till -14 LUFS före mix (-6,7 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 104 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Sabrina Carpenter - Espresso.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.shaboozey-a-bar-song",
@@ -2456,7 +2470,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 171,3 s, -7,6 LUFS integrerat: normalisera till -14 LUFS före mix (-6,4 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Shaboozey - A Bar Song (Tipsy).mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.slayyyter-dance",
@@ -2507,7 +2522,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 287,1 s, -8,0 LUFS integrerat: normalisera till -14 LUFS före mix (-6,0 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Slayyyter - DANCE....mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.sophie-ellis-bextor-murder-on-the-dancefloor",
@@ -2559,7 +2575,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 230,1 s, -9,0 LUFS integrerat: normalisera till -14 LUFS före mix (-5,0 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 118 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Sophie Ellis-Bextor - Murder On The Dancefloor.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.wham-last-christmas",
@@ -2611,7 +2628,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 263,0 s, -15,5 LUFS integrerat: normalisera till -14 LUFS före mix (+1,5 dB) – tyst master, ~7 dB svagare än de andra topplåtarna. Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 108 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Wham! - Last Christmas.mp3"
-      }
+      },
+      "local_only": true
     },
     {
       "id": "music.zara-larsson-lush-life",
@@ -2663,7 +2681,8 @@
         "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
         "level": "Hel låt 200,7 s, -8,0 LUFS integrerat: normalisera till -14 LUFS före mix (-6,0 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 98 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
         "file": "library/sounds/files/Zara Larsson - Lush Life.mp3"
-      }
+      },
+      "local_only": true
     }
   ]
 }
