@@ -1,0 +1,584 @@
+<!doctype html>
+<!--
+  chat-thread (imessage-samtal): ljus iMessage-skärm som spelar upp window.CHAT_CONFIG.
+
+  Bygger på HyperFrames-registrets chat-thread men är omskriven för mallen:
+  - allt innehåll och alla tider kommer från conversation.json via build.mjs (_typing, _start, _reaction)
+  - tråden börjar uppifrån som i riktiga iMessage och scrollar först när den är full
+  - skriver-prickar och "Levererat" är egna rader i layouten och skjuter upp tråden
+  - bild + text i samma meddelande visas som bild och textbubbla under
+  - en svans per avsändargrupp, stora emoji utan bubbla, tapback-reaktion som egen händelse
+  Enhet: --pt = skärmbredd / 350 (iOS "Större text"-zoom) eller / 402 (standard).
+  Deterministisk: layouten räknas fram vid mount (och igen när typsnitt och bilder har laddats).
+-->
+<html lang="sv" data-composition-id="chat-thread" data-composition-duration="12">
+  <head>
+    <meta charset="UTF-8" />
+    <title>iMessage-samtal</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="chat-thread" data-duration="12" data-fps="30">
+        <style>
+          #root *, #root *::before, #root *::after { box-sizing: border-box; }
+          #root {
+            --pt: 2.34px;
+            --blue: #0b84fe;
+            --gray: #e9e9eb;
+            --label: #8e8e93;
+            position: absolute; inset: 0; overflow: hidden; isolation: isolate;
+            background: #fff; color: #000;
+            font-family: "Apple Emoji", "SF Pro Text", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            pointer-events: none;
+          }
+          #root.sms { --blue: #34c759; }
+          .ms-pt { position: absolute; }
+
+          /* tråd */
+          .ms-view { position: absolute; left: 0; right: 0; top: 0; bottom: 0; overflow: hidden; }
+          .ms-row { position: absolute; left: calc(var(--pt) * 14); right: calc(var(--pt) * 14); top: 0; visibility: hidden; will-change: transform; }
+          .ms-row.sent { text-align: right; }
+          .ms-pop { display: inline-flex; flex-direction: column; gap: calc(var(--pt) * 2); position: relative; text-align: left; transform-origin: left bottom; max-width: 78%; }
+          .ms-row.sent .ms-pop { align-items: flex-end; transform-origin: right bottom; }
+          .ms-bubble {
+            position: relative; display: inline-block;
+            padding: calc(var(--pt) * 7) calc(var(--pt) * 12) calc(var(--pt) * 7.5);
+            border-radius: calc(var(--pt) * 18);
+            font-size: calc(var(--pt) * 17); line-height: calc(var(--pt) * 22); letter-spacing: -0.025em;
+            background: var(--gray); color: #000;
+            white-space: pre-wrap; overflow-wrap: anywhere;
+          }
+          .ms-row.sent .ms-bubble { background-color: #0b84fe; color: #fff; }
+          #root.sms .ms-row.sent .ms-bubble { background-color: #34c759; }
+          /* svans: bubbelfärgad kvartscirkel + vit urtagning, bara på sista bubblan i en grupp */
+          .ms-tail { position: absolute; bottom: 0; width: calc(var(--pt) * 20); height: calc(var(--pt) * 20); }
+          .ms-row.recv .ms-tail { left: calc(var(--pt) * -6); }
+          .ms-row.sent .ms-tail { right: calc(var(--pt) * -6); }
+          .ms-tail::before, .ms-tail::after { content: ""; position: absolute; bottom: 0; }
+          .ms-row.recv .ms-tail::before { left: calc(var(--pt) * 1); width: calc(var(--pt) * 14); height: calc(var(--pt) * 14); background: var(--gray); border-bottom-right-radius: calc(var(--pt) * 12) calc(var(--pt) * 10); }
+          .ms-row.recv .ms-tail::after { left: calc(var(--pt) * -4); width: calc(var(--pt) * 10); height: calc(var(--pt) * 16); background: #fff; border-bottom-right-radius: calc(var(--pt) * 8); }
+          .ms-row.sent .ms-tail::before { right: calc(var(--pt) * 1); width: calc(var(--pt) * 14); height: calc(var(--pt) * 14); background: var(--blue); border-bottom-left-radius: calc(var(--pt) * 12) calc(var(--pt) * 10); }
+          .ms-row.sent .ms-tail::after { right: calc(var(--pt) * -4); width: calc(var(--pt) * 10); height: calc(var(--pt) * 16); background: #fff; border-bottom-left-radius: calc(var(--pt) * 8); }
+          .ms-bubble > span { position: relative; z-index: 1; }
+          .ms-emoji { font-size: calc(var(--pt) * 46); line-height: 1.15; padding: 0 calc(var(--pt) * 2); }
+          /* låsskärm (intro): bakgrund, datum, stor klocka, notis, ficklampa/kamera */
+          .ms-lock { position: absolute; inset: 0; z-index: 9; display: none; overflow: hidden; transform-origin: 50% 70%; }
+          .ms-lock-bg { position: absolute; inset: 0; background: linear-gradient(170deg, #3a5a8c 0%, #6b4f8f 55%, #c46a6a 100%); background-size: cover; background-position: center; }
+          .ms-lock-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 38%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.3) 100%); }
+          .ms-lock-date, .ms-lock-time { position: absolute; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.92); font-family: "SF Pro Display", sans-serif; }
+          .ms-lock-date { font-size: calc(var(--pt) * 20); font-weight: 600; letter-spacing: 0.01em; }
+          .ms-lock-time { font-size: calc(var(--pt) * 92); font-weight: 600; letter-spacing: -0.02em; line-height: 1; color: rgba(255,255,255,0.95); }
+          .ms-lock-lock { position: absolute; left: 50%; transform: translateX(-50%); }
+          .ms-notif { position: absolute; left: calc(var(--pt) * 9); right: calc(var(--pt) * 9); display: flex; gap: calc(var(--pt) * 11); align-items: center; padding: calc(var(--pt) * 12) calc(var(--pt) * 14); border-radius: calc(var(--pt) * 22); background: rgba(246, 246, 248, 0.72); backdrop-filter: blur(24px) saturate(1.6); color: #000; visibility: hidden; transform-origin: 50% 50%; }
+          .ms-notif .ic { flex: none; width: calc(var(--pt) * 38); height: calc(var(--pt) * 38); border-radius: calc(var(--pt) * 9); background: linear-gradient(180deg, #67f57f, #0fbe2c); display: grid; place-items: center; }
+          .ms-notif .tx { flex: 1; min-width: 0; }
+          .ms-notif .hd { display: flex; justify-content: space-between; align-items: baseline; font-size: calc(var(--pt) * 15); line-height: calc(var(--pt) * 20); }
+          .ms-notif .hd b { font-weight: 600; }
+          .ms-notif .hd span { color: rgba(60, 60, 67, 0.6); font-size: calc(var(--pt) * 13); }
+          .ms-notif .bd { font-size: calc(var(--pt) * 15); line-height: calc(var(--pt) * 20); }
+          .ms-lock-btn { position: absolute; width: calc(var(--pt) * 50); height: calc(var(--pt) * 50); border-radius: 50%; background: rgba(0, 0, 0, 0.28); backdrop-filter: blur(16px); display: grid; place-items: center; }
+          .ms-ov { position: absolute; left: 0; top: 0; z-index: 8; visibility: hidden; pointer-events: none; image-rendering: pixelated; transform-origin: 50% 50%; }
+          .ms-photo { display: block; width: calc(var(--pt) * 230); max-width: 100%; border-radius: calc(var(--pt) * 18); object-fit: cover; background: #f2f2f7; }
+          .ms-react {
+            position: absolute; top: calc(var(--pt) * -22); visibility: hidden;
+            min-width: calc(var(--pt) * 32); height: calc(var(--pt) * 30); padding: 0 calc(var(--pt) * 6);
+            border-radius: calc(var(--pt) * 16); border: calc(var(--pt) * 2) solid #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: calc(var(--pt) * 16); background: var(--gray); z-index: 2;
+          }
+          .ms-row.recv .ms-react { right: calc(var(--pt) * -26); background: var(--blue); transform-origin: left bottom; }
+          .ms-row.sent .ms-react { left: calc(var(--pt) * -26); transform-origin: right bottom; }
+          .ms-react::after { content: ""; position: absolute; bottom: calc(var(--pt) * -7); width: calc(var(--pt) * 8); height: calc(var(--pt) * 8); border-radius: 50%; background: inherit; border: calc(var(--pt) * 1.5) solid #fff; }
+          .ms-row.recv .ms-react::after { left: calc(var(--pt) * 1); }
+          .ms-row.sent .ms-react::after { right: calc(var(--pt) * 1); }
+          .ms-stamp { position: absolute; left: 0; right: 0; top: 0; text-align: center; color: var(--label); font-size: calc(var(--pt) * 11.5); line-height: calc(var(--pt) * 14); visibility: hidden; }
+          .ms-stamp b { font-weight: 600; }
+          .ms-receipt { position: absolute; right: calc(var(--pt) * 16); top: 0; color: var(--label); font-size: calc(var(--pt) * 11.5); line-height: calc(var(--pt) * 14); font-weight: 500; visibility: hidden; }
+          .ms-dots { position: absolute; left: calc(var(--pt) * 14); top: 0; visibility: hidden; transform-origin: left bottom; }
+          .ms-dots .b { position: relative; display: flex; gap: calc(var(--pt) * 4); align-items: center; justify-content: center; width: calc(var(--pt) * 58); height: calc(var(--pt) * 36); border-radius: calc(var(--pt) * 18); background: var(--gray); }
+          .ms-dots .b i { width: calc(var(--pt) * 8); height: calc(var(--pt) * 8); border-radius: 50%; background: #8e8e93; opacity: 0.45; }
+          .ms-dots .t1 { position: absolute; left: calc(var(--pt) * -2); bottom: calc(var(--pt) * -2); width: calc(var(--pt) * 13); height: calc(var(--pt) * 13); border-radius: 50%; background: var(--gray); }
+          .ms-dots .t2 { position: absolute; left: calc(var(--pt) * -7); bottom: calc(var(--pt) * -8); width: calc(var(--pt) * 6); height: calc(var(--pt) * 6); border-radius: 50%; background: var(--gray); }
+
+          /* statusrad */
+          .ms-status { position: absolute; left: 0; right: 0; top: 0; z-index: 5; color: #000; }
+          .ms-clock { position: absolute; text-align: center; font-weight: 600; font-size: calc(var(--pt) * 17); letter-spacing: -0.01em; }
+          .ms-icons { position: absolute; display: flex; gap: calc(var(--pt) * 5); align-items: center; justify-content: center; }
+          .ms-icons svg { display: block; }
+
+          /* rubrik med frostat glas */
+          .ms-head { position: absolute; left: 0; right: 0; top: 0; z-index: 4; background: rgba(249, 249, 249, 0.86); backdrop-filter: blur(20px) saturate(1.8); border-bottom: 1px solid rgba(60, 60, 67, 0.18); }
+          .ms-back { position: absolute; left: calc(var(--pt) * 8); display: flex; align-items: center; gap: calc(var(--pt) * 3); color: var(--blue); font-size: calc(var(--pt) * 17); }
+          .ms-back .n { min-width: calc(var(--pt) * 22); height: calc(var(--pt) * 22); padding: 0 calc(var(--pt) * 6); border-radius: calc(var(--pt) * 11); background: var(--blue); color: #fff; font-size: calc(var(--pt) * 13); font-weight: 600; display: grid; place-items: center; }
+          .ms-avatar { position: absolute; left: 50%; transform: translateX(-50%); width: calc(var(--pt) * 50); height: calc(var(--pt) * 50); border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: linear-gradient(180deg, #a5abb8, #858994); color: #fff; font-family: "SF Pro Display", sans-serif; font-weight: 600; font-size: calc(var(--pt) * 21); letter-spacing: 0.01em; }
+          .ms-avatar img { width: 100%; height: 100%; object-fit: cover; }
+          .ms-name { position: absolute; left: 0; right: 0; text-align: center; font-size: calc(var(--pt) * 11.5); color: #000; white-space: nowrap; }
+          .ms-name .c { color: var(--label); margin-left: calc(var(--pt) * 2); }
+          .ms-video { position: absolute; right: calc(var(--pt) * 16); }
+
+          /* inmatning */
+          .ms-compose { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: rgba(255, 255, 255, 0.94); }
+          .ms-plus { position: absolute; left: calc(var(--pt) * 10); width: calc(var(--pt) * 34); height: calc(var(--pt) * 34); border-radius: 50%; background: var(--gray); display: grid; place-items: center; }
+          .ms-field { position: absolute; left: calc(var(--pt) * 52); right: calc(var(--pt) * 12); height: calc(var(--pt) * 36); border: 1px solid #c7c7cc; border-radius: calc(var(--pt) * 18); overflow: hidden; }
+          .ms-ph, .ms-typed { position: absolute; left: calc(var(--pt) * 13); right: calc(var(--pt) * 40); top: 0; bottom: 0; display: flex; align-items: center; font-size: calc(var(--pt) * 17); white-space: pre; overflow: hidden; }
+          .ms-ph { color: #a1a1a6; }
+          .ms-typed { color: #000; visibility: hidden; }
+          .ms-typed.end { justify-content: flex-end; }
+          .ms-caret { display: inline-block; width: calc(var(--pt) * 2); height: calc(var(--pt) * 21); background: var(--blue); margin-left: 1px; border-radius: 1px; }
+          .ms-mic, .ms-send { position: absolute; right: calc(var(--pt) * 4); top: 50%; transform: translateY(-50%); }
+          .ms-send { width: calc(var(--pt) * 28); height: calc(var(--pt) * 28); border-radius: 50%; background: var(--blue); display: grid; place-items: center; visibility: hidden; }
+          .ms-mic { right: calc(var(--pt) * 10); }
+          .ms-home { position: absolute; z-index: 7; left: 50%; transform: translateX(-50%); width: calc(var(--pt) * 134); height: calc(var(--pt) * 5); border-radius: calc(var(--pt) * 3); background: #000; }
+
+          /* tangentbord (iOS, svensk layout, ljust) */
+          .ms-kb { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; background: #d1d3d9; display: none; }
+          .ms-key { position: absolute; border-radius: calc(var(--pt) * 5.5); background: #fff; box-shadow: 0 calc(var(--pt) * 1) 0 rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; color: #000; font-family: "SF Pro Text", sans-serif; font-size: calc(var(--pt) * 22.5); font-weight: 400; line-height: 1; }
+          .ms-key.fn { background: #abb0ba; font-size: calc(var(--pt) * 15.5); }
+          .ms-key.fn.on, .ms-key.on { background: #fff; }
+          .ms-key.space.on { background: #abb0ba; }
+          .ms-key svg { display: block; }
+          .ms-kbicon { position: absolute; }
+          .ms-pop1 { position: absolute; z-index: 6; visibility: hidden; pointer-events: none; }
+          .ms-pop1 .top { position: absolute; left: 0; right: 0; top: 0; background: #fff; border-radius: calc(var(--pt) * 9); box-shadow: 0 calc(var(--pt) * 1) calc(var(--pt) * 3) rgba(0, 0, 0, 0.32); display: flex; align-items: center; justify-content: center; font-family: "Apple Emoji", "SF Pro Text", sans-serif; font-size: calc(var(--pt) * 33); color: #000; }
+          .ms-pop1 .base { position: absolute; bottom: 0; background: #fff; border-radius: 0 0 calc(var(--pt) * 5.5) calc(var(--pt) * 5.5); }
+        </style>
+
+        <div class="ms-view" id="ms-view">
+          <div class="ms-stamp" id="ms-stamp" data-layout-ignore></div>
+          <div class="ms-receipt" id="ms-receipt" data-layout-ignore></div>
+          <div class="ms-dots" id="ms-dots"><div class="b"><i></i><i></i><i></i><span class="t1"></span><span class="t2"></span></div></div>
+        </div>
+
+        <div class="ms-head" id="ms-head" data-layout-allow-occlusion>
+          <div class="ms-back" id="ms-back">
+            <svg viewBox="0 0 12 21" style="width:calc(var(--pt) * 12);height:calc(var(--pt) * 21)"><path d="M10.5 1.5 1.8 10.5l8.7 9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="n" id="ms-unread"></span>
+          </div>
+          <div class="ms-avatar" id="ms-avatar" data-layout-ignore></div>
+          <div class="ms-name" id="ms-name" data-layout-ignore></div>
+          <svg class="ms-video" id="ms-video" viewBox="0 0 28 18" style="width:calc(var(--pt) * 27);height:calc(var(--pt) * 18)"><rect x="0.5" y="0.5" width="18" height="17" rx="4.2" fill="currentColor"/><path d="M20.5 6.2 27 2.4v13.2l-6.5-3.8Z" fill="currentColor"/></svg>
+        </div>
+
+        <div class="ms-status" id="ms-status" data-layout-allow-occlusion>
+          <div class="ms-clock" id="ms-clock">9:41</div>
+          <div class="ms-icons" id="ms-icons">
+            <svg viewBox="0 0 19 12" style="width:calc(var(--pt) * 18);height:calc(var(--pt) * 12)"><rect x="0" y="8" width="3.2" height="4" rx="1"/><rect x="5" y="5.5" width="3.2" height="6.5" rx="1"/><rect x="10" y="3" width="3.2" height="9" rx="1"/><rect x="15" y="0" width="3.2" height="12" rx="1"/></svg>
+            <svg viewBox="0 0 17 12" style="width:calc(var(--pt) * 16);height:calc(var(--pt) * 12)"><path d="M8.5 2.6c2.3 0 4.4.9 6 2.4l1.2-1.2A10.2 10.2 0 0 0 8.5.9 10.2 10.2 0 0 0 1.3 3.8L2.5 5a8.6 8.6 0 0 1 6-2.4Zm0 3.4c1.4 0 2.6.5 3.6 1.4l1.2-1.2a6.8 6.8 0 0 0-4.8-1.9 6.8 6.8 0 0 0-4.8 1.9l1.2 1.2c1-.9 2.2-1.4 3.6-1.4Zm0 3.3c.5 0 1 .2 1.3.5L8.5 11 7.2 9.8c.3-.3.8-.5 1.3-.5Z"/></svg>
+            <svg viewBox="0 0 27 13" style="width:calc(var(--pt) * 26);height:calc(var(--pt) * 13)"><rect x="0.5" y="0.5" width="23" height="12" rx="3.8" fill="none" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="20" height="9" rx="2.5"/><path d="M25 4.3v4.4a2.4 2.4 0 0 0 0-4.4Z" fill-opacity="0.45"/></svg>
+          </div>
+        </div>
+
+        <div class="ms-compose" id="ms-compose">
+          <div class="ms-plus" id="ms-plus"><svg viewBox="0 0 16 16" style="width:calc(var(--pt) * 15);height:calc(var(--pt) * 15)"><path d="M8 1.5v13M1.5 8h13" stroke="#7c7c80" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div class="ms-field" id="ms-field">
+            <div class="ms-ph" id="ms-ph" data-layout-ignore>iMessage</div>
+            <div class="ms-typed" id="ms-typed"><span id="ms-typed-text"></span><span class="ms-caret"></span></div>
+            <svg class="ms-mic" id="ms-mic" viewBox="0 0 14 20" style="width:calc(var(--pt) * 13);height:calc(var(--pt) * 19)"><rect x="4" y="0.8" width="6" height="11.5" rx="3" fill="#8e8e93"/><path d="M1.3 9a5.7 5.7 0 0 0 11.4 0M7 14.8v3.6" fill="none" stroke="#8e8e93" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div class="ms-send" id="ms-send"><svg viewBox="0 0 14 16" style="width:calc(var(--pt) * 12);height:calc(var(--pt) * 14)"><path d="M7 14.5V2M1.8 7 7 1.8 12.2 7" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+        </div>
+        <div class="ms-kb" id="ms-kb"></div>
+        <div class="ms-lock" id="ms-lock" data-layout-allow-occlusion data-layout-allow-overlap>
+          <div class="ms-lock-bg" id="ms-lock-bg"></div>
+          <svg class="ms-lock-lock" id="ms-lock-lock" viewBox="0 0 16 20" style="width:calc(var(--pt) * 13);height:calc(var(--pt) * 17)"><rect x="1" y="8.5" width="14" height="10.5" rx="2.2" fill="#fff"/><path d="M4.2 8.8V5.8a3.8 3.8 0 0 1 7.6 0v3" fill="none" stroke="#fff" stroke-width="1.9"/></svg>
+          <div class="ms-lock-date" id="ms-lock-date" data-layout-ignore></div>
+          <div class="ms-lock-time" id="ms-lock-time"></div>
+          <div class="ms-notif" id="ms-notif">
+            <div class="ic"><svg viewBox="0 0 24 22" style="width:calc(var(--pt) * 24);height:calc(var(--pt) * 22)"><path d="M12 1.5C6 1.5 1.3 5.4 1.3 10.2c0 2.8 1.6 5.3 4.1 6.9-.2 1.4-.9 2.8-2 3.8 2.3.1 4.4-.7 5.8-2 .9.2 1.8.3 2.8.3 6 0 10.7-3.9 10.7-8.9S18 1.5 12 1.5Z" fill="#fff"/></svg></div>
+            <div class="tx"><div class="hd"><b id="ms-notif-from"></b><span id="ms-notif-when" data-layout-ignore>nu</span></div><div class="bd" id="ms-notif-body"></div></div>
+          </div>
+          <div class="ms-lock-btn" id="ms-lock-l"><svg viewBox="0 0 14 24" style="width:calc(var(--pt) * 12);height:calc(var(--pt) * 21)"><path d="M2 1.5h10v4.2l-2.6 3.6V22a.9.9 0 0 1-.9.9H5.5a.9.9 0 0 1-.9-.9V9.3L2 5.7Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><circle cx="7" cy="14" r="1.3" fill="#fff"/></svg></div>
+          <div class="ms-lock-btn" id="ms-lock-r"><svg viewBox="0 0 26 21" style="width:calc(var(--pt) * 23);height:calc(var(--pt) * 19)"><path d="M3.5 4.5h4.2l1.8-2.6h7l1.8 2.6h4.2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-19a2 2 0 0 1-2-2v-11a2 2 0 0 1 2-2Z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><circle cx="13" cy="11.5" r="4.4" fill="none" stroke="#fff" stroke-width="1.6"/></svg></div>
+        </div>
+        <div class="ms-pop1" id="ms-pop1" data-layout-allow-occlusion data-layout-allow-overlap><div class="base" id="ms-pop1-base"></div><div class="top" id="ms-pop1-top"></div></div>
+        <div class="ms-home" id="ms-home"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            var C = window.CHAT_CONFIG || {};
+            var msgs = Array.isArray(C.messages) ? C.messages : [];
+            var root = document.getElementById("ms-view").parentNode;
+            var $ = function (id) { return document.getElementById(id); };
+            var view = $("ms-view");
+            var W = root.offsetWidth || 820, H = root.offsetHeight || 1780;
+            var PT = W / (C.largerText === false ? 402 : 350);
+            root.style.setProperty("--pt", PT + "px");
+            if (C.service === "sms") root.classList.add("sms");
+            var P = function (n) { return n * PT; };
+
+            /* mått för telefonens skärm, från ramens utskärning (se index.html) */
+            var island = C.screen && C.screen.island ? C.screen.island : { top: H * 0.0164, bottom: H * 0.0572, left: W * 0.3456, right: W * 0.6529 };
+            var statusMid = (island.top + island.bottom) / 2;
+            var clock = $("ms-clock");
+            clock.textContent = C.clock || "9:41";
+            clock.style.left = "0px"; clock.style.width = island.left + "px";
+            clock.style.top = (statusMid - P(11)) + "px"; clock.style.lineHeight = P(22) + "px";
+            var icons = $("ms-icons");
+            icons.style.left = island.right + "px"; icons.style.right = "0px";
+            icons.style.top = (statusMid - P(7)) + "px"; icons.style.height = P(14) + "px"; icons.style.fill = "#000";
+
+            /* rubrik */
+            var headTop = island.bottom + P(8);
+            var head = $("ms-head");
+            var back = $("ms-back"); back.style.top = (headTop + P(14)) + "px";
+            var unread = Number(C.unread || 0);
+            if (unread > 0) $("ms-unread").textContent = String(Math.min(999, Math.round(unread))); else $("ms-unread").style.display = "none";
+            var avatar = $("ms-avatar"); avatar.style.top = headTop + "px";
+            var contact = String(C.contact || "Alex").slice(0, 40);
+            if (C.avatar) { var ai = document.createElement("img"); ai.src = C.avatar; ai.alt = ""; avatar.appendChild(ai); }
+            else avatar.textContent = contact.split(/\s+/).map(function (w) { return Array.from(w)[0] || ""; }).join("").slice(0, 2).toUpperCase();
+            var name = $("ms-name"); name.style.top = (headTop + P(54)) + "px";
+            name.textContent = contact;
+            var chev = document.createElement("span"); chev.className = "c"; chev.textContent = "›"; name.appendChild(chev);
+            var video = $("ms-video"); video.style.top = (headTop + P(16)) + "px"; video.style.color = getComputedStyle(root).getPropertyValue("--blue");
+            var headBottom = headTop + P(76);
+            head.style.height = headBottom + "px";
+
+            /* inmatning */
+            var homeBottom = P(8);
+            var composeH = P(36 + 34);
+            var compose = $("ms-compose"); compose.style.height = composeH + "px";
+            $("ms-home").style.bottom = homeBottom + "px";
+            $("ms-field").style.top = P(4) + "px"; $("ms-plus").style.top = P(5) + "px";
+            if (C.service === "sms") $("ms-ph").textContent = "Textmeddelande";
+            if (C.placeholder) $("ms-ph").textContent = C.placeholder;
+
+            var viewTop = headBottom + P(10);
+            var viewBottom = H - composeH - P(8);
+
+            /* tangentbord: svensk iOS-layout, uppe tills C._kbHide (räknas i build.mjs) */
+            var KB = C.keyboard === true;
+            var kb = $("ms-kb"), keys = {}, kbH = P(8 + 4 * 42 + 3 * 11 + 5 + 44 + 34);
+            var kbShift = -(kbH - P(22)), viewBottomKb = H - kbH - P(48) - P(8);
+            function kbUp(t) { return KB && (C._kbHide == null || t < C._kbHide - 1e-6); }
+            if (KB) {
+              kb.style.display = "block"; kb.style.height = kbH + "px";
+              var Wpt = W / PT, gap = 5, kw = (Wpt - 6 - 10 * gap) / 11, kh = 42;
+              var rowY = function (r) { return 8 + r * (kh + 11); };
+              var addKey = function (id, label, x, r, w, cls) {
+                var k = document.createElement("div");
+                k.className = "ms-key" + (cls ? " " + cls : "");
+                k.style.left = P(x) + "px"; k.style.top = P(rowY(r)) + "px"; k.style.width = P(w) + "px"; k.style.height = P(kh) + "px";
+                if (typeof label === "string") k.textContent = label; else if (label) k.appendChild(label);
+                kb.appendChild(k); keys[id] = { el: k, x: x, r: r, w: w, cls: k.className };
+                return k;
+              };
+              var svg = function (vb, w, h, inner) {
+                var e = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                e.setAttribute("viewBox", vb); e.style.width = P(w) + "px"; e.style.height = P(h) + "px"; e.innerHTML = inner; return e;
+              };
+              ["qwertyuiopå", "asdfghjklöä"].forEach(function (row, r) {
+                Array.from(row).forEach(function (c, i) { addKey(c, c, 3 + i * (kw + gap), r, kw); });
+              });
+              var fnW = kw * 1.32, midW = 7 * kw + 6 * gap, midX = (Wpt - midW) / 2;
+              addKey("shift", svg("0 0 20 20", 19, 19, '<path d="M10 2.6 2.4 10.4h4.2v6.4h6.8v-6.4h4.2Z" fill="none" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/>'), 3, 2, fnW, "fn");
+              Array.from("zxcvbnm").forEach(function (c, i) { addKey(c, c, midX + i * (kw + gap), 2, kw); });
+              addKey("del", svg("0 0 26 20", 24, 18, '<path d="M8.4 2.5h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-14L1.6 10Z" fill="none" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/><path d="m11.6 6.6 6.8 6.8m0-6.8-6.8 6.8" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>'), Wpt - 3 - fnW, 2, fnW, "fn");
+              var w123 = 2 * kw + gap, wRet = 2.25 * kw + gap;
+              addKey("123", "123", 3, 3, w123, "fn");
+              addKey(" ", "mellanslag", 3 + w123 + gap, 3, Wpt - 6 - w123 - wRet - 2 * gap, "space");
+              keys[" "].el.style.fontSize = P(15.5) + "px";
+              addKey("ret", "retur", Wpt - 3 - wRet, 3, wRet, "fn");
+              var barY = rowY(4) - 11 + 5 + 8;
+              var emo = svg("0 0 28 28", 27, 27, '<circle cx="14" cy="14" r="12" fill="none" stroke="#50555c" stroke-width="1.7"/><circle cx="10" cy="11.5" r="1.6" fill="#50555c"/><circle cx="18" cy="11.5" r="1.6" fill="#50555c"/><path d="M8.6 16.4a6 6 0 0 0 10.8 0" fill="none" stroke="#50555c" stroke-width="1.7" stroke-linecap="round"/>');
+              emo.classList.add("ms-kbicon"); emo.style.left = P(22) + "px"; emo.style.top = P(barY) + "px"; kb.appendChild(emo);
+              var mic2 = svg("0 0 18 26", 16, 24, '<rect x="5" y="1" width="8" height="15" rx="4" fill="#50555c"/><path d="M1.6 12a7.4 7.4 0 0 0 14.8 0M9 19.6v4.6" fill="none" stroke="#50555c" stroke-width="1.8" stroke-linecap="round"/>');
+              mic2.classList.add("ms-kbicon"); mic2.style.right = P(26) + "px"; mic2.style.top = P(barY + 1.5) + "px"; kb.appendChild(mic2);
+            }
+            /* låsskärm som intro (C.intro.lockscreen); tider från build.mjs: _notify och _open */
+            var LOCK = !!(C.intro && C.intro.lockscreen && msgs.length);
+            var lock = $("ms-lock"), notif = $("ms-notif");
+            if (LOCK) {
+              lock.style.display = "block";
+              if (C.intro.wallpaper) { $("ms-lock-bg").style.backgroundImage = 'url("' + C.intro.wallpaper + '")'; }
+              var lt = island.bottom + P(14);
+              $("ms-lock-lock").style.top = lt + "px";
+              $("ms-lock-date").style.top = (lt + P(22)) + "px";
+              $("ms-lock-date").textContent = C.intro.date || "";
+              $("ms-lock-time").style.top = (lt + P(46)) + "px";
+              $("ms-lock-time").textContent = C.clock || "9:41";
+              $("ms-notif-from").textContent = contact;
+              $("ms-notif-body").textContent = msgs[0].text || "Bild";
+              var btnY = H - P(34) - P(50);
+              $("ms-lock-l").style.left = P(46) + "px"; $("ms-lock-l").style.top = btnY + "px";
+              $("ms-lock-r").style.right = P(46) + "px"; $("ms-lock-r").style.top = btnY + "px";
+              notif.style.bottom = (H - btnY + P(46)) + "px";
+            }
+            var pop1 = $("ms-pop1"), popTop = $("ms-pop1-top"), popBase = $("ms-pop1-base");
+            var EMOJI_CH = /\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}/u;
+            function keyFor(ch) {
+              if (ch === " ") return " ";
+              var l = ch.toLocaleLowerCase("sv");
+              if (keys[l]) return l;
+              if (EMOJI_CH.test(ch) || /^[‍️]$/.test(ch)) return null;
+              return "123";
+            }
+
+            /* tidsstämpel överst i tråden */
+            var stamp = $("ms-stamp");
+            var stampText = C.stamp !== undefined ? C.stamp : ((C.date || "Idag") + " " + (C.clock || "9:41"));
+            if (stampText) {
+              var sb = document.createElement("b"); sb.textContent = C.service === "sms" ? "Textmeddelande" : "iMessage";
+              stamp.appendChild(sb); stamp.appendChild(document.createElement("br")); stamp.appendChild(document.createTextNode(stampText));
+            }
+            var receipt = $("ms-receipt"); receipt.textContent = C.receiptText || "Levererat";
+            var receiptOn = C.receipt !== false;
+            var dots = $("ms-dots");
+
+            var EMOJI_ONLY = /^(?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}|‍|️|\s)+$/u;
+            function bigEmoji(t) {
+              if (!t || !EMOJI_ONLY.test(t)) return false;
+              var n = typeof Intl !== "undefined" && Intl.Segmenter ? Array.from(new Intl.Segmenter("sv", { granularity: "grapheme" }).segment(t.trim())).length : Array.from(t.trim()).length;
+              return n <= 3;
+            }
+
+            /* emoji sist i texten radbryts aldrig ensamma: mellanslaget före dem blir hårt */
+            var TRAIL = / ((?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator}|‍|️)+)$/u;
+            var GRAPH = typeof Intl !== "undefined" && Intl.Segmenter ? new Intl.Segmenter("sv", { granularity: "grapheme" }) : null;
+            function noWidow(t) {
+              return t.replace(/\s+$/, "").replace(TRAIL, function (_, run) {
+                /* hårt mellanslag före gruppen och ordfog (U+2060) mellan emoji, så hela gruppen följer sista ordet */
+                var parts = GRAPH ? Array.from(GRAPH.segment(run), function (s) { return s.segment; }) : [run];
+                return " " + parts.join("⁠");
+              });
+            }
+
+            var rows = msgs.map(function (m, i) {
+              var row = document.createElement("div");
+              row.className = "ms-row " + (m.side === "sent" ? "sent" : "recv");
+              var pop = document.createElement("div"); pop.className = "ms-pop"; row.appendChild(pop);
+              var tail = null;
+              if (m.image) {
+                var img = document.createElement("img"); img.className = "ms-photo"; img.src = m.image; img.alt = "";
+                pop.appendChild(img);
+              }
+              if (typeof m.text === "string" && m.text.length) {
+                if (!m.image && bigEmoji(m.text)) {
+                  var e = document.createElement("div"); e.className = "ms-emoji"; e.textContent = m.text.trim(); pop.appendChild(e);
+                } else {
+                  var b = document.createElement("div"); b.className = "ms-bubble";
+                  tail = document.createElement("i"); tail.className = "ms-tail"; b.appendChild(tail);
+                  var s = document.createElement("span"); s.textContent = noWidow(m.text); b.appendChild(s);
+                  pop.appendChild(b);
+                }
+              }
+              var react = null;
+              if (m.reaction) { react = document.createElement("div"); react.className = "ms-react"; react.textContent = m.reaction; pop.appendChild(react); }
+              view.appendChild(row);
+              /* overlay på en bild (t.ex. pixelglasögon som glider ner på ansiktet) */
+              var ov = null;
+              if (m.overlay && m.overlay.src && m.image) {
+                ov = document.createElement("img"); ov.className = "ms-ov"; ov.src = m.overlay.src; ov.alt = "";
+                ov.setAttribute("data-layout-allow-occlusion", ""); ov.setAttribute("data-layout-allow-overlap", "");
+                root.appendChild(ov);
+              }
+              return { m: m, el: row, pop: pop, tail: tail, react: react, ov: ov, side: m.side === "sent" ? "sent" : "recv" };
+            });
+
+            var tl = gsap.timeline({ paused: true });
+            var DUR = Number(C.duration) || 12;
+
+            function build() {
+              tl.clear();
+              var heights = rows.map(function (r) { return r.el.offsetHeight; });
+              var stampH = stamp.textContent ? stamp.offsetHeight : 0;
+              var receiptH = receipt.offsetHeight;
+              var dotsH = dots.offsetHeight;
+              var REACT = P(18), SAME = P(2), DIFF = P(10), RECEIPT_GAP = P(3);
+
+              function state(t) {
+                var vis = [];
+                rows.forEach(function (r, i) { if (r.m._start <= t + 1e-6) vis.push(i); });
+                var dotFor = -1;
+                if (C.typing !== false) rows.forEach(function (r, i) { if (r.side === "recv" && typeof r.m._typing === "number" && r.m._typing <= t + 1e-6 && t < r.m._start - 1e-6) dotFor = i; });
+                var last = vis.length ? vis[vis.length - 1] : -1;
+                var rc = receiptOn && last >= 0 && rows[last].side === "sent" && t >= rows[last].m._start + 0.5 - 1e-6 ? last : -1;
+                var y = viewTop, pos = {}, prev = null;
+                if (stampH) { pos.stamp = y; y += stampH + P(14); }
+                vis.forEach(function (i) {
+                  var r = rows[i];
+                  if (prev !== null) y += rows[prev].side === r.side ? SAME : DIFF;
+                  if (r.react && t >= r.m._reaction - 1e-6) y += REACT;
+                  pos[i] = y; y += heights[i];
+                  if (rc === i) { pos.receipt = y + RECEIPT_GAP; y += RECEIPT_GAP + receiptH; }
+                  prev = i;
+                });
+                if (dotFor >= 0) { if (prev !== null) y += rows[prev].side === "recv" ? SAME + P(2) : DIFF; pos.dots = y; y += dotsH; }
+                var scroll = Math.max(0, y - (kbUp(t) ? viewBottomKb : viewBottom));
+                Object.keys(pos).forEach(function (k) { pos[k] -= scroll; });
+                var groupEnd = {};
+                vis.forEach(function (i, k) { var n = vis[k + 1]; groupEnd[i] = n === undefined ? dotFor < 0 || rows[i].side !== "recv" : rows[n].side !== rows[i].side; });
+                return { pos: pos, vis: vis, dots: dotFor, receipt: rc, groupEnd: groupEnd };
+              }
+
+              var times = [0];
+              rows.forEach(function (r) {
+                [r.m._typing, r.m._start, r.m._start + 0.5, r.react ? r.m._reaction : null].forEach(function (x) { if (typeof x === "number" && x >= 0) times.push(Math.round(x * 1000) / 1000); });
+              });
+              if (KB && C._kbHide != null) times.push(Math.round(C._kbHide * 1000) / 1000);
+              times = times.filter(function (x, i, a) { return a.indexOf(x) === i; }).sort(function (a, b) { return a - b; });
+
+              /* utgångsläge */
+              var s0 = state(0);
+              rows.forEach(function (r, i) {
+                var on = s0.pos[i] !== undefined;
+                tl.set(r.el, { y: on ? s0.pos[i] : viewBottom, visibility: on ? "visible" : "hidden" }, 0);
+                if (r.tail) tl.set(r.tail, { visibility: s0.groupEnd[i] === false ? "hidden" : "inherit" }, 0);
+                if (r.react) tl.set(r.react, { visibility: "hidden", scale: 1 }, 0);
+              });
+              tl.set(stamp, { y: s0.pos.stamp || viewTop, visibility: stampH ? "visible" : "hidden" }, 0);
+              tl.set(receipt, { y: s0.pos.receipt || 0, visibility: s0.receipt >= 0 ? "visible" : "hidden" }, 0);
+              tl.set(dots, { y: s0.pos.dots || viewBottom, visibility: s0.dots >= 0 ? "visible" : "hidden", scale: 1 }, 0);
+
+              var MOVE = 0.32;
+              var prevS = s0;
+              times.slice(1).forEach(function (t) {
+                var s = state(t);
+                function move(el, a, b) {
+                  if (a === undefined || b === undefined || Math.abs(a - b) < 0.5) { if (b !== undefined) tl.set(el, { y: b }, t); return; }
+                  tl.fromTo(el, { y: a }, { y: b, duration: MOVE, ease: "power3.out", immediateRender: false }, t);
+                }
+                rows.forEach(function (r, i) {
+                  var was = prevS.pos[i] !== undefined, is = s.pos[i] !== undefined;
+                  if (is && !was) {
+                    tl.set(r.el, { y: s.pos[i], visibility: "visible" }, t);
+                    if (r.side === "sent") tl.fromTo(r.pop, { y: P(26), scale: 0.86, opacity: 0.4 }, { y: 0, scale: 1, opacity: 1, duration: 0.28, ease: "back.out(1.4)", immediateRender: false }, t);
+                    else tl.fromTo(r.pop, { scale: 0.7, opacity: 0.3 }, { scale: 1, opacity: 1, duration: 0.24, ease: "back.out(1.6)", immediateRender: false }, t);
+                  } else if (is) {
+                    move(r.el, prevS.pos[i], s.pos[i]);
+                    /* helt ovanför skärmen: dölj (efter rörelsen); tillbaka i bild: visa direkt */
+                    var offNow = s.pos[i] + heights[i] < 0, offBefore = prevS.pos[i] + heights[i] < 0;
+                    if (offNow && !offBefore) tl.set(r.el, { visibility: "hidden" }, t + MOVE);
+                    if (!offNow && offBefore) tl.set(r.el, { visibility: "visible" }, t);
+                  }
+                  if (r.tail && is) tl.set(r.tail, { visibility: s.groupEnd[i] === false ? "hidden" : "inherit" }, t);
+                  if (r.react && Math.abs(t - r.m._reaction) < 1e-6) tl.fromTo(r.react, { visibility: "visible", scale: 0.2 }, { scale: 1, duration: 0.3, ease: "back.out(2.2)", immediateRender: false }, t);
+                });
+                if (s.pos.stamp !== undefined) move(stamp, prevS.pos.stamp, s.pos.stamp);
+                if (s.receipt >= 0) {
+                  if (prevS.receipt !== s.receipt) tl.fromTo(receipt, { y: s.pos.receipt, visibility: "visible", opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: false }, t);
+                  else move(receipt, prevS.pos.receipt, s.pos.receipt);
+                } else if (prevS.receipt >= 0) tl.set(receipt, { visibility: "hidden" }, t);
+                if (s.dots >= 0 && prevS.dots !== s.dots) {
+                  tl.fromTo(dots, { y: s.pos.dots, visibility: "visible", scale: 0.4 }, { scale: 1, duration: 0.22, ease: "back.out(1.8)", immediateRender: false }, t);
+                  var span = rows[s.dots].m._start - t;
+                  var cycles = Math.max(1, Math.floor(span / 0.84));
+                  dots.querySelectorAll("i").forEach(function (d, k) {
+                    tl.fromTo(d, { opacity: 0.35 }, { keyframes: [{ opacity: 0.9, duration: 0.21 }, { opacity: 0.35, duration: 0.21 }, { opacity: 0.35, duration: 0.42 }], repeat: cycles - 1, ease: "none", immediateRender: false }, t + k * 0.14);
+                  });
+                } else if (s.dots >= 0) move(dots, prevS.pos.dots, s.pos.dots);
+                else if (prevS.dots >= 0) tl.set(dots, { visibility: "hidden" }, t);
+                prevS = s;
+              });
+
+              /* skickade meddelanden skrivs i inmatningsfältet */
+              var typed = $("ms-typed"), typedText = $("ms-typed-text"), ph = $("ms-ph"), mic = $("ms-mic"), send = $("ms-send");
+              tl.set(typed, { visibility: "hidden" }, 0); tl.set(ph, { visibility: "visible" }, 0);
+              tl.set(mic, { visibility: "visible" }, 0); tl.set(send, { visibility: "hidden" }, 0); tl.set(typedText, { textContent: "" }, 0);
+              var fieldW = typed.clientWidth - P(4);
+              /* tangentbordets läge: uppe från start, glider ner vid C._kbHide och tar med inmatningsfältet */
+              if (KB) {
+                tl.set(compose, { y: kbShift }, 0); tl.set(kb, { y: 0 }, 0);
+                tl.set(pop1, { visibility: "hidden" }, 0);
+                Object.keys(keys).forEach(function (id) { tl.set(keys[id].el, { attr: { class: keys[id].cls } }, 0); });
+                if (C._kbHide != null) {
+                  tl.fromTo(compose, { y: kbShift }, { y: 0, duration: 0.32, ease: "power3.out", immediateRender: false }, C._kbHide);
+                  tl.fromTo(kb, { y: 0 }, { y: kbH, duration: 0.32, ease: "power3.out", immediateRender: false }, C._kbHide);
+                }
+              }
+              function press(ch, t, tNext) {
+                var id = keyFor(ch); if (!id || !keys[id]) return;
+                var k = keys[id], off = Math.min(t + 0.1, tNext - 0.005);
+                if (k.r <= 2 && id.length === 1 && id !== " ") {
+                  /* bokstav: förstorad ballong ovanför tangenten, som på iPhone */
+                  var bw = k.w + 22, bx = Math.max(1, Math.min(W / PT - bw - 1, k.x - 11));
+                  var keyTop = H - kbH + P(8 + k.r * 53);
+                  tl.set(pop1, { visibility: "visible", left: P(bx) + "px", top: (keyTop - P(54)) + "px", width: P(bw) + "px", height: P(54 + 42) + "px" }, t);
+                  tl.set(popTop, { textContent: ch, height: P(56) + "px" }, t);
+                  tl.set(popBase, { left: P(k.x - bx) + "px", width: P(k.w) + "px", height: P(44) + "px" }, t);
+                  tl.set(pop1, { visibility: "hidden" }, off);
+                } else {
+                  tl.set(k.el, { attr: { class: k.cls + " on" } }, t);
+                  tl.set(k.el, { attr: { class: k.cls } }, off);
+                }
+              }
+              rows.forEach(function (r) {
+                if (r.side !== "sent" || C.showTyping === false || typeof r.m._typing !== "number") return;
+                var chars = Array.from(r.m.text || "");
+                var a = r.m._typing;
+                var at = Array.isArray(r.m._keys) && r.m._keys.length === chars.length ? r.m._keys : chars.map(function (_, k) { return a + (r.m._start - 0.08 - a) * (k / chars.length); });
+                tl.set(ph, { visibility: "hidden" }, a); tl.set(typed, { visibility: "visible" }, a);
+                tl.set(mic, { visibility: "hidden" }, a); tl.set(send, { visibility: "visible" }, a);
+                if (!chars.length) tl.set(typedText, { textContent: "" }, a);
+                typed.classList.remove("end");
+                chars.forEach(function (ch, k) {
+                  var part = chars.slice(0, k + 1).join("");
+                  typedText.textContent = part;
+                  var over = typedText.offsetWidth > fieldW;
+                  tl.set(typedText, { textContent: part }, at[k]);
+                  tl.set(typed, { attr: { class: "ms-typed" + (over ? " end" : "") } }, at[k]);
+                  if (KB) press(ch, at[k], k + 1 < chars.length ? at[k + 1] : r.m._start);
+                });
+                typedText.textContent = "";
+                tl.set(typedText, { textContent: "" }, r.m._start);
+                tl.set(typed, { visibility: "hidden", attr: { class: "ms-typed" } }, r.m._start);
+                tl.set(ph, { visibility: "visible" }, r.m._start);
+                tl.set(mic, { visibility: "visible" }, r.m._start); tl.set(send, { visibility: "hidden" }, r.m._start);
+              });
+
+              /* låsskärmen: notisen glider upp, trycks, appen öppnas (låsskärmen zoomar och tonar bort) */
+              if (LOCK) {
+                var nt = C.intro._notify, op = C.intro._open, clockEl = $("ms-clock"), iconsEl = $("ms-icons");
+                tl.set(lock, { visibility: "visible", opacity: 1, scale: 1 }, 0);
+                tl.set(notif, { visibility: "hidden" }, 0);
+                tl.set(clockEl, { visibility: "hidden" }, 0); tl.set(iconsEl, { fill: "#fff" }, 0);
+                tl.set($("ms-status"), { zIndex: 10 }, 0);
+                tl.fromTo(notif, { visibility: "visible", y: P(46), opacity: 0, scale: 0.94 }, { y: 0, opacity: 1, scale: 1, duration: 0.42, ease: "back.out(1.3)", immediateRender: false }, nt);
+                tl.to(notif, { scale: 0.96, duration: 0.1, ease: "power1.out" }, op - 0.22);
+                tl.to(notif, { scale: 1, duration: 0.1, ease: "power1.in" }, op - 0.12);
+                tl.fromTo(lock, { opacity: 1, scale: 1 }, { opacity: 0, scale: 1.18, duration: 0.24, ease: "power2.in", immediateRender: false }, op);
+                tl.set(lock, { visibility: "hidden" }, op + 0.24);
+                tl.set(clockEl, { visibility: "visible" }, op + 0.1); tl.set(iconsEl, { fill: "#000" }, op + 0.1);
+                tl.set($("ms-status"), { zIndex: 5 }, op + 0.24);
+              }
+
+              /* overlays: läggs på bildens läge när de släpps (bilden får inte flytta sig efteråt) */
+              var rb = root.getBoundingClientRect(), sc = rb.width / W || 1;
+              rows.forEach(function (r, i) {
+                if (!r.ov) return;
+                var o = r.m.overlay, photo = r.pop.querySelector(".ms-photo");
+                if (!photo) return;
+                var ib = photo.getBoundingClientRect(), eb = r.el.getBoundingClientRect();
+                var iw = ib.width / sc, ih = ib.height / sc, ix = (ib.left - rb.left) / sc, dy = (ib.top - eb.top) / sc;
+                var at = typeof r.m._overlay === "number" ? r.m._overlay : r.m._start + 1;
+                var rowY = state(at).pos[i];
+                if (rowY === undefined) return;
+                var w = iw * (o.width || 0.6), ratio = r.ov.naturalWidth ? r.ov.naturalHeight / r.ov.naturalWidth : 0.15, h = w * ratio;
+                var left = ix + iw * (o.x != null ? o.x : 0.5) - w / 2, top = rowY + dy + ih * (o.y != null ? o.y : 0.3) - h / 2;
+                r.ov.style.width = w + "px"; r.ov.style.height = h + "px"; r.ov.style.left = left + "px"; r.ov.style.top = top + "px";
+                var from = -(top + h + P(30));
+                tl.set(r.ov, { visibility: "hidden", y: from, rotation: o.rotate || 0 }, 0);
+                /* som memen: jämn fart rakt ner, stannar tvärt på plats */
+                tl.fromTo(r.ov, { visibility: "visible", y: from }, { y: 0, duration: o.duration || 1.6, ease: "none", immediateRender: false }, at);
+              });
+
+              tl.set({}, {}, DUR);
+              tl.seek(0);
+            }
+
+            build();
+            var waits = [];
+            if (document.fonts && document.fonts.ready) waits.push(document.fonts.ready);
+            root.querySelectorAll("img").forEach(function (img) { if (img.decode) waits.push(img.decode().catch(function () {})); });
+            Promise.all(waits).then(function () { build(); tl.pause(0); });
+            window.__timelines = window.__timelines || {};
+            window.__timelines["chat-thread"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

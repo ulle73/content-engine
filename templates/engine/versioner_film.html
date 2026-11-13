@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ film }} · Versioner{% endblock %}
+{% block extra_head %}{% include "engine/versioner_stil.html" %}
+<style>
+.vx .tl{display:flex;flex-direction:column;gap:12px}
+.vx .ver{display:grid;grid-template-columns:28px 120px 1fr;gap:14px;background:#fff;border:1px solid #e3e8e5;border-radius:12px;padding:12px}
+.vx .ver img.poster{width:120px;border-radius:8px;display:block;background:#0b1a14}
+.vx .ver img.kontakt{width:100%;max-width:720px;border-radius:6px;margin-top:6px;display:block}
+.vx .ver .titel{font-size:15px;font-weight:700}
+.vx .komm{margin:6px 0 0;padding-left:16px}.vx .komm li{margin:2px 0}.vx .komm li.klar{color:#9aa7a1;text-decoration:line-through}
+.vx .sticky{position:sticky;top:0;background:#f6f8f7ee;padding:10px 0;z-index:5;border-bottom:1px solid #e3e8e5;margin-bottom:12px}
+</style>{% endblock %}
+{% block content %}
+<div class="vx">
+  <p class="muted"><a href="{% url 'versioner' %}">← Alla filmer</a></p>
+  <h1>{{ film }}</h1>
+  <p class="sub">{{ versioner|length }} versioner, nyast överst. Bocka i två till fyra och jämför dem synkat.</p>
+  <div class="sticky rad"><button class="prim" id="jamfor">Jämför valda</button><span class="muted" id="antal">0 valda</span>
+    <a class="knapp" href="{% url 'versioner_jamfor' film %}">Jämför två senaste</a></div>
+  <div class="tl">
+  {% for v in versioner %}
+    <div class="ver" data-namn="{{ v.namn }}">
+      <input type="checkbox" class="val" value="{{ v.namn }}" aria-label="Välj {{ v.namn }}">
+      <a href="{% url 'versioner_jamfor' film %}?v={{ v.namn }}"><img class="poster" loading="lazy" src="{% url 'versioner_fil' film v.namn 'poster.jpg' %}" alt=""></a>
+      <div>
+        <div class="rad"><span class="titel">{{ v.namn }} – {{ v.titel }}</span>
+          <span class="badge {{ v.granskning.status }}">{{ v.granskning.status|capfirst }}</span></div>
+        <div class="muted">{{ v.datum|slice:":16"|cut:"T" }} {% if v.av %}· {{ v.av }}{% endif %} · {% for f in v.filer %}{{ f.format }} {{ f.langd|floatformat:1 }} s{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+        {% if v.andring %}<div>{{ v.andring }}</div>{% endif %}
+        <img class="kontakt" loading="lazy" src="{% url 'versioner_fil' film v.namn 'kontakt.jpg' %}" alt="">
+        {% if v.granskning.kommentarer %}<ul class="komm">{% for k in v.granskning.kommentarer %}<li class="{% if k.klar %}klar{% endif %}">{% if k.tid != None %}<b>{{ k.tid|floatformat:1 }} s</b> {% endif %}{{ k.text }} <span class="muted">– {{ k.av }}</span></li>{% endfor %}</ul>{% endif %}
+        <div class="rad" style="margin-top:8px">
+          <button data-status="godkänd">Godkänn</button><button data-status="underkänd">Underkänn</button><button data-status="utkast">Utkast</button>
+          <button class="uppdrag">Kopiera uppdrag till Claude/Codex</button>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+<script>
+(() => {
+  const FILM = "{{ film|escapejs }}";
+  const bas = "{% url 'versioner' %}" + FILM + "/";
+  const csrf = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || "";
+  const val = () => [...document.querySelectorAll('.val:checked')].map(c => c.value);
+  document.querySelectorAll('.val').forEach(c => c.addEventListener('change', () => { document.getElementById('antal').textContent = val().length + ' valda'; }));
+  document.getElementById('jamfor').onclick = () => { const v = val(); if (v.length) location.href = bas + 'jamfor/?v=' + v.reverse().join(','); };
+  document.querySelectorAll('[data-status]').forEach(b => b.onclick = async () => {
+    const namn = b.closest('.ver').dataset.namn;
+    await fetch(bas + namn + '/status/', { method: 'POST', headers: { 'X-CSRFToken': csrf }, body: JSON.stringify({ status: b.dataset.status }) });
+    location.reload();
+  });
+  document.querySelectorAll('.uppdrag').forEach(b => b.onclick = async () => {
+    const namn = b.closest('.ver').dataset.namn;
+    const t = await (await fetch(bas + namn + '/uppdrag/')).text();
+    await navigator.clipboard.writeText(t); b.textContent = 'Kopierat!'; setTimeout(() => b.textContent = 'Kopiera uppdrag till Claude/Codex', 1500);
+  });
+})();
+</script>
+{% endblock %}

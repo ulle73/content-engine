@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Jämför · {{ film }}{% endblock %}
+{% block extra_head %}{% include "engine/versioner_stil.html" %}
+<style>
+body{background:#0e1512}
+.vx{color:#e7efeb;max-width:none;padding:14px 18px 40px}.vx a{color:#8fe3bf}.vx .muted{color:#93a39c}
+.vx button,.vx select,.vx input{font:inherit;background:#1a2622;color:#e7efeb;border:1px solid #2f413a;border-radius:8px;padding:5px 10px}
+.vx button.vald{background:#e7efeb;color:#0e1512;border-color:#e7efeb}
+.vx button.prim{background:#2ea36f;border-color:#2ea36f;color:#fff}
+.scen{position:relative;display:flex;gap:12px;justify-content:center;align-items:flex-start;height:calc(100vh - 270px);min-height:320px}
+.slot{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.slot video{max-width:100%;border-radius:10px;background:#000;display:block}
+.vx .slot .hud button,.vx .slot .hud select,.vx .slot .hud input{padding:2px 6px;min-height:0;height:28px;font-size:12px}
+.vx .slot .hud select{max-width:230px}
+.vx .kontroll button,.vx .kontroll select{min-height:0;height:34px;padding:4px 10px}
+.slot .hud{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;font-size:12.5px}
+.slot .slut{position:absolute;top:44px;left:50%;transform:translateX(-50%);background:#000c;padding:4px 10px;border-radius:99px;font-size:12px;display:none}
+.slot.ljud video{outline:3px solid #2ea36f}
+.slot .etikett{position:absolute;top:6px;left:50%;transform:translateX(-50%);background:#000a;padding:2px 10px;border-radius:99px;font-weight:700;font-size:13px;z-index:2}
+/* gardin: två filmer ovanpå varandra */
+.scen.gardin .slot{position:absolute;left:50%;transform:translateX(-50%)}
+.scen.gardin .slot ~ .slot video{clip-path:inset(0 0 0 var(--gardin,50%))}
+.scen.gardin .slot ~ .slot .hud{display:none}
+.scen.gardin .slot .etikett{left:12px;transform:none}
+.scen.gardin .slot ~ .slot .etikett{left:auto;right:12px}
+.scen.gardin .slot ~ .slot ~ .slot{display:none}
+.gardinlinje{position:absolute;top:0;bottom:44px;width:2px;background:#fff;pointer-events:none;display:none;z-index:3}
+.scen.gardin .gardinlinje{display:block}
+/* A/B: bara aktiv syns */
+.scen.ab .slot{display:none}.scen.ab .slot.aktiv{display:flex}
+.kontroll{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.tidslinje{position:relative;height:30px}
+.tidslinje input[type=range]{width:100%;margin:0;position:absolute;top:8px}
+.tidslinje .mark{position:absolute;top:0;width:8px;height:8px;border-radius:50%;transform:translateX(-4px);cursor:pointer}
+.kommlista{max-height:180px;overflow:auto;font-size:13px}
+.kommlista div{padding:3px 0;border-bottom:1px solid #22302b;cursor:pointer}.kommlista div.klar{opacity:.45;text-decoration:line-through}
+</style>{% endblock %}
+{% block content %}
+<div class="vx">
+  <div class="rad" style="justify-content:space-between">
+    <div class="rad"><a href="{% url 'versioner_film' film %}">← {{ film }}</a>
+      <span class="muted">Mellanslag spela/pausa · ←/→ en bildruta · 1–4 välj ljud · A/B växla · G gardin</span></div>
+    <div class="rad">Läge: <button data-lage="sida" class="vald">Sida vid sida</button><button data-lage="gardin">Gardin</button><button data-lage="ab">A/B</button>
+      &nbsp;Format: <select id="format"></select> <button id="lagg">+ Version</button></div>
+  </div>
+  <div class="scen" id="scen"><div class="gardinlinje" id="gardinlinje"></div></div>
+  <div class="kontroll">
+    <div class="rad"><button class="prim" id="spela">▶ Spela</button><button id="bak">⏮</button>
+      <span id="tid" style="font-variant-numeric:tabular-nums;min-width:120px">0,00 / 0,00 s</span>
+      Fart <select id="fart"><option>0.25</option><option>0.5</option><option selected>1</option></select>
+      <label class="rad muted"><input type="checkbox" id="slinga" checked> Slinga</label>
+      <span id="gardinval" class="rad" style="display:none">Gardin <input type="range" id="gardin" min="0" max="100" value="50" style="width:160px"></span></div>
+    <div class="tidslinje"><div id="markor"></div><input type="range" id="skrubb" min="0" max="1000" value="0" step="1"></div>
+    <div class="rad"><select id="kommv"></select><input id="kommtext" placeholder="Kommentar vid aktuell tid …" style="flex:1;min-width:260px">
+      <button class="prim" id="kommspara">Kommentera vid <span id="kommtid">0,0</span> s</button></div>
+    <div class="kommlista" id="kommlista"></div>
+  </div>
+</div>
+<script>
+(() => {
+const FILM = "{{ film|escapejs }}";
+const BAS = "{% url 'versioner' %}" + FILM + "/";
+const DATA = {{ data|safe }};
+let valda = {{ valda|safe }}.filter(n => DATA.some(v => v.namn === n));
+if (!valda.length) valda = [DATA[DATA.length - 1].namn];
+const csrf = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || "";
+const fmt2 = s => (Math.max(0, s)).toFixed(2).replace('.', ',');
+const scen = document.getElementById('scen');
+const st = { t: 0, spelar: false, senast: 0, fart: 1, ljud: 0, lage: 'sida', aktiv: 0, format: '{{ format|escapejs }}' };
+let slots = [];   // {namn, video, offset, el}
+
+// formatval: format som alla valda har, annars första versionens
+function formatLista() { const s = new Set(); DATA.forEach(v => v.filer.forEach(f => s.add(f.format))); return [...s]; }
+const fsel = document.getElementById('format');
+formatLista().forEach(f => fsel.add(new Option(f, f)));
+if (!st.format) st.format = (DATA.find(v => v.namn === valda[0]) || DATA[0]).filer[0].format;
+fsel.value = st.format;
+fsel.onchange = () => { st.format = fsel.value; bygg(); };
+
+function filFor(v) { return v.filer.find(f => f.format === st.format) || v.filer[0]; }
+function bygg() {
+  const t0 = st.t;
+  slots.forEach(s => s.el.remove()); slots = [];
+  valda.forEach((namn, i) => {
+    const v = DATA.find(x => x.namn === namn);
+    const el = document.createElement('div'); el.className = 'slot';
+    const f = filFor(v);
+    el.innerHTML = `<span class="etikett">${'ABCD'[i]} · ${v.namn}</span><video preload="auto" playsinline src="${BAS}${v.namn}/fil/${f.namn}"></video>
+      <span class="slut">slut</span>
+      <div class="hud"><select class="vval"></select><label>förskj. <input class="off" type="number" step="0.1" value="0" style="width:64px"> s</label>
+      <button class="ljudk">🔈</button><button class="bort" title="Ta bort">✕</button></div>`;
+    const sel = el.querySelector('.vval');
+    DATA.slice().reverse().forEach(x => sel.add(new Option(`${x.namn} – ${x.titel.slice(0, 40)}`, x.namn)));
+    sel.value = namn;
+    sel.onchange = () => { valda[i] = sel.value; uppdateraUrl(); bygg(); };
+    const s = { namn, v, el, video: el.querySelector('video'), offset: 0 };
+    el.querySelector('.off').oninput = e => { s.offset = parseFloat(e.target.value) || 0; synka(true); };
+    el.querySelector('.ljudk').onclick = () => { st.ljud = i; ljud(); };
+    el.querySelector('.bort').onclick = () => { if (valda.length > 1) { valda.splice(i, 1); uppdateraUrl(); bygg(); } };
+    s.video.addEventListener('loadedmetadata', () => { langdUpp(); synka(true); });
+    scen.appendChild(el); slots.push(s);
+  });
+  st.ljud = Math.min(st.ljud, slots.length - 1); st.aktiv = Math.min(st.aktiv, slots.length - 1);
+  ljud(); lage(st.lage); kommVal(); markor(); st.t = t0; synka(true); requestAnimationFrame(storlek);
+}
+function storlek() {
+  const h = scen.clientHeight;
+  slots.forEach(s => { const hud = s.el.querySelector('.hud'); s.video.style.height = Math.max(120, h - hud.offsetHeight - 8) + 'px'; });
+  gardinPos();
+}
+window.addEventListener('resize', storlek);
+function uppdateraUrl() { history.replaceState(null, '', `?v=${valda.join(',')}&format=${st.format}`); }
+function ljud() { slots.forEach((s, i) => { s.video.muted = i !== st.ljud; s.el.classList.toggle('ljud', i === st.ljud); s.el.querySelector('.ljudk').textContent = i === st.ljud ? '🔊' : '🔈'; }); }
+function langd() { return Math.max(0.1, ...slots.map(s => (s.video.duration || filFor(s.v).langd || 0) + s.offset)); }
+function langdUpp() { document.getElementById('tid').textContent = `${fmt2(st.t)} / ${fmt2(langd())} s`; }
+
+function synka(hart) {
+  slots.forEach(s => {
+    const mal = st.t - s.offset, d = s.video.duration || 0;
+    const slut = d && mal >= d - 0.02;
+    s.el.querySelector('.slut').style.display = slut ? 'block' : 'none';
+    const m = Math.max(0, Math.min(mal, d ? d - 0.01 : mal));
+    if (st.spelar && !slut && mal >= 0) {
+      if (s.video.paused) s.video.play().catch(() => { s.video.muted = true; s.video.play().catch(() => {}); });
+      if (Math.abs(s.video.currentTime - m) > 0.12) s.video.currentTime = m;
+      s.video.playbackRate = st.fart;
+    } else {
+      if (!s.video.paused) s.video.pause();
+      if (hart || Math.abs(s.video.currentTime - m) > 0.02) s.video.currentTime = m;
+    }
+  });
+  document.getElementById('skrubb').value = Math.round(st.t / langd() * 1000);
+  document.getElementById('kommtid').textContent = (st.t).toFixed(1).replace('.', ',');
+  langdUpp();
+}
+function loop(now) {
+  if (st.spelar) {
+    const dt = (now - st.senast) / 1000; st.senast = now;
+    st.t += dt * st.fart;
+    if (st.t >= langd()) { if (document.getElementById('slinga').checked) { st.t = 0; synka(true); } else { st.t = langd(); spela(false); } }
+    // klockan följer ljudkällan när den spelar, så att ljud och bild inte glider
+    const k = slots[st.ljud];
+    if (k && !k.video.paused && k.video.currentTime > 0 && Math.abs(k.video.currentTime + k.offset - st.t) < 0.3) st.t = k.video.currentTime + k.offset;
+    synka(false);
+  }
+  requestAnimationFrame(loop);
+}
+function spela(p) { st.spelar = p ?? !st.spelar; st.senast = performance.now(); document.getElementById('spela').textContent = st.spelar ? '⏸ Paus' : '▶ Spela'; synka(true); }
+document.getElementById('spela').onclick = () => spela();
+document.getElementById('bak').onclick = () => { st.t = 0; synka(true); };
+document.getElementById('fart').onchange = e => { st.fart = parseFloat(e.target.value); };
+document.getElementById('skrubb').oninput = e => { st.t = e.target.value / 1000 * langd(); synka(true); };
+document.getElementById('lagg').onclick = () => { if (valda.length < 4) { const ny = DATA.slice().reverse().find(v => !valda.includes(v.namn)); if (ny) { valda.push(ny.namn); uppdateraUrl(); bygg(); } } };
+
+function lage(l) {
+  if ((l === 'gardin') && slots.length < 2) l = 'sida';
+  st.lage = l; scen.className = 'scen ' + l;
+  document.querySelectorAll('[data-lage]').forEach(b => b.classList.toggle('vald', b.dataset.lage === l));
+  document.getElementById('gardinval').style.display = l === 'gardin' ? 'flex' : 'none';
+  slots.forEach((s, i) => s.el.classList.toggle('aktiv', i === st.aktiv));
+  gardinPos();
+}
+document.querySelectorAll('[data-lage]').forEach(b => b.onclick = () => lage(b.dataset.lage));
+function gardinPos() {
+  const p = document.getElementById('gardin').value;
+  scen.style.setProperty('--gardin', p + '%');
+  const v = slots[0] && slots[0].video, r = v && v.getBoundingClientRect(), sr = scen.getBoundingClientRect();
+  if (r) document.getElementById('gardinlinje').style.left = (r.left - sr.left + r.width * p / 100) + 'px';
+}
+document.getElementById('gardin').oninput = gardinPos;
+scen.addEventListener('mousemove', e => { if (st.lage !== 'gardin' || !e.buttons) return; const v = slots[0].video.getBoundingClientRect(); document.getElementById('gardin').value = Math.max(0, Math.min(100, (e.clientX - v.left) / v.width * 100)); gardinPos(); });
+window.addEventListener('resize', gardinPos);
+
+// kommentarer
+function kommVal() { const s = document.getElementById('kommv'); s.innerHTML = ''; slots.forEach((x, i) => s.add(new Option(`${'ABCD'[i]} · ${x.namn}`, x.namn))); s.value = slots[st.ljud] ? slots[st.ljud].namn : ''; }
+function markor() {
+  const m = document.getElementById('markor'), lista = document.getElementById('kommlista'); m.innerHTML = ''; lista.innerHTML = '';
+  const farger = ['#2ea36f', '#e2ae47', '#6aa9ff', '#ff7a7a'];
+  slots.forEach((s, i) => s.v.kommentarer.forEach(k => {
+    const t = (k.tid ?? 0) + s.offset;
+    if (k.tid != null) { const d = document.createElement('div'); d.className = 'mark'; d.style.left = (t / langd() * 100) + '%'; d.style.background = farger[i]; d.title = k.text; d.onclick = () => { st.t = t; synka(true); }; m.appendChild(d); }
+    const r = document.createElement('div'); r.className = k.klar ? 'klar' : '';
+    r.innerHTML = `<b style="color:${farger[i]}">${'ABCD'[i]} ${s.namn}</b> ${k.tid != null ? k.tid.toFixed(1).replace('.', ',') + ' s' : ''} – ${k.text.replace(/</g, '&lt;')} <span class="muted">(${k.av})</span> <button data-id="${k.id}">${k.klar ? 'Öppna' : 'Klar'}</button>`;
+    r.onclick = e => { if (e.target.tagName === 'BUTTON') return; if (k.tid != null) { st.t = t; synka(true); } };
+    r.querySelector('button').onclick = async () => { await post(s.namn, 'kommentar', { klar_id: k.id, klar: !k.klar }); k.klar = !k.klar; markor(); };
+    lista.appendChild(r);
+  }));
+}
+async function post(namn, vad, body) {
+  const r = await fetch(`${BAS}${namn}/${vad}/`, { method: 'POST', headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  return r.json();
+}
+document.getElementById('kommspara').onclick = async () => {
+  const text = document.getElementById('kommtext').value.trim(); if (!text) return;
+  const namn = document.getElementById('kommv').value, s = slots.find(x => x.namn === namn);
+  const tid = Math.max(0, st.t - (s ? s.offset : 0));
+  const r = await post(namn, 'kommentar', { text, tid });
+  if (r.kommentar) { DATA.find(v => v.namn === namn).kommentarer.push(r.kommentar); document.getElementById('kommtext').value = ''; markor(); }
+};
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  if (e.code === 'Space') { e.preventDefault(); spela(); }
+  else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { spela(false); st.t = Math.max(0, st.t + (e.key === 'ArrowRight' ? 1 : -1) / 30); synka(true); }
+  else if (/^[1-4]$/.test(e.key) && slots[+e.key - 1]) { st.ljud = +e.key - 1; st.aktiv = st.ljud; ljud(); lage(st.lage); kommVal(); }
+  else if (e.key === 'a' || e.key === 'b' || e.key === 'A' || e.key === 'B') { if (st.lage !== 'ab') lage('ab'); st.aktiv = (st.aktiv + 1) % slots.length; st.ljud = st.aktiv; ljud(); lage('ab'); kommVal(); }
+  else if (e.key === 'g' || e.key === 'G') lage(st.lage === 'gardin' ? 'sida' : 'gardin');
+});
+bygg(); requestAnimationFrame(loop);
+})();
+</script>
+{% endblock %}

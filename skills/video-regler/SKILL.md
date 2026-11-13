@@ -72,13 +72,15 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
   bryt hellre om raden än att krympa texten.
 - Textanimationer: fade, lätt scale-in, tracking som dras ihop. Inga överdrivna övergångar.
 - **Markerade ord (ord i färgad ruta):** ingen textskugga på texten i rutan – en mörk skugga på mörk text mot ljus ruta
-  smetar ut bokstäverna. Rutan ska täcka hela versalhöjden inklusive Å/Ä/Ö-prickar och ringar.
+  smetar ut bokstäverna. Rutan ska täcka hela versalhöjden inklusive Å/Ä/Ö-prickar och ringar: när ordet i rutan
+  har Å, Ä eller Ö höjs rutans överkant 0,17 em (Anton), annars smälter prickarna in i bakgrunden. I filmerna:
+  `top:${/[ÅÄÖ]/i.test(w) ? '-0.17em' : '0'}` på `.box`, och raden flyttas ned 0,08 em (`margin-top` på `.hl`)
+  så att ett litet mellanrum finns kvar mellan raden ovanför och rutans kant. Titta på ett ord med Ä i stillbild före leverans.
 
 ### Bild
 - **Något som ska vara svårt att se** (dolt rådjur, detalj): dämpa bara zonen runt det och kalibrera nivån med
   varianter (2.3). Mörka inte ner hela bilden eller sidorna. FAIV-rådjuret: 0,4 och 0,48 syntes för tydligt, 0,55 godkändes.
 - **Vinjett** högst ~15 % i hörnen.
-- Ta bort **andra varumärken** (märkestext och emblem på bilar, produkter) i reklam.
 - Före/efter-bilder: kontrollera att de ligger exakt linjerade (korrelation/skillnad) och ändra aldrig innehållet.
 
 ### Slutkort
@@ -93,6 +95,13 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - Allt i `skills/ljud`: bara riktiga ljud, ljudprovning, effekter som accenter, -14 LUFS, stems.
 
 ### Leverans
+- **Varje leverans är en version (Jonas 2026-11-12):** allt som visas för Jonas sparas som låst version i
+  `work/<film>/versioner/` med en rad om vad som ändrats (`scripts/versioner.py spara … -m "…"`, automatiskt i `make.sh`).
+  Skriv aldrig över en version; Jonas jämför versionerna sida vid sida i Content Engine → `/versioner/`.
+- **Bilder i två format (Jonas 2026-10-30):** varje **bild** (stillbild, annonsbild) levereras i **9:16 (1080×1920)**
+  och **4:5 (1080×1350)**. Filmer görs bara i 9:16 om inget annat sägs. 4:5 är en omkomponering, inte en beskärning:
+  samma innehåll, mer luft, 5 % marginal upptill och nedtill. Filnamn med `_4x5`. Mallen `golfkuponger-golfare-i-stad`:
+  `rendera.mjs … --format 4x5 --bara-still`.
 - Film + stems (musik och effekter separat) + **manus** (`MANUS.md`: tidslinje med tider, text, bild, effekt,
   ljud, källor och licenser). Manuset skrivs från renderarens egna tider, inte ur minnet.
 
@@ -130,3 +139,8 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-14 | GK (alla) | "Text ska generellt vara mot mitten och centrerat" | Varje rad horisontellt centrerad i säkra ytan (mitt x ≈ 497) som utgångspunkt; QA kontrollerar, kan stängas av per film (3, Text) |
 | 2026-10-24 | FAIV Kör du den här? (alla) | "Det ser så jävla fult ut när det ligger lite off" – text och logga låg 43 px åt vänster | Centrera på bildens mitt x 540 med lika marginal (≥ 151 px) båda sidor, aldrig 497; färgad ruta ensam på sin rad; QA mäter mot 540 (3, Text) |
 | 2026-10-13 | GK Årsskiftet | "Man ser inte riktigt texten" (mörk text i ljus ruta) | Ingen skugga i markerade rutor; rutan täcker Å-ringen (3, Text) |
+| 2026-10-15 | GK Spelat den här? (alla) | "Ä syns dåligt, prickarna smälter in i bakgrunden" – återkommande i alla videor | Rutan höjs 0,17 em när ordet har Å/Ä/Ö och raden flyttas ned 0,08 em (litet mellanrum mot raden ovanför); alla filmer och mallar (3, Text) |
+| 2026-10-21 | GK Så funkar Golfkuponger (alla) | "Ta bort regeln om varumärken, den får visa varumärken, radera den regeln helt" | Andra varumärken i bild (loggor på kläder, utrustning, bilar) får synas – retuschera eller beskär aldrig bort dem |
+| 2026-10-28 | GK Golfare i <stad>? (alla) | "Från sekund 7–10 är det helt tyst, inget rör sig och bilden står stilla – där ska musiken tona och svingloggan komma in" | Ingen död tid före slutbilden: när det sista elementet har landat och bilden står still klipper vi till Spotlight-slutbilden och musiken tonar ut där – även om läsregeln räknar längre (då varnar QA i stället för att stoppa) (3, Slutkort) |
+| 2026-10-28 | GK Golfare i <stad>? | "Prickarna över Ö på Göteborg blir vita" (guldtext) | Text med gradient via background-clip: bakgrundsytan ska sträcka sig ~0,3 em ovanför versalhöjden (top:-.3em; padding-top:.3em) och grundtexten under ha samma färg, så att prickar och ringar på Å/Ä/Ö får färgen (3, Text) |
+| 2026-10-30 | GK Golfare i <stad>? (alla) | "Bilder ska alltid även produceras i 4:5" (förtydligat: bilder, inte filmer) | Bilder alltid i 9:16 + 4:5; filmer bara 9:16 (3, Leverans) |

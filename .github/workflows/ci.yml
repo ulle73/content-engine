@@ -88,7 +88,8 @@ jobs:
   browser:
     needs: [changes, test]
     if: needs.changes.outputs.browser == 'true'
-    runs-on: ubuntu-latest
+    # ubuntu-latest is 26.04, where Playwright 1.55 can't install Chromium.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       DJANGO_SETTINGS_MODULE: engine.test_settings

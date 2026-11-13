@@ -1,0 +1,13 @@
+{
+  "contact": "Alex",
+  "clock": "9:41",
+  "date": "Idag",
+  "messages": [
+    {"side": "recv", "text": "Hej! Spelar du golf i helgen? ⛳"},
+    {"side": "sent", "text": "Ja! Kolla vilken bana jag hittade", "image": "assets/exempel-bana.jpg"},
+    {"side": "recv", "text": "Wow, den är ju fin!", "reaction": "❤️"},
+    {"side": "recv", "text": "Vad kostar greenfee där?"},
+    {"side": "sent", "text": "Jag har kuponger, så det blir billigt 😎"},
+    {"side": "recv", "text": "🙌🙌"}
+  ]
+}

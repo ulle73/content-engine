@@ -1,0 +1,67 @@
+{
+  "_om": "Stora och kända klubbar per region som alltid är med i klubbrullen. Namnen matchar golfkuponger.se:s klubblista (delsträng). Ordning = vikt: den första kommer sist i rullen (där den går långsammast, precis före den utvalda klubben). Förslag av Claude 2026-10-28 efter Jonas: 'ha med alla stora klubbarna i varje region, t.ex. Bro Hof'. Jonas kan lägga till eller ta bort. Regioner utan lista får jämnt spridda klubbar ur klubblistan. Skåne, Halland, Östergötland och Uppsala & Mälardalen tillagda av Claude 2026-10-29; Malmö, Uppsala och Linköping har egen \"klubbrulle\" i annonsen eftersom kortnamnen annars blir fel (Barsebäcks, Upsala, Landeryds anläggning …).",
+  "Stockholmsområdet": [
+    "Bro Hof",
+    "Ullna",
+    "Arlandastad",
+    "Stockholms GK",
+    "Djursholm",
+    "Lidingö",
+    "Saltsjöbaden",
+    "Wermdö",
+    "Österåker",
+    "Sigtuna",
+    "Fågelbro",
+    "Vidbynäs",
+    "Drottningholm"
+  ],
+  "Göteborgsområdet": [
+    "Hills",
+    "Öijared",
+    "Gullbringa",
+    "Delsjö",
+    "Vallda",
+    "Kungsbacka",
+    "Albatross",
+    "Torslanda",
+    "Lycke",
+    "Chalmers"
+  ],
+  "Skåne": [
+    "Barsebäck",
+    "Ljunghusen",
+    "Bokskogen",
+    "Malmö Burlöv",
+    "Lunds akademiska",
+    "Falsterbo",
+    "Vellinge",
+    "Flommen",
+    "Vasatorp",
+    "Kristianstad"
+  ],
+  "Halland": [
+    "Falkenberg",
+    "Varberg GK Västra",
+    "Tönnersjö",
+    "Laholm",
+    "Rydö",
+    "Skogaby",
+    "Halmstad"
+  ],
+  "Östergötland": [
+    "Landeryds GK anläggning Landeryd",
+    "Linköpings Golfklubb",
+    "Vreta Kloster",
+    "Motala",
+    "Bråviken",
+    "Ombergs"
+  ],
+  "Uppsala & Mälardalen": [
+    "Upsala GK",
+    "Vassunda",
+    "Västerås",
+    "Fullerö",
+    "Enköpings",
+    "Söderby"
+  ]
+}

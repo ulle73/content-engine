@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Versioner · Content Engine{% endblock %}
+{% block extra_head %}{% include "engine/versioner_stil.html" %}{% endblock %}
+{% block content %}
+<div class="vx">
+  <h1>Versioner</h1>
+  <p class="sub">Alla filmer i work/ med sina versioner. Varje version är låst och kan jämföras med de andra.</p>
+  {% if saknas %}
+  <div class="varn"><b>{{ saknas|length }} färdiga filmer saknar version</b> – de har renderats utan att arkiveras.
+    <div class="rad" style="margin:6px 0"><button class="prim" id="samla">Arkivera dem som nya versioner</button><span class="muted">(eller <code>python scripts/versioner.py samla</code>)</span></div>
+    <ul class="muted">{% for s in saknas|slice:":12" %}<li>{{ s.film }}/{{ s.fil }}</li>{% endfor %}</ul></div>
+  {% endif %}
+  <div class="grid">
+    {% for f in filmer %}
+    <a class="kort" href="{% url 'versioner_film' f.film %}" style="text-decoration:none;color:inherit">
+      <img class="poster" loading="lazy" src="{% url 'versioner_fil' f.film f.senaste.namn 'poster.jpg' %}" alt="">
+      <div class="in">
+        <b>{{ f.film }}</b>
+        <span class="muted">{{ f.antal }} versioner · senast {{ f.senaste.namn }} {{ f.senaste.datum|slice:":10" }}</span>
+        <span class="muted">{{ f.senaste.titel }}</span>
+        <span class="rad">{% if f.godkand %}<span class="badge godkänd">Godkänd {{ f.godkand.namn }}</span>{% endif %}
+          {% if f.oppna %}<span class="badge">{{ f.oppna }} öppna kommentarer</span>{% endif %}</span>
+      </div>
+    </a>
+    {% empty %}
+    <p class="muted">Inga versioner än. Renderare sparar versioner automatiskt; befintliga filmer importeras med <code>python scripts/versioner.py importera &lt;film&gt;</code>.</p>
+    {% endfor %}
+  </div>
+</div>
+<script>
+document.getElementById('samla')?.addEventListener('click', async e => {
+  e.target.disabled = true; e.target.textContent = 'Arkiverar …';
+  const csrf = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '';
+  await fetch("{% url 'versioner_samla' %}", { method: 'POST', headers: { 'X-CSRFToken': csrf } });
+  location.reload();
+});
+</script>
+{% endblock %}
