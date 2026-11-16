@@ -15,7 +15,7 @@ SECRET_KEY = env("SECRET_KEY")
 APP_URL = os.environ.get("RENDER_EXTERNAL_URL") or env("APP_URL", default="http://127.0.0.1:8765")
 LOCAL_HTTP = urlparse(APP_URL).hostname in {"127.0.0.1", "localhost"} and APP_URL.startswith("http://")
 DEBUG = False
-ALLOWED_HOSTS = [urlparse(APP_URL).hostname]
+ALLOWED_HOSTS = [urlparse(APP_URL).hostname, "content.golfkuponger.se"]
 DATABASES = {"default": env.db("DATABASE_URL", default=f"sqlite:///{ENGINE_ROOT / 'data' / 'app.sqlite3'}")}
 if DATABASES["default"]["ENGINE"].endswith("postgresql"):
     DATABASES["default"]["CONN_MAX_AGE"] = 60
@@ -112,4 +112,4 @@ else:
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 31536000
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    CSRF_TRUSTED_ORIGINS = [APP_URL.rstrip("/")]
+    CSRF_TRUSTED_ORIGINS = [APP_URL.rstrip("/"), "https://content.golfkuponger.se"]

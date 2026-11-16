@@ -79,6 +79,45 @@ class ViewTests(TestCase):
         self.assertContains(response, "SMS-film")
         self.assertContains(response, "sms-limits-data")
 
+    def test_embed_restricts_framing_and_preserves_access(self):
+        url = reverse("engine:sms_film_embed", kwargs={"workspace_id": self.company.pk})
+        response = self.client.get(url, HTTP_HOST="content.golfkuponger.se")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "SMS-film")
+        self.assertNotContains(response, "Huvudnavigation")
+        self.assertEqual(response["Content-Security-Policy"], "frame-ancestors https://dashboard.golfkuponger.se")
+        self.assertNotIn("X-Frame-Options", response)
+        self.assertEqual(response["Cache-Control"], "private, no-store")
+        self.assertContains(response, url)
+        self.assertEqual(self.client.get(self.url)["X-Frame-Options"], "DENY")
+        other = get_user_model().objects.create_user(username="embed-other", password="test")
+        self.client.force_login(other)
+        self.assertEqual(self.client.get(url, HTTP_HOST="content.golfkuponger.se").status_code, 404)
+
+    def test_embed_login_and_wrong_host(self):
+        url = reverse("engine:sms_film_embed", kwargs={"workspace_id": self.company.pk})
+        self.assertEqual(self.client.get(url).status_code, 404)
+        self.client.logout()
+        response = self.client.get(url, HTTP_HOST="content.golfkuponger.se")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Logga in för att skapa SMS-film")
+        self.assertContains(response, 'target="_blank"')
+        self.assertEqual(response["Content-Security-Policy"], "frame-ancestors https://dashboard.golfkuponger.se")
+        self.assertNotIn("X-Frame-Options", response)
+
+    def test_embed_post_requires_csrf(self):
+        from django.test import Client
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(self.user)
+        url = reverse("engine:sms_film_embed", kwargs={"workspace_id": self.company.pk})
+        args = {"HTTP_HOST": "content.golfkuponger.se", "HTTP_ORIGIN": "https://content.golfkuponger.se",
+                "HTTP_ACCEPT": "application/json", "secure": True}
+        self.assertEqual(client.post(url, {"form_json": "{}"}, **args).status_code, 403)
+        client.get(url, **args)
+        token = client.cookies["csrftoken"].value
+        response = client.post(url, {"form_json": "{}"}, HTTP_X_CSRFTOKEN=token, **args)
+        self.assertEqual(response.status_code, 400)
+
     def test_post_creates_job_and_status(self):
         form = {"title": "Test", "notification": "Hej", "messages": [{"side": "sent", "text": "Tja", "image": {"file": "f1"}}]}
         response = self.client.post(self.url, {"form_json": json.dumps(form),
