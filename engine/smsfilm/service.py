@@ -152,7 +152,8 @@ def worker_payload(job: SmsFilmJob, base_url: str) -> dict:
         # end card: no conversation, no uploads and no Apple pack – the worker renders the template directly
         form = job.form or {}
         return {"job_id": str(job.pk), "lease": str(job.lease_token), "attempt": job.attempts, "kind": "slutmall",
-                "slutmall": {"mall": form.get("mall"), "rad1": form.get("rad1", ""), "rad2": form.get("rad2", "")},
+                "slutmall": {"mall": form.get("mall"), "rad1": form.get("rad1", ""), "rad2": form.get("rad2", ""),
+                             "effekt": form.get("effekt") or "small", "stil": form.get("stil") or {}},
                 "assets": [], "limits": limits}
     assets = []
     for asset in MediaAsset.objects.filter(pk__in=job.image_asset_ids, company=job.company, kind="image"):

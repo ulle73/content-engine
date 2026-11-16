@@ -233,13 +233,25 @@ class SlutmallSpecTests(TestCase):
     def test_build_ok(self):
         saved, total = spec.build_slutmall({"mall": "epassi", "rad1": " Friskvårdsbidrag kvar? ", "rad2": "Det brinner *inne*"})
         self.assertEqual(saved, {"kind": "slutmall", "mall": "epassi", "rad1": "Friskvårdsbidrag kvar?",
-                                 "rad2": "Det brinner *inne*"})
+                                 "rad2": "Det brinner *inne*", "effekt": "small", "stil": {}})
         self.assertEqual(total, spec.SLUTMALL_LEN)
+
+    def test_effect_and_style_are_clamped_and_defaults_dropped(self):
+        saved, _ = spec.build_slutmall({"mall": "alla", "rad2": "x", "effekt": "tona", "stil": {
+            "logga": 999, "ikoner": 100, "luft_logga": 40.4, "hojd": -500, "okand": 5, "cta": "120", "rad1": True, "skak": 0}})
+        self.assertEqual(saved["effekt"], "tona")
+        # logga clamped to max, ikoner = default (dropped), hojd clamped to min, unknown/non-numeric dropped,
+        # skak 0 is the default for "tona" (dropped)
+        self.assertEqual(saved["stil"], {"logga": 160, "luft_logga": 40, "hojd": -120})
+        saved, _ = spec.build_slutmall({"mall": "alla", "rad2": "x", "effekt": "small", "stil": {"skak": 0}})
+        self.assertEqual(saved["stil"], {"skak": 0})   # "small" shakes by default, so 0 is a choice
 
     def test_rejects_bad_input(self):
         for form in ({"mall": "okand", "rad2": "x"}, {"mall": "alla", "rad2": "  "},
                      {"mall": "alla", "rad1": "a" * (spec.SLUTMALL_RAD1 + 1), "rad2": "x"},
-                     {"mall": "alla", "rad2": "b" * (spec.SLUTMALL_RAD2 + 1)}):
+                     {"mall": "alla", "rad2": "b" * (spec.SLUTMALL_RAD2 + 1)},
+                     {"mall": "alla", "rad2": "x", "effekt": "explodera"},
+                     {"mall": "alla", "rad2": "x", "stil": ["logga", 120]}):
             with self.assertRaises(spec.SmsFilmError, msg=form):
                 spec.build_slutmall(form)
 
@@ -261,10 +273,28 @@ class SlutmallFlowTests(TestCase):
         self.assertContains(response, "Generera video")
         self.assertContains(response, "slutmall-section")
         self.assertContains(response, "Epassi")
+        self.assertContains(response, "sm-effekt")
+        self.assertContains(response, "Skrivmaskin")
+        self.assertContains(response, "sm-stil-data")
+        self.assertContains(response, "Luft under loggan")
+
+    def test_preview_serves_template_and_assets_only(self):
+        url = lambda fil: reverse("engine:sms_film_slutmall", kwargs={"workspace_id": self.company.pk, "fil": fil})
+        page = self.client.get(url("slutmall.html"))
+        self.assertEqual(page.status_code, 200)
+        self.assertTrue(page["Content-Type"].startswith("text/html"))
+        self.assertEqual(page["X-Frame-Options"], "SAMEORIGIN")
+        font = self.client.get(url("assets/anton.woff2"))
+        self.assertEqual((font.status_code, font["Content-Type"]), (200, "font/woff2"))
+        self.assertEqual(self.client.get(url("assets/portal-epassi.jpg")).status_code, 200)
+        for bad in ("render.mjs", "README.md", "LIBRARY.json", "assets/../render.mjs", "../views.py", "assets/finns-inte.png"):
+            self.assertEqual(self.client.get(url(bad)).status_code, 404, bad)
+        self.client.logout()
+        self.assertEqual(self.client.get(url("slutmall.html")).status_code, 302)
 
     def test_post_creates_slutmall_job_and_worker_payload(self):
         response = self.create({"kind": "slutmall", "mall": "alla", "rad1": "Friskvårdsbidrag kvar?",
-                                "rad2": "Det brinner inne 31/12"})
+                                "rad2": "Det brinner inne 31/12", "effekt": "studs", "stil": {"logga": 130}})
         self.assertEqual(response.status_code, 201, response.content)
         self.assertEqual(response.json()["job"]["kind"], "slutmall")
         job = SmsFilmJob.objects.get()
@@ -274,6 +304,7 @@ class SlutmallFlowTests(TestCase):
                                    content_type="application/json", **auth).json()["job"]
         self.assertEqual(payload["kind"], "slutmall")
         self.assertEqual(payload["slutmall"]["rad2"], "Det brinner inne 31/12")
+        self.assertEqual((payload["slutmall"]["effekt"], payload["slutmall"]["stil"]), ("studs", {"logga": 130}))
         self.assertNotIn("apple_pack_url", payload)
         self.assertEqual(payload["assets"], [])
         pack = self.client.get(f"/internal/sms-film/apple-pack/{job.pk}/", **auth, HTTP_X_EDIT_LEASE=payload["lease"])

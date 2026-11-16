@@ -219,10 +219,10 @@ async function processJob(payload) {
     if (payload.kind === 'slutmall') {
       // Slutmall: svingloggan + två textrader, renderad av golfkuponger-slutmallar/render.mjs (Playwright + ffmpeg).
       // Inga Apple-filer och inga bilder behövs.
-      const {mall, rad1 = '', rad2} = payload.slutmall || {};
-      console.log(`[${id}] slutmall ${mall} (försök ${payload.attempt})`);
+      const {mall, rad1 = '', rad2, effekt = 'small', stil = {}} = payload.slutmall || {};
+      console.log(`[${id}] slutmall ${mall}, effekt ${effekt} (försök ${payload.attempt})`);
       const jobbPath = join(work, 'jobb.json');
-      await writeFile(jobbPath, JSON.stringify({mall, rad1, rad2, ut: work, format: ['9x16']}));
+      await writeFile(jobbPath, JSON.stringify({mall, rad1, rad2, effekt, stil, ut: work, format: ['9x16']}));
       stage = 'rendering'; progress = 0.1; await beat();
       const tail = await run(process.execPath, [SLUTMALL_RENDER, '--json', jobbPath], {cwd: REPO, timeoutMs: 20 * 60_000})
         .catch((err) => { throw new JobError('render_failed', (err.tail || err.message).slice(-250), {retryable: true}); });

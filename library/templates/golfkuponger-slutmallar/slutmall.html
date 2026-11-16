@@ -1,9 +1,12 @@
 <!doctype html>
 <html lang="sv"><head><meta charset="utf-8">
-<!-- Slutmallar för Golfkuponger (Jonas 2026-11-16): den rörliga svingloggan överst, två textrader som byts fritt och portalerna.
-     Parametrar i adressen:  ?mall=alla|epassi|benify|sp|edenred  &r1=<rad 1, liten guldrad>  &r2=<rad 2, stor rubrik>
-                              &h=1350 (4:5)  &logga=1 (fast logga i stället för tom plats – för förhandsvisning i webbläsaren)
-     *ord* i rad 2 blir guld med glans. window.frame(t) ritar bildrutan vid t sekunder (render.mjs); window.INFO har tiderna. -->
+<!-- Slutmallar för Golfkuponger (Jonas 2026-11-16, valbar stil 2026-11-17): den rörliga svingloggan överst, två fria textrader och portalerna.
+     Parametrar i adressen (alla valfria, utan dem blir det grundutseendet):
+       mall=alla|epassi|benify|sp|edenred   r1=<rad 1, liten guldrad>   r2=<rad 2, stor rubrik; *ord* blir guld>   h=1350 (4:5)
+       eff=small|studs|tona|glid|skriv|avtack   (hur rad 2 landar)
+       s_<nyckel>=<tal> – storlekar i %, mellanrum/höjd i px och tempo/skak i % (se STIL nedan; värdena kläms till sina gränser)
+       logga=1 (fast logga i stället för tom plats – förhandsvisning)   zoner=1 (visa säkerhetszonerna)   slut=1 (visa sista bildrutan)
+     window.frame(t) ritar bildrutan vid t sekunder (render.mjs); window.INFO har tider, mått och varningar. -->
 <style>
 @font-face{font-family:Anton;src:url(assets/anton.woff2)}
 @font-face{font-family:Inter;font-weight:600;src:url(assets/inter-600.woff2)}
@@ -13,13 +16,10 @@ body{background:radial-gradient(ellipse 80% 60% at 50% 42%,#173a2a 0%,#0f2a1e 55
 #skak{position:absolute;inset:0}
 #logga{position:absolute;left:0;right:0;text-align:center}
 #logga img{height:100%}
-#blk{position:absolute;left:151px;right:151px;display:flex;flex-direction:column;align-items:center;text-align:center}
-#kick{display:flex;align-items:center;gap:22px;white-space:nowrap}
-#kick .t{font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#D9A93C;
+#blk{position:absolute;display:flex;flex-direction:column;align-items:center;text-align:center}
+#kick{white-space:nowrap;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#D9A93C;
   background:linear-gradient(100deg,#C8922A 0%,#F2D27A 38%,#FFF1C4 50%,#F2D27A 62%,#C8922A 100%);background-size:260% 100%;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-right:-.16em}
-#kick .l{height:3px;border-radius:2px;background:linear-gradient(90deg,rgba(217,169,60,0),#D9A93C);width:0}
-#kick .l.h{transform:scaleX(-1)}
 h1{font-family:Anton,sans-serif;font-weight:400;margin:0;line-height:1.04;letter-spacing:.5px;text-transform:uppercase;color:#F8F4EC}
 h1 .rad{display:block;white-space:nowrap}
 .ord{display:inline-block;white-space:nowrap;position:relative;--d:0;
@@ -32,25 +32,29 @@ h1 .rad{display:block;white-space:nowrap}
 .glans{position:absolute;left:0;top:-.3em;padding-top:.3em;text-shadow:none;
   background:linear-gradient(100deg,#C8922A 0%,#F2D27A 38%,#FFF1C4 50%,#F2D27A 62%,#C8922A 100%);background-size:260% 100%;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-#cta{margin:0;font-weight:600;font-size:34px;color:#F8F4EC}
+#cta{margin:0;font-weight:600;color:#F8F4EC;white-space:nowrap}
 #cta .w{display:inline-block}
 #cta b{font-weight:700;color:#D9A93C}
-.kort{display:grid;gap:18px;justify-content:center}
-.kort>div{background:#fff;border-radius:22px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+.kort{display:grid;justify-content:center}
+.kort>div{background:#fff;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
   box-shadow:0 0 0 2px rgba(217,169,60,.6),0 10px 30px rgba(0,0,0,.35)}
 .kort>div::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,241,196,.55) 50%,transparent 65%);
   transform:translateX(var(--sv,-120%))}
 .kort img{display:block}
+#zoner{position:absolute;inset:0;pointer-events:none;display:none}
+#zoner i{position:absolute;background:rgba(255,80,80,.16);border:0 dashed rgba(255,120,120,.8)}
 </style></head>
 <body><div id="skak">
 <div id="logga"><img src="assets/logo-final.png"></div>
 <div id="blk">
-  <div id="kick"><span class="l h"></span><span class="t"></span><span class="l"></span></div>
+  <div id="kick"></div>
   <h1></h1>
   <p id="cta"></p>
   <div class="kort"></div>
 </div>
 </div>
+<div id="zoner"><i style="left:0;right:0;top:0;height:269px;border-bottom-width:3px"></i><i style="left:0;right:0;top:1248px;bottom:0;border-top-width:3px"></i>
+  <i style="left:0;width:65px;top:269px;height:979px;border-right-width:3px"></i><i style="right:0;width:151px;top:269px;height:979px;border-left-width:3px"></i></div>
 <script type="module">
 // typsnitten måste vara laddade innan texten mäts
 await Promise.all(['400 100px Anton', '700 40px Inter', '600 34px Inter'].map(f => document.fonts.load(f)));
@@ -71,93 +75,150 @@ const R1 = (Q.get('r1') ?? 'Friskvårdsbidrag kvar?').trim(), R2 = (Q.get('r2') 
 const H = +(Q.get('h') || 1920);
 for (const el of [document.documentElement, document.body]) el.style.height = H + 'px';
 
-// ---- layout (9:16): loggan y 286–546, blocket från 590 och ned till högst 1240 (safe zones: topp 270, botten 35 % → 1248)
-const LOGGA_TOP = 290, LOGGA_H = 260, BLK_TOP = 584, BLK_BOTTEN = 1240, BREDD = 778;
+// ---- valbar stil. Samma nycklar och gränser som SLUTMALL_STIL i engine/smsfilm/spec.py: [min, max, standard]
+const EFFEKTER = ['small', 'studs', 'tona', 'glid', 'skriv', 'avtack'];
+const EFF = EFFEKTER.includes(Q.get('eff')) ? Q.get('eff') : 'small';
+const STIL = {
+  logga: [50, 160, 100], ikoner: [50, 160, 100], rad1: [50, 160, 100], rubrik: [50, 160, 100], cta: [50, 160, 100],
+  bredd: [560, 950, 778],
+  luft_logga: [-30, 240, 0], luft_rad1: [-30, 160, 0], luft_rubrik: [-20, 160, 0], luft_cta: [-20, 200, 0], luft_ikoner: [-8, 60, 0],
+  hojd: [-120, 300, 0], tempo: [50, 200, 100], skak: [0, 200, EFF === 'small' ? 100 : EFF === 'studs' ? 40 : 0],
+};
+const S = Object.fromEntries(Object.entries(STIL).map(([k, [lo, hi, std]]) => {
+  const v = parseFloat(Q.get('s_' + k));
+  return [k, Number.isFinite(v) ? Math.min(hi, Math.max(lo, Math.round(v))) : std];
+}));
+const pr = k => S[k] / 100;
+if (Q.get('zoner') === '1') document.getElementById('zoner').style.display = 'block';
+
+// ---- layout (9:16): loggan från y 290, blocket under den och ned till högst 1240 (safe zones: topp 269, botten 35 % → 1248)
+const LOGGA_TOP = 290 + S.hojd, LOGGA_H = Math.round(260 * pr('logga')), BLK_BOTTEN = 1240, BREDD = S.bredd;
+const BLK_TOP = LOGGA_TOP + LOGGA_H + 34 + S.luft_logga;
 const logga = document.getElementById('logga');
 logga.style.top = LOGGA_TOP + 'px'; logga.style.height = LOGGA_H + 'px';
 if (Q.get('logga') !== '1') logga.style.visibility = 'hidden';   // den animerade svingloggan läggs dit i ffmpeg
-const blk = document.getElementById('blk'); blk.style.top = BLK_TOP + 'px';
+const blk = document.getElementById('blk');
+blk.style.top = BLK_TOP + 'px'; blk.style.left = blk.style.right = Math.round((1080 - BREDD) / 2) + 'px';
 
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-// rad 1: liten guldrad med streck på båda sidor; storleken krymper så att den ryms
-const kick = document.getElementById('kick'), kt = kick.querySelector('.t');
-kt.textContent = R1; kick.hidden = !R1;
-// rad 2: orden slår ner ett i taget; *ord* blir guld
+// rad 1: liten guldrad; storleken krymper så att den ryms i bredden
+const kick = document.getElementById('kick');
+kick.textContent = R1; kick.style.display = R1 ? '' : 'none';
+let kfs = Math.round(42 * pr('rad1')); kick.style.fontSize = kfs + 'px';
+while (R1 && kick.getBoundingClientRect().width > BREDD && kfs > 14) kick.style.fontSize = --kfs + 'px';
+// rad 2: orden landar ett i taget; *ord* blir guld
 const ORD2 = R2.split(/\s+/).filter(Boolean).map(w => { const g = /^\*.+\*$/.test(w); return { w: g ? w.slice(1, -1) : w, g }; });
 const ordHtml = o => o.g ? `<span class="ord g">${esc(o.w)}<span class="glans">${esc(o.w)}</span></span>` : `<span class="ord">${esc(o.w)}</span>`;
 const h1 = document.querySelector('h1');
+// CTA-raden: krymper om den inte ryms
 const cta = document.getElementById('cta');
 cta.innerHTML = M.cta.split(/(<b>.*?<\/b>|\s+)/).filter(Boolean).map(s => /^\s+$/.test(s) ? ' ' : `<span class="w">${s}</span>`).join('');
-const kort = document.querySelector('.kort'), EN = M.kort.length === 1;
-kort.style.gridTemplateColumns = EN ? '480px' : 'repeat(4,180px)';
-kort.style.gap = EN ? '0' : '12px';
-kort.innerHTML = M.kort.map(k => `<div style="height:${EN ? 190 : 112}px;border-radius:${EN ? 22 : 16}px"><img src="assets/${PORTALER[k].bild}" style="height:${EN ? 176 : 104}px"></div>`).join('');
+let cfs = Math.round(34 * pr('cta')); cta.style.fontSize = cfs + 'px';
+while (cta.getBoundingClientRect().width > BREDD && cfs > 14) cta.style.fontSize = --cfs + 'px';
+// portalkorten: fyra i rad, eller 2 × 2 om de blir bredare än bilden tillåter
+const kort = document.querySelector('.kort'), EN = M.kort.length === 1, IK = pr('ikoner');
+const kw = Math.round((EN ? 480 : 180) * IK), kgap = EN ? 0 : Math.max(0, 12 + S.luft_ikoner);
+const kol = EN ? 1 : (4 * kw + 3 * kgap > 950 ? 2 : 4);
+kort.style.gridTemplateColumns = `repeat(${kol},${kw}px)`; kort.style.gap = kgap + 'px';
+kort.innerHTML = M.kort.map(k => `<div style="height:${Math.round((EN ? 190 : 112) * IK)}px;border-radius:${Math.round((EN ? 22 : 16) * IK)}px">` +
+  `<img src="assets/${PORTALER[k].bild}" style="height:${Math.round((EN ? 176 : 104) * IK)}px"></div>`).join('');
+kort.style.marginTop = (26 + S.luft_cta) + 'px';
 
-// rad 1 i storlek 42 px eller mindre så att den (med strecken) ryms i bredden
-let kfs = 42; kt.style.fontSize = kfs + 'px';
-while (kt.getBoundingClientRect().width + 2 * (40 + 22) > BREDD && kfs > 24) kt.style.fontSize = --kfs + 'px';
-
-// rubriken: en rad om den blir minst 118 px, annars två balanserade rader; krymp tills blocket ryms över 1240
-function layout(max) {
-  const prov = (rader, fs) => { h1.style.fontSize = fs + 'px'; h1.innerHTML = rader.map(r => `<span class="rad">${r.map(ordHtml).join(' ')}</span>`).join(''); };
-  const bredast = rader => { prov(rader, 100); return Math.max(...[...h1.querySelectorAll('.rad')].map(r => r.getBoundingClientRect().width)) / 100; };
-  const alt = [[ORD2]];
-  for (let i = 1; i < ORD2.length; i++) alt.push([ORD2.slice(0, i), ORD2.slice(i)]);
-  const val = alt.map(r => ({ r, fs: Math.min(r.length === 1 ? 150 : max, Math.floor(BREDD / bredast(r))) }));
-  const en = val[0], tva = val.slice(1).sort((a, b) => b.fs - a.fs)[0];
-  return en.fs >= 118 || !tva ? en : tva;
+// rubriken: en rad om den blir minst 118 px (× storleken), annars två balanserade rader; krymp sedan tills blocket ryms över 1240
+const RUB = pr('rubrik'), RUB_MAX = Math.round(150 * RUB);
+const visa = (rader, fs) => { h1.style.fontSize = fs + 'px'; h1.innerHTML = rader.map(r => `<span class="rad">${r.map(ordHtml).join(' ')}</span>`).join(''); };
+const bredast = rader => { visa(rader, 100); return Math.max(...[...h1.querySelectorAll('.rad')].map(r => r.getBoundingClientRect().width)) / 100; };
+const alt = [[ORD2]];
+for (let i = 1; i < ORD2.length; i++) alt.push([ORD2.slice(0, i), ORD2.slice(i)]);
+const val = alt.map(r => ({ r, fs: Math.min(RUB_MAX, Math.floor(BREDD / bredast(r))) }));
+const tva = val.slice(1).sort((a, b) => b.fs - a.fs)[0];
+const VAL = val[0].fs >= 118 * RUB || !tva ? val[0] : tva;
+let fs = VAL.fs;
+visa(VAL.r, fs);
+// Å/Ä/Ö på första raden sticker upp över versalhöjden: ge dem luft mot rad 1
+const prickar = /[ÅÄÖ]/i.test(VAL.r[0].map(o => o.w).join(''));
+for (;;) {
+  h1.style.fontSize = fs + 'px';
+  h1.style.marginTop = (Math.round(fs * (prickar ? 0.26 : 0.12)) + (R1 ? S.luft_rad1 : 0)) + 'px';
+  cta.style.marginTop = (Math.round(14 + fs * 0.1) + S.luft_rubrik) + 'px';
+  if (blk.getBoundingClientRect().bottom <= BLK_BOTTEN || fs <= 40) break;
+  fs -= 2;
 }
-let max = 150, val;
-for (; max >= 70; max -= 4) {
-  val = layout(max); h1.style.fontSize = val.fs + 'px';
-  h1.innerHTML = val.r.map(r => `<span class="rad">${r.map(ordHtml).join(' ')}</span>`).join('');
-  // Å/Ä/Ö på första raden sticker upp över versalhöjden: ge dem luft mot rad 1
-  const prickar = /[ÅÄÖ]/i.test(val.r[0].map(o => o.w).join(''));
-  h1.style.marginTop = Math.round(val.fs * (prickar ? 0.26 : 0.12)) + 'px';
-  cta.style.marginTop = Math.round(14 + val.fs * 0.1) + 'px';
-  kort.style.marginTop = '26px';
-  if (blk.getBoundingClientRect().bottom <= BLK_BOTTEN) break;
-}
 
-// 4:5: loggan + blocket centreras i bildens höjd (räknat på blockets verkliga botten)
+// 4:5: loggan + blocket centreras i bildens höjd (räknat på blockets verkliga botten), höjdreglaget gäller ovanpå
 const BOTTEN = Math.round(blk.getBoundingClientRect().bottom);
-const DY = H === 1920 ? 0 : Math.round(H / 2 - (LOGGA_TOP + BOTTEN) / 2);
+const DY = H === 1920 ? 0 : Math.round(H / 2 - (LOGGA_TOP + BOTTEN) / 2) + S.hojd;
+const VARNINGAR = [];
+if (BOTTEN > BLK_BOTTEN + 1) VARNINGAR.push('Texten och portalerna går ned i nedre säkerhetszonen (där Instagram lägger knappar och text). Minska storlekar eller mellanrum.');
+if (LOGGA_TOP < 269) VARNINGAR.push('Loggan går upp i övre säkerhetszonen. Flytta ned allt.');
+if (BREDD > 778) VARNINGAR.push('Texten går ut i högra säkerhetszonen. Minska textbredden till 778 px.');
+if (fs < Math.min(VAL.fs, RUB_MAX)) VARNINGAR.push(`Rubriken krymptes till ${fs} px för att få plats.`);
 
 // ---- rörelse
 const $$ = s => [...document.querySelectorAll(s)];
-const ORD = $$('h1 .ord'), W = $$('#cta .w'), KORT = $$('.kort>div'), LINJER = $$('#kick .l');
+const ORD = $$('h1 .ord'), W = $$('#cta .w'), KORT = $$('.kort>div');
 const kl = x => Math.max(0, Math.min(1, x)), ut3 = x => 1 - Math.pow(1 - kl(x), 3);
 const back = x => { x = kl(x); const s = 1.9; return 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2); };
-// svingloggan tar ~1,7 s; rad 1 kommer när svinget är på väg, rad 2 slår ner efter
-const T1 = 0.7, T2 = T1 + 0.45, SLAG = 0.2, LAND = 0.17;
-const landar = ORD.map((_, i) => T2 + i * SLAG + LAND);
-const SUB = (landar[landar.length - 1] ?? T2) + 0.2, KT = SUB + W.length * 0.06 + 0.12;
-// läsregeln: all text i följd får max(5/6, tecken/12) + 0,9 s räknat från första texten
+const fjader = p => p >= 1 ? 1 : 1 - Math.exp(-6 * p) * Math.cos(3 * Math.PI * p);
+// mått som effekterna behöver (tas innan något transformeras): ordets bredd, höjd och, för skrivmaskinen, högerkanten efter varje tecken
+const MATT = ORD.map(el => {
+  const r = el.getBoundingClientRect(), tn = el.firstChild, kanter = [];
+  for (let i = 1; i <= tn.length; i++) { const rg = document.createRange(); rg.setStart(tn, 0); rg.setEnd(tn, i); kanter.push(rg.getBoundingClientRect().right - r.left); }
+  return { w: r.width, h: r.height, kanter };
+});
+// svingloggan tar ~1,7 s; rad 1 kommer när svinget är på väg, rad 2 landar efter. Tempot skalar alla tider efter T1.
+const K = pr('tempo'), SK = pr('skak');
+const T1 = 0.7, T2 = T1 + 0.45 / K, SLAG = 0.2 / K;
+const LANG = { small: 0.17, studs: 0.42, tona: 0.38, glid: 0.3, avtack: 0.32 }[EFF] / K, TECKENTID = 0.05 / K;
+const start = [], dur = [];
+let ts = T2;
+ORD.forEach((_, i) => {
+  if (EFF === 'skriv') { start.push(ts); dur.push(MATT[i].kanter.length * TECKENTID); ts += dur[i] + TECKENTID * 1.5; }
+  else { start.push(T2 + i * SLAG); dur.push(LANG); }
+});
+const landar = ORD.map((_, i) => start[i] + dur[i]);
+const slag = ORD.map((_, i) => EFF === 'studs' ? start[i] + dur[i] * 0.17 : landar[i]);   // när skakningen sätter i
+const SUB = (landar[landar.length - 1] ?? T2) + 0.2, KT = SUB + W.length * 0.06 / K + 0.12;
+// läsregeln: all text i följd får max(5/6, tecken/12) + 0,9 s räknat från första texten; korten ska hinna synas en stund
 const TECKEN = R1.length + ORD2.map(o => o.w).join(' ').length + cta.textContent.length;
-const LANGD = Math.max(4.2, +(T1 + Math.max(5 / 6, TECKEN / 12) + 0.9).toFixed(2));
-window.INFO = { mall: MALL, r1: R1, r2: R2, cta: cta.textContent, tecken: TECKEN, langd: LANGD, rubrik_px: val.fs, rubrik_rader: val.r.length,
-  rad1_px: kfs, botten: BOTTEN + DY, logga: { top: LOGGA_TOP + DY, h: LOGGA_H }, dy: DY };
+const LANGD = +Math.max(4.2, T1 + Math.max(5 / 6, TECKEN / 12) + 0.9, KT + KORT.length * 0.11 + 1.3).toFixed(2);
+window.INFO = { mall: MALL, r1: R1, r2: R2, cta: cta.textContent, effekt: EFF, stil: S, tecken: TECKEN, langd: LANGD,
+  rubrik_px: fs, rubrik_rader: VAL.r.length, rad1_px: kfs, cta_px: cfs, botten: BOTTEN + DY,
+  logga: { top: LOGGA_TOP + DY, h: LOGGA_H }, dy: DY, ryms: !VARNINGAR.some(v => v.includes('zonen')), varningar: VARNINGAR };
 
+const klipp = (topp, hoger, botten, vanster) => `inset(${topp} ${hoger} ${botten} ${vanster})`;
 window.frame = t => {
   let skak = 0;
-  // rad 1: strecken växer ut från mitten, texten spärras ihop och glansen drar förbi
-  const p1 = ut3((t - T1) / 0.5);
-  kt.style.opacity = kl((t - T1) / 0.25); kt.style.letterSpacing = `${0.16 + 0.08 * (1 - p1)}em`;
-  kt.style.backgroundPosition = `${100 - 100 * ut3((t - T1 - 0.2) / 1.0)}% 0`;
-  LINJER.forEach(l => { l.style.width = `${40 * ut3((t - T1 - 0.15) / 0.45)}px`; });
-  // rad 2: slam med djup och skak (som i Golfare i <stad>)
+  // rad 1: texten spärras ihop och glansen drar förbi
+  const p1 = ut3((t - T1) / (0.5 / K));
+  kick.style.opacity = kl((t - T1) / (0.25 / K)); kick.style.letterSpacing = `${0.16 + 0.08 * (1 - p1)}em`;
+  kick.style.backgroundPosition = `${100 - 100 * ut3((t - T1 - 0.2 / K) / (1.0 / K))}% 0`;
+  // rad 2: vald effekt per ord, sedan djup, skak och glans
   ORD.forEach((el, i) => {
-    const t0 = T2 + i * SLAG, p = kl((t - t0) / LAND), q = p * p;
-    el.style.opacity = kl((t - t0) / 0.06);
-    el.style.transform = `scale(${2.3 - 1.3 * q})`;
-    el.style.filter = p < 1 ? `blur(${(1 - q) * 9}px)` : 'none';
+    const t0 = start[i], p = kl((t - t0) / dur[i]), m = MATT[i], syns = t >= t0 ? 1 : 0;
+    let op = syns, tf = 'none', fi = 'none', cl = 'none';
+    if (EFF === 'small') {
+      const q = p * p; op = kl((t - t0) / 0.06); tf = `scale(${2.3 - 1.3 * q})`; if (p < 1) fi = `blur(${(1 - q) * 9}px)`;
+    } else if (EFF === 'studs') {
+      op = kl((t - t0) / 0.05); tf = `translateY(${(1 - ut3(p * 3)) * -40}px) scale(${syns * Math.max(0, fjader(p))})`;
+    } else if (EFF === 'tona') {
+      const e = ut3(p); op = e; tf = `translateY(${(1 - e) * 40}px)`; if (p < 1) fi = `blur(${(1 - e) * 12}px)`;
+    } else if (EFF === 'glid') {
+      const y = (1 - ut3(p)) * m.h; tf = `translateY(${y}px)`; if (p < 1) cl = klipp('-60%', '-40%', `${y}px`, '-40%');
+    } else if (EFF === 'skriv') {
+      const n = m.kanter.length, c = Math.min(n, Math.floor(p * n) + 1);
+      if (c < n) cl = klipp('-60%', `${m.w - m.kanter[c - 1]}px`, '-60%', '-60%');
+    } else if (EFF === 'avtack') {
+      const e = ut3(p); if (p < 1) cl = klipp('-60%', `${(1 - e) * m.w}px`, '-60%', '-60%');
+    }
+    el.style.opacity = op; el.style.transform = tf; el.style.filter = fi; el.style.clipPath = cl;
     el.style.setProperty('--d', t < landar[i] ? 0 : 10 * ut3((t - landar[i]) / 0.25));
-    const e = t - landar[i]; if (e > 0 && e < 0.28) skak += 6 * (1 - e / 0.28) * Math.sin(e * 70);
+    const e = t - slag[i]; if (e > 0 && e < 0.28) skak += 6 * SK * (1 - e / 0.28) * Math.sin(e * 70);
     const gl = el.querySelector('.glans'); if (gl) gl.style.backgroundPosition = `${100 - 100 * ut3((t - landar[i] - 0.15) / 0.9)}% 0`;
   });
   document.getElementById('skak').style.transform = `translate(${skak * 0.6}px,${skak + DY}px)`;
   // CTA-raden tonar upp ord för ord, korten poppar in och svävar sedan svagt; en ljusglans drar över dem var 2,4 s
-  W.forEach((w, i) => { const p = ut3((t - SUB - i * 0.06) / 0.35); w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 24}px)`; });
+  W.forEach((w, i) => { const p = ut3((t - SUB - i * 0.06 / K) / (0.35 / K)); w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 24}px)`; });
   KORT.forEach((k, i) => {
     const a = KT + i * 0.11, p = kl((t - a) / 0.38), sv = Math.sin((t - a) * 2.2 + i * 1.3) * 3 * kl((t - a - 0.4) / 0.6);
     k.style.opacity = kl((t - a) / 0.12); k.style.transform = `translateY(${sv}px) scale(${0.55 + 0.45 * back(p)})`;

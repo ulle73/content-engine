@@ -1,7 +1,8 @@
 // Slutmallar för Golfkuponger (Jonas 2026-11-16): den rörliga svingloggan + två fria textrader + portal(er).
 //   node render.mjs --mall alla --rad1 "Friskvårdsbidrag kvar?" --rad2 "Det brinner inne 31/12" --ut work/slutmallar [--format 9x16,4x5]
-//   node render.mjs --json jobb.json      ({ "mall", "rad1", "rad2", "ut", "format": ["9x16","4x5"] })
+//   node render.mjs --json jobb.json      ({ "mall", "rad1", "rad2", "effekt", "stil": {...}, "ut", "format": ["9x16","4x5"] })
 // mall: alla | epassi | benify | sp | edenred.  *ord* i rad 2 blir guld.
+// effekt (--eff): small | studs | tona | glid | skriv | avtack.  stil (--stil "logga=120,luft_logga=40"): se STIL i slutmall.html.
 // Ut: <ut>/slutmall-<mall>-<9x16|4x5>.mp4 + kontakt-<format>.jpg, och en JSON-rad på stdout med filer, längd och textmått.
 import fs from 'node:fs'; import path from 'node:path'; import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -15,6 +16,10 @@ const MALL = jobb.mall || arg('--mall') || 'alla';
 const RAD1 = jobb.rad1 ?? arg('--rad1') ?? 'Friskvårdsbidrag kvar?', RAD2 = jobb.rad2 ?? arg('--rad2') ?? 'Det brinner inne 31/12';
 const UT = path.resolve(jobb.ut || arg('--ut') || path.join(ROT, 'work', 'slutmallar'));
 const FORMAT = [].concat(jobb.format || (arg('--format') || '9x16,4x5').split(','));
+const EFFEKT = jobb.effekt || arg('--eff') || 'small';
+// stil: { logga: 120, luft_logga: 40, ... } – se STIL i slutmall.html. Från CLI: --stil "logga=120,luft_logga=40"
+const STIL = jobb.stil || Object.fromEntries((arg('--stil') || '').split(',').filter(Boolean).map(p => p.split('=')));
+if (!['small', 'studs', 'tona', 'glid', 'skriv', 'avtack'].includes(EFFEKT)) throw new Error(`okänd effekt: ${EFFEKT}`);
 const SVING = process.env.SLUTMALL_SVING || path.join(ROT, 'edit-renderer/outros/golfkuponger/spotlight-9x16.mp4');
 const FPS = 30;
 if (!['alla', 'epassi', 'benify', 'sp', 'edenred'].includes(MALL)) throw new Error(`okänd mall: ${MALL}`);
@@ -28,7 +33,8 @@ try {
   for (const fmt of FORMAT) {
     const H = fmt === '4x5' ? 1350 : 1920;
     const p = await b.newPage({ viewport: { width: 1080, height: H } });
-    const q = new URLSearchParams({ mall: MALL, r1: RAD1, r2: RAD2, h: String(H) });
+    const q = new URLSearchParams({ mall: MALL, r1: RAD1, r2: RAD2, h: String(H), eff: EFFEKT });
+    for (const [k, v] of Object.entries(STIL)) if (/^[a-z_]+$/.test(k) && Number.isFinite(Number(v))) q.set('s_' + k, String(v));
     await p.goto(pathToFileURL(path.join(HERE, 'slutmall.html')).href + '?' + q);
     await p.waitForFunction(() => window.INFO, null, { timeout: 30000 });   // sidan mäter texten först när typsnitten laddats
     const info = await p.evaluate(() => window.INFO), LEN = info.langd;
@@ -59,7 +65,8 @@ try {
       tider.map((_, i) => `[${i}:v]scale=300:-2,trim=end_frame=1[k${i}]`).join(';') + ';' + tider.map((_, i) => `[k${i}]`).join('') + `hstack=inputs=${tider.length}`,
       '-frames:v', '1', kontakt]);
     resultat.filer.push({ format: fmt, fil: ut, kontakt, langd: LEN, ...info });
-    console.error(`${fmt}: ${LEN} s, rubrik ${info.rubrik_px} px på ${info.rubrik_rader} rad(er), botten y ${info.botten}`);
+    console.error(`${fmt}: ${LEN} s, effekt ${info.effekt}, rubrik ${info.rubrik_px} px på ${info.rubrik_rader} rad(er), botten y ${info.botten}`);
+    for (const v of info.varningar || []) console.error(`  varning: ${v}`);
   }
 } finally { await b.close(); }
 console.log(JSON.stringify(resultat));

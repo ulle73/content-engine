@@ -115,10 +115,22 @@
   .sms-film-page .mode-row { gap: 1.2rem; }
   .sms-film-page select { max-width: 100%; }
   .sms-film-page .count { float: right; font-weight: 400; color: var(--text-muted); font-size: .82rem; }
-  .sms-film-page .sm-preview { background: #0f2a1d; border-radius: 12px; padding: 1.4rem 1rem; text-align: center; margin: .4rem 0 .8rem; }
-  .sms-film-page .sm-preview .k { color: #d9b45a; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .85rem; min-height: 1.1em; }
-  .sms-film-page .sm-preview .h { color: #f3efe4; font-weight: 800; text-transform: uppercase; font-size: 1.6rem; line-height: 1.05; margin-top: .35rem; font-stretch: condensed; }
-  .sms-film-page .sm-preview .h b { color: #d9b45a; }
+  .sms-film-page .sm-layout { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 1.2rem; align-items: start; margin: .6rem 0 .8rem; }
+  @media (max-width: 720px) { .sms-film-page .sm-layout { grid-template-columns: minmax(0, 1fr); } .sms-film-page .sm-live { order: -1; justify-self: center; } }
+  .sms-film-page .sm-sliders h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; margin: .9rem 0 .3rem; opacity: .7; }
+  .sms-film-page .sm-sliders h3:first-child { margin-top: 0; }
+  .sms-film-page .sm-slider { display: grid; grid-template-columns: minmax(0, 1fr) 4.2rem; gap: .1rem .6rem; align-items: center; margin-bottom: .45rem; }
+  .sms-film-page .sm-slider label { grid-column: 1 / -1; font-size: .85rem; margin: 0; }
+  .sms-film-page .sm-slider input[type=range] { width: 100%; accent-color: #d9a93c; margin: 0; }
+  .sms-film-page .sm-slider output { font-variant-numeric: tabular-nums; font-size: .85rem; text-align: right; }
+  .sms-film-page .sm-slider.changed label { font-weight: 600; }
+  .sms-film-page .sm-live { position: sticky; top: 1rem; }
+  .sms-film-page .sm-frame { width: 270px; height: 480px; overflow: hidden; border-radius: 12px; background: #0f2a1d; }
+  .sms-film-page .sm-frame iframe { width: 1080px; height: 1920px; border: 0; transform: scale(.25); transform-origin: 0 0; pointer-events: none; display: block; }
+  .sms-film-page .sm-live-actions { display: flex; gap: .6rem; align-items: center; justify-content: space-between; margin-top: .5rem; }
+  .sms-film-page .sm-zoner { margin: 0; font-size: .85rem; }
+  .sms-film-page .sm-warn { color: #b3261e; font-size: .85rem; margin: .3rem 0 0; padding-left: 1.1rem; }
+  .sms-film-page .sm-warn:empty { display: none; }
 </style>
 <script type="module" src="{% static 'vendor/emoji-picker/picker.js' %}"></script>
 {% endblock %}
@@ -148,9 +160,23 @@
           <input type="text" id="sm-rad1" maxlength="{{ slutmall_limits.rad1 }}" placeholder="Friskvårdsbidrag kvar?"></div>
         <div class="field"><label for="sm-rad2">Rad 2 – stor rubrik <span class="count" id="sm-rad2-count"></span></label>
           <input type="text" id="sm-rad2" maxlength="{{ slutmall_limits.rad2 }}" placeholder="Det brinner inne *31/12*"></div>
-        <p class="small">Förhandsvisning av texten (färger och storlek ungefärliga):</p>
-        <div class="sm-preview" aria-hidden="true"><div class="k" id="sm-prev-k"></div><div class="h" id="sm-prev-h"></div></div>
-        <p class="small">Den rörliga svingloggan är alltid med. Skriv <code>*ord*</code> i rad 2 för att göra orden guldfärgade. Rad 1 kan lämnas tom. Filmen blir 9:16 med ljud.</p>
+        <p class="small">Skriv <code>*ord*</code> i rad 2 för att göra orden guldfärgade. Rad 1 kan lämnas tom. Filmen blir 9:16 med ljud.</p>
+        <div class="field"><label for="sm-effekt">Hur texten landar</label>
+          <select id="sm-effekt">{% for e in slutmall_effekter %}<option value="{{ e.id }}">{{ e.namn }}</option>{% endfor %}</select></div>
+        <div class="sm-layout">
+          <div class="sm-sliders" id="sm-sliders"></div>
+          <div class="sm-live">
+            <div class="sm-frame"><iframe id="sm-iframe" title="Förhandsvisning av slutmallen" tabindex="-1"></iframe></div>
+            <div class="sm-live-actions">
+              <button type="button" class="icon-btn" id="sm-play">▶ Spela upp</button>
+              <label class="check sm-zoner"><input type="checkbox" id="sm-zoner" checked><span>Visa säkra zoner</span></label>
+            </div>
+            <p class="small" id="sm-info"></p>
+            <ul class="sm-warn" id="sm-warn"></ul>
+          </div>
+        </div>
+        <button type="button" class="icon-btn" id="sm-reset">Återställ storlekar och mellanrum</button>
+        <p class="small">Förhandsvisningen visar loggan stilla. I filmen spelar svingloggan på samma plats och i samma storlek.</p>
       </section>
 
       <div id="sms-mode">
@@ -211,6 +237,8 @@
 {{ jobs_json|json_script:'sms-jobs-data' }}
 {{ reopen|json_script:'sms-reopen-data' }}
 {{ limits|json_script:'sms-limits-data' }}
+{{ slutmall_stil|json_script:'sm-stil-data' }}
+{{ slutmall_skak|json_script:'sm-skak-data' }}
 <script>
 (function () {
   "use strict";
@@ -506,18 +534,89 @@
   $("sms-outro").addEventListener("change", updateTiming);
 
   // ---------------------------------------------------------------- slutmall (svingloggan + två rader)
+  // Every size and spacing is a slider; the live preview is the real template (slutmall.html) in a scaled iframe.
+  const SM_URL = "{% url 'engine:sms_film_slutmall' workspace_id=workspace.pk fil='slutmall.html' %}";
+  const SM_STIL = JSON.parse(document.getElementById("sm-stil-data").textContent);
+  const SM_SKAK = JSON.parse(document.getElementById("sm-skak-data").textContent);
+  const SM_GROUPS = [["Storlek", ["logga", "rad1", "rubrik", "cta", "ikoner", "bredd"]],
+                     ["Mellanrum och placering", ["hojd", "luft_logga", "luft_rad1", "luft_rubrik", "luft_cta", "luft_ikoner"]],
+                     ["Rörelse", ["tempo", "skak"]]];
+  const smDefault = (s) => (s.std === null ? (SM_SKAK[$("sm-effekt").value] || 0) : s.std);
+  const smInputs = {};
+  SM_GROUPS.forEach(([title, keys]) => {
+    $("sm-sliders").append(el("h3", {}, title));
+    keys.forEach((k) => {
+      const s = SM_STIL.find((x) => x.id === k);
+      if (!s) return;
+      const input = el("input", { type: "range", id: "sm-s-" + k, min: s.min, max: s.max, step: 1, value: smDefault(s) });
+      const out = el("output", { for: "sm-s-" + k });
+      const row = el("div", { class: "sm-slider" }, el("label", { for: "sm-s-" + k }, s.namn), input, out);
+      const show = () => {
+        const v = +input.value, d = smDefault(s);
+        out.textContent = (s.enhet === "px" && v > 0 && s.min < 0 ? "+" : "") + v + " " + s.enhet;
+        row.classList.toggle("changed", v !== d);
+      };
+      input.addEventListener("input", () => { show(); smLive(); });
+      input.addEventListener("dblclick", () => { input.value = smDefault(s); show(); smLive(); });
+      smInputs[k] = { input, show, s };
+      $("sm-sliders").append(row);
+    });
+  });
+  function smStil() {   // only what differs from the default, as the server stores it
+    const out = {};
+    Object.entries(smInputs).forEach(([k, { input, s }]) => { if (+input.value !== smDefault(s)) out[k] = +input.value; });
+    return out;
+  }
+  function smSetStil(stil) {
+    Object.entries(smInputs).forEach(([k, o]) => { o.input.value = stil && k in stil ? stil[k] : smDefault(o.s); o.show(); });
+  }
+  let smTimer = 0, smPlaying = 0;
+  function smUrl(extra) {
+    const q = new URLSearchParams({ mall: $("sm-mall").value, r1: $("sm-rad1").value.trim(),
+      r2: $("sm-rad2").value.trim() || $("sm-rad2").placeholder, h: "1920", eff: $("sm-effekt").value, logga: "1" });
+    Object.entries(smStil()).forEach(([k, v]) => q.set("s_" + k, v));
+    if ($("sm-zoner").checked) q.set("zoner", "1");
+    Object.entries(extra || {}).forEach(([k, v]) => q.set(k, v));
+    return SM_URL + "?" + q;
+  }
+  function smLive() {
+    clearTimeout(smTimer);
+    smTimer = setTimeout(() => { smStop(); $("sm-iframe").src = smUrl({ slut: "1" }); }, 150);
+  }
+  function smWin() { try { return $("sm-iframe").contentWindow; } catch (_) { return null; } }
+  $("sm-iframe").addEventListener("load", () => {
+    let tries = 0;
+    const wait = () => {
+      const w = smWin(), info = w && w.INFO;
+      if (!info) { if (++tries < 60) setTimeout(wait, 50); return; }
+      $("sm-info").textContent = `${fmt(info.langd)} · rubrik ${info.rubrik_px} px på ${info.rubrik_rader} rad${info.rubrik_rader > 1 ? "er" : ""}`;
+      $("sm-warn").replaceChildren(...(info.varningar || []).map((v) => el("li", {}, v)));
+    };
+    wait();
+  });
+  function smStop() { cancelAnimationFrame(smPlaying); smPlaying = 0; $("sm-play").textContent = "▶ Spela upp"; }
+  $("sm-play").addEventListener("click", () => {
+    const w = smWin();
+    if (smPlaying) { smStop(); if (w && w.frame) w.frame(99); return; }
+    if (!w || !w.frame || !w.INFO) return;
+    const len = w.INFO.langd, t0 = performance.now();
+    $("sm-play").textContent = "■ Stoppa";
+    const step = (now) => {
+      const t = (now - t0) / 1000;
+      w.frame(Math.min(t, len));
+      if (t < len) smPlaying = requestAnimationFrame(step); else smStop();
+    };
+    smPlaying = requestAnimationFrame(step);
+  });
+  $("sm-reset").addEventListener("click", () => { smSetStil({}); smLive(); });
+  $("sm-effekt").addEventListener("change", () => { smInputs.skak && (smInputs.skak.input.value = smDefault(smInputs.skak.s), smInputs.skak.show()); smLive(); });
+  ["sm-mall", "sm-zoner"].forEach((id) => $(id).addEventListener("change", smLive));
+
   function updateSlutmallPreview() {
     const r1 = $("sm-rad1").value, r2 = $("sm-rad2").value;
     $("sm-rad1-count").textContent = `${chars(r1)}/${$("sm-rad1").maxLength}`;
     $("sm-rad2-count").textContent = `${chars(r2)}/${$("sm-rad2").maxLength}`;
-    $("sm-prev-k").textContent = r1.trim();
-    const h = $("sm-prev-h");
-    h.replaceChildren();
-    (r2.trim() || $("sm-rad2").placeholder).split(/(\*[^*]+\*)/).forEach((part) => {
-      if (!part) return;
-      if (/^\*[^*]+\*$/.test(part)) { const b = document.createElement("b"); b.textContent = part.slice(1, -1); h.append(b); }
-      else h.append(document.createTextNode(part));
-    });
+    if (kind() === "slutmall") smLive();
   }
   function applyMode() {
     const sm = kind() === "slutmall";
@@ -538,6 +637,8 @@
     if (reopen.mall) $("sm-mall").value = reopen.mall;
     $("sm-rad1").value = reopen.rad1 || "";
     $("sm-rad2").value = reopen.rad2 || "";
+    if (reopen.effekt) $("sm-effekt").value = reopen.effekt;
+    smSetStil(reopen.stil || {});
     state.messages.push(newMsg("sent"));
   } else if (reopen) {
     $("sms-title").value = reopen.title || "";
@@ -581,6 +682,7 @@
     const form = kind() === "slutmall" ? {
       kind: "slutmall", title: $("sms-title").value.trim(), mall: $("sm-mall").value,
       rad1: $("sm-rad1").value.trim(), rad2: $("sm-rad2").value.trim(),
+      effekt: $("sm-effekt").value, stil: smStil(),
     } : {
       title: $("sms-title").value.trim(),
       notification,
@@ -619,30 +721,50 @@
   // ---------------------------------------------------------------- job list
   const jobs = JSON.parse(document.getElementById("sms-jobs-data").textContent);
   const ACTIVE = ["queued", "claimed", "rendering"];
+  // Kort per jobb-id som återanvänds mellan pollningarna: bara det som ändrats byggs om, så färdiga
+  // videor laddas aldrig om medan någon annan film renderas (förut byggdes hela listan om var 5:e sekund).
+  const cards = new Map();
+  const jobKey = (j) => [j.status, j.status_label, j.output_asset_id, j.error, j.title, j.duration_s, j.dispatch_error].join("|");
+  const pct = (j) => `${Math.max(4, Math.round((j.progress || 0) * 100))}%`;
+  function buildCard(j) {
+    const when = new Date(j.created_at).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    const card = el("div", { class: "job" },
+      el("div", { class: "job-head" }, el("strong", {}, j.title || (j.kind === "slutmall" ? "Slutmall" : "SMS-film")), el("span", { class: `badge ${j.status}` }, j.status_label)),
+      el("div", { class: "small" }, when + (j.duration_s ? ` · ${Math.round(j.duration_s)} s` : "")));
+    if (ACTIVE.includes(j.status)) {
+      card._bar = el("i", { style: `width:${pct(j)}` });
+      card.append(el("div", { class: "bar" }, card._bar));
+      if (j.dispatch_error && j.status === "queued") card.append(el("p", { class: "small" }, j.dispatch_error));
+    }
+    if (j.status === "failed" && j.error) card.append(el("p", { class: "small" }, j.error));
+    if (j.output_asset_id) {
+      const url = assetUrl(j.output_asset_id);
+      card.append(el("video", { src: url, controls: "", preload: "metadata", playsinline: "" }));
+      card.append(el("div", { class: "row small" }, el("a", { href: url, download: "" }, "Ladda ned"), el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
+    } else if (!ACTIVE.includes(j.status)) {
+      card.append(el("div", { class: "row small" }, el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
+    }
+    card._key = jobKey(j);
+    return card;
+  }
   function renderJobs() {
     const box = $("sms-jobs");
-    box.replaceChildren();
-    if (!jobs.length) { box.append(el("p", { class: "small" }, "Dina filmer visas här när du skapat den första.")); return; }
-    jobs.forEach((j) => {
-      const when = new Date(j.created_at).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-      const card = el("div", { class: "job" },
-        el("div", { class: "job-head" }, el("strong", {}, j.title || (j.kind === "slutmall" ? "Slutmall" : "SMS-film")), el("span", { class: `badge ${j.status}` }, j.status_label)),
-        el("div", { class: "small" }, when + (j.duration_s ? ` · ${Math.round(j.duration_s)} s` : "")));
-      if (ACTIVE.includes(j.status)) {
-        const bar = el("div", { class: "bar" }, el("i", { style: `width:${Math.max(4, Math.round((j.progress || 0) * 100))}%` }));
-        card.append(bar);
-        if (j.dispatch_error && j.status === "queued") card.append(el("p", { class: "small" }, j.dispatch_error));
+    if (!jobs.length) { cards.clear(); box.replaceChildren(el("p", { class: "small" }, "Dina filmer visas här när du skapat den första.")); return; }
+    const keep = new Set();
+    jobs.forEach((j, i) => {
+      let card = cards.get(j.id);
+      if (!card || card._key !== jobKey(j)) {
+        const fresh = buildCard(j);
+        if (card) card.replaceWith(fresh);
+        card = fresh; cards.set(j.id, card);
+      } else if (card._bar) {
+        card._bar.style.width = pct(j);
       }
-      if (j.status === "failed" && j.error) card.append(el("p", { class: "small" }, j.error));
-      if (j.output_asset_id) {
-        const url = assetUrl(j.output_asset_id);
-        card.append(el("video", { src: url, controls: "", preload: "metadata", playsinline: "" }));
-        card.append(el("div", { class: "row small" }, el("a", { href: url, download: "" }, "Ladda ned"), el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
-      } else if (!ACTIVE.includes(j.status)) {
-        card.append(el("div", { class: "row small" }, el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
-      }
-      box.append(card);
+      keep.add(card);
+      if (box.children[i] !== card) box.insertBefore(card, box.children[i] || null);
     });
+    [...box.children].forEach((c) => { if (!keep.has(c)) c.remove(); });
+    for (const [id, c] of cards) if (!keep.has(c)) cards.delete(id);
   }
   async function poll() {
     const active = jobs.filter((j) => ACTIVE.includes(j.status));
