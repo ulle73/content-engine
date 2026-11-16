@@ -28,12 +28,16 @@
   .sms-film-page .message-editor textarea { display:block; padding-right:38px; padding-bottom:34px; }
   .sms-film-page button.emoji-toggle { position:absolute; bottom:7px; right:7px; display:grid; place-items:center; width:28px; height:28px; min-width:0; min-height:0; padding:0; border:0; border-radius:6px; background:transparent; color:#718078; cursor:pointer; }
   .sms-film-page button.emoji-toggle:hover, .sms-film-page button.emoji-toggle:focus-visible { color:#245e40; background:#edf5ef; }
-  .sms-film-page .emoji-panel { position:absolute; z-index:5; right:0; top:calc(100% + 6px); width:min(280px, 90vw); padding:10px; border:1px solid #dbe5dd; border-radius:10px; background:white; box-shadow:0 8px 24px #1d352329; }
+  .sms-film-page .emoji-panel { position:absolute; z-index:5; right:0; top:calc(100% + 6px); width:min(340px, 90vw); padding:8px; border:1px solid #dbe5dd; border-radius:10px; background:white; box-shadow:0 8px 24px #1d352329; }
   .sms-film-page .emoji-panel[hidden] { display:none; }
-  .sms-film-page .emoji-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; }
-  .sms-film-page button.emoji-option { min-width:0; min-height:34px; padding:2px; border:0; border-radius:6px; background:transparent; font-size:20px; cursor:pointer; }
-  .sms-film-page button.emoji-option:hover, .sms-film-page button.emoji-option:focus-visible { background:#edf5ef; }
-  .sms-film-page .emoji-note { margin:6px 2px 0; color:#718078; font-size:11px; line-height:1.4; }
+  .sms-film-page .emoji-tabs { display:flex; gap:4px; padding:0 0 6px; }
+  .sms-film-page button.emoji-tab { min-height:32px; padding:5px 10px; border:0; border-radius:6px; color:#506359; background:transparent; font-size:12px; cursor:pointer; }
+  .sms-film-page button.emoji-tab[aria-pressed=true] { color:#20583a; background:#e9f3ec; font-weight:600; }
+  .sms-film-page emoji-picker { width:100%; height:320px; max-height:50vh; --border-size:0px; --background:#fff; --indicator-color:#2c6847; --button-hover-background:#edf5ef; }
+  .sms-film-page emoji-picker[hidden], .sms-film-page .emoji-faces[hidden] { display:none; }
+  .sms-film-page .emoji-faces { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:4px; max-height:320px; overflow:auto; }
+  .sms-film-page button.emoji-face { min-height:38px; padding:6px; border:0; border-radius:6px; background:transparent; color:#273a2e; font-size:13px; cursor:pointer; }
+  .sms-film-page button.emoji-face:hover, .sms-film-page button.emoji-face:focus-visible { background:#edf5ef; }
   .sms-film-page .msg-foot { display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; align-items: center; margin-top: .45rem; font-size: .82rem; color: var(--text-muted); }
   .sms-film-page .pick { cursor: pointer; color: var(--accent); font-weight: 600; }
   .sms-film-page .pick input { display: none; }
@@ -102,6 +106,7 @@
   .sms-film-page .badge.failed { background: #fde8e6; color: #7a1d14; }
   .sms-film-page .badge.done { background: #e3f4e8; color: #1c5b33; }
 </style>
+<script type="module" src="{% static 'vendor/emoji-picker/picker.js' %}"></script>
 {% endblock %}
 {% block content %}
 <main class="engine sms-film-page">
@@ -324,26 +329,33 @@
   }
 
   function emojiEditor(textarea) {
-    const panel = el("div", { class: "emoji-panel", hidden: "", role: "group", "aria-label": "Välj emoji" });
+    const panel = el("div", { class: "emoji-panel", hidden: "", role: "group", "aria-label": "Välj emoji och symboler" });
     const toggle = el("button", { type: "button", class: "emoji-toggle", "aria-label": "Välj emoji", "aria-expanded": "false", title: "Välj emoji" });
     toggle.innerHTML = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 14.5c1 2 2.4 3 4 3s3-1 4-3M8.5 9.5h.01M15.5 9.5h.01" stroke-width="2"/></svg>';
-    const grid = el("div", { class: "emoji-grid" });
+    const picker = el("emoji-picker", { locale: "sv", "data-source": "{% static 'vendor/emoji-picker/data-sv.json' %}" });
+    customElements.whenDefined("emoji-picker").then(() => {
+      picker.i18n = { categories: {custom:"Egna", "smileys-emotion":"Smileys och känslor", "people-body":"Personer och kropp", "animals-nature":"Djur och natur", "food-drink":"Mat och dryck", "travel-places":"Resor och platser", activities:"Aktiviteter", objects:"Föremål", symbols:"Symboler", flags:"Flaggor"}, categoriesLabel:"Kategorier", emojiUnsupportedMessage:"Din webbläsare stöder inte färgemoji.", favoritesLabel:"Favoriter", loadingMessage:"Laddar…", networkErrorMessage:"Kunde inte ladda emoji.", regionLabel:"Emojiväljare", searchDescription:"Använd piltangenterna för att välja och Enter för att infoga.", searchLabel:"Sök emoji", searchResultsLabel:"Sökresultat", skinToneDescription:"Välj hudton med piltangenterna och Enter.", skinToneLabel:"Välj hudton (nuvarande: {skinTone})", skinTones:["Standard","Ljus","Mellanljus","Mellan","Mellanmörk","Mörk"], skinTonesLabel:"Hudtoner" };
+    });
+    const faces = el("div", { class: "emoji-faces", hidden: "" });
+    const emojiTab = el("button", {type:"button", class:"emoji-tab", "aria-pressed":"true"}, "Emoji");
+    const faceTab = el("button", {type:"button", class:"emoji-tab", "aria-pressed":"false"}, "Textansikten");
     const close = () => { panel.hidden = true; toggle.setAttribute("aria-expanded", "false"); };
-    toggle.addEventListener("click", () => { const opening = panel.hidden; panel.hidden = !opening; toggle.setAttribute("aria-expanded", String(opening)); });
+    const insert = (value) => {
+      const start = textarea.selectionStart, end = textarea.selectionEnd;
+      if (textarea.value.length - (end - start) + value.length > LIMITS.text) return;
+      textarea.setRangeText(value, start, end, "end"); textarea.dispatchEvent(new Event("input", { bubbles: true }));
+      close(); textarea.focus();
+    };
+    picker.addEventListener("emoji-click", (event) => insert(event.detail.unicode));
+    for (const face of ["(⌐■_■)", "( •_•)", "( ͡° ͜ʖ ͡°)", "¯\\_(ツ)_/¯", "(╯°□°）╯︵ ┻━┻", "(✿◠‿◠)", "(づ｡◕‿‿◕｡)づ", "(｡♥‿♥｡)", "(≧◡≦)", "(☞ﾟヮﾟ)☞", "(•‿•)", "(ง •̀_•́)ง"]) {
+      faces.append(el("button", {type:"button", class:"emoji-face", onclick:() => insert(face)}, face));
+    }
+    const selectTab = (showFaces) => { picker.hidden = showFaces; faces.hidden = !showFaces; emojiTab.setAttribute("aria-pressed", String(!showFaces)); faceTab.setAttribute("aria-pressed", String(showFaces)); };
+    emojiTab.addEventListener("click", () => selectTab(false)); faceTab.addEventListener("click", () => selectTab(true));
+    toggle.addEventListener("click", () => { const opening = panel.hidden; if (opening && !picker.isConnected) panel.insertBefore(picker, faces); panel.hidden = !opening; toggle.setAttribute("aria-expanded", String(opening)); });
     panel.addEventListener("keydown", (event) => { if (event.key === "Escape") { close(); toggle.focus(); } });
     document.addEventListener("click", (event) => { if (!panel.hidden && !panel.contains(event.target) && event.target !== toggle && !toggle.contains(event.target)) close(); }, { signal: emojiEditor.controller.signal });
-    for (const emoji of ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","🙂","😉","😍","🥰","😘","😎","🤩","🥳","😇","🤔","😅","😢","😭","😱","😴","😜","😋","🙌","👏","👍","👎","👌","🤞","💪","🙏","❤️","🧡","💛","💚","💙","💜","🔥","✨","🎉","🎁","🏌️","⛳","🏆","☀️","🌧️","❄️","🍀","🍻","🥂","💯","✅","👀"]) {
-      const option = el("button", { type: "button", class: "emoji-option", "aria-label": emoji }, emoji);
-      option.addEventListener("click", () => {
-        const start = textarea.selectionStart, end = textarea.selectionEnd;
-        if (textarea.value.length - (end - start) + emoji.length > LIMITS.text) return;
-        textarea.setRangeText(emoji, start, end, "end");
-        textarea.dispatchEvent(new Event("input", { bubbles: true }));
-        close(); textarea.focus();
-      });
-      grid.append(option);
-    }
-    panel.append(grid, el("p", { class: "emoji-note" }, "Fler emoji: Win + . (Windows) eller Ctrl + Cmd + mellanslag (Mac)."));
+    panel.append(el("div", {class:"emoji-tabs"}, emojiTab, faceTab), faces);
     return el("div", { class: "message-editor" }, textarea, toggle, panel);
   }
   emojiEditor.controller = new AbortController();
