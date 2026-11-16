@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}SMS-film · {{ workspace.name }}{% endblock %}
+{% block title %}Generera video · {{ workspace.name }}{% endblock %}
 {% block extra_head %}
 <style>
   .sms-film-page { --bubble-sent: #0a84ff; --bubble-recv: #e9e9eb; }
@@ -112,21 +112,50 @@
   .sms-film-page .badge { font-size: .78rem; padding: .1rem .5rem; border-radius: 99px; background: var(--surface-accent); white-space: nowrap; }
   .sms-film-page .badge.failed { background: #fde8e6; color: #7a1d14; }
   .sms-film-page .badge.done { background: #e3f4e8; color: #1c5b33; }
+  .sms-film-page .mode-row { gap: 1.2rem; }
+  .sms-film-page select { max-width: 100%; }
+  .sms-film-page .count { float: right; font-weight: 400; color: var(--text-muted); font-size: .82rem; }
+  .sms-film-page .sm-preview { background: #0f2a1d; border-radius: 12px; padding: 1.4rem 1rem; text-align: center; margin: .4rem 0 .8rem; }
+  .sms-film-page .sm-preview .k { color: #d9b45a; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .85rem; min-height: 1.1em; }
+  .sms-film-page .sm-preview .h { color: #f3efe4; font-weight: 800; text-transform: uppercase; font-size: 1.6rem; line-height: 1.05; margin-top: .35rem; font-stretch: condensed; }
+  .sms-film-page .sm-preview .h b { color: #d9b45a; }
 </style>
 <script type="module" src="{% static 'vendor/emoji-picker/picker.js' %}"></script>
 {% endblock %}
 {% block content %}
 <main class="engine sms-film-page">
-  <header class="page-header"><div><p class="eyebrow">Generera video</p><h1>SMS-film</h1><p class="intro">Skriv en sms-konversation, välj bilder och tryck på Skapa film. Videon renderas i molnet och dyker upp här när den är klar, oftast inom några minuter.</p></div></header>
+  <header class="page-header"><div><p class="eyebrow">Content Engine</p><h1>Generera video</h1><p class="intro">Välj typ av video, fyll i texterna och tryck på Skapa film. Videon renderas i molnet och dyker upp här när den är klar, oftast inom några minuter.</p></div></header>
 
   <div class="sms-grid">
     <form id="sms-form" novalidate>
       {% csrf_token %}
       <div id="sms-error" class="notice error" role="alert" hidden></div>
 
+      <section aria-labelledby="gv-kind-title">
+        <h2 id="gv-kind-title">Typ av video</h2>
+        <div class="row mode-row" role="radiogroup" aria-labelledby="gv-kind-title">
+          <label class="check"><input type="radio" name="gv-kind" value="sms" checked><span>SMS-film<small>En sms-konversation i en iPhone.</small></span></label>
+          <label class="check"><input type="radio" name="gv-kind" value="slutmall"><span>Slutmall<small>Svingloggan och två textrader, {{ slutmall_len|floatformat:1 }} s.</small></span></label>
+        </div>
+        <div class="field" style="margin-top:.85rem"><label for="sms-title">Namn på filmen</label><input type="text" id="sms-title" maxlength="200" placeholder="T.ex. Sugar daddy – golf"></div>
+      </section>
+
+      <section id="slutmall-section" aria-labelledby="sm-title" hidden>
+        <h2 id="sm-title">Slutmall</h2>
+        <div class="field"><label for="sm-mall">Vilken slutmall</label>
+          <select id="sm-mall">{% for m in slutmallar %}<option value="{{ m.id }}">{{ m.namn }}</option>{% endfor %}</select></div>
+        <div class="field"><label for="sm-rad1">Rad 1 – liten guldtext överst <span class="count" id="sm-rad1-count"></span></label>
+          <input type="text" id="sm-rad1" maxlength="{{ slutmall_limits.rad1 }}" placeholder="Friskvårdsbidrag kvar?"></div>
+        <div class="field"><label for="sm-rad2">Rad 2 – stor rubrik <span class="count" id="sm-rad2-count"></span></label>
+          <input type="text" id="sm-rad2" maxlength="{{ slutmall_limits.rad2 }}" placeholder="Det brinner inne *31/12*"></div>
+        <p class="small">Förhandsvisning av texten (färger och storlek ungefärliga):</p>
+        <div class="sm-preview" aria-hidden="true"><div class="k" id="sm-prev-k"></div><div class="h" id="sm-prev-h"></div></div>
+        <p class="small">Den rörliga svingloggan är alltid med. Skriv <code>*ord*</code> i rad 2 för att göra orden guldfärgade. Rad 1 kan lämnas tom. Filmen blir 9:16 med ljud.</p>
+      </section>
+
+      <div id="sms-mode">
       <section aria-labelledby="sms-start-title">
         <h2 id="sms-start-title">Start</h2>
-        <div class="field"><label for="sms-title">Namn på filmen</label><input type="text" id="sms-title" maxlength="200" placeholder="T.ex. Sugar daddy – golf"></div>
         <div class="field"><label for="sms-notification">Notistext på låsskärmen</label>
           <textarea id="sms-notification" maxlength="{{ limits.text }}" placeholder="Visas som notis på låsskärmen och blir första meddelandet i chatten. Lämna tomt för att börja direkt i chatten."></textarea></div>
         <div class="field" id="sms-wall-field"><label>Bakgrund på låsskärmen</label>
@@ -159,20 +188,21 @@
           </div>
         </details>
       </section>
+      </div>
 
       <div class="row"><button type="submit" id="sms-submit">Skapa film</button><span class="small" id="sms-submit-hint"></span></div>
     </form>
 
     <aside class="sms-side">
-      <div><h2>Förhandsvisning</h2><p class="small">Stillbild som uppdateras när du ändrar filmen. Rörelser och ljud spelas upp i den färdiga filmen, där även emoji kan se annorlunda ut.</p><div class="preview-tabs"><button type="button" id="preview-lock-tab" aria-pressed="true">Låsskärm</button><button type="button" id="preview-chat-tab" aria-pressed="false">Konversation</button></div><div class="phone"><div id="preview-lock" class="phone-screen phone-lock"><div class="phone-lock-date" id="preview-lock-date"></div><div class="phone-lock-time" id="preview-lock-time"></div><div class="phone-notice" id="preview-notice"></div><div class="small" id="preview-no-lock" style="margin-top:4rem;color:white">Lägg till en notistext för att visa låsskärmen i filmen.</div></div><div id="preview-chat-screen" class="phone-screen" hidden><div class="phone-status" id="preview-clock"></div><div class="phone-head"><div class="phone-avatar" id="preview-avatar"></div><span id="preview-name"></span></div><div class="phone-chat" id="preview-messages"></div><div class="phone-compose">iMessage</div></div></div></div>
-      <div>
+      <div id="sms-preview-box"><h2>Förhandsvisning</h2><p class="small">Stillbild som uppdateras när du ändrar filmen. Rörelser och ljud spelas upp i den färdiga filmen, där även emoji kan se annorlunda ut.</p><div class="preview-tabs"><button type="button" id="preview-lock-tab" aria-pressed="true">Låsskärm</button><button type="button" id="preview-chat-tab" aria-pressed="false">Konversation</button></div><div class="phone"><div id="preview-lock" class="phone-screen phone-lock"><div class="phone-lock-date" id="preview-lock-date"></div><div class="phone-lock-time" id="preview-lock-time"></div><div class="phone-notice" id="preview-notice"></div><div class="small" id="preview-no-lock" style="margin-top:4rem;color:white">Lägg till en notistext för att visa låsskärmen i filmen.</div></div><div id="preview-chat-screen" class="phone-screen" hidden><div class="phone-status" id="preview-clock"></div><div class="phone-head"><div class="phone-avatar" id="preview-avatar"></div><span id="preview-name"></span></div><div class="phone-chat" id="preview-messages"></div><div class="phone-compose">iMessage</div></div></div></div>
+      <div id="sms-length-box">
         <h2>Längd</h2>
         <div class="length" id="sms-length">–</div>
         <p class="small" id="sms-length-note">Högst {{ limits.seconds }} sekunder. Tiden räknas efter läsregeln: varje meddelande får stå kvar så länge det tar att läsa det.</p>
         <ol class="timeline" id="sms-timeline"></ol>
       </div>
       <div>
-        <h2>Dina SMS-filmer</h2>
+        <h2>Dina filmer</h2>
         <div class="jobs" id="sms-jobs"></div>
       </div>
     </aside>
@@ -195,6 +225,7 @@
   const assetUrl = (id) => ASSET_URL.replace(ZERO, id);
   const fmt = (s) => s.toFixed(1).replace(".", ",") + " s";
   const chars = (t) => (typeof t === "string" ? [...t].length : 0);
+  const kind = () => document.querySelector("[name=gv-kind]:checked").value;
 
   // ---------------------------------------------------------------- state
   // An image ref is {file: File, url} for a new pick, or {asset: "<uuid>", url} for an earlier upload.
@@ -250,6 +281,12 @@
     return { lockscreen: !!notification, outro: $("sms-outro").checked, messages };
   }
   function updateTiming() {
+    if (kind() === "slutmall") {
+      const empty = !$("sm-rad2").value.trim();
+      $("sms-submit").disabled = empty;
+      $("sms-submit-hint").textContent = empty ? "Skriv text på rad 2." : "";
+      return;
+    }
     updatePreview();
     const conv = timingConv();
     const { starts, total } = schedule(conv);
@@ -468,8 +505,41 @@
   $("sms-notification").addEventListener("input", () => { toggleWall(); updateTiming(); });
   $("sms-outro").addEventListener("change", updateTiming);
 
+  // ---------------------------------------------------------------- slutmall (svingloggan + två rader)
+  function updateSlutmallPreview() {
+    const r1 = $("sm-rad1").value, r2 = $("sm-rad2").value;
+    $("sm-rad1-count").textContent = `${chars(r1)}/${$("sm-rad1").maxLength}`;
+    $("sm-rad2-count").textContent = `${chars(r2)}/${$("sm-rad2").maxLength}`;
+    $("sm-prev-k").textContent = r1.trim();
+    const h = $("sm-prev-h");
+    h.replaceChildren();
+    (r2.trim() || $("sm-rad2").placeholder).split(/(\*[^*]+\*)/).forEach((part) => {
+      if (!part) return;
+      if (/^\*[^*]+\*$/.test(part)) { const b = document.createElement("b"); b.textContent = part.slice(1, -1); h.append(b); }
+      else h.append(document.createTextNode(part));
+    });
+  }
+  function applyMode() {
+    const sm = kind() === "slutmall";
+    $("sms-mode").hidden = sm;
+    $("slutmall-section").hidden = !sm;
+    $("sms-length-box").hidden = sm;
+    $("sms-preview-box").hidden = sm;
+    $("sms-title").placeholder = sm ? "T.ex. Friskvård – brinner inne" : "T.ex. Sugar daddy – golf";
+    updateSlutmallPreview(); updateTiming();
+  }
+  document.querySelectorAll("[name=gv-kind]").forEach((r) => r.addEventListener("change", applyMode));
+  ["sm-rad1", "sm-rad2"].forEach((id) => $(id).addEventListener("input", () => { updateSlutmallPreview(); updateTiming(); }));
+
   // ---------------------------------------------------------------- prefill ("Gör om")
-  if (reopen) {
+  if (reopen && reopen.kind === "slutmall") {
+    document.querySelector("[name=gv-kind][value=slutmall]").checked = true;
+    $("sms-title").value = reopen.title || "";
+    if (reopen.mall) $("sm-mall").value = reopen.mall;
+    $("sm-rad1").value = reopen.rad1 || "";
+    $("sm-rad2").value = reopen.rad2 || "";
+    state.messages.push(newMsg("sent"));
+  } else if (reopen) {
     $("sms-title").value = reopen.title || "";
     $("sms-notification").value = reopen.notification || "";
     $("sms-outro").checked = !!reopen.outro;
@@ -490,7 +560,7 @@
   } else {
     state.messages.push(newMsg("sent"));
   }
-  showWall(); showAvatar(); toggleWall(); renderMessages(); updateTiming(); setPreviewTab(!!$("sms-notification").value.trim());
+  showWall(); showAvatar(); toggleWall(); renderMessages(); applyMode(); setPreviewTab(!!$("sms-notification").value.trim());
 
   // ---------------------------------------------------------------- submit
   function showError(text) { const e = $("sms-error"); e.textContent = text; e.hidden = !text; if (text) e.scrollIntoView({ behavior: "smooth", block: "center" }); }
@@ -508,7 +578,10 @@
       return { file: files.get(r.file) };
     };
     const notification = $("sms-notification").value.trim();
-    const form = {
+    const form = kind() === "slutmall" ? {
+      kind: "slutmall", title: $("sms-title").value.trim(), mall: $("sm-mall").value,
+      rad1: $("sm-rad1").value.trim(), rad2: $("sm-rad2").value.trim(),
+    } : {
       title: $("sms-title").value.trim(),
       notification,
       lockDate: $("sms-lockdate").value.trim(),
@@ -553,7 +626,7 @@
     jobs.forEach((j) => {
       const when = new Date(j.created_at).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
       const card = el("div", { class: "job" },
-        el("div", { class: "job-head" }, el("strong", {}, j.title || "SMS-film"), el("span", { class: `badge ${j.status}` }, j.status_label)),
+        el("div", { class: "job-head" }, el("strong", {}, j.title || (j.kind === "slutmall" ? "Slutmall" : "SMS-film")), el("span", { class: `badge ${j.status}` }, j.status_label)),
         el("div", { class: "small" }, when + (j.duration_s ? ` · ${Math.round(j.duration_s)} s` : "")));
       if (ACTIVE.includes(j.status)) {
         const bar = el("div", { class: "bar" }, el("i", { style: `width:${Math.max(4, Math.round((j.progress || 0) * 100))}%` }));

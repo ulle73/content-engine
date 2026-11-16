@@ -106,7 +106,9 @@ def asset_bytes(request, job_id, asset_id):
 
 @worker_endpoint("GET")
 def apple_pack(request, job_id):
-    service.leased(job_id, request.headers.get("X-Edit-Lease"))
+    job = service.leased(job_id, request.headers.get("X-Edit-Lease"))
+    if job.kind != "sms":
+        return JsonResponse({"error": "Slutmallar använder inga Apple-filer."}, status=404)
     return _stream(lambda: open_key(service.APPLE_PACK_KEY), "application/gzip")
 
 

@@ -41,6 +41,8 @@ jobs:
         with:
           sparse-checkout: |
             library/templates/imessage-samtal
+            library/templates/golfkuponger-slutmallar
+            .claude/skills/animate/tools
             edit-renderer/outros
       - uses: actions/setup-node@v4
         with:
@@ -62,6 +64,14 @@ jobs:
           key: hyperframes-${{ runner.os }}-0.9.39
       - name: Prepare HyperFrames browser
         run: npx --yes hyperframes@0.9.39 browser ensure
+      - name: Install Playwright for the end templates
+        # Slutmallar (golfkuponger-slutmallar/render.mjs) screenshot each frame via .claude/skills/animate/tools/pw.mjs,
+        # which loads Playwright from work/animate and drives the runner's preinstalled Google Chrome.
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: |
+          npm i --no-save --no-audit --no-fund --prefix work/animate playwright@1.63.0
+          if ! command -v google-chrome >/dev/null; then npx --prefix work/animate playwright install --with-deps chromium; fi
       - name: Render queued SMS films
         run: node library/templates/imessage-samtal/dashboard-worker.mjs
       - name: Remove Apple files

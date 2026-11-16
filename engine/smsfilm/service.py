@@ -51,7 +51,8 @@ def max_per_day() -> int:
     return int(os.environ.get("SMS_FILM_MAX_JOBS_PER_DAY", "30"))
 
 
-def create_job(company, user, *, title, form, conversation, image_asset_ids, duration_s, dispatch_now=True):
+def create_job(company, user, *, title, form, conversation, image_asset_ids, duration_s, dispatch_now=True,
+               kind="sms"):
     active = SmsFilmJob.objects.filter(company=company, status__in=ACTIVE).count()
     if active >= max_active():
         raise SmsFilmError(f"{active} filmer renderas redan. Vänta tills någon är klar och försök igen.")
@@ -59,7 +60,8 @@ def create_job(company, user, *, title, form, conversation, image_asset_ids, dur
     if today >= max_per_day():
         raise SmsFilmError(f"Max {max_per_day()} SMS-filmer per dygn är nått. Försök igen i morgon.")
     job = SmsFilmJob.objects.create(company=company, created_by=user, title=title[:200], form=form,
-                                    conversation=conversation, image_asset_ids=image_asset_ids, duration_s=duration_s)
+                                    conversation=conversation, image_asset_ids=image_asset_ids, duration_s=duration_s,
+                                    kind=kind)
     if dispatch_now:
         dispatch(job)
     return job
@@ -145,6 +147,13 @@ def leased(job_id, token, *, lock=False) -> SmsFilmJob:
 
 def worker_payload(job: SmsFilmJob, base_url: str) -> dict:
     base = base_url.rstrip("/")
+    limits = {"output_max_bytes": OUTPUT_MAX_BYTES, "heartbeat_s": 30, "lease_s": LEASE_SECONDS}
+    if job.kind == "slutmall":
+        # end card: no conversation, no uploads and no Apple pack – the worker renders the template directly
+        form = job.form or {}
+        return {"job_id": str(job.pk), "lease": str(job.lease_token), "attempt": job.attempts, "kind": "slutmall",
+                "slutmall": {"mall": form.get("mall"), "rad1": form.get("rad1", ""), "rad2": form.get("rad2", "")},
+                "assets": [], "limits": limits}
     assets = []
     for asset in MediaAsset.objects.filter(pk__in=job.image_asset_ids, company=job.company, kind="image"):
         ext = asset.storage_key.rsplit(".", 1)[-1].lower()
@@ -153,10 +162,10 @@ def worker_payload(job: SmsFilmJob, base_url: str) -> dict:
     if len(assets) != len(set(job.image_asset_ids)):
         raise SmsFilmError("En bild i filmen finns inte längre i mediabanken.")
     return {
-        "job_id": str(job.pk), "lease": str(job.lease_token), "attempt": job.attempts,
+        "job_id": str(job.pk), "lease": str(job.lease_token), "attempt": job.attempts, "kind": "sms",
         "conversation": job.conversation, "assets": assets,
         "apple_pack_url": f"{base}/internal/sms-film/apple-pack/{job.pk}/",
-        "limits": {"output_max_bytes": OUTPUT_MAX_BYTES, "heartbeat_s": 30, "lease_s": LEASE_SECONDS},
+        "limits": limits,
     }
 
 
@@ -200,12 +209,13 @@ def complete(job_id, token, video: bytes, *, duration_s=None, warnings=None) -> 
     job = leased(job_id, token)
     if not video or len(video) > OUTPUT_MAX_BYTES:
         raise SmsFilmError("Videon ska vara mellan 1 byte och 120 MB.")
-    title = job.title or "SMS-film"
+    slutmall = job.kind == "slutmall"
+    title = job.title or ("Slutmall" if slutmall else "SMS-film")
     asset = store_asset(job.company, video, alt_text=title[:500])
     if asset.kind != "video":
         raise SmsFilmError("Renderaren skickade inte en video.")
-    MediaAsset.objects.filter(pk=asset.pk).update(origin="generated", provider="hyperframes",
-                                                  brief=f"SMS-film: {title}"[:2000])
+    MediaAsset.objects.filter(pk=asset.pk).update(origin="generated", provider="playwright" if slutmall else "hyperframes",
+                                                  brief=f"{'Slutmall' if slutmall else 'SMS-film'}: {title}"[:2000])
     with transaction.atomic():
         job = leased(job_id, token, lock=True)
         job.output_asset = asset
@@ -257,7 +267,7 @@ def get_job(company, job_id) -> SmsFilmJob:
 
 def serialize(job: SmsFilmJob) -> dict:
     return {
-        "id": str(job.pk), "title": job.title, "status": job.status, "status_label": job.get_status_display(),
+        "id": str(job.pk), "kind": job.kind, "title": job.title, "status": job.status, "status_label": job.get_status_display(),
         "progress": round(job.progress, 2), "stage": job.stage, "error": job.error, "warnings": job.warnings,
         "duration_s": job.duration_s, "dispatch_error": job.dispatch_error,
         "output_asset_id": str(job.output_asset_id) if job.output_asset_id else None,

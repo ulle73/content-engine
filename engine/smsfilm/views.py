@@ -39,12 +39,19 @@ def _sms_film(request, workspace_id, *, embedded):
             except ValueError:
                 raise spec.SmsFilmError("Formuläret kom inte fram. Ladda om sidan och försök igen.") from None
             title = spec._text(form.get("title") if isinstance(form, dict) else "", "Namn på filmen", 200)
-            with transaction.atomic():
-                conv, image_ids, saved, total = spec.build(form, request.FILES, company)
+            if isinstance(form, dict) and form.get("kind") == "slutmall":
+                saved, total = spec.build_slutmall(form)
                 saved["title"] = title
-                job = service.create_job(company, request.user, title=title or "SMS-film", form=saved,
-                                         conversation=conv, image_asset_ids=image_ids, duration_s=total,
-                                         dispatch_now=False)
+                job = service.create_job(company, request.user, title=title or f"Slutmall – {spec.SLUTMALLAR[saved['mall']]}",
+                                         form=saved, conversation={}, image_asset_ids=[], duration_s=total,
+                                         dispatch_now=False, kind="slutmall")
+            else:
+                with transaction.atomic():
+                    conv, image_ids, saved, total = spec.build(form, request.FILES, company)
+                    saved["title"] = title
+                    job = service.create_job(company, request.user, title=title or "SMS-film", form=saved,
+                                             conversation=conv, image_asset_ids=image_ids, duration_s=total,
+                                             dispatch_now=False)
             service.dispatch(job)
         except spec.SmsFilmError as exc:
             if _wants_json(request):
@@ -71,6 +78,9 @@ def _sms_film(request, workspace_id, *, embedded):
         "reopen": reopen,
         "limits": {"messages": spec.MAX_MESSAGES, "text": spec.MAX_TEXT, "seconds": spec.MAX_SECONDS,
                    "uploads": spec.MAX_UPLOADS, "outro": spec.OUTRO_LEN},
+        "slutmallar": [{"id": k, "namn": v} for k, v in spec.SLUTMALLAR.items()],
+        "slutmall_limits": {"rad1": spec.SLUTMALL_RAD1, "rad2": spec.SLUTMALL_RAD2},
+        "slutmall_len": spec.SLUTMALL_LEN,
     })
 
 

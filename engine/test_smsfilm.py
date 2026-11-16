@@ -228,6 +228,65 @@ class WorkerApiTests(TestCase):
         self.job.refresh_from_db()
         self.assertEqual(self.job.status, "queued")
 
+
+class SlutmallSpecTests(TestCase):
+    def test_build_ok(self):
+        saved, total = spec.build_slutmall({"mall": "epassi", "rad1": " Friskvårdsbidrag kvar? ", "rad2": "Det brinner *inne*"})
+        self.assertEqual(saved, {"kind": "slutmall", "mall": "epassi", "rad1": "Friskvårdsbidrag kvar?",
+                                 "rad2": "Det brinner *inne*"})
+        self.assertEqual(total, spec.SLUTMALL_LEN)
+
+    def test_rejects_bad_input(self):
+        for form in ({"mall": "okand", "rad2": "x"}, {"mall": "alla", "rad2": "  "},
+                     {"mall": "alla", "rad1": "a" * (spec.SLUTMALL_RAD1 + 1), "rad2": "x"},
+                     {"mall": "alla", "rad2": "b" * (spec.SLUTMALL_RAD2 + 1)}):
+            with self.assertRaises(spec.SmsFilmError, msg=form):
+                spec.build_slutmall(form)
+
+
+@override_settings(APP_URL="https://engine.test")
+@mock.patch.dict(os.environ, {"EDIT_WORKER_TOKEN": TOKEN, "GITHUB_DISPATCH_TOKEN": ""})
+class SlutmallFlowTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(username="s", password="test")
+        self.company = Company.objects.create(owner=self.user, name="GK")
+        self.client.force_login(self.user)
+        self.url = reverse("engine:sms_film", kwargs={"workspace_id": self.company.pk})
+
+    def create(self, form):
+        return self.client.post(self.url, {"form_json": json.dumps(form)}, HTTP_ACCEPT="application/json")
+
+    def test_page_offers_slutmallar(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Generera video")
+        self.assertContains(response, "slutmall-section")
+        self.assertContains(response, "Epassi")
+
+    def test_post_creates_slutmall_job_and_worker_payload(self):
+        response = self.create({"kind": "slutmall", "mall": "alla", "rad1": "Friskvårdsbidrag kvar?",
+                                "rad2": "Det brinner inne 31/12"})
+        self.assertEqual(response.status_code, 201, response.content)
+        self.assertEqual(response.json()["job"]["kind"], "slutmall")
+        job = SmsFilmJob.objects.get()
+        self.assertEqual((job.kind, job.title, job.image_asset_ids), ("slutmall", "Slutmall – Alla portaler", []))
+        auth = {"HTTP_AUTHORIZATION": f"Bearer {TOKEN}"}
+        payload = self.client.post("/internal/sms-film/claim/", json.dumps({"worker_id": "gh"}),
+                                   content_type="application/json", **auth).json()["job"]
+        self.assertEqual(payload["kind"], "slutmall")
+        self.assertEqual(payload["slutmall"]["rad2"], "Det brinner inne 31/12")
+        self.assertNotIn("apple_pack_url", payload)
+        self.assertEqual(payload["assets"], [])
+        pack = self.client.get(f"/internal/sms-film/apple-pack/{job.pk}/", **auth, HTTP_X_EDIT_LEASE=payload["lease"])
+        self.assertEqual(pack.status_code, 404)
+        reopen = self.client.get(self.url + f"?from={job.pk}")
+        self.assertContains(reopen, "Det brinner inne 31/12")
+
+    def test_bad_slutmall_and_non_object_form(self):
+        self.assertEqual(self.create({"kind": "slutmall", "mall": "alla", "rad2": ""}).status_code, 400)
+        self.assertEqual(self.create(["inte", "ett", "objekt"]).status_code, 400)
+        self.assertFalse(SmsFilmJob.objects.exists())
+
+
 class CommandTests(TestCase):
     def test_apple_pack_contains_all_files_without_owner(self):
         import tarfile

@@ -236,3 +236,31 @@ def build(form, files, company):
     if total > MAX_SECONDS:
         raise SmsFilmError(f"Filmen blir {total:.0f} sekunder. Högst {MAX_SECONDS} sekunder – ta bort några meddelanden.")
     return conv, images.ids, saved, total
+
+
+# --- slutmallar (library/templates/golfkuponger-slutmallar) ----------------------------------------------------
+
+SLUTMALLAR = {
+    "alla": "Alla portaler",
+    "epassi": "Epassi",
+    "benify": "Benify",
+    "sp": "Söderberg & Partners",
+    "edenred": "Edenred",
+}
+SLUTMALL_RAD1 = 40
+SLUTMALL_RAD2 = 48
+SLUTMALL_LEN = 7.7  # render.mjs reports the real length; this is only the estimate shown before rendering
+
+
+def build_slutmall(form):
+    """Validates the end-card form. Returns (saved_form, estimated_seconds). render.mjs checks the same limits."""
+    if not isinstance(form, dict):
+        raise SmsFilmError("Formuläret kom inte fram. Ladda om sidan och försök igen.")
+    mall = form.get("mall")
+    if mall not in SLUTMALLAR:
+        raise SmsFilmError("Välj vilken slutmall som ska användas.")
+    rad1 = _text(form.get("rad1"), "Rad 1", SLUTMALL_RAD1)
+    rad2 = _text(form.get("rad2"), "Rad 2", SLUTMALL_RAD2, required=True)
+    if "\n" in rad1 or "\n" in rad2:
+        raise SmsFilmError("Raderna får inte innehålla radbrytningar.")
+    return {"kind": "slutmall", "mall": mall, "rad1": rad1, "rad2": rad2}, SLUTMALL_LEN
