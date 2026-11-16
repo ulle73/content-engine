@@ -65,7 +65,7 @@ def analyze_prompt(text: str) -> dict:
 def _owned_company(user, company_id):
     if not getattr(user, "is_authenticated", False):
         raise PermissionDenied("Logga in f\u00f6rst.")
-    company = Company.objects.filter(pk=company_id, owner=user).first()
+    company = Company.accessible(user).filter(pk=company_id).first()
     if company is None:
         raise PermissionDenied("F\u00f6retaget kunde inte \u00f6ppnas.")
     return company

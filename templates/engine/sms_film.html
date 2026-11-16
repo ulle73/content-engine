@@ -1,0 +1,449 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}SMS-film · {{ workspace.name }}{% endblock %}
+{% block extra_head %}
+<style>
+  .sms-film-page { --bubble-sent: #0a84ff; --bubble-recv: #e9e9eb; }
+  .sms-film-page .sms-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  @media (min-width: 1100px) { .sms-film-page .sms-grid { grid-template-columns: minmax(0, 1fr) 340px; align-items: start; } .sms-film-page .sms-side { position: sticky; top: 1rem; } }
+  .sms-film-page section, .sms-film-page aside > div { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.2rem; margin-bottom: 1rem; }
+  .sms-film-page h2 { font-size: 1.05rem; margin: 0 0 .75rem; }
+  .sms-film-page .field { margin-bottom: .85rem; }
+  .sms-film-page .field label { display: block; font-weight: 600; margin-bottom: .3rem; }
+  .sms-film-page input[type=text], .sms-film-page textarea { width: 100%; box-sizing: border-box; }
+  .sms-film-page textarea { min-height: 3.2rem; resize: vertical; font-size: 1rem; }
+  .sms-film-page .row { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
+  .sms-film-page .check { display: flex; gap: .5rem; align-items: flex-start; font-weight: 600; cursor: pointer; }
+  .sms-film-page .check small { display: block; font-weight: 400; color: var(--text-muted); }
+  .sms-film-page .msgs { display: flex; flex-direction: column; gap: .75rem; margin-bottom: .9rem; }
+  .sms-film-page .msg { border: 1px solid var(--border); border-radius: 12px; padding: .75rem; background: var(--surface-subtle); max-width: 88%; }
+  .sms-film-page .msg.sent { align-self: flex-end; border-color: #b9d8ff; background: #f2f8ff; }
+  .sms-film-page .msg.recv { align-self: flex-start; }
+  .sms-film-page .msg-head { display: flex; justify-content: space-between; gap: .5rem; align-items: center; margin-bottom: .4rem; font-size: .85rem; color: var(--text-muted); }
+  .sms-film-page .msg-head strong { color: var(--text); }
+  .sms-film-page .msg-tools { display: flex; gap: .25rem; }
+  .sms-film-page .icon-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: .15rem .45rem; cursor: pointer; font-size: .85rem; color: var(--text); }
+  .sms-film-page .icon-btn:disabled { opacity: .35; cursor: default; }
+  .sms-film-page .msg-foot { display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; align-items: center; margin-top: .45rem; font-size: .82rem; color: var(--text-muted); }
+  .sms-film-page .pick { cursor: pointer; color: var(--accent); font-weight: 600; }
+  .sms-film-page .pick input { display: none; }
+  .sms-film-page .thumb { position: relative; margin-top: .5rem; border-radius: 10px; overflow: hidden; display: inline-block; max-width: 100%; touch-action: none; user-select: none; }
+  .sms-film-page .thumb > img.base { display: block; max-width: min(320px, 100%); max-height: 360px; }
+  .sms-film-page .thumb .glasses { position: absolute; transform: translate(-50%, -50%); image-rendering: pixelated; cursor: grab; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+  .sms-film-page .thumb .glasses:active { cursor: grabbing; }
+  .sms-film-page .glasses-tools { display: grid; grid-template-columns: auto 1fr; gap: .3rem .6rem; align-items: center; margin-top: .5rem; font-size: .85rem; }
+  .sms-film-page .add-row { display: flex; gap: .6rem; flex-wrap: wrap; }
+  .sms-film-page .add-row button { flex: 1 1 10rem; }
+  .sms-film-page .wall { max-width: 120px; max-height: 200px; border-radius: 10px; display: block; margin-top: .4rem; }
+  .sms-film-page .length { font-size: 1.6rem; font-weight: 700; }
+  .sms-film-page .length.over { color: #b42318; }
+  .sms-film-page .timeline { list-style: none; padding: 0; margin: .6rem 0 0; font-size: .85rem; max-height: 280px; overflow: auto; }
+  .sms-film-page .timeline li { display: flex; justify-content: space-between; gap: .5rem; padding: .2rem 0; border-bottom: 1px dashed var(--border); }
+  .sms-film-page .timeline span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sms-film-page .notice.error { border-color: #f4b4ae; background: #fff4f2; color: #7a1d14; }
+  .sms-film-page .jobs { display: flex; flex-direction: column; gap: .8rem; }
+  .sms-film-page .job { border: 1px solid var(--border); border-radius: 12px; padding: .7rem .8rem; }
+  .sms-film-page .job-head { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
+  .sms-film-page .job video { width: 100%; max-height: 420px; background: #000; border-radius: 8px; margin-top: .5rem; }
+  .sms-film-page .bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: .45rem; }
+  .sms-film-page .bar > i { display: block; height: 100%; background: var(--accent); transition: width .4s; }
+  .sms-film-page .badge { font-size: .78rem; padding: .1rem .5rem; border-radius: 99px; background: var(--surface-accent); white-space: nowrap; }
+  .sms-film-page .badge.failed { background: #fde8e6; color: #7a1d14; }
+  .sms-film-page .badge.done { background: #e3f4e8; color: #1c5b33; }
+</style>
+{% endblock %}
+{% block content %}
+<main class="engine sms-film-page">
+  <header class="page-header"><div><p class="eyebrow">Generera video</p><h1>SMS-film</h1><p class="intro">Skriv en sms-konversation, välj bilder och tryck på Skapa film. Videon renderas i molnet och dyker upp här när den är klar, oftast inom några minuter.</p></div></header>
+
+  <div class="sms-grid">
+    <form id="sms-form" novalidate>
+      {% csrf_token %}
+      <div id="sms-error" class="notice error" role="alert" hidden></div>
+
+      <section aria-labelledby="sms-start-title">
+        <h2 id="sms-start-title">Start</h2>
+        <div class="field"><label for="sms-title">Namn på filmen</label><input type="text" id="sms-title" maxlength="200" placeholder="T.ex. Sugar daddy – golf"></div>
+        <div class="field"><label for="sms-notification">Notistext på låsskärmen</label>
+          <textarea id="sms-notification" maxlength="{{ limits.text }}" placeholder="Visas som notis på låsskärmen och blir första meddelandet i chatten. Lämna tomt för att börja direkt i chatten."></textarea></div>
+        <div class="field" id="sms-wall-field"><label>Bakgrund på låsskärmen</label>
+          <div class="row"><label class="pick">Välj bild<input type="file" accept="image/jpeg,image/png,image/webp" id="sms-wall-input"></label><button type="button" class="icon-btn" id="sms-wall-clear" hidden>Ta bort</button><span class="small" id="sms-wall-hint">Valfri. Utan egen bild används mallens standardbakgrund.</span></div>
+          <img class="wall" id="sms-wall-preview" alt="" hidden></div>
+      </section>
+
+      <section aria-labelledby="sms-chat-title">
+        <h2 id="sms-chat-title">Konversationen</h2>
+        <p class="small">Vänster = meddelanden du får. Höger = meddelanden du skickar. Lägg till i vilken ordning du vill och flytta med pilarna.</p>
+        <p class="small">Emoji: tryck <kbd>Win</kbd> + <kbd>.</kbd> (Windows) eller <kbd>Ctrl</kbd> + <kbd>Cmd</kbd> + <kbd>Mellanslag</kbd> (Mac). Väljaren visar datorns egna emoji, men i filmen blir de Apples iPhone-emoji.</p>
+        <div class="msgs" id="sms-msgs"></div>
+        <div class="add-row"><button type="button" class="button-secondary" data-add="recv">+ Lägg till vänster</button><button type="button" class="button-secondary" data-add="sent">+ Lägg till höger</button></div>
+      </section>
+
+      <section aria-labelledby="sms-end-title">
+        <h2 id="sms-end-title">Slut</h2>
+        <label class="check"><input type="checkbox" id="sms-outro"><span>Golfkuponger-logga på slutet<small>Spotlight-loggan svingar in efter sista meddelandet (+{{ limits.outro|floatformat:1 }} s).</small></span></label>
+      </section>
+
+      <section>
+        <details><summary>Mer inställningar</summary>
+          <div style="margin-top:.8rem">
+            <div class="field"><label for="sms-contact">Kontaktens namn</label><input type="text" id="sms-contact" maxlength="40" placeholder="Alex"></div>
+            <div class="field"><label>Profilbild</label><div class="row"><label class="pick">Välj bild<input type="file" accept="image/jpeg,image/png,image/webp" id="sms-avatar-input"></label><button type="button" class="icon-btn" id="sms-avatar-clear" hidden>Ta bort</button></div><img class="wall" id="sms-avatar-preview" alt="" hidden style="max-width:64px;border-radius:50%"></div>
+            <div class="field"><label for="sms-clock">Klockan i statusfältet</label><input type="text" id="sms-clock" maxlength="5" placeholder="9:41" style="max-width:7rem"></div>
+            <div class="field"><label for="sms-chatdate">Datum i chatten</label><input type="text" id="sms-chatdate" maxlength="40" placeholder="Idag"></div>
+            <div class="field"><label for="sms-lockdate">Datum på låsskärmen</label><input type="text" id="sms-lockdate" maxlength="40" placeholder="Dagens datum"></div>
+            <label class="check"><input type="checkbox" id="sms-keyboard" checked><span>Visa tangentbordet när du skriver</span></label>
+            <label class="check" style="margin-top:.5rem"><input type="checkbox" id="sms-sounds" checked><span>Ljud (skicka, ta emot, tangentklick)</span></label>
+          </div>
+        </details>
+      </section>
+
+      <div class="row"><button type="submit" id="sms-submit">Skapa film</button><span class="small" id="sms-submit-hint"></span></div>
+    </form>
+
+    <aside class="sms-side">
+      <div>
+        <h2>Längd</h2>
+        <div class="length" id="sms-length">–</div>
+        <p class="small" id="sms-length-note">Högst {{ limits.seconds }} sekunder. Tiden räknas efter läsregeln: varje meddelande får stå kvar så länge det tar att läsa det.</p>
+        <ol class="timeline" id="sms-timeline"></ol>
+      </div>
+      <div>
+        <h2>Dina SMS-filmer</h2>
+        <div class="jobs" id="sms-jobs"></div>
+      </div>
+    </aside>
+  </div>
+</main>
+{{ jobs_json|json_script:'sms-jobs-data' }}
+{{ reopen|json_script:'sms-reopen-data' }}
+{{ limits|json_script:'sms-limits-data' }}
+<script>
+(function () {
+  "use strict";
+  const ZERO = "00000000-0000-0000-0000-000000000000";
+  const ASSET_URL = "{% url 'engine:asset_file' workspace_id=workspace.pk asset_id='00000000-0000-0000-0000-000000000000' %}";
+  const STATUS_URL = "{% url 'engine:sms_film_job' workspace_id=workspace.pk job_id='00000000-0000-0000-0000-000000000000' %}";
+  const PAGE_URL = "{% url 'engine:sms_film' workspace_id=workspace.pk %}";
+  const GLASSES_SRC = "{% static 'img/sms-film/thug-glasogon.png' %}";
+  const LIMITS = JSON.parse(document.getElementById("sms-limits-data").textContent);
+  const reopen = JSON.parse(document.getElementById("sms-reopen-data").textContent);
+  const $ = (id) => document.getElementById(id);
+  const assetUrl = (id) => ASSET_URL.replace(ZERO, id);
+  const fmt = (s) => s.toFixed(1).replace(".", ",") + " s";
+  const chars = (t) => (typeof t === "string" ? [...t].length : 0);
+
+  // ---------------------------------------------------------------- state
+  // An image ref is {file: File, url} for a new pick, or {asset: "<uuid>", url} for an earlier upload.
+  let uid = 0;
+  const newGlasses = () => ({ on: false, x: 0.5, y: 0.3, width: 0.6, rotate: 0 });
+  const newMsg = (side, text) => ({ id: ++uid, side, text: text || "", image: null, glasses: newGlasses() });
+  const state = { wallpaper: null, avatar: null, messages: [] };
+
+  function refFromSaved(ref) { return ref && ref.asset ? { asset: ref.asset, url: assetUrl(ref.asset) } : null; }
+  function refFromFile(file) { return file ? { file, url: URL.createObjectURL(file) } : null; }
+
+  // ---------------------------------------------------------------- timing (port of engine/smsfilm/spec.py = build.mjs)
+  function readTime(m) {
+    const n = chars(m.text);
+    const text = n ? Math.max(5 / 6, n / 12) + 0.9 : 0;
+    if (m.image) return n ? text + 0.8 : 1.5;
+    return text;
+  }
+  function typingTime(m, speed) {
+    const n = chars(m.text);
+    const base = m.side === "sent" ? Math.min(2.4, Math.max(0.6, n * 0.065)) : Math.min(2.6, Math.max(1.1, 0.8 + n * 0.04));
+    return base / speed;
+  }
+  function schedule(conv) {
+    const msgs = conv.messages;
+    if (!msgs.length) return { starts: [], total: 0 };
+    let first = 0.6;
+    if (conv.lockscreen) first = Math.round((Math.max(3, 0.5 + readTime(msgs[0]) + 0.3) - 0.3) * 100) / 100;
+    const starts = [], ends = [];
+    let prev = null, prevStart = 0;
+    msgs.forEach((m, i) => {
+      const typing = (i === 0 && conv.lockscreen) ? 0 : typingTime(m, m.side === "sent" ? 0.7 : 1.4);
+      let start = prev === null ? Math.max(first, typing) : Math.max(prevStart + readTime(prev), prevStart + 0.4 + typing);
+      start = Math.ceil(start * 100 - 1e-6) / 100;
+      if (m.glasses && m.image) ends.push(start + 1 + 1.6 + 2.5);
+      starts.push(start);
+      prev = m; prevStart = start;
+    });
+    const hold = conv.outro ? 2 : 0;
+    const minEnd = Math.max(prevStart + Math.max(readTime(prev), 2.2, hold) + 0.4, ...ends);
+    const total = Math.round((Math.ceil(minEnd * 2) / 2 + (conv.outro ? LIMITS.outro : 0)) * 100) / 100;
+    return { starts, total };
+  }
+  function timingConv() {
+    const notification = $("sms-notification").value.trim();
+    const messages = [];
+    if (notification) messages.push({ side: "recv", text: notification, label: "Notis" });
+    state.messages.forEach((m, i) => {
+      const text = m.text.trim();
+      if (!text && !m.image) return;
+      messages.push({ side: m.side, text, image: !!m.image, glasses: m.glasses.on && !!m.image, label: (m.side === "sent" ? "Du" : "Hen") + " " + (i + 1), id: m.id });
+    });
+    return { lockscreen: !!notification, outro: $("sms-outro").checked, messages };
+  }
+  function updateTiming() {
+    const conv = timingConv();
+    const { starts, total } = schedule(conv);
+    const over = total > LIMITS.seconds;
+    $("sms-length").textContent = conv.messages.length ? `ca ${Math.round(total)} s` : "–";
+    $("sms-length").classList.toggle("over", over);
+    $("sms-length-note").textContent = over
+      ? `För lång: högst ${LIMITS.seconds} sekunder. Korta texterna eller ta bort några meddelanden.`
+      : `Högst ${LIMITS.seconds} sekunder. Tiden räknas efter läsregeln: varje meddelande står kvar så länge det tar att läsa det.`;
+    const list = $("sms-timeline");
+    list.replaceChildren();
+    conv.messages.forEach((m, i) => {
+      const li = document.createElement("li");
+      const a = document.createElement("span"); a.textContent = `${m.label}: ${m.text || "(bild)"}`;
+      const b = document.createElement("span"); b.textContent = `${fmt(starts[i])} · läses ${fmt(readTime(m))}`;
+      li.append(a, b); list.append(li);
+      if (m.id) { const el = document.querySelector(`[data-msg-time="${m.id}"]`); if (el) el.textContent = `start ${fmt(starts[i])} · läses ${fmt(readTime(m))}`; }
+    });
+    state.messages.forEach((m) => { if (!m.text.trim() && !m.image) { const el = document.querySelector(`[data-msg-time="${m.id}"]`); if (el) el.textContent = "tomt – kommer inte med"; } });
+    if (conv.outro && conv.messages.length) {
+      const li = document.createElement("li");
+      li.innerHTML = "<span>Golfkuponger-loggan</span>";
+      const b = document.createElement("span"); b.textContent = `+${fmt(LIMITS.outro)}`; li.append(b); list.append(li);
+    }
+    $("sms-submit").disabled = over || !conv.messages.length;
+    $("sms-submit-hint").textContent = !conv.messages.length ? "Skriv minst ett meddelande." : "";
+  }
+
+  // ---------------------------------------------------------------- messages
+  function el(tag, attrs, ...kids) {
+    const n = document.createElement(tag);
+    Object.entries(attrs || {}).forEach(([k, v]) => { if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else if (v !== null && v !== undefined) n.setAttribute(k, v); });
+    kids.flat().forEach((k) => k !== null && k !== undefined && n.append(k));
+    return n;
+  }
+
+  function placeGlasses(img, g) {
+    img.style.left = g.x * 100 + "%";
+    img.style.top = g.y * 100 + "%";
+    img.style.width = g.width * 100 + "%";
+    img.style.transform = `translate(-50%, -50%) rotate(${g.rotate}deg)`;
+  }
+
+  function glassesEditor(m) {
+    const wrap = el("div", { class: "thumb" });
+    const base = el("img", { class: "base", src: m.image.url, alt: "Vald bild", draggable: "false" });
+    wrap.append(base);
+    if (!m.glasses.on) return wrap;
+    const g = m.glasses;
+    const glasses = el("img", { class: "glasses", src: GLASSES_SRC, alt: "Gangsterglasögon", draggable: "false", title: "Dra för att flytta" });
+    placeGlasses(glasses, g);
+    wrap.append(glasses);
+    let drag = null;
+    glasses.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      glasses.setPointerCapture(e.pointerId);
+      drag = { x: e.clientX, y: e.clientY, gx: g.x, gy: g.y, rect: base.getBoundingClientRect() };
+    });
+    glasses.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      g.x = Math.min(1, Math.max(0, drag.gx + (e.clientX - drag.x) / drag.rect.width));
+      g.y = Math.min(1, Math.max(0, drag.gy + (e.clientY - drag.y) / drag.rect.height));
+      placeGlasses(glasses, g);
+    });
+    const stop = () => { drag = null; };
+    glasses.addEventListener("pointerup", stop);
+    glasses.addEventListener("pointercancel", stop);
+    wrap.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      g.width = Math.min(1.5, Math.max(0.1, Math.round((g.width - Math.sign(e.deltaY) * 0.03) * 100) / 100));
+      placeGlasses(glasses, g);
+      const s = wrap.parentNode && wrap.parentNode.querySelector("[data-g=width]"); if (s) s.value = g.width;
+    }, { passive: false });
+    const tools = el("div", { class: "glasses-tools" },
+      el("label", { for: `g-w-${m.id}` }, "Storlek"),
+      el("input", { type: "range", id: `g-w-${m.id}`, "data-g": "width", min: "0.1", max: "1.5", step: "0.01", value: g.width,
+        oninput: (e) => { g.width = +e.target.value; placeGlasses(glasses, g); } }),
+      el("label", { for: `g-r-${m.id}` }, "Vridning"),
+      el("input", { type: "range", id: `g-r-${m.id}`, min: "-45", max: "45", step: "1", value: g.rotate,
+        oninput: (e) => { g.rotate = +e.target.value; placeGlasses(glasses, g); } }),
+    );
+    const box = el("div", {}, wrap, tools, el("p", { class: "small" }, "Dra glasögonen dit de ska landa. Storlek med reglaget eller scrollhjulet."));
+    return box;
+  }
+
+  function renderMessages() {
+    const box = $("sms-msgs");
+    box.replaceChildren();
+    state.messages.forEach((m, i) => {
+      const last = i === state.messages.length - 1;
+      const textarea = el("textarea", { maxlength: LIMITS.text, "aria-label": `Meddelande ${i + 1}`, placeholder: m.side === "sent" ? "Det du skickar…" : "Det du får…" });
+      textarea.value = m.text;
+      textarea.addEventListener("input", () => { m.text = textarea.value; updateTiming(); });
+      const fileInput = el("input", { type: "file", accept: "image/jpeg,image/png,image/webp" });
+      fileInput.addEventListener("change", () => { if (fileInput.files[0]) { m.image = refFromFile(fileInput.files[0]); renderMessages(); updateTiming(); } });
+      const glassesBox = el("input", { type: "checkbox" });
+      glassesBox.checked = m.glasses.on;
+      glassesBox.addEventListener("change", () => { m.glasses.on = glassesBox.checked; renderMessages(); updateTiming(); });
+      const head = el("div", { class: "msg-head" },
+        el("strong", {}, m.side === "sent" ? "Höger · du skickar" : "Vänster · du får"),
+        el("div", { class: "msg-tools" },
+          el("button", { type: "button", class: "icon-btn", title: "Byt sida", onclick: () => { m.side = m.side === "sent" ? "recv" : "sent"; renderMessages(); updateTiming(); } }, "⇄"),
+          el("button", { type: "button", class: "icon-btn", title: "Flytta upp", disabled: i === 0 ? "" : null, onclick: () => { state.messages.splice(i - 1, 0, state.messages.splice(i, 1)[0]); renderMessages(); updateTiming(); } }, "↑"),
+          el("button", { type: "button", class: "icon-btn", title: "Flytta ned", disabled: last ? "" : null, onclick: () => { state.messages.splice(i + 1, 0, state.messages.splice(i, 1)[0]); renderMessages(); updateTiming(); } }, "↓"),
+          el("button", { type: "button", class: "icon-btn", title: "Ta bort", onclick: () => { state.messages.splice(i, 1); renderMessages(); updateTiming(); } }, "✕"),
+        ));
+      const foot = el("div", { class: "msg-foot" },
+        el("div", { class: "row" },
+          el("label", { class: "pick" }, m.image ? "Byt bild" : "+ Bild", fileInput),
+          m.image ? el("button", { type: "button", class: "icon-btn", onclick: () => { m.image = null; m.glasses.on = false; renderMessages(); updateTiming(); } }, "Ta bort bild") : null,
+          m.image ? el("label", { class: "check", style: "font-weight:400" }, glassesBox, "Gangsterglasögon") : null,
+        ),
+        el("span", { "data-msg-time": m.id }));
+      const card = el("div", { class: `msg ${m.side}` }, head, textarea, m.image ? glassesEditor(m) : null, foot);
+      box.append(card);
+    });
+  }
+
+  document.querySelectorAll("[data-add]").forEach((b) => b.addEventListener("click", () => {
+    if (state.messages.length + ($("sms-notification").value.trim() ? 1 : 0) >= LIMITS.messages) { showError(`Högst ${LIMITS.messages} meddelanden per film.`); return; }
+    state.messages.push(newMsg(b.dataset.add));
+    renderMessages(); updateTiming();
+    const all = $("sms-msgs").querySelectorAll("textarea"); if (all.length) all[all.length - 1].focus();
+  }));
+
+  // ---------------------------------------------------------------- single images (wallpaper, avatar)
+  function bindSingle(key, inputId, previewId, clearId) {
+    const show = () => {
+      const ref = state[key];
+      $(previewId).hidden = !ref; if (ref) $(previewId).src = ref.url;
+      $(clearId).hidden = !ref;
+    };
+    $(inputId).addEventListener("change", (e) => { if (e.target.files[0]) { state[key] = refFromFile(e.target.files[0]); show(); } });
+    $(clearId).addEventListener("click", () => { state[key] = null; $(inputId).value = ""; show(); });
+    return show;
+  }
+  const showWall = bindSingle("wallpaper", "sms-wall-input", "sms-wall-preview", "sms-wall-clear");
+  const showAvatar = bindSingle("avatar", "sms-avatar-input", "sms-avatar-preview", "sms-avatar-clear");
+  const toggleWall = () => { $("sms-wall-field").hidden = !$("sms-notification").value.trim(); };
+  $("sms-notification").addEventListener("input", () => { toggleWall(); updateTiming(); });
+  $("sms-outro").addEventListener("change", updateTiming);
+
+  // ---------------------------------------------------------------- prefill ("Gör om")
+  if (reopen) {
+    $("sms-title").value = reopen.title || "";
+    $("sms-notification").value = reopen.notification || "";
+    $("sms-outro").checked = !!reopen.outro;
+    $("sms-contact").value = reopen.contact && reopen.contact !== "Alex" ? reopen.contact : "";
+    $("sms-clock").value = reopen.clock && reopen.clock !== "9:41" ? reopen.clock : "";
+    $("sms-chatdate").value = reopen.chatDate && reopen.chatDate !== "Idag" ? reopen.chatDate : "";
+    $("sms-lockdate").value = reopen.lockDate || "";
+    $("sms-keyboard").checked = reopen.keyboard !== false;
+    $("sms-sounds").checked = reopen.sounds !== false;
+    state.wallpaper = refFromSaved(reopen.wallpaper);
+    state.avatar = refFromSaved(reopen.avatar);
+    (reopen.messages || []).forEach((s) => {
+      const m = newMsg(s.side, s.text);
+      m.image = refFromSaved(s.image);
+      if (s.glasses && s.glasses.on) Object.assign(m.glasses, s.glasses, { on: true });
+      state.messages.push(m);
+    });
+  } else {
+    state.messages.push(newMsg("sent"));
+  }
+  showWall(); showAvatar(); toggleWall(); renderMessages(); updateTiming();
+
+  // ---------------------------------------------------------------- submit
+  function showError(text) { const e = $("sms-error"); e.textContent = text; e.hidden = !text; if (text) e.scrollIntoView({ behavior: "smooth", block: "center" }); }
+
+  $("sms-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showError("");
+    const data = new FormData();
+    let n = 0;
+    const files = new Map();
+    const ref = (r) => {
+      if (!r) return null;
+      if (r.asset) return { asset: r.asset };
+      if (!files.has(r.file)) { const key = "f" + (++n); files.set(r.file, key); data.append(key, r.file); }
+      return { file: files.get(r.file) };
+    };
+    const notification = $("sms-notification").value.trim();
+    const form = {
+      title: $("sms-title").value.trim(),
+      notification,
+      lockDate: $("sms-lockdate").value.trim(),
+      wallpaper: notification ? ref(state.wallpaper) : null,
+      contact: $("sms-contact").value.trim(),
+      avatar: ref(state.avatar),
+      clock: $("sms-clock").value.trim(),
+      chatDate: $("sms-chatdate").value.trim(),
+      keyboard: $("sms-keyboard").checked,
+      sounds: $("sms-sounds").checked,
+      outro: $("sms-outro").checked,
+      messages: state.messages.filter((m) => m.text.trim() || m.image).map((m) => ({
+        side: m.side, text: m.text.trim(), image: ref(m.image),
+        glasses: m.glasses.on && m.image ? { on: true, x: m.glasses.x, y: m.glasses.y, width: m.glasses.width, rotate: m.glasses.rotate } : { on: false },
+      })),
+    };
+    data.append("form_json", JSON.stringify(form));
+    const button = $("sms-submit");
+    button.disabled = true; button.textContent = "Skickar…";
+    try {
+      const res = await fetch(PAGE_URL, { method: "POST", body: data, credentials: "same-origin",
+        headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value, Accept: "application/json" } });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || !body.job) { showError(body.error || "Något gick fel. Försök igen om en stund."); return; }
+      jobs.unshift(body.job);
+      renderJobs();
+      $("sms-jobs").scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (err) {
+      showError("Kunde inte nå servern. Kontrollera uppkopplingen och försök igen.");
+    } finally {
+      button.textContent = "Skapa film"; updateTiming();
+    }
+  });
+
+  // ---------------------------------------------------------------- job list
+  const jobs = JSON.parse(document.getElementById("sms-jobs-data").textContent);
+  const ACTIVE = ["queued", "claimed", "rendering"];
+  function renderJobs() {
+    const box = $("sms-jobs");
+    box.replaceChildren();
+    if (!jobs.length) { box.append(el("p", { class: "small" }, "Dina filmer visas här när du skapat den första.")); return; }
+    jobs.forEach((j) => {
+      const when = new Date(j.created_at).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+      const card = el("div", { class: "job" },
+        el("div", { class: "job-head" }, el("strong", {}, j.title || "SMS-film"), el("span", { class: `badge ${j.status}` }, j.status_label)),
+        el("div", { class: "small" }, when + (j.duration_s ? ` · ${Math.round(j.duration_s)} s` : "")));
+      if (ACTIVE.includes(j.status)) {
+        const bar = el("div", { class: "bar" }, el("i", { style: `width:${Math.max(4, Math.round((j.progress || 0) * 100))}%` }));
+        card.append(bar);
+        if (j.dispatch_error && j.status === "queued") card.append(el("p", { class: "small" }, j.dispatch_error));
+      }
+      if (j.status === "failed" && j.error) card.append(el("p", { class: "small" }, j.error));
+      if (j.output_asset_id) {
+        const url = assetUrl(j.output_asset_id);
+        card.append(el("video", { src: url, controls: "", preload: "metadata", playsinline: "" }));
+        card.append(el("div", { class: "row small" }, el("a", { href: url, download: "" }, "Ladda ned"), el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
+      } else if (!ACTIVE.includes(j.status)) {
+        card.append(el("div", { class: "row small" }, el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
+      }
+      box.append(card);
+    });
+  }
+  async function poll() {
+    const active = jobs.filter((j) => ACTIVE.includes(j.status));
+    for (const j of active) {
+      try {
+        const res = await fetch(STATUS_URL.replace(ZERO, j.id), { credentials: "same-origin", headers: { Accept: "application/json" } });
+        if (res.ok) { const body = await res.json(); Object.assign(j, body.job); }
+      } catch (err) { /* try again next round */ }
+    }
+    if (active.length) renderJobs();
+    setTimeout(poll, active.length ? 5000 : 15000);
+  }
+  renderJobs();
+  setTimeout(poll, 4000);
+})();
+</script>
+{% endblock %}

@@ -259,7 +259,7 @@ class SequenceWorkspaceF1Tests(TestCase):
         foreign = create_sequence_project(other, title="Other")
         self.assertEqual(self.client.post(reverse("engine:sequence_connect_images", args=[self.company.pk, foreign.pk])).status_code, 404)
 
-    def test_sequences_are_media_subnavigation_without_adding_seventh_primary_destination(self):
+    def test_sequences_are_media_subnavigation_without_adding_a_primary_destination(self):
         project = create_sequence_project(self.company, author=self.user, title="Nav sequence")
         for url_name, kwargs in (
             ("sequence_list", {"workspace_id": self.company.pk}),
@@ -273,7 +273,7 @@ class SequenceWorkspaceF1Tests(TestCase):
                     for link in parser.links
                     if link_class in link.get("class", "").split()
                 ]
-                self.assertEqual(len(links), 7)
+                self.assertEqual(len(links), 8)
                 active = [link for link in links if link.get("aria-current") == "page"]
                 self.assertEqual(len(active), 1)
                 self.assertEqual(

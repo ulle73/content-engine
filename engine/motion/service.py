@@ -21,7 +21,7 @@ ACTIVE = ("queued", "running", "saving")
 
 
 def _owner(company, user):
-    if company.owner_id != user.pk:
+    if not company.can_access(user):
         raise ValueError("F\u00f6retaget tillh\u00f6r inte anv\u00e4ndaren.")
 
 

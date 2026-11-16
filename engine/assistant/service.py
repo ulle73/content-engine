@@ -41,7 +41,7 @@ def digest(value):
 
 
 def owned(company, user, conversation_id, *, lock=False):
-    if company.owner_id != user.pk:
+    if not company.can_access(user):
         raise ValueError("Företaget kunde inte öppnas.")
     query = AssistantConversation.objects.select_for_update() if lock else AssistantConversation.objects
     conversation = query.filter(company=company, pk=conversation_id).first()

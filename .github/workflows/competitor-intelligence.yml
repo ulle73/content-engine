@@ -86,3 +86,9 @@ jobs:
           GITHUB_DISPATCH_TOKEN: ${{ github.token }}
         # Discord retries run on Render (they need the public APP_URL); here only requeue + dispatch.
         run: python manage.py edit_jobs --no-discord
+      - name: Wake the SMS film renderer for waiting films
+        if: always() && env.PHASE == 'full'
+        continue-on-error: true
+        env:
+          GITHUB_DISPATCH_TOKEN: ${{ github.token }}
+        run: python manage.py sms_film_jobs

@@ -8,6 +8,9 @@
 <a class="{{ link_class }} {% if page == 'media_library' or page == 'media' or page == 'media_job' or page == 'prompt_library' or page == 'prompt_detail' or page == 'sequence_list' or page == 'sequence_workspace' or page == 'motion_list' or page == 'motion_workspace' %}is-active{% endif %}" {% if page == 'media_library' or page == 'media' or page == 'media_job' or page == 'prompt_library' or page == 'prompt_detail' or page == 'sequence_list' or page == 'sequence_workspace' or page == 'motion_list' or page == 'motion_workspace' %}aria-current="page"{% endif %} href="{% url 'engine:media_library' workspace_id=workspace.pk %}">
   <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"></rect><path d="M7 15l3.2-3.3 2.7 2.6 2.1-2.2 2 2.1M8.5 9h.01"></path></svg><span>Media</span>
 </a>
+<a class="{{ link_class }} {% if page == 'sms_film' %}is-active{% endif %}" {% if page == 'sms_film' %}aria-current="page"{% endif %} href="{% url 'engine:sms_film' workspace_id=workspace.pk %}">
+  <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"></rect><path d="M16 10.5l5-3v9l-5-3"></path></svg><span>Generera video</span>
+</a>
 <a class="{{ link_class }} {% if page == 'intelligence' or page == 'analyze_signal' or page == 'ad_analyze' or page == 'market_intelligence' %}is-active{% endif %}" {% if page == 'intelligence' or page == 'analyze_signal' or page == 'ad_analyze' or page == 'market_intelligence' %}aria-current="page"{% endif %} href="{% url 'engine:intelligence' workspace_id=workspace.pk %}">
   <svg class="app-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M8 14a6 6 0 1 1 8 0l-1 4H9z"></path></svg><span>Inspiration</span>
 </a>
