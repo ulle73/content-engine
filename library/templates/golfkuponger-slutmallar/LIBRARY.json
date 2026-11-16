@@ -1,0 +1,58 @@
+{
+  "kit": "golfkuponger",
+  "title": "Slutmallar med svingloggan (alla portaler / en portal)",
+  "source": {
+    "name": "Content Engine (egen produktion)",
+    "url": "https://github.com/ulle73/content-engine",
+    "license": "Egen produktion. Svingloggan är Golfkupongers Spotlight-outro (edit-renderer/outros/golfkuponger). Typsnitt Anton och Inter (SIL OFL). Portalloggorna används för att visa var kupongerna går att köpa."
+  },
+  "items": [
+    {
+      "id": "golfkuponger.template.slutmallar",
+      "name": "Slutmall – svingloggan + två textrader + portal(er)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Slutscen för Golfkupongers filmer. Den rörliga svingloggan spelar alltid, därefter två fria textrader på mörkgrönt: rad 1 en liten guldfärgad överrubrik i versaler (valfri), rad 2 en stor rubrik där *ord* blir guld. Fem mallar: alla (alla portalkort på en rad), epassi, benify (visas som Benifex), sp (Söderberg & Partners) och edenred – portalmallarna visar ett kort och \"Sök Golfkuponger i <portal>\". Typsnitten mäts in så att texten alltid får plats. Renderas bildruta för bildruta med Playwright och ffmpeg, med svingloggans ljud. Finns i dashboarden under Generera video → Slutmall.",
+      "tags": [
+        "slutmall",
+        "slutbild",
+        "outro",
+        "endcard",
+        "svinglogga",
+        "spotlight",
+        "logga",
+        "portal",
+        "epassi",
+        "benify",
+        "benifex",
+        "edenred",
+        "söderberg & partners",
+        "friskvårdsbidrag",
+        "cta",
+        "kampanj",
+        "deadline"
+      ],
+      "path": "library/templates/golfkuponger-slutmallar/README.md",
+      "use": "node library/templates/golfkuponger-slutmallar/render.mjs --mall alla --rad1 \"Friskvårdsbidrag kvar?\" --rad2 \"Det brinner inne *31/12*\" --ut work/<film>/slut",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome",
+        "ffmpeg"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": "2026-11-16",
+      "preview": {
+        "video": "library/previews/golfkuponger.template.slutmallar.mp4",
+        "still": "library/previews/golfkuponger.template.slutmallar.jpg"
+      },
+      "notes": "Jonas 2026-11-16: olika slutmallar – en för alla portaler med olika budskap och en per portal; svingloggan alltid med; två rader som är lätta att byta; ska gå att välja mall och skriva texten under Generera video i dashboarden. Ej godkänd av Jonas ännu. Påståenden i rad 1/2 ska komma ur faktabanken."
+    }
+  ]
+}

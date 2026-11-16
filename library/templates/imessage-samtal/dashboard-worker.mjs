@@ -20,6 +20,7 @@ import {fileURLToPath} from 'node:url';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..', '..');
 const OUTRO_SRC = join(REPO, 'edit-renderer', 'outros', 'golfkuponger', 'spotlight-9x16.mp4');
+const SLUTMALL_RENDER = join(REPO, 'library', 'templates', 'golfkuponger-slutmallar', 'render.mjs');
 const APP = (process.env.CONTENT_APP_URL || 'https://content-engine-mcp.onrender.com').replace(/\/+$/, '');
 const TOKEN = process.env.CONTENT_EDIT_WORKER_TOKEN || process.env.EDIT_WORKER_TOKEN || '';
 const MAX_JOBS = Math.max(1, Number(process.env.SMS_FILM_MAX_JOBS || 3));
@@ -167,6 +168,38 @@ async function probeDuration(file) {
   return Number.isFinite(s) ? Math.round(s * 100) / 100 : null;
 }
 
+/** SMS-film: kopiera mallen, hämta Apple-filer och bilder, bygg och rendera med HyperFrames. Ger sökvägen till MP4:an. */
+async function buildSmsFilm(payload, work, setStage, setProgress) {
+  const {job_id: id, lease} = payload;
+  console.log(`[${id}] förbereder (${(payload.assets || []).length} bilder, försök ${payload.attempt})`);
+  await prepareWorkdir(work);
+  if (!process.env.IMESSAGE_SKIP_APPLE) await applePack(payload);
+  for (const asset of payload.assets || []) await download(asset.url, safeJoin(work, asset.path), lease, asset.sha256);
+  await writeFile(join(work, 'conversation.json'), JSON.stringify(payload.conversation, null, 2));
+
+  await setStage('building', 0.1);
+  await run(process.execPath, ['build.mjs'], {cwd: work, env: {IMESSAGE_CACHE: CACHE}}).catch((err) => {
+    throw new JobError('build_failed', (err.tail || err.message).split('\n').filter(Boolean).slice(-3).join(' | '));
+  });
+  await run('npx', ['--yes', HYPERFRAMES, 'check'], {cwd: work}).catch((err) => {
+    throw new JobError('build_failed', `hyperframes check: ${(err.tail || err.message).slice(-250)}`);
+  });
+
+  await setStage('rendering', 0.15);
+  const out = join(work, 'out', 'film.mp4');
+  const args = ['--yes', HYPERFRAMES, 'render', '--quality', 'looks', '-o', out];
+  if (process.env.HYPERFRAMES_WORKERS) args.push('--workers', process.env.HYPERFRAMES_WORKERS);
+  if (process.env.HYPERFRAMES_RENDER_ARGS) args.push(...process.env.HYPERFRAMES_RENDER_ARGS.split(' ').filter(Boolean));
+  await run('npx', args, {
+    cwd: work,
+    onLine: (line) => {
+      const m = line.match(/(\d{1,3}(?:\.\d+)?)\s*%/);
+      if (m) setProgress(0.15 + 0.75 * Math.min(100, Number(m[1])) / 100);
+    },
+  }).catch((err) => { throw new JobError('render_failed', (err.tail || err.message).slice(-250), {retryable: true}); });
+  return out;
+}
+
 async function processJob(payload) {
   const {job_id: id, lease, limits = {}} = payload;
   const work = await mkdtemp(join(tmpdir(), `sms-film-${id.slice(0, 8)}-`));
@@ -182,32 +215,22 @@ async function processJob(payload) {
   const warnings = [];
   try {
     await beat();
-    console.log(`[${id}] förbereder (${payload.assets.length} bilder, försök ${payload.attempt})`);
-    await prepareWorkdir(work);
-    if (!process.env.IMESSAGE_SKIP_APPLE) await applePack(payload);
-    for (const asset of payload.assets) await download(asset.url, safeJoin(work, asset.path), lease, asset.sha256);
-    await writeFile(join(work, 'conversation.json'), JSON.stringify(payload.conversation, null, 2));
-
-    stage = 'building'; progress = 0.1; await beat();
-    await run(process.execPath, ['build.mjs'], {cwd: work, env: {IMESSAGE_CACHE: CACHE}}).catch((err) => {
-      throw new JobError('build_failed', (err.tail || err.message).split('\n').filter(Boolean).slice(-3).join(' | '));
-    });
-    await run('npx', ['--yes', HYPERFRAMES, 'check'], {cwd: work}).catch((err) => {
-      throw new JobError('build_failed', `hyperframes check: ${(err.tail || err.message).slice(-250)}`);
-    });
-
-    stage = 'rendering'; progress = 0.15; await beat();
-    const out = join(work, 'out', 'film.mp4');
-    const args = ['--yes', HYPERFRAMES, 'render', '--quality', 'looks', '-o', out];
-    if (process.env.HYPERFRAMES_WORKERS) args.push('--workers', process.env.HYPERFRAMES_WORKERS);
-    if (process.env.HYPERFRAMES_RENDER_ARGS) args.push(...process.env.HYPERFRAMES_RENDER_ARGS.split(' ').filter(Boolean));
-    await run('npx', args, {
-      cwd: work,
-      onLine: (line) => {
-        const m = line.match(/(\d{1,3}(?:\.\d+)?)\s*%/);
-        if (m) progress = Math.max(progress, 0.15 + 0.75 * Math.min(100, Number(m[1])) / 100);
-      },
-    }).catch((err) => { throw new JobError('render_failed', (err.tail || err.message).slice(-250), {retryable: true}); });
+    let out;
+    if (payload.kind === 'slutmall') {
+      // Slutmall: svingloggan + två textrader, renderad av golfkuponger-slutmallar/render.mjs (Playwright + ffmpeg).
+      // Inga Apple-filer och inga bilder behövs.
+      const {mall, rad1 = '', rad2} = payload.slutmall || {};
+      console.log(`[${id}] slutmall ${mall} (försök ${payload.attempt})`);
+      const jobbPath = join(work, 'jobb.json');
+      await writeFile(jobbPath, JSON.stringify({mall, rad1, rad2, ut: work, format: ['9x16']}));
+      stage = 'rendering'; progress = 0.1; await beat();
+      const tail = await run(process.execPath, [SLUTMALL_RENDER, '--json', jobbPath], {cwd: REPO, timeoutMs: 20 * 60_000})
+        .catch((err) => { throw new JobError('render_failed', (err.tail || err.message).slice(-250), {retryable: true}); });
+      const line = tail.split(/\r?\n/).reverse().find((l) => l.trim().startsWith('{'));
+      try { out = JSON.parse(line).filer[0].fil; } catch { throw new JobError('invalid_output', 'slutmallen gav inget filnamn'); }
+    } else {
+      out = await buildSmsFilm(payload, work, async (s, p) => { stage = s; progress = p; await beat(); }, (p) => { progress = Math.max(progress, p); });
+    }
 
     stage = 'checking'; progress = 0.92; await beat();
     const size = (await stat(out).catch(() => ({size: 0}))).size;
@@ -221,7 +244,7 @@ async function processJob(payload) {
 
     stage = 'uploading'; progress = 0.95; await beat();
     const form = new FormData();
-    form.append('file', new Blob([await readFile(out)], {type: 'video/mp4'}), 'film.mp4');
+    form.append('file', new Blob([await readFile(out)], {type: 'video/mp4'}), payload.kind === 'slutmall' ? 'slutmall.mp4' : 'film.mp4');
     form.append('warnings', JSON.stringify(warnings));
     form.append('meta', JSON.stringify({duration_s: duration}));
     await api(`output/${id}/`, {form, headers: {'X-Edit-Lease': lease}, timeoutMs: 15 * 60_000});

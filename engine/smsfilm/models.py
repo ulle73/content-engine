@@ -11,6 +11,7 @@ class SmsFilmJob(models.Model):
     those ids are listed in `image_asset_ids` so the worker may download exactly them.
     """
 
+    KINDS = [("sms", "SMS-film"), ("slutmall", "Slutmall")]
     STATUSES = [
         ("queued", "I kö"), ("claimed", "Hämtad av renderaren"), ("rendering", "Renderas"),
         ("done", "Klar"), ("failed", "Misslyckades"),
@@ -21,6 +22,9 @@ class SmsFilmJob(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
                                    related_name="sms_film_jobs")
     title = models.CharField(max_length=200, blank=True)
+    # "slutmall": an end card from library/templates/golfkuponger-slutmallar (swing logo + two text lines);
+    # form holds {mall, rad1, rad2} and conversation/image_asset_ids stay empty.
+    kind = models.CharField(max_length=10, choices=KINDS, default="sms")
     # The form as submitted (to reopen and tweak it) and the conversation.json built from it.
     form = models.JSONField(default=dict, blank=True)
     conversation = models.JSONField(default=dict)
