@@ -124,7 +124,7 @@
   const ZERO = "00000000-0000-0000-0000-000000000000";
   const ASSET_URL = "{% url 'engine:asset_file' workspace_id=workspace.pk asset_id='00000000-0000-0000-0000-000000000000' %}";
   const STATUS_URL = "{% url 'engine:sms_film_job' workspace_id=workspace.pk job_id='00000000-0000-0000-0000-000000000000' %}";
-  const PAGE_URL = "{% url 'engine:sms_film' workspace_id=workspace.pk %}";
+  const PAGE_URL = "{% if sms_embed %}{% url 'engine:sms_film_embed' workspace_id=workspace.pk %}{% else %}{% url 'engine:sms_film' workspace_id=workspace.pk %}{% endif %}";
   const GLASSES_SRC = "{% static 'img/sms-film/thug-glasogon.png' %}";
   const LIMITS = JSON.parse(document.getElementById("sms-limits-data").textContent);
   const reopen = JSON.parse(document.getElementById("sms-reopen-data").textContent);

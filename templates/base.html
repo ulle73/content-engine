@@ -33,7 +33,9 @@
 </head>
 <body>
   <a class="skip-link" href="#main-content">Till innehållet</a>
-  {% if user.is_authenticated and workspace %}
+  {% if sms_embed %}
+    <style>body { background: #f8f8f8; } #main-content { padding: 0 1rem; }</style>
+  {% elif user.is_authenticated and workspace %}
     <div class="app-shell">
       {% include 'components/sidebar.html' %}
       <section class="app-main">
@@ -56,7 +58,7 @@
 
   <div id="main-content" tabindex="-1">{% block content %}{% endblock %}</div>
 
-  {% if user.is_authenticated and workspace %}
+  {% if not sms_embed and user.is_authenticated and workspace %}
         {% include 'components/mobile_bottom_nav.html' %}
       </section>
     </div>

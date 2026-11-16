@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from engine.ownership import company_required
 
@@ -23,6 +24,10 @@ def _wants_json(request):
 @login_required
 @company_required
 def sms_film(request, workspace_id):
+    return _sms_film(request, workspace_id, embedded=False)
+
+
+def _sms_film(request, workspace_id, *, embedded):
     company = request.workspace
     if request.method == "POST":
         raw = request.POST.get("form_json") or ""
@@ -60,6 +65,7 @@ def sms_film(request, workspace_id):
     jobs = list(service.jobs_for(company))
     return render(request, "engine/sms_film.html", {
         "workspace": company,
+        "sms_embed": embedded,
         "jobs": jobs,
         "jobs_json": [service.serialize(j) for j in jobs],
         "reopen": reopen,
@@ -76,3 +82,22 @@ def job_status(request, workspace_id, job_id):
     except service.SmsFilmError:
         raise Http404("Filmen finns inte.") from None
     return JsonResponse({"job": service.serialize(job)})
+
+
+@xframe_options_exempt
+def sms_film_embed(request, workspace_id):
+    """Only the SMS editor may be framed by Golfkuponger's dashboard."""
+    if request.get_host().split(":", 1)[0] != "content.golfkuponger.se":
+        raise Http404
+    if not request.user.is_authenticated:
+        response = render(request, "engine/sms_film_embed_login.html")
+    else:
+        response = _authorized_embed(request, workspace_id)
+    response["Content-Security-Policy"] = "frame-ancestors https://dashboard.golfkuponger.se"
+    response["Cache-Control"] = "private, no-store"
+    return response
+
+
+@company_required
+def _authorized_embed(request, workspace_id):
+    return _sms_film(request, workspace_id, embedded=True)

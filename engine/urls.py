@@ -36,6 +36,7 @@ engine_urls = [
     path("motion/<uuid:project_id>/action/", motion_views.project_action, name="motion_action"),
     path("motion/<uuid:project_id>/status/", motion_views.status, name="motion_status"),
     path("sms-film/", smsfilm_views.sms_film, name="sms_film"),
+    path("sms-film/embed/", smsfilm_views.sms_film_embed, name="sms_film_embed"),
     path("sms-film/<uuid:job_id>/status/", smsfilm_views.job_status, name="sms_film_job"),
     path("intelligence/market/", market_views.intelligence, name="market_intelligence"),
     path("intelligence/market/run/", market_views.action, name="market_action"),
