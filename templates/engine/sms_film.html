@@ -34,6 +34,42 @@
   .sms-film-page .glasses-tools { display: grid; grid-template-columns: auto 1fr; gap: .3rem .6rem; align-items: center; margin-top: .5rem; font-size: .85rem; }
   .sms-film-page .add-row { display: flex; gap: .6rem; flex-wrap: wrap; }
   .sms-film-page .add-row button { flex: 1 1 10rem; }
+  .sms-film-page .upload { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
+  .sms-film-page .field label.upload-pick { display:inline-flex; align-items:center; gap:.5rem; border:1px dashed #aebfb7; border-radius:10px; padding:.7rem .9rem; cursor:pointer; font-weight:600; color:var(--text); }
+  .sms-film-page .upload-pick:hover, .sms-film-page .upload-pick:focus-within { border-color:#286b4d; background:#f3f8f5; }
+  .sms-film-page .upload-pick input { position:absolute; width:1px; height:1px; opacity:0; }
+  .sms-film-page .upload-image { position:relative; display:inline-block; }
+  .sms-film-page .upload-image[hidden] { display:none; }
+  .sms-film-page .upload-image .wall { margin:0; width:120px; height:80px; object-fit:cover; }
+  .sms-film-page .upload-image.avatar .wall { width:64px; height:64px; border-radius:50%; }
+  .sms-film-page .upload-remove { position:absolute; right:4px; top:4px; width:25px; height:25px; padding:0; display:grid; place-items:center; border:0; border-radius:50%; background:#c62929; color:white; font-size:18px; line-height:1; cursor:pointer; opacity:0; }
+  .sms-film-page .upload-image:hover .upload-remove, .sms-film-page .upload-image:focus-within .upload-remove { opacity:1; }
+  @media (hover:none) { .sms-film-page .upload-remove { opacity:1; } }
+  .sms-film-page .preview-tabs { display:flex; gap:.35rem; margin-bottom:.8rem; }
+  .sms-film-page .preview-tabs button { flex:1; padding:.45rem; border:1px solid var(--border); background:transparent; color:var(--text); border-radius:8px; cursor:pointer; }
+  .sms-film-page .preview-tabs button[aria-pressed=true] { background:#e8f2ec; border-color:#7aab91; }
+  .sms-film-page .phone { position:relative; width:min(100%, 238px); aspect-ratio: 0.47; margin:auto; border:7px solid #202020; border-radius:34px; overflow:hidden; background:white; font-family:Arial,sans-serif; color:#111; }
+  .sms-film-page .phone:before { content:''; position:absolute; z-index:3; width:30%; height:17px; top:7px; left:35%; border-radius:12px; background:#111; }
+  .sms-film-page .phone-screen { position:absolute; inset:0; overflow:hidden; }
+  .sms-film-page .phone-lock { background:linear-gradient(170deg,#3a5a8c,#6b4f8f 55%,#c46a6a); background-position:center; background-size:cover; color:white; text-align:center; padding:55px 10px 0; }
+  .sms-film-page .phone-lock-date { font-size:12px; font-weight:600; }
+  .sms-film-page .phone-lock-time { font-size:46px; font-weight:600; }
+  .sms-film-page .phone-notice { margin-top:70px; border-radius:14px; background:rgba(246,246,248,.83); color:#111; text-align:left; padding:10px; font-size:11px; overflow-wrap:anywhere; }
+  .sms-film-page .phone-status { padding:15px 18px 5px; font-size:11px; font-weight:600; }
+  .sms-film-page .phone-head { text-align:center; background:#f8f8f8; padding:10px 8px; border-bottom:1px solid #ddd; font-size:11px; }
+  .sms-film-page .phone-avatar { display:grid; place-items:center; margin:auto auto 4px; width:35px; height:35px; border-radius:50%; background:#a5abb8; color:white; overflow:hidden; }
+  .sms-film-page .phone-avatar img { width:100%; height:100%; object-fit:cover; }
+  .sms-film-page .phone-chat { position:absolute; inset:110px 0 36px; overflow:auto; padding:10px; display:flex; flex-direction:column; gap:5px; }
+  .sms-film-page .phone-date { text-align:center; color:#8e8e93; font-size:9px; margin:0 0 6px; }
+  .sms-film-page .phone-bubble { max-width:78%; border-radius:14px; padding:7px 10px; background:#e9e9eb; font-size:12px; white-space:pre-wrap; overflow-wrap:anywhere; align-self:flex-start; }
+  .sms-film-page .phone-bubble.sent { align-self:flex-end; background:#0b84fe; color:white; }
+  .sms-film-page .phone-photo-wrap { position:relative; max-width:75%; align-self:flex-start; }
+  .sms-film-page .phone-photo-wrap.sent { align-self:flex-end; }
+  .sms-film-page .phone-photo-wrap .phone-photo { max-width:100%; }
+  .sms-film-page .phone-glasses { position:absolute; image-rendering:pixelated; }
+  .sms-film-page .phone-photo { max-width:75%; max-height:130px; border-radius:12px; object-fit:contain; align-self:flex-start; }
+  .sms-film-page .phone-photo.sent { align-self:flex-end; }
+  .sms-film-page .phone-compose { position:absolute; bottom:10px; left:12px; right:12px; border:1px solid #c7c7cc; border-radius:15px; color:#aaa; padding:5px 10px; font-size:11px; }
   .sms-film-page .wall { max-width: 120px; max-height: 200px; border-radius: 10px; display: block; margin-top: .4rem; }
   .sms-film-page .length { font-size: 1.6rem; font-weight: 700; }
   .sms-film-page .length.over { color: #b42318; }
@@ -67,8 +103,7 @@
         <div class="field"><label for="sms-notification">Notistext på låsskärmen</label>
           <textarea id="sms-notification" maxlength="{{ limits.text }}" placeholder="Visas som notis på låsskärmen och blir första meddelandet i chatten. Lämna tomt för att börja direkt i chatten."></textarea></div>
         <div class="field" id="sms-wall-field"><label>Bakgrund på låsskärmen</label>
-          <div class="row"><label class="pick">Välj bild<input type="file" accept="image/jpeg,image/png,image/webp" id="sms-wall-input"></label><button type="button" class="icon-btn" id="sms-wall-clear" hidden>Ta bort</button><span class="small" id="sms-wall-hint">Valfri. Utan egen bild används mallens standardbakgrund.</span></div>
-          <img class="wall" id="sms-wall-preview" alt="" hidden></div>
+          <div class="upload"><label class="upload-pick">＋ Välj bild<input type="file" accept="image/jpeg,image/png,image/webp" id="sms-wall-input"></label><div class="upload-image" id="sms-wall-wrap" hidden><img class="wall" id="sms-wall-preview" alt="Vald bakgrund"><button type="button" class="upload-remove" id="sms-wall-clear" aria-label="Ta bort bakgrund" title="Ta bort bakgrund">×</button></div><span class="small" id="sms-wall-hint">Valfri. Utan egen bild används mallens standardbakgrund.</span></div></div>
       </section>
 
       <section aria-labelledby="sms-chat-title">
@@ -88,7 +123,7 @@
         <details><summary>Mer inställningar</summary>
           <div style="margin-top:.8rem">
             <div class="field"><label for="sms-contact">Kontaktens namn</label><input type="text" id="sms-contact" maxlength="40" placeholder="Alex"></div>
-            <div class="field"><label>Profilbild</label><div class="row"><label class="pick">Välj bild<input type="file" accept="image/jpeg,image/png,image/webp" id="sms-avatar-input"></label><button type="button" class="icon-btn" id="sms-avatar-clear" hidden>Ta bort</button></div><img class="wall" id="sms-avatar-preview" alt="" hidden style="max-width:64px;border-radius:50%"></div>
+            <div class="field"><label>Profilbild</label><div class="upload"><label class="upload-pick">＋ Välj bild<input type="file" accept="image/jpeg,image/png,image/webp" id="sms-avatar-input"></label><div class="upload-image avatar" id="sms-avatar-wrap" hidden><img class="wall" id="sms-avatar-preview" alt="Vald profilbild"><button type="button" class="upload-remove" id="sms-avatar-clear" aria-label="Ta bort profilbild" title="Ta bort profilbild">×</button></div></div></div>
             <div class="field"><label for="sms-clock">Klockan i statusfältet</label><input type="text" id="sms-clock" maxlength="5" placeholder="9:41" style="max-width:7rem"></div>
             <div class="field"><label for="sms-chatdate">Datum i chatten</label><input type="text" id="sms-chatdate" maxlength="40" placeholder="Idag"></div>
             <div class="field"><label for="sms-lockdate">Datum på låsskärmen</label><input type="text" id="sms-lockdate" maxlength="40" placeholder="Dagens datum"></div>
@@ -102,6 +137,7 @@
     </form>
 
     <aside class="sms-side">
+      <div><h2>Förhandsvisning</h2><p class="small">Stillbild som uppdateras när du ändrar filmen. Rörelser och ljud spelas upp i den färdiga filmen, där även emoji kan se annorlunda ut.</p><div class="preview-tabs"><button type="button" id="preview-lock-tab" aria-pressed="true">Låsskärm</button><button type="button" id="preview-chat-tab" aria-pressed="false">Konversation</button></div><div class="phone"><div id="preview-lock" class="phone-screen phone-lock"><div class="phone-lock-date" id="preview-lock-date"></div><div class="phone-lock-time" id="preview-lock-time"></div><div class="phone-notice" id="preview-notice"></div><div class="small" id="preview-no-lock" style="margin-top:4rem;color:white">Lägg till en notistext för att visa låsskärmen i filmen.</div></div><div id="preview-chat-screen" class="phone-screen" hidden><div class="phone-status" id="preview-clock"></div><div class="phone-head"><div class="phone-avatar" id="preview-avatar"></div><span id="preview-name"></span></div><div class="phone-chat" id="preview-messages"></div><div class="phone-compose">iMessage</div></div></div></div>
       <div>
         <h2>Längd</h2>
         <div class="length" id="sms-length">–</div>
@@ -187,6 +223,7 @@
     return { lockscreen: !!notification, outro: $("sms-outro").checked, messages };
   }
   function updateTiming() {
+    updatePreview();
     const conv = timingConv();
     const { starts, total } = schedule(conv);
     const over = total > LIMITS.seconds;
@@ -248,7 +285,7 @@
       if (!drag) return;
       g.x = Math.min(1, Math.max(0, drag.gx + (e.clientX - drag.x) / drag.rect.width));
       g.y = Math.min(1, Math.max(0, drag.gy + (e.clientY - drag.y) / drag.rect.height));
-      placeGlasses(glasses, g);
+      placeGlasses(glasses, g); updatePreview();
     });
     const stop = () => { drag = null; };
     glasses.addEventListener("pointerup", stop);
@@ -256,16 +293,16 @@
     wrap.addEventListener("wheel", (e) => {
       e.preventDefault();
       g.width = Math.min(1.5, Math.max(0.1, Math.round((g.width - Math.sign(e.deltaY) * 0.03) * 100) / 100));
-      placeGlasses(glasses, g);
+      placeGlasses(glasses, g); updatePreview();
       const s = wrap.parentNode && wrap.parentNode.querySelector("[data-g=width]"); if (s) s.value = g.width;
     }, { passive: false });
     const tools = el("div", { class: "glasses-tools" },
       el("label", { for: `g-w-${m.id}` }, "Storlek"),
       el("input", { type: "range", id: `g-w-${m.id}`, "data-g": "width", min: "0.1", max: "1.5", step: "0.01", value: g.width,
-        oninput: (e) => { g.width = +e.target.value; placeGlasses(glasses, g); } }),
+        oninput: (e) => { g.width = +e.target.value; placeGlasses(glasses, g); updatePreview(); } }),
       el("label", { for: `g-r-${m.id}` }, "Vridning"),
       el("input", { type: "range", id: `g-r-${m.id}`, min: "-45", max: "45", step: "1", value: g.rotate,
-        oninput: (e) => { g.rotate = +e.target.value; placeGlasses(glasses, g); } }),
+        oninput: (e) => { g.rotate = +e.target.value; placeGlasses(glasses, g); updatePreview(); } }),
     );
     const box = el("div", {}, wrap, tools, el("p", { class: "small" }, "Dra glasögonen dit de ska landa. Storlek med reglaget eller scrollhjulet."));
     return box;
@@ -311,15 +348,49 @@
     const all = $("sms-msgs").querySelectorAll("textarea"); if (all.length) all[all.length - 1].focus();
   }));
 
+  function updatePreview() {
+    const clock = $("sms-clock").value.trim() || "9:41", name = $("sms-contact").value.trim() || "Alex";
+    $("preview-clock").textContent = clock;
+    $("preview-lock-time").textContent = clock;
+    $("preview-lock-date").textContent = $("sms-lockdate").value.trim() || new Date().toLocaleDateString("sv-SE", {weekday:"long", day:"numeric", month:"long"});
+    $("preview-lock").style.backgroundImage = state.wallpaper ? 'url(' + JSON.stringify(state.wallpaper.url) + ')' : '';
+    $("preview-name").textContent = name;
+    const avatar = $("preview-avatar"); avatar.replaceChildren();
+    if (state.avatar) avatar.append(el("img", {src:state.avatar.url, alt:""})); else avatar.textContent = name.slice(0,1).toUpperCase();
+    const notice = $("sms-notification").value.trim();
+    $("preview-notice").hidden = !notice;
+    $("preview-no-lock").hidden = !!notice;
+    $("preview-notice").textContent = name + " · nu\n" + notice;
+    $("preview-notice").style.whiteSpace = "pre-wrap";
+    const list = $("preview-messages"); list.replaceChildren(el("div", {class:"phone-date"}, $("sms-chatdate").value.trim() || "Idag"));
+    if (notice) list.append(el("div", {class:"phone-bubble"}, notice));
+    state.messages.forEach((m) => {
+      if (m.image) {
+        const photo = el("div", {class:"phone-photo-wrap " + m.side}, el("img", {class:"phone-photo", src:m.image.url, alt:"Bild i konversationen"}));
+        if (m.glasses.on) { const glasses = el("img", {class:"phone-glasses", src:GLASSES_SRC, alt:""}); placeGlasses(glasses, m.glasses); photo.append(glasses); }
+        list.append(photo);
+      }
+      if (m.text.trim()) list.append(el("div", {class:"phone-bubble " + m.side}, m.text));
+    });
+  }
+  function setPreviewTab(lock) {
+    $("preview-lock").hidden = !lock; $("preview-chat-screen").hidden = lock;
+    $("preview-lock-tab").setAttribute("aria-pressed", String(lock)); $("preview-chat-tab").setAttribute("aria-pressed", String(!lock));
+  }
+  $("preview-lock-tab").addEventListener("click", () => setPreviewTab(true));
+  $("preview-chat-tab").addEventListener("click", () => setPreviewTab(false));
+  ["sms-contact", "sms-clock", "sms-chatdate", "sms-lockdate"].forEach(id => $(id).addEventListener("input", updatePreview));
+
   // ---------------------------------------------------------------- single images (wallpaper, avatar)
   function bindSingle(key, inputId, previewId, clearId) {
     const show = () => {
       const ref = state[key];
       $(previewId).hidden = !ref; if (ref) $(previewId).src = ref.url;
-      $(clearId).hidden = !ref;
+      $(previewId.replace("-preview", "-wrap")).hidden = !ref;
+      updatePreview();
     };
-    $(inputId).addEventListener("change", (e) => { if (e.target.files[0]) { state[key] = refFromFile(e.target.files[0]); show(); } });
-    $(clearId).addEventListener("click", () => { state[key] = null; $(inputId).value = ""; show(); });
+    $(inputId).addEventListener("change", (e) => { if (e.target.files[0]) { if (state[key] && state[key].file) URL.revokeObjectURL(state[key].url); state[key] = refFromFile(e.target.files[0]); show(); } });
+    $(clearId).addEventListener("click", () => { if (state[key] && state[key].file) URL.revokeObjectURL(state[key].url); state[key] = null; $(inputId).value = ""; show(); });
     return show;
   }
   const showWall = bindSingle("wallpaper", "sms-wall-input", "sms-wall-preview", "sms-wall-clear");
@@ -350,7 +421,7 @@
   } else {
     state.messages.push(newMsg("sent"));
   }
-  showWall(); showAvatar(); toggleWall(); renderMessages(); updateTiming();
+  showWall(); showAvatar(); toggleWall(); renderMessages(); updateTiming(); setPreviewTab(!!$("sms-notification").value.trim());
 
   // ---------------------------------------------------------------- submit
   function showError(text) { const e = $("sms-error"); e.textContent = text; e.hidden = !text; if (text) e.scrollIntoView({ behavior: "smooth", block: "center" }); }
