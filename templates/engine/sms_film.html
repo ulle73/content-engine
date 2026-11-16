@@ -34,17 +34,22 @@
   .sms-film-page .glasses-tools { display: grid; grid-template-columns: auto 1fr; gap: .3rem .6rem; align-items: center; margin-top: .5rem; font-size: .85rem; }
   .sms-film-page .add-row { display: flex; gap: .6rem; flex-wrap: wrap; }
   .sms-film-page .add-row button { flex: 1 1 10rem; }
-  .sms-film-page .upload { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
-  .sms-film-page .field label.upload-pick { display:inline-flex; align-items:center; gap:.5rem; border:1px dashed #aebfb7; border-radius:10px; padding:.7rem .9rem; cursor:pointer; font-weight:600; color:var(--text); }
-  .sms-film-page .upload-pick:hover, .sms-film-page .upload-pick:focus-within { border-color:#286b4d; background:#f3f8f5; }
-  .sms-film-page .upload-pick input { position:absolute; width:1px; height:1px; opacity:0; }
-  .sms-film-page .upload-image { position:relative; display:inline-block; }
+  .sms-film-page .upload { display:flex; align-items:center; gap:14px; width:min(100%, 360px); padding:10px; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-sizing:border-box; }
+  .sms-film-page .upload-image { position:relative; flex:none; width:112px; height:76px; }
   .sms-film-page .upload-image[hidden] { display:none; }
-  .sms-film-page .upload-image .wall { margin:0; width:120px; height:80px; object-fit:cover; }
-  .sms-film-page .upload-image.avatar .wall { width:64px; height:64px; border-radius:50%; }
-  .sms-film-page .upload-remove { position:absolute; right:4px; top:4px; width:25px; height:25px; padding:0; display:grid; place-items:center; border:0; border-radius:50%; background:#c62929; color:white; font-size:18px; line-height:1; cursor:pointer; opacity:0; }
+  .sms-film-page .upload-image .wall { display:block; margin:0; width:100%; height:100%; max-width:none; max-height:none; border-radius:6px; object-fit:cover; }
+  .sms-film-page .upload-image.avatar { width:76px; }
+  .sms-film-page .upload-image.avatar .wall { border-radius:6px; }
+  .sms-film-page .upload-details { min-width:0; }
+  .sms-film-page .field label.upload-pick { display:inline-block; margin:0; cursor:pointer; color:var(--accent); font-size:.875rem; font-weight:600; }
+  .sms-film-page .upload-pick:hover { text-decoration:underline; }
+  .sms-film-page .upload-pick:focus-within { outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
+  .sms-film-page .upload-pick input { position:absolute; width:1px; height:1px; opacity:0; }
+  .sms-film-page .upload-format { display:block; margin-top:4px; color:var(--text-muted); font-size:.75rem; line-height:1.4; }
+  .sms-film-page .upload-hint { display:block; margin-top:8px; color:var(--text-muted); }
+  .sms-film-page button.upload-remove { appearance:none; position:absolute; z-index:1; top:5px; right:5px; display:grid; place-items:center; width:24px; height:24px; min-width:0; min-height:0; padding:0; margin:0; border:0; border-radius:50%; background:#fff; color:#c62929; font:600 19px/1 Arial,sans-serif; box-shadow:0 1px 3px #0004; cursor:pointer; opacity:0; }
   .sms-film-page .upload-image:hover .upload-remove, .sms-film-page .upload-image:focus-within .upload-remove { opacity:1; }
-  @media (hover:none) { .sms-film-page .upload-remove { opacity:1; } }
+  @media (hover:none) { .sms-film-page button.upload-remove { opacity:1; } }
   .sms-film-page .preview-tabs { display:flex; gap:.35rem; margin-bottom:.8rem; }
   .sms-film-page .preview-tabs button { flex:1; padding:.45rem; border:1px solid var(--border); background:transparent; color:var(--text); border-radius:8px; cursor:pointer; }
   .sms-film-page .preview-tabs button[aria-pressed=true] { background:#e8f2ec; border-color:#7aab91; }
@@ -103,7 +108,7 @@
         <div class="field"><label for="sms-notification">Notistext på låsskärmen</label>
           <textarea id="sms-notification" maxlength="{{ limits.text }}" placeholder="Visas som notis på låsskärmen och blir första meddelandet i chatten. Lämna tomt för att börja direkt i chatten."></textarea></div>
         <div class="field" id="sms-wall-field"><label>Bakgrund på låsskärmen</label>
-          <div class="upload"><label class="upload-pick">＋ Välj bild<input type="file" accept="image/jpeg,image/png,image/webp" id="sms-wall-input"></label><div class="upload-image" id="sms-wall-wrap" hidden><img class="wall" id="sms-wall-preview" alt="Vald bakgrund"><button type="button" class="upload-remove" id="sms-wall-clear" aria-label="Ta bort bakgrund" title="Ta bort bakgrund">×</button></div><span class="small" id="sms-wall-hint">Valfri. Utan egen bild används mallens standardbakgrund.</span></div></div>
+          <div class="upload"><div class="upload-image" id="sms-wall-wrap" hidden><img class="wall" id="sms-wall-preview" alt="Vald bakgrund"><button type="button" class="upload-remove" id="sms-wall-clear" aria-label="Ta bort bakgrund" title="Ta bort bakgrund">×</button></div><div class="upload-details"><label class="upload-pick"><span id="sms-wall-action">Välj bild</span><input type="file" accept="image/jpeg,image/png,image/webp" id="sms-wall-input"></label><span class="upload-format">JPG, PNG eller WebP</span></div></div><span class="small upload-hint" id="sms-wall-hint">Valfri. Utan egen bild används mallens standardbakgrund.</span></div>
       </section>
 
       <section aria-labelledby="sms-chat-title">
@@ -123,7 +128,7 @@
         <details><summary>Mer inställningar</summary>
           <div style="margin-top:.8rem">
             <div class="field"><label for="sms-contact">Kontaktens namn</label><input type="text" id="sms-contact" maxlength="40" placeholder="Alex"></div>
-            <div class="field"><label>Profilbild</label><div class="upload"><label class="upload-pick">＋ Välj bild<input type="file" accept="image/jpeg,image/png,image/webp" id="sms-avatar-input"></label><div class="upload-image avatar" id="sms-avatar-wrap" hidden><img class="wall" id="sms-avatar-preview" alt="Vald profilbild"><button type="button" class="upload-remove" id="sms-avatar-clear" aria-label="Ta bort profilbild" title="Ta bort profilbild">×</button></div></div></div>
+            <div class="field"><label>Profilbild</label><div class="upload"><div class="upload-image avatar" id="sms-avatar-wrap" hidden><img class="wall" id="sms-avatar-preview" alt="Vald profilbild"><button type="button" class="upload-remove" id="sms-avatar-clear" aria-label="Ta bort profilbild" title="Ta bort profilbild">×</button></div><div class="upload-details"><label class="upload-pick"><span id="sms-avatar-action">Välj bild</span><input type="file" accept="image/jpeg,image/png,image/webp" id="sms-avatar-input"></label><span class="upload-format">JPG, PNG eller WebP</span></div></div></div>
             <div class="field"><label for="sms-clock">Klockan i statusfältet</label><input type="text" id="sms-clock" maxlength="5" placeholder="9:41" style="max-width:7rem"></div>
             <div class="field"><label for="sms-chatdate">Datum i chatten</label><input type="text" id="sms-chatdate" maxlength="40" placeholder="Idag"></div>
             <div class="field"><label for="sms-lockdate">Datum på låsskärmen</label><input type="text" id="sms-lockdate" maxlength="40" placeholder="Dagens datum"></div>
@@ -387,6 +392,7 @@
       const ref = state[key];
       $(previewId).hidden = !ref; if (ref) $(previewId).src = ref.url;
       $(previewId.replace("-preview", "-wrap")).hidden = !ref;
+      $(previewId.replace("-preview", "-action")).textContent = ref ? "Byt bild" : "Välj bild";
       updatePreview();
     };
     $(inputId).addEventListener("change", (e) => { if (e.target.files[0]) { if (state[key] && state[key].file) URL.revokeObjectURL(state[key].url); state[key] = refFromFile(e.target.files[0]); show(); } });
