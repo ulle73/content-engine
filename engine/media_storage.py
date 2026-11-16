@@ -82,6 +82,23 @@ def open_asset(asset, *, unbranded=False):
         raise MediaError("Den sparade filen kunde inte läsas.") from exc
 
 
+@contextmanager
+def open_key(key, backend=None):
+    """Read a stored file that has no MediaAsset row (e.g. the private Apple pack for the SMS film)."""
+    backend = check_storage(backend)
+    try:
+        if backend == "local":
+            with local_path(key).open("rb") as file:
+                yield file
+        else:
+            with SpooledTemporaryFile(max_size=8 * 1024 * 1024) as file:
+                r2().download_fileobj(os.environ["R2_BUCKET_NAME"], key, file)
+                file.seek(0)
+                yield file
+    except (OSError, BotoCoreError, ClientError) as exc:
+        raise MediaError("Den sparade filen kunde inte läsas.") from exc
+
+
 def download_url(asset):
     try:
         return r2().generate_presigned_url("get_object", Params={"Bucket": os.environ["R2_BUCKET_NAME"],

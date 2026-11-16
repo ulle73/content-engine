@@ -7,6 +7,7 @@ from .ad_studio import views as ad_views
 from .assistant import views as assistant_views
 from .company_settings import company_settings, costs
 from .motion import views as motion_views
+from .smsfilm import views as smsfilm_views
 from .onboarding import SignInView, setup
 from .performance_views import performance
 from .review import views as review_views
@@ -34,6 +35,8 @@ engine_urls = [
     path("motion/<uuid:project_id>/", motion_views.workspace, name="motion_workspace"),
     path("motion/<uuid:project_id>/action/", motion_views.project_action, name="motion_action"),
     path("motion/<uuid:project_id>/status/", motion_views.status, name="motion_status"),
+    path("sms-film/", smsfilm_views.sms_film, name="sms_film"),
+    path("sms-film/<uuid:job_id>/status/", smsfilm_views.job_status, name="sms_film_job"),
     path("intelligence/market/", market_views.intelligence, name="market_intelligence"),
     path("intelligence/market/run/", market_views.action, name="market_action"),
     path("intelligence/market/<int:item_id>/feedback/", market_views.feedback, name="market_feedback"),
@@ -110,6 +113,7 @@ engine_urls = [
 urlpatterns = [
     path("internal/motion/", include("engine.motion.worker_api")),
     path("internal/edit/", include("engine.edit.worker_api")),
+    path("internal/sms-film/", include("engine.smsfilm.worker_api")),
     path("", views.index, name="dashboard"),
     path("setup/", setup, name="setup"),
     path("accounts/login/", SignInView.as_view(), name="login"),

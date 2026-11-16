@@ -16,7 +16,7 @@ from .ownership import company_required
 
 @login_required
 def index(request):
-    companies = Company.objects.filter(owner=request.user).order_by("name")
+    companies = Company.accessible(request.user).order_by("name")
     form = CompanyForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         company = form.save(commit=False)
@@ -182,6 +182,9 @@ def connect(request, workspace_id):
     from .postiz import PostizError, list_channels
 
     context = request.workspace
+    if context.owner_id != request.user.pk:
+        messages.error(request, "Bara företagets ägare kan ändra Postiz-kopplingen.")
+        return redirect("engine:home", workspace_id=workspace_id)
     if request.method == "POST":
         key = request.POST.get("api_key", "").strip() or context.postiz_key
         try:

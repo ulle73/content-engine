@@ -69,7 +69,7 @@ def render(snapshot, values):
 @transaction.atomic
 def save(company, user, data):
     data = TemplateRequest.model_validate(data)
-    if company.owner_id != user.pk:
+    if not company.can_access(user):
         raise ValueError("Företaget kunde inte öppnas.")
     unknown = set(PLACEHOLDER.findall(data.instructions)) - VARIABLES
     if unknown:
