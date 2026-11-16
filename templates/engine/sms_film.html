@@ -21,7 +21,12 @@
   .sms-film-page .msg.recv { align-self: flex-start; }
   .sms-film-page .msg-head { display: flex; justify-content: space-between; gap: .5rem; align-items: center; margin-bottom: .4rem; font-size: .85rem; color: var(--text-muted); }
   .sms-film-page .msg-head strong { color: var(--text); }
-  .sms-film-page .msg-tools { display: flex; gap: .25rem; }
+  .sms-film-page .msg-tools { display:flex; gap:2px; align-items:center; }
+  .sms-film-page button.msg-action { display:grid; place-items:center; flex:none; width:32px; height:32px; min-width:0; min-height:0; padding:0; border:0; border-radius:7px; background:transparent; color:#6d7c74; box-shadow:none; cursor:pointer; }
+  .sms-film-page button.msg-action:hover:not(:disabled), .sms-film-page button.msg-action:focus-visible { background:#e4eee7; color:#285b3d; }
+  .sms-film-page button.msg-action.remove:hover, .sms-film-page button.msg-action.remove:focus-visible { background:#fff0ef; color:#b52b2b; }
+  .sms-film-page button.msg-action:disabled { opacity:.25; cursor:default; }
+  .sms-film-page .msg-action svg { width:16px; height:16px; }
   .sms-film-page .icon-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: .15rem .45rem; cursor: pointer; font-size: .85rem; color: var(--text); }
   .sms-film-page .icon-btn:disabled { opacity: .35; cursor: default; }
   .sms-film-page .message-editor { position:relative; }
@@ -46,8 +51,10 @@
   .sms-film-page .thumb .glasses { position: absolute; transform: translate(-50%, -50%); image-rendering: pixelated; cursor: grab; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
   .sms-film-page .thumb .glasses:active { cursor: grabbing; }
   .sms-film-page .glasses-tools { display: grid; grid-template-columns: auto 1fr; gap: .3rem .6rem; align-items: center; margin-top: .5rem; font-size: .85rem; }
-  .sms-film-page .add-row { display: flex; gap: .6rem; flex-wrap: wrap; }
-  .sms-film-page .add-row button { flex: 1 1 10rem; }
+  .sms-film-page .add-row { display:flex; gap:8px; flex-wrap:wrap; }
+  .sms-film-page .add-row button { display:flex; align-items:center; justify-content:center; gap:8px; flex:1 1 10rem; min-height:42px; padding:9px 14px; border:1px solid #d5e1d9; border-radius:9px; background:#fff; color:#315b45; box-shadow:none; font-size:13px; font-weight:600; cursor:pointer; }
+  .sms-film-page .add-row button:hover, .sms-film-page .add-row button:focus-visible { border-color:#9ab9a5; background:#f1f7f3; }
+  .sms-film-page .add-row svg { width:16px; height:16px; flex:none; }
   .sms-film-page .upload { display:flex; align-items:center; gap:14px; width:min(100%, 360px); padding:10px; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-sizing:border-box; }
   .sms-film-page .upload-image { position:relative; flex:none; width:112px; height:76px; }
   .sms-film-page .upload-image[hidden] { display:none; }
@@ -131,7 +138,7 @@
         <p class="small">Vänster = meddelanden du får. Höger = meddelanden du skickar. Lägg till i vilken ordning du vill och flytta med pilarna.</p>
 
         <div class="msgs" id="sms-msgs"></div>
-        <div class="add-row"><button type="button" class="button-secondary" data-add="recv">+ Lägg till vänster</button><button type="button" class="button-secondary" data-add="sent">+ Lägg till höger</button></div>
+        <div class="add-row"><button type="button" data-add="recv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Lägg till vänster</button><button type="button" data-add="sent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Lägg till höger</button></div>
       </section>
 
       <section aria-labelledby="sms-end-title">
@@ -360,6 +367,13 @@
   }
   emojiEditor.controller = new AbortController();
 
+  function messageAction(label, icon, onClick, disabled, remove) {
+    const button = el("button", {type:"button", class:remove ? "msg-action remove" : "msg-action", title:label, "aria-label":label, disabled:disabled ? "" : null, onclick:onClick});
+    const paths = { swap:'<path d="M4 8h14m-3-3 3 3-3 3M20 16H6m3-3-3 3 3 3"/>', up:'<path d="M12 19V5m-5 5 5-5 5 5"/>', down:'<path d="M12 5v14m-5-5 5 5 5-5"/>', remove:'<path d="M6 6l12 12M18 6 6 18"/>' };
+    button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths[icon] + '</svg>';
+    return button;
+  }
+
   function renderMessages() {
     emojiEditor.controller.abort();
     emojiEditor.controller = new AbortController();
@@ -378,10 +392,10 @@
       const head = el("div", { class: "msg-head" },
         el("strong", {}, m.side === "sent" ? "Höger · du skickar" : "Vänster · du får"),
         el("div", { class: "msg-tools" },
-          el("button", { type: "button", class: "icon-btn", title: "Byt sida", onclick: () => { m.side = m.side === "sent" ? "recv" : "sent"; renderMessages(); updateTiming(); } }, "⇄"),
-          el("button", { type: "button", class: "icon-btn", title: "Flytta upp", disabled: i === 0 ? "" : null, onclick: () => { state.messages.splice(i - 1, 0, state.messages.splice(i, 1)[0]); renderMessages(); updateTiming(); } }, "↑"),
-          el("button", { type: "button", class: "icon-btn", title: "Flytta ned", disabled: last ? "" : null, onclick: () => { state.messages.splice(i + 1, 0, state.messages.splice(i, 1)[0]); renderMessages(); updateTiming(); } }, "↓"),
-          el("button", { type: "button", class: "icon-btn", title: "Ta bort", onclick: () => { state.messages.splice(i, 1); renderMessages(); updateTiming(); } }, "✕"),
+          messageAction("Byt sida", "swap", () => { m.side = m.side === "sent" ? "recv" : "sent"; renderMessages(); updateTiming(); }),
+          messageAction("Flytta upp", "up", () => { state.messages.splice(i - 1, 0, state.messages.splice(i, 1)[0]); renderMessages(); updateTiming(); }, i === 0),
+          messageAction("Flytta ned", "down", () => { state.messages.splice(i + 1, 0, state.messages.splice(i, 1)[0]); renderMessages(); updateTiming(); }, last),
+          messageAction("Ta bort meddelande", "remove", () => { state.messages.splice(i, 1); renderMessages(); updateTiming(); }, false, true),
         ));
       const foot = el("div", { class: "msg-foot" },
         el("div", { class: "row" },
