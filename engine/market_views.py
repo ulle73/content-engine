@@ -45,6 +45,8 @@ def action(request, workspace_id):
     company = request.workspace
     try:
         if request.POST.get("action") == "toggle":
+            if company.owner_id != request.user.pk:
+                raise ValueError("Bara företagets ägare kan slå av eller på marknadsbevakningen.")
             company.market_intelligence_enabled = not company.market_intelligence_enabled
             company.save(update_fields=["market_intelligence_enabled"])
         else:

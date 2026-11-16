@@ -34,7 +34,7 @@ def resolve_company(user, company_ref: str) -> Company:
     value = str(company_ref or "").strip()
     if not value:
         raise OperatorError("Ange företagets id eller exakta namn.")
-    owned = Company.objects.filter(owner=user)
+    owned = Company.accessible(user)
     try:
         company_id = uuid.UUID(value)
     except ValueError:
@@ -50,7 +50,7 @@ def resolve_company(user, company_ref: str) -> Company:
     return matches[0]
 
 def list_companies(user) -> list[dict[str, Any]]:
-    return [company_summary(c) for c in Company.objects.filter(owner=user).order_by("name")]
+    return [company_summary(c) for c in Company.accessible(user).order_by("name")]
 
 def company_summary(company: Company) -> dict[str, Any]:
     return {

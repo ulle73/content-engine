@@ -1,0 +1,69 @@
+name: SMS Film Render
+# "Generera video → SMS-film" in the dashboard: renders queued SmsFilmJobs (engine/smsfilm) with the iMessage
+# template (library/templates/imessage-samtal) and uploads the MP4. Started by content-engine (workflow_dispatch via
+# GITHUB_DISPATCH_TOKEN) and by the daily workflow when films have waited too long.
+# Apple's fonts, emoji, iOS sounds and phone frame come from the app's private storage per job. The repo is public:
+# they are never committed, cached, uploaded as artifacts or printed.
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: 'SmsFilmJob-id att rendera först (valfritt; övriga köade filmer tas också)'
+        required: false
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: sms-film-render
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CONTENT_APP_URL: ${{ secrets.CONTENT_APP_URL || 'https://content-engine-mcp.onrender.com' }}
+      CONTENT_EDIT_WORKER_TOKEN: ${{ secrets.CONTENT_EDIT_WORKER_TOKEN }}
+      SMS_FILM_JOB_ID: ${{ inputs.job_id }}
+      SMS_FILM_MAX_JOBS: '3'
+      HYPERFRAMES_VERSION: '0.9.39'
+      HYPERFRAMES_WORKERS: '2'
+      HYPERFRAMES_RENDER_ARGS: '--no-low-memory-mode'
+      # Not under ~/.cache: that is partly restored/saved by actions/cache and Apple's files must never land there.
+      IMESSAGE_CACHE: /tmp/imessage-apple
+    steps:
+      - name: Check configuration
+        run: |
+          if [ -z "$CONTENT_EDIT_WORKER_TOKEN" ]; then
+            echo "::error::Secret CONTENT_EDIT_WORKER_TOKEN saknas (samma värde som EDIT_WORKER_TOKEN på Render)."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            library/templates/imessage-samtal
+            edit-renderer/outros
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install ffmpeg and fonttools
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+          ffmpeg -version | head -1
+          python3 -m pip install --quiet --user 'fonttools[woff]'
+      - name: Cache HyperFrames and its browser
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm/_npx
+            ~/.cache/hyperframes
+            ~/.cache/puppeteer
+          key: hyperframes-${{ runner.os }}-0.9.39
+      - name: Prepare HyperFrames browser
+        run: npx --yes hyperframes@0.9.39 browser ensure
+      - name: Render queued SMS films
+        run: node library/templates/imessage-samtal/dashboard-worker.mjs
+      - name: Remove Apple files
+        if: always()
+        run: rm -rf "$IMESSAGE_CACHE"

@@ -19,6 +19,9 @@ class SetupState(models.Model):
 class Company(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    # Colleagues who may work in the company's dashboard. Only the owner changes the Postiz connection and the
+    # market-intelligence switch (engine/views.connect, engine/market_views.action).
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="member_companies")
     name = models.CharField(max_length=200)
     profile = models.TextField(blank=True)
     voice = models.TextField(blank=True)
@@ -47,6 +50,17 @@ class Company(models.Model):
     @postiz_key.setter
     def postiz_key(self, value):
         self.postiz_ciphertext = self.cipher().encrypt(value.encode()).decode() if value else ""
+
+    @classmethod
+    def accessible(cls, user):
+        """Companies the user owns or is a member of."""
+        if not getattr(user, "is_authenticated", False):
+            return cls.objects.none()
+        return cls.objects.filter(models.Q(owner=user) | models.Q(members=user)).distinct()
+
+    def can_access(self, user):
+        return getattr(user, "is_authenticated", False) and (
+            self.owner_id == user.pk or self.members.filter(pk=user.pk).exists())
 
 
 class AssistantConversation(models.Model):
@@ -1099,3 +1113,6 @@ from .ideas.models import IdeaCard  # noqa: F401,E402
 
 # Approved per-company techniques extend the static Content Library catalog.
 from .techniques.models import TechniqueImport, StoredTechnique  # noqa: F401,E402
+
+# SMS films made in the dashboard (Generera video → SMS-film, engine/smsfilm).
+from .smsfilm.models import SmsFilmJob  # noqa: F401,E402
