@@ -18,8 +18,17 @@ PIXABAY = "Pixabay Content License – reklam ok, ingen attribution; sprid inte 
 FILM = "GK Årsskiftet (spola tillbaka), godkänd av Jonas 2026-10-13"
 FILM2 = "GK Chefen betalar (ingen portal), godkänd av Jonas 2026-10-14"
 FILM3 = "GK Spelat den här? (alla banor), godkänd av Jonas 2026-10-14"
+FILM5 = "GK Så funkar Golfkuponger (musikbädd under berättarröst, utzoomning, konfetti i appen), godkänd av Jonas 2026-10-23"
+NEW5 = {"sound.svep-mjukt", "sound.success-gitarr", "music.close-up"}
 FILM4 = "GK Skriet, 31 december (Munch-hyllning), godkänd av Jonas 2026-10-14"
 NEW4 = {"sound.skrik-man", "sound.eldsus", "sound.svep-luftigt", "sound.svep-snabbt"}
+FILM6 = "GK Golfare i <stad>? (mallen golfkuponger-golfare-i-stad, test 01), skickat av Jonas 2026-10-28"
+NEW6 = {"music.hallelujah-handel-1916", "sound.hallelujah-kor"}
+FILM7 = "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)"
+TOPPLAT = ("Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: "
+           "aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens "
+           "musikbibliotek vid publicering. Filen checkas inte in i git")
+PD = "Public domain (Wikimedia Commons: Public Domain Mark 1.0; Edison-inspelning 1916 via Internet Archive EDIS-SRP-0195-06)"
 # Ljud som används i flera filmer eller bara i en senare film (id -> användning)
 USED_IN = {k: FILM + "; " + FILM2 for k in ("sound.smack-dov-trumma", "sound.klocktick", "sound.papper-glid", "sound.bollsus", "music.under-the-sun")}
 USED_IN.update({k: USED_IN.get(k, FILM) + "; GK Skriet" for k in ("sound.papper-riv", "sound.golftraff", "sound.bollsus", "sound.eld-sprak", "music.running-out-of-time", "music.under-the-sun")})
@@ -138,15 +147,99 @@ S = [
      ["svep", "whoosh", "övergång", "zoom ut", "luftigt"], "Mixkit 1474 – Transition windy swoosh", MIXKIT, None,
      "https://assets.mixkit.co/active_storage/sfx/1474/1474-preview.mp3", "aa02d9e3365bfe7cb3b84a6e7bb1cdf3", {"start": 0.0, "dur": 1.6, "fade_out": 0.6},
      "Toppen på rörelsens mitt, ~3,5 dB över musiken."),
+    ("sound.svep-mjukt", "Svep – mjukt, långt luftdrag (diskret utzoomning)", "Diskret, långsamt luftdrag under en lugn utzoomning när rösten pratar",
+     ["svep", "whoosh", "luft", "zoom ut", "mjukt", "diskret", "kollage", "övergång"], "Mixkit 167 – Long sweeping air swoosh", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/167/167-preview.mp3", "e39b50990b8d7e89ce0e7a6a59bab519", None,
+     "Toppen (0,80 s in) mitt i zoomen. Mycket diskret: topp ~12 dB UNDER musikbädden (Jonas sänkte i tre steg: -3, -7, -12; svep-luftigt på +3,5 dB var för överdrivet)."),
+    ("sound.success-gitarr", "Success – akustisk gitarr (varm)", "Något lyckas i appen: saldo laddat, konfetti, köp klart – varmt och premium, inte spel",
+     ["success", "lyckat", "klart", "konfetti", "saldo", "gitarr", "notis", "app", "bekräftelse"], "Mixkit 2320 – Guitar notification alert", MIXKIT, None,
+     "https://assets.mixkit.co/active_storage/sfx/2320/2320-preview.mp3", "54425bf2f13e930d24f7a6d221f3bc27", None,
+     "Lägg ansatsen (0,06 s in) när konfettin börjar; toppen kommer ~1 s in. Starkaste 50 ms ~3 dB UNDER musikbädden (Jonas halverade volymen från +3)."),
     ("sound.svep-snabbt", "Svep – snabbt (zoom in)", "Snabbt svep när kameran zoomar in mot något",
      ["svep", "whoosh", "zoom in", "snabb", "övergång"], "Mixkit 1490 – Fast whoosh transition", MIXKIT, None,
      "https://assets.mixkit.co/active_storage/sfx/1490/1490-preview.mp3", "63676fdad508b6c600dc89266ba431a0", None,
      "Toppen ~0,5 s efter rörelsens start, ~3 dB över musiken."),
+    ("music.close-up", "Musik: Close Up (105 BPM, corporate)", "Bädd under berättarröst i förklarings-/produktfilm – lätt, modern, inte glad reklampop",
+     ["musik", "corporate", "bädd", "berättarröst", "explainer", "så funkar", "105 bpm"], "Mixkit musik 1167 – Close Up (Michael Ramir C.)", MIXKIT_MUSIC, None,
+     "https://assets.mixkit.co/music/1167/1167.mp3", "624504b8c9f8340b6729d62b711c734d", None,
+     "Naturligt slut 91,50 s i spåret (taktstart, bandet slutar): lägg det på sista klippet. ~-21 LUFS ensam, duckad 8 dB under rösten."),
     ("music.under-the-sun", "Musik: Under the Sun (120 BPM)", "Lättnad, sol, golf, glatt slut",
      ["musik", "glad", "sol", "golf", "vår", "120 bpm"], "Mixkit musik 859 – Under the Sun (Michael Ramir C.)", MIXKIT_MUSIC, None,
      "https://assets.mixkit.co/music/859/859.mp3", "376303e4efe79bc98da66e425aabf306", None,
      "Taktstart 24,232 s i spåret. Tona ut 0,55 s vid irisen/slutbilden."),
+    ("music.hallelujah-handel-1916", "Musik: Händel – Halleluja (Oratorio Chorus, 1916)", "Halleluja-kör: uppenbarelse, äntligen, segermoment med glimten i ögat",
+     ["musik", "halleluja", "hallelujah", "händel", "messias", "kör", "klassisk", "äntligen", "seger", "humor", "public domain"],
+     "Oratorio Chorus – Hallelujah (Händel, Messiah), Edison 1916, Internet Archive EDIS-SRP-0195-06 / Wikimedia Commons", PD,
+     "library/sounds/files/hallelujah-handel-1916_archive-edis-srp-0195-06.ogg", None, None,
+     "Mono, akustisk inspelning från 1916 (brus och knaster hör till). Orkesterintro först; kören sätter in 6,61 s i spåret – "
+     "lägg den på avslöjandet (golfkuponger-golfare-i-stad: --traff 6.61). Loudnorm till -16 LUFS under bild, -14 totalt."),
+    ("sound.hallelujah-kor", "Halleluja-kör (kort, 8,7 s)", "Kort skrikig halleluja-kör för humoristiska segermoment: något landar, äntligen, bingo",
+     ["halleluja", "hallelujah", "kör", "seger", "äntligen", "humor", "meme", "jingel", "stinger"],
+     "Pixabay – Hallelujah (freesound_community 88495)", PIXABAY, "library/sounds/files/hallelujah-kor_pixabay-88495.mp3", None, None,
+     "8,7 s, mono 11 kHz (lite dovt). Två fraser: första 0,08–2,0 s, tyst 2,0–2,48 s, andra frasen slår an 2,48 s (tydligaste anslaget). "
+     "golfkuponger-golfare-i-stad: --traff 2.48 (första frasen under rullen, pausen precis före, andra frasen slår när stadsnamnet landar)."),
+
 ]
+
+# Topplåtar som Jonas lagt i files/ och godkänt 2026-11-13. Mätt med ffmpeg (ebur128); BPM uppskattat, None = osäkert.
+# (slug, artist, titel, filnamn, bpm, stämning, roll, sökord, längd s, LUFS)
+TOPP = [
+    ("abba-money-money-money", "ABBA", "Money, Money, Money", "ABBA - Money, Money, Money.mp3", 120, "disco, pengar",
+     "Pengar, pris, spara – med glimten i ögat om vad golfen kostar", ["pengar", "spara", "pris", "rabatt", "kostnad", "humor", "disco", "70-tal"], 186.9, -10.7),
+    ("alex-warren-ordinary", "Alex Warren", "Ordinary", "Alex Warren - Ordinary.mp3", None, "känslosam ballad",
+     "Känslosamt och stort – kärlek till spelet, vacker bana, långsam kamerafärd", ["känslosam", "ballad", "vacker", "kärlek", "långsam", "stämning"], 187.0, -6.4),
+    ("avicii-the-nights", "Avicii", "The Nights", "Avicii - The Nights.mp3", 126, "euforisk EDM",
+     "Euforisk energi – minnen, sommar, vänner på banan, montage", ["euforisk", "sommar", "minnen", "vänner", "montage", "edm", "energi", "svensk"], 176.7, -7.3),
+    ("benson-boone-beautiful-things", "Benson Boone", "Beautiful Things", "Benson Boone - Beautiful Things.mp3", None, "känslosam, crescendo",
+     "Tacksamhet för det vackra – lugn start som byggs upp till stort crescendo", ["känslosam", "tacksamhet", "vacker", "crescendo", "uppbyggnad", "drama"], 180.4, -6.9),
+    ("black-eyed-peas-i-gotta-feeling", "Black Eyed Peas", "I Gotta Feeling", "Black Eyed Peas - I Gotta Feeling.mp3", 128, "fest, feel-good",
+     "Feel-good inför helgen eller rundan – fest, uppladdning, 'good night'", ["fest", "helg", "glad", "feel-good", "uppladdning", "party", "energi"], 289.2, -9.8),
+    ("black-eyed-peas-pump-it", "Black Eyed Peas", "Pump It", "Black Eyed Peas - Pump It.mp3", 154, "hård energi",
+     "Pumpa upp – träning, drive på rangen, snabba klipp, action", ["energi", "träning", "pumpa", "hård", "snabb", "range", "drive", "action"], 213.1, -7.3),
+    ("chappell-roan-hot-to-go", "Chappell Roan", "HOT TO GO!", "Chappell Roan - HOT TO GO!.mp3", None, "lekfull pop",
+     "Lekfull pop med ramsa – trend, dans, TikTok-känsla", ["pop", "lekfull", "dans", "trend", "tiktok", "ramsa", "glad"], 184.9, -7.8),
+    ("coldplay-viva-la-vida", "Coldplay", "Viva La Vida", "Coldplay - Viva La Vida.mp3", 138, "episk, stråkar",
+     "Episkt och storslaget – segrar, legender, stora ögonblick", ["episk", "storslaget", "seger", "stråkar", "hymn", "drama"], 242.4, -9.2),
+    ("dr-dre-snoop-dogg-the-next-episode", "Dr. Dre, Snoop Dogg", "The Next Episode", "Dr. Dre, Snoop Dogg - The Next Episode.mp3", 96, "cool hiphop",
+     "Cool attityd – entré, 'nästa nivå', swing i slow motion", ["cool", "hiphop", "attityd", "entré", "slow motion", "kaxig", "west coast"], 161.5, -7.8),
+    ("earth-wind-fire-september", "Earth, Wind & Fire", "September", "Earth, Wind & Fire - September.mp3", 124, "glad funk",
+     "Glad funk – säsongsstart, september, dansant feel-good", ["funk", "glad", "september", "höst", "säsong", "dans", "feel-good", "70-tal"], 217.2, -9.8),
+    ("katy-perry-the-one-that-got-away", "Katy Perry", "The One That Got Away", "Katy Perry - The One That Got Away.mp3", 134, "pop, nostalgi",
+     "Den som kom undan – missad putt, missad chans, nostalgi med glimt", ["nostalgi", "missad chans", "miss", "putt", "pop", "längtan", "humor"], 227.4, -8.1),
+    ("natasha-bedingfield-unwritten", "Natasha Bedingfield", "Unwritten", "Natasha Bedingfield - Unwritten.mp3", 100, "feel-good, ny start",
+     "Ny start, oskriven säsong – nyår, första rundan, möjligheter", ["ny start", "nyår", "möjligheter", "feel-good", "säsongsstart", "inspiration"], 259.4, -9.6),
+    ("rose-bruno-mars-apt", "ROSÉ, Bruno Mars", "APT.", "ROSÉ, Bruno Mars - APT..mp3", None, "catchig k-pop",
+     "Catchig trendpop – lekfullt, snabba klipp, TikTok-trend", ["kpop", "k-pop", "trend", "catchig", "lekfull", "tiktok", "snabb", "rose"], 170.0, -7.4),
+    ("sabrina-carpenter-espresso", "Sabrina Carpenter", "Espresso", "Sabrina Carpenter - Espresso.mp3", 104, "kaxig pop",
+     "Kaxig, lättsam pop – självsäker stil, sommar, trend", ["pop", "kaxig", "självsäker", "trend", "sommar", "lättsam", "kaffe"], 175.5, -7.3),
+    ("shaboozey-a-bar-song", "Shaboozey", "A Bar Song (Tipsy)", "Shaboozey - A Bar Song (Tipsy).mp3", None, "country-fest",
+     "Country-fest – 19:e hålet, afterwork i klubbhuset, skål", ["country", "fest", "19:e hålet", "klubbhus", "skål", "afterwork", "bar", "tipsy"], 171.3, -7.6),
+    ("slayyyter-dance", "Slayyyter", "DANCE...", "Slayyyter - DANCE....mp3", None, "electropop, dans",
+     "Dansgolvsenergi – snabba klipp, fest, glitter", ["dans", "electro", "fest", "energi", "klubb", "glitter", "pop"], 287.1, -8.0),
+    ("sophie-ellis-bextor-murder-on-the-dancefloor", "Sophie Ellis-Bextor", "Murder On The Dancefloor", "Sophie Ellis-Bextor - Murder On The Dancefloor.mp3", 118, "retrodisco",
+     "Retrodisco med glimten – tävlingsinstinkt, 'mord' på greenen, Saltburn-trend", ["disco", "retro", "dans", "humor", "tävling", "trend", "2000-tal"], 230.1, -9.0),
+    ("wham-last-christmas", "Wham!", "Last Christmas", "Wham! - Last Christmas.mp3", 108, "jul",
+     "Jul – julkampanj, presentkort som julklapp", ["jul", "julklapp", "presentkort", "vinter", "december", "80-tal", "jullåt"], 263.0, -15.5),
+    ("zara-larsson-lush-life", "Zara Larsson", "Lush Life", "Zara Larsson - Lush Life.mp3", 98, "sommarpop",
+     "Sommar och sol – svensk sommarpop, bästa livet på banan", ["sommar", "sol", "glad", "svensk", "lyx", "pop", "feel-good"], 200.7, -8.0),
+]
+
+
+def _kr(x):
+    return f"{x:.1f}".replace(".", ",")
+
+
+for _slug, _artist, _titel, _fil, _bpm, _mood, _role, _tags, _dur, _lufs in TOPP:
+    _gain = -14 - _lufs
+    _tips = (f"Hel låt {_kr(_dur)} s, {_kr(_lufs)} LUFS integrerat: normalisera till -14 LUFS före mix ({'+' if _gain > 0 else ''}{_kr(_gain)} dB)"
+             + (" – tyst master, ~7 dB svagare än de andra topplåtarna" if _lufs < -12 else "")
+             + ". Välj utdraget själv (refräng/drop) och tona in/ut. "
+             + (f"BPM ca {_bpm} (uppskattat). " if _bpm else "BPM osäkert – räkna takten själv. ")
+             + "Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.")
+    S.append((f"music.{_slug}", f"Musik: {_artist} – {_titel} ({f'ca {_bpm} BPM, ' if _bpm else ''}{_mood})", _role,
+              ["musik", "topplåt", "låt", "känd låt", _artist.lower(), _titel.lower()] + _tags + ([f"{_bpm} bpm"] if _bpm else []),
+              f"{_artist} – {_titel} (fil från Jonas)", TOPPLAT, f"library/sounds/files/{_fil}", None, None, _tips))
+NEW7 = {f"music.{t[0]}" for t in TOPP}
 
 
 def main():
@@ -156,7 +249,7 @@ def main():
         if len(row) == 10:  # lokal fil: (..., file, None, cut, tips)
             row = row[:7] + (None, None) + row[8:]
         sid, name, role, tags, source, lic, file, url, md5, cut, tips = row
-        used = USED_IN.get(sid, FILM4 if sid in NEW4 else FILM3 if sid == "music.lifes-a-movie" else FILM2 if sid in NEW2 else FILM)
+        used = USED_IN.get(sid, FILM7 if sid in NEW7 else FILM6 if sid in NEW6 else FILM5 if sid in NEW5 else FILM4 if sid in NEW4 else FILM3 if sid == "music.lifes-a-movie" else FILM2 if sid in NEW2 else FILM)
         bank = {"role": role, "source": source, "license": lic, "used_in": used, "level": tips}
         if file:
             bank["file"] = file
@@ -170,9 +263,11 @@ def main():
             "description": f"{role}. Källa: {source}.", "tags": ["ljud", "godkänt", "ljudbank"] + tags,
             "path": file or "library/sounds/sounds.py",
             "use": f"python library/sounds/sounds.py copy {sid} work/<film>/sfx/{sid.split('.')[-1]}.wav" + (" --cut" if cut else ""),
-            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-10-14" if sid in NEW2 or sid in NEW4 or sid == "music.lifes-a-movie" else "2026-10-13",
+            "requires": ["ffmpeg", "python"], "cost": "free", "status": "verified", "verified_at": "2026-11-13" if sid in NEW7 else "2026-10-28" if sid in NEW6 else "2026-10-23" if sid in NEW5 else "2026-10-14" if sid in NEW2 or sid in NEW4 or sid == "music.lifes-a-movie" else "2026-10-13",
             "preview": {"video": None, "still": still}, "notes": tips, "bank": bank,
         }
+        if sid in NEW7:  # topplåtarna är gitignorerade och finns bara på Jonas dator
+            item["local_only"] = True
         out.append(item)
     data = {"kit": "sounds", "title": "Ljudbanken – godkända ljud", "source": {"name": "Content Engine", "url": "",
             "license": "Per ljud, se bank.license"}, "items": out}

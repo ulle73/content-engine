@@ -1356,6 +1356,101 @@
       }
     },
     {
+      "id": "sound.svep-mjukt",
+      "name": "Svep – mjukt, långt luftdrag (diskret utzoomning)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Diskret, långsamt luftdrag under en lugn utzoomning när rösten pratar. Källa: Mixkit 167 – Long sweeping air swoosh.",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "svep",
+        "whoosh",
+        "luft",
+        "zoom ut",
+        "mjukt",
+        "diskret",
+        "kollage",
+        "övergång"
+      ],
+      "path": "library/sounds/sounds.py",
+      "use": "python library/sounds/sounds.py copy sound.svep-mjukt work/<film>/sfx/svep-mjukt.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-23",
+      "preview": {
+        "video": null,
+        "still": "library/previews/sound.svep-mjukt.png"
+      },
+      "notes": "Toppen (0,80 s in) mitt i zoomen. Mycket diskret: topp ~12 dB UNDER musikbädden (Jonas sänkte i tre steg: -3, -7, -12; svep-luftigt på +3,5 dB var för överdrivet).",
+      "bank": {
+        "role": "Diskret, långsamt luftdrag under en lugn utzoomning när rösten pratar",
+        "source": "Mixkit 167 – Long sweeping air swoosh",
+        "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+        "used_in": "GK Så funkar Golfkuponger (musikbädd under berättarröst, utzoomning, konfetti i appen), godkänd av Jonas 2026-10-23",
+        "level": "Toppen (0,80 s in) mitt i zoomen. Mycket diskret: topp ~12 dB UNDER musikbädden (Jonas sänkte i tre steg: -3, -7, -12; svep-luftigt på +3,5 dB var för överdrivet).",
+        "url": "https://assets.mixkit.co/active_storage/sfx/167/167-preview.mp3",
+        "md5": "e39b50990b8d7e89ce0e7a6a59bab519"
+      }
+    },
+    {
+      "id": "sound.success-gitarr",
+      "name": "Success – akustisk gitarr (varm)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Något lyckas i appen: saldo laddat, konfetti, köp klart – varmt och premium, inte spel. Källa: Mixkit 2320 – Guitar notification alert.",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "success",
+        "lyckat",
+        "klart",
+        "konfetti",
+        "saldo",
+        "gitarr",
+        "notis",
+        "app",
+        "bekräftelse"
+      ],
+      "path": "library/sounds/sounds.py",
+      "use": "python library/sounds/sounds.py copy sound.success-gitarr work/<film>/sfx/success-gitarr.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-23",
+      "preview": {
+        "video": null,
+        "still": "library/previews/sound.success-gitarr.png"
+      },
+      "notes": "Lägg ansatsen (0,06 s in) när konfettin börjar; toppen kommer ~1 s in. Starkaste 50 ms ~3 dB UNDER musikbädden (Jonas halverade volymen från +3).",
+      "bank": {
+        "role": "Något lyckas i appen: saldo laddat, konfetti, köp klart – varmt och premium, inte spel",
+        "source": "Mixkit 2320 – Guitar notification alert",
+        "license": "Mixkit Sound Effects Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+        "used_in": "GK Så funkar Golfkuponger (musikbädd under berättarröst, utzoomning, konfetti i appen), godkänd av Jonas 2026-10-23",
+        "level": "Lägg ansatsen (0,06 s in) när konfettin börjar; toppen kommer ~1 s in. Starkaste 50 ms ~3 dB UNDER musikbädden (Jonas halverade volymen från +3).",
+        "url": "https://assets.mixkit.co/active_storage/sfx/2320/2320-preview.mp3",
+        "md5": "54425bf2f13e930d24f7a6d221f3bc27"
+      }
+    },
+    {
       "id": "sound.svep-snabbt",
       "name": "Svep – snabbt (zoom in)",
       "type": "sound",
@@ -1397,6 +1492,52 @@
         "level": "Toppen ~0,5 s efter rörelsens start, ~3 dB över musiken.",
         "url": "https://assets.mixkit.co/active_storage/sfx/1490/1490-preview.mp3",
         "md5": "63676fdad508b6c600dc89266ba431a0"
+      }
+    },
+    {
+      "id": "music.close-up",
+      "name": "Musik: Close Up (105 BPM, corporate)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Bädd under berättarröst i förklarings-/produktfilm – lätt, modern, inte glad reklampop. Källa: Mixkit musik 1167 – Close Up (Michael Ramir C.).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "corporate",
+        "bädd",
+        "berättarröst",
+        "explainer",
+        "så funkar",
+        "105 bpm"
+      ],
+      "path": "library/sounds/sounds.py",
+      "use": "python library/sounds/sounds.py copy music.close-up work/<film>/sfx/close-up.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-23",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.close-up.png"
+      },
+      "notes": "Naturligt slut 91,50 s i spåret (taktstart, bandet slutar): lägg det på sista klippet. ~-21 LUFS ensam, duckad 8 dB under rösten.",
+      "bank": {
+        "role": "Bädd under berättarröst i förklarings-/produktfilm – lätt, modern, inte glad reklampop",
+        "source": "Mixkit musik 1167 – Close Up (Michael Ramir C.)",
+        "license": "Mixkit Stock Music Free License (reklam ok; får inte ligga i mallar/verktyg – hämtas)",
+        "used_in": "GK Så funkar Golfkuponger (musikbädd under berättarröst, utzoomning, konfetti i appen), godkänd av Jonas 2026-10-23",
+        "level": "Naturligt slut 91,50 s i spåret (taktstart, bandet slutar): lägg det på sista klippet. ~-21 LUFS ensam, duckad 8 dB under rösten.",
+        "url": "https://assets.mixkit.co/music/1167/1167.mp3",
+        "md5": "624504b8c9f8340b6729d62b711c734d"
       }
     },
     {
@@ -1443,6 +1584,1105 @@
         "url": "https://assets.mixkit.co/music/859/859.mp3",
         "md5": "376303e4efe79bc98da66e425aabf306"
       }
+    },
+    {
+      "id": "music.hallelujah-handel-1916",
+      "name": "Musik: Händel – Halleluja (Oratorio Chorus, 1916)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Halleluja-kör: uppenbarelse, äntligen, segermoment med glimten i ögat. Källa: Oratorio Chorus – Hallelujah (Händel, Messiah), Edison 1916, Internet Archive EDIS-SRP-0195-06 / Wikimedia Commons.",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "halleluja",
+        "hallelujah",
+        "händel",
+        "messias",
+        "kör",
+        "klassisk",
+        "äntligen",
+        "seger",
+        "humor",
+        "public domain"
+      ],
+      "path": "library/sounds/files/hallelujah-handel-1916_archive-edis-srp-0195-06.ogg",
+      "use": "python library/sounds/sounds.py copy music.hallelujah-handel-1916 work/<film>/sfx/hallelujah-handel-1916.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-28",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.hallelujah-handel-1916.png"
+      },
+      "notes": "Mono, akustisk inspelning från 1916 (brus och knaster hör till). Orkesterintro först; kören sätter in 6,61 s i spåret – lägg den på avslöjandet (golfkuponger-golfare-i-stad: --traff 6.61). Loudnorm till -16 LUFS under bild, -14 totalt.",
+      "bank": {
+        "role": "Halleluja-kör: uppenbarelse, äntligen, segermoment med glimten i ögat",
+        "source": "Oratorio Chorus – Hallelujah (Händel, Messiah), Edison 1916, Internet Archive EDIS-SRP-0195-06 / Wikimedia Commons",
+        "license": "Public domain (Wikimedia Commons: Public Domain Mark 1.0; Edison-inspelning 1916 via Internet Archive EDIS-SRP-0195-06)",
+        "used_in": "GK Golfare i <stad>? (mallen golfkuponger-golfare-i-stad, test 01), skickat av Jonas 2026-10-28",
+        "level": "Mono, akustisk inspelning från 1916 (brus och knaster hör till). Orkesterintro först; kören sätter in 6,61 s i spåret – lägg den på avslöjandet (golfkuponger-golfare-i-stad: --traff 6.61). Loudnorm till -16 LUFS under bild, -14 totalt.",
+        "file": "library/sounds/files/hallelujah-handel-1916_archive-edis-srp-0195-06.ogg"
+      }
+    },
+    {
+      "id": "sound.hallelujah-kor",
+      "name": "Halleluja-kör (kort, 8,7 s)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Kort skrikig halleluja-kör för humoristiska segermoment: något landar, äntligen, bingo. Källa: Pixabay – Hallelujah (freesound_community 88495).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "halleluja",
+        "hallelujah",
+        "kör",
+        "seger",
+        "äntligen",
+        "humor",
+        "meme",
+        "jingel",
+        "stinger"
+      ],
+      "path": "library/sounds/files/hallelujah-kor_pixabay-88495.mp3",
+      "use": "python library/sounds/sounds.py copy sound.hallelujah-kor work/<film>/sfx/hallelujah-kor.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-10-28",
+      "preview": {
+        "video": null,
+        "still": "library/previews/sound.hallelujah-kor.png"
+      },
+      "notes": "8,7 s, mono 11 kHz (lite dovt). Två fraser: första 0,08–2,0 s, tyst 2,0–2,48 s, andra frasen slår an 2,48 s (tydligaste anslaget). golfkuponger-golfare-i-stad: --traff 2.48 (första frasen under rullen, pausen precis före, andra frasen slår när stadsnamnet landar).",
+      "bank": {
+        "role": "Kort skrikig halleluja-kör för humoristiska segermoment: något landar, äntligen, bingo",
+        "source": "Pixabay – Hallelujah (freesound_community 88495)",
+        "license": "Pixabay Content License – reklam ok, ingen attribution; sprid inte som lösa ljud",
+        "used_in": "GK Golfare i <stad>? (mallen golfkuponger-golfare-i-stad, test 01), skickat av Jonas 2026-10-28",
+        "level": "8,7 s, mono 11 kHz (lite dovt). Två fraser: första 0,08–2,0 s, tyst 2,0–2,48 s, andra frasen slår an 2,48 s (tydligaste anslaget). golfkuponger-golfare-i-stad: --traff 2.48 (första frasen under rullen, pausen precis före, andra frasen slår när stadsnamnet landar).",
+        "file": "library/sounds/files/hallelujah-kor_pixabay-88495.mp3"
+      }
+    },
+    {
+      "id": "music.abba-money-money-money",
+      "name": "Musik: ABBA – Money, Money, Money (ca 120 BPM, disco, pengar)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Pengar, pris, spara – med glimten i ögat om vad golfen kostar. Källa: ABBA – Money, Money, Money (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "abba",
+        "money, money, money",
+        "pengar",
+        "spara",
+        "pris",
+        "rabatt",
+        "kostnad",
+        "humor",
+        "disco",
+        "70-tal",
+        "120 bpm"
+      ],
+      "path": "library/sounds/files/ABBA - Money, Money, Money.mp3",
+      "use": "python library/sounds/sounds.py copy music.abba-money-money-money work/<film>/sfx/abba-money-money-money.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.abba-money-money-money.png"
+      },
+      "notes": "Hel låt 186,9 s, -10,7 LUFS integrerat: normalisera till -14 LUFS före mix (-3,3 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 120 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Pengar, pris, spara – med glimten i ögat om vad golfen kostar",
+        "source": "ABBA – Money, Money, Money (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 186,9 s, -10,7 LUFS integrerat: normalisera till -14 LUFS före mix (-3,3 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 120 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/ABBA - Money, Money, Money.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.alex-warren-ordinary",
+      "name": "Musik: Alex Warren – Ordinary (känslosam ballad)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Känslosamt och stort – kärlek till spelet, vacker bana, långsam kamerafärd. Källa: Alex Warren – Ordinary (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "alex warren",
+        "ordinary",
+        "känslosam",
+        "ballad",
+        "vacker",
+        "kärlek",
+        "långsam",
+        "stämning"
+      ],
+      "path": "library/sounds/files/Alex Warren - Ordinary.mp3",
+      "use": "python library/sounds/sounds.py copy music.alex-warren-ordinary work/<film>/sfx/alex-warren-ordinary.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.alex-warren-ordinary.png"
+      },
+      "notes": "Hel låt 187,0 s, -6,4 LUFS integrerat: normalisera till -14 LUFS före mix (-7,6 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Känslosamt och stort – kärlek till spelet, vacker bana, långsam kamerafärd",
+        "source": "Alex Warren – Ordinary (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 187,0 s, -6,4 LUFS integrerat: normalisera till -14 LUFS före mix (-7,6 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Alex Warren - Ordinary.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.avicii-the-nights",
+      "name": "Musik: Avicii – The Nights (ca 126 BPM, euforisk EDM)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Euforisk energi – minnen, sommar, vänner på banan, montage. Källa: Avicii – The Nights (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "avicii",
+        "the nights",
+        "euforisk",
+        "sommar",
+        "minnen",
+        "vänner",
+        "montage",
+        "edm",
+        "energi",
+        "svensk",
+        "126 bpm"
+      ],
+      "path": "library/sounds/files/Avicii - The Nights.mp3",
+      "use": "python library/sounds/sounds.py copy music.avicii-the-nights work/<film>/sfx/avicii-the-nights.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.avicii-the-nights.png"
+      },
+      "notes": "Hel låt 176,7 s, -7,3 LUFS integrerat: normalisera till -14 LUFS före mix (-6,7 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 126 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Euforisk energi – minnen, sommar, vänner på banan, montage",
+        "source": "Avicii – The Nights (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 176,7 s, -7,3 LUFS integrerat: normalisera till -14 LUFS före mix (-6,7 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 126 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Avicii - The Nights.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.benson-boone-beautiful-things",
+      "name": "Musik: Benson Boone – Beautiful Things (känslosam, crescendo)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Tacksamhet för det vackra – lugn start som byggs upp till stort crescendo. Källa: Benson Boone – Beautiful Things (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "benson boone",
+        "beautiful things",
+        "känslosam",
+        "tacksamhet",
+        "vacker",
+        "crescendo",
+        "uppbyggnad",
+        "drama"
+      ],
+      "path": "library/sounds/files/Benson Boone - Beautiful Things.mp3",
+      "use": "python library/sounds/sounds.py copy music.benson-boone-beautiful-things work/<film>/sfx/benson-boone-beautiful-things.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.benson-boone-beautiful-things.png"
+      },
+      "notes": "Hel låt 180,4 s, -6,9 LUFS integrerat: normalisera till -14 LUFS före mix (-7,1 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Tacksamhet för det vackra – lugn start som byggs upp till stort crescendo",
+        "source": "Benson Boone – Beautiful Things (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 180,4 s, -6,9 LUFS integrerat: normalisera till -14 LUFS före mix (-7,1 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Benson Boone - Beautiful Things.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.black-eyed-peas-i-gotta-feeling",
+      "name": "Musik: Black Eyed Peas – I Gotta Feeling (ca 128 BPM, fest, feel-good)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Feel-good inför helgen eller rundan – fest, uppladdning, 'good night'. Källa: Black Eyed Peas – I Gotta Feeling (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "black eyed peas",
+        "i gotta feeling",
+        "fest",
+        "helg",
+        "glad",
+        "feel-good",
+        "uppladdning",
+        "party",
+        "energi",
+        "128 bpm"
+      ],
+      "path": "library/sounds/files/Black Eyed Peas - I Gotta Feeling.mp3",
+      "use": "python library/sounds/sounds.py copy music.black-eyed-peas-i-gotta-feeling work/<film>/sfx/black-eyed-peas-i-gotta-feeling.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.black-eyed-peas-i-gotta-feeling.png"
+      },
+      "notes": "Hel låt 289,2 s, -9,8 LUFS integrerat: normalisera till -14 LUFS före mix (-4,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 128 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Feel-good inför helgen eller rundan – fest, uppladdning, 'good night'",
+        "source": "Black Eyed Peas – I Gotta Feeling (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 289,2 s, -9,8 LUFS integrerat: normalisera till -14 LUFS före mix (-4,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 128 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Black Eyed Peas - I Gotta Feeling.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.black-eyed-peas-pump-it",
+      "name": "Musik: Black Eyed Peas – Pump It (ca 154 BPM, hård energi)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Pumpa upp – träning, drive på rangen, snabba klipp, action. Källa: Black Eyed Peas – Pump It (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "black eyed peas",
+        "pump it",
+        "energi",
+        "träning",
+        "pumpa",
+        "hård",
+        "snabb",
+        "range",
+        "drive",
+        "action",
+        "154 bpm"
+      ],
+      "path": "library/sounds/files/Black Eyed Peas - Pump It.mp3",
+      "use": "python library/sounds/sounds.py copy music.black-eyed-peas-pump-it work/<film>/sfx/black-eyed-peas-pump-it.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.black-eyed-peas-pump-it.png"
+      },
+      "notes": "Hel låt 213,1 s, -7,3 LUFS integrerat: normalisera till -14 LUFS före mix (-6,7 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 154 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Pumpa upp – träning, drive på rangen, snabba klipp, action",
+        "source": "Black Eyed Peas – Pump It (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 213,1 s, -7,3 LUFS integrerat: normalisera till -14 LUFS före mix (-6,7 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 154 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Black Eyed Peas - Pump It.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.chappell-roan-hot-to-go",
+      "name": "Musik: Chappell Roan – HOT TO GO! (lekfull pop)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Lekfull pop med ramsa – trend, dans, TikTok-känsla. Källa: Chappell Roan – HOT TO GO! (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "chappell roan",
+        "hot to go!",
+        "pop",
+        "lekfull",
+        "dans",
+        "trend",
+        "tiktok",
+        "ramsa",
+        "glad"
+      ],
+      "path": "library/sounds/files/Chappell Roan - HOT TO GO!.mp3",
+      "use": "python library/sounds/sounds.py copy music.chappell-roan-hot-to-go work/<film>/sfx/chappell-roan-hot-to-go.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.chappell-roan-hot-to-go.png"
+      },
+      "notes": "Hel låt 184,9 s, -7,8 LUFS integrerat: normalisera till -14 LUFS före mix (-6,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Lekfull pop med ramsa – trend, dans, TikTok-känsla",
+        "source": "Chappell Roan – HOT TO GO! (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 184,9 s, -7,8 LUFS integrerat: normalisera till -14 LUFS före mix (-6,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Chappell Roan - HOT TO GO!.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.coldplay-viva-la-vida",
+      "name": "Musik: Coldplay – Viva La Vida (ca 138 BPM, episk, stråkar)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Episkt och storslaget – segrar, legender, stora ögonblick. Källa: Coldplay – Viva La Vida (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "coldplay",
+        "viva la vida",
+        "episk",
+        "storslaget",
+        "seger",
+        "stråkar",
+        "hymn",
+        "drama",
+        "138 bpm"
+      ],
+      "path": "library/sounds/files/Coldplay - Viva La Vida.mp3",
+      "use": "python library/sounds/sounds.py copy music.coldplay-viva-la-vida work/<film>/sfx/coldplay-viva-la-vida.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.coldplay-viva-la-vida.png"
+      },
+      "notes": "Hel låt 242,4 s, -9,2 LUFS integrerat: normalisera till -14 LUFS före mix (-4,8 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 138 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Episkt och storslaget – segrar, legender, stora ögonblick",
+        "source": "Coldplay – Viva La Vida (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 242,4 s, -9,2 LUFS integrerat: normalisera till -14 LUFS före mix (-4,8 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 138 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Coldplay - Viva La Vida.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.dr-dre-snoop-dogg-the-next-episode",
+      "name": "Musik: Dr. Dre, Snoop Dogg – The Next Episode (ca 96 BPM, cool hiphop)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Cool attityd – entré, 'nästa nivå', swing i slow motion. Källa: Dr. Dre, Snoop Dogg – The Next Episode (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "dr. dre, snoop dogg",
+        "the next episode",
+        "cool",
+        "hiphop",
+        "attityd",
+        "entré",
+        "slow motion",
+        "kaxig",
+        "west coast",
+        "96 bpm"
+      ],
+      "path": "library/sounds/files/Dr. Dre, Snoop Dogg - The Next Episode.mp3",
+      "use": "python library/sounds/sounds.py copy music.dr-dre-snoop-dogg-the-next-episode work/<film>/sfx/dr-dre-snoop-dogg-the-next-episode.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.dr-dre-snoop-dogg-the-next-episode.png"
+      },
+      "notes": "Hel låt 161,5 s, -7,8 LUFS integrerat: normalisera till -14 LUFS före mix (-6,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 96 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Cool attityd – entré, 'nästa nivå', swing i slow motion",
+        "source": "Dr. Dre, Snoop Dogg – The Next Episode (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 161,5 s, -7,8 LUFS integrerat: normalisera till -14 LUFS före mix (-6,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 96 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Dr. Dre, Snoop Dogg - The Next Episode.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.earth-wind-fire-september",
+      "name": "Musik: Earth, Wind & Fire – September (ca 124 BPM, glad funk)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Glad funk – säsongsstart, september, dansant feel-good. Källa: Earth, Wind & Fire – September (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "earth, wind & fire",
+        "september",
+        "funk",
+        "glad",
+        "september",
+        "höst",
+        "säsong",
+        "dans",
+        "feel-good",
+        "70-tal",
+        "124 bpm"
+      ],
+      "path": "library/sounds/files/Earth, Wind & Fire - September.mp3",
+      "use": "python library/sounds/sounds.py copy music.earth-wind-fire-september work/<film>/sfx/earth-wind-fire-september.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.earth-wind-fire-september.png"
+      },
+      "notes": "Hel låt 217,2 s, -9,8 LUFS integrerat: normalisera till -14 LUFS före mix (-4,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 124 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Glad funk – säsongsstart, september, dansant feel-good",
+        "source": "Earth, Wind & Fire – September (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 217,2 s, -9,8 LUFS integrerat: normalisera till -14 LUFS före mix (-4,2 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 124 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Earth, Wind & Fire - September.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.katy-perry-the-one-that-got-away",
+      "name": "Musik: Katy Perry – The One That Got Away (ca 134 BPM, pop, nostalgi)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Den som kom undan – missad putt, missad chans, nostalgi med glimt. Källa: Katy Perry – The One That Got Away (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "katy perry",
+        "the one that got away",
+        "nostalgi",
+        "missad chans",
+        "miss",
+        "putt",
+        "pop",
+        "längtan",
+        "humor",
+        "134 bpm"
+      ],
+      "path": "library/sounds/files/Katy Perry - The One That Got Away.mp3",
+      "use": "python library/sounds/sounds.py copy music.katy-perry-the-one-that-got-away work/<film>/sfx/katy-perry-the-one-that-got-away.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.katy-perry-the-one-that-got-away.png"
+      },
+      "notes": "Hel låt 227,4 s, -8,1 LUFS integrerat: normalisera till -14 LUFS före mix (-5,9 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 134 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Den som kom undan – missad putt, missad chans, nostalgi med glimt",
+        "source": "Katy Perry – The One That Got Away (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 227,4 s, -8,1 LUFS integrerat: normalisera till -14 LUFS före mix (-5,9 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 134 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Katy Perry - The One That Got Away.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.natasha-bedingfield-unwritten",
+      "name": "Musik: Natasha Bedingfield – Unwritten (ca 100 BPM, feel-good, ny start)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Ny start, oskriven säsong – nyår, första rundan, möjligheter. Källa: Natasha Bedingfield – Unwritten (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "natasha bedingfield",
+        "unwritten",
+        "ny start",
+        "nyår",
+        "möjligheter",
+        "feel-good",
+        "säsongsstart",
+        "inspiration",
+        "100 bpm"
+      ],
+      "path": "library/sounds/files/Natasha Bedingfield - Unwritten.mp3",
+      "use": "python library/sounds/sounds.py copy music.natasha-bedingfield-unwritten work/<film>/sfx/natasha-bedingfield-unwritten.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.natasha-bedingfield-unwritten.png"
+      },
+      "notes": "Hel låt 259,4 s, -9,6 LUFS integrerat: normalisera till -14 LUFS före mix (-4,4 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 100 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Ny start, oskriven säsong – nyår, första rundan, möjligheter",
+        "source": "Natasha Bedingfield – Unwritten (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 259,4 s, -9,6 LUFS integrerat: normalisera till -14 LUFS före mix (-4,4 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 100 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Natasha Bedingfield - Unwritten.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.rose-bruno-mars-apt",
+      "name": "Musik: ROSÉ, Bruno Mars – APT. (catchig k-pop)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Catchig trendpop – lekfullt, snabba klipp, TikTok-trend. Källa: ROSÉ, Bruno Mars – APT. (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "rosé, bruno mars",
+        "apt.",
+        "kpop",
+        "k-pop",
+        "trend",
+        "catchig",
+        "lekfull",
+        "tiktok",
+        "snabb",
+        "rose"
+      ],
+      "path": "library/sounds/files/ROSÉ, Bruno Mars - APT..mp3",
+      "use": "python library/sounds/sounds.py copy music.rose-bruno-mars-apt work/<film>/sfx/rose-bruno-mars-apt.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.rose-bruno-mars-apt.png"
+      },
+      "notes": "Hel låt 170,0 s, -7,4 LUFS integrerat: normalisera till -14 LUFS före mix (-6,6 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Catchig trendpop – lekfullt, snabba klipp, TikTok-trend",
+        "source": "ROSÉ, Bruno Mars – APT. (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 170,0 s, -7,4 LUFS integrerat: normalisera till -14 LUFS före mix (-6,6 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/ROSÉ, Bruno Mars - APT..mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.sabrina-carpenter-espresso",
+      "name": "Musik: Sabrina Carpenter – Espresso (ca 104 BPM, kaxig pop)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Kaxig, lättsam pop – självsäker stil, sommar, trend. Källa: Sabrina Carpenter – Espresso (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "sabrina carpenter",
+        "espresso",
+        "pop",
+        "kaxig",
+        "självsäker",
+        "trend",
+        "sommar",
+        "lättsam",
+        "kaffe",
+        "104 bpm"
+      ],
+      "path": "library/sounds/files/Sabrina Carpenter - Espresso.mp3",
+      "use": "python library/sounds/sounds.py copy music.sabrina-carpenter-espresso work/<film>/sfx/sabrina-carpenter-espresso.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.sabrina-carpenter-espresso.png"
+      },
+      "notes": "Hel låt 175,5 s, -7,3 LUFS integrerat: normalisera till -14 LUFS före mix (-6,7 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 104 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Kaxig, lättsam pop – självsäker stil, sommar, trend",
+        "source": "Sabrina Carpenter – Espresso (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 175,5 s, -7,3 LUFS integrerat: normalisera till -14 LUFS före mix (-6,7 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 104 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Sabrina Carpenter - Espresso.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.shaboozey-a-bar-song",
+      "name": "Musik: Shaboozey – A Bar Song (Tipsy) (country-fest)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Country-fest – 19:e hålet, afterwork i klubbhuset, skål. Källa: Shaboozey – A Bar Song (Tipsy) (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "shaboozey",
+        "a bar song (tipsy)",
+        "country",
+        "fest",
+        "19:e hålet",
+        "klubbhus",
+        "skål",
+        "afterwork",
+        "bar",
+        "tipsy"
+      ],
+      "path": "library/sounds/files/Shaboozey - A Bar Song (Tipsy).mp3",
+      "use": "python library/sounds/sounds.py copy music.shaboozey-a-bar-song work/<film>/sfx/shaboozey-a-bar-song.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.shaboozey-a-bar-song.png"
+      },
+      "notes": "Hel låt 171,3 s, -7,6 LUFS integrerat: normalisera till -14 LUFS före mix (-6,4 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Country-fest – 19:e hålet, afterwork i klubbhuset, skål",
+        "source": "Shaboozey – A Bar Song (Tipsy) (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 171,3 s, -7,6 LUFS integrerat: normalisera till -14 LUFS före mix (-6,4 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Shaboozey - A Bar Song (Tipsy).mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.slayyyter-dance",
+      "name": "Musik: Slayyyter – DANCE... (electropop, dans)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Dansgolvsenergi – snabba klipp, fest, glitter. Källa: Slayyyter – DANCE... (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "slayyyter",
+        "dance...",
+        "dans",
+        "electro",
+        "fest",
+        "energi",
+        "klubb",
+        "glitter",
+        "pop"
+      ],
+      "path": "library/sounds/files/Slayyyter - DANCE....mp3",
+      "use": "python library/sounds/sounds.py copy music.slayyyter-dance work/<film>/sfx/slayyyter-dance.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.slayyyter-dance.png"
+      },
+      "notes": "Hel låt 287,1 s, -8,0 LUFS integrerat: normalisera till -14 LUFS före mix (-6,0 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Dansgolvsenergi – snabba klipp, fest, glitter",
+        "source": "Slayyyter – DANCE... (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 287,1 s, -8,0 LUFS integrerat: normalisera till -14 LUFS före mix (-6,0 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM osäkert – räkna takten själv. Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Slayyyter - DANCE....mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.sophie-ellis-bextor-murder-on-the-dancefloor",
+      "name": "Musik: Sophie Ellis-Bextor – Murder On The Dancefloor (ca 118 BPM, retrodisco)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Retrodisco med glimten – tävlingsinstinkt, 'mord' på greenen, Saltburn-trend. Källa: Sophie Ellis-Bextor – Murder On The Dancefloor (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "sophie ellis-bextor",
+        "murder on the dancefloor",
+        "disco",
+        "retro",
+        "dans",
+        "humor",
+        "tävling",
+        "trend",
+        "2000-tal",
+        "118 bpm"
+      ],
+      "path": "library/sounds/files/Sophie Ellis-Bextor - Murder On The Dancefloor.mp3",
+      "use": "python library/sounds/sounds.py copy music.sophie-ellis-bextor-murder-on-the-dancefloor work/<film>/sfx/sophie-ellis-bextor-murder-on-the-dancefloor.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.sophie-ellis-bextor-murder-on-the-dancefloor.png"
+      },
+      "notes": "Hel låt 230,1 s, -9,0 LUFS integrerat: normalisera till -14 LUFS före mix (-5,0 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 118 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Retrodisco med glimten – tävlingsinstinkt, 'mord' på greenen, Saltburn-trend",
+        "source": "Sophie Ellis-Bextor – Murder On The Dancefloor (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 230,1 s, -9,0 LUFS integrerat: normalisera till -14 LUFS före mix (-5,0 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 118 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Sophie Ellis-Bextor - Murder On The Dancefloor.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.wham-last-christmas",
+      "name": "Musik: Wham! – Last Christmas (ca 108 BPM, jul)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Jul – julkampanj, presentkort som julklapp. Källa: Wham! – Last Christmas (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "wham!",
+        "last christmas",
+        "jul",
+        "julklapp",
+        "presentkort",
+        "vinter",
+        "december",
+        "80-tal",
+        "jullåt",
+        "108 bpm"
+      ],
+      "path": "library/sounds/files/Wham! - Last Christmas.mp3",
+      "use": "python library/sounds/sounds.py copy music.wham-last-christmas work/<film>/sfx/wham-last-christmas.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.wham-last-christmas.png"
+      },
+      "notes": "Hel låt 263,0 s, -15,5 LUFS integrerat: normalisera till -14 LUFS före mix (+1,5 dB) – tyst master, ~7 dB svagare än de andra topplåtarna. Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 108 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Jul – julkampanj, presentkort som julklapp",
+        "source": "Wham! – Last Christmas (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 263,0 s, -15,5 LUFS integrerat: normalisera till -14 LUFS före mix (+1,5 dB) – tyst master, ~7 dB svagare än de andra topplåtarna. Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 108 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Wham! - Last Christmas.mp3"
+      },
+      "local_only": true
+    },
+    {
+      "id": "music.zara-larsson-lush-life",
+      "name": "Musik: Zara Larsson – Lush Life (ca 98 BPM, sommarpop)",
+      "type": "sound",
+      "medium": "audio",
+      "formats": [
+        "any"
+      ],
+      "engine": "python",
+      "description": "Sommar och sol – svensk sommarpop, bästa livet på banan. Källa: Zara Larsson – Lush Life (fil från Jonas).",
+      "tags": [
+        "ljud",
+        "godkänt",
+        "ljudbank",
+        "musik",
+        "topplåt",
+        "låt",
+        "känd låt",
+        "zara larsson",
+        "lush life",
+        "sommar",
+        "sol",
+        "glad",
+        "svensk",
+        "lyx",
+        "pop",
+        "feel-good",
+        "98 bpm"
+      ],
+      "path": "library/sounds/files/Zara Larsson - Lush Life.mp3",
+      "use": "python library/sounds/sounds.py copy music.zara-larsson-lush-life work/<film>/sfx/zara-larsson-lush-life.wav",
+      "requires": [
+        "ffmpeg",
+        "python"
+      ],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-13",
+      "preview": {
+        "video": null,
+        "still": "library/previews/music.zara-larsson-lush-life.png"
+      },
+      "notes": "Hel låt 200,7 s, -8,0 LUFS integrerat: normalisera till -14 LUFS före mix (-6,0 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 98 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+      "bank": {
+        "role": "Sommar och sol – svensk sommarpop, bästa livet på banan",
+        "source": "Zara Larsson – Lush Life (fil från Jonas)",
+        "license": "Upphovsrättsskyddad topplåt (fil från Jonas) – godkänd av Jonas 2026-11-13 för våra videos. Ingen egen synk-licens: aldrig i annonser (Meta/Google/TikTok-ads); i organiska inlägg helst lägga på låten via TikTok/IG-appens musikbibliotek vid publicering. Filen checkas inte in i git",
+        "used_in": "Topplåt godkänd av Jonas 2026-11-13 för våra videos (ingen film än)",
+        "level": "Hel låt 200,7 s, -8,0 LUFS integrerat: normalisera till -14 LUFS före mix (-6,0 dB). Välj utdraget själv (refräng/drop) och tona in/ut. BPM ca 98 (uppskattat). Topplåt: bara organiska inlägg, aldrig annons; helst lägga på låten i appen vid publicering.",
+        "file": "library/sounds/files/Zara Larsson - Lush Life.mp3"
+      },
+      "local_only": true
     }
   ]
 }

@@ -1,0 +1,70 @@
+{
+  "kit": "golfkuponger",
+  "title": "iMessage-samtal i iPhone (9:16, ljust tema)",
+  "source": {
+    "name": "Content Engine (egen produktion) på HyperFrames-registrets chat-thread",
+    "url": "https://github.com/heygen-com/hyperframes",
+    "license": "Komponenten Apache-2.0 (HyperFrames), omskriven. Apples SF Pro, Apple Color Emoji och iOS-meddelandeljud används på Jonas beslut 2026-11-12 – hämtas lokalt, committas aldrig (publikt repo). Telefonram: Jonas iPhone 17-fil."
+  },
+  "items": [
+    {
+      "id": "golfkuponger.template.imessage-samtal",
+      "name": "iMessage-samtal i inzoomad iPhone – redigerbart samtal (9:16)",
+      "type": "template",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "hyperframes",
+      "description": "En inzoomad iPhone 17 (ingen hållare) med ett iMessage-samtal i ljust tema. Hela samtalet styrs från conversation.json: avsändare, text, bilder (bild + text), stora emoji, reaktioner (tapback som egen händelse), profilbild, klocka, SMS-läge, bakgrund och ljud. Tiderna räknas automatiskt från läsregeln. Skriver-prickar för den andra, text som skrivs i fältet med skicka-knapp för dig. Levererat under senaste meddelandet. Tråden börjar uppifrån och scrollar när den är full. Bygget stoppar om en manuell tid bryter läsregeln. Apples SF Pro, Apple-emoji och iPhones egna sänt/mottaget-ljud (hämtas lokalt av build.mjs). Valbart iPhone-tangentbord (svensk layout) med tangentballonger och iPhones tangentklick: \"keyboard\": true. Overlay på bildmeddelanden, t.ex. pixelglasögon som glider ner på ett ansikte (\"overlay\" i meddelandet). Valbart intro: låsskärm med notis (Tri-tone) som öppnas till chatten. Valbar avslutning: Spotlight-slutbilden.",
+      "tags": [
+        "imessage",
+        "iphone",
+        "chatt",
+        "sms",
+        "meddelanden",
+        "konversation",
+        "mockup",
+        "telefon",
+        "mobil",
+        "skriver",
+        "typing",
+        "reaktion",
+        "tapback",
+        "ljust tema",
+        "ugc",
+        "story",
+        "dialog",
+        "tangentbord",
+        "keyboard",
+        "deal with it",
+        "thug life",
+        "glasögon",
+        "overlay",
+        "meme",
+        "låsskärm",
+        "notis",
+        "intro",
+        "spotlight",
+        "slutbild"
+      ],
+      "path": "library/templates/imessage-samtal/README.md",
+      "use": "cp -r library/templates/imessage-samtal work/<film> && cd work/<film> && (redigera conversation.json) && node build.mjs && npm run render",
+      "requires": [
+        "node",
+        "hyperframes",
+        "ffmpeg",
+        "7-zip",
+        "uv"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "verified_at": "2026-11-12",
+      "preview": {
+        "video": "library/previews/golfkuponger.template.imessage-samtal.mp4",
+        "still": "library/previews/golfkuponger.template.imessage-samtal.jpg"
+      },
+      "notes": "Jonas 2026-11-12: ingen hållare, bara iPhone-mockup inzoomad; ljust tema; Apples typsnitt, emoji och ljud exakt; ny ram iphone17-3d-flat.png. Apple-filerna ligger i ~/.cache/imessage-mall och är gitignorerade (publikt repo). Ej jämförd mot riktig skärminspelning."
+    }
+  ]
+}

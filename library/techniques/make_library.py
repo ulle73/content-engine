@@ -26,6 +26,11 @@ YST = {"källa": "https://www.instagram.com/p/Dd6b1iSEWbC/", "kreatör": "Your S
        "likes": 2020, "kommentarer": 1405, "datum": "2026-09-30", "lokal_kopia": "work/references/instagram-Dd6b1iSEWbC/",
        "notering": "Karusell (8 slides, 2 med video) om visuella karusell-trender oktober 2026. Kommentarerna (1405 på 2020 "
                    "likes) kommer från 'kommentera DROPS'. Vi lånar greppen, aldrig bilder/formuleringar."}
+SPOTIFY = {"källa": "Lokal fil: Downloads/spotify-new-app-reveal.mp4 (nedladdad av Jonas 2026-11-11)",
+           "kreatör": "Spotify (officiell app-reveal/lanseringstrailer)", "likes": None, "kommentarer": None, "datum": None,
+           "lokal_kopia": "work/references/spotify-new-app-reveal/",
+           "notering": "55 s, 16:9, inga hårda klipp – bara mjuka övergångar. Länk, siffror och datum saknas (lokal fil). "
+                       "Inspo för app-lanseringar. Vi lånar greppen, aldrig Spotifys färger, bilder, formuleringar, ljud eller logga."}
 EGEN = lambda film, datum="2026-10-14": {"källa": film, "kreatör": "Golfkuponger (egen film)", "godkänd": f"Jonas {datum}"}
 TILLAGD = "2026-10-14"
 
@@ -236,6 +241,76 @@ TEKNIKER = [
          filmat="–", golfkuponger="Skriet den 31 december (godkänd). Bara verk där konstnären dog för >70 år sedan.",
          taggar=["krok", "konst", "parodi", "igenkänning", "delbart", "public domain"], bevis=EGEN("work/gk-konstverk"),
          preview="library/previews/teknik.konstverk-hyllning.jpg"),
+    # ---------- Spotify app-reveal (lokal fil, 2026-11-11) ----------
+    dict(id="teknik.app-reveal-trailer", namn="App-reveal: en funktion per takt med mobilen i bild", roll="struktur", medium=["video"],
+         kort="Lanseringstrailer: 'Möt nya …' → 'Introducerar …' → en funktion per 2–4 s (rubrik + mobilskärm) → 'Snart i din app' → logga.",
+         hur="1) Varumärkesrad på svart. 2) Kort energistöt (bildvägg). 3) 'Möt nya …' i en glödande ring. 4) 'Introducerar…' ensamt. "
+             "5) Kapitel: vänsterställd rubrik på 2–3 rader med nyckelordet i accentfärg, mobilen glider upp bredvid/under; "
+             "mobilskärmen byts medan rubriken står. Meningen fortsätter över korten ('En ny start' → 'där du kan …'). "
+             "Bakgrundens färgton skiftar per kapitel. 6) Avrundning ('Allt kommer snart till din app') → logga som krymper till en prick.",
+         varför="Förväntan byggs som en filmtrailer; en funktion i taget går att läsa och komma ihåg; mobilen visar att det är på riktigt; "
+                "den fortsatta meningen drar tittaren vidare till nästa kort; färgskiftet markerar nytt kapitel utan hårda klipp.",
+         tajming="Referensen: 55 s – krok 4 s, 'Möt nya' 2,5 s, 'Introducerar' 2 s, funktionskort 3–6 s vardera (läsregeln), "
+                 "slutrad 3,5 s, logga 5 s. I 9:16 för sociala medier: korta till 20–30 s, 4–5 funktioner.",
+         tecknat="Riktiga skärmdumpar från appen i en mobilram (som golfkuponger.scene.mobilflode-riktig-sajt). 9:16: rubriken "
+                 "överst i safe zone, mobilen under, centrerad. Bakgrunder = mjuka gradienter i våra färger. Kapitelbyte med "
+                 "teknik.ringportal-kapitelbyte.",
+         filmat="Skärminspelningar av appen (stående) i en mobilram; resten grafik.",
+         golfkuponger="Lansering/uppdatering av Golfkuponger-appen: 'Möt nya Golfkuponger-appen' → 'Aktivera kupongen' → 'Se ditt saldo' "
+                      "→ 'Greenfee. Range. Lektioner. Simulator.' → 'Ladda ner appen'. Påståenden enligt faktabanken (skills/golfkuponger-friskvard).",
+         taggar=["struktur", "app", "lansering", "launch", "reveal", "trailer", "mobil", "mockup", "funktioner", "features",
+                 "produktvideo", "uppdatering", "nyhet"],
+         bevis=SPOTIFY, tillagd="2026-11-11"),
+    dict(id="teknik.ringportal-kapitelbyte", namn="Ringportal – kameran dyker genom en glödande cirkel", roll="övergång", medium=["video"],
+         kort="Glödande ringbågar snurrar in runt mitten, sluts till en cirkel och kameran dyker genom den – på andra sidan väntar nästa kapitel.",
+         hur="1) Tunna, glödande ringbågar (olika radier, olika hastighet) roterar in. 2) De sluts till en ring som ramar in texten eller tomrummet. "
+             "3) Ringen skalar upp förbi kameran (eller en liten cirkel i mitten växer) och avslöjar nästa scen/bakgrund. "
+             "Variant: ringen krymper till en punkt → loggan.",
+         varför="Samma övergång varje gång blir filmens 'leitmotiv' – tittaren lär sig att ett nytt kapitel börjar. "
+                "Rörelse mot mitten drar blicken dit nästa text kommer. Känns premium utan bilder.",
+         tajming="Bågarna in 0,8–1,2 s, genomdyket 0,4–0,6 s med ease-in. Referensen använder den 5 gånger på 55 s (var ~10:e s).",
+         tecknat="HyperFrames/GSAP: SVG-cirklar med stroke-dasharray + rotation + glow (filter drop-shadow); scale 1→8 med clip-path "
+                 "circle() för nästa scen. Färdig nära släkting: hf-skeletons.shader.sdf-iris (cirkulär iris-wipe med glödande ring).",
+         filmat="Fungerar inte filmat – läggs som grafik över/mellan klipp.",
+         golfkuponger="Ringen = golfhålet: bågarna sluts till koppen, kameran dyker ner i hålet → nästa kapitel. Eller golfbollen sedd uppifrån.",
+         taggar=["övergång", "transition", "ring", "cirkel", "portal", "iris", "glöd", "glow", "kapitel", "premium", "loop"],
+         bevis=SPOTIFY, tillagd="2026-11-11"),
+    dict(id="teknik.ljudvag-runt-mobilen", namn="Ljudvågen pulsar runt mobilen medan ordet byts", roll="retention", medium=["video"],
+         kort="Mobilen står still i mitten, ljudvågsstaplar på båda sidor pulsar i takt med musiken – ett ord ovanför byts per takt ('Musik' → 'Poddar' → 'Ljudböcker').",
+         hur="1) Mobilen i mitten, stora staplar på båda sidor som speglar musikens nivå. 2) Ett kort ord ovanför byts på taktslag; "
+             "mobilskärmen byts samtidigt. 3) Bakgrundens färg glider mot nästa ton för varje ord.",
+         varför="Bilden rör sig hela tiden (staplarna) fast innehållet är stilla – ögat har något att följa; byten på taktslag "
+                "ger rytm och känsla av 'mycket på kort tid'. Uppräkning av bredd i 3 ord.",
+         tajming="Ett ord per 2,5–3 s (läsregeln för korta ord), byte exakt på taktslag; staplarna följer ljudet bildruta för bildruta.",
+         tecknat="Staplarna från ljudfilens amplitud (ffmpeg/numpy → JSON per bildruta) eller audio-reactive i HyperFrames "
+                 "(hyperframes-creative: audio-reactive visuals). Ordbyte med blur swap (nextphase.motiongraphics.device-blur-swap).",
+         filmat="Mobilen filmad på stativ mot ren bakgrund; staplar och ord läggs på efteråt.",
+         golfkuponger="'Greenfee' → 'Range' → 'Lektioner' → 'Simulator' ovanför mobilen med kupongen i appen; staplarna kan vara golfsvingens rytm.",
+         taggar=["retention", "ljudvåg", "waveform", "audio-reactive", "takt", "beat", "uppräkning", "mobil", "app", "ordbyte"],
+         bevis=SPOTIFY, tillagd="2026-11-11"),
+    dict(id="teknik.bildvagg-energistot", namn="Bildvägg som energistöt", roll="retention", medium=["video"],
+         kort="1–1,5 s där en vägg av stående bilder/klipp glider förbi i parallax – en kort energistöt i början och mitt i filmen.",
+         hur="Ett rutnät av stående rutor (olika storlek, lite isär) rör sig snabbt diagonalt/uppåt i olika hastighet (parallax); "
+             "rutorna bläddrar bild var 0,2 s. Sedan klipps det tillbaka till lugn grafik.",
+         varför="Kontrasten mellan lugna grafikkort och en plötslig mängd människor/miljöer återställer uppmärksamheten och visar "
+                "bredd ('för alla') utan att säga det.",
+         tajming="1–1,5 s per gång, 2 gånger per film (efter kroken och mitt i). Skiljer sig från teknik.vagg-av-allt som bygger mot loggan som bevis.",
+         tecknat="Parallaxrutnät i HyperFrames (släkt: nextphase.short.parallax-zoom / hyperframes.registry.parallax-unzoom) med våra bilder.",
+         filmat="Korta stående klipp från bildarkivet (golfare, banor, range, simulator).",
+         golfkuponger="Banor, golfare i olika åldrar, range och simulator från bildarkivet glider förbi i 1,2 s → 'Golf för alla. Via friskvården.'",
+         taggar=["retention", "mosaik", "bildvägg", "parallax", "energi", "montage", "bredd", "människor"],
+         bevis=SPOTIFY, tillagd="2026-11-11"),
+    dict(id="teknik.text-oskarpa-och-sparring", namn="Text tonar med oskärpa och glesare bokstäver", roll="text", medium=["video"],
+         kort="Rubriker kommer in med rörelseoskärpa i läsriktningen och går ut genom att bokstäverna glider isär och tonar bort.",
+         hur="In: texten glider in 40–80 px från vänster med horisontell oskärpa som skärps, ord för ord. Ut: bokstavsavståndet ökar "
+             "(letter-spacing +0,3 em) medan texten tonar till 0 – eller svischar ut åt sidan med oskärpa. Nyckelordet i accentfärg.",
+         varför="Mjuka, filmiska textbyten utan hårda klipp; glesnandet signalerar 'nu tar det slut' och ger plats åt nästa rad.",
+         tajming="In 0,4–0,5 s, ut 0,4–0,6 s; stå minst läsregeln (max(5/6, tecken/12) + 0,9 s).",
+         tecknat="GSAP: filter blur + x in; letterSpacing + opacity ut. Nära släkting: nextphase.motiongraphics.device-blur-swap.",
+         filmat="Läggs på i redigeringen.",
+         golfkuponger="'Introducerar…' → glesnar bort → 'Nya Golfkuponger-appen'. Fungerar i alla lugna, premiumkänsliga filmer.",
+         taggar=["text", "typografi", "oskärpa", "blur", "letter-spacing", "tracking", "premium", "kinetisk typografi"],
+         bevis=SPOTIFY, tillagd="2026-11-11"),
 ]
 
 

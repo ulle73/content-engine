@@ -1,0 +1,8 @@
+# Apples typsnitt, emoji och iOS-ljud får inte spridas (repot är publikt).
+# De hämtas till ~/.cache/imessage-mall av `node apple-resurser.mjs` och kopieras hit av build.mjs.
+assets/fonts/
+assets/ljud/
+assets/iphone-17.png
+.hyperframes/
+preview.mp4
+assets/outro/

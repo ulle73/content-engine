@@ -10,6 +10,7 @@ from .motion import views as motion_views
 from .onboarding import SignInView, setup
 from .performance_views import performance
 from .review import views as review_views
+from . import version_views
 
 engine_urls = [
     path("annonser/", ad_views.ad_list, name="ad_list"),
@@ -117,5 +118,13 @@ urlpatterns = [
     path("webhooks/higgsfield/", media_views.higgsfield_webhook, name="higgsfield_webhook"),
     path("webhooks/discord/", review_views.discord_interaction, name="engine_review_discord"),
     path("review/v/<str:token>/", review_views.video, name="engine_review_video"),
+    path("versioner/", version_views.lista, name="versioner"),
+    path("versioner/samla/", version_views.samla, name="versioner_samla"),
+    path("versioner/<slug:film>/", version_views.film, name="versioner_film"),
+    path("versioner/<slug:film>/jamfor/", version_views.jamfor, name="versioner_jamfor"),
+    path("versioner/<slug:film>/<slug:nr>/fil/<str:namn>", version_views.fil, name="versioner_fil"),
+    path("versioner/<slug:film>/<slug:nr>/kommentar/", version_views.kommentar, name="versioner_kommentar"),
+    path("versioner/<slug:film>/<slug:nr>/status/", version_views.status, name="versioner_status"),
+    path("versioner/<slug:film>/<slug:nr>/uppdrag/", version_views.uppdrag, name="versioner_uppdrag"),
     path("company/<uuid:workspace_id>/", include((engine_urls, "engine"))),
 ]

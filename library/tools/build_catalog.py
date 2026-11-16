@@ -81,7 +81,8 @@ def load_manifests() -> tuple[list[dict], list[str]]:
             if bad_formats:
                 problems.append(f"{where} ({item_id}): okända format {bad_formats}")
             path = item["path"]
-            if not path.startswith(("http://", "https://")) and not (ROOT / path).exists():
+            # local_only: filen är gitignorerad (t.ex. topplåtar) och finns bara på en dator, inte i CI
+            if not item.get("local_only") and not path.startswith(("http://", "https://")) and not (ROOT / path).exists():
                 problems.append(f"{where} ({item_id}): path finns inte: {path}")
             preview = item.get("preview") or {}
             for kind in ("video", "still"):

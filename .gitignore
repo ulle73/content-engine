@@ -25,3 +25,6 @@ library/.venv/
 
 # Ljudbanken: Mixkit-ljud hämtas hit (får inte ligga i mallar/verktyg)
 library/sounds/.cache/
+
+# Topplåtar från Jonas (upphovsrättsskyddade, stora) – registreras i make_library.py men checkas inte in
+library/sounds/files/* - *

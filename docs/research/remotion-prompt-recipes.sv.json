@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "researched_at": "2026-10-03",
+  "status": "candidate_not_installed",
+  "notice": "template_request följer dagens promptmallskontrakt. proposed_renderer_profile är ett förslag och styr inte dagens renderer. Recepten är egna svenska texter; externa komponenter har inte importerats eller visuellt testats.",
+  "recipes": [
+    {
+      "template_request": {
+        "key": "motion-image-carousel",
+        "title": "Bildkarusell – bevara originalbilder",
+        "kind": "motion",
+        "instructions": "Planera {{brief}} som en tydlig Remotion-karusell för {{company_name}}. Följ tonaliteten {{voice}} och verifierade uppgifter i {{profile}}. Använd bifogade originalbilder i användarens ordning; skapa inte nya AI-bilder eller AI-video. Varje bild får ett eget kort budskap, normalt högst sju ord, och ett lugnt läsbart håll. Avsluta med en enda uppmaning och originalloggan om den finns. Bevara proportioner och produktidentitet. Föreslå contain när beskärning skulle ta bort motiv eller text. Fråga om bildordning eller viktig CTA är oklar. Beskriv scenordning och bildpassning i planen; varna om låg upplösning. Behåll längre förklaringar i inläggstexten. Hitta inte på fakta. Bekräfta upplägg och kostnadsdelar före körning. Receptet kräver karusellstöd; lova inte att renderaren redan kan använda alla bilder."
+      },
+      "proposed_renderer_profile": {
+        "template_id": "image-carousel",
+        "availability": "requires_new_component_and_ordered_assets",
+        "duration_seconds_range": [12, 24],
+        "image_count_range": [2, 8],
+        "beats": ["hook", "one_message_per_image", "cta"],
+        "quality_checks": ["ordered_original_assets", "crop_preview", "effective_resolution", "readable_hold", "social_safe_zone"]
+      },
+      "source_urls": ["https://www.remotion.dev/elements/commerce/product-collection/"]
+    },
+    {
+      "template_request": {
+        "key": "motion-gift-card",
+        "title": "Presentkort – en enkel gåva",
+        "kind": "motion",
+        "instructions": "Planera {{brief}} som en kort presentkortsfilm för {{company_name}} med tonaliteten {{voice}}. Utgå från verifierade uppgifter i {{profile}}. Strukturera filmen i tre olika budskap: presentidén, en konkret nytta och en uppmaning. Visa bifogat presentkort eller produktmaterial med bibehållna proportioner och exakt originallogga. Håll rubriker till omkring sju ord och visa en huvudpoäng åt gången. Ange inte pris, rabatt, giltighetstid eller användningsvillkor om de saknas i underlaget. Fråga bara om en uppgift som behövs för att budskapet ska bli korrekt. Använd återhållsamma rörelser och ge avslutningen lästid. Bekräfta innehåll, material, upplägg och kostnadsdelar innan rendering. Återanvänd inte samma rubrik i alla scener."
+      },
+      "proposed_renderer_profile": {
+        "template_id": "gift-card-promo",
+        "availability": "existing_catalog_requires_chat_routing_and_scene_copy",
+        "duration_seconds_range": [12, 18],
+        "beats": ["gift_idea", "verified_benefit", "cta"],
+        "quality_checks": ["no_invented_terms", "original_logo", "distinct_scene_copy", "readable_cta"]
+      },
+      "source_urls": ["https://www.remotion.dev/prompts"]
+    },
+    {
+      "template_request": {
+        "key": "motion-facility-spotlight",
+        "title": "Banpresentation – upptäck nästa runda",
+        "kind": "motion",
+        "instructions": "Planera {{brief}} som en banpresentation för {{company_name}}. Följ {{voice}} och verifierade uppgifter i {{profile}}. Använd tre delar med olika innehåll: visa platsen och dess namn, lyft en konkret verifierad anledning att besöka den, avsluta med nästa steg. Bifogade banbilder ska förbli originalbilder; använd lugn inzoomning eller bildväxling som inte döljer motivet. Hitta inte på betyg, avstånd, bokningsläge eller kupongvillkor. Fråga om banans identitet eller det avsedda erbjudandet är oklart. Använd kort text, hög kontrast och exakt logga. Föreslå bildpassning och varna om beskärning skulle ta bort det viktiga motivet. Bekräfta scenplan och kostnadsdelar före körning."
+      },
+      "proposed_renderer_profile": {
+        "template_id": "facility-spotlight",
+        "availability": "existing_catalog_requires_chat_routing_and_scene_copy",
+        "duration_seconds_range": [12, 20],
+        "beats": ["place", "verified_reason_to_visit", "cta"],
+        "quality_checks": ["verified_facility_identity", "image_focal_point", "distinct_scene_copy", "text_contrast"]
+      },
+      "source_urls": ["https://www.remotion.dev/elements", "https://github.com/heygen-com/hyperframes"]
+    },
+    {
+      "template_request": {
+        "key": "motion-three-steps",
+        "title": "Så fungerar det – tre tydliga steg",
+        "kind": "motion",
+        "instructions": "Planera {{brief}} som en stegförklaring för {{company_name}} enligt {{voice}} och verifierade uppgifter i {{profile}}. Öppna med vad personen kan uppnå. Följ med högst tre steg i faktisk ordning och avsluta med nästa steg för tittaren. Skriv en kort rubrik per steg och högst en stödmening där den behövs. Visa varje instruktion tillräckligt länge för att kunna läsas. Fråga om avgörande steg eller villkor saknas. För friskvård: lova inte avdragsrätt, ersättning eller godkännande utan verifierat underlag. Använd befintliga skärmbilder eller bilder om de förklarar processen och originalloggan i slutet. Ingen scen ska upprepa hela beskrivningen. Bekräfta fakta, scenplan och kostnadsdelar före körning."
+      },
+      "proposed_renderer_profile": {
+        "template_id": "friskvard-explainer",
+        "availability": "existing_catalog_requires_chat_routing_and_scene_copy",
+        "duration_seconds_range": [18, 28],
+        "beats": ["goal", "ordered_steps", "cta"],
+        "quality_checks": ["verified_steps", "verified_conditions", "readable_step_timing", "one_instruction_at_a_time"]
+      },
+      "source_urls": ["https://github.com/xsourabhsharma/remotion-marketing-video-skill"]
+    },
+    {
+      "template_request": {
+        "key": "motion-verified-testimonial",
+        "title": "Kundcitat – ett trovärdigt budskap",
+        "kind": "motion",
+        "instructions": "Planera {{brief}} som ett kundcitat för {{company_name}} med tonaliteten {{voice}}. Använd endast ett autentiskt citat och en avsändare som användaren eller verifierat underlag i {{profile}} faktiskt anger. Fråga efter citatet om det saknas. Förkorta inte så att innebörden ändras; föreslå ett tydligt utdrag för godkännande om citatet är för långt. Strukturera i citat, källangivelse och en diskret uppmaning. Hitta inte på namn, stjärnbetyg, resultat eller kundporträtt. Använd egna originalbilder bara om deras roll är tydlig. Ge citatet lugn lästid och hög kontrast. Använd exakt originallogga i avslutningen. Bekräfta utdrag, källa, scenplan och kostnadsdelar före körning."
+      },
+      "proposed_renderer_profile": {
+        "template_id": "quote-testimonial",
+        "availability": "existing_catalog_requires_chat_routing_and_scene_copy",
+        "duration_seconds_range": [12, 24],
+        "beats": ["verified_quote", "attribution", "cta"],
+        "quality_checks": ["source_backed_quote", "approved_excerpt", "quote_reading_time", "no_invented_rating"]
+      },
+      "source_urls": ["https://www.remotion.dev/prompts", "https://www.remotion.dev/elements/guidelines"]
+    },
+    {
+      "template_request": {
+        "key": "motion-monthly-recap",
+        "title": "Månadssammanfattning – tydliga resultat",
+        "kind": "motion",
+        "instructions": "Planera {{brief}} som en månadssammanfattning för {{company_name}} enligt {{voice}}. Använd bara verifierade siffror och perioder från användaren eller {{profile}}. Be om period, enhet och värde när de saknas; uppskatta inte siffror för att fylla en scen. Börja med perioden, presentera två eller tre olika mätvärden med tydliga etiketter och avsluta med vad tittaren kan göra härnäst. En siffra ska aldrig visas utan begriplig enhet och sammanhang. Räkna upp värdet lugnt och låt slutvärdet stå kvar. Använd svensk sifferformatering och exakt originallogga. Visa inte en tillväxtjämförelse om referensperioden saknas. Bekräfta datakällor, scenplan och kostnadsdelar innan rendering."
+      },
+      "proposed_renderer_profile": {
+        "template_id": "monthly-wrapped",
+        "availability": "existing_catalog_requires_chat_routing_and_verified_data_binding",
+        "duration_seconds_range": [18, 30],
+        "beats": ["period", "verified_metrics", "next_step"],
+        "quality_checks": ["source_backed_metrics", "units_and_period", "swedish_number_format", "final_value_hold"]
+      },
+      "source_urls": ["https://www.remotion.dev/elements/data/number-counter/"]
+    },
+    {
+      "template_request": {
+        "key": "motion-app-feature-demo",
+        "title": "Appdemo – visa en funktion",
+        "kind": "motion",
+        "instructions": "Planera {{brief}} som en kort appdemo för {{company_name}} enligt {{voice}} och verifierade uppgifter i {{profile}}. Visa en funktion: ett konkret behov, funktionen i befintlig skärmbild eller inspelning, nyttan och en enda uppmaning. Be om en relevant skärmbild eller inspelning om den saknas. Skapa inte påhittade skärmar, knappar eller användarresultat. Använd inzoomning och enkla markeringar för att rikta blicken utan att dölja viktig UI-text. Beskriv bildordning och vad som ska framhävas. Använd olika korta budskap i scenerna och tillräcklig tid för att förstå handlingen. Originalloggan får visas i slutet. Bekräfta material, funktion, scenplan och kostnadsdelar före körning."
+      },
+      "proposed_renderer_profile": {
+        "template_id": "feature-announcement",
+        "availability": "existing_catalog_requires_chat_routing_and_scene_copy",
+        "duration_seconds_range": [15, 24],
+        "beats": ["need", "real_feature_demo", "benefit", "cta"],
+        "quality_checks": ["authentic_ui_assets", "ui_readability", "focal_point", "distinct_scene_copy"]
+      },
+      "source_urls": ["https://github.com/xsourabhsharma/remotion-marketing-video-skill", "https://www.remotion.dev/elements"]
+    },
+    {
+      "template_request": {
+        "key": "motion-logo-outro",
+        "title": "Logga och avslutning – ett tydligt nästa steg",
+        "kind": "motion",
+        "instructions": "Planera {{brief}} som en kort avslutning för {{company_name}} enligt {{voice}}. Använd bifogad originallogga med bibehållna proportioner, god luft runt märket och en diskret entré. Visa en enda kort uppmaning samt adress eller nästa steg endast om det finns verifierat i {{profile}} eller användarens underlag. Om loggan saknas, fråga efter filen eller föreslå en tydlig textavslutning. Förvräng inte loggan och skapa inte en ny variant. Ge uppmaningen tillräcklig lästid. Använd varumärkets verifierade färger och hög kontrast. Behåll en ren bild utan konkurrerande effekter. Bekräfta logga, uppmaning, format och kostnadsdelar före rendering."
+      },
+      "proposed_renderer_profile": {
+        "template_id": "logo-end-card",
+        "availability": "existing_catalog_requires_chat_routing_and_scene_copy",
+        "duration_seconds_range": [5, 8],
+        "beats": ["logo_entrance", "readable_cta"],
+        "quality_checks": ["original_logo_proportions", "brand_colors", "cta_reading_time", "social_safe_zone"]
+      },
+      "source_urls": ["https://www.remotion.dev/prompts/transparent-call-to-action-overlay", "https://github.com/heygen-com/hyperframes"]
+    }
+  ]
+}

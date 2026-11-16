@@ -26,6 +26,7 @@ För bilder där golfare, utrustning eller banmiljö ska se ut som verkliga foto
 - Lugnt och luftigt: gott om andrum runt motivet så text får plats.
 - Riktiga skärminspelningar för portal, webb, app och kvitto. Återskapa aldrig UI med AI.
 - **Eget bildarkiv:** allt i `Downloads\golfkuponger\` är godkänt för reklam (Jonas 2026-11-07): banfoton i `KLUBBAR/` (utom `raderade/`), `golfbanor/`, `cards/` och klippen i `VIDEOS/`. Använd riktiga banor därifrån före AI-bilder; varje klubb en gång när en film visar många banor.
+- **Banbild = banans namn i bild** (Jonas 2026-10-28): varje bild eller film som visar en riktig bana har en plats-ikon och banans namn i litet format nere till vänster (9:16: vänster 65 px, ca y 1500 – Jonas valde under säkra ytan 2026-10-28), så att folk ser vilken bana det är. Mall: `golfkuponger.template.golfare-i-stad` (`#plats`).
 
 **Brukar se billigt ut (undvik om det inte är poängen)**
 - Amerikansk country club-glans, palmer, öken, överdriven lyx.

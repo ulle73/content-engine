@@ -1184,6 +1184,271 @@
         "eget_exempel": "godkänt – work/gk-konstverk (Jonas 2026-10-14)",
         "exempel": []
       }
+    },
+    {
+      "id": "teknik.app-reveal-trailer",
+      "name": "App-reveal: en funktion per takt med mobilen i bild",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[struktur] Lanseringstrailer: 'Möt nya …' → 'Introducerar …' → en funktion per 2–4 s (rubrik + mobilskärm) → 'Snart i din app' → logga. Varför: Förväntan byggs som en filmtrailer; en funktion i taget går att läsa och komma ihåg; mobilen visar att det är på riktigt; den fortsatta meningen drar tittaren vidare till nästa kort; färgskiftet markerar nytt kapitel utan hårda klipp.",
+      "tags": [
+        "teknik",
+        "struktur",
+        "video",
+        "struktur",
+        "app",
+        "lansering",
+        "launch",
+        "reveal",
+        "trailer",
+        "mobil",
+        "mockup",
+        "funktioner",
+        "features",
+        "produktvideo",
+        "uppdatering",
+        "nyhet"
+      ],
+      "path": "library/techniques/app-reveal-trailer.md",
+      "use": "Läs library/techniques/app-reveal-trailer.md. Golfkuponger: Lansering/uppdatering av Golfkuponger-appen: 'Möt nya Golfkuponger-appen' → 'Aktivera kupongen' → 'Se ditt saldo' → 'Greenfee. Range. Lektioner. Simulator.' → 'Ladda ner appen'. Påståenden enligt faktabanken (skills/golfkuponger-friskvard).",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-11",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "struktur",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Referensen: 55 s – krok 4 s, 'Möt nya' 2,5 s, 'Introducerar' 2 s, funktionskort 3–6 s vardera (läsregeln), slutrad 3,5 s, logga 5 s. I 9:16 för sociala medier: korta till 20–30 s, 4–5 funktioner.",
+        "bevis": {
+          "källa": "Lokal fil: Downloads/spotify-new-app-reveal.mp4 (nedladdad av Jonas 2026-11-11)",
+          "kreatör": "Spotify (officiell app-reveal/lanseringstrailer)",
+          "likes": null,
+          "kommentarer": null,
+          "datum": null,
+          "lokal_kopia": "work/references/spotify-new-app-reveal/",
+          "notering": "55 s, 16:9, inga hårda klipp – bara mjuka övergångar. Länk, siffror och datum saknas (lokal fil). Inspo för app-lanseringar. Vi lånar greppen, aldrig Spotifys färger, bilder, formuleringar, ljud eller logga."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.ringportal-kapitelbyte",
+      "name": "Ringportal – kameran dyker genom en glödande cirkel",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[övergång] Glödande ringbågar snurrar in runt mitten, sluts till en cirkel och kameran dyker genom den – på andra sidan väntar nästa kapitel. Varför: Samma övergång varje gång blir filmens 'leitmotiv' – tittaren lär sig att ett nytt kapitel börjar. Rörelse mot mitten drar blicken dit nästa text kommer. Känns premium utan bilder.",
+      "tags": [
+        "teknik",
+        "övergång",
+        "video",
+        "övergång",
+        "transition",
+        "ring",
+        "cirkel",
+        "portal",
+        "iris",
+        "glöd",
+        "glow",
+        "kapitel",
+        "premium",
+        "loop"
+      ],
+      "path": "library/techniques/ringportal-kapitelbyte.md",
+      "use": "Läs library/techniques/ringportal-kapitelbyte.md. Golfkuponger: Ringen = golfhålet: bågarna sluts till koppen, kameran dyker ner i hålet → nästa kapitel. Eller golfbollen sedd uppifrån.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-11",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "övergång",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Bågarna in 0,8–1,2 s, genomdyket 0,4–0,6 s med ease-in. Referensen använder den 5 gånger på 55 s (var ~10:e s).",
+        "bevis": {
+          "källa": "Lokal fil: Downloads/spotify-new-app-reveal.mp4 (nedladdad av Jonas 2026-11-11)",
+          "kreatör": "Spotify (officiell app-reveal/lanseringstrailer)",
+          "likes": null,
+          "kommentarer": null,
+          "datum": null,
+          "lokal_kopia": "work/references/spotify-new-app-reveal/",
+          "notering": "55 s, 16:9, inga hårda klipp – bara mjuka övergångar. Länk, siffror och datum saknas (lokal fil). Inspo för app-lanseringar. Vi lånar greppen, aldrig Spotifys färger, bilder, formuleringar, ljud eller logga."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.ljudvag-runt-mobilen",
+      "name": "Ljudvågen pulsar runt mobilen medan ordet byts",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[retention] Mobilen står still i mitten, ljudvågsstaplar på båda sidor pulsar i takt med musiken – ett ord ovanför byts per takt ('Musik' → 'Poddar' → 'Ljudböcker'). Varför: Bilden rör sig hela tiden (staplarna) fast innehållet är stilla – ögat har något att följa; byten på taktslag ger rytm och känsla av 'mycket på kort tid'. Uppräkning av bredd i 3 ord.",
+      "tags": [
+        "teknik",
+        "retention",
+        "video",
+        "retention",
+        "ljudvåg",
+        "waveform",
+        "audio-reactive",
+        "takt",
+        "beat",
+        "uppräkning",
+        "mobil",
+        "app",
+        "ordbyte"
+      ],
+      "path": "library/techniques/ljudvag-runt-mobilen.md",
+      "use": "Läs library/techniques/ljudvag-runt-mobilen.md. Golfkuponger: 'Greenfee' → 'Range' → 'Lektioner' → 'Simulator' ovanför mobilen med kupongen i appen; staplarna kan vara golfsvingens rytm.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-11",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "retention",
+        "medium": [
+          "video"
+        ],
+        "tajming": "Ett ord per 2,5–3 s (läsregeln för korta ord), byte exakt på taktslag; staplarna följer ljudet bildruta för bildruta.",
+        "bevis": {
+          "källa": "Lokal fil: Downloads/spotify-new-app-reveal.mp4 (nedladdad av Jonas 2026-11-11)",
+          "kreatör": "Spotify (officiell app-reveal/lanseringstrailer)",
+          "likes": null,
+          "kommentarer": null,
+          "datum": null,
+          "lokal_kopia": "work/references/spotify-new-app-reveal/",
+          "notering": "55 s, 16:9, inga hårda klipp – bara mjuka övergångar. Länk, siffror och datum saknas (lokal fil). Inspo för app-lanseringar. Vi lånar greppen, aldrig Spotifys färger, bilder, formuleringar, ljud eller logga."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.bildvagg-energistot",
+      "name": "Bildvägg som energistöt",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[retention] 1–1,5 s där en vägg av stående bilder/klipp glider förbi i parallax – en kort energistöt i början och mitt i filmen. Varför: Kontrasten mellan lugna grafikkort och en plötslig mängd människor/miljöer återställer uppmärksamheten och visar bredd ('för alla') utan att säga det.",
+      "tags": [
+        "teknik",
+        "retention",
+        "video",
+        "retention",
+        "mosaik",
+        "bildvägg",
+        "parallax",
+        "energi",
+        "montage",
+        "bredd",
+        "människor"
+      ],
+      "path": "library/techniques/bildvagg-energistot.md",
+      "use": "Läs library/techniques/bildvagg-energistot.md. Golfkuponger: Banor, golfare i olika åldrar, range och simulator från bildarkivet glider förbi i 1,2 s → 'Golf för alla. Via friskvården.'",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-11",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "retention",
+        "medium": [
+          "video"
+        ],
+        "tajming": "1–1,5 s per gång, 2 gånger per film (efter kroken och mitt i). Skiljer sig från teknik.vagg-av-allt som bygger mot loggan som bevis.",
+        "bevis": {
+          "källa": "Lokal fil: Downloads/spotify-new-app-reveal.mp4 (nedladdad av Jonas 2026-11-11)",
+          "kreatör": "Spotify (officiell app-reveal/lanseringstrailer)",
+          "likes": null,
+          "kommentarer": null,
+          "datum": null,
+          "lokal_kopia": "work/references/spotify-new-app-reveal/",
+          "notering": "55 s, 16:9, inga hårda klipp – bara mjuka övergångar. Länk, siffror och datum saknas (lokal fil). Inspo för app-lanseringar. Vi lånar greppen, aldrig Spotifys färger, bilder, formuleringar, ljud eller logga."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
+    },
+    {
+      "id": "teknik.text-oskarpa-och-sparring",
+      "name": "Text tonar med oskärpa och glesare bokstäver",
+      "type": "technique",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "any"
+      ],
+      "engine": "none",
+      "description": "[text] Rubriker kommer in med rörelseoskärpa i läsriktningen och går ut genom att bokstäverna glider isär och tonar bort. Varför: Mjuka, filmiska textbyten utan hårda klipp; glesnandet signalerar 'nu tar det slut' och ger plats åt nästa rad.",
+      "tags": [
+        "teknik",
+        "text",
+        "video",
+        "text",
+        "typografi",
+        "oskärpa",
+        "blur",
+        "letter-spacing",
+        "tracking",
+        "premium",
+        "kinetisk typografi"
+      ],
+      "path": "library/techniques/text-oskarpa-och-sparring.md",
+      "use": "Läs library/techniques/text-oskarpa-och-sparring.md. Golfkuponger: 'Introducerar…' → glesnar bort → 'Nya Golfkuponger-appen'. Fungerar i alla lugna, premiumkänsliga filmer.",
+      "requires": [],
+      "cost": "free",
+      "status": "verified",
+      "verified_at": "2026-11-11",
+      "preview": null,
+      "notes": "Tekniken är godkänd. Vårt eget exempel: ej byggt än – visa ett utkast och låt beställaren godkänna.",
+      "teknik": {
+        "roll": "text",
+        "medium": [
+          "video"
+        ],
+        "tajming": "In 0,4–0,5 s, ut 0,4–0,6 s; stå minst läsregeln (max(5/6, tecken/12) + 0,9 s).",
+        "bevis": {
+          "källa": "Lokal fil: Downloads/spotify-new-app-reveal.mp4 (nedladdad av Jonas 2026-11-11)",
+          "kreatör": "Spotify (officiell app-reveal/lanseringstrailer)",
+          "likes": null,
+          "kommentarer": null,
+          "datum": null,
+          "lokal_kopia": "work/references/spotify-new-app-reveal/",
+          "notering": "55 s, 16:9, inga hårda klipp – bara mjuka övergångar. Länk, siffror och datum saknas (lokal fil). Inspo för app-lanseringar. Vi lånar greppen, aldrig Spotifys färger, bilder, formuleringar, ljud eller logga."
+        },
+        "eget_exempel": "ej byggt än – visa ett utkast och låt beställaren godkänna",
+        "exempel": []
+      }
     }
   ]
 }

@@ -4,7 +4,7 @@
 function tblock(lines, size, fg, box, boxFg, top = 300, shadow = true) {
   let h = `<div class="block" style="top:${top}px;color:${fg};font-size:${size}px">`;
   for (const ln of lines) {
-    const inner = ln.replace(/\{(.+?)\}/g, (_, w) => `<span class="hl"><span class="box" style="background:${box};box-shadow:0 6px 14px rgba(0,0,0,.25)"></span><span class="w" style="color:${boxFg}">${w}</span></span>`);
+    const inner = ln.replace(/\{(.+?)\}/g, (_, w) => `<span class="hl" style="margin-top:${/[ÅÄÖ]/i.test(w) ? '0.08em' : '0'}"><span class="box" style="top:${/[ÅÄÖ]/i.test(w) ? '-0.17em' : '0'};background:${box};box-shadow:0 6px 14px rgba(0,0,0,.25)"></span><span class="w" style="color:${boxFg}">${w}</span></span>`);
     h += `<span class="line" style="text-shadow:${shadow ? '0 4px 0 rgba(0,0,0,.22), 0 10px 24px rgba(0,0,0,.35)' : 'none'}">${inner}</span>`;
   }
   return h + '</div>';
