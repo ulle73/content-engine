@@ -119,10 +119,11 @@
   @media (max-width: 720px) { .sms-film-page .sm-layout { grid-template-columns: minmax(0, 1fr); } .sms-film-page .sm-live { order: -1; justify-self: center; } }
   .sms-film-page .sm-sliders h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; margin: .9rem 0 .3rem; opacity: .7; }
   .sms-film-page .sm-sliders h3:first-child { margin-top: 0; }
-  .sms-film-page .sm-slider { display: grid; grid-template-columns: minmax(0, 1fr) 4.2rem; gap: .1rem .6rem; align-items: center; margin-bottom: .45rem; }
-  .sms-film-page .sm-slider label { grid-column: 1 / -1; font-size: .85rem; margin: 0; }
-  .sms-film-page .sm-slider input[type=range] { width: 100%; accent-color: #d9a93c; margin: 0; }
-  .sms-film-page .sm-slider output { font-variant-numeric: tabular-nums; font-size: .85rem; text-align: right; }
+  .sms-film-page .sm-slider { display: block; margin-bottom: .5rem; }
+  .sms-film-page .sm-slider-head { display: flex; justify-content: space-between; align-items: baseline; gap: .6rem; }
+  .sms-film-page .sm-slider label { display: inline; font-size: .85rem; margin: 0; padding: 0; }
+  .sms-film-page .sm-slider input[type=range] { display: block; width: 100%; min-width: 0; height: auto; padding: 0; border: 0; background: none; box-shadow: none; accent-color: #d9a93c; margin: .1rem 0 0; }
+  .sms-film-page .sm-slider output { flex: none; font-variant-numeric: tabular-nums; font-size: .85rem; white-space: nowrap; }
   .sms-film-page .sm-slider.changed label { font-weight: 600; }
   .sms-film-page .sm-live { position: sticky; top: 1rem; }
   .sms-film-page .sm-frame { width: 270px; height: 480px; overflow: hidden; border-radius: 12px; background: #0f2a1d; }
@@ -550,7 +551,7 @@
       if (!s) return;
       const input = el("input", { type: "range", id: "sm-s-" + k, min: s.min, max: s.max, step: 1, value: smDefault(s) });
       const out = el("output", { for: "sm-s-" + k });
-      const row = el("div", { class: "sm-slider" }, el("label", { for: "sm-s-" + k }, s.namn), input, out);
+      const row = el("div", { class: "sm-slider" }, el("div", { class: "sm-slider-head" }, el("label", { for: "sm-s-" + k }, s.namn), out), input);
       const show = () => {
         const v = +input.value, d = smDefault(s);
         out.textContent = (s.enhet === "px" && v > 0 && s.min < 0 ? "+" : "") + v + " " + s.enhet;
@@ -560,6 +561,7 @@
       input.addEventListener("dblclick", () => { input.value = smDefault(s); show(); smLive(); });
       smInputs[k] = { input, show, s };
       $("sm-sliders").append(row);
+      show();   // every slider shows its value from the start, not only after it has been moved
     });
   });
   function smStil() {   // only what differs from the default, as the server stores it
