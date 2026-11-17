@@ -87,6 +87,8 @@ def _sms_film(request, workspace_id, *, embedded):
         "slutmall_stil": [{"id": k, "namn": namn, "enhet": enhet, "min": lo, "max": hi, "std": std}
                           for k, (namn, enhet, lo, hi, std) in spec.SLUTMALL_STIL.items()],
         "slutmall_skak": spec.SLUTMALL_SKAK,
+        "slutmall_formats": [{"id": k, "namn": v} for k, v in spec.SLUTMALL_FORMAT.items()],
+        "slutmall_klara": service.finished_slutmallar(company),
     })
 
 

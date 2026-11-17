@@ -22,7 +22,7 @@ from engine.media import store_asset
 from engine.models import MediaAsset
 
 from .models import SmsFilmJob
-from .spec import SmsFilmError
+from .spec import SmsFilmError, slutmall_format
 
 log = logging.getLogger(__name__)
 
@@ -153,7 +153,8 @@ def worker_payload(job: SmsFilmJob, base_url: str) -> dict:
         form = job.form or {}
         return {"job_id": str(job.pk), "lease": str(job.lease_token), "attempt": job.attempts, "kind": "slutmall",
                 "slutmall": {"mall": form.get("mall"), "rad1": form.get("rad1", ""), "rad2": form.get("rad2", ""),
-                             "effekt": form.get("effekt") or "small", "stil": form.get("stil") or {}},
+                             "effekt": form.get("effekt") or "small", "stil": form.get("stil") or {},
+                             "format": slutmall_format(form)},
                 "assets": [], "limits": limits}
     assets = []
     for asset in MediaAsset.objects.filter(pk__in=job.image_asset_ids, company=job.company, kind="image"):
@@ -162,12 +163,29 @@ def worker_payload(job: SmsFilmJob, base_url: str) -> dict:
                        "byte_size": asset.byte_size, "url": f"{base}/internal/sms-film/assets/{job.pk}/{asset.pk}/"})
     if len(assets) != len(set(job.image_asset_ids)):
         raise SmsFilmError("En bild i filmen finns inte längre i mediabanken.")
-    return {
+    payload = {
         "job_id": str(job.pk), "lease": str(job.lease_token), "attempt": job.attempts, "kind": "sms",
         "conversation": job.conversation, "assets": assets,
         "apple_pack_url": f"{base}/internal/sms-film/apple-pack/{job.pk}/",
         "limits": limits,
     }
+    outro_id = outro_asset_id(job)
+    if outro_id:
+        video = MediaAsset.objects.filter(pk=outro_id, company=job.company, kind="video").first()
+        if video is None:
+            raise SmsFilmError("Slutmallen i filmen finns inte längre i mediabanken.")
+        payload["outro_asset"] = {"id": str(video.pk), "path": job.conversation["outro"]["src"], "sha256": video.sha256,
+                                  "byte_size": video.byte_size,
+                                  "url": f"{base}/internal/sms-film/assets/{job.pk}/{video.pk}/"}
+    return payload
+
+
+def outro_asset_id(job: SmsFilmJob) -> str | None:
+    """The slutmall video an SMS film ends with, if one was chosen under "Slut"."""
+    outro = (job.conversation or {}).get("outro")
+    if job.kind == "sms" and isinstance(outro, dict) and outro.get("asset"):
+        return str(outro["asset"])
+    return None
 
 
 @transaction.atomic
@@ -272,5 +290,12 @@ def serialize(job: SmsFilmJob) -> dict:
         "progress": round(job.progress, 2), "stage": job.stage, "error": job.error, "warnings": job.warnings,
         "duration_s": job.duration_s, "dispatch_error": job.dispatch_error,
         "output_asset_id": str(job.output_asset_id) if job.output_asset_id else None,
+        "format": slutmall_format(job.form) if job.kind == "slutmall" else "9x16",
         "created_at": job.created_at.isoformat(),
     }
+
+
+def finished_slutmallar(company, limit=30):
+    """Rendered slutmallar that an SMS film can end with, newest first."""
+    jobs = SmsFilmJob.objects.filter(company=company, kind="slutmall", status="done", output_asset__isnull=False)
+    return [serialize(job) for job in jobs.order_by("-created_at")[:limit]]

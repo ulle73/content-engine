@@ -175,6 +175,14 @@ async function buildSmsFilm(payload, work, setStage, setProgress) {
   await prepareWorkdir(work);
   if (!process.env.IMESSAGE_SKIP_APPLE) await applePack(payload);
   for (const asset of payload.assets || []) await download(asset.url, safeJoin(work, asset.path), lease, asset.sha256);
+  // En egen slutmall som filmen slutar med (renderad tidigare i Content Engine).
+  if (payload.outro_asset) {
+    const o = payload.outro_asset;
+    if (typeof o.path !== 'string' || !/^assets\/outro\/slutmall-[0-9a-f-]{36}\.mp4$/.test(o.path)) {
+      throw new JobError('asset_missing', `ogiltig sökväg för slutmallen ${String(o.path).slice(0, 80)}`);
+    }
+    await download(o.url, join(work, o.path), lease, o.sha256);
+  }
   await writeFile(join(work, 'conversation.json'), JSON.stringify(payload.conversation, null, 2));
 
   await setStage('building', 0.1);
@@ -220,9 +228,10 @@ async function processJob(payload) {
       // Slutmall: svingloggan + två textrader, renderad av golfkuponger-slutmallar/render.mjs (Playwright + ffmpeg).
       // Inga Apple-filer och inga bilder behövs.
       const {mall, rad1 = '', rad2, effekt = 'small', stil = {}} = payload.slutmall || {};
-      console.log(`[${id}] slutmall ${mall}, effekt ${effekt} (försök ${payload.attempt})`);
+      const format = payload.slutmall?.format === '4x5' ? '4x5' : '9x16';
+      console.log(`[${id}] slutmall ${mall}, ${format}, effekt ${effekt} (försök ${payload.attempt})`);
       const jobbPath = join(work, 'jobb.json');
-      await writeFile(jobbPath, JSON.stringify({mall, rad1, rad2, effekt, stil, ut: work, format: ['9x16']}));
+      await writeFile(jobbPath, JSON.stringify({mall, rad1, rad2, effekt, stil, ut: work, format: [format]}));
       stage = 'rendering'; progress = 0.1; await beat();
       const tail = await run(process.execPath, [SLUTMALL_RENDER, '--json', jobbPath], {cwd: REPO, timeoutMs: 20 * 60_000})
         .catch((err) => { throw new JobError('render_failed', (err.tail || err.message).slice(-250), {retryable: true}); });

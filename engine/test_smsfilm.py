@@ -23,10 +23,60 @@ def png(color="red", size=(40, 30)):
     return buf.getvalue()
 
 
+def done_slutmall(company, user, fmt="9x16", duration=7.7, status="done"):
+    """A rendered slutmall job whose output is a video in the company's media library."""
+    files = {"f1": SimpleUploadedFile("a.png", png(), content_type="image/png")}
+    _, ids, _, _ = spec.build({"messages": [{"side": "recv", "image": {"file": "f1"}}]}, files, company)
+    asset = MediaAsset.objects.get(pk=ids[0])
+    asset.kind = "video"
+    asset.save(update_fields=["kind"])
+    saved, _ = spec.build_slutmall({"mall": "alla", "rad2": "x", "format": fmt})
+    job = service.create_job(company, user, title=f"Slut {fmt}", form=saved, conversation={}, image_asset_ids=[],
+                             duration_s=duration, dispatch_now=False, kind="slutmall")
+    SmsFilmJob.objects.filter(pk=job.pk).update(status=status, output_asset=asset)
+    job.refresh_from_db()
+    return job, asset
+
+
 class SpecTests(TestCase):
     def setUp(self):
-        user = get_user_model().objects.create_user(username="spec", password="test")
+        self.user = user = get_user_model().objects.create_user(username="spec", password="test")
         self.company = Company.objects.create(owner=user, name="Spec AB")
+
+    def test_slutmall_as_outro(self):
+        job, asset = done_slutmall(self.company, self.user, duration=6.4)
+        *_, base = spec.build({"messages": [{"side": "recv", "text": "Hej"}]}, {}, self.company)
+        conv, _, saved, total = spec.build(
+            {"messages": [{"side": "recv", "text": "Hej"}], "outro": True, "slutmall": str(job.pk)}, {}, self.company)
+        self.assertEqual(conv["outro"], {"asset": str(asset.pk), "src": f"assets/outro/slutmall-{asset.pk}.mp4", "len": 6.4})
+        self.assertEqual((saved["slutmall"], saved["outro"]), (str(job.pk), False))
+        self.assertAlmostEqual(total, base + 6.4)
+        self.assertEqual(spec.outro_len(conv), 6.4)
+
+    def test_outro_len(self):
+        self.assertEqual(spec.outro_len({"outro": "spotlight"}), spec.OUTRO_LEN)
+        self.assertEqual(spec.outro_len({"outro": {"len": 5}}), 5)
+        for conv in ({}, {"outro": None}, {"outro": {"len": -1}}, {"outro": {"len": "x"}}, {"outro": "annat"}):
+            self.assertEqual(spec.outro_len(conv), 0, conv)
+
+    def test_slutmall_outro_rejects_bad_choices(self):
+        other_user = get_user_model().objects.create_user(username="annan", password="test")
+        other = Company.objects.create(owner=other_user, name="Annat AB")
+        wide, _ = done_slutmall(self.company, self.user, fmt="4x5")
+        foreign, _ = done_slutmall(other, other_user)
+        pending, _ = done_slutmall(self.company, self.user, status="queued")
+        cases = {"inte-ett-id": "ogiltigt", str(wide.pk): "4:5", str(foreign.pk): "finns inte",
+                 str(pending.pk): "finns inte"}
+        for ref, message in cases.items():
+            with self.assertRaisesMessage(spec.SmsFilmError, message, msg=ref):
+                spec.build({"messages": [{"side": "recv", "text": "Hej"}], "slutmall": ref}, {}, self.company)
+
+    def test_finished_slutmallar_and_serialize(self):
+        done, _ = done_slutmall(self.company, self.user, fmt="4x5")
+        done_slutmall(self.company, self.user, status="failed")
+        listed = service.finished_slutmallar(self.company)
+        self.assertEqual([j["id"] for j in listed], [str(done.pk)])
+        self.assertEqual((listed[0]["format"], listed[0]["duration_s"]), ("4x5", 7.7))
 
     def test_notification_becomes_first_message_and_lockscreen(self):
         conv, ids, saved, total = spec.build(
@@ -211,6 +261,26 @@ class WorkerApiTests(TestCase):
         late = self.post("heartbeat/", {"job_id": str(self.job.pk), "lease": lease, "progress": 1})
         self.assertEqual(late.status_code, 409)
 
+    def test_sms_job_with_slutmall_outro_gets_the_video(self):
+        user = get_user_model().objects.get(username="w")
+        slut, video = done_slutmall(self.company, user, duration=7.2)
+        conv, ids, saved, total = spec.build({"messages": [{"side": "recv", "text": "Hej"}], "slutmall": str(slut.pk)},
+                                             {}, self.company)
+        job = service.create_job(self.company, user, title="Med slut", form=saved, conversation=conv,
+                                 image_asset_ids=ids, duration_s=total, dispatch_now=False)
+        payload = self.post("claim/", {"worker_id": "gh", "job_id": str(job.pk)}).json()["job"]
+        self.assertEqual(payload["job_id"], str(job.pk))
+        outro = payload["outro_asset"]
+        self.assertEqual((outro["id"], outro["path"]), (str(video.pk), f"assets/outro/slutmall-{video.pk}.mp4"))
+        got = self.client.get(outro["url"].replace("https://engine.test", ""), **self.auth,
+                              HTTP_X_EDIT_LEASE=payload["lease"])
+        self.assertEqual(got.status_code, 200)
+        # The leased SMS job may fetch only its own slutmall, not other videos in the library.
+        _, stranger = done_slutmall(self.company, user)
+        other = self.client.get(f"/internal/sms-film/assets/{job.pk}/{stranger.pk}/", **self.auth,
+                                HTTP_X_EDIT_LEASE=payload["lease"])
+        self.assertEqual(other.status_code, 404)
+
     def test_fail_retryable_requeues_then_fails(self):
         for attempt in range(service.MAX_ATTEMPTS):
             payload = self.post("claim/", {"worker_id": "gh"}).json()["job"]
@@ -233,8 +303,14 @@ class SlutmallSpecTests(TestCase):
     def test_build_ok(self):
         saved, total = spec.build_slutmall({"mall": "epassi", "rad1": " Friskvårdsbidrag kvar? ", "rad2": "Det brinner *inne*"})
         self.assertEqual(saved, {"kind": "slutmall", "mall": "epassi", "rad1": "Friskvårdsbidrag kvar?",
-                                 "rad2": "Det brinner *inne*", "effekt": "small", "stil": {}})
+                                 "rad2": "Det brinner *inne*", "effekt": "small", "stil": {}, "format": "9x16"})
         self.assertEqual(total, spec.SLUTMALL_LEN)
+
+    def test_format_4x5_and_bad_format(self):
+        saved, _ = spec.build_slutmall({"mall": "alla", "rad2": "x", "format": "4x5"})
+        self.assertEqual(saved["format"], "4x5")
+        with self.assertRaisesMessage(spec.SmsFilmError, "format"):
+            spec.build_slutmall({"mall": "alla", "rad2": "x", "format": "16x9"})
 
     def test_effect_and_style_are_clamped_and_defaults_dropped(self):
         saved, _ = spec.build_slutmall({"mall": "alla", "rad2": "x", "effekt": "tona", "stil": {
@@ -277,6 +353,25 @@ class SlutmallFlowTests(TestCase):
         self.assertContains(response, "Skrivmaskin")
         self.assertContains(response, "sm-stil-data")
         self.assertContains(response, "Luft under loggan")
+        self.assertContains(response, "sm-format")
+        self.assertContains(response, "sm-klara-data")
+
+    def test_finished_slutmall_is_listed_under_slut_and_reopens(self):
+        job, _ = done_slutmall(self.company, self.user, duration=6.9)
+        page = self.client.get(self.url)
+        klara = json.loads(page.content.decode().split('id="sm-klara-data" type="application/json">', 1)[1].split("</script>", 1)[0])
+        self.assertEqual([(j["id"], j["format"], j["duration_s"]) for j in klara], [(str(job.pk), "9x16", 6.9)])
+        response = self.create({"messages": [{"side": "recv", "text": "Hej"}], "slutmall": str(job.pk)})
+        self.assertEqual(response.status_code, 201, response.content)
+        film = SmsFilmJob.objects.get(kind="sms")
+        self.assertEqual(film.form["slutmall"], str(job.pk))
+        self.assertGreater(film.duration_s, 6.9)
+
+    def test_4x5_slutmall_cannot_end_an_sms_film(self):
+        job, _ = done_slutmall(self.company, self.user, fmt="4x5")
+        response = self.create({"messages": [{"side": "recv", "text": "Hej"}], "slutmall": str(job.pk)})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("4:5", response.json()["error"])
 
     def test_preview_serves_template_and_assets_only(self):
         url = lambda fil: reverse("engine:sms_film_slutmall", kwargs={"workspace_id": self.company.pk, "fil": fil})
