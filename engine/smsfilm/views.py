@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import redirect, render
-from django.views.decorators.clickjacking import xframe_options_exempt, xframe_options_sameorigin
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from engine.ownership import company_required
 
@@ -90,6 +90,7 @@ def _sms_film(request, workspace_id, *, embedded):
     })
 
 
+DASHBOARD_ORIGIN = "https://dashboard.golfkuponger.se"
 SLUTMALL_DIR = Path(__file__).resolve().parents[2] / "library" / "templates" / "golfkuponger-slutmallar"
 SLUTMALL_FILE_RE = re.compile(r"^(slutmall\.html|assets/[a-z0-9-]+\.(woff2|png|jpg))$")
 SLUTMALL_TYPES = {"html": "text/html; charset=utf-8", "woff2": "font/woff2", "png": "image/png", "jpg": "image/jpeg"}
@@ -97,9 +98,14 @@ SLUTMALL_TYPES = {"html": "text/html; charset=utf-8", "woff2": "font/woff2", "pn
 
 @login_required
 @company_required
-@xframe_options_sameorigin
+@xframe_options_exempt
 def slutmall_preview(request, workspace_id, fil):
-    """Serves the end-card template and its assets so the form can show a live preview in an iframe."""
+    """Serves the end-card template and its assets so the form can show a live preview in an iframe.
+
+    The form itself may sit inside Golfkuponger's dashboard, and browsers check framing against every
+    ancestor, so X-Frame-Options SAMEORIGIN would block the preview there. CSP allows this site and the
+    dashboard instead.
+    """
     if not SLUTMALL_FILE_RE.match(fil):
         raise Http404
     path = SLUTMALL_DIR / fil
@@ -107,6 +113,7 @@ def slutmall_preview(request, workspace_id, fil):
         raise Http404
     response = FileResponse(path.open("rb"), content_type=SLUTMALL_TYPES[fil.rsplit(".", 1)[-1]])
     response["Cache-Control"] = "private, max-age=300"
+    response["Content-Security-Policy"] = f"frame-ancestors 'self' {DASHBOARD_ORIGIN}"
     return response
 
 
@@ -129,7 +136,7 @@ def sms_film_embed(request, workspace_id):
         response = render(request, "engine/sms_film_embed_login.html")
     else:
         response = _authorized_embed(request, workspace_id)
-    response["Content-Security-Policy"] = "frame-ancestors https://dashboard.golfkuponger.se"
+    response["Content-Security-Policy"] = f"frame-ancestors {DASHBOARD_ORIGIN}"
     response["Cache-Control"] = "private, no-store"
     return response
 

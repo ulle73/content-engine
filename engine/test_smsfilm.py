@@ -283,7 +283,9 @@ class SlutmallFlowTests(TestCase):
         page = self.client.get(url("slutmall.html"))
         self.assertEqual(page.status_code, 200)
         self.assertTrue(page["Content-Type"].startswith("text/html"))
-        self.assertEqual(page["X-Frame-Options"], "SAMEORIGIN")
+        # Framed inside the embedded editor too: no X-Frame-Options (checked against every ancestor), CSP instead.
+        self.assertNotIn("X-Frame-Options", page)
+        self.assertEqual(page["Content-Security-Policy"], "frame-ancestors 'self' https://dashboard.golfkuponger.se")
         font = self.client.get(url("assets/anton.woff2"))
         self.assertEqual((font.status_code, font["Content-Type"]), (200, "font/woff2"))
         self.assertEqual(self.client.get(url("assets/portal-epassi.jpg")).status_code, 200)
