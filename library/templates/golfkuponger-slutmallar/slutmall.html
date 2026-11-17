@@ -54,7 +54,7 @@ h1 .rad{display:block;white-space:nowrap}
 </div>
 </div>
 <div id="zoner"><i style="left:0;right:0;top:0;height:269px;border-bottom-width:3px"></i><i style="left:0;right:0;top:1248px;bottom:0;border-top-width:3px"></i>
-  <i style="left:0;width:65px;top:269px;height:979px;border-right-width:3px"></i><i style="right:0;width:151px;top:269px;height:979px;border-left-width:3px"></i></div>
+  <i style="left:0;width:151px;top:269px;height:979px;border-right-width:3px"></i><i style="right:0;width:151px;top:269px;height:979px;border-left-width:3px"></i></div>
 <script type="module">
 // typsnitten måste vara laddade innan texten mäts
 await Promise.all(['400 100px Anton', '700 40px Inter', '600 34px Inter'].map(f => document.fonts.load(f)));
@@ -91,8 +91,9 @@ const S = Object.fromEntries(Object.entries(STIL).map(([k, [lo, hi, std]]) => {
 const pr = k => S[k] / 100;
 if (Q.get('zoner') === '1') document.getElementById('zoner').style.display = 'block';
 
-// ---- layout (9:16): loggan från y 290, blocket under den och ned till högst 1240 (safe zones: topp 269, botten 35 % → 1248)
-const LOGGA_TOP = 290 + S.hojd, LOGGA_H = Math.round(260 * pr('logga')), BLK_BOTTEN = 1240, BREDD = S.bredd;
+// ---- layout (9:16): loggan från y 290, blocket under den och ned till högst 1240 (safe zones: topp 269, botten 35 % → 1248,
+// sidor 151 px båda sidor så att allt centreras på x 540). Höjdreglaget flyttar allt efteråt via DY.
+const LOGGA_TOP = 290, LOGGA_H = Math.round(260 * pr('logga')), BLK_BOTTEN = 1240, BREDD = S.bredd;
 const BLK_TOP = LOGGA_TOP + LOGGA_H + 34 + S.luft_logga;
 const logga = document.getElementById('logga');
 logga.style.top = LOGGA_TOP + 'px'; logga.style.height = LOGGA_H + 'px';
@@ -145,13 +146,16 @@ for (;;) {
   fs -= 2;
 }
 
-// 4:5: loggan + blocket centreras i bildens höjd (räknat på blockets verkliga botten), höjdreglaget gäller ovanpå
+// loggan + blocket centreras (räknat på blockets verkliga botten), höjdreglaget gäller ovanpå:
+// 9:16 mitt i den säkra ytan (269–1248, mitt 758), 4:5 mitt i bildens höjd
 const BOTTEN = Math.round(blk.getBoundingClientRect().bottom);
-const DY = H === 1920 ? 0 : Math.round(H / 2 - (LOGGA_TOP + BOTTEN) / 2) + S.hojd;
+const MITT = H === 1920 ? (269 + 1248) / 2 : H / 2;
+const DY = Math.round(MITT - (LOGGA_TOP + BOTTEN) / 2) + S.hojd;
+const D916 = H === 1920 ? DY : 0;
 const VARNINGAR = [];
-if (BOTTEN > BLK_BOTTEN + 1) VARNINGAR.push('Texten och portalerna går ned i nedre säkerhetszonen (där Instagram lägger knappar och text). Minska storlekar eller mellanrum.');
-if (LOGGA_TOP < 269) VARNINGAR.push('Loggan går upp i övre säkerhetszonen. Flytta ned allt.');
-if (BREDD > 778) VARNINGAR.push('Texten går ut i högra säkerhetszonen. Minska textbredden till 778 px.');
+if (BOTTEN + D916 > (H === 1920 ? 1248 : BLK_BOTTEN + 1)) VARNINGAR.push('Texten och portalerna går ned i nedre säkerhetszonen (där Instagram lägger knappar och text). Minska storlekar eller mellanrum.');
+if (LOGGA_TOP + D916 < 269) VARNINGAR.push('Loggan går upp i övre säkerhetszonen. Flytta ned allt.');
+if (BREDD > 778) VARNINGAR.push('Texten går ut i säkerhetszonen på sidorna. Minska textbredden till 778 px.');
 if (fs < Math.min(VAL.fs, RUB_MAX)) VARNINGAR.push(`Rubriken krymptes till ${fs} px för att få plats.`);
 
 // ---- rörelse
