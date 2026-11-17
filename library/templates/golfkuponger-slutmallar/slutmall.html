@@ -172,7 +172,7 @@ const MATT = ORD.map(el => {
 });
 // svingloggan tar ~1,7 s; rad 1 kommer när svinget är på väg, rad 2 landar efter. Tempot skalar alla tider efter T1.
 const K = pr('tempo'), SK = pr('skak');
-const T1 = 0.7, T2 = T1 + 0.45 / K, SLAG = 0.2 / K;
+const T1 = 0.7, T2 = T1 + 0.45 / K, SLAG = 0.13 / K;
 const LANG = { small: 0.17, studs: 0.42, tona: 0.38, glid: 0.3, avtack: 0.32 }[EFF] / K, TECKENTID = 0.05 / K;
 const start = [], dur = [];
 let ts = T2;
@@ -182,10 +182,13 @@ ORD.forEach((_, i) => {
 });
 const landar = ORD.map((_, i) => start[i] + dur[i]);
 const slag = ORD.map((_, i) => EFF === 'studs' ? start[i] + dur[i] * 0.17 : landar[i]);   // när skakningen sätter i
-const SUB = (landar[landar.length - 1] ?? T2) + 0.2, KT = SUB + W.length * 0.06 / K + 0.12;
-// läsregeln: all text i följd får max(5/6, tecken/12) + 0,9 s räknat från första texten; korten ska hinna synas en stund
+const SUB = (landar[landar.length - 1] ?? T2) + 0.12;
+const CTA_STEG = 0.045 / K, CTA_TID = 0.25 / K;
+const KT = SUB + 0.18 / K, KORT_STEG = 0.07 / K, KORT_TID = 0.3 / K;
 const TECKEN = R1.length + ORD2.map(o => o.w).join(' ').length + cta.textContent.length;
-const LANGD = +Math.max(4.2, T1 + Math.max(5 / 6, TECKEN / 12) + 0.9, KT + KORT.length * 0.11 + 1.3).toFixed(2);
+// Håll kvar slutbilden kort efter att sista texten och portalikonen har landat.
+const SISTA = Math.max(SUB + (W.length - 1) * CTA_STEG + CTA_TID, KT + (KORT.length - 1) * KORT_STEG + KORT_TID);
+const LANGD = Math.ceil(Math.max(3.1, SISTA + 0.4) * 30) / 30;
 window.INFO = { mall: MALL, r1: R1, r2: R2, cta: cta.textContent, effekt: EFF, stil: S, tecken: TECKEN, langd: LANGD,
   rubrik_px: fs, rubrik_rader: VAL.r.length, rad1_px: kfs, cta_px: cfs, botten: BOTTEN + DY,
   logga: { top: LOGGA_TOP + DY, h: LOGGA_H }, dy: DY, ryms: !VARNINGAR.some(v => v.includes('zonen')), varningar: VARNINGAR };
@@ -222,9 +225,9 @@ window.frame = t => {
   });
   document.getElementById('skak').style.transform = `translate(${skak * 0.6}px,${skak + DY}px)`;
   // CTA-raden tonar upp ord för ord, korten poppar in och svävar sedan svagt; en ljusglans drar över dem var 2,4 s
-  W.forEach((w, i) => { const p = ut3((t - SUB - i * 0.06 / K) / (0.35 / K)); w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 24}px)`; });
+  W.forEach((w, i) => { const p = ut3((t - SUB - i * CTA_STEG) / CTA_TID); w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 24}px)`; });
   KORT.forEach((k, i) => {
-    const a = KT + i * 0.11, p = kl((t - a) / 0.38), sv = Math.sin((t - a) * 2.2 + i * 1.3) * 3 * kl((t - a - 0.4) / 0.6);
+    const a = KT + i * KORT_STEG, p = kl((t - a) / KORT_TID), sv = Math.sin((t - a) * 2.2 + i * 1.3) * 3 * kl((t - a - 0.4) / 0.6);
     k.style.opacity = kl((t - a) / 0.12); k.style.transform = `translateY(${sv}px) scale(${0.55 + 0.45 * back(p)})`;
     const g = ((t - a - 0.5) % 2.4 + 2.4) % 2.4, gp = t - a - 0.5 < 0 ? -1 : kl(g / 0.7);
     k.style.setProperty('--sv', `${-120 + 240 * gp}%`);

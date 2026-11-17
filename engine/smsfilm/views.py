@@ -12,6 +12,8 @@ from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
+from engine.edit.outros import ROOT as OUTRO_DIR
+from engine.media_views import local_asset_response
 from engine.ownership import company_required
 
 from . import service, spec
@@ -108,6 +110,13 @@ def slutmall_preview(request, workspace_id, fil):
     ancestor, so X-Frame-Options SAMEORIGIN would block the preview there. CSP allows this site and the
     dashboard instead.
     """
+    if fil == "spotlight-9x16.mp4":
+        path = OUTRO_DIR / "golfkuponger" / fil
+        if not path.is_file():
+            raise Http404
+        response = local_asset_response(request, path, "video/mp4")
+        response["Cache-Control"] = "private, max-age=300"
+        return response
     if not SLUTMALL_FILE_RE.match(fil):
         raise Http404
     path = SLUTMALL_DIR / fil

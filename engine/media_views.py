@@ -705,21 +705,27 @@ def asset_file(request, workspace_id, asset_id):
         path = local_path(asset.storage_key)
         if not path.is_file():
             return HttpResponse("Filen saknas.", status=404)
-        # MP4 previews need byte ranges for seeking; R2 supports these natively.
-        range_header = request.headers.get("Range", "")
-        match = re.fullmatch(r"bytes=(\d+)-(\d*)", range_header)
-        if match:
-            size = path.stat().st_size
-            start, end = int(match[1]), min(int(match[2]) if match[2] else size - 1, size - 1)
-            if start > end:
-                return HttpResponse(status=416, headers={"Content-Range": f"bytes */{size}"})
-            with path.open("rb") as file:
-                file.seek(start)
-                response = HttpResponse(file.read(end - start + 1), status=206, content_type=asset.mime_type,
-                                        headers={"Content-Range": f"bytes {start}-{end}/{size}"})
-        else:
-            response = FileResponse(path.open("rb"), content_type=asset.mime_type)
-        response["Accept-Ranges"] = "bytes"
+        response = local_asset_response(request, path, asset.mime_type)
+        if response.status_code == 416:
+            return response
     response["Cache-Control"] = "private, no-store"
     response["X-Content-Type-Options"] = "nosniff"
+    return response
+
+
+def local_asset_response(request, path, mime_type):
+    # MP4 previews need byte ranges for seeking; R2 supports these natively.
+    match = re.fullmatch(r"bytes=(\d+)-(\d*)", request.headers.get("Range", ""))
+    if match:
+        size = path.stat().st_size
+        start, end = int(match[1]), min(int(match[2]) if match[2] else size - 1, size - 1)
+        if start > end:
+            return HttpResponse(status=416, headers={"Content-Range": f"bytes */{size}"})
+        with path.open("rb") as file:
+            file.seek(start)
+            response = HttpResponse(file.read(end - start + 1), status=206, content_type=mime_type,
+                                    headers={"Content-Range": f"bytes {start}-{end}/{size}"})
+    else:
+        response = FileResponse(path.open("rb"), content_type=mime_type)
+    response["Accept-Ranges"] = "bytes"
     return response

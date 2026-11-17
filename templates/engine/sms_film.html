@@ -130,8 +130,14 @@
   .sms-film-page .sm-frame iframe { width: 1080px; height: 1920px; border: 0; transform: scale(.25); transform-origin: 0 0; pointer-events: none; display: block; }
   .sms-film-page .sm-frame.f4x5 { height: 337.5px; }
   .sms-film-page .sm-frame.f4x5 iframe { height: 1350px; }
+  .sms-film-page .end-layout { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: start; }
   .sms-film-page .end-list { display: grid; gap: .5rem; }
   .sms-film-page .end-list .check.off { opacity: .55; }
+  .sms-film-page .end-preview { width: 158px; max-width: 100%; justify-self: center; }
+  .sms-film-page .end-preview video { width: 100%; aspect-ratio: 9 / 16; border-radius: 8px; background: #081a12; }
+  @media (max-width: 540px) {
+    .sms-film-page .end-layout { grid-template-columns: minmax(0, 1fr); }
+  }
   .sms-film-page .sm-live-actions { display: flex; gap: .6rem; align-items: center; justify-content: space-between; margin-top: .5rem; }
   .sms-film-page .sm-zoner { margin: 0; font-size: .85rem; }
   .sms-film-page .sm-warn { color: #b3261e; font-size: .85rem; margin: .3rem 0 0; padding-left: 1.1rem; }
@@ -152,7 +158,7 @@
         <h2 id="gv-kind-title">Typ av video</h2>
         <div class="row mode-row" role="radiogroup" aria-labelledby="gv-kind-title">
           <label class="check"><input type="radio" name="gv-kind" value="sms" checked><span>SMS-film<small>En sms-konversation i en iPhone.</small></span></label>
-          <label class="check"><input type="radio" name="gv-kind" value="slutmall"><span>Slutmall<small>Svingloggan och två textrader, {{ slutmall_len|floatformat:1 }} s.</small></span></label>
+          <label class="check"><input type="radio" name="gv-kind" value="slutmall"><span>Slutmall<small>Svingloggan och två textrader, från {{ slutmall_len|floatformat:1 }} s.</small></span></label>
         </div>
         <div class="field" style="margin-top:.85rem"><label for="sms-title">Namn på filmen</label><input type="text" id="sms-title" maxlength="200" placeholder="T.ex. Sugar daddy – golf"></div>
       </section>
@@ -207,11 +213,19 @@
       <section aria-labelledby="sms-end-title">
         <h2 id="sms-end-title">Slut</h2>
         <p class="small">Välj vad som visas efter sista meddelandet.</p>
+        <div class="end-layout">
+        <div>
         <div class="end-list" id="sms-end-list" role="radiogroup" aria-labelledby="sms-end-title">
           <label class="check"><input type="radio" name="sms-end" value="" checked><span>Inget slut<small>Filmen slutar efter sista meddelandet.</small></span></label>
           <label class="check"><input type="radio" name="sms-end" value="spotlight"><span>Golfkuponger-logga<small>Spotlight-loggan svingar in (+{{ limits.outro|floatformat:1 }} s).</small></span></label>
         </div>
         <p class="small" id="sms-end-empty">Dina slutmallar dyker upp här när de är klara. Skapa en under Typ av video → Slutmall.</p>
+        </div>
+        <div class="end-preview" id="sms-end-preview" hidden>
+          <video id="sms-end-video" controls playsinline preload="metadata" aria-label="Förhandsvisning av slutklippet"></video>
+          <p id="sms-end-error" class="small" role="status" hidden>Slutklippet kunde inte spelas upp.</p>
+        </div>
+        </div>
       </section>
 
       <section>
@@ -313,28 +327,49 @@
   }
   // ---------------------------------------------------------------- end ("Slut"): nothing, Spotlight or a finished slutmall
   const KLARA = JSON.parse(document.getElementById("sm-klara-data").textContent);
+  const SPOTLIGHT_URL = "{% url 'engine:sms_film_slutmall' workspace_id=workspace.pk fil='spotlight-9x16.mp4' %}";
   const FORMAT_NAMN = { "9x16": "9:16", "4x5": "4:5" };
   function renderEnds() {
     const list = $("sms-end-list");
+    const selected = list.querySelector(":checked")?.value;
+    list.querySelectorAll("[data-end-job]").forEach((label) => label.remove());
     KLARA.forEach((j) => {
       const ok = (j.format || "9x16") === "9x16";
       const len = j.duration_s || 0;
       const input = el("input", { type: "radio", name: "sms-end", value: j.id });
       input.disabled = !ok;
+      input.checked = ok && j.id === selected;
       const note = `${FORMAT_NAMN[j.format] || "9:16"} · ${fmt(len)}` + (ok ? "" : " · bara 9:16 passar SMS-filmen");
-      const label = el("label", { class: "check" + (ok ? "" : " off") }, input,
+      const label = el("label", { class: "check" + (ok ? "" : " off"), "data-end-job": "" }, input,
         el("span", {}, j.title || "Slutmall", el("small", {}, note)));
       list.append(label);
     });
     $("sms-end-empty").hidden = KLARA.length > 0;
-    list.addEventListener("change", updateTiming);
   }
   function chosenEnd() {
     const v = (document.querySelector("[name=sms-end]:checked") || {}).value || "";
-    if (v === "spotlight") return { value: v, len: LIMITS.outro, label: "Golfkuponger-loggan" };
+    if (v === "spotlight") return { value: v, len: LIMITS.outro, label: "Golfkuponger-loggan", url: SPOTLIGHT_URL };
     const j = KLARA.find((k) => k.id === v);
-    return j ? { value: v, len: j.duration_s || 0, label: `Slutmall: ${j.title || "Slutmall"}` } : null;
+    return j ? { value: v, len: j.duration_s || 0, label: `Slutmall: ${j.title || "Slutmall"}`,
+      url: assetUrl(j.output_asset_id) } : null;
   }
+  const endVideo = $("sms-end-video");
+  endVideo.addEventListener("error", () => { $("sms-end-error").hidden = false; });
+  function updateEndPreview() {
+    const end = kind() === "sms" ? chosenEnd() : null;
+    $("sms-end-preview").hidden = !end;
+    const url = end?.url || null;
+    if (url === endVideo.getAttribute("src")) return;
+    $("sms-end-error").hidden = true;
+    if (url) {
+      endVideo.setAttribute("aria-label", `Förhandsvisning av ${end.label}`);
+      endVideo.src = url;
+    } else {
+      endVideo.removeAttribute("src");
+      endVideo.load();
+    }
+  }
+  $("sms-end-list").addEventListener("change", () => { updateEndPreview(); updateTiming(); });
   function timingConv() {
     const notification = $("sms-notification").value.trim();
     const messages = [];
@@ -665,7 +700,7 @@
     $("sms-length-box").hidden = sm;
     $("sms-preview-box").hidden = sm;
     $("sms-title").placeholder = sm ? "T.ex. Friskvård – brinner inne" : "T.ex. Sugar daddy – golf";
-    updateSlutmallPreview(); updateTiming();
+    updateSlutmallPreview(); updateEndPreview(); updateTiming();
   }
   document.querySelectorAll("[name=gv-kind]").forEach((r) => r.addEventListener("change", applyMode));
   ["sm-rad1", "sm-rad2"].forEach((id) => $(id).addEventListener("input", () => { updateSlutmallPreview(); updateTiming(); }));
@@ -815,7 +850,14 @@
     for (const j of active) {
       try {
         const res = await fetch(STATUS_URL.replace(ZERO, j.id), { credentials: "same-origin", headers: { Accept: "application/json" } });
-        if (res.ok) { const body = await res.json(); Object.assign(j, body.job); }
+        if (res.ok) {
+          const body = await res.json();
+          Object.assign(j, body.job);
+          if (j.kind === "slutmall" && j.status === "done" && j.output_asset_id && !KLARA.some((item) => item.id === j.id)) {
+            KLARA.unshift(j);
+            renderEnds();
+          }
+        }
       } catch (err) { /* try again next round */ }
     }
     if (active.length) renderJobs();
