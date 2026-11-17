@@ -357,10 +357,11 @@ class SlutmallFlowTests(TestCase):
         self.assertContains(response, "sm-klara-data")
 
     def test_finished_slutmall_is_listed_under_slut_and_reopens(self):
-        job, _ = done_slutmall(self.company, self.user, duration=6.9)
+        job, asset = done_slutmall(self.company, self.user, duration=6.9)
         page = self.client.get(self.url)
         klara = json.loads(page.content.decode().split('id="sm-klara-data" type="application/json">', 1)[1].split("</script>", 1)[0])
         self.assertEqual([(j["id"], j["format"], j["duration_s"]) for j in klara], [(str(job.pk), "9x16", 6.9)])
+        self.assertEqual(klara[0]["output_asset_id"], str(asset.pk))
         response = self.create({"messages": [{"side": "recv", "text": "Hej"}], "slutmall": str(job.pk)})
         self.assertEqual(response.status_code, 201, response.content)
         film = SmsFilmJob.objects.get(kind="sms")
@@ -384,10 +385,15 @@ class SlutmallFlowTests(TestCase):
         font = self.client.get(url("assets/anton.woff2"))
         self.assertEqual((font.status_code, font["Content-Type"]), (200, "font/woff2"))
         self.assertEqual(self.client.get(url("assets/portal-epassi.jpg")).status_code, 200)
-        for bad in ("render.mjs", "README.md", "LIBRARY.json", "assets/../render.mjs", "../views.py", "assets/finns-inte.png"):
+        spotlight = self.client.get(url("spotlight-9x16.mp4"), HTTP_RANGE="bytes=0-15")
+        self.assertEqual((spotlight.status_code, spotlight["Content-Type"]), (206, "video/mp4"))
+        self.assertTrue(spotlight["Content-Range"].startswith("bytes 0-15/"))
+        for bad in ("render.mjs", "README.md", "LIBRARY.json", "assets/../render.mjs", "../views.py", "assets/finns-inte.png",
+                    "spotlight-4x5.mp4", "assets/spotlight-9x16.mp4"):
             self.assertEqual(self.client.get(url(bad)).status_code, 404, bad)
         self.client.logout()
         self.assertEqual(self.client.get(url("slutmall.html")).status_code, 302)
+        self.assertEqual(self.client.get(url("spotlight-9x16.mp4")).status_code, 302)
 
     def test_post_creates_slutmall_job_and_worker_payload(self):
         response = self.create({"kind": "slutmall", "mall": "alla", "rad1": "Friskvårdsbidrag kvar?",

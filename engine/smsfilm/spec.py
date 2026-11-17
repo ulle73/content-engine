@@ -284,7 +284,7 @@ SLUTMALLAR = {
 }
 SLUTMALL_RAD1 = 40
 SLUTMALL_RAD2 = 48
-SLUTMALL_LEN = 7.7  # render.mjs reports the real length; this is only the estimate shown before rendering
+SLUTMALL_LEN = 3.1  # Minimum length; slow or long animations can need more time.
 SLUTMALL_EFFEKTER = {
     "small": "Smäll",
     "studs": "Studs",

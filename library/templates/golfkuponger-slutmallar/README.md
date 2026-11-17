@@ -72,7 +72,7 @@ Dashboarden och servern (`engine/smsfilm/spec.py`, `SLUTMALL_STIL`) använder sa
 
 Ut: `<ut>/slutmall-<mall>-<format>.mp4` och ett kontaktark `kontakt-<mall>-<format>.jpg`. Sista raden på stdout är
 JSON med filerna och längden. Kräver Node, ffmpeg och Playwright i `work/animate` (via
-`.claude/skills/animate/tools/pw.mjs`, som kör systemets Chrome). Längd: ca 7,7 s för `alla`, ca 6,9 s för en portal.
+`.claude/skills/animate/tools/pw.mjs`, som kör systemets Chrome). Längd: från 3,1 s, beroende på text, effekt och tempo.
 
 ## I dashboarden
 

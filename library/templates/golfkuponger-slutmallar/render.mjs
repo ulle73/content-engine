@@ -59,7 +59,7 @@ try {
       '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', ut]);
     fs.rmSync(rutor, { recursive: true, force: true });
     ff(['-i', ut, '-f', 'null', '-']);   // leveransfilen ska gå att avkoda
-    const tider = [0.4, 1.2, 1.9, 2.8, 4.0, LEN - 0.1];
+    const tider = [0.13, 0.33, 0.53, 0.7, 0.85].map(andelen => LEN * andelen).concat(LEN - 0.1);
     const kontakt = path.join(UT, `kontakt-${MALL}-${fmt}.jpg`);
     ff([...tider.flatMap(t => ['-ss', t.toFixed(2), '-i', ut]), '-filter_complex',
       tider.map((_, i) => `[${i}:v]scale=300:-2,trim=end_frame=1[k${i}]`).join(';') + ';' + tider.map((_, i) => `[k${i}]`).join('') + `hstack=inputs=${tider.length}`,
