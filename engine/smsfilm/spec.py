@@ -81,8 +81,18 @@ def schedule(conv):
     hold = conv["endHold"] if _num(conv.get("endHold")) else 0
     min_end = max([prev_start + max(read_time(prev), 2.2, hold) + 0.4, *ends])
     duration = math.ceil(min_end * 2) / 2
-    total = round(duration + (OUTRO_LEN if conv.get("outro") == "spotlight" else 0), 2)
+    total = round(duration + outro_len(conv), 2)
     return starts, total
+
+
+def outro_len(conv):
+    """Length of what follows the conversation: the Spotlight clip or a rendered slutmall ({"src", "len"})."""
+    outro = conv.get("outro")
+    if outro == "spotlight":
+        return OUTRO_LEN
+    if isinstance(outro, dict) and _num(outro.get("len")) and outro["len"] > 0:
+        return float(outro["len"])
+    return 0
 
 
 # --- form → conversation --------------------------------------------------------------------------------------
@@ -225,10 +235,17 @@ def build(form, files, company):
         raise SmsFilmError("Lägg till minst ett meddelande.")
     conv["messages"] = messages
     saved["messages"] = saved_messages
-    if form.get("outro"):
+    slutmall = _slutmall_outro(form.get("slutmall"), company)
+    if slutmall:
+        job, asset = slutmall
+        length = round(job.duration_s or SLUTMALL_LEN, 2)
+        conv["outro"] = {"asset": str(asset.pk), "src": f"assets/outro/slutmall-{asset.pk}.mp4", "len": length}
+        conv["endHold"] = 2
+    elif form.get("outro"):
         conv["outro"] = "spotlight"
         conv["endHold"] = 2
-    saved["outro"] = bool(form.get("outro"))
+    saved["outro"] = bool(form.get("outro")) and not slutmall
+    saved["slutmall"] = str(slutmall[0].pk) if slutmall else ""
     conv["typingSpeed"] = 1.4
     conv["sentTypingSpeed"] = 0.7
 
@@ -236,6 +253,24 @@ def build(form, files, company):
     if total > MAX_SECONDS:
         raise SmsFilmError(f"Filmen blir {total:.0f} sekunder. Högst {MAX_SECONDS} sekunder – ta bort några meddelanden.")
     return conv, images.ids, saved, total
+
+
+def _slutmall_outro(ref, company):
+    """A finished 9:16 slutmall chosen under "Slut". Returns (job, video asset) or None when nothing is chosen."""
+    if not ref:
+        return None
+    from .models import SmsFilmJob
+
+    try:
+        job_id = uuid.UUID(str(ref))
+    except ValueError as exc:
+        raise SmsFilmError("Slutmallen: ogiltigt val.") from exc
+    job = SmsFilmJob.objects.filter(pk=job_id, company=company, kind="slutmall").select_related("output_asset").first()
+    if job is None or job.status != "done" or job.output_asset is None or job.output_asset.kind != "video":
+        raise SmsFilmError("Slutmallen finns inte längre. Välj en annan.")
+    if slutmall_format(job.form) != "9x16":
+        raise SmsFilmError("Slutmallen är i 4:5. SMS-filmen är 9:16, så välj en slutmall i 9:16.")
+    return job, job.output_asset
 
 
 # --- slutmallar (library/templates/golfkuponger-slutmallar) ----------------------------------------------------
@@ -276,6 +311,13 @@ SLUTMALL_STIL = {
     "skak": ("Skakning", "%", 0, 200, None),
 }
 SLUTMALL_SKAK = {"small": 100, "studs": 40}  # other effects: 0
+SLUTMALL_FORMAT = {"9x16": "9:16 (1080×1920)", "4x5": "4:5 (1080×1350)"}
+
+
+def slutmall_format(form):
+    """Older slutmallar were always 9:16 and have no format in their form."""
+    value = (form or {}).get("format")
+    return value if value in SLUTMALL_FORMAT else "9x16"
 
 
 def slutmall_default(key, effekt):
@@ -315,4 +357,8 @@ def build_slutmall(form):
     if effekt not in SLUTMALL_EFFEKTER:
         raise SmsFilmError("Välj en effekt för texten.")
     stil = _slutmall_stil(form.get("stil"), effekt)
-    return {"kind": "slutmall", "mall": mall, "rad1": rad1, "rad2": rad2, "effekt": effekt, "stil": stil}, SLUTMALL_LEN
+    fmt = form.get("format") or "9x16"
+    if fmt not in SLUTMALL_FORMAT:
+        raise SmsFilmError("Välj format för slutmallen.")
+    return ({"kind": "slutmall", "mall": mall, "rad1": rad1, "rad2": rad2, "effekt": effekt, "stil": stil,
+             "format": fmt}, SLUTMALL_LEN)

@@ -128,6 +128,10 @@
   .sms-film-page .sm-live { position: sticky; top: 1rem; }
   .sms-film-page .sm-frame { width: 270px; height: 480px; overflow: hidden; border-radius: 12px; background: #0f2a1d; }
   .sms-film-page .sm-frame iframe { width: 1080px; height: 1920px; border: 0; transform: scale(.25); transform-origin: 0 0; pointer-events: none; display: block; }
+  .sms-film-page .sm-frame.f4x5 { height: 337.5px; }
+  .sms-film-page .sm-frame.f4x5 iframe { height: 1350px; }
+  .sms-film-page .end-list { display: grid; gap: .5rem; }
+  .sms-film-page .end-list .check.off { opacity: .55; }
   .sms-film-page .sm-live-actions { display: flex; gap: .6rem; align-items: center; justify-content: space-between; margin-top: .5rem; }
   .sms-film-page .sm-zoner { margin: 0; font-size: .85rem; }
   .sms-film-page .sm-warn { color: #b3261e; font-size: .85rem; margin: .3rem 0 0; padding-left: 1.1rem; }
@@ -157,11 +161,14 @@
         <h2 id="sm-title">Slutmall</h2>
         <div class="field"><label for="sm-mall">Vilken slutmall</label>
           <select id="sm-mall">{% for m in slutmallar %}<option value="{{ m.id }}">{{ m.namn }}</option>{% endfor %}</select></div>
+        <div class="field"><label for="sm-format">Format</label>
+          <select id="sm-format">{% for f in slutmall_formats %}<option value="{{ f.id }}">{{ f.namn }}</option>{% endfor %}</select>
+          <span class="small">SMS-filmer är 9:16, så bara en 9:16-slutmall kan läggas sist i en SMS-film.</span></div>
         <div class="field"><label for="sm-rad1">Rad 1 – liten guldtext överst <span class="count" id="sm-rad1-count"></span></label>
           <input type="text" id="sm-rad1" maxlength="{{ slutmall_limits.rad1 }}" placeholder="Friskvårdsbidrag kvar?"></div>
         <div class="field"><label for="sm-rad2">Rad 2 – stor rubrik <span class="count" id="sm-rad2-count"></span></label>
           <input type="text" id="sm-rad2" maxlength="{{ slutmall_limits.rad2 }}" placeholder="Det brinner inne *31/12*"></div>
-        <p class="small">Skriv <code>*ord*</code> i rad 2 för att göra orden guldfärgade. Rad 1 kan lämnas tom. Filmen blir 9:16 med ljud.</p>
+        <p class="small">Skriv <code>*ord*</code> i rad 2 för att göra orden guldfärgade. Rad 1 kan lämnas tom. Filmen får ljud.</p>
         <div class="field"><label for="sm-effekt">Hur texten landar</label>
           <select id="sm-effekt">{% for e in slutmall_effekter %}<option value="{{ e.id }}">{{ e.namn }}</option>{% endfor %}</select></div>
         <div class="sm-layout">
@@ -199,7 +206,12 @@
 
       <section aria-labelledby="sms-end-title">
         <h2 id="sms-end-title">Slut</h2>
-        <label class="check"><input type="checkbox" id="sms-outro"><span>Golfkuponger-logga på slutet<small>Spotlight-loggan svingar in efter sista meddelandet (+{{ limits.outro|floatformat:1 }} s).</small></span></label>
+        <p class="small">Välj vad som visas efter sista meddelandet.</p>
+        <div class="end-list" id="sms-end-list" role="radiogroup" aria-labelledby="sms-end-title">
+          <label class="check"><input type="radio" name="sms-end" value="" checked><span>Inget slut<small>Filmen slutar efter sista meddelandet.</small></span></label>
+          <label class="check"><input type="radio" name="sms-end" value="spotlight"><span>Golfkuponger-logga<small>Spotlight-loggan svingar in (+{{ limits.outro|floatformat:1 }} s).</small></span></label>
+        </div>
+        <p class="small" id="sms-end-empty">Dina slutmallar dyker upp här när de är klara. Skapa en under Typ av video → Slutmall.</p>
       </section>
 
       <section>
@@ -240,6 +252,7 @@
 {{ limits|json_script:'sms-limits-data' }}
 {{ slutmall_stil|json_script:'sm-stil-data' }}
 {{ slutmall_skak|json_script:'sm-skak-data' }}
+{{ slutmall_klara|json_script:'sm-klara-data' }}
 <script>
 (function () {
   "use strict";
@@ -295,8 +308,32 @@
     });
     const hold = conv.outro ? 2 : 0;
     const minEnd = Math.max(prevStart + Math.max(readTime(prev), 2.2, hold) + 0.4, ...ends);
-    const total = Math.round((Math.ceil(minEnd * 2) / 2 + (conv.outro ? LIMITS.outro : 0)) * 100) / 100;
+    const total = Math.round((Math.ceil(minEnd * 2) / 2 + (conv.outro ? conv.outro.len : 0)) * 100) / 100;
     return { starts, total };
+  }
+  // ---------------------------------------------------------------- end ("Slut"): nothing, Spotlight or a finished slutmall
+  const KLARA = JSON.parse(document.getElementById("sm-klara-data").textContent);
+  const FORMAT_NAMN = { "9x16": "9:16", "4x5": "4:5" };
+  function renderEnds() {
+    const list = $("sms-end-list");
+    KLARA.forEach((j) => {
+      const ok = (j.format || "9x16") === "9x16";
+      const len = j.duration_s || 0;
+      const input = el("input", { type: "radio", name: "sms-end", value: j.id });
+      input.disabled = !ok;
+      const note = `${FORMAT_NAMN[j.format] || "9:16"} · ${fmt(len)}` + (ok ? "" : " · bara 9:16 passar SMS-filmen");
+      const label = el("label", { class: "check" + (ok ? "" : " off") }, input,
+        el("span", {}, j.title || "Slutmall", el("small", {}, note)));
+      list.append(label);
+    });
+    $("sms-end-empty").hidden = KLARA.length > 0;
+    list.addEventListener("change", updateTiming);
+  }
+  function chosenEnd() {
+    const v = (document.querySelector("[name=sms-end]:checked") || {}).value || "";
+    if (v === "spotlight") return { value: v, len: LIMITS.outro, label: "Golfkuponger-loggan" };
+    const j = KLARA.find((k) => k.id === v);
+    return j ? { value: v, len: j.duration_s || 0, label: `Slutmall: ${j.title || "Slutmall"}` } : null;
   }
   function timingConv() {
     const notification = $("sms-notification").value.trim();
@@ -307,7 +344,7 @@
       if (!text && !m.image) return;
       messages.push({ side: m.side, text, image: !!m.image, glasses: m.glasses.on && !!m.image, label: (m.side === "sent" ? "Du" : "Hen") + " " + (i + 1), id: m.id });
     });
-    return { lockscreen: !!notification, outro: $("sms-outro").checked, messages };
+    return { lockscreen: !!notification, outro: chosenEnd(), messages };
   }
   function updateTiming() {
     if (kind() === "slutmall") {
@@ -337,8 +374,8 @@
     state.messages.forEach((m) => { if (!m.text.trim() && !m.image) { const el = document.querySelector(`[data-msg-time="${m.id}"]`); if (el) el.textContent = "tomt – kommer inte med"; } });
     if (conv.outro && conv.messages.length) {
       const li = document.createElement("li");
-      li.innerHTML = "<span>Golfkuponger-loggan</span>";
-      const b = document.createElement("span"); b.textContent = `+${fmt(LIMITS.outro)}`; li.append(b); list.append(li);
+      const a = document.createElement("span"); a.textContent = conv.outro.label;
+      const b = document.createElement("span"); b.textContent = `+${fmt(conv.outro.len)}`; li.append(a, b); list.append(li);
     }
     $("sms-submit").disabled = over || !conv.messages.length;
     $("sms-submit-hint").textContent = !conv.messages.length ? "Skriv minst ett meddelande." : "";
@@ -532,7 +569,7 @@
   const showAvatar = bindSingle("avatar", "sms-avatar-input", "sms-avatar-preview", "sms-avatar-clear");
   const toggleWall = () => { $("sms-wall-field").hidden = !$("sms-notification").value.trim(); };
   $("sms-notification").addEventListener("input", () => { toggleWall(); updateTiming(); });
-  $("sms-outro").addEventListener("change", updateTiming);
+  renderEnds();
 
   // ---------------------------------------------------------------- slutmall (svingloggan + två rader)
   // Every size and spacing is a slider; the live preview is the real template (slutmall.html) in a scaled iframe.
@@ -575,7 +612,7 @@
   let smTimer = 0, smPlaying = 0;
   function smUrl(extra) {
     const q = new URLSearchParams({ mall: $("sm-mall").value, r1: $("sm-rad1").value.trim(),
-      r2: $("sm-rad2").value.trim() || $("sm-rad2").placeholder, h: "1920", eff: $("sm-effekt").value, logga: "1" });
+      r2: $("sm-rad2").value.trim() || $("sm-rad2").placeholder, h: $("sm-format").value === "4x5" ? "1350" : "1920", eff: $("sm-effekt").value, logga: "1" });
     Object.entries(smStil()).forEach(([k, v]) => q.set("s_" + k, v));
     if ($("sm-zoner").checked) q.set("zoner", "1");
     Object.entries(extra || {}).forEach(([k, v]) => q.set(k, v));
@@ -583,6 +620,7 @@
   }
   function smLive() {
     clearTimeout(smTimer);
+    document.querySelector(".sm-frame").classList.toggle("f4x5", $("sm-format").value === "4x5");
     smTimer = setTimeout(() => { smStop(); $("sm-iframe").src = smUrl({ slut: "1" }); }, 150);
   }
   function smWin() { try { return $("sm-iframe").contentWindow; } catch (_) { return null; } }
@@ -612,7 +650,7 @@
   });
   $("sm-reset").addEventListener("click", () => { smSetStil({}); smLive(); });
   $("sm-effekt").addEventListener("change", () => { smInputs.skak && (smInputs.skak.input.value = smDefault(smInputs.skak.s), smInputs.skak.show()); smLive(); });
-  ["sm-mall", "sm-zoner"].forEach((id) => $(id).addEventListener("change", smLive));
+  ["sm-mall", "sm-zoner", "sm-format"].forEach((id) => $(id).addEventListener("change", smLive));
 
   function updateSlutmallPreview() {
     const r1 = $("sm-rad1").value, r2 = $("sm-rad2").value;
@@ -640,12 +678,15 @@
     $("sm-rad1").value = reopen.rad1 || "";
     $("sm-rad2").value = reopen.rad2 || "";
     if (reopen.effekt) $("sm-effekt").value = reopen.effekt;
+    if (reopen.format) $("sm-format").value = reopen.format;
     smSetStil(reopen.stil || {});
     state.messages.push(newMsg("sent"));
   } else if (reopen) {
     $("sms-title").value = reopen.title || "";
     $("sms-notification").value = reopen.notification || "";
-    $("sms-outro").checked = !!reopen.outro;
+    const endPick = document.querySelector(`[name=sms-end][value="${CSS.escape(reopen.slutmall || (reopen.outro ? "spotlight" : ""))}"]:not(:disabled)`)
+      || document.querySelector("[name=sms-end][value='']");
+    endPick.checked = true;
     $("sms-contact").value = reopen.contact && reopen.contact !== "Alex" ? reopen.contact : "";
     $("sms-clock").value = reopen.clock && reopen.clock !== "9:41" ? reopen.clock : "";
     $("sms-chatdate").value = reopen.chatDate && reopen.chatDate !== "Idag" ? reopen.chatDate : "";
@@ -684,7 +725,7 @@
     const form = kind() === "slutmall" ? {
       kind: "slutmall", title: $("sms-title").value.trim(), mall: $("sm-mall").value,
       rad1: $("sm-rad1").value.trim(), rad2: $("sm-rad2").value.trim(),
-      effekt: $("sm-effekt").value, stil: smStil(),
+      effekt: $("sm-effekt").value, stil: smStil(), format: $("sm-format").value,
     } : {
       title: $("sms-title").value.trim(),
       notification,
@@ -696,7 +737,8 @@
       chatDate: $("sms-chatdate").value.trim(),
       keyboard: $("sms-keyboard").checked,
       sounds: $("sms-sounds").checked,
-      outro: $("sms-outro").checked,
+      outro: (chosenEnd() || {}).value === "spotlight",
+      slutmall: ((v) => (v && v !== "spotlight" ? v : ""))((chosenEnd() || {}).value),
       messages: state.messages.filter((m) => m.text.trim() || m.image).map((m) => ({
         side: m.side, text: m.text.trim(), image: ref(m.image),
         glasses: m.glasses.on && m.image ? { on: true, x: m.glasses.x, y: m.glasses.y, width: m.glasses.width, rotate: m.glasses.rotate } : { on: false },

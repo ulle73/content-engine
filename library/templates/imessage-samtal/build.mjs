@@ -197,11 +197,18 @@ export async function build() {
   }
   schedule(data);
   // Avslutning: Golfkupongers slutbild Spotlight (3,1 s) efter en tonad övergång till mörkgrönt (#0c140f).
+  // En egen slutmall (renderad i Content Engine) är ett objekt {src, len} med filen i assets/outro/.
   data._total = data.duration;
+  let outroSrc = null, outroLen = 0;
   if (data.outro === 'spotlight') {
     await prepareOutro();
-    data._total = round(data.duration + OUTRO_LEN);
+    outroSrc = 'assets/outro/spotlight-9x16.mp4'; outroLen = OUTRO_LEN;
+  } else if (data.outro && typeof data.outro === 'object') {
+    if (!(Number.isFinite(data.outro.len) && data.outro.len > 0)) throw Error('Slutmall: längden saknas.');
+    await assetPath(data.outro.src, 'Slutmall');
+    outroSrc = data.outro.src; outroLen = data.outro.len;
   }
+  if (outroSrc) data._total = round(data.duration + outroLen);
   await writeFile(new URL('conversation.generated.js', here), `window.CHAT_CONFIG = ${JSON.stringify(data, null, 2)};\n`);
 
   const target = new URL('index.html', here);
@@ -218,8 +225,8 @@ export async function build() {
   const introClip = data.intro?._sound ? `\n  <audio id="intro-sound" class="clip" src="${escapeHtml(data.intro._sound)}" data-start="${data.intro._notify}" data-duration="1.2" data-track-index="6" data-volume="0.9"></audio>` : '';
   html = html.replace(/<!-- SOUNDS:START -->[\s\S]*?<!-- SOUNDS:END -->/, `<!-- SOUNDS:START -->\n  ${sounds}${keyClip}${introClip}\n  <!-- SOUNDS:END -->`);
   html = html.replace(/(data-composition-id="main" data-start="0" data-duration=")[\d.]+"/, `$1${data._total}"`);
-  const outro = data.outro === 'spotlight'
-    ? `<div id="outro-fade" data-layout-allow-occlusion></div>\n  <video id="outro-video" class="clip" src="assets/outro/spotlight-9x16.mp4" data-start="${data.duration}" data-duration="${OUTRO_LEN}" data-track-index="7" data-has-audio="true" playsinline></video>`
+  const outro = outroSrc
+    ? `<div id="outro-fade" data-layout-allow-occlusion></div>\n  <video id="outro-video" class="clip" src="${escapeHtml(outroSrc)}" data-start="${data.duration}" data-duration="${outroLen}" data-track-index="7" data-has-audio="true" playsinline></video>`
     : '';
   html = html.replace(/<!-- OUTRO:START -->[\s\S]*?<!-- OUTRO:END -->/, `<!-- OUTRO:START -->\n  ${outro}\n  <!-- OUTRO:END -->`);
   await writeFile(target, html);

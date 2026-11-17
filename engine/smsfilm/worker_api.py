@@ -99,6 +99,8 @@ def asset_bytes(request, job_id, asset_id):
     asset = None
     if str(asset_id) in {str(i) for i in job.image_asset_ids}:
         asset = job.company.media_assets.filter(pk=asset_id, kind="image").first()
+    elif str(asset_id) == service.outro_asset_id(job):
+        asset = job.company.media_assets.filter(pk=asset_id, kind="video").first()
     if not asset:
         return JsonResponse({"error": "Bilden hör inte till filmjobbet."}, status=404)
     return _stream(lambda: open_asset(asset), asset.mime_type, asset.byte_size)
