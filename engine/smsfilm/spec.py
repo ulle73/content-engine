@@ -250,6 +250,54 @@ SLUTMALLAR = {
 SLUTMALL_RAD1 = 40
 SLUTMALL_RAD2 = 48
 SLUTMALL_LEN = 7.7  # render.mjs reports the real length; this is only the estimate shown before rendering
+SLUTMALL_EFFEKTER = {
+    "small": "Smäll",
+    "studs": "Studs",
+    "tona": "Tona in",
+    "glid": "Glid upp",
+    "skriv": "Skrivmaskin",
+    "avtack": "Avtäck",
+}
+# Same keys and limits as STIL in slutmall.html: (label, unit, min, max, default). skak's default depends on the effect.
+SLUTMALL_STIL = {
+    "logga": ("Loggans storlek", "%", 50, 160, 100),
+    "ikoner": ("Portalikonernas storlek", "%", 50, 160, 100),
+    "rad1": ("Rad 1, storlek", "%", 50, 160, 100),
+    "rubrik": ("Rad 2, största storlek", "%", 50, 160, 100),
+    "cta": ("Uppmaningens storlek", "%", 50, 160, 100),
+    "bredd": ("Textens bredd", "px", 560, 950, 778),
+    "hojd": ("Flytta allt nedåt", "px", -120, 300, 0),
+    "luft_logga": ("Luft under loggan", "px", -30, 240, 0),
+    "luft_rad1": ("Luft under rad 1", "px", -30, 160, 0),
+    "luft_rubrik": ("Luft under rad 2", "px", -20, 160, 0),
+    "luft_cta": ("Luft ovanför ikonerna", "px", -20, 200, 0),
+    "luft_ikoner": ("Luft mellan ikonerna", "px", -8, 60, 0),
+    "tempo": ("Tempo", "%", 50, 200, 100),
+    "skak": ("Skakning", "%", 0, 200, None),
+}
+SLUTMALL_SKAK = {"small": 100, "studs": 40}  # other effects: 0
+
+
+def slutmall_default(key, effekt):
+    if key == "skak":
+        return SLUTMALL_SKAK.get(effekt, 0)
+    return SLUTMALL_STIL[key][4]
+
+
+def _slutmall_stil(raw, effekt):
+    """Keeps known keys only, as whole numbers clamped to their limits. Missing keys use the template's default."""
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict):
+        raise SmsFilmError("Stilvalen kom inte fram. Ladda om sidan och försök igen.")
+    stil = {}
+    for key, (_, _, lo, hi, _) in SLUTMALL_STIL.items():
+        value = raw.get(key)
+        if _num(value):
+            value = int(round(min(hi, max(lo, float(value)))))
+            if value != slutmall_default(key, effekt):
+                stil[key] = value
+    return stil
 
 
 def build_slutmall(form):
@@ -263,4 +311,8 @@ def build_slutmall(form):
     rad2 = _text(form.get("rad2"), "Rad 2", SLUTMALL_RAD2, required=True)
     if "\n" in rad1 or "\n" in rad2:
         raise SmsFilmError("Raderna får inte innehålla radbrytningar.")
-    return {"kind": "slutmall", "mall": mall, "rad1": rad1, "rad2": rad2}, SLUTMALL_LEN
+    effekt = form.get("effekt") or "small"
+    if effekt not in SLUTMALL_EFFEKTER:
+        raise SmsFilmError("Välj en effekt för texten.")
+    stil = _slutmall_stil(form.get("stil"), effekt)
+    return {"kind": "slutmall", "mall": mall, "rad1": rad1, "rad2": rad2, "effekt": effekt, "stil": stil}, SLUTMALL_LEN

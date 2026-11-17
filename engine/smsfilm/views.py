@@ -1,14 +1,16 @@
 """Dashboard page "Generera video → SMS-film": the form, the job list and a JSON status endpoint for polling."""
 
 import json
+import re
 import uuid
+from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import Http404, JsonResponse
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import redirect, render
-from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.clickjacking import xframe_options_exempt, xframe_options_sameorigin
 
 from engine.ownership import company_required
 
@@ -81,7 +83,31 @@ def _sms_film(request, workspace_id, *, embedded):
         "slutmallar": [{"id": k, "namn": v} for k, v in spec.SLUTMALLAR.items()],
         "slutmall_limits": {"rad1": spec.SLUTMALL_RAD1, "rad2": spec.SLUTMALL_RAD2},
         "slutmall_len": spec.SLUTMALL_LEN,
+        "slutmall_effekter": [{"id": k, "namn": v} for k, v in spec.SLUTMALL_EFFEKTER.items()],
+        "slutmall_stil": [{"id": k, "namn": namn, "enhet": enhet, "min": lo, "max": hi, "std": std}
+                          for k, (namn, enhet, lo, hi, std) in spec.SLUTMALL_STIL.items()],
+        "slutmall_skak": spec.SLUTMALL_SKAK,
     })
+
+
+SLUTMALL_DIR = Path(__file__).resolve().parents[2] / "library" / "templates" / "golfkuponger-slutmallar"
+SLUTMALL_FILE_RE = re.compile(r"^(slutmall\.html|assets/[a-z0-9-]+\.(woff2|png|jpg))$")
+SLUTMALL_TYPES = {"html": "text/html; charset=utf-8", "woff2": "font/woff2", "png": "image/png", "jpg": "image/jpeg"}
+
+
+@login_required
+@company_required
+@xframe_options_sameorigin
+def slutmall_preview(request, workspace_id, fil):
+    """Serves the end-card template and its assets so the form can show a live preview in an iframe."""
+    if not SLUTMALL_FILE_RE.match(fil):
+        raise Http404
+    path = SLUTMALL_DIR / fil
+    if not path.is_file():
+        raise Http404
+    response = FileResponse(path.open("rb"), content_type=SLUTMALL_TYPES[fil.rsplit(".", 1)[-1]])
+    response["Cache-Control"] = "private, max-age=300"
+    return response
 
 
 @login_required
