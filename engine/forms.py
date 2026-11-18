@@ -131,11 +131,18 @@ class MediaCreationForm(forms.Form):
         super().__init__(*args, **kwargs)
         from django.db.models import Q
 
-        from .creative_controls import CAMERAS, ENDINGS, MOTIONS, TEMPLATE_LABELS, creation_catalog
+        from .creative_controls import (
+            CAMERAS,
+            ENDINGS,
+            MOTIONS,
+            TEMPLATE_LABELS,
+            creation_catalog,
+            recipe_available_for_company,
+        )
         from .creative_recipes import registry
         from .media import publishable_assets
         kind = (self.data if self.is_bound else self.initial).get("kind", "image")
-        self.catalog = creation_catalog(kind)
+        self.catalog = creation_catalog(kind, company=company)
         images = publishable_assets(company.media_assets.filter(kind="image").filter(
             Q(purpose="content") | Q(pk=company.official_logo_id)).filter(
             Q(expires_at__isnull=True) | Q(expires_at__gt=timezone.now()))).order_by("-created_at")
@@ -147,7 +154,8 @@ class MediaCreationForm(forms.Form):
             self.fields[name].choices = [(key, label) for key, (label, _) in options.items()]
             self.fields[name].initial = "auto"
         self.fields["recipe_id"].choices = [("", "Egen id\u00e9 / Auto")] + [
-            (r.recipe_id, TEMPLATE_LABELS.get(r.recipe_id, (r.name, ""))[0]) for r in registry() if kind in r.kinds]
+            (r.recipe_id, TEMPLATE_LABELS.get(r.recipe_id, (r.name, ""))[0]) for r in registry()
+            if kind in r.kinds and recipe_available_for_company(r, company)]
         # Include an invalid previously-selected model so it is never silently reset to Auto.
         values = self.data if self.is_bound else self.initial
         roles = {role for field, role in (("source_asset", "START_IMAGE"), ("end_asset", "END_IMAGE")) if values.get(field)}
