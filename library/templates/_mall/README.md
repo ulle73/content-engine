@@ -38,4 +38,9 @@ node library/tools/kontrollera_mallar.mjs <mapp> --uppdatera-referens   ny refer
 node library/templates/<mall>/render.mjs --lokal [--format 4x5] [--satt rubrik="Hej"] [--ut work/x]
 ```
 
+Referensbilderna kommer från CI-jobbet `mallar` (Linux, Chrome). Chrome på Windows ritar textkanter lite annorlunda, så en
+lokal körning kan ligga strax över gränsen på 0,5 % fast inget ändrats. Gör så här för att uppdatera en referens: kör lokalt med
+`--uppdatera-referens` för att se bilden, pusha och låt CI-jobbet misslyckas. Ta sedan `<mall>-<format>.png` ur artefakten
+`mallkontroll` och lägg den i `referens/<format>.png`.
+
 En sida kan också öppnas fristående via en lokal server, med till exempel `?format=9x16&visa_zoner=1`. Då ritas plattformarnas osäkra zoner ovanpå bilden.
