@@ -128,6 +128,45 @@ def slutmall_preview(request, workspace_id, fil):
     return response
 
 
+MALL_ROOT = Path(__file__).resolve().parents[2] / "library" / "templates"
+MALL_NAMN_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,63}$")
+MALL_FIL_RE = re.compile(r"^(mall\.json|[a-z0-9_-]+\.html|assets/[a-z0-9-]+\.(woff2|png|jpg))$")
+MALL_TYPES = {**SLUTMALL_TYPES, "json": "application/json", "mjs": "text/javascript", "js": "text/javascript"}
+# The page helper shared by every template (library/templates/_mall). safezones.js is served next to it so a
+# page never has to reach outside library/templates; render-bas.mjs maps the same path.
+MALL_DELAT = {
+    "sida.mjs": MALL_ROOT / "_mall" / "sida.mjs",
+    "safezones.js": MALL_ROOT.parents[1] / "edit-renderer" / "src" / "safezones.js",
+}
+
+
+@login_required
+@company_required
+@xframe_options_exempt
+def mall_fil(request, workspace_id, mall, fil):
+    """Serves a dashboard template (mall/v1) for the live preview: its page, mall.json and assets, plus the shared
+    page helper under _mall. Only folders with a mall.json, only the page that mall.json names and only listed
+    file types; nothing else in the repository is reachable.
+    """
+    if mall == "_mall":
+        path = MALL_DELAT.get(fil)
+    else:
+        if not MALL_NAMN_RE.match(mall) or not MALL_FIL_RE.match(fil):
+            raise Http404
+        manifest = MALL_ROOT / mall / "mall.json"
+        if not manifest.is_file():
+            raise Http404
+        if fil.endswith(".html") and fil != json.loads(manifest.read_text(encoding="utf-8")).get("sida"):
+            raise Http404
+        path = MALL_ROOT / mall / fil
+    if path is None or not path.is_file():
+        raise Http404
+    response = FileResponse(path.open("rb"), content_type=MALL_TYPES[fil.rsplit(".", 1)[-1]])
+    response["Cache-Control"] = "private, max-age=300"
+    response["Content-Security-Policy"] = f"frame-ancestors 'self' {DASHBOARD_ORIGIN}"
+    return response
+
+
 @login_required
 @company_required
 def job_status(request, workspace_id, job_id):

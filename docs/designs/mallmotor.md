@@ -145,7 +145,7 @@ Varje mall är en mapp under `library/templates/`. `LIBRARY.json` pekar på `mal
 | `titel`, `typ` | Namn i dashboarden; `bild` eller `video`. |
 | `sida`, `render` | Filnamn för sidan och renderingsskriptet. |
 | `reglage` | Lista med `nyckel`, `typ` (text, tal, färg, val, bild, typsnitt, av/på), `standard`, `min`/`max`/`steg`, `etikett` och `grupp`. Grupp `"Fler inställningar"` fälls ihop. |
-| `standard_per` | Standardvärden som beror på ett annat val, t.ex. `{"format": {"4x5": {"fokus_y": 0.4}, "9x16": {"fokus_y": 0.5}}}`. Används för fokuspunkt och textstorlek per format. |
+| `standard_per` | Standardvärden som beror på ett annat val, t.ex. `{"format": {"4x5": {"fokus_y": 0.4}, "9x16": {"fokus_y": 0.5}}}`. Används för fokuspunkt och textstorlek per format. Nyckeln kan också vara ett val-reglage (steg 2: slutmallens skakning beror på effekten, `{"effekt": {"small": {"skak": 100}}}`). Format gäller först, sedan de andra i ordning. |
 | `format` | T.ex. `4x5` = 1080×1350 och `9x16` = 1080×1920. |
 | `utdata` | Vilka filer ett jobb ger, t.ex. `[{typ: "bild", format: ["4x5","9x16"]}]`. |
 
@@ -442,6 +442,18 @@ Arbetet delas i fem byggsteg. Varje steg blir en egen PR mot `main`, kan publice
 - Skriv `mall.json` för slutmallarna. Låt `slutmall.html` och `render.mjs` följa sidkontraktet och läsa zonerna från `edit-renderer/src/safezones.js`.
 - Behåll de gamla gränserna i `spec.py` tills steg 3, så att dashboarden fungerar under tiden.
 - **Klart när:** fem befintliga slutmallsjobb (olika portaler, effekter och format) renderas lokalt med `--lokal` och jämförs bildruta för bildruta mot de filer som redan ligger i R2. Skillnaden ska vara högst 0,5 % av pixlarna per bildruta, och ingen bildruta får sakna text eller logga. Bilderna sparas som referensbilder i `golfkuponger-slutmallar/referens/` och visas för Jonas.
+
+*Utfall 2026-11-19.* Det fanns bara tre slutmallsjobb i produktionen, och bara ett av dem var renderat med dagens kod. Jämförelsen gjordes därför i två delar:
+
+- Sex varierade fall med olika portaler, effekter, format och stilval. Varje fall renderades med den gamla koden från `main` och med den nya, lokalt. Högst 0,008 % ändrade pixlar per bildruta, och längd och antal bildrutor var lika.
+- Produktionsjobbet jämfördes mot sin fil i R2, som renderats på Linux. Högst 0,32 % ändrade pixlar per bildruta.
+
+Två ändringar i sidkontrollen följde av det här:
+
+- **Slump:** sidkontrollen räknar bara synliga skillnader. Chrome ritar oskärpa med ett brus på högst 6 av 255.
+- **Zoner:** för video kontrolleras zonerna på slutbilden och vid tiderna i `INFO.zon_tider`, inte mitt i en effekt. Smäll gör ordet 2,3 gånger större medan det landar.
+
+Förhandsvisningen hämtar nu sidan via `sms-film/mall/<mall>/<fil>`, eftersom sidan importerar `_mall/sida.mjs`. Den glesa utcheckningen i `sms-film-render.yml` tar med `library/templates/_mall` och `edit-renderer/src`.
 
 **Steg 3: Datamodellen och det generiska formuläret**
 

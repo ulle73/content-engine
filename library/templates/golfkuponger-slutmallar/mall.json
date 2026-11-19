@@ -1,0 +1,53 @@
+{
+  "schema": "mall/v1",
+  "id": "golfkuponger-slutmallar",
+  "titel": "Slutmall med svingloggan",
+  "beskrivning": "Den rörliga svingloggan, två fria textrader och portal(er). *ord* i rad 2 blir guld.",
+  "typ": "video",
+  "sida": "slutmall.html",
+  "render": "render.mjs",
+  "format": ["9x16", "4x5"],
+  "video": { "fps": 30 },
+  "utdata": [{ "typ": "video", "filtyp": "mp4", "format": ["9x16", "4x5"] }],
+  "reglage": [
+    { "nyckel": "mall", "typ": "val", "etikett": "Slutmall", "standard": "alla",
+      "val": [
+        { "varde": "alla", "etikett": "Alla portaler" },
+        { "varde": "epassi", "etikett": "Epassi" },
+        { "varde": "benify", "etikett": "Benify" },
+        { "varde": "sp", "etikett": "Söderberg & Partners" },
+        { "varde": "edenred", "etikett": "Edenred" }
+      ] },
+    { "nyckel": "text1", "typ": "text", "etikett": "Rad 1", "hjalp": "Liten guldrad överst. Får vara tom.", "standard": "Friskvårdsbidrag kvar?", "max_langd": 40 },
+    { "nyckel": "text2", "typ": "text", "etikett": "Rad 2", "hjalp": "Stor rubrik. *ord* blir guld.", "standard": "Det brinner inne 31/12", "max_langd": 48, "kravs": true },
+    { "nyckel": "effekt", "typ": "val", "etikett": "Effekt", "standard": "small",
+      "val": [
+        { "varde": "small", "etikett": "Smäll" },
+        { "varde": "studs", "etikett": "Studs" },
+        { "varde": "tona", "etikett": "Tona in" },
+        { "varde": "glid", "etikett": "Glid upp" },
+        { "varde": "skriv", "etikett": "Skrivmaskin" },
+        { "varde": "avtack", "etikett": "Avtäck" }
+      ] },
+    { "nyckel": "logga", "typ": "tal", "etikett": "Loggans storlek", "grupp": "Storlek", "standard": 100, "min": 50, "max": 160, "steg": 1, "enhet": "%" },
+    { "nyckel": "rad1", "typ": "tal", "etikett": "Rad 1, storlek", "grupp": "Storlek", "standard": 100, "min": 50, "max": 160, "steg": 1, "enhet": "%" },
+    { "nyckel": "rubrik", "typ": "tal", "etikett": "Rad 2, största storlek", "grupp": "Storlek", "standard": 100, "min": 50, "max": 160, "steg": 1, "enhet": "%" },
+    { "nyckel": "cta", "typ": "tal", "etikett": "Uppmaningens storlek", "grupp": "Storlek", "standard": 100, "min": 50, "max": 160, "steg": 1, "enhet": "%" },
+    { "nyckel": "ikoner", "typ": "tal", "etikett": "Portalikonernas storlek", "grupp": "Storlek", "standard": 100, "min": 50, "max": 160, "steg": 1, "enhet": "%" },
+    { "nyckel": "bredd", "typ": "tal", "etikett": "Textens bredd", "grupp": "Storlek", "standard": 778, "min": 560, "max": 950, "steg": 1, "enhet": "px" },
+    { "nyckel": "hojd", "typ": "tal", "etikett": "Flytta allt nedåt", "grupp": "Mellanrum och placering", "standard": 0, "min": -120, "max": 300, "steg": 1, "enhet": "px" },
+    { "nyckel": "luft_logga", "typ": "tal", "etikett": "Luft under loggan", "grupp": "Mellanrum och placering", "standard": 0, "min": -30, "max": 240, "steg": 1, "enhet": "px" },
+    { "nyckel": "luft_rad1", "typ": "tal", "etikett": "Luft under rad 1", "grupp": "Mellanrum och placering", "standard": 0, "min": -30, "max": 160, "steg": 1, "enhet": "px" },
+    { "nyckel": "luft_rubrik", "typ": "tal", "etikett": "Luft under rad 2", "grupp": "Mellanrum och placering", "standard": 0, "min": -20, "max": 160, "steg": 1, "enhet": "px" },
+    { "nyckel": "luft_cta", "typ": "tal", "etikett": "Luft ovanför ikonerna", "grupp": "Mellanrum och placering", "standard": 0, "min": -20, "max": 200, "steg": 1, "enhet": "px" },
+    { "nyckel": "luft_ikoner", "typ": "tal", "etikett": "Luft mellan ikonerna", "grupp": "Mellanrum och placering", "standard": 0, "min": -8, "max": 60, "steg": 1, "enhet": "px" },
+    { "nyckel": "tempo", "typ": "tal", "etikett": "Tempo", "grupp": "Rörelse", "standard": 100, "min": 50, "max": 200, "steg": 1, "enhet": "%" },
+    { "nyckel": "skak", "typ": "tal", "etikett": "Skakning", "grupp": "Rörelse", "hjalp": "Standard beror på effekten.", "standard": 0, "min": 0, "max": 200, "steg": 1, "enhet": "%" }
+  ],
+  "standard_per": {
+    "effekt": {
+      "small": { "skak": 100 },
+      "studs": { "skak": 40 }
+    }
+  }
+}

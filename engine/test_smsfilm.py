@@ -395,6 +395,25 @@ class SlutmallFlowTests(TestCase):
         self.assertEqual(self.client.get(url("slutmall.html")).status_code, 302)
         self.assertEqual(self.client.get(url("spotlight-9x16.mp4")).status_code, 302)
 
+    def test_mall_preview_serves_the_page_contract_files_only(self):
+        url = lambda mall, fil: reverse("engine:sms_film_mall", kwargs={"workspace_id": self.company.pk, "mall": mall, "fil": fil})
+        page = self.client.get(url("golfkuponger-slutmallar", "slutmall.html"))
+        self.assertEqual(page.status_code, 200)
+        self.assertNotIn("X-Frame-Options", page)
+        self.assertEqual(page["Content-Security-Policy"], "frame-ancestors 'self' https://dashboard.golfkuponger.se")
+        for mall, fil, typ in (("golfkuponger-slutmallar", "mall.json", "application/json"),
+                               ("golfkuponger-slutmallar", "assets/anton.woff2", "font/woff2"),
+                               ("_mall", "sida.mjs", "text/javascript"), ("_mall", "safezones.js", "text/javascript")):
+            response = self.client.get(url(mall, fil))
+            self.assertEqual((response.status_code, response["Content-Type"]), (200, typ), fil)
+        b"".join(self.client.get(url("_mall", "safezones.js")).streaming_content).decode().index("PLATFORM_ZONES")
+        for mall, fil in (("golfkuponger-slutmallar", "render.mjs"), ("golfkuponger-slutmallar", "README.md"),
+                          ("golfkuponger-slutmallar", "annan.html"), ("golfkuponger-slutmallar", "assets/../render.mjs"),
+                          ("golfkuponger-slutmallar", "referens/9x16.png"), ("_mall", "render-bas.mjs"), ("_mall", "mall.schema.json"),
+                          ("imessage-samtal", "mall.json"), ("..", "manage.py"), ("_mall", "../../manage.py")):
+            self.assertEqual(self.client.get(url(mall, fil)).status_code, 404, f"{mall}/{fil}")
+        self.client.logout()
+        self.assertEqual(self.client.get(url("golfkuponger-slutmallar", "slutmall.html")).status_code, 302)
     def test_post_creates_slutmall_job_and_worker_payload(self):
         response = self.create({"kind": "slutmall", "mall": "alla", "rad1": "Friskvårdsbidrag kvar?",
                                 "rad2": "Det brinner inne 31/12", "effekt": "studs", "stil": {"logga": 130}})

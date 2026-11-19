@@ -43,6 +43,7 @@
         "reglage"
       ],
       "path": "library/templates/golfkuponger-slutmallar/README.md",
+      "mall": "mall.json",
       "use": "node library/templates/golfkuponger-slutmallar/render.mjs --mall alla --rad1 \"Friskvårdsbidrag kvar?\" --rad2 \"Det brinner inne *31/12*\" --eff small --stil \"logga=100,ikoner=100\" --ut work/<film>/slut",
       "requires": [
         "node",

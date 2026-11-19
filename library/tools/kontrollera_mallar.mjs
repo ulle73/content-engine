@@ -2,8 +2,9 @@
 // Sidkontrollen för dashboardmallar (mall/v1). Öppnar varje mallsida i Chrome och stoppar om
 //   klar      sidan inte blir window.KLAR inom gränsen (eller kraschar när den startar)
 //   reglage   ett reglage i mall.json aldrig läses av sidan
-//   slump     samma t ger olika bild (i samma sida, baklänges eller i en ny sida)
-//   zon       text eller [data-zon]-element hamnar i plattformens osäkra zon (edit-renderer/src/safezones.js)
+//   slump     samma t ger synligt olika bild (i samma sida, baklänges eller i en ny sida)
+//   zon       text eller [data-zon]-element hamnar i plattformens osäkra zon (edit-renderer/src/safezones.js); för video
+//             på slutbilden (när allt landat) och vid tiderna i window.INFO.zon_tider, inte mitt i en effekt
 //   referens  bilden skiljer sig mer än 0,5 % av pixlarna från referens/<format>.png
 //
 //   node library/tools/kontrollera_mallar.mjs                       alla mallar (library/templates/*/mall.json + testmallen)
@@ -25,6 +26,9 @@ const TESTMALL = path.join(MALLAR, '_mall', 'testmall');
 const BEVIS = path.join(ROT, 'work', 'mallkontroll');
 const REF_ANDEL = 0.005;      // högst 0,5 % ändrade pixlar
 const REF_TROSKEL = 40;       // en pixel räknas som ändrad när någon kanal skiljer mer än så (0–255)
+// slump: Chrome ritar oskärpa och övertoningar med ett brus på några steg (uppmätt högst 6 av 255). Det syns inte och
+// räknas inte; en sida som flyttar något slumpvis ger tusentals pixlar med stor skillnad.
+const SLUMP_TROSKEL = 16, SLUMP_ANDEL = 0.001;
 
 const args = process.argv.slice(2);
 const SJALVTEST = args.includes('--sjalvtest');
@@ -67,7 +71,7 @@ async function rutor(page) {
   });
 }
 
-async function jamforBilder(browser, aPng, bPng) {
+async function jamforBilder(browser, aPng, bPng, troskel = REF_TROSKEL) {
   const p = await browser.newPage();
   try {
     return await p.evaluate(async ([a, b, troskel]) => {
@@ -87,8 +91,15 @@ async function jamforBilder(browser, aPng, bPng) {
       }
       dctx.putImageData(diff, 0, 0);
       return { andel: n / (da.length / 4), diff: cd.toDataURL('image/png') };
-    }, [`data:image/png;base64,${aPng.toString('base64')}`, `data:image/png;base64,${bPng.toString('base64')}`, REF_TROSKEL]);
+    }, [`data:image/png;base64,${aPng.toString('base64')}`, `data:image/png;base64,${bPng.toString('base64')}`, troskel]);
   } finally { await p.close(); }
+}
+
+/** Synlig skillnad mellan två bilder av samma t, eller null. Identiska bilder jämförs inte. */
+async function olika(browser, a, b) {
+  if (sha(a) === sha(b)) return null;
+  const j = await jamforBilder(browser, a, b, SLUMP_TROSKEL);
+  return j.andel > SLUMP_ANDEL ? `${(j.andel * 100).toFixed(2)} % av pixlarna` : null;
 }
 
 const ZON_SV = { top: 'övre', bottom: 'nedre', left: 'vänstra', right: 'högra' };
@@ -113,10 +124,12 @@ export async function kontrollera(browser, server, mallDir, { urlMapp, namn, gra
       for (const t of T) { await ritaRuta(page, t); bilder[t] = await page.screenshot({ type: 'png' }); }
       for (const t of [...T].reverse()) {
         await ritaRuta(page, t);
-        if (sha(await page.screenshot({ type: 'png' })) !== sha(bilder[t])) { fel.push({ kod: 'slump', text: `${fmt}: t=${t} gav en annan bild andra gången i samma sida` }); break; }
+        const s = await olika(browser, await page.screenshot({ type: 'png' }), bilder[t]);
+        if (s) { fel.push({ kod: 'slump', text: `${fmt}: t=${t} gav en annan bild andra gången i samma sida (${s})` }); break; }
       }
-      // zon: text och [data-zon] vid varje kontrolltid
-      for (const t of T) {
+      // zon: text och [data-zon] på slutbilden (video) eller stillbilden, och vid sidans egna zon_tider
+      const zonT = [...new Set([T[T.length - 1], ...((info.zon_tider || []).map(Number).filter(Number.isFinite))])];
+      for (const t of zonT) {
         await ritaRuta(page, t);
         for (const b of checkSafeZones(await rutor(page), FORMAT_NYCKEL[format])) {
           fel.push({ kod: 'zon', text: `${fmt} t=${t}: ${b.id} går ${b.px} px in i den ${ZON_SV[b.zone]} osäkra zonen` });
@@ -134,7 +147,8 @@ export async function kontrollera(browser, server, mallDir, { urlMapp, namn, gra
       try {
         for (const t of T) {
           await ritaRuta(p2, t);
-          if (sha(await p2.screenshot({ type: 'png' })) !== sha(bilder[t])) { fel.push({ kod: 'slump', text: `${fmt}: t=${t} gav en annan bild i en ny sida` }); break; }
+          const s = await olika(browser, await p2.screenshot({ type: 'png' }), bilder[t]);
+          if (s) { fel.push({ kod: 'slump', text: `${fmt}: t=${t} gav en annan bild i en ny sida (${s})` }); break; }
         }
       } finally { await p2.close(); }
     } catch (e) { fel.push({ kod: 'klar', text: `${fmt} (andra öppningen): ${e.message}` }); }

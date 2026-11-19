@@ -608,7 +608,7 @@
 
   // ---------------------------------------------------------------- slutmall (svingloggan + två rader)
   // Every size and spacing is a slider; the live preview is the real template (slutmall.html) in a scaled iframe.
-  const SM_URL = "{% url 'engine:sms_film_slutmall' workspace_id=workspace.pk fil='slutmall.html' %}";
+  const SM_URL = "{% url 'engine:sms_film_mall' workspace_id=workspace.pk mall='golfkuponger-slutmallar' fil='slutmall.html' %}";
   const SM_STIL = JSON.parse(document.getElementById("sm-stil-data").textContent);
   const SM_SKAK = JSON.parse(document.getElementById("sm-skak-data").textContent);
   const SM_GROUPS = [["Storlek", ["logga", "rad1", "rubrik", "cta", "ikoner", "bredd"]],

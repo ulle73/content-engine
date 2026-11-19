@@ -54,6 +54,8 @@ def _varde_problem(reglage: dict, varde, where: str) -> list[str]:
     if typ == "text":
         if not isinstance(varde, str):
             return [f"{where}: ska vara text"]
+        if reglage.get("kravs") and not varde.strip():
+            return [f"{where}: får inte vara tom"]
         if len(varde) > reglage["max_langd"]:
             return [f"{where}: {len(varde)} tecken, högst {reglage['max_langd']}"]
         return []
@@ -121,17 +123,48 @@ def kontrollera(data, mappnamn: str | None = None, mapp: Path | None = None) -> 
             problems.append(f"utdata[{j}]: typ {ut['typ']} passar inte filtyp {ut['filtyp']}")
         if ut["typ"] == "video" and data["typ"] != "video":
             problems.append(f"utdata[{j}]: en bildmall kan inte ge video")
-    for fmt, varden in (data.get("standard_per") or {}).get("format", {}).items():
-        if fmt not in data["format"]:
-            problems.append(f"standard_per.format.{fmt}: formatet finns inte i mallens format")
-        for nyckel, varde in varden.items():
-            if nyckel not in reglage:
-                problems.append(f"standard_per.format.{fmt}.{nyckel}: inget reglage med den nyckeln")
-            else:
-                problems += _varde_problem(reglage[nyckel], varde, f"standard_per.format.{fmt}.{nyckel}")
+    for beror, per_val in (data.get("standard_per") or {}).items():
+        if beror == "format":
+            tillatna = list(data["format"])
+        elif beror in reglage and reglage[beror]["typ"] in ("val", "typsnitt"):
+            tillatna = [v["varde"] for v in reglage[beror]["val"]]
+        elif beror in reglage and reglage[beror]["typ"] == "avpa":
+            tillatna = ["true", "false"]
+        else:
+            problems.append(f"standard_per.{beror}: ska vara format eller ett reglage av typen val, typsnitt eller avpa")
+            continue
+        for val, varden in per_val.items():
+            where = f"standard_per.{beror}.{val}"
+            if val not in tillatna:
+                problems.append(f"{where}: '{val}' är inte ett av {tillatna}")
+            for nyckel, varde in varden.items():
+                if nyckel not in reglage:
+                    problems.append(f"{where}.{nyckel}: inget reglage med den nyckeln")
+                elif nyckel == beror:
+                    problems.append(f"{where}.{nyckel}: ett reglage kan inte bero på sig självt")
+                else:
+                    problems += _varde_problem(reglage[nyckel], varde, f"{where}.{nyckel}")
     problems += _mediafiler({k: v for k, v in data.items() if k not in ("sida", "render")}, "mall.json")
     return problems
 
+
+def standardvarden(data: dict, format: str, valda: dict | None = None) -> dict:
+    """Standardvärdet för varje reglage i ett format, med standard_per (format först, sedan övriga i ordning).
+
+    valda = redan valda värden för de reglage som andra beror på (t.ex. effekt); saknas de används standard.
+    Samma regel som losVarden() i library/templates/_mall/sida.mjs.
+    """
+    valda = valda or {}
+    ut = {r["nyckel"]: r.get("standard") for r in data["reglage"]}
+    per = data.get("standard_per") or {}
+    ut.update(per.get("format", {}).get(format, {}))
+    for beror, per_val in per.items():
+        if beror == "format":
+            continue
+        varde = valda.get(beror, ut.get(beror))
+        nyckel = ("true" if varde else "false") if isinstance(varde, bool) else str(varde)
+        ut.update({k: v for k, v in per_val.get(nyckel, {}).items() if k != beror})
+    return ut
 
 def alla_mallar() -> list[Path]:
     """Alla mall.json under library/templates (även testmallen i _mall/)."""

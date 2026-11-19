@@ -45,14 +45,12 @@
       "items": { "$ref": "#/$defs/reglage" }
     },
     "standard_per": {
+      "description": "Standardvärden som beror på ett annat val: {\"format\": {\"4x5\": {\"rubrik\": 80}}, \"effekt\": {\"small\": {\"skak\": 100}}}. Nyckeln är format eller ett reglage av typen val, typsnitt eller avpa. Format gäller först, sedan de andra i ordning.",
       "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "format": {
-          "type": "object",
-          "propertyNames": { "$ref": "#/$defs/format" },
-          "additionalProperties": { "type": "object" }
-        }
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]{0,39}$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "type": "object" }
       }
     }
   },
@@ -61,7 +59,7 @@
     "nyckel": {
       "type": "string",
       "pattern": "^[a-z][a-z0-9_]{0,39}$",
-      "not": { "enum": ["format", "visa_zoner", "mall"] }
+      "not": { "enum": ["format", "visa_zoner"] }
     },
     "reglage": {
       "type": "object",
@@ -79,6 +77,7 @@
         "steg": { "type": "number", "exclusiveMinimum": 0 },
         "enhet": { "type": "string", "maxLength": 10 },
         "max_langd": { "type": "integer", "minimum": 1, "maximum": 500 },
+        "kravs": { "type": "boolean", "description": "text: får inte vara tom" },
         "val": {
           "type": "array",
           "minItems": 1,

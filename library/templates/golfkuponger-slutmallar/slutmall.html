@@ -1,12 +1,10 @@
 <!doctype html>
 <html lang="sv"><head><meta charset="utf-8">
 <!-- Slutmallar för Golfkuponger (Jonas 2026-11-16, valbar stil 2026-11-17): den rörliga svingloggan överst, två fria textrader och portalerna.
-     Parametrar i adressen (alla valfria, utan dem blir det grundutseendet):
-       mall=alla|epassi|benify|sp|edenred   r1=<rad 1, liten guldrad>   r2=<rad 2, stor rubrik; *ord* blir guld>   h=1350 (4:5)
-       eff=small|studs|tona|glid|skriv|avtack   (hur rad 2 landar)
-       s_<nyckel>=<tal> – storlekar i %, mellanrum/höjd i px och tempo/skak i % (se STIL nedan; värdena kläms till sina gränser)
-       logga=1 (fast logga i stället för tom plats – förhandsvisning)   zoner=1 (visa säkerhetszonerna)   slut=1 (visa sista bildrutan)
-     window.frame(t) ritar bildrutan vid t sekunder (render.mjs); window.INFO har tider, mått och varningar. -->
+     Följer sidkontraktet för dashboardmallar (library/templates/_mall/README.md): reglagen och gränserna står i mall.json,
+     värdena kommer i window.PARAMS och window.frame(t) ritar bildrutan vid t sekunder. Svingloggan läggs på i ffmpeg (render.mjs).
+     Äldre adressparametrar fungerar fortfarande i förhandsvisningen: mall, r1, r2, h=1350 (4:5), eff, s_<nyckel>,
+     logga=1 (fast logga i stället för tom plats), zoner=1 (säkra zoner) och slut=1 (visa sista bildrutan). -->
 <style>
 @font-face{font-family:Anton;src:url(assets/anton.woff2)}
 @font-face{font-family:Inter;font-weight:600;src:url(assets/inter-600.woff2)}
@@ -41,8 +39,6 @@ h1 .rad{display:block;white-space:nowrap}
 .kort>div::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,241,196,.55) 50%,transparent 65%);
   transform:translateX(var(--sv,-120%))}
 .kort img{display:block}
-#zoner{position:absolute;inset:0;pointer-events:none;display:none}
-#zoner i{position:absolute;background:rgba(255,80,80,.16);border:0 dashed rgba(255,120,120,.8)}
 </style></head>
 <body><div id="skak">
 <div id="logga"><img src="assets/logo-final.png"></div>
@@ -53,11 +49,9 @@ h1 .rad{display:block;white-space:nowrap}
   <div class="kort"></div>
 </div>
 </div>
-<div id="zoner"><i style="left:0;right:0;top:0;height:269px;border-bottom-width:3px"></i><i style="left:0;right:0;top:1248px;bottom:0;border-top-width:3px"></i>
-  <i style="left:0;width:151px;top:269px;height:979px;border-right-width:3px"></i><i style="right:0;width:151px;top:269px;height:979px;border-left-width:3px"></i></div>
 <script type="module">
-// typsnitten måste vara laddade innan texten mäts
-await Promise.all(['400 100px Anton', '700 40px Inter', '600 34px Inter'].map(f => document.fonts.load(f)));
+import { starta, formatInfo } from '../_mall/sida.mjs';
+
 // ---- mallarna: CTA-raden och portalkorten (bilderna är portalernas egna loggor, samma som i Golfare i <stad>-slutscenen)
 const PORTALER = {
   benify: { namn: 'Benifex', bild: 'portal-benifex.png' },
@@ -69,170 +63,198 @@ const MALLAR = {
   alla: { cta: 'Sök <b>Golfkuponger</b> i din portal', kort: ['benify', 'epassi', 'sp', 'edenred'] },
   ...Object.fromEntries(Object.entries(PORTALER).map(([k, p]) => [k, { cta: `Sök <b>Golfkuponger</b> ${p.hos ? 'hos' : 'i'} ${p.namn}`, kort: [k] }])),
 };
-const Q = new URLSearchParams(location.search);
-const MALL = MALLAR[Q.get('mall')] ? Q.get('mall') : 'alla', M = MALLAR[MALL];
-const R1 = (Q.get('r1') ?? 'Friskvårdsbidrag kvar?').trim(), R2 = (Q.get('r2') ?? 'Det brinner inne 31/12').trim();
-const H = +(Q.get('h') || 1920);
-for (const el of [document.documentElement, document.body]) el.style.height = H + 'px';
+// stilreglagen (storlekar i %, mellanrum/höjd i px, tempo/skak i %); gränserna står i mall.json
+const STIL = ['logga', 'ikoner', 'rad1', 'rubrik', 'cta', 'bredd', 'luft_logga', 'luft_rad1', 'luft_rubrik', 'luft_cta', 'luft_ikoner', 'hojd', 'tempo', 'skak'];
 
-// ---- valbar stil. Samma nycklar och gränser som SLUTMALL_STIL i engine/smsfilm/spec.py: [min, max, standard]
-const EFFEKTER = ['small', 'studs', 'tona', 'glid', 'skriv', 'avtack'];
-const EFF = EFFEKTER.includes(Q.get('eff')) ? Q.get('eff') : 'small';
-const STIL = {
-  logga: [50, 160, 100], ikoner: [50, 160, 100], rad1: [50, 160, 100], rubrik: [50, 160, 100], cta: [50, 160, 100],
-  bredd: [560, 950, 778],
-  luft_logga: [-30, 240, 0], luft_rad1: [-30, 160, 0], luft_rubrik: [-20, 160, 0], luft_cta: [-20, 200, 0], luft_ikoner: [-8, 60, 0],
-  hojd: [-120, 300, 0], tempo: [50, 200, 100], skak: [0, 200, EFF === 'small' ? 100 : EFF === 'studs' ? 40 : 0],
-};
-const S = Object.fromEntries(Object.entries(STIL).map(([k, [lo, hi, std]]) => {
-  const v = parseFloat(Q.get('s_' + k));
-  return [k, Number.isFinite(v) ? Math.min(hi, Math.max(lo, Math.round(v))) : std];
-}));
-const pr = k => S[k] / 100;
-if (Q.get('zoner') === '1') document.getElementById('zoner').style.display = 'block';
-
-// ---- layout (9:16): loggan från y 290, blocket under den och ned till högst 1240 (safe zones: topp 269, botten 35 % → 1248,
-// sidor 151 px båda sidor så att allt centreras på x 540). Höjdreglaget flyttar allt efteråt via DY.
-const LOGGA_TOP = 290, LOGGA_H = Math.round(260 * pr('logga')), BLK_BOTTEN = 1240, BREDD = S.bredd;
-const BLK_TOP = LOGGA_TOP + LOGGA_H + 34 + S.luft_logga;
-const logga = document.getElementById('logga');
-logga.style.top = LOGGA_TOP + 'px'; logga.style.height = LOGGA_H + 'px';
-if (Q.get('logga') !== '1') logga.style.visibility = 'hidden';   // den animerade svingloggan läggs dit i ffmpeg
-const blk = document.getElementById('blk');
-blk.style.top = BLK_TOP + 'px'; blk.style.left = blk.style.right = Math.round((1080 - BREDD) / 2) + 'px';
-
-const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-// rad 1: liten guldrad; storleken krymper så att den ryms i bredden
-const kick = document.getElementById('kick');
-kick.textContent = R1; kick.style.display = R1 ? '' : 'none';
-let kfs = Math.round(42 * pr('rad1')); kick.style.fontSize = kfs + 'px';
-while (R1 && kick.getBoundingClientRect().width > BREDD && kfs > 14) kick.style.fontSize = --kfs + 'px';
-// rad 2: orden landar ett i taget; *ord* blir guld
-const ORD2 = R2.split(/\s+/).filter(Boolean).map(w => { const g = /^\*.+\*$/.test(w); return { w: g ? w.slice(1, -1) : w, g }; });
-const ordHtml = o => o.g ? `<span class="ord g">${esc(o.w)}<span class="glans">${esc(o.w)}</span></span>` : `<span class="ord">${esc(o.w)}</span>`;
-const h1 = document.querySelector('h1');
-// CTA-raden: krymper om den inte ryms
-const cta = document.getElementById('cta');
-cta.innerHTML = M.cta.split(/(<b>.*?<\/b>|\s+)/).filter(Boolean).map(s => /^\s+$/.test(s) ? ' ' : `<span class="w">${s}</span>`).join('');
-let cfs = Math.round(34 * pr('cta')); cta.style.fontSize = cfs + 'px';
-while (cta.getBoundingClientRect().width > BREDD && cfs > 14) cta.style.fontSize = --cfs + 'px';
-// portalkorten: fyra i rad, eller 2 × 2 om de blir bredare än bilden tillåter
-const kort = document.querySelector('.kort'), EN = M.kort.length === 1, IK = pr('ikoner');
-const kw = Math.round((EN ? 480 : 180) * IK), kgap = EN ? 0 : Math.max(0, 12 + S.luft_ikoner);
-const kol = EN ? 1 : (4 * kw + 3 * kgap > 950 ? 2 : 4);
-kort.style.gridTemplateColumns = `repeat(${kol},${kw}px)`; kort.style.gap = kgap + 'px';
-kort.innerHTML = M.kort.map(k => `<div style="height:${Math.round((EN ? 190 : 112) * IK)}px;border-radius:${Math.round((EN ? 22 : 16) * IK)}px">` +
-  `<img src="assets/${PORTALER[k].bild}" style="height:${Math.round((EN ? 176 : 104) * IK)}px"></div>`).join('');
-kort.style.marginTop = (26 + S.luft_cta) + 'px';
-
-// rubriken: en rad om den blir minst 118 px (× storleken), annars två balanserade rader; krymp sedan tills blocket ryms över 1240
-const RUB = pr('rubrik'), RUB_MAX = Math.round(150 * RUB);
-const visa = (rader, fs) => { h1.style.fontSize = fs + 'px'; h1.innerHTML = rader.map(r => `<span class="rad">${r.map(ordHtml).join(' ')}</span>`).join(''); };
-const bredast = rader => { visa(rader, 100); return Math.max(...[...h1.querySelectorAll('.rad')].map(r => r.getBoundingClientRect().width)) / 100; };
-const alt = [[ORD2]];
-for (let i = 1; i < ORD2.length; i++) alt.push([ORD2.slice(0, i), ORD2.slice(i)]);
-const val = alt.map(r => ({ r, fs: Math.min(RUB_MAX, Math.floor(BREDD / bredast(r))) }));
-const tva = val.slice(1).sort((a, b) => b.fs - a.fs)[0];
-const VAL = val[0].fs >= 118 * RUB || !tva ? val[0] : tva;
-let fs = VAL.fs;
-visa(VAL.r, fs);
-// Å/Ä/Ö på första raden sticker upp över versalhöjden: ge dem luft mot rad 1
-const prickar = /[ÅÄÖ]/i.test(VAL.r[0].map(o => o.w).join(''));
-for (;;) {
-  h1.style.fontSize = fs + 'px';
-  h1.style.marginTop = (Math.round(fs * (prickar ? 0.26 : 0.12)) + (R1 ? S.luft_rad1 : 0)) + 'px';
-  cta.style.marginTop = (Math.round(14 + fs * 0.1) + S.luft_rubrik) + 'px';
-  if (blk.getBoundingClientRect().bottom <= BLK_BOTTEN || fs <= 40) break;
-  fs -= 2;
+// Förhandsvisningen i dashboarden skickar fortfarande de gamla adressparametrarna (se kommentaren överst).
+const Q0 = new URLSearchParams(location.search);
+function fraga(Q) {
+  const p = { format: Q.get('h') === '1350' ? '4x5' : (Q.get('format') || '9x16') };
+  if (Q.has('mall')) p.mall = Q.get('mall');
+  if (Q.has('r1')) p.text1 = Q.get('r1');
+  if (Q.has('r2')) p.text2 = Q.get('r2');
+  if (Q.has('eff')) p.effekt = Q.get('eff');
+  for (const k of STIL) if (Q.has('s_' + k) && Number.isFinite(parseFloat(Q.get('s_' + k)))) p[k] = parseFloat(Q.get('s_' + k));
+  if (Q.get('zoner') === '1') p.visa_zoner = true;
+  return p;
 }
 
-// loggan + blocket centreras (räknat på blockets verkliga botten), höjdreglaget gäller ovanpå:
-// 9:16 mitt i den säkra ytan (269–1248, mitt 758), 4:5 mitt i bildens höjd
-const BOTTEN = Math.round(blk.getBoundingClientRect().bottom);
-const MITT = H === 1920 ? (269 + 1248) / 2 : H / 2;
-const DY = Math.round(MITT - (LOGGA_TOP + BOTTEN) / 2) + S.hojd;
-const D916 = H === 1920 ? DY : 0;
-const VARNINGAR = [];
-if (BOTTEN + D916 > (H === 1920 ? 1248 : BLK_BOTTEN + 1)) VARNINGAR.push('Texten och portalerna går ned i nedre säkerhetszonen (där Instagram lägger knappar och text). Minska storlekar eller mellanrum.');
-if (LOGGA_TOP + D916 < 269) VARNINGAR.push('Loggan går upp i övre säkerhetszonen. Flytta ned allt.');
-if (BREDD > 778) VARNINGAR.push('Texten går ut i säkerhetszonen på sidorna. Minska textbredden till 778 px.');
-if (fs < Math.min(VAL.fs, RUB_MAX)) VARNINGAR.push(`Rubriken krymptes till ${fs} px för att få plats.`);
-
-// ---- rörelse
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const $$ = s => [...document.querySelectorAll(s)];
-const ORD = $$('h1 .ord'), W = $$('#cta .w'), KORT = $$('.kort>div');
 const kl = x => Math.max(0, Math.min(1, x)), ut3 = x => 1 - Math.pow(1 - kl(x), 3);
 const back = x => { x = kl(x); const s = 1.9; return 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2); };
 const fjader = p => p >= 1 ? 1 : 1 - Math.exp(-6 * p) * Math.cos(3 * Math.PI * p);
-// mått som effekterna behöver (tas innan något transformeras): ordets bredd, höjd och, för skrivmaskinen, högerkanten efter varje tecken
-const MATT = ORD.map(el => {
-  const r = el.getBoundingClientRect(), tn = el.firstChild, kanter = [];
-  for (let i = 1; i <= tn.length; i++) { const rg = document.createRange(); rg.setStart(tn, 0); rg.setEnd(tn, i); kanter.push(rg.getBoundingClientRect().right - r.left); }
-  return { w: r.width, h: r.height, kanter };
-});
-// svingloggan tar ~1,7 s; rad 1 kommer när svinget är på väg, rad 2 landar efter. Tempot skalar alla tider efter T1.
-const K = pr('tempo'), SK = pr('skak');
-const T1 = 0.7, T2 = T1 + 0.45 / K, SLAG = 0.13 / K;
-const LANG = { small: 0.17, studs: 0.42, tona: 0.38, glid: 0.3, avtack: 0.32 }[EFF] / K, TECKENTID = 0.05 / K;
-const start = [], dur = [];
-let ts = T2;
-ORD.forEach((_, i) => {
-  if (EFF === 'skriv') { start.push(ts); dur.push(MATT[i].kanter.length * TECKENTID); ts += dur[i] + TECKENTID * 1.5; }
-  else { start.push(T2 + i * SLAG); dur.push(LANG); }
-});
-const landar = ORD.map((_, i) => start[i] + dur[i]);
-const slag = ORD.map((_, i) => EFF === 'studs' ? start[i] + dur[i] * 0.17 : landar[i]);   // när skakningen sätter i
-const SUB = (landar[landar.length - 1] ?? T2) + 0.12;
-const CTA_STEG = 0.045 / K, CTA_TID = 0.25 / K;
-const KT = SUB + 0.18 / K, KORT_STEG = 0.07 / K, KORT_TID = 0.3 / K;
-const TECKEN = R1.length + ORD2.map(o => o.w).join(' ').length + cta.textContent.length;
-// Håll kvar slutbilden kort efter att sista texten och portalikonen har landat.
-const SISTA = Math.max(SUB + (W.length - 1) * CTA_STEG + CTA_TID, KT + (KORT.length - 1) * KORT_STEG + KORT_TID);
-const LANGD = Math.ceil(Math.max(3.1, SISTA + 0.4) * 30) / 30;
-window.INFO = { mall: MALL, r1: R1, r2: R2, cta: cta.textContent, effekt: EFF, stil: S, tecken: TECKEN, langd: LANGD,
-  rubrik_px: fs, rubrik_rader: VAL.r.length, rad1_px: kfs, cta_px: cfs, botten: BOTTEN + DY,
-  logga: { top: LOGGA_TOP + DY, h: LOGGA_H }, dy: DY, ryms: !VARNINGAR.some(v => v.includes('zonen')), varningar: VARNINGAR };
-
 const klipp = (topp, hoger, botten, vanster) => `inset(${topp} ${hoger} ${botten} ${vanster})`;
-window.frame = t => {
-  let skak = 0;
-  // rad 1: texten spärras ihop och glansen drar förbi
-  const p1 = ut3((t - T1) / (0.5 / K));
-  kick.style.opacity = kl((t - T1) / (0.25 / K)); kick.style.letterSpacing = `${0.16 + 0.08 * (1 - p1)}em`;
-  kick.style.backgroundPosition = `${100 - 100 * ut3((t - T1 - 0.2 / K) / (1.0 / K))}% 0`;
-  // rad 2: vald effekt per ord, sedan djup, skak och glans
-  ORD.forEach((el, i) => {
-    const t0 = start[i], p = kl((t - t0) / dur[i]), m = MATT[i], syns = t >= t0 ? 1 : 0;
-    let op = syns, tf = 'none', fi = 'none', cl = 'none';
-    if (EFF === 'small') {
-      const q = p * p; op = kl((t - t0) / 0.06); tf = `scale(${2.3 - 1.3 * q})`; if (p < 1) fi = `blur(${(1 - q) * 9}px)`;
-    } else if (EFF === 'studs') {
-      op = kl((t - t0) / 0.05); tf = `translateY(${(1 - ut3(p * 3)) * -40}px) scale(${syns * Math.max(0, fjader(p))})`;
-    } else if (EFF === 'tona') {
-      const e = ut3(p); op = e; tf = `translateY(${(1 - e) * 40}px)`; if (p < 1) fi = `blur(${(1 - e) * 12}px)`;
-    } else if (EFF === 'glid') {
-      const y = (1 - ut3(p)) * m.h; tf = `translateY(${y}px)`; if (p < 1) cl = klipp('-60%', '-40%', `${y}px`, '-40%');
-    } else if (EFF === 'skriv') {
-      const n = m.kanter.length, c = Math.min(n, Math.floor(p * n) + 1);
-      if (c < n) cl = klipp('-60%', `${m.w - m.kanter[c - 1]}px`, '-60%', '-60%');
-    } else if (EFF === 'avtack') {
-      const e = ut3(p); if (p < 1) cl = klipp('-60%', `${(1 - e) * m.w}px`, '-60%', '-60%');
-    }
-    el.style.opacity = op; el.style.transform = tf; el.style.filter = fi; el.style.clipPath = cl;
-    el.style.setProperty('--d', t < landar[i] ? 0 : 10 * ut3((t - landar[i]) / 0.25));
-    const e = t - slag[i]; if (e > 0 && e < 0.28) skak += 6 * SK * (1 - e / 0.28) * Math.sin(e * 70);
-    const gl = el.querySelector('.glans'); if (gl) gl.style.backgroundPosition = `${100 - 100 * ut3((t - landar[i] - 0.15) / 0.9)}% 0`;
+
+// Säkra zoner för 9:16 ur edit-renderer/src/safezones.js: topp 269, botten 1248, sidorna 151 px båda sidor (den bredaste
+// sidan, så att allt centreras på x 540). 4:5 använder samma textbredd.
+const Z = Object.fromEntries(formatInfo('9x16').osakra.map(r => [r.zone, r]));
+const ZON_TOPP = Z.top.y1, ZON_BOTTEN = Z.bottom.y0, SIDA = Math.max(Z.left.x1, 1080 - Z.right.x0), MAX_BREDD = 1080 - 2 * SIDA;
+
+let INFO = {}, ritaRuta = () => {};
+
+async function forbered(v, ctx) {
+  // typsnitten måste vara laddade innan texten mäts
+  await Promise.all(['400 100px Anton', '700 40px Inter', '600 34px Inter'].map(f => document.fonts.load(f)));
+  const MALL = v.mall, M = MALLAR[MALL];
+  const R1 = v.text1.trim(), R2 = v.text2.trim();
+  const H = ctx.hojd, EFF = v.effekt;
+  for (const el of [document.documentElement, document.body]) el.style.height = H + 'px';
+  const S = Object.fromEntries(STIL.map(k => [k, Math.round(v[k])]));
+  const pr = k => S[k] / 100;
+  // nollställ det som förra bildrutan ändrade, så att måtten blir rätt när värdena byts i förhandsvisningen
+  const skakEl = document.getElementById('skak');
+  skakEl.style.transform = 'none';
+
+  // ---- layout (9:16): loggan från y 290, blocket under den och ned till högst 1240. Höjdreglaget flyttar allt efteråt via DY.
+  const LOGGA_TOP = 290, LOGGA_H = Math.round(260 * pr('logga')), BLK_BOTTEN = 1240, BREDD = S.bredd;
+  const BLK_TOP = LOGGA_TOP + LOGGA_H + 34 + S.luft_logga;
+  const logga = document.getElementById('logga');
+  logga.style.top = LOGGA_TOP + 'px'; logga.style.height = LOGGA_H + 'px';
+  // den animerade svingloggan läggs dit i ffmpeg; förhandsvisningen kan be om en fast logga (logga=1)
+  logga.style.visibility = !window.PARAMS && Q0.get('logga') === '1' ? '' : 'hidden';
+  const blk = document.getElementById('blk');
+  blk.style.top = BLK_TOP + 'px'; blk.style.left = blk.style.right = Math.round((1080 - BREDD) / 2) + 'px';
+
+  // rad 1: liten guldrad; storleken krymper så att den ryms i bredden
+  const kick = document.getElementById('kick');
+  kick.style.letterSpacing = ''; kick.style.opacity = '';
+  kick.textContent = R1; kick.style.display = R1 ? '' : 'none';
+  let kfs = Math.round(42 * pr('rad1')); kick.style.fontSize = kfs + 'px';
+  while (R1 && kick.getBoundingClientRect().width > BREDD && kfs > 14) kick.style.fontSize = --kfs + 'px';
+  // rad 2: orden landar ett i taget; *ord* blir guld
+  const ORD2 = R2.split(/\s+/).filter(Boolean).map(w => { const g = /^\*.+\*$/.test(w); return { w: g ? w.slice(1, -1) : w, g }; });
+  const ordHtml = o => o.g ? `<span class="ord g">${esc(o.w)}<span class="glans">${esc(o.w)}</span></span>` : `<span class="ord">${esc(o.w)}</span>`;
+  const h1 = document.querySelector('h1');
+  // CTA-raden: krymper om den inte ryms
+  const cta = document.getElementById('cta');
+  cta.innerHTML = M.cta.split(/(<b>.*?<\/b>|\s+)/).filter(Boolean).map(s => /^\s+$/.test(s) ? ' ' : `<span class="w">${s}</span>`).join('');
+  let cfs = Math.round(34 * pr('cta')); cta.style.fontSize = cfs + 'px';
+  while (cta.getBoundingClientRect().width > BREDD && cfs > 14) cta.style.fontSize = --cfs + 'px';
+  // portalkorten: fyra i rad, eller 2 × 2 om de blir bredare än bilden tillåter
+  const kort = document.querySelector('.kort'), EN = M.kort.length === 1, IK = pr('ikoner');
+  const kw = Math.round((EN ? 480 : 180) * IK), kgap = EN ? 0 : Math.max(0, 12 + S.luft_ikoner);
+  const kol = EN ? 1 : (4 * kw + 3 * kgap > 950 ? 2 : 4);
+  kort.style.gridTemplateColumns = `repeat(${kol},${kw}px)`; kort.style.gap = kgap + 'px';
+  kort.innerHTML = M.kort.map(k => `<div style="height:${Math.round((EN ? 190 : 112) * IK)}px;border-radius:${Math.round((EN ? 22 : 16) * IK)}px">` +
+    `<img src="assets/${PORTALER[k].bild}" style="height:${Math.round((EN ? 176 : 104) * IK)}px"></div>`).join('');
+  kort.style.marginTop = (26 + S.luft_cta) + 'px';
+  await Promise.all($$('.kort img').map(i => (i.complete ? null : new Promise(r => { i.onload = i.onerror = r; }))));
+
+  // rubriken: en rad om den blir minst 118 px (× storleken), annars två balanserade rader; krymp sedan tills blocket ryms över 1240
+  const RUB = pr('rubrik'), RUB_MAX = Math.round(150 * RUB);
+  const visa = (rader, fs) => { h1.style.fontSize = fs + 'px'; h1.innerHTML = rader.map(r => `<span class="rad">${r.map(ordHtml).join(' ')}</span>`).join(''); };
+  const bredast = rader => { visa(rader, 100); return Math.max(...[...h1.querySelectorAll('.rad')].map(r => r.getBoundingClientRect().width)) / 100; };
+  const alt = [[ORD2]];
+  for (let i = 1; i < ORD2.length; i++) alt.push([ORD2.slice(0, i), ORD2.slice(i)]);
+  const val = alt.map(r => ({ r, fs: Math.min(RUB_MAX, Math.floor(BREDD / bredast(r))) }));
+  const tva = val.slice(1).sort((a, b) => b.fs - a.fs)[0];
+  const VAL = val[0].fs >= 118 * RUB || !tva ? val[0] : tva;
+  let fs = VAL.fs;
+  visa(VAL.r, fs);
+  // Å/Ä/Ö på första raden sticker upp över versalhöjden: ge dem luft mot rad 1
+  const prickar = /[ÅÄÖ]/i.test(VAL.r[0].map(o => o.w).join(''));
+  for (;;) {
+    h1.style.fontSize = fs + 'px';
+    h1.style.marginTop = (Math.round(fs * (prickar ? 0.26 : 0.12)) + (R1 ? S.luft_rad1 : 0)) + 'px';
+    cta.style.marginTop = (Math.round(14 + fs * 0.1) + S.luft_rubrik) + 'px';
+    if (blk.getBoundingClientRect().bottom <= BLK_BOTTEN || fs <= 40) break;
+    fs -= 2;
+  }
+
+  // loggan + blocket centreras (räknat på blockets verkliga botten), höjdreglaget gäller ovanpå:
+  // 9:16 mitt i den säkra ytan (mellan topp- och bottenzonen), 4:5 mitt i bildens höjd
+  const BOTTEN = Math.round(blk.getBoundingClientRect().bottom);
+  const MITT = H === 1920 ? (ZON_TOPP + ZON_BOTTEN) / 2 : H / 2;
+  const DY = Math.round(MITT - (LOGGA_TOP + BOTTEN) / 2) + S.hojd;
+  const D916 = H === 1920 ? DY : 0;
+  const VARNINGAR = [];
+  if (BOTTEN + D916 > (H === 1920 ? ZON_BOTTEN : BLK_BOTTEN + 1)) VARNINGAR.push('Texten och portalerna går ned i nedre säkerhetszonen (där Instagram lägger knappar och text). Minska storlekar eller mellanrum.');
+  if (LOGGA_TOP + D916 < ZON_TOPP) VARNINGAR.push('Loggan går upp i övre säkerhetszonen. Flytta ned allt.');
+  if (BREDD > MAX_BREDD) VARNINGAR.push(`Texten går ut i säkerhetszonen på sidorna. Minska textbredden till ${MAX_BREDD} px.`);
+  if (fs < Math.min(VAL.fs, RUB_MAX)) VARNINGAR.push(`Rubriken krymptes till ${fs} px för att få plats.`);
+
+  // ---- rörelse
+  const ORD = $$('h1 .ord'), W = $$('#cta .w'), KORT = $$('.kort>div');
+  // mått som effekterna behöver (tas innan något transformeras): ordets bredd, höjd och, för skrivmaskinen, högerkanten efter varje tecken
+  const MATT = ORD.map(el => {
+    const r = el.getBoundingClientRect(), tn = el.firstChild, kanter = [];
+    for (let i = 1; i <= tn.length; i++) { const rg = document.createRange(); rg.setStart(tn, 0); rg.setEnd(tn, i); kanter.push(rg.getBoundingClientRect().right - r.left); }
+    return { w: r.width, h: r.height, kanter };
   });
-  document.getElementById('skak').style.transform = `translate(${skak * 0.6}px,${skak + DY}px)`;
-  // CTA-raden tonar upp ord för ord, korten poppar in och svävar sedan svagt; en ljusglans drar över dem var 2,4 s
-  W.forEach((w, i) => { const p = ut3((t - SUB - i * CTA_STEG) / CTA_TID); w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 24}px)`; });
-  KORT.forEach((k, i) => {
-    const a = KT + i * KORT_STEG, p = kl((t - a) / KORT_TID), sv = Math.sin((t - a) * 2.2 + i * 1.3) * 3 * kl((t - a - 0.4) / 0.6);
-    k.style.opacity = kl((t - a) / 0.12); k.style.transform = `translateY(${sv}px) scale(${0.55 + 0.45 * back(p)})`;
-    const g = ((t - a - 0.5) % 2.4 + 2.4) % 2.4, gp = t - a - 0.5 < 0 ? -1 : kl(g / 0.7);
-    k.style.setProperty('--sv', `${-120 + 240 * gp}%`);
+  // svingloggan tar ~1,7 s; rad 1 kommer när svinget är på väg, rad 2 landar efter. Tempot skalar alla tider efter T1.
+  const K = pr('tempo'), SK = pr('skak');
+  const T1 = 0.7, T2 = T1 + 0.45 / K, SLAG = 0.13 / K;
+  const LANG = { small: 0.17, studs: 0.42, tona: 0.38, glid: 0.3, avtack: 0.32 }[EFF] / K, TECKENTID = 0.05 / K;
+  const start = [], dur = [];
+  let ts = T2;
+  ORD.forEach((_, i) => {
+    if (EFF === 'skriv') { start.push(ts); dur.push(MATT[i].kanter.length * TECKENTID); ts += dur[i] + TECKENTID * 1.5; }
+    else { start.push(T2 + i * SLAG); dur.push(LANG); }
   });
-};
-window.frame(Q.has('slut') ? 99 : 0);
+  const landar = ORD.map((_, i) => start[i] + dur[i]);
+  const slag = ORD.map((_, i) => EFF === 'studs' ? start[i] + dur[i] * 0.17 : landar[i]);   // när skakningen sätter i
+  const SUB = (landar[landar.length - 1] ?? T2) + 0.12;
+  const CTA_STEG = 0.045 / K, CTA_TID = 0.25 / K;
+  const KT = SUB + 0.18 / K, KORT_STEG = 0.07 / K, KORT_TID = 0.3 / K;
+  const TECKEN = R1.length + ORD2.map(o => o.w).join(' ').length + cta.textContent.length;
+  // Håll kvar slutbilden kort efter att sista texten och portalikonen har landat.
+  const SISTA = Math.max(SUB + (W.length - 1) * CTA_STEG + CTA_TID, KT + (KORT.length - 1) * KORT_STEG + KORT_TID);
+  const LANGD = Math.ceil(Math.max(3.1, SISTA + 0.4) * 30) / 30;
+  // svingloggans ruta (loggans ram i spotlight-9x16.mp4 är 760 × 833 px), så att sidkontrollen ser den
+  const loggaB = Math.round(760 * LOGGA_H / 833);
+  INFO = { mall: MALL, r1: R1, r2: R2, cta: cta.textContent, effekt: EFF, stil: S, tecken: TECKEN, langd: LANGD,
+    rubrik_px: fs, rubrik_rader: VAL.r.length, rad1_px: kfs, cta_px: cfs, botten: BOTTEN + DY,
+    logga: { top: LOGGA_TOP + DY, h: LOGGA_H }, dy: DY, ryms: !VARNINGAR.some(x => x.includes('zonen')), varningar: VARNINGAR,
+    rutor: [{ id: 'svingloggan', x: 540 - loggaB / 2, y: LOGGA_TOP + DY, w: loggaB, h: LOGGA_H }] };
+
+  ritaRuta = t => {
+    let skak = 0;
+    // rad 1: texten spärras ihop och glansen drar förbi
+    const p1 = ut3((t - T1) / (0.5 / K));
+    kick.style.opacity = kl((t - T1) / (0.25 / K)); kick.style.letterSpacing = `${0.16 + 0.08 * (1 - p1)}em`;
+    kick.style.backgroundPosition = `${100 - 100 * ut3((t - T1 - 0.2 / K) / (1.0 / K))}% 0`;
+    // rad 2: vald effekt per ord, sedan djup, skak och glans
+    ORD.forEach((el, i) => {
+      const t0 = start[i], p = kl((t - t0) / dur[i]), m = MATT[i], syns = t >= t0 ? 1 : 0;
+      let op = syns, tf = 'none', fi = 'none', cl = 'none';
+      if (EFF === 'small') {
+        const q = p * p; op = kl((t - t0) / 0.06); tf = `scale(${2.3 - 1.3 * q})`; if (p < 1) fi = `blur(${(1 - q) * 9}px)`;
+      } else if (EFF === 'studs') {
+        op = kl((t - t0) / 0.05); tf = `translateY(${(1 - ut3(p * 3)) * -40}px) scale(${syns * Math.max(0, fjader(p))})`;
+      } else if (EFF === 'tona') {
+        const e = ut3(p); op = e; tf = `translateY(${(1 - e) * 40}px)`; if (p < 1) fi = `blur(${(1 - e) * 12}px)`;
+      } else if (EFF === 'glid') {
+        const y = (1 - ut3(p)) * m.h; tf = `translateY(${y}px)`; if (p < 1) cl = klipp('-60%', '-40%', `${y}px`, '-40%');
+      } else if (EFF === 'skriv') {
+        const n = m.kanter.length, c = Math.min(n, Math.floor(p * n) + 1);
+        if (c < n) cl = klipp('-60%', `${m.w - m.kanter[c - 1]}px`, '-60%', '-60%');
+      } else if (EFF === 'avtack') {
+        const e = ut3(p); if (p < 1) cl = klipp('-60%', `${(1 - e) * m.w}px`, '-60%', '-60%');
+      }
+      el.style.opacity = op; el.style.transform = tf; el.style.filter = fi; el.style.clipPath = cl;
+      el.style.setProperty('--d', t < landar[i] ? 0 : 10 * ut3((t - landar[i]) / 0.25));
+      const e = t - slag[i]; if (e > 0 && e < 0.28) skak += 6 * SK * (1 - e / 0.28) * Math.sin(e * 70);
+      const gl = el.querySelector('.glans'); if (gl) gl.style.backgroundPosition = `${100 - 100 * ut3((t - landar[i] - 0.15) / 0.9)}% 0`;
+    });
+    skakEl.style.transform = `translate(${skak * 0.6}px,${skak + DY}px)`;
+    // CTA-raden tonar upp ord för ord, korten poppar in och svävar sedan svagt; en ljusglans drar över dem var 2,4 s
+    W.forEach((w, i) => { const p = ut3((t - SUB - i * CTA_STEG) / CTA_TID); w.style.opacity = p; w.style.transform = `translateY(${(1 - p) * 24}px)`; });
+    KORT.forEach((k, i) => {
+      const a = KT + i * KORT_STEG, p = kl((t - a) / KORT_TID), sv = Math.sin((t - a) * 2.2 + i * 1.3) * 3 * kl((t - a - 0.4) / 0.6);
+      k.style.opacity = kl((t - a) / 0.12); k.style.transform = `translateY(${sv}px) scale(${0.55 + 0.45 * back(p)})`;
+      const g = ((t - a - 0.5) % 2.4 + 2.4) % 2.4, gp = t - a - 0.5 < 0 ? -1 : kl(g / 0.7);
+      k.style.setProperty('--sv', `${-120 + 240 * gp}%`);
+    });
+  };
+}
+
+starta({
+  fraga,
+  forstaT: Q0.has('slut') ? 99 : 0,
+  forbered,
+  info: () => INFO,
+  rita: t => ritaRuta(t),
+});
 </script>
 </body></html>

@@ -42,6 +42,8 @@ jobs:
           sparse-checkout: |
             library/templates/imessage-samtal
             library/templates/golfkuponger-slutmallar
+            library/templates/_mall
+            edit-renderer/src
             .claude/skills/animate/tools
             edit-renderer/outros
       - uses: actions/setup-node@v4

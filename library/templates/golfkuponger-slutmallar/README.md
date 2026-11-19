@@ -33,8 +33,10 @@ Med effekt och egna storlekar/mellanrum:
 node library/templates/golfkuponger-slutmallar/render.mjs --mall alla --eff studs --stil "logga=130,luft_logga=40,ikoner=120" --ut work/<film>/slut
 ```
 
-Eller med en jobbfil: `node render.mjs --json jobb.json` där filen är
-`{ "mall", "rad1", "rad2", "effekt", "stil": { "logga": 130 }, "ut", "format": ["9x16", "4x5"] }`.
+Eller med reglagens nycklar (se `mall.json`): `node render.mjs --lokal --satt text2="Det brinner inne *31/12*" --satt effekt=studs --satt logga=130`.
+
+Jobbfil: `node render.mjs --json jobb.json` med `{ "varden": { "mall": "alla", "text1": "…", "text2": "…", "effekt": "studs", "logga": 130 }, "format": ["9x16"], "ut": "…" }`.
+Den äldre formen `{ "mall", "rad1", "rad2", "effekt", "stil": { "logga": 130 }, "ut", "format": ["9x16", "4x5"] }` fungerar också (`dashboard-worker.mjs` använder den).
 
 ### Effekter (`--eff`, `effekt`)
 
@@ -68,9 +70,9 @@ Alla är valfria; utelämnade värden ger standardlayouten. Värden utanför spa
 | `tempo` | Effektens tempo | 50–200 % | 100 |
 | `skak` | Skakning vid landning | 0–200 % | 100 för Smäll, 40 för Studs, annars 0 |
 
-Dashboarden och servern (`engine/smsfilm/spec.py`, `SLUTMALL_STIL`) använder samma nycklar och spann.
+Nycklarna, spannen och standardvärdena står i `mall.json` (schemat `mall/v1`, se `library/templates/_mall/README.md`). Fram till steg 3 i `docs/designs/mallmotor.md` finns en kopia kvar i `engine/smsfilm/spec.py` (`SLUTMALL_STIL`).
 
-Ut: `<ut>/slutmall-<mall>-<format>.mp4` och ett kontaktark `kontakt-<mall>-<format>.jpg`. Sista raden på stdout är
+Ut: `<ut>/golfkuponger-slutmallar-<format>.mp4` och ett kontaktark `kontakt-<mall>-<format>.jpg`. Sista raden på stdout är
 JSON med filerna och längden. Kräver Node, ffmpeg och Playwright i `work/animate` (via
 `.claude/skills/animate/tools/pw.mjs`, som kör systemets Chrome). Längd: från 3,1 s, beroende på text, effekt och tempo.
 
@@ -78,15 +80,18 @@ JSON med filerna och längden. Kräver Node, ffmpeg och Playwright i `work/anima
 
 Generera video → Typ av video: **Slutmall**. Välj mall och effekt, skriv rad 1 och rad 2 och dra i reglagen för
 storlek, mellanrum, placering och rörelse. Förhandsvisningen till höger är själva mallen (samma `slutmall.html`, i en
-iframe via `sms-film/slutmall/…`) och uppdateras direkt; **Spela upp** visar effekten, safe zones kan slås av och på,
+iframe via `sms-film/mall/golfkuponger-slutmallar/…`) och uppdateras direkt; **Spela upp** visar effekten, safe zones kan slås av och på,
 och varningar visas om något hamnar utanför. Dubbelklicka på ett reglage för att återställa det, eller använd
 "Återställ storlekar och mellanrum". Klicka Skapa film. Jobbet renderas av GitHub-workflowen `sms-film-render.yml` (samma kö som SMS-filmerna) och
 hamnar under Dina filmer. Filmen blir 9:16 med ljud.
 
 ## Filer
 
-- `slutmall.html` – scenen; läser `?mall=&r1=&r2=&h=&eff=&s_<nyckel>=` (plus `logga=1` för en stillastående
-  logga i förhandsvisningen, `zoner=1` för safe zones och `slut=1` för att visa slutbilden direkt) och exponerar
-  `window.frame(t)` och `window.INFO` (längd, textmått, loggans läge och varningar).
-- `render.mjs` – tar bildrutor och lägger ihop dem med svingloggans ljud.
+- `mall.json` – reglagen, gränserna och standardvärdena (skakningens standard beror på effekten, `standard_per`).
+- `slutmall.html` – scenen. Följer sidkontraktet (`library/templates/_mall/sida.mjs`): värdena kommer i `window.PARAMS`,
+  `window.frame(t)` ritar och `window.INFO` har längd, textmått, loggans läge och varningar. De säkra zonerna läses ur
+  `edit-renderer/src/safezones.js`. De äldre adressparametrarna `?mall=&r1=&r2=&h=&eff=&s_<nyckel>=` (plus `logga=1`,
+  `zoner=1` och `slut=1`) fungerar fortfarande i förhandsvisningen.
+- `render.mjs` – bygger på `_mall/render-bas.mjs` och lägger på svingloggan och dess ljud i ffmpeg.
+- `referens/` – referensbilder (standardvärdena, mitt i filmen) som `library/tools/kontrollera_mallar.mjs` jämför med.
 - `assets/` – typsnitt (Anton, Inter), GK-logga och portalloggor.
