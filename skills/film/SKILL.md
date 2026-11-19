@@ -75,6 +75,21 @@ En film består av:
 granska QA, lägg till raden i `work/FILMER.md`. Helt nya idéer: börja i `skills/studio`, välj tekniker
 ur teknikbanken (`skills/teknik`) och följ `skills/video-regler` (beslutsrunda med manus och stilbilder innan bygget).
 
+## Gör en film till en mall (så att den kan skapas i dashboarden)
+När Jonas gillar något vi gjort och vill kunna göra fler själv blir det en dashboardmall (`mall/v1`,
+`docs/designs/mallmotor.md`, `library/templates/_mall/README.md`). En mall är en mapp under `library/templates/<mall>/`:
+1. **`mall.json`**: ett reglage per sak Jonas ska kunna ändra (text, tal, färg, val, bild, typsnitt, av/på) med gränser
+   och standardvärden. Standardvärden som beror på formatet eller ett val ligger i `standard_per`. Gränserna finns bara här.
+2. **Sidan**, till exempel `bild.html`: importera `starta` från `../_mall/sida.mjs`. Bygg utseendet i `forbered(v, ctx)` och rita tiden t
+   i `rita(t, v, ctx)` (samma t ska ge samma bild). Använd `ctx.marginal` för säkra zoner, och lägg inga foton i repot,
+   eftersom bakgrunder är reglage av typen `bild`.
+3. **`render.mjs`**: två rader med `cli` från `../_mall/render-bas.mjs` (se `golfkuponger-golfare-i-stad/render.mjs`).
+4. **`"mall": "mall.json"`** på mallens post i `LIBRARY.json`. Då syns den under Generera video.
+5. Kör `node library/templates/<mall>/render.mjs --lokal`, `python library/tools/build_catalog.py --check` och
+   `node library/tools/kontrollera_mallar.mjs library/templates/<mall> --uppdatera-referens`. Titta på referensbilderna,
+   kör kontrollen igen utan flaggan och committa på en branch med PR.
+Inget i Django, formuläret eller kön behöver ändras: formuläret ritas från `mall.json` och workern hämtar mallens mapp själv.
+
 ## Vanliga fel (lärdomar – undvik)
 - **Ändra inte i `src/film-config.js`** – den skrivs om från film.json vid varje bygge.
 - **Okänt text-id i film.json** stoppar bygget med en lista över giltiga id:n – använd dem.
