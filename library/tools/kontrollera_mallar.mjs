@@ -5,6 +5,9 @@
 //   slump     samma t ger synligt olika bild (i samma sida, baklänges eller i en ny sida)
 //   zon       text eller [data-zon]-element hamnar i plattformens osäkra zon (edit-renderer/src/safezones.js); för video
 //             på slutbilden (när allt landat) och vid tiderna i window.INFO.zon_tider, inte mitt i en effekt
+//   mitt      en centrerad textrad (text-align: center eller centrerad i en flexbox) har inte sin mitt på bildens mitt
+//             (x 540 i 1080 bred) ±3 px, vid samma tider som zon. Jonas 2026-10-24 och 2026-11-19: allt centrerat ligger
+//             på bildens mitt, aldrig mitt i en osymmetrisk yta. [data-zon-ignorera] räknas inte, som för zon.
 //   referens  bilden skiljer sig mer än 0,5 % av pixlarna från referens/<format>.png
 //
 //   node library/tools/kontrollera_mallar.mjs                       alla mallar (library/templates/*/mall.json + testmallen)
@@ -71,6 +74,54 @@ async function rutor(page) {
   });
 }
 
+/** Centrerade textrader vars mitt inte ligger på bildens mitt: [{id, mitt, bild, px}]. */
+export async function snedaRader(page, tolerans = 3) {
+  return page.evaluate((tol) => {
+    const synlig = el => el.checkVisibility ? el.checkVisibility({ opacityProperty: true, visibilityProperty: true }) : true;
+    const inline = el => getComputedStyle(el).display.startsWith('inline');
+    // centrerad = text-align: center, eller ett flexbarn som flexboxen centrerar (rad: justify-content, kolumn: align-items)
+    const centrerad = el => {
+      if (getComputedStyle(el).textAlign === 'center') return true;
+      for (let x = el; x && x !== document.body; x = x.parentElement) {
+        const p = x.parentElement, cs = p && getComputedStyle(p);
+        if (cs && cs.display.includes('flex')) {
+          if (cs.flexDirection.startsWith('column') ? cs.alignItems === 'center' : cs.justifyContent === 'center') return true;
+        }
+        if (!inline(x)) break;
+      }
+      return false;
+    };
+    const behallare = el => { let c = el; while (c.parentElement && inline(c)) c = c.parentElement; return c; };
+    const rader = new Map();
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    while (w.nextNode()) {
+      const n = w.currentNode, el = n.parentElement;
+      if (!n.textContent.trim() || !el || el.closest('[data-zon-ignorera]') || el.closest('script,style') || !synlig(el) || !centrerad(el)) continue;
+      const c = behallare(el);
+      const r = document.createRange();
+      // mät bara själva tecknen: blanksteg i början och slutet av en nod räknas inte (de hänger utanför raden)
+      const t = n.textContent, start = t.length - t.trimStart().length, slut = t.trimEnd().length;
+      r.setStart(n, start); r.setEnd(n, slut);
+      // letter-spacing läggs också efter sista tecknet; den räknas inte, så att det är bokstäverna som mäts
+      const ls = parseFloat(getComputedStyle(el).letterSpacing) || 0;
+      for (const b of r.getClientRects()) {
+        if (!(b.width > 0 && b.height > 0)) continue;
+        const rad = [...rader.keys()].find(k => k.c === c && Math.abs(k.y - (b.y + b.height / 2)) < b.height / 2);
+        const k = rad || { c, y: b.y + b.height / 2 };
+        const g = rader.get(k) || { x0: Infinity, x1: -Infinity, text: '' };
+        g.x0 = Math.min(g.x0, b.x); g.x1 = Math.max(g.x1, b.x + b.width - ls); g.text += t.trim() + ' ';
+        rader.set(k, g);
+      }
+    }
+    const bild = document.documentElement.clientWidth / 2, ut = [];
+    for (const g of rader.values()) {
+      const mitt = (g.x0 + g.x1) / 2;
+      if (Math.abs(mitt - bild) > tol) ut.push({ id: `"${g.text.trim().slice(0, 24)}"`, mitt: Math.round(mitt), bild, px: Math.round(mitt - bild) });
+    }
+    return ut;
+  }, tolerans);
+}
+
 async function jamforBilder(browser, aPng, bPng, troskel = REF_TROSKEL) {
   const p = await browser.newPage();
   try {
@@ -134,6 +185,10 @@ export async function kontrollera(browser, server, mallDir, { urlMapp, namn, gra
         for (const b of checkSafeZones(await rutor(page), FORMAT_NYCKEL[format])) {
           fel.push({ kod: 'zon', text: `${fmt} t=${t}: ${b.id} går ${b.px} px in i den ${ZON_SV[b.zone]} osäkra zonen` });
         }
+        for (const s of await snedaRader(page)) {
+          fel.push({ kod: 'mitt', text: `${fmt} t=${t}: ${s.id} har sin mitt på x ${s.mitt}, inte bildens mitt x ${s.bild} ` +
+            `(${Math.abs(s.px)} px åt ${s.px < 0 ? 'vänster' : 'höger'}). Centrera på bildens mitt, inte i en osymmetrisk yta.` });
+        }
       }
       // reglage: varje reglage ska läsas av sidan
       const lasta = new Set(await page.evaluate(() => [...(window.__mallLasta || [])]));
@@ -181,6 +236,7 @@ const VARIANTER = [
   { namn: 'slump', kod: 'slump', sida: ['rita() { /* stillbild: allt ritas i forbered */ },',
     "rita() { document.querySelector('#etikett').style.transform = 'translateX(' + Math.round(Math.random() * 80) + 'px)'; },"] },
   { namn: 'utanfor-zon', kod: 'zon', sida: ['rita() { /* stillbild: allt ritas i forbered */ },', "rita() { document.querySelector('#bana').style.top = '12px'; },"] },
+  { namn: 'snett', kod: 'mitt', sida: ["Object.assign(etikett.style, { left: m.left + 'px',", "Object.assign(etikett.style, { left: (m.left - 86) + 'px',"] },
   { namn: 'olast-reglage', kod: 'reglage', mall: m => { m.reglage.push({ nyckel: 'oanvand', typ: 'avpa', etikett: 'Används inte', standard: false }); } },
   { namn: 'ny-farg', kod: 'referens', mall: m => { m.reglage.find(r => r.nyckel === 'etikett_farg').standard = '#ff3b30'; } },
 ];

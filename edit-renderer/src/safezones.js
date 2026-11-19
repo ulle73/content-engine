@@ -5,9 +5,12 @@
 /** Unsafe bands as fractions of the canvas (top/bottom of height, left/right of width). */
 export const PLATFORM_ZONES = {
   // Reels/TikTok/Shorts: status + tabs on top, caption/handle/audio/CTA at the bottom, action rail on the right.
-  // The owner's rule (2026-10-13): keep text, logo and product out of the top ~14 % (270 px), the bottom ~35 %
-  // (670 px) and ~6 % per side; the right keeps 14 % for the like/comment/share rail.
-  '9:16': { top: 0.14, bottom: 0.35, left: 0.06, right: 0.14, platform: 'Reels/TikTok' },
+  // The owner's rule (2026-10-13): keep text, logo and product out of the top ~14 % (270 px) and the bottom ~35 %
+  // (670 px). The right keeps 14 % (151 px) for the like/comment/share rail, and the left MIRRORS it (Jonas 2026-10-24
+  // and 2026-11-19): everything centred sits on the image's middle x 540, so the side zones are always equal.
+  // Never make them asymmetric again (the old left 6 % = 65 px made centred content sit 43 px to the left);
+  // test/quality.test.js and library/tools/kontrollera_mallar.mjs ("mitt") stop it.
+  '9:16': { top: 0.14, bottom: 0.35, left: 0.14, right: 0.14, platform: 'Reels/TikTok' },
   // Instagram feed 4:5 is shown whole, but the profile grid crops it to 3:4 and the like bar hugs the bottom.
   '4:5': { top: 0.05, bottom: 0.07, left: 0.06, right: 0.06, platform: 'Instagram-flödet' },
   '1:1': { top: 0.05, bottom: 0.06, left: 0.05, right: 0.05, platform: 'flödet' },
@@ -16,7 +19,7 @@ export const PLATFORM_ZONES = {
 };
 
 export const FORMATS = {
-  '9:16': { W: 1080, H: 1920, safe: { top: 290, bottom: 690, left: 108, right: 156 } },
+  '9:16': { W: 1080, H: 1920, safe: { top: 290, bottom: 690, left: 156, right: 156 } },
   '4:5': { W: 1080, H: 1350, safe: { top: 110, bottom: 150, left: 90, right: 90 } },
   '1:1': { W: 1080, H: 1080, safe: { top: 80, bottom: 90, left: 80, right: 80 } },
   '16:9': { W: 1920, H: 1080, safe: { top: 100, bottom: 140, left: 140, right: 140 } },

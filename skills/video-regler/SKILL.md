@@ -61,9 +61,11 @@ Först därefter full rendering. Efter leveransen ska bara finjusteringar åters
 - **Etiketter hör ihop med texten:** en etikett (t.ex. plats-ikon + bannamn) ligger centrerad **direkt under**
   huvudtexten med ett litet mellanrum (~40 px) – inte i en annan del av bilden.
 - **Safe zones (Reels, 9:16, 1080×1920):** text, logga, produkt och allt annat viktigt (datum, belopp, etiketter) hålls
-  borta från översta ~14 % (270 px), nedersta ~35 % (670 px), ~6 % (65 px) till vänster och **~14 % (151 px) till höger**
-  – alltså inom x 65–929, y 270–1250. Högerkanten är bred för Facebooks knapprad; vi delar alltid på både Instagram och
-  Facebook (Jonas 2026-10-14). Där ligger profilnamn, bildtext, knappar och CTA. Bara dekor (bakgrund, mark, partiklar) får
+  borta från översta ~14 % (270 px), nedersta ~35 % (670 px) och **~14 % (151 px) på båda sidor** – alltså inom
+  x 151–929, y 270–1250. Högerkanten är bred för Facebooks knapprad; vi delar alltid på både Instagram och Facebook
+  (Jonas 2026-10-14). Vänsterkanten speglar den så att allt centrerat ligger på x 540 (Jonas 2026-10-24, 2026-11-19).
+  Skriv **aldrig** 65 px/x 65 eller egna zonsiffror i en mall: ta zonerna från `edit-renderer/src/safezones.js`
+  (`formatInfo().marginal`/`osakra` i `_mall/sida.mjs`, hjälplinjerna med `visa_zoner`). Där ligger profilnamn, bildtext, knappar och CTA. Bara dekor (bakgrund, mark, partiklar) får
   gå utanför. Kontrollera med hjälplinjer på stillbilderna innan full rendering; i molnklippet kontrolleras det
   automatiskt (`edit-renderer/src/safezones.js`). Håll också texten utanför motivets
   viktiga delar.
