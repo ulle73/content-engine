@@ -154,11 +154,15 @@ export async function filmaVideo(page, info, ut, { fps = info.fps || 30, ljud = 
  * format = begränsa till dessa format (valfritt). Ett fel i en fil stoppar hela jobbet med filnamnet i felet.
  */
 // videoVal({ info, format }) ger filmaVideo-val för mallen (egna ffmpeg-ingångar); efterVideo({ fil, info, format }) körs efter varje film.
-export async function renderaMall(mallDir, { varden = {}, format: bara, ut, browser: egen, videoVal, efterVideo } = {}) {
+// bildmapp: en mapp med jobbets uppladdade bilder; reglage av typen bild anger ett filnamn i den (servas som /_jobb/<fil>).
+export async function renderaMall(mallDir, { varden = {}, format: bara, ut, browser: egen, videoVal, efterVideo, bildmapp } = {}) {
   const mall = lasMall(mallDir);
   ut = path.resolve(ut || path.join(ROT, 'work', 'mallar', mall.id));
   fs.mkdirSync(ut, { recursive: true });
-  const server = await startaServer();
+  const server = await startaServer(bildmapp ? { extra: { '/_jobb/': path.resolve(bildmapp) } } : {});
+  for (const r of mall.reglage) {
+    if (r.typ === 'bild' && typeof varden[r.nyckel] === 'string' && /^[\w.-]+$/.test(varden[r.nyckel])) varden = { ...varden, [r.nyckel]: '/_jobb/' + varden[r.nyckel] };
+  }
   const browser = egen || await playwrightLaunch();
   const filer = [];
   try {
@@ -191,7 +195,7 @@ function argv(namn) { const i = process.argv.indexOf(namn); return i > 0 ? proce
 
 /**
  * CLI för en malls render.mjs: node render.mjs --lokal [--format 4x5] [--satt k=v ...] [--json jobb.json] [--ut dir]
- * jobb.json: { "varden": {...}, "format": ["4x5"], "ut": "dir" }. Valen:
+ * jobb.json: { "varden": {...}, "format": ["4x5"], "ut": "dir", "bildmapp": "dir" }. Valen:
  *   tolka(jobb, argv)  gör om en äldre jobbfil eller äldre flaggor till { varden, format, ut } (före de nya)
  *   videoVal, efterVideo  skickas till renderaMall
  *   svar(filer, jobb)  formar JSON-raden på stdout (standard: { mall, filer })
@@ -209,7 +213,8 @@ export async function cli(metaUrl, { tolka, videoVal, efterVideo, svar } = {}) {
   });
   const format = gammal.format || jobb.format || (argv('--format') ? argv('--format').split(',') : null);
   const ut = gammal.ut || jobb.ut || argv('--ut');
-  const filer = await renderaMall(mallDir, { varden, format, ut, videoVal, efterVideo });
+  const bildmapp = jobb.bildmapp || argv('--bildmapp');
+  const filer = await renderaMall(mallDir, { varden, format, ut, videoVal, efterVideo, bildmapp });
   console.log(JSON.stringify(svar ? svar(filer, jobb) : { mall: path.basename(mallDir), filer }));
   return filer;
 }

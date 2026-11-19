@@ -16,7 +16,7 @@ from engine.edit.outros import ROOT as OUTRO_DIR
 from engine.media_views import local_asset_response
 from engine.ownership import company_required
 
-from . import service, spec
+from . import mallar, service, spec
 
 MAX_FORM_JSON = 200_000
 
@@ -43,12 +43,8 @@ def _sms_film(request, workspace_id, *, embedded):
             except ValueError:
                 raise spec.SmsFilmError("Formuläret kom inte fram. Ladda om sidan och försök igen.") from None
             title = spec._text(form.get("title") if isinstance(form, dict) else "", "Namn på filmen", 200)
-            if isinstance(form, dict) and form.get("kind") == "slutmall":
-                saved, total = spec.build_slutmall(form)
-                saved["title"] = title
-                job = service.create_job(company, request.user, title=title or f"Slutmall – {spec.SLUTMALLAR[saved['mall']]}",
-                                         form=saved, conversation={}, image_asset_ids=[], duration_s=total,
-                                         dispatch_now=False, kind="slutmall")
+            if isinstance(form, dict) and form.get("kind") == "mall":
+                job = _create_mall_job(company, request.user, form, title, request.FILES)
             else:
                 with transaction.atomic():
                     conv, image_ids, saved, total = spec.build(form, request.FILES, company)
@@ -70,7 +66,9 @@ def _sms_film(request, workspace_id, *, embedded):
     reopen = None
     if request.GET.get("from"):
         try:
-            reopen = service.get_job(company, uuid.UUID(request.GET["from"])).form
+            gammal = service.get_job(company, uuid.UUID(request.GET["from"]))
+            reopen = ({"kind": "mall", "mall": gammal.mall_id, "title": gammal.title, "varden": gammal.varden,
+                       "formats": gammal.formats} if gammal.mall_id else gammal.form)
         except (spec.SmsFilmError, ValueError):
             reopen = None
     jobs = list(service.jobs_for(company))
@@ -82,21 +80,28 @@ def _sms_film(request, workspace_id, *, embedded):
         "reopen": reopen,
         "limits": {"messages": spec.MAX_MESSAGES, "text": spec.MAX_TEXT, "seconds": spec.MAX_SECONDS,
                    "uploads": spec.MAX_UPLOADS, "outro": spec.OUTRO_LEN},
-        "slutmallar": [{"id": k, "namn": v} for k, v in spec.SLUTMALLAR.items()],
-        "slutmall_limits": {"rad1": spec.SLUTMALL_RAD1, "rad2": spec.SLUTMALL_RAD2},
-        "slutmall_len": spec.SLUTMALL_LEN,
-        "slutmall_effekter": [{"id": k, "namn": v} for k, v in spec.SLUTMALL_EFFEKTER.items()],
-        "slutmall_stil": [{"id": k, "namn": namn, "enhet": enhet, "min": lo, "max": hi, "std": std}
-                          for k, (namn, enhet, lo, hi, std) in spec.SLUTMALL_STIL.items()],
-        "slutmall_skak": spec.SLUTMALL_SKAK,
-        "slutmall_formats": [{"id": k, "namn": v} for k, v in spec.SLUTMALL_FORMAT.items()],
+        "mallar": mallar.for_formularet(),
         "slutmall_klara": service.finished_slutmallar(company),
     })
 
 
+SLUTMALL_ID = "golfkuponger-slutmallar"
+
+
+def _create_mall_job(company, user, form, title, files):
+    """A dashboard template job: the values are checked against the template's mall.json (mallar.validera)."""
+    mall = mallar.hamta(form.get("mall"))
+    with transaction.atomic():
+        images = spec._Images(company, files)
+        varden, formats = mallar.validera(mall, form.get("varden"), form.get("format"), images=images)
+        saved = {"kind": "mall", "mall": mall["id"], "title": title, "varden": varden, "format": formats}
+        return service.create_job(company, user, title=title or mall["titel"], form=saved, conversation={},
+                                  image_asset_ids=mallar.bild_asset_ids(mall, varden), duration_s=None,
+                                  dispatch_now=False, kind="slutmall" if mall["id"] == SLUTMALL_ID else "mall",
+                                  mall_id=mall["id"], varden=varden, formats=formats)
+
+
 DASHBOARD_ORIGIN = "https://dashboard.golfkuponger.se"
-SLUTMALL_DIR = Path(__file__).resolve().parents[2] / "library" / "templates" / "golfkuponger-slutmallar"
-SLUTMALL_FILE_RE = re.compile(r"^(slutmall\.html|assets/[a-z0-9-]+\.(woff2|png|jpg))$")
 SLUTMALL_TYPES = {"html": "text/html; charset=utf-8", "woff2": "font/woff2", "png": "image/png", "jpg": "image/jpeg"}
 
 
@@ -104,7 +109,7 @@ SLUTMALL_TYPES = {"html": "text/html; charset=utf-8", "woff2": "font/woff2", "pn
 @company_required
 @xframe_options_exempt
 def slutmall_preview(request, workspace_id, fil):
-    """Serves the end-card template and its assets so the form can show a live preview in an iframe.
+    """Serves the Spotlight clip (the SMS film's default end) for the end preview.
 
     The form itself may sit inside Golfkuponger's dashboard, and browsers check framing against every
     ancestor, so X-Frame-Options SAMEORIGIN would block the preview there. CSP allows this site and the
@@ -117,15 +122,7 @@ def slutmall_preview(request, workspace_id, fil):
         response = local_asset_response(request, path, "video/mp4")
         response["Cache-Control"] = "private, max-age=300"
         return response
-    if not SLUTMALL_FILE_RE.match(fil):
-        raise Http404
-    path = SLUTMALL_DIR / fil
-    if not path.is_file():
-        raise Http404
-    response = FileResponse(path.open("rb"), content_type=SLUTMALL_TYPES[fil.rsplit(".", 1)[-1]])
-    response["Cache-Control"] = "private, max-age=300"
-    response["Content-Security-Policy"] = f"frame-ancestors 'self' {DASHBOARD_ORIGIN}"
-    return response
+    raise Http404  # the template itself is served by mall_fil (sms-film/mall/<mall>/<fil>)
 
 
 MALL_ROOT = Path(__file__).resolve().parents[2] / "library" / "templates"

@@ -111,8 +111,8 @@ async function forbered(v, ctx) {
   const BLK_TOP = LOGGA_TOP + LOGGA_H + 34 + S.luft_logga;
   const logga = document.getElementById('logga');
   logga.style.top = LOGGA_TOP + 'px'; logga.style.height = LOGGA_H + 'px';
-  // den animerade svingloggan läggs dit i ffmpeg; förhandsvisningen kan be om en fast logga (logga=1)
-  logga.style.visibility = !window.PARAMS && Q0.get('logga') === '1' ? '' : 'hidden';
+  // den animerade svingloggan läggs dit i ffmpeg; förhandsvisningen visar en fast logga (logga=1 eller forhandsvisning=1)
+  logga.style.visibility = Q0.get('logga') === '1' || Q0.get('forhandsvisning') === '1' ? '' : 'hidden';
   const blk = document.getElementById('blk');
   blk.style.top = BLK_TOP + 'px'; blk.style.left = blk.style.right = Math.round((1080 - BREDD) / 2) + 'px';
 

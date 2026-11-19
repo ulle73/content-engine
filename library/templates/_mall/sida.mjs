@@ -116,6 +116,20 @@ export async function starta(sida) {
   try {
     const mall = await (await fetch(new URL('mall.json', location.href))).json();
     let senasteT = Number(sida.forstaT) || 0, ctx, v;
+    // Förhandsvisningen i dashboarden skickar nya värden, bara från samma adress. Lyssnaren finns från start så att
+    // inget meddelande går förlorat medan sidan laddar; det senaste värdet vinner.
+    let startad = false, vantande = null, kor = Promise.resolve();
+    const nya = (params) => (kor = kor.then(async () => {
+      window.KLAR = false;
+      window.PARAMS = params;
+      await uppdatera(params);
+      window.KLAR = true;
+    }));
+    window.addEventListener('message', (e) => {
+      if (e.origin !== location.origin || e.data?.typ !== 'mall-params') return;
+      window.KLAR = false;
+      if (startad) nya(e.data.params || {}); else vantande = e.data.params || {};
+    });
     const uppdatera = async (params) => {
       const format = mall.format.includes(params.format) ? params.format : mall.format[0];
       const fi = formatInfo(format);
@@ -145,15 +159,9 @@ export async function starta(sida) {
     // sida.fraga(q) låter en äldre sida översätta sina gamla adressparametrar till reglagens nycklar
     const q = new URLSearchParams(location.search);
     await uppdatera(window.PARAMS || (sida.fraga ? sida.fraga(q) : fragaParams()));
-    // Förhandsvisningen i dashboarden skickar nya värden; bara från samma adress.
-    window.addEventListener('message', async (e) => {
-      if (e.origin !== location.origin || e.data?.typ !== 'mall-params') return;
-      window.KLAR = false;
-      window.PARAMS = e.data.params || {};
-      await uppdatera(window.PARAMS);
-      window.KLAR = true;
-    });
+    startad = true;
     window.KLAR = true;
+    if (vantande) await nya(vantande);
   } catch (err) {
     window.MALLFEL = String(err?.stack || err);
     console.error('mallen kunde inte starta:', err);

@@ -115,23 +115,15 @@ class Steg2Slutmallar(SimpleTestCase):
     def test_steg2_slutmallens_mall_json_godkanns(self):
         self.assertEqual(mallformat.kontrollera_fil(SLUTMALL / "mall.json"), [])
 
-    def test_steg2_gransen_stammer_med_spec_tills_steg_3(self):
-        # Steg 3 tar bort kopian i spec.py; fram till dess måste de vara lika.
+    def test_steg3_gransen_finns_bara_i_mall_json(self):
+        # Steg 3 tog bort kopian i spec.py; slutmallens gränser finns nu bara i mall.json.
         from engine.smsfilm import spec
 
-        data = _slutmall()
-        reglage = {r["nyckel"]: r for r in data["reglage"]}
-        self.assertEqual([v["varde"] for v in reglage["mall"]["val"]], list(spec.SLUTMALLAR))
-        self.assertEqual([v["varde"] for v in reglage["effekt"]["val"]], list(spec.SLUTMALL_EFFEKTER))
-        self.assertEqual((reglage["text1"]["max_langd"], reglage["text2"]["max_langd"]), (spec.SLUTMALL_RAD1, spec.SLUTMALL_RAD2))
-        self.assertEqual(sorted(data["format"]), sorted(spec.SLUTMALL_FORMAT))
-        for nyckel, (_namn, enhet, lo, hi, _std) in spec.SLUTMALL_STIL.items():
-            with self.subTest(nyckel):
-                r = reglage[nyckel]
-                self.assertEqual((r["min"], r["max"], r["enhet"]), (lo, hi, enhet))
-                for effekt in spec.SLUTMALL_EFFEKTER:
-                    std = mallformat.standardvarden(data, "9x16", {"effekt": effekt})[nyckel]
-                    self.assertEqual(std, spec.slutmall_default(nyckel, effekt), effekt)
+        for namn in ("SLUTMALLAR", "SLUTMALL_STIL", "SLUTMALL_SKAK", "SLUTMALL_EFFEKTER", "build_slutmall", "slutmall_default"):
+            self.assertFalse(hasattr(spec, namn), namn)
+        html = (SLUTMALL / "slutmall.html").read_text(encoding="utf-8")
+        self.assertNotIn("[50, 160, 100]", html)
+        self.assertNotIn("269px", html)
 
     def test_steg2_standard_per_beror_pa_ett_val(self):
         data = _slutmall()

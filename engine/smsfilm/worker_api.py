@@ -5,6 +5,9 @@
     GET  assets/<job>/<asset>/       header X-Edit-Lease                 → image bytes (only the job's own images)
     GET  apple-pack/<job>/           header X-Edit-Lease                 → private Apple tar.gz (never public)
     POST output/<job>/               header X-Edit-Lease, multipart: file (MP4), warnings (JSON list), meta (JSON)
+    POST fil/<job>/                  header X-Edit-Lease, multipart: file, meta {typ, format, variant, langd}
+                                     (templates: one call per file; again for the same file replaces it)
+    POST klar/<job>/                 header X-Edit-Lease, JSON {duration_s, warnings, render_commit}: every file arrived
     POST failed/                     {"job_id", "lease", "code", "detail", "retryable"}
 """
 
@@ -130,6 +133,31 @@ def output(request, job_id):
     return JsonResponse({"accepted": True, "job": service.serialize(job)})
 
 
+@worker_endpoint()
+def output_file(request, job_id):
+    data = request.FILES.get("file")
+    if not data or not 0 < data.size <= service.OUTPUT_MAX_BYTES:
+        raise service.SmsFilmError("Filen saknas eller är större än 120 MB.")
+    raw_meta = request.POST.get("meta") or "{}"
+    if len(raw_meta) > 4096:
+        raise ValueError("Oversized field")
+    meta = json.loads(raw_meta)
+    if not isinstance(meta, dict):
+        raise ValueError("meta")
+    out = service.add_output(job_id, request.headers.get("X-Edit-Lease"), data.read(), typ=str(meta.get("typ") or ""),
+                             format=str(meta.get("format") or ""), variant=str(meta.get("variant") or ""),
+                             langd=meta.get("langd"))
+    return JsonResponse({"accepted": True, "output": str(out.pk)})
+
+
+@worker_endpoint()
+def output_done(request, job_id):
+    data = body(request)
+    job = service.finish(job_id, request.headers.get("X-Edit-Lease"), duration_s=data.get("duration_s"),
+                         warnings=data.get("warnings"), render_commit=str(data.get("render_commit") or ""))
+    return JsonResponse({"accepted": True, "job": service.serialize(job)})
+
+
 urlpatterns = [
     path("claim/", claim),
     path("heartbeat/", heartbeat),
@@ -137,4 +165,6 @@ urlpatterns = [
     path("assets/<uuid:job_id>/<uuid:asset_id>/", asset_bytes),
     path("apple-pack/<uuid:job_id>/", apple_pack),
     path("output/<uuid:job_id>/", output),
+    path("fil/<uuid:job_id>/", output_file),
+    path("klar/<uuid:job_id>/", output_done),
 ]
