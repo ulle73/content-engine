@@ -142,6 +142,15 @@
   .sms-film-page .sm-zoner { margin: 0; font-size: .85rem; }
   .sms-film-page .sm-warn { color: #b3261e; font-size: .85rem; margin: .3rem 0 0; padding-left: 1.1rem; }
   .sms-film-page .sm-warn:empty { display: none; }
+.sms-film-page #mall-fields details { margin: .7rem 0; }
+.sms-film-page #mall-fields summary { cursor: pointer; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; opacity: .75; margin-bottom: .4rem; }
+.sms-film-page #mall-forhand-format { gap: .4rem; align-items: center; margin-top: .4rem; }
+.sms-film-page #mall-forhand-format .icon-btn.on { font-weight: 700; text-decoration: underline; }
+.sms-film-page .job-bild { display: block; width: 100%; height: auto; border-radius: 8px; margin-top: .5rem; }
+.sms-film-page .godkann-form { border: 1px solid var(--border); border-radius: 8px; padding: .6rem; margin: .4rem 0; }
+.sms-film-page .godkann-form label { display: flex; flex-direction: column; font-size: .8rem; gap: .2rem; flex: 1; min-width: 0; }
+.sms-film-page .godkann-form input { width: 100%; }
+.sms-film-page .publicering.fel { color: #b3261e; }
 </style>
 <script type="module" src="{% static 'vendor/emoji-picker/picker.js' %}"></script>
 {% endblock %}
@@ -158,39 +167,31 @@
         <h2 id="gv-kind-title">Typ av video</h2>
         <div class="row mode-row" role="radiogroup" aria-labelledby="gv-kind-title">
           <label class="check"><input type="radio" name="gv-kind" value="sms" checked><span>SMS-film<small>En sms-konversation i en iPhone.</small></span></label>
-          <label class="check"><input type="radio" name="gv-kind" value="slutmall"><span>Slutmall<small>Svingloggan och två textrader, från {{ slutmall_len|floatformat:1 }} s.</small></span></label>
+          {% for m in mallar %}<label class="check"><input type="radio" name="gv-kind" value="mall:{{ m.id }}"><span>{{ m.titel }}<small>{{ m.beskrivning }}</small></span></label>{% endfor %}
         </div>
         <div class="field" style="margin-top:.85rem"><label for="sms-title">Namn på filmen</label><input type="text" id="sms-title" maxlength="200" placeholder="T.ex. Sugar daddy – golf"></div>
       </section>
 
-      <section id="slutmall-section" aria-labelledby="sm-title" hidden>
-        <h2 id="sm-title">Slutmall</h2>
-        <div class="field"><label for="sm-mall">Vilken slutmall</label>
-          <select id="sm-mall">{% for m in slutmallar %}<option value="{{ m.id }}">{{ m.namn }}</option>{% endfor %}</select></div>
-        <div class="field"><label for="sm-format">Format</label>
-          <select id="sm-format">{% for f in slutmall_formats %}<option value="{{ f.id }}">{{ f.namn }}</option>{% endfor %}</select>
-          <span class="small">SMS-filmer är 9:16, så bara en 9:16-slutmall kan läggas sist i en SMS-film.</span></div>
-        <div class="field"><label for="sm-rad1">Rad 1 – liten guldtext överst <span class="count" id="sm-rad1-count"></span></label>
-          <input type="text" id="sm-rad1" maxlength="{{ slutmall_limits.rad1 }}" placeholder="Friskvårdsbidrag kvar?"></div>
-        <div class="field"><label for="sm-rad2">Rad 2 – stor rubrik <span class="count" id="sm-rad2-count"></span></label>
-          <input type="text" id="sm-rad2" maxlength="{{ slutmall_limits.rad2 }}" placeholder="Det brinner inne *31/12*"></div>
-        <p class="small">Skriv <code>*ord*</code> i rad 2 för att göra orden guldfärgade. Rad 1 kan lämnas tom. Filmen får ljud.</p>
-        <div class="field"><label for="sm-effekt">Hur texten landar</label>
-          <select id="sm-effekt">{% for e in slutmall_effekter %}<option value="{{ e.id }}">{{ e.namn }}</option>{% endfor %}</select></div>
+      <section id="mall-section" aria-labelledby="mall-title" hidden>
+        <h2 id="mall-title">Mall</h2>
+        <p class="small" id="mall-beskrivning"></p>
+        <div class="field"><span class="label">Format</span>
+          <div class="row" id="mall-format"></div>
+          <span class="small" id="mall-format-hint"></span></div>
         <div class="sm-layout">
-          <div class="sm-sliders" id="sm-sliders"></div>
+          <div class="sm-sliders" id="mall-fields"></div>
           <div class="sm-live">
-            <div class="sm-frame"><iframe id="sm-iframe" title="Förhandsvisning av slutmallen" tabindex="-1"></iframe></div>
+            <div class="sm-frame" id="mall-frame"><iframe id="mall-iframe" title="Förhandsvisning av mallen" tabindex="-1"></iframe></div>
             <div class="sm-live-actions">
-              <button type="button" class="icon-btn" id="sm-play">▶ Spela upp</button>
-              <label class="check sm-zoner"><input type="checkbox" id="sm-zoner" checked><span>Visa säkra zoner</span></label>
+              <button type="button" class="icon-btn" id="mall-play">▶ Spela upp</button>
+              <label class="check sm-zoner"><input type="checkbox" id="mall-zoner" checked><span>Visa säkra zoner</span></label>
             </div>
-            <p class="small" id="sm-info"></p>
-            <ul class="sm-warn" id="sm-warn"></ul>
+            <div class="row small" id="mall-forhand-format"></div>
+            <p class="small" id="mall-info"></p>
+            <ul class="sm-warn" id="mall-warn"></ul>
           </div>
         </div>
-        <button type="button" class="icon-btn" id="sm-reset">Återställ storlekar och mellanrum</button>
-        <p class="small">Förhandsvisningen visar loggan stilla. I filmen spelar svingloggan på samma plats och i samma storlek.</p>
+        <button type="button" class="icon-btn" id="mall-reset">Återställ alla reglage</button>
       </section>
 
       <div id="sms-mode">
@@ -264,8 +265,7 @@
 {{ jobs_json|json_script:'sms-jobs-data' }}
 {{ reopen|json_script:'sms-reopen-data' }}
 {{ limits|json_script:'sms-limits-data' }}
-{{ slutmall_stil|json_script:'sm-stil-data' }}
-{{ slutmall_skak|json_script:'sm-skak-data' }}
+{{ mallar|json_script:'mall-data' }}
 {{ slutmall_klara|json_script:'sm-klara-data' }}
 <script>
 (function () {
@@ -327,19 +327,23 @@
   }
   // ---------------------------------------------------------------- end ("Slut"): nothing, Spotlight or a finished slutmall
   const KLARA = JSON.parse(document.getElementById("sm-klara-data").textContent);
+  const FORMAT_NAMN = { "9x16": "9:16", "4x5": "4:5", "1x1": "1:1", "16x9": "16:9" };
   const SPOTLIGHT_URL = "{% url 'engine:sms_film_slutmall' workspace_id=workspace.pk fil='spotlight-9x16.mp4' %}";
-  const FORMAT_NAMN = { "9x16": "9:16", "4x5": "4:5" };
+  function slutVideo(j) {   // the asset of a slutmall job's 9:16 film, or null
+    const o = (j.outputs || []).find((x) => x.typ === "video" && x.format === "9x16");
+    return o ? o.asset_id : (!(j.outputs || []).length && (j.format || "9x16") === "9x16" ? j.output_asset_id : null);
+  }
   function renderEnds() {
     const list = $("sms-end-list");
     const selected = list.querySelector(":checked")?.value;
     list.querySelectorAll("[data-end-job]").forEach((label) => label.remove());
     KLARA.forEach((j) => {
-      const ok = (j.format || "9x16") === "9x16";
+      const ok = !!slutVideo(j);
       const len = j.duration_s || 0;
       const input = el("input", { type: "radio", name: "sms-end", value: j.id });
       input.disabled = !ok;
       input.checked = ok && j.id === selected;
-      const note = `${FORMAT_NAMN[j.format] || "9:16"} · ${fmt(len)}` + (ok ? "" : " · bara 9:16 passar SMS-filmen");
+      const note = `${(j.outputs || []).length ? [...new Set(j.outputs.map((o) => FORMAT_NAMN[o.format]))].join(" + ") : FORMAT_NAMN[j.format] || "9:16"} · ${fmt(len)}` + (ok ? "" : " · bara 9:16 passar SMS-filmen");
       const label = el("label", { class: "check" + (ok ? "" : " off"), "data-end-job": "" }, input,
         el("span", {}, j.title || "Slutmall", el("small", {}, note)));
       list.append(label);
@@ -351,7 +355,7 @@
     if (v === "spotlight") return { value: v, len: LIMITS.outro, label: "Golfkuponger-loggan", url: SPOTLIGHT_URL };
     const j = KLARA.find((k) => k.id === v);
     return j ? { value: v, len: j.duration_s || 0, label: `Slutmall: ${j.title || "Slutmall"}`,
-      url: assetUrl(j.output_asset_id) } : null;
+      url: assetUrl(slutVideo(j) || j.output_asset_id) } : null;
   }
   const endVideo = $("sms-end-video");
   endVideo.addEventListener("error", () => { $("sms-end-error").hidden = false; });
@@ -382,10 +386,10 @@
     return { lockscreen: !!notification, outro: chosenEnd(), messages };
   }
   function updateTiming() {
-    if (kind() === "slutmall") {
-      const empty = !$("sm-rad2").value.trim();
-      $("sms-submit").disabled = empty;
-      $("sms-submit-hint").textContent = empty ? "Skriv text på rad 2." : "";
+    if (aktivMall()) {
+      const saknas = mallKravSaknas();
+      $("sms-submit").disabled = !!saknas;
+      $("sms-submit-hint").textContent = saknas;
       return;
     }
     updatePreview();
@@ -606,115 +610,215 @@
   $("sms-notification").addEventListener("input", () => { toggleWall(); updateTiming(); });
   renderEnds();
 
-  // ---------------------------------------------------------------- slutmall (svingloggan + två rader)
-  // Every size and spacing is a slider; the live preview is the real template (slutmall.html) in a scaled iframe.
-  const SM_URL = "{% url 'engine:sms_film_slutmall' workspace_id=workspace.pk fil='slutmall.html' %}";
-  const SM_STIL = JSON.parse(document.getElementById("sm-stil-data").textContent);
-  const SM_SKAK = JSON.parse(document.getElementById("sm-skak-data").textContent);
-  const SM_GROUPS = [["Storlek", ["logga", "rad1", "rubrik", "cta", "ikoner", "bredd"]],
-                     ["Mellanrum och placering", ["hojd", "luft_logga", "luft_rad1", "luft_rubrik", "luft_cta", "luft_ikoner"]],
-                     ["Rörelse", ["tempo", "skak"]]];
-  const smDefault = (s) => (s.std === null ? (SM_SKAK[$("sm-effekt").value] || 0) : s.std);
-  const smInputs = {};
-  SM_GROUPS.forEach(([title, keys]) => {
-    $("sm-sliders").append(el("h3", {}, title));
-    keys.forEach((k) => {
-      const s = SM_STIL.find((x) => x.id === k);
-      if (!s) return;
-      const input = el("input", { type: "range", id: "sm-s-" + k, min: s.min, max: s.max, step: 1, value: smDefault(s) });
-      const out = el("output", { for: "sm-s-" + k });
-      const row = el("div", { class: "sm-slider" }, el("div", { class: "sm-slider-head" }, el("label", { for: "sm-s-" + k }, s.namn), out), input);
-      const show = () => {
-        const v = +input.value, d = smDefault(s);
-        out.textContent = (s.enhet === "px" && v > 0 && s.min < 0 ? "+" : "") + v + " " + s.enhet;
-        row.classList.toggle("changed", v !== d);
-      };
-      input.addEventListener("input", () => { show(); smLive(); });
-      input.addEventListener("dblclick", () => { input.value = smDefault(s); show(); smLive(); });
-      smInputs[k] = { input, show, s };
-      $("sm-sliders").append(row);
-      show();   // every slider shows its value from the start, not only after it has been moved
+  // ---------------------------------------------------------------- mallar (mall/v1, library/templates/<mall>/mall.json)
+  // The form is drawn from each template's mall.json; the live preview is the template page itself in a scaled iframe,
+  // updated with postMessage (library/templates/_mall/sida.mjs). Only values the user changed are sent; the server
+  // fills in the defaults and checks every value against mall.json (engine/smsfilm/mallar.py).
+  const MALLAR = JSON.parse(document.getElementById("mall-data").textContent);
+  const MALL_URL = "{% url 'engine:sms_film_mall' workspace_id=workspace.pk mall='MALLID' fil='SIDA' %}";
+  const FORMAT_H = { "9x16": 1920, "4x5": 1350, "1x1": 1080, "16x9": 1080 };
+  const mallState = { mall: null, satta: {}, formats: [], forhand: null, faltt: {} };
+  const aktivMall = () => (kind().startsWith("mall:") ? MALLAR.find((m) => "mall:" + m.id === kind()) : null);
+
+  function mallStandard(m, format) {   // same rule as standardvarden() in sida.mjs and mallformat.py
+    const std = Object.fromEntries(m.reglage.map((r) => [r.nyckel, r.standard]));
+    const per = m.standard_per || {};
+    Object.assign(std, (per.format || {})[format] || {});
+    Object.entries(per).forEach(([beror, perVal]) => {
+      if (beror === "format") return;
+      const x = beror in mallState.satta ? mallState.satta[beror] : std[beror];
+      const over = { ...(perVal[String(x)] || {}) };
+      delete over[beror];
+      Object.assign(std, over);
     });
-  });
-  function smStil() {   // only what differs from the default, as the server stores it
-    const out = {};
-    Object.entries(smInputs).forEach(([k, { input, s }]) => { if (+input.value !== smDefault(s)) out[k] = +input.value; });
-    return out;
+    return std;
   }
-  function smSetStil(stil) {
-    Object.entries(smInputs).forEach(([k, o]) => { o.input.value = stil && k in stil ? stil[k] : smDefault(o.s); o.show(); });
+  function mallVarde(r) {
+    const s = mallState.satta;
+    return r.nyckel in s ? s[r.nyckel] : mallStandard(mallState.mall, mallState.forhand)[r.nyckel];
   }
-  let smTimer = 0, smPlaying = 0;
-  function smUrl(extra) {
-    const q = new URLSearchParams({ mall: $("sm-mall").value, r1: $("sm-rad1").value.trim(),
-      r2: $("sm-rad2").value.trim() || $("sm-rad2").placeholder, h: $("sm-format").value === "4x5" ? "1350" : "1920", eff: $("sm-effekt").value, logga: "1" });
-    Object.entries(smStil()).forEach(([k, v]) => q.set("s_" + k, v));
-    if ($("sm-zoner").checked) q.set("zoner", "1");
-    Object.entries(extra || {}).forEach(([k, v]) => q.set(k, v));
-    return SM_URL + "?" + q;
+  function mallParams() {   // what the preview page gets: every value, images as URLs
+    const m = mallState.mall, p = { format: mallState.forhand, visa_zoner: $("mall-zoner").checked };
+    m.reglage.forEach((r) => {
+      const v = mallVarde(r);
+      p[r.nyckel] = r.typ === "bild" ? (v && v.url) || null : v;
+    });
+    return p;
   }
-  function smLive() {
-    clearTimeout(smTimer);
-    document.querySelector(".sm-frame").classList.toggle("f4x5", $("sm-format").value === "4x5");
-    smTimer = setTimeout(() => { smStop(); $("sm-iframe").src = smUrl({ slut: "1" }); }, 150);
+  function mallField(r) {
+    const id = "mall-f-" + r.nyckel, label = r.etikett;
+    const set = (v) => { mallState.satta[r.nyckel] = v; mallLive(); updateTiming(); };
+    const hjalp = r.hjalp ? el("span", { class: "small" }, r.hjalp) : null;
+    if (r.typ === "tal") {
+      const input = el("input", { type: "range", id, min: r.min, max: r.max, step: r.steg, value: mallVarde(r) });
+      const out = el("output", { for: id });
+      const row = el("div", { class: "sm-slider" }, el("div", { class: "sm-slider-head" }, el("label", { for: id }, label), out), input, hjalp);
+      const show = () => {
+        const v = +input.value, std = mallStandard(mallState.mall, mallState.forhand)[r.nyckel];
+        out.textContent = (r.enhet === "px" && v > 0 && r.min < 0 ? "+" : "") + v + (r.enhet ? " " + r.enhet : "");
+        row.classList.toggle("changed", r.nyckel in mallState.satta && v !== std);
+      };
+      input.addEventListener("input", () => { set(+input.value); show(); });
+      input.addEventListener("dblclick", () => { delete mallState.satta[r.nyckel]; input.value = mallVarde(r); show(); mallLive(); updateTiming(); });
+      row._sync = () => { input.value = mallVarde(r); show(); };
+      row._sync();
+      return row;
+    }
+    let input, row;
+    if (r.typ === "text") {
+      const count = el("span", { class: "count" });
+      input = el("input", { type: "text", id, maxlength: r.max_langd, value: mallVarde(r) || "" });
+      const show = () => { count.textContent = `${chars(input.value)}/${r.max_langd}`; };
+      input.addEventListener("input", () => { set(input.value); show(); });
+      row = el("div", { class: "field" }, el("label", { for: id }, label + " ", count), input, hjalp);
+      row._sync = () => { input.value = mallVarde(r) || ""; show(); };
+    } else if (r.typ === "val" || r.typ === "typsnitt") {
+      input = el("select", { id }, ...r.val.map((o) => el("option", { value: o.varde }, o.etikett)));
+      input.addEventListener("change", () => { set(input.value); mallSync(); });
+      row = el("div", { class: "field" }, el("label", { for: id }, label), input, hjalp);
+      row._sync = () => { input.value = mallVarde(r); };
+    } else if (r.typ === "farg") {
+      input = el("input", { type: "color", id, value: mallVarde(r) });
+      input.addEventListener("input", () => set(input.value));
+      row = el("div", { class: "field" }, el("label", { for: id }, label), input, hjalp);
+      row._sync = () => { input.value = mallVarde(r); };
+    } else if (r.typ === "avpa") {
+      input = el("input", { type: "checkbox", id });
+      input.addEventListener("change", () => set(input.checked));
+      row = el("div", { class: "field" }, el("label", { class: "check" }, input, el("span", {}, label)), hjalp);
+      row._sync = () => { input.checked = !!mallVarde(r); };
+    } else if (r.typ === "bild") {
+      const img = el("img", { class: "wall", alt: label });
+      const wrap = el("div", { class: "upload-image" }, img);
+      const file = el("input", { type: "file", accept: "image/jpeg,image/png,image/webp" });
+      const action = el("span", {}, "Välj bild");
+      const clear = el("button", { type: "button", class: "upload-remove", "aria-label": "Ta bort bilden", title: "Ta bort bilden" }, "×");
+      wrap.append(clear);
+      file.addEventListener("change", () => { if (file.files[0]) set(refFromFile(file.files[0])); row._sync(); });
+      clear.addEventListener("click", () => { set(null); row._sync(); });
+      row = el("div", { class: "field" }, el("label", {}, label),
+        el("div", { class: "upload" }, wrap, el("div", { class: "upload-details" }, el("label", { class: "upload-pick" }, action, file),
+          el("span", { class: "upload-format" }, "JPG, PNG eller WebP"))), hjalp);
+      row._sync = () => { const v = mallVarde(r); wrap.hidden = !v; if (v) img.src = v.url; action.textContent = v ? "Byt bild" : "Välj bild"; };
+    }
+    row._sync();
+    return row;
   }
-  function smWin() { try { return $("sm-iframe").contentWindow; } catch (_) { return null; } }
-  $("sm-iframe").addEventListener("load", () => {
-    let tries = 0;
-    const wait = () => {
-      const w = smWin(), info = w && w.INFO;
-      if (!info) { if (++tries < 60) setTimeout(wait, 50); return; }
-      $("sm-info").textContent = `${fmt(info.langd)} · rubrik ${info.rubrik_px} px på ${info.rubrik_rader} rad${info.rubrik_rader > 1 ? "er" : ""}`;
-      $("sm-warn").replaceChildren(...(info.varningar || []).map((v) => el("li", {}, v)));
-    };
-    wait();
-  });
-  function smStop() { cancelAnimationFrame(smPlaying); smPlaying = 0; $("sm-play").textContent = "▶ Spela upp"; }
-  $("sm-play").addEventListener("click", () => {
-    const w = smWin();
-    if (smPlaying) { smStop(); if (w && w.frame) w.frame(99); return; }
+  function mallSync() { document.querySelectorAll("#mall-fields .sm-slider, #mall-fields .field").forEach((row) => row._sync && row._sync()); mallLive(); }
+  function mallBuild() {
+    const m = aktivMall();
+    if (!m) return;
+    if (mallState.mall !== m) {
+      mallState.mall = m;
+      if (!mallState.formats.length || mallState.formats.some((f) => !m.format.includes(f))) mallState.formats = m.typ === "bild" ? [...m.format] : [m.format[0]];
+      mallState.forhand = mallState.formats[0];
+    }
+    $("mall-title").textContent = m.titel;
+    $("mall-beskrivning").textContent = m.beskrivning || "";
+    $("mall-format").replaceChildren(...m.format.map((f) => {
+      const box = el("input", { type: "checkbox", value: f });
+      box.checked = mallState.formats.includes(f);
+      box.addEventListener("change", () => {
+        mallState.formats = m.format.filter((x) => x === f ? box.checked : mallState.formats.includes(x));
+        if (!mallState.formats.includes(mallState.forhand) && mallState.formats.length) mallState.forhand = mallState.formats[0];
+        mallBuild(); updateTiming();
+      });
+      return el("label", { class: "check" }, box, el("span", {}, FORMAT_NAMN[f]));
+    }));
+    $("mall-format-hint").textContent = m.typ === "video" ? "Varje format blir en egen film i samma jobb. En slutmall i 9:16 kan läggas sist i en SMS-film." : "Varje format blir en egen bild i samma jobb.";
+    $("mall-forhand-format").replaceChildren(...(mallState.formats.length > 1 ? [el("span", {}, "Förhandsvisa:"), ...mallState.formats.map((f) => {
+      const b = el("button", { type: "button", class: "icon-btn" + (f === mallState.forhand ? " on" : "") }, FORMAT_NAMN[f]);
+      b.addEventListener("click", () => { mallState.forhand = f; mallBuild(); });
+      return b;
+    })] : []));
+    const grupper = [];
+    m.reglage.forEach((r) => { const g = r.grupp || ""; if (!grupper.includes(g)) grupper.push(g); });
+    const box = $("mall-fields");
+    box.replaceChildren();
+    grupper.forEach((g) => {
+      const rows = m.reglage.filter((r) => (r.grupp || "") === g).map(mallField);
+      if (!g) { box.append(...rows); return; }
+      const d = el("details", {}, el("summary", {}, g), ...rows);
+      d.open = !!mallState.faltt[g];
+      d.addEventListener("toggle", () => { mallState.faltt[g] = d.open; });
+      box.append(d);
+    });
+    $("mall-play").hidden = m.typ !== "video";
+    const frame = $("mall-frame"), h = FORMAT_H[mallState.forhand] || 1920;
+    frame.style.height = (270 * h / 1080) + "px";
+    $("mall-iframe").style.height = h + "px";
+    const url = MALL_URL.replace("MALLID", m.id).replace("SIDA", m.sida) + "?forhandsvisning=1";
+    if ($("mall-iframe").getAttribute("src") !== url) $("mall-iframe").setAttribute("src", url); else mallLive();
+  }
+  let mallTimer = 0, mallPlaying = 0;
+  function mallWin() { try { return $("mall-iframe").contentWindow; } catch (_) { return null; } }
+  function mallLive() {
+    clearTimeout(mallTimer);
+    mallTimer = setTimeout(() => {
+      const w = mallWin();
+      if (!w || !mallState.mall) return;
+      mallStop();
+      w.postMessage({ typ: "mall-params", params: mallParams() }, location.origin);
+      let tries = 0;
+      const wait = () => {
+        if (!(w.KLAR && w.INFO)) { if (++tries < 80) setTimeout(wait, 50); return; }
+        const info = w.INFO;
+        if (mallState.mall.typ === "video" && info.langd) w.frame(info.langd);
+        $("mall-info").textContent = mallState.mall.typ === "video" ? `${fmt(info.langd || 0)}` : `${info.bredd}×${info.hojd}`;
+        $("mall-warn").replaceChildren(...(info.varningar || []).map((v) => el("li", {}, v)));
+      };
+      setTimeout(wait, 60);
+    }, 120);
+  }
+  $("mall-iframe").addEventListener("load", mallLive);
+  function mallStop() { cancelAnimationFrame(mallPlaying); mallPlaying = 0; $("mall-play").textContent = "▶ Spela upp"; }
+  $("mall-play").addEventListener("click", () => {
+    const w = mallWin();
+    if (mallPlaying) { mallStop(); if (w && w.frame && w.INFO) w.frame(w.INFO.langd); return; }
     if (!w || !w.frame || !w.INFO) return;
     const len = w.INFO.langd, t0 = performance.now();
-    $("sm-play").textContent = "■ Stoppa";
+    $("mall-play").textContent = "■ Stoppa";
     const step = (now) => {
       const t = (now - t0) / 1000;
       w.frame(Math.min(t, len));
-      if (t < len) smPlaying = requestAnimationFrame(step); else smStop();
+      if (t < len) mallPlaying = requestAnimationFrame(step); else mallStop();
     };
-    smPlaying = requestAnimationFrame(step);
+    mallPlaying = requestAnimationFrame(step);
   });
-  $("sm-reset").addEventListener("click", () => { smSetStil({}); smLive(); });
-  $("sm-effekt").addEventListener("change", () => { smInputs.skak && (smInputs.skak.input.value = smDefault(smInputs.skak.s), smInputs.skak.show()); smLive(); });
-  ["sm-mall", "sm-zoner", "sm-format"].forEach((id) => $(id).addEventListener("change", smLive));
-
-  function updateSlutmallPreview() {
-    const r1 = $("sm-rad1").value, r2 = $("sm-rad2").value;
-    $("sm-rad1-count").textContent = `${chars(r1)}/${$("sm-rad1").maxLength}`;
-    $("sm-rad2-count").textContent = `${chars(r2)}/${$("sm-rad2").maxLength}`;
-    if (kind() === "slutmall") smLive();
+  $("mall-zoner").addEventListener("change", mallLive);
+  $("mall-reset").addEventListener("click", () => { mallState.satta = {}; mallSync(); updateTiming(); });
+  function mallKravSaknas() {
+    const m = aktivMall();
+    if (!m) return "";
+    if (!mallState.formats.length) return "Välj minst ett format.";
+    const r = m.reglage.find((x) => x.typ === "text" && x.kravs && !String(mallVarde(x) || "").trim());
+    return r ? `Skriv något i ${r.etikett.toLowerCase()}.` : "";
   }
+
   function applyMode() {
-    const sm = kind() === "slutmall";
-    $("sms-mode").hidden = sm;
-    $("slutmall-section").hidden = !sm;
-    $("sms-length-box").hidden = sm;
-    $("sms-preview-box").hidden = sm;
-    $("sms-title").placeholder = sm ? "T.ex. Friskvård – brinner inne" : "T.ex. Sugar daddy – golf";
-    updateSlutmallPreview(); updateEndPreview(); updateTiming();
+    const m = aktivMall();
+    $("sms-mode").hidden = !!m;
+    $("mall-section").hidden = !m;
+    $("sms-length-box").hidden = !!m;
+    $("sms-preview-box").hidden = !!m;
+    $("sms-title").placeholder = m ? `T.ex. ${m.titel}` : "T.ex. Sugar daddy – golf";
+    if (m) mallBuild();
+    updateEndPreview(); updateTiming();
   }
   document.querySelectorAll("[name=gv-kind]").forEach((r) => r.addEventListener("change", applyMode));
-  ["sm-rad1", "sm-rad2"].forEach((id) => $(id).addEventListener("input", () => { updateSlutmallPreview(); updateTiming(); }));
 
   // ---------------------------------------------------------------- prefill ("Gör om")
-  if (reopen && reopen.kind === "slutmall") {
-    document.querySelector("[name=gv-kind][value=slutmall]").checked = true;
+  if (reopen && reopen.kind === "mall" && MALLAR.some((m) => m.id === reopen.mall)) {
+    document.querySelector(`[name=gv-kind][value="mall:${CSS.escape(reopen.mall)}"]`).checked = true;
     $("sms-title").value = reopen.title || "";
-    if (reopen.mall) $("sm-mall").value = reopen.mall;
-    $("sm-rad1").value = reopen.rad1 || "";
-    $("sm-rad2").value = reopen.rad2 || "";
-    if (reopen.effekt) $("sm-effekt").value = reopen.effekt;
-    if (reopen.format) $("sm-format").value = reopen.format;
-    smSetStil(reopen.stil || {});
+    const m = MALLAR.find((x) => x.id === reopen.mall);
+    mallState.satta = {};
+    m.reglage.forEach((r) => {
+      const v = (reopen.varden || {})[r.nyckel];
+      if (v === undefined) return;
+      mallState.satta[r.nyckel] = r.typ === "bild" ? (v ? { asset: v, url: assetUrl(v) } : null) : v;
+    });
+    mallState.formats = (reopen.formats || []).filter((f) => m.format.includes(f));
     state.messages.push(newMsg("sent"));
   } else if (reopen) {
     $("sms-title").value = reopen.title || "";
@@ -757,10 +861,13 @@
       return { file: files.get(r.file) };
     };
     const notification = $("sms-notification").value.trim();
-    const form = kind() === "slutmall" ? {
-      kind: "slutmall", title: $("sms-title").value.trim(), mall: $("sm-mall").value,
-      rad1: $("sm-rad1").value.trim(), rad2: $("sm-rad2").value.trim(),
-      effekt: $("sm-effekt").value, stil: smStil(), format: $("sm-format").value,
+    const mall = aktivMall();
+    const form = mall ? {
+      kind: "mall", title: $("sms-title").value.trim(), mall: mall.id, format: mallState.formats,
+      varden: Object.fromEntries(Object.entries(mallState.satta).map(([k, v]) => {
+        const r = mall.reglage.find((x) => x.nyckel === k);
+        return [k, r && r.typ === "bild" ? ref(v) : v];
+      })),
     } : {
       title: $("sms-title").value.trim(),
       notification,
@@ -803,12 +910,68 @@
   // Kort per jobb-id som återanvänds mellan pollningarna: bara det som ändrats byggs om, så färdiga
   // videor laddas aldrig om medan någon annan film renderas (förut byggdes hela listan om var 5:e sekund).
   const cards = new Map();
-  const jobKey = (j) => [j.status, j.status_label, j.output_asset_id, j.error, j.title, j.duration_s, j.dispatch_error].join("|");
+  const jobKey = (j) => [j.status, j.status_label, j.output_asset_id, j.error, j.title, j.duration_s, j.dispatch_error,
+    JSON.stringify((j.outputs || []).map((o) => (o.publiceringar || []).map((p) => p.status + p.id)))].join("|");
+  // ---------------------------------------------------------------- Godkänn till Drive (CONTENT/01 Publicerat)
+  // The server streams the file to Google; n8n only hands out an upload address for that one folder.
+  const GODKANN_URL = "{% url 'engine:sms_film_godkann' workspace_id=workspace.pk output_id='00000000-0000-0000-0000-000000000000' %}";
+  const IGEN_URL = "{% url 'engine:sms_film_publicera_igen' workspace_id=workspace.pk pub_id='00000000-0000-0000-0000-000000000000' %}";
+  const csrf = () => document.querySelector("[name=csrfmiddlewaretoken]").value;
+  const saker = (s) => String(s || "").trim().toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-{2,}/g, "-").replace(/^-|-$/g, "");
+  function publiceringRad(p) {
+    const rad = el("div", { class: "row small publicering " + p.status });
+    if (p.status === "klar") rad.append(el("span", {}, "✓ I Drive: "), el("a", { href: p.lank, target: "_blank", rel: "noopener" }, p.filnamn));
+    else if (p.status === "fel") {
+      const knapp = el("button", { type: "button", class: "icon-btn" }, "Försök igen");
+      knapp.addEventListener("click", async () => {
+        knapp.disabled = true; knapp.textContent = "Laddar upp…";
+        const res = await fetch(IGEN_URL.replace(ZERO, p.id), { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf(), Accept: "application/json" } }).catch(() => null);
+        const body = res ? await res.json().catch(() => ({})) : {};
+        if (body.publicering) { Object.assign(p, body.publicering); rad.replaceWith(publiceringRad(p)); }
+        else { knapp.disabled = false; knapp.textContent = "Försök igen"; }
+      });
+      rad.append(el("span", {}, `Uppladdningen av ${p.filnamn} misslyckades${p.fel ? ": " + p.fel : ""}. `), knapp);
+    } else rad.append(el("span", {}, `${p.status_label}: ${p.filnamn}`));
+    return rad;
+  }
+  async function godkannDialog(o, knapp) {
+    const finns = knapp.parentElement.nextElementSibling;
+    if (finns && finns.classList.contains("godkann-form")) { finns.remove(); return; }
+    const res = await fetch(GODKANN_URL.replace(ZERO, o.id), { credentials: "same-origin", headers: { Accept: "application/json" } }).catch(() => null);
+    const f = (res && (await res.json().catch(() => ({}))).forslag) || { kampanj: "content", stad: "alla", variant: "a" };
+    const falt = (namn, varde) => el("input", { type: "text", value: varde, maxlength: 60, "aria-label": namn, placeholder: namn });
+    const kampanj = falt("Kampanj", f.kampanj), stad = falt("Stad", f.stad), variant = falt("Variant", f.variant);
+    const namn = el("code", {}), fel = el("p", { class: "small", role: "alert" });
+    const ext = o.typ === "video" ? "mp4" : "jpg";
+    const visa = () => { namn.textContent = `${saker(kampanj.value) || "?"}_${saker(stad.value) || "?"}_${saker(variant.value) || "?"}_${o.format}_vNN.${ext}`; };
+    [kampanj, stad, variant].forEach((i) => i.addEventListener("input", visa)); visa();
+    const skicka = el("button", { type: "button", class: "btn" }, "Publicera i Drive");
+    const form = el("div", { class: "godkann-form" },
+      el("div", { class: "row" }, el("label", {}, "Kampanj", kampanj), el("label", {}, "Stad", stad), el("label", {}, "Variant", variant)),
+      el("p", { class: "small" }, "Filnamn: ", namn, " (versionen räknas fram när du publicerar). Filen hamnar i CONTENT/01 Publicerat."),
+      skicka, fel);
+    skicka.addEventListener("click", async () => {
+      skicka.disabled = true; skicka.textContent = "Publicerar…"; fel.textContent = "";
+      const r = await fetch(GODKANN_URL.replace(ZERO, o.id), { method: "POST", credentials: "same-origin",
+        headers: { "X-CSRFToken": csrf(), Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ kampanj: kampanj.value, stad: stad.value, variant: variant.value }) }).catch(() => null);
+      const body = r ? await r.json().catch(() => ({})) : {};
+      if (body.publicering) {
+        (o.publiceringar = o.publiceringar || []).unshift(body.publicering);
+        form.replaceWith(publiceringRad(body.publicering));
+      } else {
+        fel.textContent = body.error || "Kunde inte nå servern. Försök igen.";
+        skicka.disabled = false; skicka.textContent = "Publicera i Drive";
+      }
+    });
+    knapp.parentElement.after(form);
+  }
   const pct = (j) => `${Math.max(4, Math.round((j.progress || 0) * 100))}%`;
   function buildCard(j) {
     const when = new Date(j.created_at).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
     const card = el("div", { class: "job" },
-      el("div", { class: "job-head" }, el("strong", {}, j.title || (j.kind === "slutmall" ? "Slutmall" : "SMS-film")), el("span", { class: `badge ${j.status}` }, j.status_label)),
+      el("div", { class: "job-head" }, el("strong", {}, j.title || (j.kind === "slutmall" ? "Slutmall" : j.kind === "mall" ? "Mall" : "SMS-film")), el("span", { class: `badge ${j.status}` }, j.status_label)),
       el("div", { class: "small" }, when + (j.duration_s ? ` · ${Math.round(j.duration_s)} s` : "")));
     if (ACTIVE.includes(j.status)) {
       card._bar = el("i", { style: `width:${pct(j)}` });
@@ -816,7 +979,17 @@
       if (j.dispatch_error && j.status === "queued") card.append(el("p", { class: "small" }, j.dispatch_error));
     }
     if (j.status === "failed" && j.error) card.append(el("p", { class: "small" }, j.error));
-    if (j.output_asset_id) {
+    if ((j.outputs || []).length) {
+      j.outputs.forEach((o) => {
+        const url = assetUrl(o.asset_id), namn = FORMAT_NAMN[o.format] + (o.variant ? " " + o.variant : "");
+        card.append(o.typ === "video" ? el("video", { src: url, controls: "", preload: "metadata", playsinline: "" })
+          : el("img", { src: url, alt: `${j.title || "Mall"} ${namn}`, class: "job-bild", loading: "lazy" }));
+        card.append(el("div", { class: "row small" }, el("span", {}, namn), el("a", { href: url, download: "" }, "Ladda ned"),
+          el("button", { type: "button", class: "icon-btn", onclick: (e) => godkannDialog(o, e.currentTarget) }, "Godkänn till Drive")));
+        (o.publiceringar || []).forEach((p) => card.append(publiceringRad(p)));
+      });
+      card.append(el("div", { class: "row small" }, el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
+    } else if (j.output_asset_id) {
       const url = assetUrl(j.output_asset_id);
       card.append(el("video", { src: url, controls: "", preload: "metadata", playsinline: "" }));
       card.append(el("div", { class: "row small" }, el("a", { href: url, download: "" }, "Ladda ned"), el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));

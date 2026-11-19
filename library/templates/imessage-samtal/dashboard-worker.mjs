@@ -12,6 +12,7 @@
  */
 import {spawn} from 'node:child_process';
 import {createHash, randomUUID} from 'node:crypto';
+import {existsSync} from 'node:fs';
 import {cp, mkdir, mkdtemp, readFile, rm, stat, writeFile} from 'node:fs/promises';
 import {tmpdir, homedir} from 'node:os';
 import {dirname, join, resolve, sep} from 'node:path';
@@ -208,6 +209,61 @@ async function buildSmsFilm(payload, work, setStage, setProgress) {
   return out;
 }
 
+/**
+ * Dashboardmall (mall/v1, docs/designs/mallmotor.md): hämta mallens mapp om den inte finns i den glesa utcheckningen,
+ * ladda ner jobbets bilder, rendera alla utdata × format med mallens render.mjs och ladda upp en fil i taget
+ * (fil/<jobb>/), sist klar/<jobb>/. Ett fel i en fil gör hela jobbet misslyckat, med filnamnet i felet.
+ */
+async function processMall(payload, work, lease, limits, setStage) {
+  const {job_id: id, mall} = payload;
+  if (!/^[a-z0-9][a-z0-9-]{1,63}$/.test(mall.id || '')) throw new JobError('build_failed', `ogiltigt mall-id ${String(mall.id).slice(0, 40)}`);
+  const mallDir = join(REPO, 'library', 'templates', mall.id);
+  if (!existsSync(join(mallDir, 'mall.json'))) {
+    await run('git', ['sparse-checkout', 'add', `library/templates/${mall.id}`], {cwd: REPO, timeoutMs: 5 * 60_000})
+      .catch((err) => { throw new JobError('build_failed', `mallen ${mall.id} kunde inte hämtas: ${(err.tail || err.message).slice(-200)}`); });
+  }
+  const bildmapp = join(work, 'assets', 'upload'), ut = join(work, 'ut');
+  await mkdir(bildmapp, {recursive: true});
+  for (const a of payload.assets || []) await download(a.url, safeJoin(work, `assets/upload/${a.fil}`), lease, a.sha256);
+  const filnamn = Object.fromEntries((payload.assets || []).map((a) => [a.id, a.fil]));
+  const varden = {...mall.varden};
+  for (const [nyckel, assetId] of Object.entries(mall.bilder || {})) varden[nyckel] = filnamn[assetId] || null;
+  const jobbPath = join(work, 'jobb.json');
+  await writeFile(jobbPath, JSON.stringify({varden, format: mall.formats, ut, bildmapp}));
+  await setStage('rendering', 0.1);
+  const tail = await run(process.execPath, [join(mallDir, 'render.mjs'), '--json', jobbPath], {cwd: REPO, timeoutMs: 30 * 60_000})
+    .catch((err) => { throw new JobError('render_failed', (err.tail || err.message).slice(-250), {retryable: true}); });
+  const line = tail.split(/\r?\n/).reverse().find((l) => l.trim().startsWith('{'));
+  let filer;
+  try { filer = JSON.parse(line).filer; } catch { throw new JobError('invalid_output', 'mallen gav ingen fillista'); }
+  const warnings = [], langd = [];
+  await setStage('uploading', 0.9);
+  for (const u of mall.utdata) {
+    const f = filer.find((x) => x.typ === u.typ && x.format === u.format && (x.variant || '') === (u.variant || ''));
+    const namn = `${u.typ} ${u.format}${u.variant ? ' ' + u.variant : ''}`;
+    if (!f) throw new JobError('invalid_output', `filen ${namn} saknas`);
+    const size = (await stat(f.fil).catch(() => ({size: 0}))).size;
+    if (!size) throw new JobError('invalid_output', `filen ${namn} är tom`);
+    if (limits.output_max_bytes && size > limits.output_max_bytes) throw new JobError('invalid_output', `filen ${namn} är ${Math.round(size / 1e6)} MB`);
+    if (u.typ === 'video') {
+      await run('ffmpeg', ['-v', 'error', '-i', f.fil, '-f', 'null', '-']).catch((err) => {
+        throw new JobError('invalid_output', `${namn} går inte att avkoda: ${(err.tail || '').slice(-200)}`);
+      });
+      langd.push(await probeDuration(f.fil).catch(() => f.langd || null));
+    }
+    for (const w of f.varningar || []) warnings.push(`${u.format}: ${w}`);
+    const form = new FormData();
+    const typ = u.filtyp === 'mp4' ? 'video/mp4' : u.filtyp === 'png' ? 'image/png' : 'image/jpeg';
+    form.append('file', new Blob([await readFile(f.fil)], {type: typ}), `${mall.id}-${u.format}.${u.filtyp}`);
+    form.append('meta', JSON.stringify({typ: u.typ, format: u.format, variant: u.variant || '', langd: f.langd || null}));
+    await api(`fil/${id}/`, {form, headers: {'X-Edit-Lease': lease}, timeoutMs: 15 * 60_000});
+    console.log(`[${id}] uppladdad: ${namn}, ${Math.round(size / 1e5) / 10} MB`);
+  }
+  const duration = langd.find((x) => x) || null;
+  await api(`klar/${id}/`, {json: {duration_s: duration, warnings, render_commit: process.env.GITHUB_SHA || ''},
+    headers: {'X-Edit-Lease': lease}, timeoutMs: 60_000});
+  console.log(`[${id}] klar: ${mall.id}, ${mall.utdata.length} fil(er)`);
+}
 async function processJob(payload) {
   const {job_id: id, lease, limits = {}} = payload;
   const work = await mkdtemp(join(tmpdir(), `sms-film-${id.slice(0, 8)}-`));
@@ -224,6 +280,10 @@ async function processJob(payload) {
   try {
     await beat();
     let out;
+    if (payload.mall) {
+      await processMall(payload, work, lease, limits, async (s, p) => { stage = s; progress = p; await beat(); });
+      return true;
+    }
     if (payload.kind === 'slutmall') {
       // Slutmall: svingloggan + två textrader, renderad av golfkuponger-slutmallar/render.mjs (Playwright + ffmpeg).
       // Inga Apple-filer och inga bilder behövs.

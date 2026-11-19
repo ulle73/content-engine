@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import uuid
 from datetime import timedelta
 
@@ -21,8 +22,9 @@ from django.utils import timezone
 from engine.media import store_asset
 from engine.models import MediaAsset
 
-from .models import SmsFilmJob
-from .spec import SmsFilmError, slutmall_format
+from . import mallar, publicera
+from .models import SmsFilmJob, SmsFilmOutput
+from .spec import SmsFilmError
 
 log = logging.getLogger(__name__)
 
@@ -52,7 +54,7 @@ def max_per_day() -> int:
 
 
 def create_job(company, user, *, title, form, conversation, image_asset_ids, duration_s, dispatch_now=True,
-               kind="sms"):
+               kind="sms", mall_id="", varden=None, formats=None):
     active = SmsFilmJob.objects.filter(company=company, status__in=ACTIVE).count()
     if active >= max_active():
         raise SmsFilmError(f"{active} filmer renderas redan. Vänta tills någon är klar och försök igen.")
@@ -61,7 +63,7 @@ def create_job(company, user, *, title, form, conversation, image_asset_ids, dur
         raise SmsFilmError(f"Max {max_per_day()} SMS-filmer per dygn är nått. Försök igen i morgon.")
     job = SmsFilmJob.objects.create(company=company, created_by=user, title=title[:200], form=form,
                                     conversation=conversation, image_asset_ids=image_asset_ids, duration_s=duration_s,
-                                    kind=kind)
+                                    kind=kind, mall_id=mall_id, varden=varden or {}, formats=formats or [])
     if dispatch_now:
         dispatch(job)
     return job
@@ -148,14 +150,8 @@ def leased(job_id, token, *, lock=False) -> SmsFilmJob:
 def worker_payload(job: SmsFilmJob, base_url: str) -> dict:
     base = base_url.rstrip("/")
     limits = {"output_max_bytes": OUTPUT_MAX_BYTES, "heartbeat_s": 30, "lease_s": LEASE_SECONDS}
-    if job.kind == "slutmall":
-        # end card: no conversation, no uploads and no Apple pack – the worker renders the template directly
-        form = job.form or {}
-        return {"job_id": str(job.pk), "lease": str(job.lease_token), "attempt": job.attempts, "kind": "slutmall",
-                "slutmall": {"mall": form.get("mall"), "rad1": form.get("rad1", ""), "rad2": form.get("rad2", ""),
-                             "effekt": form.get("effekt") or "small", "stil": form.get("stil") or {},
-                             "format": slutmall_format(form)},
-                "assets": [], "limits": limits}
+    if job.mall_id:
+        return _mall_payload(job, base, limits)
     assets = []
     for asset in MediaAsset.objects.filter(pk__in=job.image_asset_ids, company=job.company, kind="image"):
         ext = asset.storage_key.rsplit(".", 1)[-1].lower()
@@ -177,6 +173,32 @@ def worker_payload(job: SmsFilmJob, base_url: str) -> dict:
         payload["outro_asset"] = {"id": str(video.pk), "path": job.conversation["outro"]["src"], "sha256": video.sha256,
                                   "byte_size": video.byte_size,
                                   "url": f"{base}/internal/sms-film/assets/{job.pk}/{video.pk}/"}
+    return payload
+
+
+def _mall_payload(job: SmsFilmJob, base: str, limits: dict) -> dict:
+    """A dashboard template job (mall/v1): the values, the formats and the files the worker must send back."""
+    mall = mallar.hamta(job.mall_id)
+    bilder = []
+    for asset in MediaAsset.objects.filter(pk__in=job.image_asset_ids, company=job.company, kind="image"):
+        ext = asset.storage_key.rsplit(".", 1)[-1].lower()
+        bilder.append({"id": str(asset.pk), "fil": f"{asset.pk}.{ext}", "sha256": asset.sha256, "byte_size": asset.byte_size,
+                       "url": f"{base}/internal/sms-film/assets/{job.pk}/{asset.pk}/"})
+    if len(bilder) != len(set(job.image_asset_ids)):
+        raise SmsFilmError("En bild i mallen finns inte längre i mediabanken.")
+    payload = {"job_id": str(job.pk), "lease": str(job.lease_token), "attempt": job.attempts, "kind": job.kind,
+               "mall": {"id": job.mall_id, "typ": mall["typ"], "varden": job.varden, "formats": job.formats,
+                        "bilder": {r["nyckel"]: job.varden.get(r["nyckel"]) for r in mall["reglage"] if r["typ"] == "bild"
+                                   and job.varden.get(r["nyckel"])},
+                        "utdata": mallar.utdata(mall, job.formats)},
+               "assets": bilder, "limits": limits}
+    if job.kind == "slutmall":
+        # A worker from before the multi-file protocol only knows this shape; it renders the first format.
+        v = job.varden
+        payload["slutmall"] = {"mall": v.get("mall"), "rad1": v.get("text1", ""), "rad2": v.get("text2", ""),
+                               "effekt": v.get("effekt") or "small",
+                               "stil": {k: x for k, x in v.items() if k not in ("mall", "text1", "text2", "effekt")},
+                               "format": (job.formats or ["9x16"])[0]}
     return payload
 
 
@@ -228,7 +250,7 @@ def complete(job_id, token, video: bytes, *, duration_s=None, warnings=None) -> 
     job = leased(job_id, token)
     if not video or len(video) > OUTPUT_MAX_BYTES:
         raise SmsFilmError("Videon ska vara mellan 1 byte och 120 MB.")
-    slutmall = job.kind == "slutmall"
+    slutmall = job.kind in ("slutmall", "mall")
     title = job.title or ("Slutmall" if slutmall else "SMS-film")
     asset = store_asset(job.company, video, alt_text=title[:500])
     if asset.kind != "video":
@@ -246,6 +268,72 @@ def complete(job_id, token, video: bytes, *, duration_s=None, warnings=None) -> 
         job.lease_expires_at = None
         if isinstance(duration_s, (int, float)) and not isinstance(duration_s, bool) and 0 < duration_s < 3600:
             job.duration_s = float(duration_s)
+        job.warnings = list(dict.fromkeys([*job.warnings, *_clean_warnings(warnings)]))
+        job.save()
+        if job.mall_id:
+            # a worker from before the multi-file protocol sends one file: the first format
+            fmt = (job.formats or ["9x16"])[0]
+            w, h = _storlek(fmt)
+            SmsFilmOutput.objects.update_or_create(job=job, typ="video", format=fmt, variant="", defaults={
+                "asset": asset, "bredd": w, "hojd": h, "langd": job.duration_s})
+    return job
+
+
+def _storlek(fmt):
+    return {"9x16": (1080, 1920), "4x5": (1080, 1350), "1x1": (1080, 1080), "16x9": (1920, 1080)}.get(fmt, (0, 0))
+
+
+def add_output(job_id, token, data: bytes, *, typ, format, variant="", langd=None) -> SmsFilmOutput:
+    """Multi-file protocol: one call per file. Calling again for the same file replaces it, so a retry is safe."""
+    job = leased(job_id, token)
+    if not job.mall_id:
+        raise SmsFilmError("Bara mallar skickar flera filer.")
+    vantade = {(u["typ"], u["format"], u["variant"]) for u in mallar.utdata(mallar.hamta(job.mall_id), job.formats)}
+    variant = str(variant or "")
+    if (typ, format, variant) not in vantade:
+        raise SmsFilmError(f"Filen {typ} {format} {variant} hör inte till jobbet.")
+    if not data or len(data) > OUTPUT_MAX_BYTES:
+        raise SmsFilmError("Filen ska vara mellan 1 byte och 120 MB.")
+    title = job.title or "Mall"
+    asset = store_asset(job.company, data, alt_text=title[:500])
+    if asset.kind != typ_kind(typ):
+        raise SmsFilmError(f"Renderaren skickade inte en {'video' if typ == 'video' else 'bild'}.")
+    MediaAsset.objects.filter(pk=asset.pk).update(origin="generated", provider="playwright",
+                                                  brief=f"Mall {job.mall_id} {format}: {title}"[:2000])
+    w, h = _storlek(format)
+    with transaction.atomic():
+        job = leased(job_id, token, lock=True)
+        out, _ = SmsFilmOutput.objects.update_or_create(job=job, typ=typ, format=format, variant=variant, defaults={
+            "asset": asset, "bredd": w, "hojd": h,
+            "langd": float(langd) if isinstance(langd, (int, float)) and not isinstance(langd, bool) else None})
+    return out
+
+
+def typ_kind(typ):
+    return "video" if typ == "video" else "image"
+
+
+def finish(job_id, token, *, duration_s=None, warnings=None, render_commit="") -> SmsFilmJob:
+    """Multi-file protocol: the last call. Every expected file must have arrived; the 9:16 file becomes output_asset."""
+    with transaction.atomic():
+        job = leased(job_id, token, lock=True)
+        vantade = mallar.utdata(mallar.hamta(job.mall_id), job.formats)
+        filer = {(o.typ, o.format, o.variant): o for o in job.outputs.all()}
+        saknas = [f"{u['typ']} {u['format']}" for u in vantade if (u["typ"], u["format"], u["variant"]) not in filer]
+        if saknas:
+            raise SmsFilmError(f"Filer saknas: {', '.join(saknas)}.")
+        forsta = filer[(vantade[0]["typ"], vantade[0]["format"], vantade[0]["variant"])]
+        job.output_asset = forsta.asset
+        job.status = "done"
+        job.progress = 1
+        job.stage = ""
+        job.finished_at = timezone.now()
+        job.lease_token = None
+        job.lease_expires_at = None
+        if isinstance(duration_s, (int, float)) and not isinstance(duration_s, bool) and 0 < duration_s < 3600:
+            job.duration_s = float(duration_s)
+        if re.fullmatch(r"[0-9a-f]{7,40}", str(render_commit or "")):
+            job.render_commit = str(render_commit)
         job.warnings = list(dict.fromkeys([*job.warnings, *_clean_warnings(warnings)]))
         job.save()
     return job
@@ -274,7 +362,7 @@ def recover(*, redispatch=True) -> dict:
 
 
 def jobs_for(company, limit=20):
-    return SmsFilmJob.objects.filter(company=company).select_related("output_asset", "created_by")[:limit]
+    return SmsFilmJob.objects.filter(company=company).select_related("output_asset", "created_by").prefetch_related("outputs__publiceringar")[:limit]
 
 
 def get_job(company, job_id) -> SmsFilmJob:
@@ -290,7 +378,11 @@ def serialize(job: SmsFilmJob) -> dict:
         "progress": round(job.progress, 2), "stage": job.stage, "error": job.error, "warnings": job.warnings,
         "duration_s": job.duration_s, "dispatch_error": job.dispatch_error,
         "output_asset_id": str(job.output_asset_id) if job.output_asset_id else None,
-        "format": slutmall_format(job.form) if job.kind == "slutmall" else "9x16",
+        "format": (job.formats or ["9x16"])[0],
+        "mall_id": job.mall_id,
+        "outputs": [{"id": str(o.pk), "typ": o.typ, "format": o.format, "variant": o.variant, "asset_id": str(o.asset_id),
+                     "publiceringar": [publicera.serialize(p) for p in o.publiceringar.all()]}
+                    for o in sorted(job.outputs.all(), key=lambda o: (o.format != "9x16", o.format, o.variant))] if job.mall_id else [],
         "created_at": job.created_at.isoformat(),
     }
 

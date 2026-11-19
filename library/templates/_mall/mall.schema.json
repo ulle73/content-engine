@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ulle73/content-engine/library/templates/_mall/mall.schema.json",
+  "title": "mall/v1",
+  "description": "En dashboardmall: reglage, gränser, format och utdata. Gränserna finns bara här; Django validerar mot dem, formuläret ritas från dem och sidan klämmer mot dem. Se library/templates/_mall/README.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "titel", "typ", "sida", "render", "format", "utdata", "reglage"],
+  "properties": {
+    "schema": { "const": "mall/v1" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+    "titel": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "beskrivning": { "type": "string", "maxLength": 400 },
+    "typ": { "enum": ["bild", "video"] },
+    "sida": { "type": "string", "pattern": "^[a-z0-9_-]+\\.html$" },
+    "render": { "type": "string", "pattern": "^[a-z0-9_-]+\\.mjs$" },
+    "format": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/format" }
+    },
+    "video": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "fps": { "type": "integer", "minimum": 1, "maximum": 60 } }
+    },
+    "utdata": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["typ", "filtyp", "format"],
+        "properties": {
+          "typ": { "enum": ["bild", "video"] },
+          "filtyp": { "enum": ["jpg", "png", "mp4"] },
+          "variant": { "type": "string", "pattern": "^[a-z0-9-]{1,20}$" },
+          "format": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/format" } }
+        }
+      }
+    },
+    "reglage": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/reglage" }
+    },
+    "standard_per": {
+      "description": "Standardvärden som beror på ett annat val: {\"format\": {\"4x5\": {\"rubrik\": 80}}, \"effekt\": {\"small\": {\"skak\": 100}}}. Nyckeln är format eller ett reglage av typen val, typsnitt eller avpa. Format gäller först, sedan de andra i ordning.",
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]{0,39}$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "type": "object" }
+      }
+    }
+  },
+  "$defs": {
+    "format": { "enum": ["9x16", "4x5", "1x1", "16x9"] },
+    "nyckel": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,39}$",
+      "not": { "enum": ["format", "visa_zoner"] }
+    },
+    "reglage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nyckel", "typ", "etikett"],
+      "properties": {
+        "nyckel": { "$ref": "#/$defs/nyckel" },
+        "typ": { "enum": ["text", "tal", "farg", "val", "bild", "typsnitt", "avpa"] },
+        "etikett": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "hjalp": { "type": "string", "maxLength": 200 },
+        "grupp": { "type": "string", "maxLength": 40 },
+        "standard": {},
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "steg": { "type": "number", "exclusiveMinimum": 0 },
+        "enhet": { "type": "string", "maxLength": 10 },
+        "max_langd": { "type": "integer", "minimum": 1, "maximum": 500 },
+        "kravs": { "type": "boolean", "description": "text: får inte vara tom" },
+        "val": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["varde", "etikett"],
+            "properties": {
+              "varde": { "type": "string", "pattern": "^[a-z0-9_-]{1,40}$" },
+              "etikett": { "type": "string", "minLength": 1, "maxLength": 60 }
+            }
+          }
+        }
+      },
+      "allOf": [
+        { "if": { "properties": { "typ": { "const": "tal" } } },
+          "then": { "required": ["standard", "min", "max", "steg"], "properties": { "standard": { "type": "number" } } } },
+        { "if": { "properties": { "typ": { "const": "text" } } },
+          "then": { "required": ["standard", "max_langd"], "properties": { "standard": { "type": "string" } } } },
+        { "if": { "properties": { "typ": { "const": "farg" } } },
+          "then": { "required": ["standard"], "properties": { "standard": { "type": "string", "pattern": "^#[0-9a-f]{6}$" } } } },
+        { "if": { "properties": { "typ": { "enum": ["val", "typsnitt"] } } },
+          "then": { "required": ["standard", "val"], "properties": { "standard": { "type": "string" } } } },
+        { "if": { "properties": { "typ": { "const": "avpa" } } },
+          "then": { "required": ["standard"], "properties": { "standard": { "type": "boolean" } } } },
+        { "if": { "properties": { "typ": { "const": "bild" } } },
+          "then": { "properties": { "standard": { "type": "null" } } } }
+      ]
+    }
+  }
+}

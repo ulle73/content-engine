@@ -255,110 +255,27 @@ def build(form, files, company):
     return conv, images.ids, saved, total
 
 
+SLUTMALL_LEN = 3.1  # Shortest slutmall; used when a finished job has no measured length.
+
+
 def _slutmall_outro(ref, company):
-    """A finished 9:16 slutmall chosen under "Slut". Returns (job, video asset) or None when nothing is chosen."""
+    """A finished slutmall with a 9:16 film, chosen under "Slut". Returns (job, video asset) or None when nothing is chosen.
+
+    The slutmall's controls and limits live in library/templates/golfkuponger-slutmallar/mall.json (mallar.py)."""
     if not ref:
         return None
-    from .models import SmsFilmJob
+    from .models import SmsFilmJob, SmsFilmOutput
 
     try:
         job_id = uuid.UUID(str(ref))
     except ValueError as exc:
         raise SmsFilmError("Slutmallen: ogiltigt val.") from exc
     job = SmsFilmJob.objects.filter(pk=job_id, company=company, kind="slutmall").select_related("output_asset").first()
-    if job is None or job.status != "done" or job.output_asset is None or job.output_asset.kind != "video":
+    if job is None or job.status != "done" or job.output_asset is None:
         raise SmsFilmError("Slutmallen finns inte längre. Välj en annan.")
-    if slutmall_format(job.form) != "9x16":
+    out = SmsFilmOutput.objects.filter(job=job, typ="video", format="9x16").select_related("asset").first()
+    if out is None:
         raise SmsFilmError("Slutmallen är i 4:5. SMS-filmen är 9:16, så välj en slutmall i 9:16.")
-    return job, job.output_asset
-
-
-# --- slutmallar (library/templates/golfkuponger-slutmallar) ----------------------------------------------------
-
-SLUTMALLAR = {
-    "alla": "Alla portaler",
-    "epassi": "Epassi",
-    "benify": "Benify",
-    "sp": "Söderberg & Partners",
-    "edenred": "Edenred",
-}
-SLUTMALL_RAD1 = 40
-SLUTMALL_RAD2 = 48
-SLUTMALL_LEN = 3.1  # Minimum length; slow or long animations can need more time.
-SLUTMALL_EFFEKTER = {
-    "small": "Smäll",
-    "studs": "Studs",
-    "tona": "Tona in",
-    "glid": "Glid upp",
-    "skriv": "Skrivmaskin",
-    "avtack": "Avtäck",
-}
-# Same keys and limits as STIL in slutmall.html: (label, unit, min, max, default). skak's default depends on the effect.
-SLUTMALL_STIL = {
-    "logga": ("Loggans storlek", "%", 50, 160, 100),
-    "ikoner": ("Portalikonernas storlek", "%", 50, 160, 100),
-    "rad1": ("Rad 1, storlek", "%", 50, 160, 100),
-    "rubrik": ("Rad 2, största storlek", "%", 50, 160, 100),
-    "cta": ("Uppmaningens storlek", "%", 50, 160, 100),
-    "bredd": ("Textens bredd", "px", 560, 950, 778),
-    "hojd": ("Flytta allt nedåt", "px", -120, 300, 0),
-    "luft_logga": ("Luft under loggan", "px", -30, 240, 0),
-    "luft_rad1": ("Luft under rad 1", "px", -30, 160, 0),
-    "luft_rubrik": ("Luft under rad 2", "px", -20, 160, 0),
-    "luft_cta": ("Luft ovanför ikonerna", "px", -20, 200, 0),
-    "luft_ikoner": ("Luft mellan ikonerna", "px", -8, 60, 0),
-    "tempo": ("Tempo", "%", 50, 200, 100),
-    "skak": ("Skakning", "%", 0, 200, None),
-}
-SLUTMALL_SKAK = {"small": 100, "studs": 40}  # other effects: 0
-SLUTMALL_FORMAT = {"9x16": "9:16 (1080×1920)", "4x5": "4:5 (1080×1350)"}
-
-
-def slutmall_format(form):
-    """Older slutmallar were always 9:16 and have no format in their form."""
-    value = (form or {}).get("format")
-    return value if value in SLUTMALL_FORMAT else "9x16"
-
-
-def slutmall_default(key, effekt):
-    if key == "skak":
-        return SLUTMALL_SKAK.get(effekt, 0)
-    return SLUTMALL_STIL[key][4]
-
-
-def _slutmall_stil(raw, effekt):
-    """Keeps known keys only, as whole numbers clamped to their limits. Missing keys use the template's default."""
-    if raw is None:
-        return {}
-    if not isinstance(raw, dict):
-        raise SmsFilmError("Stilvalen kom inte fram. Ladda om sidan och försök igen.")
-    stil = {}
-    for key, (_, _, lo, hi, _) in SLUTMALL_STIL.items():
-        value = raw.get(key)
-        if _num(value):
-            value = int(round(min(hi, max(lo, float(value)))))
-            if value != slutmall_default(key, effekt):
-                stil[key] = value
-    return stil
-
-
-def build_slutmall(form):
-    """Validates the end-card form. Returns (saved_form, estimated_seconds). render.mjs checks the same limits."""
-    if not isinstance(form, dict):
-        raise SmsFilmError("Formuläret kom inte fram. Ladda om sidan och försök igen.")
-    mall = form.get("mall")
-    if mall not in SLUTMALLAR:
-        raise SmsFilmError("Välj vilken slutmall som ska användas.")
-    rad1 = _text(form.get("rad1"), "Rad 1", SLUTMALL_RAD1)
-    rad2 = _text(form.get("rad2"), "Rad 2", SLUTMALL_RAD2, required=True)
-    if "\n" in rad1 or "\n" in rad2:
-        raise SmsFilmError("Raderna får inte innehålla radbrytningar.")
-    effekt = form.get("effekt") or "small"
-    if effekt not in SLUTMALL_EFFEKTER:
-        raise SmsFilmError("Välj en effekt för texten.")
-    stil = _slutmall_stil(form.get("stil"), effekt)
-    fmt = form.get("format") or "9x16"
-    if fmt not in SLUTMALL_FORMAT:
-        raise SmsFilmError("Välj format för slutmallen.")
-    return ({"kind": "slutmall", "mall": mall, "rad1": rad1, "rad2": rad2, "effekt": effekt, "stil": stil,
-             "format": fmt}, SLUTMALL_LEN)
+    if out.asset.kind != "video":
+        raise SmsFilmError("Slutmallen finns inte längre. Välj en annan.")
+    return job, out.asset

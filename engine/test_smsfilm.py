@@ -11,8 +11,8 @@ from django.urls import reverse
 from PIL import Image
 
 from engine.models import Company, MediaAsset
-from engine.smsfilm import service, spec
-from engine.smsfilm.models import SmsFilmJob
+from engine.smsfilm import mallar, service, spec
+from engine.smsfilm.models import SmsFilmJob, SmsFilmOutput
 
 TOKEN = "t" * 40
 
@@ -30,10 +30,14 @@ def done_slutmall(company, user, fmt="9x16", duration=7.7, status="done"):
     asset = MediaAsset.objects.get(pk=ids[0])
     asset.kind = "video"
     asset.save(update_fields=["kind"])
-    saved, _ = spec.build_slutmall({"mall": "alla", "rad2": "x", "format": fmt})
-    job = service.create_job(company, user, title=f"Slut {fmt}", form=saved, conversation={}, image_asset_ids=[],
-                             duration_s=duration, dispatch_now=False, kind="slutmall")
+    mall = mallar.hamta("golfkuponger-slutmallar")
+    varden, formats = mallar.validera(mall, {"text2": "x"}, [fmt])
+    job = service.create_job(company, user, title=f"Slut {fmt}", form={"kind": "mall"}, conversation={}, image_asset_ids=[],
+                             duration_s=duration, dispatch_now=False, kind="slutmall", mall_id=mall["id"],
+                             varden=varden, formats=formats)
     SmsFilmJob.objects.filter(pk=job.pk).update(status=status, output_asset=asset)
+    SmsFilmOutput.objects.create(job=job, typ="video", format=fmt, bredd=1080, hojd=1920 if fmt == "9x16" else 1350,
+                                 langd=duration, asset=asset)
     job.refresh_from_db()
     return job, asset
 
@@ -299,37 +303,69 @@ class WorkerApiTests(TestCase):
         self.assertEqual(self.job.status, "queued")
 
 
-class SlutmallSpecTests(TestCase):
-    def test_build_ok(self):
-        saved, total = spec.build_slutmall({"mall": "epassi", "rad1": " Friskvårdsbidrag kvar? ", "rad2": "Det brinner *inne*"})
-        self.assertEqual(saved, {"kind": "slutmall", "mall": "epassi", "rad1": "Friskvårdsbidrag kvar?",
-                                 "rad2": "Det brinner *inne*", "effekt": "small", "stil": {}, "format": "9x16"})
-        self.assertEqual(total, spec.SLUTMALL_LEN)
+class MallValideringTests(TestCase):
+    """engine/smsfilm/mallar.py: the server checks a job's values against the template's mall.json."""
 
-    def test_format_4x5_and_bad_format(self):
-        saved, _ = spec.build_slutmall({"mall": "alla", "rad2": "x", "format": "4x5"})
-        self.assertEqual(saved["format"], "4x5")
-        with self.assertRaisesMessage(spec.SmsFilmError, "format"):
-            spec.build_slutmall({"mall": "alla", "rad2": "x", "format": "16x9"})
+    def setUp(self):
+        self.mall = mallar.hamta("golfkuponger-slutmallar")
 
-    def test_effect_and_style_are_clamped_and_defaults_dropped(self):
-        saved, _ = spec.build_slutmall({"mall": "alla", "rad2": "x", "effekt": "tona", "stil": {
-            "logga": 999, "ikoner": 100, "luft_logga": 40.4, "hojd": -500, "okand": 5, "cta": "120", "rad1": True, "skak": 0}})
-        self.assertEqual(saved["effekt"], "tona")
-        # logga clamped to max, ikoner = default (dropped), hojd clamped to min, unknown/non-numeric dropped,
-        # skak 0 is the default for "tona" (dropped)
-        self.assertEqual(saved["stil"], {"logga": 160, "luft_logga": 40, "hojd": -120})
-        saved, _ = spec.build_slutmall({"mall": "alla", "rad2": "x", "effekt": "small", "stil": {"skak": 0}})
-        self.assertEqual(saved["stil"], {"skak": 0})   # "small" shakes by default, so 0 is a choice
+    def test_defaults_are_frozen_and_follow_the_effect(self):
+        varden, formats = mallar.validera(self.mall, {"mall": "epassi", "text2": " Det brinner *inne* ", "effekt": "studs"}, ["9x16"])
+        self.assertEqual(formats, ["9x16"])
+        self.assertEqual((varden["mall"], varden["text2"], varden["effekt"]), ("epassi", "Det brinner *inne*", "studs"))
+        self.assertEqual((varden["text1"], varden["logga"], varden["bredd"], varden["skak"]), ("Friskvårdsbidrag kvar?", 100, 778, 40))
+        varden, _ = mallar.validera(self.mall, {"text2": "x", "effekt": "tona"}, ["9x16", "4x5"])
+        self.assertEqual(varden["skak"], 0)
+        varden, _ = mallar.validera(self.mall, {"text2": "x", "effekt": "small", "skak": 0}, ["4x5"])
+        self.assertEqual(varden["skak"], 0)   # "small" shakes by default, so 0 is a choice
 
-    def test_rejects_bad_input(self):
-        for form in ({"mall": "okand", "rad2": "x"}, {"mall": "alla", "rad2": "  "},
-                     {"mall": "alla", "rad1": "a" * (spec.SLUTMALL_RAD1 + 1), "rad2": "x"},
-                     {"mall": "alla", "rad2": "b" * (spec.SLUTMALL_RAD2 + 1)},
-                     {"mall": "alla", "rad2": "x", "effekt": "explodera"},
-                     {"mall": "alla", "rad2": "x", "stil": ["logga", 120]}):
-            with self.assertRaises(spec.SmsFilmError, msg=form):
-                spec.build_slutmall(form)
+    def test_rejects_what_mall_json_does_not_allow(self):
+        fall = [({"text2": "x", "logga": 999}, ["9x16"]), ({"text2": "  "}, ["9x16"]), ({"text2": "x", "okand": 1}, ["9x16"]),
+                ({"text2": "x", "text1": "a" * 41}, ["9x16"]), ({"text2": "x", "effekt": "explodera"}, ["9x16"]),
+                ({"text2": "x", "mall": "okand"}, ["9x16"]), ({"text2": "x"}, ["16x9"]), ({"text2": "x"}, []),
+                ({"text2": "x", "hojd": "mycket"}, ["9x16"]), (["text2", "x"], ["9x16"])]
+        for raw, formats in fall:
+            with self.assertRaises(spec.SmsFilmError, msg=(raw, formats)):
+                mallar.validera(self.mall, raw, formats)
+
+    def test_only_templates_with_a_mall_field_are_offered(self):
+        ids = [m["id"] for m in mallar.for_formularet()]
+        self.assertIn("golfkuponger-slutmallar", ids)
+        self.assertNotIn("testmall", ids)
+        with self.assertRaises(spec.SmsFilmError):
+            mallar.hamta("testmall")
+
+    def test_utdata_puts_9x16_first(self):
+        self.assertEqual([u["format"] for u in mallar.utdata(self.mall, ["4x5", "9x16"])], ["9x16", "4x5"])
+
+    def test_old_slutmall_jobs_are_migrated(self):
+        import importlib
+
+        from django.apps import apps
+
+        migration = importlib.import_module("engine.migrations.0045_mallmotor")
+        user = get_user_model().objects.create_user(username="mig", password="test")
+        company = Company.objects.create(owner=user, name="Mig AB")
+        asset = MediaAsset.objects.create(company=company, kind="video", storage_key="x/y.mp4", byte_size=1, sha256="0" * 64,
+                                          mime_type="video/mp4")
+        old = SmsFilmJob.objects.create(company=company, kind="slutmall", status="done", output_asset=asset, duration_s=3.1,
+                                        form={"kind": "slutmall", "mall": "sp", "rad1": "", "rad2": "Hej", "effekt": "studs",
+                                              "stil": {"logga": 130}})
+        wide = SmsFilmJob.objects.create(company=company, kind="slutmall", status="failed",
+                                         form={"mall": "alla", "rad2": "x", "format": "4x5"})
+        migration.fyll_slutmallar(apps, None)
+        old.refresh_from_db()
+        wide.refresh_from_db()
+        self.assertEqual((old.mall_id, old.formats, wide.formats), ("golfkuponger-slutmallar", ["9x16"], ["4x5"]))
+        self.assertEqual({k: old.varden[k] for k in ("mall", "text1", "text2", "effekt", "logga", "skak", "bredd")},
+                         {"mall": "sp", "text1": "", "text2": "Hej", "effekt": "studs", "logga": 130, "skak": 40, "bredd": 778})
+        self.assertEqual(list(old.outputs.values_list("format", "typ", "asset_id")), [("9x16", "video", asset.pk)])
+        self.assertFalse(wide.outputs.exists())
+        # every frozen value is still valid against today's mall.json
+        mallar.validera(mallar.hamta("golfkuponger-slutmallar"), old.varden, old.formats)
+        migration.tom_slutmallar(apps, None)
+        old.refresh_from_db()
+        self.assertEqual((old.mall_id, old.varden), ("", {}))
 
 
 @override_settings(APP_URL="https://engine.test")
@@ -344,17 +380,14 @@ class SlutmallFlowTests(TestCase):
     def create(self, form):
         return self.client.post(self.url, {"form_json": json.dumps(form)}, HTTP_ACCEPT="application/json")
 
-    def test_page_offers_slutmallar(self):
+    def test_page_offers_the_templates(self):
         response = self.client.get(self.url)
         self.assertContains(response, "Generera video")
-        self.assertContains(response, "slutmall-section")
-        self.assertContains(response, "Epassi")
-        self.assertContains(response, "sm-effekt")
-        self.assertContains(response, "Skrivmaskin")
-        self.assertContains(response, "sm-stil-data")
-        self.assertContains(response, "Luft under loggan")
-        self.assertContains(response, "sm-format")
-        self.assertContains(response, "sm-klara-data")
+        self.assertContains(response, "mall-section")
+        self.assertContains(response, 'value="mall:golfkuponger-slutmallar"')
+        for text in ("Epassi", "Skrivmaskin", "Luft under loggan", "mall-data", "sm-klara-data"):
+            self.assertContains(response, text)
+        self.assertNotContains(response, "testmall")
 
     def test_finished_slutmall_is_listed_under_slut_and_reopens(self):
         job, asset = done_slutmall(self.company, self.user, duration=6.9)
@@ -362,6 +395,7 @@ class SlutmallFlowTests(TestCase):
         klara = json.loads(page.content.decode().split('id="sm-klara-data" type="application/json">', 1)[1].split("</script>", 1)[0])
         self.assertEqual([(j["id"], j["format"], j["duration_s"]) for j in klara], [(str(job.pk), "9x16", 6.9)])
         self.assertEqual(klara[0]["output_asset_id"], str(asset.pk))
+        self.assertEqual([(o["format"], o["asset_id"]) for o in klara[0]["outputs"]], [("9x16", str(asset.pk))])
         response = self.create({"messages": [{"side": "recv", "text": "Hej"}], "slutmall": str(job.pk)})
         self.assertEqual(response.status_code, 201, response.content)
         film = SmsFilmJob.objects.get(kind="sms")
@@ -374,49 +408,122 @@ class SlutmallFlowTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("4:5", response.json()["error"])
 
-    def test_preview_serves_template_and_assets_only(self):
+    def test_old_preview_route_serves_only_the_spotlight_clip(self):
         url = lambda fil: reverse("engine:sms_film_slutmall", kwargs={"workspace_id": self.company.pk, "fil": fil})
-        page = self.client.get(url("slutmall.html"))
-        self.assertEqual(page.status_code, 200)
-        self.assertTrue(page["Content-Type"].startswith("text/html"))
-        # Framed inside the embedded editor too: no X-Frame-Options (checked against every ancestor), CSP instead.
-        self.assertNotIn("X-Frame-Options", page)
-        self.assertEqual(page["Content-Security-Policy"], "frame-ancestors 'self' https://dashboard.golfkuponger.se")
-        font = self.client.get(url("assets/anton.woff2"))
-        self.assertEqual((font.status_code, font["Content-Type"]), (200, "font/woff2"))
-        self.assertEqual(self.client.get(url("assets/portal-epassi.jpg")).status_code, 200)
         spotlight = self.client.get(url("spotlight-9x16.mp4"), HTTP_RANGE="bytes=0-15")
         self.assertEqual((spotlight.status_code, spotlight["Content-Type"]), (206, "video/mp4"))
         self.assertTrue(spotlight["Content-Range"].startswith("bytes 0-15/"))
-        for bad in ("render.mjs", "README.md", "LIBRARY.json", "assets/../render.mjs", "../views.py", "assets/finns-inte.png",
-                    "spotlight-4x5.mp4", "assets/spotlight-9x16.mp4"):
+        for bad in ("slutmall.html", "assets/anton.woff2", "render.mjs", "../views.py", "spotlight-4x5.mp4"):
             self.assertEqual(self.client.get(url(bad)).status_code, 404, bad)
         self.client.logout()
-        self.assertEqual(self.client.get(url("slutmall.html")).status_code, 302)
         self.assertEqual(self.client.get(url("spotlight-9x16.mp4")).status_code, 302)
 
+    def test_mall_preview_serves_the_page_contract_files_only(self):
+        url = lambda mall, fil: reverse("engine:sms_film_mall", kwargs={"workspace_id": self.company.pk, "mall": mall, "fil": fil})
+        page = self.client.get(url("golfkuponger-slutmallar", "slutmall.html"))
+        self.assertEqual(page.status_code, 200)
+        self.assertNotIn("X-Frame-Options", page)
+        self.assertEqual(page["Content-Security-Policy"], "frame-ancestors 'self' https://dashboard.golfkuponger.se")
+        for mall, fil, typ in (("golfkuponger-slutmallar", "mall.json", "application/json"),
+                               ("golfkuponger-slutmallar", "assets/anton.woff2", "font/woff2"),
+                               ("_mall", "sida.mjs", "text/javascript"), ("_mall", "safezones.js", "text/javascript")):
+            response = self.client.get(url(mall, fil))
+            self.assertEqual((response.status_code, response["Content-Type"]), (200, typ), fil)
+        b"".join(self.client.get(url("_mall", "safezones.js")).streaming_content).decode().index("PLATFORM_ZONES")
+        for mall, fil in (("golfkuponger-slutmallar", "render.mjs"), ("golfkuponger-slutmallar", "README.md"),
+                          ("golfkuponger-slutmallar", "annan.html"), ("golfkuponger-slutmallar", "assets/../render.mjs"),
+                          ("golfkuponger-slutmallar", "referens/9x16.png"), ("_mall", "render-bas.mjs"), ("_mall", "mall.schema.json"),
+                          ("imessage-samtal", "mall.json"), ("..", "manage.py"), ("_mall", "../../manage.py")):
+            self.assertEqual(self.client.get(url(mall, fil)).status_code, 404, f"{mall}/{fil}")
+        self.client.logout()
+        self.assertEqual(self.client.get(url("golfkuponger-slutmallar", "slutmall.html")).status_code, 302)
+
     def test_post_creates_slutmall_job_and_worker_payload(self):
-        response = self.create({"kind": "slutmall", "mall": "alla", "rad1": "Friskvårdsbidrag kvar?",
-                                "rad2": "Det brinner inne 31/12", "effekt": "studs", "stil": {"logga": 130}})
+        response = self.create({"kind": "mall", "mall": "golfkuponger-slutmallar", "format": ["9x16", "4x5"],
+                                "varden": {"text1": "Friskvårdsbidrag kvar?", "text2": "Det brinner inne 31/12",
+                                           "effekt": "studs", "logga": 130}})
         self.assertEqual(response.status_code, 201, response.content)
         self.assertEqual(response.json()["job"]["kind"], "slutmall")
         job = SmsFilmJob.objects.get()
-        self.assertEqual((job.kind, job.title, job.image_asset_ids), ("slutmall", "Slutmall – Alla portaler", []))
+        self.assertEqual((job.kind, job.title, job.mall_id, job.formats), ("slutmall", "Slutmall med svingloggan",
+                                                                           "golfkuponger-slutmallar", ["9x16", "4x5"]))
+        self.assertEqual((job.varden["logga"], job.varden["skak"]), (130, 40))
         auth = {"HTTP_AUTHORIZATION": f"Bearer {TOKEN}"}
         payload = self.client.post("/internal/sms-film/claim/", json.dumps({"worker_id": "gh"}),
                                    content_type="application/json", **auth).json()["job"]
         self.assertEqual(payload["kind"], "slutmall")
-        self.assertEqual(payload["slutmall"]["rad2"], "Det brinner inne 31/12")
-        self.assertEqual((payload["slutmall"]["effekt"], payload["slutmall"]["stil"]), ("studs", {"logga": 130}))
+        self.assertEqual(payload["mall"]["id"], "golfkuponger-slutmallar")
+        self.assertEqual([(u["typ"], u["format"]) for u in payload["mall"]["utdata"]], [("video", "9x16"), ("video", "4x5")])
+        # a worker from before the multi-file protocol still gets the old shape
+        self.assertEqual((payload["slutmall"]["rad2"], payload["slutmall"]["effekt"], payload["slutmall"]["stil"]["logga"]),
+                         ("Det brinner inne 31/12", "studs", 130))
         self.assertNotIn("apple_pack_url", payload)
         self.assertEqual(payload["assets"], [])
-        pack = self.client.get(f"/internal/sms-film/apple-pack/{job.pk}/", **auth, HTTP_X_EDIT_LEASE=payload["lease"])
+        lease = {"HTTP_X_EDIT_LEASE": payload["lease"]}
+        pack = self.client.get(f"/internal/sms-film/apple-pack/{job.pk}/", **auth, **lease)
         self.assertEqual(pack.status_code, 404)
+
+        # multi-file protocol: one call per file, then klar/
+        def fil(fmt, data=b"mp4-" , typ="video"):
+            with mock.patch("engine.smsfilm.service.store_asset", side_effect=lambda c, d, **kw: MediaAsset.objects.create(
+                    company=c, kind="video", storage_key=f"x/{len(d)}-{fmt}.mp4", byte_size=len(d), sha256="1" * 64,
+                    mime_type="video/mp4")):
+                return self.client.post(f"/internal/sms-film/fil/{job.pk}/", {
+                    "file": SimpleUploadedFile("a.mp4", data + fmt.encode()),
+                    "meta": json.dumps({"typ": typ, "format": fmt, "langd": 3.1})}, **auth, **lease)
+
+        done = lambda: self.client.post(f"/internal/sms-film/klar/{job.pk}/", json.dumps({"duration_s": 3.1, "render_commit": "abc1234"}),
+                                        content_type="application/json", **auth, **lease)
+        self.assertEqual(fil("9x16").status_code, 200)
+        self.assertEqual(done().status_code, 409)               # 4:5 has not arrived
+        self.assertEqual(fil("1x1").status_code, 409)           # not one of the job's files
+        self.assertEqual(fil("4x5", typ="bild").status_code, 409)
+        self.assertEqual(fil("4x5").status_code, 200)
+        self.assertEqual(fil("4x5", data=b"igen-").status_code, 200)   # a retry replaces the file
+        self.assertEqual(done().status_code, 200)
+        job.refresh_from_db()
+        nio = job.outputs.get(format="9x16")
+        self.assertEqual((job.status, job.output_asset_id, job.render_commit, job.outputs.count()), ("done", nio.asset_id, "abc1234", 2))
         reopen = self.client.get(self.url + f"?from={job.pk}")
         self.assertContains(reopen, "Det brinner inne 31/12")
 
-    def test_bad_slutmall_and_non_object_form(self):
-        self.assertEqual(self.create({"kind": "slutmall", "mall": "alla", "rad2": ""}).status_code, 400)
+    def test_golfare_job_with_a_photo_gives_two_images(self):
+        # steg 4: Golfare i stad – banfotot laddas upp, värdena kontrolleras mot mall.json, 9:16 och 4:5 i samma jobb
+        form = {"kind": "mall", "mall": "golfkuponger-golfare-i-stad", "format": ["9x16", "4x5"],
+                "varden": {"bakgrund": {"file": "f1"}, "stad": "Uppsala", "klubb": "Upsala", "bana": "Upsala GK", "zoom": 120}}
+        response = self.client.post(self.url, {"form_json": json.dumps(form), "f1": SimpleUploadedFile("bana.png", png(), content_type="image/png")},
+                                    HTTP_ACCEPT="application/json")
+        self.assertEqual(response.status_code, 201, response.content)
+        job = SmsFilmJob.objects.get()
+        foto = MediaAsset.objects.get(company=self.company, kind="image")
+        self.assertEqual((job.kind, job.mall_id, job.image_asset_ids), ("mall", "golfkuponger-golfare-i-stad", [str(foto.pk)]))
+        self.assertEqual((job.varden["bakgrund"], job.varden["stad"], job.varden["zoom"], job.varden["rubrik"]),
+                         (str(foto.pk), "Uppsala", 120, 220))
+        self.assertNotIn("fokus_y", job.varden)   # depends on the format: the page picks it per format
+        auth = {"HTTP_AUTHORIZATION": f"Bearer {TOKEN}"}
+        payload = self.client.post("/internal/sms-film/claim/", json.dumps({"worker_id": "gh"}),
+                                   content_type="application/json", **auth).json()["job"]
+        self.assertEqual(payload["mall"]["bilder"], {"bakgrund": str(foto.pk)})
+        self.assertEqual([(a["id"], a["fil"].split(".")[0]) for a in payload["assets"]], [(str(foto.pk), str(foto.pk))])
+        self.assertEqual([(u["typ"], u["format"]) for u in payload["mall"]["utdata"]], [("bild", "9x16"), ("bild", "4x5")])
+        got = self.client.get(payload["assets"][0]["url"].replace("https://engine.test", ""), **auth, HTTP_X_EDIT_LEASE=payload["lease"])
+        self.assertEqual(got.status_code, 200)
+        # the photo is reused when the job is made again
+        reopen = self.client.get(self.url + f"?from={job.pk}")
+        self.assertContains(reopen, str(foto.pk))
+
+    def test_golfare_needs_a_city_and_a_real_photo(self):
+        base = {"kind": "mall", "mall": "golfkuponger-golfare-i-stad", "format": ["4x5"]}
+        self.assertEqual(self.create({**base, "varden": {"stad": " "}}).status_code, 400)
+        self.assertEqual(self.create({**base, "varden": {"bakgrund": {"asset": "00000000-0000-0000-0000-000000000000"}}}).status_code, 400)
+        self.assertEqual(self.create({**base, "varden": {"bakgrund": {"file": "f9"}}}).status_code, 400)
+        self.assertFalse(SmsFilmJob.objects.exists())
+
+    def test_bad_template_job_and_non_object_form(self):
+        base = {"kind": "mall", "mall": "golfkuponger-slutmallar", "format": ["9x16"]}
+        for form in ({**base, "varden": {"text2": ""}}, {**base, "varden": {"text2": "x", "logga": 999}},
+                     {**base, "mall": "testmall", "varden": {}}, {**base, "format": [], "varden": {"text2": "x"}}):
+            self.assertEqual(self.create(form).status_code, 400, form)
         self.assertEqual(self.create(["inte", "ett", "objekt"]).status_code, 400)
         self.assertFalse(SmsFilmJob.objects.exists())
 

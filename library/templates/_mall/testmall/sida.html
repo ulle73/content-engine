@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>Testmall</title>
+<style>
+  @font-face { font-family: 'Anton'; src: url('../../golfkuponger-slutmallar/assets/anton.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 700; src: url('../../golfkuponger-slutmallar/assets/inter-700.woff2') format('woff2'); }
+  html, body { margin: 0; }
+  body { background: #0f3d2e; }
+  #bakgrund { position: absolute; inset: 0; background-size: cover; background-position: center; }
+  #etikett { position: absolute; display: flex; justify-content: center; }
+  #etikett span { padding: .08em .3em .02em; line-height: 1.1; color: #0b0b0b; text-transform: uppercase; }
+  #bana { position: absolute; display: flex; align-items: center; gap: 12px; color: #fff; font: 700 34px 'Inter', sans-serif; }
+  #bana svg { width: 30px; height: 30px; flex: none; }
+</style>
+</head>
+<body>
+<div id="bakgrund"></div>
+<div id="etikett"><span></span></div>
+<div id="bana"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span></span></div>
+<script type="module">
+  import { starta } from '../sida.mjs';
+  const $ = s => document.querySelector(s);
+
+  starta({
+    forbered(v, ctx) {
+      const m = ctx.marginal;
+      document.body.style.background = v.bakgrundsfarg;
+      $('#bakgrund').style.backgroundImage = v.bakgrund ? `url("${v.bakgrund}")` : 'none';
+      const etikett = $('#etikett'), text = $('#etikett span');
+      text.textContent = v.rubrik;
+      text.style.background = v.etikett_farg;
+      text.style.fontFamily = v.typsnitt === 'inter' ? "'Inter', sans-serif" : "'Anton', sans-serif";
+      text.style.fontWeight = v.typsnitt === 'inter' ? '700' : '400';
+      text.style.fontSize = v.rubrik_storlek + 'px';
+      Object.assign(etikett.style, { left: m.left + 'px', width: (ctx.bredd - m.left - m.right) + 'px' });
+      // rubrik_y: 0 = överst i den säkra ytan, 1 = så långt ner att etiketten fortfarande ryms
+      const lagst = ctx.hojd - m.bottom - etikett.offsetHeight;
+      etikett.style.top = Math.round(m.top + (lagst - m.top) * v.rubrik_y) + 'px';
+      const bana = $('#bana');
+      bana.style.display = v.visa_bana ? 'flex' : 'none';
+      $('#bana span').textContent = v.bana;
+      Object.assign(bana.style, { left: m.left + 'px', top: (ctx.hojd - m.bottom - 44) + 'px' });
+    },
+    rita() { /* stillbild: allt ritas i forbered */ },
+  });
+</script>
+</body>
+</html>
