@@ -11,7 +11,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 from openai import APIConnectionError, APIError
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 from . import media_providers as providers
 from .creative_core import ReferenceRole
@@ -39,6 +39,42 @@ def _audio_metadata(container, stream, extension):
         raise MediaError("Ljudfilen saknar l\u00e4sbart ljud.")
     return {"kind": "audio", "mime_type": {"wav": "audio/wav", "mp3": "audio/mpeg", "m4a": "audio/mp4"}[extension],
             "extension": extension, "duration_seconds": duration}
+
+
+MAX_BILD_BYTES = 8 * 1024 * 1024
+MAX_BILD_SIDA = 4096
+
+
+def krymp_stor_bild(data, max_bytes=MAX_BILD_BYTES, max_sida=MAX_BILD_SIDA):
+    """A photo over max_bytes (phone and camera photos are often 10-25 MB) is scaled to at most max_sida px on the long
+    side, turned the way the camera recorded it, and saved as JPEG (PNG when it has transparency) instead of being
+    rejected. 4096 px covers a 1080x1920 frame even at 250 % zoom. Anything else, and anything Pillow cannot read,
+    is returned unchanged so describe_file() gives its usual answer."""
+    if len(data) <= max_bytes or len(data) > 80 * 1024 * 1024:
+        return data
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(data)) as img:
+                if img.format not in {"PNG", "JPEG", "WEBP"}:
+                    return data
+                img.draft("RGB", (max_sida, max_sida))   # JPEG: decode at a smaller scale straight away
+                img = ImageOps.exif_transpose(img)
+                alfa = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+                img = img.convert("RGBA" if alfa else "RGB")
+                img.thumbnail((max_sida, max_sida), Image.Resampling.LANCZOS)
+                ut = io.BytesIO()
+                if alfa:
+                    img.save(ut, "PNG", optimize=True)
+                    return ut.getvalue()
+                for kvalitet in (90, 82, 72):
+                    ut = io.BytesIO()
+                    img.save(ut, "JPEG", quality=kvalitet, optimize=True, progressive=True)
+                    if ut.tell() <= max_bytes:
+                        break
+                return ut.getvalue()
+    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError):
+        return data
 
 
 def describe_file(data):

@@ -11,6 +11,7 @@ from django.urls import reverse
 from PIL import Image
 
 from engine.models import Company, MediaAsset
+from engine.media import describe_file, krymp_stor_bild
 from engine.smsfilm import mallar, service, spec
 from engine.smsfilm.models import SmsFilmJob, SmsFilmOutput
 
@@ -40,6 +41,46 @@ def done_slutmall(company, user, fmt="9x16", duration=7.7, status="done"):
                                  langd=duration, asset=asset)
     job.refresh_from_db()
     return job, asset
+
+
+def noise_png(w, h):
+    """A PNG that does not compress: about 3 bytes per pixel."""
+    return png_bytes(Image.frombytes("RGB", (w, h), os.urandom(w * h * 3)))
+
+
+def png_bytes(img, fmt="PNG", **kw):
+    out = io.BytesIO()
+    img.save(out, fmt, **kw)
+    return out.getvalue()
+
+
+class KrympBildTests(TestCase):
+    """engine/media.py krymp_stor_bild: photos over 8 MB are shrunk instead of rejected."""
+
+    def test_small_photos_are_untouched(self):
+        liten = png_bytes(Image.new("RGB", (1200, 800), "green"))
+        self.assertIs(krymp_stor_bild(liten), liten)
+
+    def test_large_photo_becomes_a_jpeg_under_the_limit_and_keeps_its_aspect(self):
+        stor = noise_png(4400, 2000)
+        ut = krymp_stor_bild(stor)
+        with Image.open(io.BytesIO(ut)) as img:
+            self.assertEqual((img.format, img.size), ("JPEG", (4096, 1862)))
+        self.assertLessEqual(len(ut), 8 * 1024 * 1024)
+        self.assertEqual(describe_file(ut)["kind"], "image")
+
+    def test_camera_rotation_is_applied(self):
+        img = Image.frombytes("RGB", (3000, 1100), os.urandom(3000 * 1100 * 3))
+        exif = Image.Exif()
+        exif[0x0112] = 6   # stored on its side: should be shown rotated 90 degrees
+        stor = png_bytes(img, "JPEG", quality=100, exif=exif.tobytes())
+        stor += b"\0" * max(0, 8 * 1024 * 1024 + 1 - len(stor))   # make sure it is over the limit
+        with Image.open(io.BytesIO(krymp_stor_bild(stor))) as ut:
+            self.assertEqual(ut.size, (1100, 3000))
+
+    def test_what_is_not_an_image_is_left_for_describe_file(self):
+        skrap = b"x" * (9 * 1024 * 1024)
+        self.assertIs(krymp_stor_bild(skrap), skrap)
 
 
 class SpecTests(TestCase):
@@ -511,6 +552,20 @@ class SlutmallFlowTests(TestCase):
         # the photo is reused when the job is made again
         reopen = self.client.get(self.url + f"?from={job.pk}")
         self.assertContains(reopen, str(foto.pk))
+
+    def test_golfare_accepts_a_large_phone_photo(self):
+        # Jonas 2026-11-20: a single course photo over 8 MB was rejected ("Bilder får vara högst 8 MB"). Now it is shrunk.
+        stor = noise_png(3000, 1100)
+        self.assertGreater(len(stor), 8 * 1024 * 1024)
+        form = {"kind": "mall", "mall": "golfkuponger-golfare-i-stad", "format": ["9x16"],
+                "varden": {"bakgrund": {"file": "f1"}, "stad": "Uppsala"}}
+        response = self.client.post(self.url, {"form_json": json.dumps(form), "f1": SimpleUploadedFile("bana.png", stor, content_type="image/png")},
+                                    HTTP_ACCEPT="application/json")
+        self.assertEqual(response.status_code, 201, response.content)
+        foto = MediaAsset.objects.get(company=self.company, kind="image")
+        self.assertLessEqual(foto.byte_size, 8 * 1024 * 1024)
+        self.assertLessEqual(max(foto.width, foto.height), 4096)
+        self.assertEqual(foto.mime_type, "image/jpeg")
 
     def test_golfare_needs_a_city_and_a_real_photo(self):
         base = {"kind": "mall", "mall": "golfkuponger-golfare-i-stad", "format": ["4x5"]}
