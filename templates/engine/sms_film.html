@@ -846,6 +846,24 @@
   showWall(); showAvatar(); toggleWall(); renderMessages(); applyMode(); setPreviewTab(!!$("sms-notification").value.trim());
 
   // ---------------------------------------------------------------- submit
+  // Ett foto över 8 MB (vanligt från mobil och kamera) skalas till högst 4096 px på längsta sidan och sparas som JPEG.
+  // Mallarna behöver högst 1080×1920 (×2,5 med zoom), så 4096 px räcker. Går det inte, skickas originalet och servern
+  // krymper det (engine/media.py krymp_stor_bild).
+  async function krympBild(file) {
+    const MAX = 8 * 1024 * 1024, SIDA = 4096;
+    if (!file || file.size <= MAX || !/^image\/(jpeg|png|webp)$/.test(file.type) || !window.createImageBitmap) return file;
+    try {
+      const bild = await createImageBitmap(file, { imageOrientation: "from-image" });
+      const skala = Math.min(1, SIDA / Math.max(bild.width, bild.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(bild.width * skala); c.height = Math.round(bild.height * skala);
+      c.getContext("2d").drawImage(bild, 0, 0, c.width, c.height);
+      bild.close();
+      const blob = await new Promise((ok) => c.toBlob(ok, "image/jpeg", 0.9));
+      return blob ? new File([blob], file.name.replace(/\.\w+$/, "") + ".jpg", { type: "image/jpeg" }) : file;
+    } catch (_) { return file; }
+  }
+
   function showError(text) { const e = $("sms-error"); e.textContent = text; e.hidden = !text; if (text) e.scrollIntoView({ behavior: "smooth", block: "center" }); }
 
   $("sms-form").addEventListener("submit", async (e) => {
@@ -857,7 +875,7 @@
     const ref = (r) => {
       if (!r) return null;
       if (r.asset) return { asset: r.asset };
-      if (!files.has(r.file)) { const key = "f" + (++n); files.set(r.file, key); data.append(key, r.file); }
+      if (!files.has(r.file)) files.set(r.file, "f" + (++n));
       return { file: files.get(r.file) };
     };
     const notification = $("sms-notification").value.trim();
@@ -890,6 +908,7 @@
     const button = $("sms-submit");
     button.disabled = true; button.textContent = "Skickar…";
     try {
+      for (const [file, key] of files) data.append(key, await krympBild(file));   // stora foton krymps före uppladdning
       const res = await fetch(PAGE_URL, { method: "POST", body: data, credentials: "same-origin",
         headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value, Accept: "application/json" } });
       const body = await res.json().catch(() => ({}));

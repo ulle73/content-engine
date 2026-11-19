@@ -9,7 +9,7 @@ import math
 import re
 import uuid
 
-from ..media import describe_file, store_asset
+from ..media import describe_file, krymp_stor_bild, store_asset
 from ..media_storage import MediaError
 
 MAX_MESSAGES = 30
@@ -137,7 +137,7 @@ class _Images:
                     raise SmsFilmError(f"{label}: bilden kom inte med. Välj den igen.")
                 if len(self._stored) >= MAX_UPLOADS:
                     raise SmsFilmError(f"Högst {MAX_UPLOADS} bilder per film.")
-                data = upload.read()
+                data = krymp_stor_bild(upload.read())   # a 20 MB phone photo is shrunk, not rejected
                 try:
                     if describe_file(data)["kind"] != "image":
                         raise SmsFilmError(f"{label}: välj en bild (JPEG, PNG eller WebP).")
