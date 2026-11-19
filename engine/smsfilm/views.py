@@ -16,7 +16,8 @@ from engine.edit.outros import ROOT as OUTRO_DIR
 from engine.media_views import local_asset_response
 from engine.ownership import company_required
 
-from . import mallar, service, spec
+from . import mallar, publicera, service, spec
+from .models import Publicering, SmsFilmOutput
 
 MAX_FORM_JSON = 200_000
 
@@ -162,6 +163,47 @@ def mall_fil(request, workspace_id, mall, fil):
     response["Cache-Control"] = "private, max-age=300"
     response["Content-Security-Policy"] = f"frame-ancestors 'self' {DASHBOARD_ORIGIN}"
     return response
+
+
+@login_required
+@company_required
+def godkann(request, workspace_id, output_id):
+    """Godkänn: publish one finished file to Drive CONTENT/01 Publicerat (engine/smsfilm/publicera.py).
+
+    GET gives the suggested campaign, city and variant; POST {kampanj, stad, variant} creates the next version and
+    uploads it. Every approval is a new version, so approving the same image twice gives v01 and v02."""
+    output = SmsFilmOutput.objects.filter(pk=output_id, job__company=request.workspace).select_related("job", "asset").first()
+    if output is None:
+        return JsonResponse({"error": "Filen finns inte."}, status=404)
+    if request.method == "GET":
+        return JsonResponse({"forslag": publicera.forslag(output)})
+    if request.method != "POST":
+        return JsonResponse({"error": "Använd POST."}, status=405)
+    try:
+        data = json.loads(request.body or b"{}")
+        if not isinstance(data, dict):
+            raise ValueError
+        pub = publicera.godkann(output, request.user, kampanj=data.get("kampanj"), stad=data.get("stad"),
+                                variant=data.get("variant"))
+    except ValueError:
+        return JsonResponse({"error": "Formuläret kom inte fram. Försök igen."}, status=400)
+    except spec.SmsFilmError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+    pub = publicera.ladda_upp(pub)
+    return JsonResponse({"publicering": publicera.serialize(pub)}, status=201 if pub.status == "klar" else 502)
+
+
+@login_required
+@company_required
+def publicera_igen(request, workspace_id, pub_id):
+    """Försök igen: continue a failed upload with the same upload_url. A finished one is not uploaded twice."""
+    if request.method != "POST":
+        return JsonResponse({"error": "Använd POST."}, status=405)
+    pub = Publicering.objects.filter(pk=pub_id, company=request.workspace).select_related("output__asset").first()
+    if pub is None:
+        return JsonResponse({"error": "Publiceringen finns inte."}, status=404)
+    pub = publicera.ladda_upp(pub)
+    return JsonResponse({"publicering": publicera.serialize(pub)}, status=200 if pub.status == "klar" else 502)
 
 
 @login_required

@@ -455,6 +455,27 @@ Två ändringar i sidkontrollen följde av det här:
 
 Förhandsvisningen hämtar nu sidan via `sms-film/mall/<mall>/<fil>`, eftersom sidan importerar `_mall/sida.mjs`. Den glesa utcheckningen i `sms-film-render.yml` tar med `library/templates/_mall` och `edit-renderer/src`.
 
+*Utfall steg 3–5, 2026-11-19 (Claude).*
+
+**Steg 3: sparat och kontrollerat**
+- **Var formaten sparas:** formaten sparas i ett eget fält, `formats`, på jobbet, inte i `varden`.
+- **Formatberoende standardvärden:** standardvärden som beror på formatet lämnas utanför `varden`, så att sidan väljer rätt värde per format.
+- **Mallens mapp:** workern lägger till mallens mapp i den glesa utcheckningen när mappen saknas (`git sparse-checkout add`). En ny mall kräver därför ingen ändring i workflowen.
+- **Prov i webbläsaren:** formuläret, förhandsvisningen och en hel körning med den riktiga workern mot en lokal server provades. Ett jobb gav både 9:16 och 4:5.
+
+**Steg 4:** mallen är jämförd sida vid sida med `golfare-i-linkoping_A-still_4x5.jpg` och ger samma utseende. Banans namn står med flit under säkra ytan i 9:16, så det räknas inte i sidkontrollens zoner.
+
+**Steg 5: fyra avvikelser från designen**
+- **Eget n8n-flöde.** Ett nytt flöde, "CE – Publicera till CONTENT" (`content-engine-publicera`), har det fasta mapp-id:t. Det används i stället för att bygga ut `drive-uppladdning`, eftersom Claudes andra uppladdningar använder det flödet med valfri mapp. Lagringsinställningarna är satta och lästa tillbaka.
+- **Mappen är delad.** n8n:s Google-koppling är kontot jonas.rydqvist89@gmail.com. CONTENT skapades därför i Min enhet hos info@svenskagolfkuponger.se, där VIDEOS och GIFTED ligger, och delades som redigerare med samma två konton som VIDEOS. Den fick ingen publik länk.
+- **Var koden ligger.** `Publicering` och uppladdningen ligger i `engine/smsfilm` (`publicera.py`), bredvid filerna de publicerar, i stället för i `engine/review`.
+- **Discord-notisen** skickas till företagets granskningskanal med `discord.post`.
+
+**Steg 5: provat mot riktiga Drive**
+- En fil på 708 byte skickades med GIFTED-mappens id. Den hamnade ändå i `01 Publicerat`.
+- Två godkännanden av samma bild i dashboarden gav `v01` och `v02`.
+- GIFTED-mappen och presentkortsfilerna har oförändrad ändringstid.
+
 **Steg 3: Datamodellen och det generiska formuläret**
 
 - Nya fält, `SmsFilmOutput`, migreringen `0045_mallmotor.py` och `mallar.py`.

@@ -22,7 +22,7 @@ from django.utils import timezone
 from engine.media import store_asset
 from engine.models import MediaAsset
 
-from . import mallar
+from . import mallar, publicera
 from .models import SmsFilmJob, SmsFilmOutput
 from .spec import SmsFilmError
 
@@ -362,7 +362,7 @@ def recover(*, redispatch=True) -> dict:
 
 
 def jobs_for(company, limit=20):
-    return SmsFilmJob.objects.filter(company=company).select_related("output_asset", "created_by").prefetch_related("outputs")[:limit]
+    return SmsFilmJob.objects.filter(company=company).select_related("output_asset", "created_by").prefetch_related("outputs__publiceringar")[:limit]
 
 
 def get_job(company, job_id) -> SmsFilmJob:
@@ -380,7 +380,8 @@ def serialize(job: SmsFilmJob) -> dict:
         "output_asset_id": str(job.output_asset_id) if job.output_asset_id else None,
         "format": (job.formats or ["9x16"])[0],
         "mall_id": job.mall_id,
-        "outputs": [{"id": str(o.pk), "typ": o.typ, "format": o.format, "variant": o.variant, "asset_id": str(o.asset_id)}
+        "outputs": [{"id": str(o.pk), "typ": o.typ, "format": o.format, "variant": o.variant, "asset_id": str(o.asset_id),
+                     "publiceringar": [publicera.serialize(p) for p in o.publiceringar.all()]}
                     for o in sorted(job.outputs.all(), key=lambda o: (o.format != "9x16", o.format, o.variant))] if job.mall_id else [],
         "created_at": job.created_at.isoformat(),
     }

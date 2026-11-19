@@ -147,6 +147,10 @@
 .sms-film-page #mall-forhand-format { gap: .4rem; align-items: center; margin-top: .4rem; }
 .sms-film-page #mall-forhand-format .icon-btn.on { font-weight: 700; text-decoration: underline; }
 .sms-film-page .job-bild { display: block; width: 100%; height: auto; border-radius: 8px; margin-top: .5rem; }
+.sms-film-page .godkann-form { border: 1px solid var(--border); border-radius: 8px; padding: .6rem; margin: .4rem 0; }
+.sms-film-page .godkann-form label { display: flex; flex-direction: column; font-size: .8rem; gap: .2rem; flex: 1; min-width: 0; }
+.sms-film-page .godkann-form input { width: 100%; }
+.sms-film-page .publicering.fel { color: #b3261e; }
 </style>
 <script type="module" src="{% static 'vendor/emoji-picker/picker.js' %}"></script>
 {% endblock %}
@@ -906,7 +910,63 @@
   // Kort per jobb-id som återanvänds mellan pollningarna: bara det som ändrats byggs om, så färdiga
   // videor laddas aldrig om medan någon annan film renderas (förut byggdes hela listan om var 5:e sekund).
   const cards = new Map();
-  const jobKey = (j) => [j.status, j.status_label, j.output_asset_id, j.error, j.title, j.duration_s, j.dispatch_error, (j.outputs || []).length].join("|");
+  const jobKey = (j) => [j.status, j.status_label, j.output_asset_id, j.error, j.title, j.duration_s, j.dispatch_error,
+    JSON.stringify((j.outputs || []).map((o) => (o.publiceringar || []).map((p) => p.status + p.id)))].join("|");
+  // ---------------------------------------------------------------- Godkänn till Drive (CONTENT/01 Publicerat)
+  // The server streams the file to Google; n8n only hands out an upload address for that one folder.
+  const GODKANN_URL = "{% url 'engine:sms_film_godkann' workspace_id=workspace.pk output_id='00000000-0000-0000-0000-000000000000' %}";
+  const IGEN_URL = "{% url 'engine:sms_film_publicera_igen' workspace_id=workspace.pk pub_id='00000000-0000-0000-0000-000000000000' %}";
+  const csrf = () => document.querySelector("[name=csrfmiddlewaretoken]").value;
+  const saker = (s) => String(s || "").trim().toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-{2,}/g, "-").replace(/^-|-$/g, "");
+  function publiceringRad(p) {
+    const rad = el("div", { class: "row small publicering " + p.status });
+    if (p.status === "klar") rad.append(el("span", {}, "✓ I Drive: "), el("a", { href: p.lank, target: "_blank", rel: "noopener" }, p.filnamn));
+    else if (p.status === "fel") {
+      const knapp = el("button", { type: "button", class: "icon-btn" }, "Försök igen");
+      knapp.addEventListener("click", async () => {
+        knapp.disabled = true; knapp.textContent = "Laddar upp…";
+        const res = await fetch(IGEN_URL.replace(ZERO, p.id), { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf(), Accept: "application/json" } }).catch(() => null);
+        const body = res ? await res.json().catch(() => ({})) : {};
+        if (body.publicering) { Object.assign(p, body.publicering); rad.replaceWith(publiceringRad(p)); }
+        else { knapp.disabled = false; knapp.textContent = "Försök igen"; }
+      });
+      rad.append(el("span", {}, `Uppladdningen av ${p.filnamn} misslyckades${p.fel ? ": " + p.fel : ""}. `), knapp);
+    } else rad.append(el("span", {}, `${p.status_label}: ${p.filnamn}`));
+    return rad;
+  }
+  async function godkannDialog(o, knapp) {
+    const finns = knapp.parentElement.nextElementSibling;
+    if (finns && finns.classList.contains("godkann-form")) { finns.remove(); return; }
+    const res = await fetch(GODKANN_URL.replace(ZERO, o.id), { credentials: "same-origin", headers: { Accept: "application/json" } }).catch(() => null);
+    const f = (res && (await res.json().catch(() => ({}))).forslag) || { kampanj: "content", stad: "alla", variant: "a" };
+    const falt = (namn, varde) => el("input", { type: "text", value: varde, maxlength: 60, "aria-label": namn, placeholder: namn });
+    const kampanj = falt("Kampanj", f.kampanj), stad = falt("Stad", f.stad), variant = falt("Variant", f.variant);
+    const namn = el("code", {}), fel = el("p", { class: "small", role: "alert" });
+    const ext = o.typ === "video" ? "mp4" : "jpg";
+    const visa = () => { namn.textContent = `${saker(kampanj.value) || "?"}_${saker(stad.value) || "?"}_${saker(variant.value) || "?"}_${o.format}_vNN.${ext}`; };
+    [kampanj, stad, variant].forEach((i) => i.addEventListener("input", visa)); visa();
+    const skicka = el("button", { type: "button", class: "btn" }, "Publicera i Drive");
+    const form = el("div", { class: "godkann-form" },
+      el("div", { class: "row" }, el("label", {}, "Kampanj", kampanj), el("label", {}, "Stad", stad), el("label", {}, "Variant", variant)),
+      el("p", { class: "small" }, "Filnamn: ", namn, " (versionen räknas fram när du publicerar). Filen hamnar i CONTENT/01 Publicerat."),
+      skicka, fel);
+    skicka.addEventListener("click", async () => {
+      skicka.disabled = true; skicka.textContent = "Publicerar…"; fel.textContent = "";
+      const r = await fetch(GODKANN_URL.replace(ZERO, o.id), { method: "POST", credentials: "same-origin",
+        headers: { "X-CSRFToken": csrf(), Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ kampanj: kampanj.value, stad: stad.value, variant: variant.value }) }).catch(() => null);
+      const body = r ? await r.json().catch(() => ({})) : {};
+      if (body.publicering) {
+        (o.publiceringar = o.publiceringar || []).unshift(body.publicering);
+        form.replaceWith(publiceringRad(body.publicering));
+      } else {
+        fel.textContent = body.error || "Kunde inte nå servern. Försök igen.";
+        skicka.disabled = false; skicka.textContent = "Publicera i Drive";
+      }
+    });
+    knapp.parentElement.after(form);
+  }
   const pct = (j) => `${Math.max(4, Math.round((j.progress || 0) * 100))}%`;
   function buildCard(j) {
     const when = new Date(j.created_at).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -924,7 +984,9 @@
         const url = assetUrl(o.asset_id), namn = FORMAT_NAMN[o.format] + (o.variant ? " " + o.variant : "");
         card.append(o.typ === "video" ? el("video", { src: url, controls: "", preload: "metadata", playsinline: "" })
           : el("img", { src: url, alt: `${j.title || "Mall"} ${namn}`, class: "job-bild", loading: "lazy" }));
-        card.append(el("div", { class: "row small" }, el("span", {}, namn), el("a", { href: url, download: "" }, "Ladda ned")));
+        card.append(el("div", { class: "row small" }, el("span", {}, namn), el("a", { href: url, download: "" }, "Ladda ned"),
+          el("button", { type: "button", class: "icon-btn", onclick: (e) => godkannDialog(o, e.currentTarget) }, "Godkänn till Drive")));
+        (o.publiceringar || []).forEach((p) => card.append(publiceringRad(p)));
       });
       card.append(el("div", { class: "row small" }, el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
     } else if (j.output_asset_id) {

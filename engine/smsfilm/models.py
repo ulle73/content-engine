@@ -81,3 +81,38 @@ class SmsFilmOutput(models.Model):
     class Meta:
         ordering = ["job", "format", "variant"]
         constraints = [models.UniqueConstraint(fields=["job", "typ", "format", "variant"], name="sms_film_output_unique")]
+
+
+class Publicering(models.Model):
+    """One approved file sent to Google Drive CONTENT/01 Publicerat (docs/designs/mallmotor.md, step 5).
+
+    The version is counted in the database under a row lock, so two approvals at the same time never share a
+    number. A retry reuses the row and its upload_url (Google keeps a resumable session about a week), and a row that
+    already has a Drive file id is never uploaded again, so no duplicates appear in Drive."""
+
+    STATUS = [("vantar", "Väntar"), ("laddar", "Laddas upp"), ("klar", "Publicerad"), ("fel", "Misslyckades")]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company = models.ForeignKey("engine.Company", on_delete=models.CASCADE, related_name="publiceringar")
+    output = models.ForeignKey(SmsFilmOutput, on_delete=models.PROTECT, related_name="publiceringar")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
+                                   related_name="publiceringar")
+    kampanj = models.CharField(max_length=60)
+    stad = models.CharField(max_length=60)
+    variant = models.CharField(max_length=30)
+    format = models.CharField(max_length=10)
+    version = models.PositiveIntegerField()
+    filnamn = models.CharField(max_length=200)
+    status = models.CharField(max_length=10, choices=STATUS, default="vantar")
+    upload_url = models.TextField(blank=True)
+    drive_id = models.CharField(max_length=100, blank=True)
+    lank = models.URLField(max_length=300, blank=True)
+    fel = models.CharField(max_length=300, blank=True)
+    discord_skickad = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [models.UniqueConstraint(fields=["company", "kampanj", "stad", "variant", "format", "version"],
+                                               name="publicering_unik_version")]
