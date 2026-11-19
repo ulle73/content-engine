@@ -92,7 +92,8 @@ async function vantaMedia() {
   await document.fonts.ready;
   const bilder = [...document.images].filter(i => i.src && !i.complete);
   await Promise.all(bilder.map(i => new Promise(r => { i.onload = i.onerror = r; })));
-  await Promise.all([...document.images].map(i => (i.decode ? i.decode().catch(() => {}) : null)));
+  // decode() på en bild utan adress blir aldrig klar i Chrome, så bara bilder med src avkodas
+  await Promise.all([...document.images].filter(i => i.getAttribute('src')).map(i => (i.decode ? i.decode().catch(() => {}) : null)));
   const filmer = [...document.querySelectorAll('video')].filter(f => f.readyState < 2);
   await Promise.all(filmer.map(f => new Promise(r => { f.addEventListener('loadeddata', r, { once: true }); f.addEventListener('error', r, { once: true }); })));
 }

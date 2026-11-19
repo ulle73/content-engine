@@ -222,9 +222,9 @@ async function processMall(payload, work, lease, limits, setStage) {
     await run('git', ['sparse-checkout', 'add', `library/templates/${mall.id}`], {cwd: REPO, timeoutMs: 5 * 60_000})
       .catch((err) => { throw new JobError('build_failed', `mallen ${mall.id} kunde inte hämtas: ${(err.tail || err.message).slice(-200)}`); });
   }
-  const bildmapp = join(work, 'bilder'), ut = join(work, 'ut');
+  const bildmapp = join(work, 'assets', 'upload'), ut = join(work, 'ut');
   await mkdir(bildmapp, {recursive: true});
-  for (const a of payload.assets || []) await download(a.url, safeJoin(bildmapp, a.fil), lease, a.sha256);
+  for (const a of payload.assets || []) await download(a.url, safeJoin(work, `assets/upload/${a.fil}`), lease, a.sha256);
   const filnamn = Object.fromEntries((payload.assets || []).map((a) => [a.id, a.fil]));
   const varden = {...mall.varden};
   for (const [nyckel, assetId] of Object.entries(mall.bilder || {})) varden[nyckel] = filnamn[assetId] || null;

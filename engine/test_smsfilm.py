@@ -487,6 +487,38 @@ class SlutmallFlowTests(TestCase):
         reopen = self.client.get(self.url + f"?from={job.pk}")
         self.assertContains(reopen, "Det brinner inne 31/12")
 
+    def test_golfare_job_with_a_photo_gives_two_images(self):
+        # steg 4: Golfare i stad – banfotot laddas upp, värdena kontrolleras mot mall.json, 9:16 och 4:5 i samma jobb
+        form = {"kind": "mall", "mall": "golfkuponger-golfare-i-stad", "format": ["9x16", "4x5"],
+                "varden": {"bakgrund": {"file": "f1"}, "stad": "Uppsala", "klubb": "Upsala", "bana": "Upsala GK", "zoom": 120}}
+        response = self.client.post(self.url, {"form_json": json.dumps(form), "f1": SimpleUploadedFile("bana.png", png(), content_type="image/png")},
+                                    HTTP_ACCEPT="application/json")
+        self.assertEqual(response.status_code, 201, response.content)
+        job = SmsFilmJob.objects.get()
+        foto = MediaAsset.objects.get(company=self.company, kind="image")
+        self.assertEqual((job.kind, job.mall_id, job.image_asset_ids), ("mall", "golfkuponger-golfare-i-stad", [str(foto.pk)]))
+        self.assertEqual((job.varden["bakgrund"], job.varden["stad"], job.varden["zoom"], job.varden["rubrik"]),
+                         (str(foto.pk), "Uppsala", 120, 220))
+        self.assertNotIn("fokus_y", job.varden)   # depends on the format: the page picks it per format
+        auth = {"HTTP_AUTHORIZATION": f"Bearer {TOKEN}"}
+        payload = self.client.post("/internal/sms-film/claim/", json.dumps({"worker_id": "gh"}),
+                                   content_type="application/json", **auth).json()["job"]
+        self.assertEqual(payload["mall"]["bilder"], {"bakgrund": str(foto.pk)})
+        self.assertEqual([(a["id"], a["fil"].split(".")[0]) for a in payload["assets"]], [(str(foto.pk), str(foto.pk))])
+        self.assertEqual([(u["typ"], u["format"]) for u in payload["mall"]["utdata"]], [("bild", "9x16"), ("bild", "4x5")])
+        got = self.client.get(payload["assets"][0]["url"].replace("https://engine.test", ""), **auth, HTTP_X_EDIT_LEASE=payload["lease"])
+        self.assertEqual(got.status_code, 200)
+        # the photo is reused when the job is made again
+        reopen = self.client.get(self.url + f"?from={job.pk}")
+        self.assertContains(reopen, str(foto.pk))
+
+    def test_golfare_needs_a_city_and_a_real_photo(self):
+        base = {"kind": "mall", "mall": "golfkuponger-golfare-i-stad", "format": ["4x5"]}
+        self.assertEqual(self.create({**base, "varden": {"stad": " "}}).status_code, 400)
+        self.assertEqual(self.create({**base, "varden": {"bakgrund": {"asset": "00000000-0000-0000-0000-000000000000"}}}).status_code, 400)
+        self.assertEqual(self.create({**base, "varden": {"bakgrund": {"file": "f9"}}}).status_code, 400)
+        self.assertFalse(SmsFilmJob.objects.exists())
+
     def test_bad_template_job_and_non_object_form(self):
         base = {"kind": "mall", "mall": "golfkuponger-slutmallar", "format": ["9x16"]}
         for form in ({**base, "varden": {"text2": ""}}, {**base, "varden": {"text2": "x", "logga": 999}},

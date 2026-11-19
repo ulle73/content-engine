@@ -110,6 +110,42 @@
         "still": "library/previews/golfkuponger.template.golfare-i-stad-slutscen.jpg"
       },
       "notes": "Feedback + Jonas 2026-10-29: båda slutbilderna godkända, fyra varianter som komplement till originalen med svingloggan. Renderat för Stockholm, Göteborg, Malmö, Uppsala, Linköping och Halmstad (48 filmer i Drive). Ljudet inte avlyssnat av Claude."
+    },
+    {
+      "id": "golfkuponger.template.golfare-i-stad-bild",
+      "name": "Golfare i <stad>? – bild i 9:16 och 4:5 (dashboardmall)",
+      "type": "template",
+      "medium": "image",
+      "formats": [
+        "9:16",
+        "4:5"
+      ],
+      "engine": "html-playwright",
+      "description": "Stillbilden ur Golfare i <stad>? som dashboardmall (mall/v1): banfoto med fokus och zoom, GOLFARE I + STAD? i guld med 3D-djup, en klubb i underraden och banans namn vid plats-ikonen. Reglage för texterna, storlekar, mellanrum, typsnitt, toning och djup. Ett jobb ger en JPG i 9:16 och en i 4:5. Finns i dashboarden under Generera video. Filmerna (slam, snurr) görs med rendera.mjs.",
+      "tags": [
+        "golfkuponger",
+        "lokal",
+        "stad",
+        "golfare",
+        "annons",
+        "bild",
+        "meta",
+        "dashboard",
+        "mall",
+        "4:5",
+        "9:16"
+      ],
+      "path": "library/templates/golfkuponger-golfare-i-stad/README.md",
+      "mall": "mall.json",
+      "use": "node library/templates/golfkuponger-golfare-i-stad/render.mjs --lokal --bildmapp <mapp> --satt bakgrund=<foto.jpg> --satt stad=Uppsala --satt klubb=Upsala --satt bana=\"Upsala GK\"",
+      "requires": [
+        "node",
+        "playwright",
+        "chrome"
+      ],
+      "cost": "free",
+      "status": "unverified",
+      "notes": "Jonas 2026-11-18: skapa Golfare-bilderna i dashboarden med val av bakgrund, stad, bana, storlek, mellanrum och logga. Jämförd mot golfare-i-linkoping_A-still_4x5.jpg 2026-11-19 (samma utseende)."
     }
   ]
 }

@@ -1,0 +1,43 @@
+{
+  "schema": "mall/v1",
+  "id": "golfkuponger-golfare-i-stad",
+  "titel": "Golfare i stad (bild)",
+  "beskrivning": "Banfoto, \"GOLFARE I STAD?\" med 3D-djup, en klubb i underraden och banans namn vid plats-ikonen. Ger en bild i 9:16 och en i 4:5.",
+  "typ": "bild",
+  "sida": "golfare.html",
+  "render": "render.mjs",
+  "format": ["9x16", "4x5"],
+  "utdata": [{ "typ": "bild", "filtyp": "jpg", "format": ["9x16", "4x5"] }],
+  "reglage": [
+    { "nyckel": "bakgrund", "typ": "bild", "etikett": "Banfoto", "hjalp": "Ett foto från klubben. Utan foto blir bakgrunden mörkgrön.", "standard": null },
+    { "nyckel": "rad1", "typ": "text", "etikett": "Etikettens första rad", "standard": "Golfare i", "max_langd": 24 },
+    { "nyckel": "stad", "typ": "text", "etikett": "Stad", "hjalp": "Blir STAD? i guld.", "standard": "Linköping", "max_langd": 18, "kravs": true },
+    { "nyckel": "klubb", "typ": "text", "etikett": "Klubb i underraden", "hjalp": "Står i guld i rutan under rubriken.", "standard": "Omberg", "max_langd": 30 },
+    { "nyckel": "underrad", "typ": "text", "etikett": "Underrad", "hjalp": "{klubb} byts mot klubben. Allt efter klubben hamnar på nästa rad.", "standard": "Spela {klubb} och 10+ andra klubbar i regionen – på friskvårdsbidraget.", "max_langd": 120 },
+    { "nyckel": "bana", "typ": "text", "etikett": "Banans namn", "hjalp": "Visas smått nere till vänster vid plats-ikonen.", "standard": "Ombergs GK", "max_langd": 40 },
+    { "nyckel": "visa_bana", "typ": "avpa", "etikett": "Visa banans namn", "standard": true },
+    { "nyckel": "typsnitt", "typ": "typsnitt", "etikett": "Typsnitt i rubriken", "standard": "anton",
+      "val": [{ "varde": "anton", "etikett": "Anton (smalt, högt)" }, { "varde": "inter", "etikett": "Inter (brett, fett)" }] },
+    { "nyckel": "fokus_x", "typ": "tal", "etikett": "Fotots fokus i sidled", "grupp": "Foto", "standard": 0.5, "min": 0, "max": 1, "steg": 0.01 },
+    { "nyckel": "fokus_y", "typ": "tal", "etikett": "Fotots fokus i höjdled", "grupp": "Foto", "standard": 0.5, "min": 0, "max": 1, "steg": 0.01 },
+    { "nyckel": "zoom", "typ": "tal", "etikett": "Zoom", "grupp": "Foto", "standard": 100, "min": 100, "max": 250, "steg": 1, "enhet": "%" },
+    { "nyckel": "toning", "typ": "tal", "etikett": "Mörk toning över fotot", "grupp": "Foto", "standard": 100, "min": 0, "max": 250, "steg": 1, "enhet": "%" },
+    { "nyckel": "rubrik", "typ": "tal", "etikett": "Etikettens största storlek", "grupp": "Storlek", "standard": 220, "min": 80, "max": 300, "steg": 1, "enhet": "px" },
+    { "nyckel": "bredd", "typ": "tal", "etikett": "Etikettens bredd", "grupp": "Storlek", "standard": 760, "min": 500, "max": 900, "steg": 1, "enhet": "px" },
+    { "nyckel": "underrad_storlek", "typ": "tal", "etikett": "Underradens storlek", "grupp": "Storlek", "standard": 40, "min": 24, "max": 60, "steg": 1, "enhet": "px" },
+    { "nyckel": "logga", "typ": "tal", "etikett": "Loggans storlek", "grupp": "Storlek", "standard": 118, "min": 0, "max": 240, "steg": 1, "enhet": "px" },
+    { "nyckel": "bana_storlek", "typ": "tal", "etikett": "Banans namn, storlek", "grupp": "Storlek", "standard": 28, "min": 18, "max": 48, "steg": 1, "enhet": "px" },
+    { "nyckel": "luft_logga", "typ": "tal", "etikett": "Luft under loggan", "grupp": "Mellanrum och placering", "standard": 30, "min": 0, "max": 160, "steg": 1, "enhet": "px" },
+    { "nyckel": "luft_rubrik", "typ": "tal", "etikett": "Luft under etiketten", "grupp": "Mellanrum och placering", "standard": 44, "min": 0, "max": 160, "steg": 1, "enhet": "px" },
+    { "nyckel": "radavstand", "typ": "tal", "etikett": "Radavstånd i etiketten", "grupp": "Mellanrum och placering", "standard": 98, "min": 80, "max": 130, "steg": 1, "enhet": "%" },
+    { "nyckel": "hojd", "typ": "tal", "etikett": "Flytta blocket nedåt", "grupp": "Mellanrum och placering", "standard": 0, "min": -300, "max": 300, "steg": 1, "enhet": "px" },
+    { "nyckel": "djup", "typ": "tal", "etikett": "3D-djup i etiketten", "grupp": "Färg och djup", "standard": 22, "min": 0, "max": 46, "steg": 1 },
+    { "nyckel": "underrad_ruta", "typ": "tal", "etikett": "Underradens ruta, täckning", "grupp": "Färg och djup", "standard": 82, "min": 0, "max": 100, "steg": 1, "enhet": "%" },
+    { "nyckel": "rubrik_farg", "typ": "farg", "etikett": "Färg på första raden", "grupp": "Färg och djup", "standard": "#f8f4ec" }
+  ],
+  "standard_per": {
+    "format": {
+      "4x5": { "fokus_y": 0.55 }
+    }
+  }
+}

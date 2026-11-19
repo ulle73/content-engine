@@ -149,3 +149,21 @@ class Steg2Slutmallar(SimpleTestCase):
         for fmt in _slutmall()["format"]:
             with self.subTest(fmt):
                 self.assertTrue((SLUTMALL / "referens" / f"{fmt}.png").is_file())
+
+
+GOLFARE = ROOT / "library" / "templates" / "golfkuponger-golfare-i-stad"
+
+
+class Steg4Golfare(SimpleTestCase):
+    def test_steg4_golfare_godkanns_och_har_referensbilder(self):
+        self.assertEqual(mallformat.kontrollera_fil(GOLFARE / "mall.json"), [])
+        data = json.loads((GOLFARE / "mall.json").read_text(encoding="utf-8"))
+        self.assertEqual(data["format"], ["9x16", "4x5"])
+        for fmt in data["format"]:
+            self.assertTrue((GOLFARE / "referens" / f"{fmt}.png").is_file(), fmt)
+
+    def test_steg4_golfare_har_reglagen_jonas_bad_om(self):
+        nycklar = {r["nyckel"] for r in json.loads((GOLFARE / "mall.json").read_text(encoding="utf-8"))["reglage"]}
+        for k in ("bakgrund", "stad", "bana", "rubrik", "luft_rubrik", "logga", "typsnitt", "fokus_x", "fokus_y", "zoom"):
+            self.assertIn(k, nycklar)
+
