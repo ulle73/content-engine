@@ -21,13 +21,14 @@ jobs:
       app: ${{ steps.files.outputs.app }}
       browser: ${{ steps.files.outputs.browser }}
       motion: ${{ steps.files.outputs.motion }}
+      mallar: ${{ steps.files.outputs.mallar }}
     steps:
       - id: files
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
         run: |
-          if [ -z "$PR" ]; then printf 'app=true\nbrowser=true\nmotion=true\n' >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ -z "$PR" ]; then printf 'app=true\nbrowser=true\nmotion=true\nmallar=true\n' >> "$GITHUB_OUTPUT"; exit 0; fi
           files=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --jq '.[].filename')
           echo "$files"
           has() { echo "$files" | grep -Eq "$1" && echo true || echo false; }
@@ -35,7 +36,8 @@ jobs:
           app=$(echo "$files" | grep -Evq '^(docs/|edit-renderer/|motion-renderer/|\.claude/|README\.md$|THIRD_PARTY_NOTICES\.md$)' && echo true || echo false)
           browser=$(has '^(templates/|engine/static/|engine/([a-z_]*views|urls|forms|creative_[a-z_]+|operator[a-z_]*)\.py$|scripts/(product_flow_browser|creator_browser_smoke)\.py$|requirements|\.github/workflows/ci\.yml$)')
           motion=$(has '^(motion-renderer/|engine/motion/|engine/test_motion|engine/(test_)?ad_templates|scripts/(motion_render_smoke|export-motion-schema)\.py$|\.github/workflows/ci\.yml$)')
-          printf 'app=%s\nbrowser=%s\nmotion=%s\n' "$app" "$browser" "$motion" | tee -a "$GITHUB_OUTPUT"
+          mallar=$(has '^(library/templates/|library/tools/(kontrollera_mallar\.mjs|mallformat\.py)$|edit-renderer/src/safezones\.js$|\.claude/skills/animate/tools/pw\.mjs$|\.github/workflows/ci\.yml$)')
+          printf 'app=%s\nbrowser=%s\nmotion=%s\nmallar=%s\n' "$app" "$browser" "$motion" "$mallar" | tee -a "$GITHUB_OUTPUT"
 
   test:
     needs: changes
@@ -118,6 +120,36 @@ jobs:
           path: |
             data/product-flow-browser/
             data/creator-browser/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  mallar:
+    # Sidkontrollen för dashboardmallar (docs/designs/mallmotor.md): varje mallsida öppnas i Chrome och kontrolleras mot
+    # sidkontraktet, säkra zoner och referensbilder. Självtestet visar att trasiga varianter av testmallen stoppas.
+    needs: changes
+    if: needs.changes.outputs.mallar == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright (drives the runner's Google Chrome)
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: |
+          npm i --no-save --no-audit --no-fund --prefix work/animate playwright@1.63.0
+          if ! command -v google-chrome >/dev/null; then npx --prefix work/animate playwright install --with-deps chromium; fi
+      - name: Check every template page and run the self-test
+        run: node library/tools/kontrollera_mallar.mjs --sjalvtest
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: mallkontroll
+          path: work/mallkontroll
           if-no-files-found: ignore
           retention-days: 3
 

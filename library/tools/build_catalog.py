@@ -7,6 +7,8 @@ Also validates every production recipe (library/recipes/<id>/recipe.json, schema
 schema, that footage ids exist in docs/FILMLISTA.md, that effect/transition/music ids exist in the catalog,
 that AI upgrades name a model playbook (library/models/<model>/PLAYBOOK.md) and that {fact:F<n>}
 placeholders exist in the company's fact skill.
+
+And every dashboard template (library/templates/<mall>/mall.json, schema mall/v1, see library/tools/mallformat.py).
 """
 
 from __future__ import annotations
@@ -19,6 +21,8 @@ from pathlib import Path
 
 LIBRARY = Path(__file__).resolve().parents[1]
 ROOT = LIBRARY.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from mallformat import mall_problems  # noqa: E402  (dashboardmallar, mall/v1)
 
 TYPES = {"template", "scene", "effect", "transition", "text", "caption", "grade", "background", "technique",
          "carousel", "skill", "prompt", "sound", "tool", "recipe", "model"}
@@ -105,6 +109,7 @@ def load_manifests() -> tuple[list[dict], list[str]]:
             })
     items.sort(key=lambda i: (i["status"] != "verified", i["type"], i["id"]))
     problems.extend(recipe_problems(items))
+    problems.extend(mall_problems(items))
     return items, problems
 
 

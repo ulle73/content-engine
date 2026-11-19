@@ -1,0 +1,29 @@
+{
+  "schema": "mall/v1",
+  "id": "testmall",
+  "titel": "Testmall (för kontrollerna)",
+  "beskrivning": "Liten bildmall som build_catalog.py --check och kontrollera_mallar.mjs provas mot. Syns inte i dashboarden.",
+  "typ": "bild",
+  "sida": "sida.html",
+  "render": "render.mjs",
+  "format": ["4x5", "9x16"],
+  "utdata": [{ "typ": "bild", "filtyp": "jpg", "format": ["4x5", "9x16"] }],
+  "reglage": [
+    { "nyckel": "rubrik", "typ": "text", "etikett": "Etikettens text", "standard": "Golfare i Linköping?", "max_langd": 40 },
+    { "nyckel": "rubrik_storlek", "typ": "tal", "etikett": "Etikettens storlek", "standard": 88, "min": 40, "max": 140, "steg": 2, "enhet": "px" },
+    { "nyckel": "rubrik_y", "typ": "tal", "etikett": "Etikettens höjd", "standard": 0.3, "min": 0, "max": 1, "steg": 0.01 },
+    { "nyckel": "typsnitt", "typ": "typsnitt", "etikett": "Typsnitt", "standard": "anton",
+      "val": [{ "varde": "anton", "etikett": "Anton" }, { "varde": "inter", "etikett": "Inter" }] },
+    { "nyckel": "bana", "typ": "text", "etikett": "Bannamn", "standard": "Linköpings GK", "max_langd": 40 },
+    { "nyckel": "visa_bana", "typ": "avpa", "etikett": "Visa bannamn", "standard": true },
+    { "nyckel": "bakgrund", "typ": "bild", "etikett": "Bakgrundsbild", "standard": null },
+    { "nyckel": "bakgrundsfarg", "typ": "farg", "etikett": "Bakgrundsfärg", "standard": "#0f3d2e", "grupp": "Fler inställningar" },
+    { "nyckel": "etikett_farg", "typ": "farg", "etikett": "Etikettens färg", "standard": "#ffd60a", "grupp": "Fler inställningar" }
+  ],
+  "standard_per": {
+    "format": {
+      "4x5": { "rubrik_storlek": 80, "rubrik_y": 0.35 },
+      "9x16": { "rubrik_storlek": 92, "rubrik_y": 0.3 }
+    }
+  }
+}
