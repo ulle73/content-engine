@@ -1,6 +1,7 @@
 import io
 import json
 import os
+from types import SimpleNamespace
 from unittest import mock
 
 from django.contrib.auth import get_user_model
@@ -329,11 +330,24 @@ class MallValideringTests(TestCase):
                 mallar.validera(self.mall, raw, formats)
 
     def test_only_templates_with_a_mall_field_are_offered(self):
-        ids = [m["id"] for m in mallar.for_formularet()]
+        ids = [m["id"] for m in mallar.for_formularet(SimpleNamespace(email="jonas@golfkuponger.se"))]
         self.assertIn("golfkuponger-slutmallar", ids)
         self.assertNotIn("testmall", ids)
         with self.assertRaises(spec.SmsFilmError):
             mallar.hamta("testmall")
+
+    def test_endast_for_hides_golfare_i_stad_from_everyone_else(self):
+        jonas, annan, utan = (SimpleNamespace(email="Jonas@Golfkuponger.se"), SimpleNamespace(email="annan@golfkuponger.se"),
+                              SimpleNamespace(email=""))
+        self.assertIn("golfkuponger-golfare-i-stad", [m["id"] for m in mallar.for_formularet(jonas)])
+        for user in (annan, utan):
+            ids = [m["id"] for m in mallar.for_formularet(user)]
+            self.assertNotIn("golfkuponger-golfare-i-stad", ids)
+            self.assertIn("golfkuponger-slutmallar", ids)
+            with self.assertRaises(spec.SmsFilmError):
+                mallar.hamta_for("golfkuponger-golfare-i-stad", user)
+        self.assertEqual(mallar.hamta_for("golfkuponger-golfare-i-stad", jonas)["id"], "golfkuponger-golfare-i-stad")
+        self.assertEqual(mallar.hamta_for("golfkuponger-slutmallar", annan)["id"], "golfkuponger-slutmallar")
 
     def test_utdata_puts_9x16_first(self):
         self.assertEqual([u["format"] for u in mallar.utdata(self.mall, ["4x5", "9x16"])], ["9x16", "4x5"])
@@ -372,7 +386,7 @@ class MallValideringTests(TestCase):
 @mock.patch.dict(os.environ, {"EDIT_WORKER_TOKEN": TOKEN, "GITHUB_DISPATCH_TOKEN": ""})
 class SlutmallFlowTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="s", password="test")
+        self.user = get_user_model().objects.create_user(username="s", password="test", email="jonas@golfkuponger.se")
         self.company = Company.objects.create(owner=self.user, name="GK")
         self.client.force_login(self.user)
         self.url = reverse("engine:sms_film", kwargs={"workspace_id": self.company.pk})
@@ -518,6 +532,21 @@ class SlutmallFlowTests(TestCase):
         self.assertEqual(self.create({**base, "varden": {"bakgrund": {"asset": "00000000-0000-0000-0000-000000000000"}}}).status_code, 400)
         self.assertEqual(self.create({**base, "varden": {"bakgrund": {"file": "f9"}}}).status_code, 400)
         self.assertFalse(SmsFilmJob.objects.exists())
+
+    def test_golfare_i_stad_is_only_for_jonas(self):
+        # mall.json "endast_for": the option, the jobs and the reopen link are hidden from every other account
+        form = {"kind": "mall", "mall": "golfkuponger-golfare-i-stad", "format": ["4x5"], "varden": {"stad": "Uppsala"}}
+        self.assertEqual(self.create(form).status_code, 201)
+        job = SmsFilmJob.objects.get()
+        self.assertContains(self.client.get(self.url), "golfkuponger-golfare-i-stad")
+        self.user.email = "annan@golfkuponger.se"
+        self.user.save()
+        page = self.client.get(self.url)
+        self.assertNotContains(page, "golfkuponger-golfare-i-stad")
+        self.assertContains(page, "golfkuponger-slutmallar")
+        self.assertNotContains(self.client.get(self.url + f"?from={job.pk}"), "Uppsala")
+        self.assertEqual(self.create(form).status_code, 400)
+        self.assertEqual(SmsFilmJob.objects.count(), 1)
 
     def test_bad_template_job_and_non_object_form(self):
         base = {"kind": "mall", "mall": "golfkuponger-slutmallar", "format": ["9x16"]}

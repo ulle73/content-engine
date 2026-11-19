@@ -3,6 +3,7 @@
   "id": "golfkuponger-golfare-i-stad",
   "titel": "Golfare i stad (bild)",
   "beskrivning": "Banfoto, \"GOLFARE I STAD?\" med 3D-djup, en klubb i underraden och banans namn vid plats-ikonen. Ger en bild i 9:16 och en i 4:5.",
+  "endast_for": ["jonas@golfkuponger.se"],
   "typ": "bild",
   "sida": "golfare.html",
   "render": "render.mjs",
