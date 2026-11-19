@@ -116,7 +116,7 @@ for (const v of [1, 2]) {
     const centrerad = id !== 'plats';   // bannamnet är vänsterställt nere till vänster
     // 9:16: y 270–1250 (Reels-UI), bannamnet medvetet lägre till y 1600 (beslut Jonas 2026-10-28). 4:5 (feed): 5 % marginal upptill och nedtill
     const yMin = H === 1920 ? 270 : 68, yMax = H === 1920 ? (id === 'plats' ? 1600 : 1250) : H - 68;
-    const ok = r.x0 >= 65 && r.x1 <= 929 && r.y0 >= yMin && r.y1 <= yMax && (!centrerad || Math.abs(r.x0 - (1080 - r.x1)) <= 2);
+    const ok = r.x0 >= (centrerad ? 151 : 65) && r.x1 <= 929 && r.y0 >= yMin && r.y1 <= yMax && (!centrerad || Math.abs(r.x0 - (1080 - r.x1)) <= 2);
     console.log(`v${v} ${ok ? 'ok ' : 'FEL'} ${id.padEnd(7)} x ${r.x0}–${r.x1}  y ${r.y0}–${r.y1}`);
     if (!ok) stopp(`v${v} ${id} utanför safe zones eller inte centrerad`);
   }
