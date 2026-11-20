@@ -35,6 +35,7 @@ from pathlib import Path
 MAX_BYTES = 2 * 1024 * 1024 * 1024
 SESSION_PATH = "/webhook/content-engine-drive-session"
 PUBLICERA_PATH = "/webhook/content-engine-publicera"
+PAPPERSKORG_PATH = "/webhook/content-engine-papperskorg"
 CHUNK = 1024 * 1024
 UPLOAD_PREFIX = "https://www.googleapis.com/upload/drive/"
 
@@ -100,6 +101,29 @@ def publicera_session(namn: str, size: int) -> str:
     if not secret:
         raise DriveFel("GK_DRIVE_UPLOAD_SECRET saknas.")
     return _post_json(n8n_url(PUBLICERA_PATH), secret, {"namn": namn, "storlek": size}, namn)
+
+
+def papperskorg(drive_id: str) -> str:
+    """Put one file in Drive's trash through "CE – Papperskorg i CONTENT". Only files in CONTENT/01 Publicerat are
+    touched (the flow checks the parent folder). Returns 'papperskorg', 'redan_i_papperskorgen' or 'saknas'."""
+    secret = os.environ.get("GK_DRIVE_UPLOAD_SECRET", "")
+    if not secret:
+        raise DriveFel("GK_DRIVE_UPLOAD_SECRET saknas.")
+    req = urllib.request.Request(
+        n8n_url(PAPPERSKORG_PATH), data=json.dumps({"drive_id": drive_id}).encode(), method="POST",
+        headers={"Content-Type": "application/json", "x-gk-drive": secret},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        raise DriveFel(f"Drive-filen kunde inte läggas i papperskorgen (n8n svarade {exc.code}).") from None
+    except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+        raise DriveFel(f"n8n kunde inte nås ({type(exc).__name__}).") from None
+    resultat = str(data.get("resultat", ""))
+    if not data.get("ok") or resultat not in {"papperskorg", "redan_i_papperskorgen", "saknas"}:
+        raise DriveFel("Drive bekräftade inte att filen lades i papperskorgen.")
+    return resultat
 
 
 def status(upload_url: str, size: int) -> dict | int:

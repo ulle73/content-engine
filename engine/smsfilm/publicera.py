@@ -91,6 +91,10 @@ def ladda_upp(pub: Publicering) -> Publicering:
     """Upload (or continue) one approved file. Safe to call again: a finished row is left alone."""
     if pub.drive_id:
         return pub
+    if pub.output_id is None:
+        Publicering.objects.filter(pk=pub.pk).update(status="fel", fel="Filen är raderad i Content Engine.")
+        pub.refresh_from_db()
+        return pub
     d = drive()
     asset = pub.output.asset
     size = asset.byte_size

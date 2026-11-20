@@ -16,7 +16,7 @@ from engine.edit.outros import ROOT as OUTRO_DIR
 from engine.media_views import local_asset_response
 from engine.ownership import company_required
 
-from . import mallar, publicera, service, spec
+from . import mallar, publicera, radera, service, spec
 from .models import Publicering, SmsFilmOutput
 
 MAX_FORM_JSON = 200_000
@@ -204,6 +204,29 @@ def publicera_igen(request, workspace_id, pub_id):
         return JsonResponse({"error": "Publiceringen finns inte."}, status=404)
     pub = publicera.ladda_upp(pub)
     return JsonResponse({"publicering": publicera.serialize(pub)}, status=200 if pub.status == "klar" else 502)
+
+
+@login_required
+@company_required
+def radera_jobb(request, workspace_id, job_id):
+    """Radera: POST {lista, content_engine, drive} removes one job from the chosen places (engine/smsfilm/radera.py)."""
+    if request.method != "POST":
+        return JsonResponse({"error": "Använd POST."}, status=405)
+    try:
+        job = service.get_job(request.workspace, job_id)
+        data = json.loads(request.body or b"{}")
+        if not isinstance(data, dict):
+            raise ValueError
+        resultat = radera.radera(job, lista=bool(data.get("lista")), content_engine=bool(data.get("content_engine")),
+                                 i_drive_ocksa=bool(data.get("drive")))
+    except ValueError:
+        return JsonResponse({"error": "Formuläret kom inte fram. Försök igen."}, status=400)
+    except spec.SmsFilmError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+    kvar = None
+    if not resultat["content_engine"] and not resultat["dold"]:
+        kvar = service.serialize(service.get_job(request.workspace, job_id))
+    return JsonResponse({"resultat": resultat, "job": kvar})
 
 
 @login_required

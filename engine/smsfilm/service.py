@@ -362,7 +362,7 @@ def recover(*, redispatch=True) -> dict:
 
 
 def jobs_for(company, limit=20):
-    return SmsFilmJob.objects.filter(company=company).select_related("output_asset", "created_by").prefetch_related("outputs__publiceringar")[:limit]
+    return SmsFilmJob.objects.filter(company=company, dold_at__isnull=True).select_related("output_asset", "created_by").prefetch_related("outputs__publiceringar")[:limit]
 
 
 def get_job(company, job_id) -> SmsFilmJob:
@@ -389,5 +389,6 @@ def serialize(job: SmsFilmJob) -> dict:
 
 def finished_slutmallar(company, limit=30):
     """Rendered slutmallar that an SMS film can end with, newest first."""
-    jobs = SmsFilmJob.objects.filter(company=company, kind="slutmall", status="done", output_asset__isnull=False)
+    jobs = SmsFilmJob.objects.filter(company=company, kind="slutmall", status="done", output_asset__isnull=False,
+                                     dold_at__isnull=True)
     return [serialize(job) for job in jobs.order_by("-created_at")[:limit]]

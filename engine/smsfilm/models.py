@@ -53,6 +53,8 @@ class SmsFilmJob(models.Model):
     duration_s = models.FloatField(null=True, blank=True)
     output_asset = models.ForeignKey("engine.MediaAsset", null=True, blank=True, on_delete=models.SET_NULL,
                                      related_name="sms_film_outputs")
+    # Radera → "Ta bort från listan": the job and its files stay, it is only left out of Dina filer.
+    dold_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -90,11 +92,13 @@ class Publicering(models.Model):
     number. A retry reuses the row and its upload_url (Google keeps a resumable session about a week), and a row that
     already has a Drive file id is never uploaded again, so no duplicates appear in Drive."""
 
-    STATUS = [("vantar", "Väntar"), ("laddar", "Laddas upp"), ("klar", "Publicerad"), ("fel", "Misslyckades")]
+    STATUS = [("vantar", "Väntar"), ("laddar", "Laddas upp"), ("klar", "Publicerad"), ("fel", "Misslyckades"),
+              ("raderad", "I Drives papperskorg")]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company = models.ForeignKey("engine.Company", on_delete=models.CASCADE, related_name="publiceringar")
-    output = models.ForeignKey(SmsFilmOutput, on_delete=models.PROTECT, related_name="publiceringar")
+    # SET_NULL: when a job is deleted in Content Engine the row stays, so version numbers are never reused.
+    output = models.ForeignKey(SmsFilmOutput, null=True, blank=True, on_delete=models.SET_NULL, related_name="publiceringar")
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
                                    related_name="publiceringar")
     kampanj = models.CharField(max_length=60)

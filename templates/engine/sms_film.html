@@ -5,7 +5,7 @@
 <style>
   .sms-film-page { --bubble-sent: #0a84ff; --bubble-recv: #e9e9eb; }
   .sms-film-page .sms-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
-  @media (min-width: 1100px) { .sms-film-page .sms-grid { grid-template-columns: minmax(0, 1fr) 340px; align-items: start; } .sms-film-page .sms-side { position: sticky; top: 1rem; } }
+  @media (min-width: 1100px) { .sms-film-page .sms-grid { grid-template-columns: minmax(0, 1fr) 340px; align-items: start; } .sms-film-page .sms-side { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 4px; } }
   .sms-film-page section, .sms-film-page aside > div { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.2rem; margin-bottom: 1rem; }
   .sms-film-page h2 { font-size: 1.05rem; margin: 0 0 .75rem; }
   .sms-film-page .field { margin-bottom: .85rem; }
@@ -103,31 +103,88 @@
   .sms-film-page .timeline li { display: flex; justify-content: space-between; gap: .5rem; padding: .2rem 0; border-bottom: 1px dashed var(--border); }
   .sms-film-page .timeline span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sms-film-page .notice.error { border-color: #f4b4ae; background: #fff4f2; color: #7a1d14; }
-  .sms-film-page .jobs { display: flex; flex-direction: column; gap: .5rem; }
-  .sms-film-page .job { border: 1px solid var(--border); border-radius: 10px; padding: .55rem .65rem; }
-  .sms-film-page .job-head { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
-  .sms-film-page .job-head strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .92rem; }
-  .sms-film-page .job-fil { display: flex; align-items: center; gap: .6rem; margin-top: .45rem; }
-  .sms-film-page .job-fil-info { min-width: 0; display: flex; flex-direction: column; gap: .25rem; }
-  .sms-film-page .job-fil-info .row { gap: .45rem; }
-  .sms-film-page .thumb { position: relative; flex: none; width: 40px; aspect-ratio: 9 / 16; padding: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #0f2a1d; cursor: zoom-in; }
-  .sms-film-page .thumb[data-format="4x5"] { width: 48px; aspect-ratio: 4 / 5; }
-  .sms-film-page .thumb[data-format="1x1"] { width: 48px; aspect-ratio: 1; }
-  .sms-film-page .thumb[data-format="16x9"] { width: 64px; aspect-ratio: 16 / 9; }
+  .sms-film-page .jobs { display: flex; flex-direction: column; gap: 8px; }
+  .sms-film-page .job { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md, 10px); padding: 10px 10px 8px 12px; transition: border-color .15s, box-shadow .15s; }
+  .sms-film-page .job:hover { border-color: var(--border-strong, #d6dcd8); box-shadow: 0 2px 12px rgba(18,27,21,.06); }
+  .sms-film-page .job-head { display: flex; align-items: flex-start; gap: 6px; }
+  .sms-film-page .job-titel { flex: 1; min-width: 0; padding-top: 2px; }
+  .sms-film-page .job-titel strong { display: block; font-size: .9rem; font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sms-film-page .job-meta { display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: .75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sms-film-page .dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--text-soft, #929a95); }
+  .sms-film-page .dot.done { background: var(--success, #34734d); }
+  .sms-film-page .dot.failed { background: var(--danger, #b13a31); }
+  .sms-film-page .dot.aktiv { background: var(--warning, #9a6b25); animation: gv-puls 1.2s ease-in-out infinite; }
+  @keyframes gv-puls { 50% { opacity: .35; } }
+  .sms-film-page .job-knappar, .sms-film-page .fil-knappar { display: flex; gap: 2px; flex: none; }
+  .sms-film-page .ikon, .sms-film-page .chip, .sms-film-page .drive-knapp, .gv-dialog button { min-height: 0; min-width: 0; box-shadow: none; }
+  .sms-film-page .ikon { width: 30px; height: 30px; display: inline-grid; place-items: center; padding: 0; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--text-muted); cursor: pointer; text-decoration: none; transition: background .12s, color .12s, border-color .12s; }
+  .sms-film-page .ikon:hover, .sms-film-page .ikon:focus-visible { background: var(--surface-hover, #f3f5f3); color: var(--text); border-color: var(--border); }
+  .sms-film-page .ikon svg { width: 16px; height: 16px; }
+  .sms-film-page .ikon.drive svg { width: 17px; height: 17px; }
+  .sms-film-page .ikon.drive { position: relative; }
+  .sms-film-page .ikon.drive.klar::after { content: ""; position: absolute; right: 3px; bottom: 3px; width: 8px; height: 8px; border-radius: 50%; background: var(--success, #34734d); box-shadow: 0 0 0 2px var(--surface); }
+  .sms-film-page .ikon.fara { color: var(--danger, #b13a31); }
+  .sms-film-page .ikon.fara:hover, .sms-film-page .ikon.fara:focus-visible { background: var(--danger-soft, #fff1ef); color: var(--danger, #b13a31); border-color: #f2c7c2; }
+  .sms-film-page .filer { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
+  .sms-film-page .fil { display: flex; align-items: center; gap: 10px; padding: 4px 2px 4px 4px; margin: 0 -2px 0 -4px; border-radius: 8px; transition: background .12s; }
+  .sms-film-page .fil:hover { background: var(--surface-subtle, #f8f9f8); }
+  .sms-film-page .fil-info { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .sms-film-page .fil-format { font-size: .74rem; font-weight: 600; letter-spacing: .02em; color: var(--accent, #345d47); background: var(--accent-soft, #e9f0eb); border-radius: 999px; padding: 2px 8px; }
+  .sms-film-page .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .sms-film-page .chip { display: inline-flex; align-items: center; gap: 3px; font: inherit; font-size: .7rem; font-weight: 600; line-height: 1; padding: 3px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); text-decoration: none; }
+  .sms-film-page .chip svg { width: 11px; height: 11px; }
+  .sms-film-page .chip.ok { color: var(--success, #34734d); border-color: #cfe3d6; background: #f3f9f5; }
+  .sms-film-page .chip.ok:hover { border-color: var(--success, #34734d); }
+  .sms-film-page .chip.fel { color: var(--danger, #b13a31); border-color: #f2c7c2; background: var(--danger-soft, #fff1ef); cursor: pointer; }
+  .sms-film-page .chip.borta { text-decoration: line-through; opacity: .7; }
+  .sms-film-page .chip.vantar { opacity: .75; }
+  .sms-film-page .bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+  .sms-film-page .bar > i { display: block; height: 100%; background: var(--accent); transition: width .4s; }
+  .sms-film-page .job-fel { margin: 6px 0 0; font-size: .78rem; color: var(--danger, #b13a31); }
+  .sms-film-page .thumb { position: relative; flex: none; width: 34px; aspect-ratio: 9 / 16; padding: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #0f2a1d; cursor: zoom-in; transition: transform .12s, box-shadow .12s; }
+  .sms-film-page .thumb[data-format="4x5"] { width: 42px; aspect-ratio: 4 / 5; }
+  .sms-film-page .thumb[data-format="1x1"] { width: 42px; aspect-ratio: 1; }
+  .sms-film-page .thumb[data-format="16x9"] { width: 56px; aspect-ratio: 16 / 9; }
   .sms-film-page .thumb img, .sms-film-page .thumb video { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-  .sms-film-page .thumb.video::after { content: "\25B6"; position: absolute; right: 3px; bottom: 3px; font-size: 9px; line-height: 1; color: #fff; background: rgba(0,0,0,.55); border-radius: 3px; padding: 2px 3px; }
-  .sms-film-page .thumb:hover, .sms-film-page .thumb:focus-visible { outline: 2px solid #d9a93c; outline-offset: 1px; }
-  .gv-preview { position: fixed; z-index: 60; display: none; padding: 6px; border-radius: 12px; background: #0b1f15; box-shadow: 0 14px 44px rgba(0,0,0,.38); }
-  .gv-preview.open { display: block; }
-  .gv-preview img, .gv-preview video { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 8px; background: #000; }
-  .gv-preview-cap { display: flex; justify-content: space-between; align-items: center; gap: .5rem; color: #fff; font-size: .8rem; padding: .4rem .2rem .1rem; min-height: 18px; }
+  .sms-film-page .thumb.video::after { content: "\25B6"; position: absolute; right: 2px; bottom: 2px; font-size: 7px; line-height: 1; color: #fff; background: rgba(0,0,0,.55); border-radius: 3px; padding: 2px 2px 2px 3px; }
+  .sms-film-page .thumb:hover, .sms-film-page .thumb:focus-visible { transform: scale(1.06); box-shadow: 0 0 0 2px #d9a93c; }
+  .gv-preview { position: fixed; z-index: 60; display: none; padding: 6px; border-radius: 14px; background: #0b1f15; box-shadow: 0 18px 50px rgba(0,0,0,.4); }
+  .gv-preview.open { display: block; animation: gv-in .14s ease-out; }
+  @keyframes gv-in { from { opacity: 0; transform: scale(.97); } }
+  .gv-preview img, .gv-preview video { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 9px; background: #000; }
+  .gv-preview-cap { display: flex; justify-content: space-between; align-items: center; gap: .5rem; color: #fff; font-size: .8rem; padding: .4rem .25rem .1rem; min-height: 18px; }
   .gv-preview-cap span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .gv-preview-cap button { flex: none; border: 0; background: rgba(255,255,255,.14); color: #fff; border-radius: 6px; padding: .1rem .45rem; cursor: pointer; font-size: .85rem; }
-  .sms-film-page .bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: .45rem; }
-  .sms-film-page .bar > i { display: block; height: 100%; background: var(--accent); transition: width .4s; }
-  .sms-film-page .badge { font-size: .78rem; padding: .1rem .5rem; border-radius: 99px; background: var(--surface-accent); white-space: nowrap; }
-  .sms-film-page .badge.failed { background: #fde8e6; color: #7a1d14; }
-  .sms-film-page .badge.done { background: #e3f4e8; color: #1c5b33; }
+  .gv-dialog { border: 0; padding: 0; border-radius: 16px; width: min(440px, calc(100vw - 32px)); box-shadow: 0 24px 60px rgba(18,27,21,.25); color: var(--text); background: var(--surface); }
+  .gv-dialog::backdrop { background: rgba(15,25,19,.45); backdrop-filter: blur(2px); }
+  .gv-dialog-inner { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .gv-dialog-head { display: flex; align-items: center; gap: 12px; }
+  .gv-dialog-ikon { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--danger-soft, #fff1ef); color: var(--danger, #b13a31); }
+  .gv-dialog-ikon svg { width: 20px; height: 20px; }
+  .gv-dialog h3 { margin: 0; font-size: 1.05rem; }
+  .gv-dialog-head p { margin: 2px 0 0; font-size: .85rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 320px; }
+  .gv-dialog .small { margin: 0; color: var(--text-muted); font-size: .85rem; }
+  .radera-lista { display: flex; flex-direction: column; gap: 8px; }
+  .radera-val { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: border-color .12s, background .12s; }
+  .radera-val:hover { border-color: var(--border-strong, #d6dcd8); }
+  .radera-val:has(input:checked) { border-color: var(--accent, #345d47); background: var(--accent-soft, #e9f0eb); }
+  .radera-val.fara:has(input:checked) { border-color: var(--danger, #b13a31); background: var(--danger-soft, #fff1ef); }
+  .radera-val.av { opacity: .55; cursor: default; }
+  .radera-val input { margin: 2px 0 0; width: 16px; height: 16px; flex: none; accent-color: var(--accent, #345d47); }
+  .radera-val.fara input { accent-color: var(--danger, #b13a31); }
+  .radera-val span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .radera-val strong { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; }
+  .radera-val strong svg { width: 15px; height: 15px; }
+  .radera-val small { font-size: .78rem; color: var(--text-muted); line-height: 1.35; overflow-wrap: anywhere; }
+  .radera-fel { margin: 0; min-height: 0; font-size: .82rem; color: var(--danger, #b13a31); }
+  .radera-fel:empty { display: none; }
+  .gv-dialog-fot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+  .gv-dialog-fot button { font: inherit; font-size: .88rem; font-weight: 600; padding: 8px 14px; border-radius: 9px; cursor: pointer; }
+  .knapp-sek { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+  .knapp-sek:hover { background: var(--surface-hover, #f3f5f3); }
+  .knapp-fara { background: var(--danger, #b13a31); border: 1px solid var(--danger, #b13a31); color: #fff; }
+  .knapp-fara:hover { filter: brightness(.94); }
+  .knapp-fara:disabled { opacity: .5; cursor: default; }
   .sms-film-page .mode-row { gap: 1.2rem; }
   .sms-film-page select { max-width: 100%; }
   .sms-film-page .count { float: right; font-weight: 400; color: var(--text-muted); font-size: .82rem; }
@@ -162,10 +219,18 @@
 .sms-film-page #mall-fields summary { cursor: pointer; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; opacity: .75; margin-bottom: .4rem; }
 .sms-film-page #mall-forhand-format { gap: .4rem; align-items: center; margin-top: .4rem; }
 .sms-film-page #mall-forhand-format .icon-btn.on { font-weight: 700; text-decoration: underline; }
-.sms-film-page .godkann-form { border: 1px solid var(--border); border-radius: 8px; padding: .6rem; margin: .4rem 0; }
-.sms-film-page .godkann-form label { display: flex; flex-direction: column; font-size: .8rem; gap: .2rem; flex: 1; min-width: 0; }
-.sms-film-page .godkann-form input { width: 100%; }
-.sms-film-page .publicering.fel { color: #b3261e; }
+.sms-film-page .godkann-form { display: flex; flex-direction: column; gap: 8px; margin: 2px 0 6px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-subtle, #f8f9f8); }
+.sms-film-page .godkann-falt { display: grid; grid-template-columns: 1fr 1fr 64px; gap: 6px; }
+.sms-film-page .godkann-form label { display: flex; flex-direction: column; font-size: .72rem; font-weight: 600; color: var(--text-muted); gap: 3px; min-width: 0; margin: 0; }
+.sms-film-page .godkann-form input { width: 100%; min-height: 0; height: 30px; font-size: .82rem; padding: 4px 8px; border-radius: 7px; box-shadow: none; }
+.sms-film-page .godkann-namn { margin: 0; font-size: .72rem; color: var(--text-muted); overflow-wrap: anywhere; }
+.sms-film-page .godkann-namn code { font-size: .72rem; color: var(--text); }
+.sms-film-page .godkann-rad { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sms-film-page .drive-knapp { flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 7px; font: inherit; font-size: .82rem; font-weight: 600; padding: 6px 11px; border-radius: 8px; border: 1px solid var(--border-strong, #d6dcd8); background: var(--surface); color: var(--text); cursor: pointer; }
+.sms-film-page .drive-knapp:hover { border-color: var(--accent, #345d47); }
+.sms-film-page .drive-knapp svg { width: 15px; height: 15px; }
+.sms-film-page .godkann-fel { margin: 0; font-size: .78rem; color: var(--danger, #b13a31); }
+.sms-film-page .godkann-fel:empty { display: none; }
 </style>
 <script type="module" src="{% static 'vendor/emoji-picker/picker.js' %}"></script>
 {% endblock %}
@@ -953,53 +1018,141 @@
   const csrf = () => document.querySelector("[name=csrfmiddlewaretoken]").value;
   const saker = (s) => String(s || "").trim().toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
     .replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-{2,}/g, "-").replace(/^-|-$/g, "");
-  function publiceringRad(p) {
-    const rad = el("div", { class: "row small publicering " + p.status });
-    if (p.status === "klar") rad.append(el("span", {}, "✓ I Drive: "), el("a", { href: p.lank, target: "_blank", rel: "noopener" }, p.filnamn));
-    else if (p.status === "fel") {
-      const knapp = el("button", { type: "button", class: "icon-btn" }, "Försök igen");
+  const RADERA_URL = "{% url 'engine:sms_film_radera' workspace_id=workspace.pk job_id='00000000-0000-0000-0000-000000000000' %}";
+  // ---------------------------------------------------------------- Ikoner (inline SVG; linjeikonerna ärver textfärgen)
+  const LINJE = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const IKON = {
+    ned: LINJE('<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>'),
+    korg: LINJE('<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/>'),
+    gorom: LINJE('<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'),
+    igen: LINJE('<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>'),
+    drive: '<svg viewBox="0 0 87.3 78" aria-hidden="true"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg>',
+  };
+  function ikon(namn) { const t = document.createElement("template"); t.innerHTML = IKON[namn]; return t.content.firstElementChild; }
+  function ikonKnapp(namn, etikett, attrs = {}) {
+    const tag = attrs.href ? "a" : "button";
+    const n = el(tag, Object.assign(tag === "button" ? { type: "button" } : {}, attrs,
+      { class: "ikon " + (attrs.class || ""), title: etikett, "aria-label": etikett }));
+    n.append(ikon(namn));
+    return n;
+  }
+  // En liten bricka per Drive-version: grön länk, röd = försök igen, överstruken = i Drives papperskorg.
+  function publiceringChip(p) {
+    const v = `v${String(p.version).padStart(2, "0")}`;
+    if (p.status === "klar") return el("a", { class: "chip ok", href: p.lank, target: "_blank", rel: "noopener", title: `Öppna ${p.filnamn} i Drive` }, v, " ↗");
+    if (p.status === "raderad") return el("span", { class: "chip borta", title: `${p.filnamn} ligger i Drives papperskorg` }, v);
+    if (p.status === "fel") {
+      const knapp = el("button", { type: "button", class: "chip fel", title: `${p.filnamn} kom inte fram${p.fel ? ": " + p.fel : ""}. Klicka för att försöka igen.` }, v, ikon("igen"));
       knapp.addEventListener("click", async () => {
-        knapp.disabled = true; knapp.textContent = "Laddar upp…";
+        knapp.disabled = true; knapp.classList.add("vantar");
         const res = await fetch(IGEN_URL.replace(ZERO, p.id), { method: "POST", credentials: "same-origin", headers: { "X-CSRFToken": csrf(), Accept: "application/json" } }).catch(() => null);
         const body = res ? await res.json().catch(() => ({})) : {};
-        if (body.publicering) { Object.assign(p, body.publicering); rad.replaceWith(publiceringRad(p)); }
-        else { knapp.disabled = false; knapp.textContent = "Försök igen"; }
+        if (body.publicering) { Object.assign(p, body.publicering); knapp.replaceWith(publiceringChip(p)); }
+        else { knapp.disabled = false; knapp.classList.remove("vantar"); }
       });
-      rad.append(el("span", {}, `Uppladdningen av ${p.filnamn} misslyckades${p.fel ? ": " + p.fel : ""}. `), knapp);
-    } else rad.append(el("span", {}, `${p.status_label}: ${p.filnamn}`));
-    return rad;
+      return knapp;
+    }
+    return el("span", { class: "chip vantar", title: `${p.status_label}: ${p.filnamn}` }, v, " …");
   }
-  async function godkannDialog(o, knapp) {
-    const finns = knapp.parentElement.nextElementSibling;
+  async function godkannDialog(o, fil, chips, driveKnapp) {
+    const finns = fil.nextElementSibling;
     if (finns && finns.classList.contains("godkann-form")) { finns.remove(); return; }
     const res = await fetch(GODKANN_URL.replace(ZERO, o.id), { credentials: "same-origin", headers: { Accept: "application/json" } }).catch(() => null);
     const f = (res && (await res.json().catch(() => ({}))).forslag) || { kampanj: "content", stad: "alla", variant: "a" };
     const falt = (namn, varde) => el("input", { type: "text", value: varde, maxlength: 60, "aria-label": namn, placeholder: namn });
     const kampanj = falt("Kampanj", f.kampanj), stad = falt("Stad", f.stad), variant = falt("Variant", f.variant);
-    const namn = el("code", {}), fel = el("p", { class: "small", role: "alert" });
+    const namn = el("code", {}), fel = el("p", { class: "godkann-fel", role: "alert" });
     const ext = o.typ === "video" ? "mp4" : "jpg";
     const visa = () => { namn.textContent = `${saker(kampanj.value) || "?"}_${saker(stad.value) || "?"}_${saker(variant.value) || "?"}_${o.format}_vNN.${ext}`; };
     [kampanj, stad, variant].forEach((i) => i.addEventListener("input", visa)); visa();
-    const skicka = el("button", { type: "button", class: "btn" }, "Publicera i Drive");
+    const skicka = el("button", { type: "button", class: "drive-knapp" }, ikon("drive"), "Publicera i Drive");
     const form = el("div", { class: "godkann-form" },
-      el("div", { class: "row" }, el("label", {}, "Kampanj", kampanj), el("label", {}, "Stad", stad), el("label", {}, "Variant", variant)),
-      el("p", { class: "small" }, "Filnamn: ", namn, " (versionen räknas fram när du publicerar). Filen hamnar i CONTENT/01 Publicerat."),
-      skicka, fel);
+      el("div", { class: "godkann-falt" }, el("label", {}, "Kampanj", kampanj), el("label", {}, "Stad", stad), el("label", {}, "Variant", variant)),
+      el("p", { class: "godkann-namn" }, namn),
+      el("div", { class: "godkann-rad" }, el("span", { class: "godkann-namn" }, "Till CONTENT/01 Publicerat"), skicka), fel);
     skicka.addEventListener("click", async () => {
-      skicka.disabled = true; skicka.textContent = "Publicerar…"; fel.textContent = "";
+      skicka.disabled = true; skicka.lastChild.textContent = "Publicerar…"; fel.textContent = "";
       const r = await fetch(GODKANN_URL.replace(ZERO, o.id), { method: "POST", credentials: "same-origin",
         headers: { "X-CSRFToken": csrf(), Accept: "application/json", "Content-Type": "application/json" },
         body: JSON.stringify({ kampanj: kampanj.value, stad: stad.value, variant: variant.value }) }).catch(() => null);
       const body = r ? await r.json().catch(() => ({})) : {};
       if (body.publicering) {
         (o.publiceringar = o.publiceringar || []).unshift(body.publicering);
-        form.replaceWith(publiceringRad(body.publicering));
+        chips.prepend(publiceringChip(body.publicering)); chips.hidden = false;
+        if (body.publicering.status === "klar") driveKnapp.classList.add("klar");
+        form.remove();
       } else {
         fel.textContent = body.error || "Kunde inte nå servern. Försök igen.";
-        skicka.disabled = false; skicka.textContent = "Publicera i Drive";
+        skicka.disabled = false; skicka.lastChild.textContent = "Publicera i Drive";
       }
     });
-    knapp.parentElement.after(form);
+    fil.after(form);
+    kampanj.focus();
+  }
+  // ---------------------------------------------------------------- Radera: välj lista, Content Engine och/eller Drive
+  let raderaDialog = null;
+  function oppnaRadera(j) {
+    if (!raderaDialog) {
+      raderaDialog = el("dialog", { class: "gv-dialog", "aria-label": "Radera" });
+      raderaDialog.addEventListener("click", (e) => { if (e.target === raderaDialog) raderaDialog.close(); });
+      document.body.append(raderaDialog);
+    }
+    const titel = j.title || (j.kind === "slutmall" ? "Slutmall" : j.kind === "mall" ? "Mall" : "SMS-film");
+    const antal = (j.outputs || []).length || (j.output_asset_id ? 1 : 0);
+    const iDrive = (j.outputs || []).flatMap((o) => (o.publiceringar || []).filter((p) => p.status === "klar"));
+    const aktiv = ACTIVE.includes(j.status);
+    const val = (namn, rubrik, text, { checked = false, disabled = false, fara = false } = {}) => {
+      const box = el("input", { type: "checkbox", name: namn });
+      box.checked = checked; box.disabled = disabled;
+      const rad = el("label", { class: "radera-val" + (fara ? " fara" : "") + (disabled ? " av" : "") }, box,
+        el("span", {}, el("strong", {}, rubrik), el("small", {}, text)));
+      return { box, rad };
+    };
+    const lista = val("lista", "Ta bort från listan", "Försvinner ur Dina filer. Filerna finns kvar i Content Engine.", { checked: true });
+    const ce = val("content_engine", "Radera i Content Engine", aktiv ? "Går inte medan filen skapas. Vänta tills den är klar."
+      : `Jobbet och ${antal === 1 ? "filen" : `de ${antal} filerna`} raderas från databasen och lagringen. Kan inte ångras.`, { disabled: aktiv, fara: true });
+    const drive = val("drive", "Google Drive", iDrive.length
+      ? `${iDrive.length === 1 ? "1 fil" : iDrive.length + " filer"} i CONTENT/01 Publicerat läggs i papperskorgen: ${iDrive.map((p) => p.filnamn).join(", ")}. Kan återställas i Drive i 30 dagar.`
+      : "Inget från det här jobbet ligger i Drive.", { disabled: !iDrive.length, fara: true });
+    drive.rad.querySelector("strong").prepend(ikon("drive"));
+    const fel = el("p", { class: "radera-fel", role: "alert" });
+    const avbryt = el("button", { type: "button", class: "knapp-sek" }, "Avbryt");
+    const ok = el("button", { type: "button", class: "knapp-fara" });
+    const uppdatera = () => {
+      lista.box.disabled = ce.box.checked;
+      if (ce.box.checked) lista.box.checked = true;
+      lista.rad.classList.toggle("av", ce.box.checked);
+      ok.disabled = !(lista.box.checked || ce.box.checked || drive.box.checked);
+      ok.textContent = ce.box.checked || drive.box.checked ? "Radera" : "Ta bort från listan";
+    };
+    [lista, ce, drive].forEach((v) => v.box.addEventListener("change", uppdatera));
+    uppdatera();
+    avbryt.addEventListener("click", () => raderaDialog.close());
+    ok.addEventListener("click", async () => {
+      ok.disabled = true; ok.textContent = "Raderar…"; fel.textContent = "";
+      const r = await fetch(RADERA_URL.replace(ZERO, j.id), { method: "POST", credentials: "same-origin",
+        headers: { "X-CSRFToken": csrf(), Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ lista: lista.box.checked, content_engine: ce.box.checked, drive: drive.box.checked }) }).catch(() => null);
+      const body = r ? await r.json().catch(() => ({})) : {};
+      if (r && r.ok && body.resultat) {
+        const i = jobs.findIndex((x) => x.id === j.id);
+        if (i >= 0) { if (body.job) jobs[i] = body.job; else jobs.splice(i, 1); }
+        stangForhand(true);
+        renderJobs();
+        raderaDialog.close();
+      } else {
+        fel.textContent = body.error || "Kunde inte nå servern. Försök igen.";
+        uppdatera();
+      }
+    });
+    raderaDialog.replaceChildren(el("div", { class: "gv-dialog-inner" },
+      el("div", { class: "gv-dialog-head" }, el("span", { class: "gv-dialog-ikon" }, ikon("korg")),
+        el("div", { style: "min-width:0" }, el("h3", {}, "Radera"), el("p", { title: titel }, titel))),
+      el("p", { class: "small" }, "Välj var den ska raderas."),
+      el("div", { class: "radera-lista" }, lista.rad, ce.rad, drive.rad), fel,
+      el("div", { class: "gv-dialog-fot" }, avbryt, ok)));
+    raderaDialog.showModal();
+    avbryt.focus();
   }
   const pct = (j) => `${Math.max(4, Math.round((j.progress || 0) * 100))}%`;
   // ---------------------------------------------------------------- Förhandsvisning: hovra eller klicka på en miniatyr
@@ -1083,35 +1236,46 @@
   }
   function buildCard(j) {
     const when = new Date(j.created_at).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-    const card = el("div", { class: "job" },
-      el("div", { class: "job-head" }, el("strong", {}, j.title || (j.kind === "slutmall" ? "Slutmall" : j.kind === "mall" ? "Mall" : "SMS-film")), el("span", { class: `badge ${j.status}` }, j.status_label)),
-      el("div", { class: "small" }, when + (j.duration_s ? ` · ${Math.round(j.duration_s)} s` : "")));
-    if (ACTIVE.includes(j.status)) {
+    const aktiv = ACTIVE.includes(j.status);
+    const titel = j.title || (j.kind === "slutmall" ? "Slutmall" : j.kind === "mall" ? "Mall" : "SMS-film");
+    const delar = [when];
+    if (j.duration_s) delar.push(`${Math.round(j.duration_s)} s`);
+    if (j.status !== "done") delar.unshift(j.status_label);
+    const knappar = el("div", { class: "job-knappar" });
+    if (!aktiv) knappar.append(ikonKnapp("gorom", "Gör om med samma värden", { href: `${PAGE_URL}?from=${j.id}` }));
+    knappar.append(ikonKnapp("korg", "Radera", { class: "fara", onclick: () => oppnaRadera(j) }));
+    const card = el("div", { class: "job" }, el("div", { class: "job-head" },
+      el("div", { class: "job-titel" }, el("strong", { title: titel }, titel),
+        el("div", { class: "job-meta" }, el("i", { class: `dot ${aktiv ? "aktiv" : j.status}` }), delar.join(" · "))),
+      knappar));
+    if (aktiv) {
       card._bar = el("i", { style: `width:${pct(j)}` });
       card.append(el("div", { class: "bar" }, card._bar));
-      if (j.dispatch_error && j.status === "queued") card.append(el("p", { class: "small" }, j.dispatch_error));
+      if (j.dispatch_error && j.status === "queued") card.append(el("p", { class: "job-fel" }, j.dispatch_error));
     }
-    if (j.status === "failed" && j.error) card.append(el("p", { class: "small" }, j.error));
-    if ((j.outputs || []).length) {
-      j.outputs.forEach((o) => {
-        const url = assetUrl(o.asset_id), namn = FORMAT_NAMN[o.format] + (o.variant ? " " + o.variant : "");
-        const atgarder = el("div", { class: "row small" }, el("span", {}, namn), el("a", { href: url, download: "" }, "Ladda ned"),
-          el("button", { type: "button", class: "icon-btn", onclick: (e) => godkannDialog(o, e.currentTarget) }, "Godkänn till Drive"));
-        const info = el("div", { class: "job-fil-info" }, atgarder);
-        (o.publiceringar || []).forEach((p) => info.append(publiceringRad(p)));
-        card.append(el("div", { class: "job-fil" },
-          miniatyr({ url, typ: o.typ, format: o.format, namn: `${j.title || "Mall"} · ${namn}` }), info));
-      });
-      card.append(el("div", { class: "row small" }, el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
-    } else if (j.output_asset_id) {
-      const url = assetUrl(j.output_asset_id);
-      card.append(el("div", { class: "job-fil" },
-        miniatyr({ url, typ: "video", format: "9x16", namn: j.title || "SMS-film" }),
-        el("div", { class: "job-fil-info" }, el("div", { class: "row small" }, el("a", { href: url, download: "" }, "Ladda ned"),
-          el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")))));
-    } else if (!ACTIVE.includes(j.status)) {
-      card.append(el("div", { class: "row small" }, el("a", { href: `${PAGE_URL}?from=${j.id}` }, "Gör om")));
+    if (j.status === "failed" && j.error) card.append(el("p", { class: "job-fel" }, j.error));
+    const filer = el("div", { class: "filer" });
+    (j.outputs || []).forEach((o) => {
+      const url = assetUrl(o.asset_id), namn = FORMAT_NAMN[o.format] + (o.variant ? " " + o.variant : "");
+      const chips = el("div", { class: "chips" });
+      (o.publiceringar || []).forEach((p) => chips.append(publiceringChip(p)));
+      chips.hidden = !chips.children.length;
+      const iDrive = (o.publiceringar || []).some((p) => p.status === "klar");
+      const fil = el("div", { class: "fil" });
+      const driveKnapp = ikonKnapp("drive", iDrive ? "Godkänn en ny version till Drive" : "Godkänn till Drive", { class: "drive" + (iDrive ? " klar" : "") });
+      driveKnapp.addEventListener("click", () => godkannDialog(o, fil, chips, driveKnapp));
+      fil.append(miniatyr({ url, typ: o.typ, format: o.format, namn: `${titel} · ${namn}` }),
+        el("div", { class: "fil-info" }, el("span", { class: "fil-format" }, namn), chips),
+        el("div", { class: "fil-knappar" }, ikonKnapp("ned", `Ladda ned ${namn}`, { href: url, download: "" }), driveKnapp));
+      filer.append(fil);
+    });
+    if (!(j.outputs || []).length && j.output_asset_id) {
+      const url = assetUrl(j.output_asset_id), namn = FORMAT_NAMN[j.format] || "9:16";
+      filer.append(el("div", { class: "fil" }, miniatyr({ url, typ: "video", format: j.format || "9x16", namn: titel }),
+        el("div", { class: "fil-info" }, el("span", { class: "fil-format" }, namn)),
+        el("div", { class: "fil-knappar" }, ikonKnapp("ned", `Ladda ned ${namn}`, { href: url, download: "" }))));
     }
+    if (filer.children.length) card.append(filer);
     card._key = jobKey(j);
     return card;
   }

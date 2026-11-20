@@ -42,6 +42,7 @@ engine_urls = [
     path("sms-film/mall/<str:mall>/<path:fil>", smsfilm_views.mall_fil, name="sms_film_mall"),
     path("sms-film/fil/<uuid:output_id>/godkann/", smsfilm_views.godkann, name="sms_film_godkann"),
     path("sms-film/publicering/<uuid:pub_id>/igen/", smsfilm_views.publicera_igen, name="sms_film_publicera_igen"),
+    path("sms-film/jobb/<uuid:job_id>/radera/", smsfilm_views.radera_jobb, name="sms_film_radera"),
     path("intelligence/market/", market_views.intelligence, name="market_intelligence"),
     path("intelligence/market/run/", market_views.action, name="market_action"),
     path("intelligence/market/<int:item_id>/feedback/", market_views.feedback, name="market_feedback"),
