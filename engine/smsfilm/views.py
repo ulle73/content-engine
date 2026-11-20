@@ -43,7 +43,7 @@ def _sms_film(request, workspace_id, *, embedded):
                 form = json.loads(raw)
             except ValueError:
                 raise spec.SmsFilmError("Formuläret kom inte fram. Ladda om sidan och försök igen.") from None
-            title = spec._text(form.get("title") if isinstance(form, dict) else "", "Namn på filmen", 200)
+            title = spec._text(form.get("title") if isinstance(form, dict) else "", "Namn", 200)
             if isinstance(form, dict) and form.get("kind") == "mall":
                 job = _create_mall_job(company, request.user, form, title, request.FILES)
             else:
