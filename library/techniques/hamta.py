@@ -18,10 +18,34 @@ import urllib.request
 from datetime import datetime, timezone
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+# YouTube har bara separata video- och ljudströmmar: hämta bästa mp4+m4a och slå ihop (yt-dlp:s formatval).
+# res = minsta sidan, så stående 1080×1920 räknas som 1080; h264 före vp9/av1 så filen går att öppna överallt.
+YDL_VIDEO = {"format": "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b", "format_sort": ["res:1080", "vcodec:h264"],
+             "merge_output_format": "mp4"}
+# drawtext kraschar (access violation) på Windows-ffmpeg utan fontconfig-config – ge en fontfil uttryckligen.
+FONTS = ["C:/Windows/Fonts/arial.ttf", "/System/Library/Fonts/Supplemental/Arial.ttf",
+         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"]
+FONT = next((f for f in FONTS if os.path.exists(f)), None)
 
 
 def ffmpeg(*args):
     subprocess.run(["ffmpeg", "-v", "error", "-y", *args], check=True)
+
+
+def drawtext(t, **opt):
+    """drawtext-filter med fontfil (kolon escapat för filtergrafen)."""
+    font = "fontfile='" + FONT.replace(":", "\\:") + "':" if FONT else ""
+    return f"drawtext={font}text='{t}':" + ":".join(f"{k}={v}" for k, v in opt.items())
+
+
+def kontaktark(video, fps, tile, ut):
+    """Kontaktark med tidsstämplar; utan tider om drawtext ändå fallerar."""
+    tid = drawtext(r"%{pts\:hms}", x=4, y=4, fontsize=16, fontcolor="white", box=1, boxcolor="black@0.6")
+    try:
+        ffmpeg("-i", video, "-vf", f"fps={fps},scale=220:-1,{tid},tile={tile}", "-frames:v", "1", ut)
+    except subprocess.CalledProcessError:
+        print("drawtext fallerade – kontaktark utan tidsstämplar:", ut)
+        ffmpeg("-i", video, "-vf", f"fps={fps},scale=220:-1,tile={tile}", "-frames:v", "1", ut)
 
 
 def datum(info):
@@ -47,14 +71,12 @@ def karusell(info, entries, url, out, plat, vid):
         bas = os.path.join(out, f"slide-{i:02d}")
         if e.get("formats"):
             if not os.path.exists(bas + ".mp4"):
-                with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True, "noprogress": True,
-                                       "format": "best[ext=mp4]/bv*+ba/best", "merge_output_format": "mp4",
+                with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True, "noprogress": True, **YDL_VIDEO,
                                        "outtmpl": bas + ".%(ext)s"}) as y:
                     y.process_ie_result(dict(e), download=True)
             dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
                                         bas + ".mp4"], capture_output=True, text=True).stdout.strip() or 0)
-            ffmpeg("-i", bas + ".mp4", "-vf", "fps=2,scale=220:-1,drawtext=text='%{pts\:hms}':x=4:y=4:fontsize=16:"
-                   "fontcolor=white:box=1:boxcolor=black@0.6,tile=8x4", "-frames:v", "1", bas + "-kontakt.png")
+            kontaktark(bas + ".mp4", 2, "8x4", bas + "-kontakt.png")
             ffmpeg("-ss", "0.3", "-i", bas + ".mp4", "-frames:v", "1", bas + ".jpg")
             slides.append({"slide": i, "typ": "video", "längd_s": round(dur, 2)})
         else:
@@ -74,7 +96,7 @@ def karusell(info, entries, url, out, plat, vid):
     rows = (n + cols - 1) // cols
     lay = "|".join(f"{(k % cols) * 360}_{(k // cols) * 450}" for k in range(n))
     vf = ";".join(f"[{k}:v]scale=360:450:force_original_aspect_ratio=decrease,pad=360:450:(ow-iw)/2:(oh-ih)/2,"
-                  f"drawtext=text='{k + 1}':x=6:y=6:fontsize=28:fontcolor=white:box=1:boxcolor=black@0.6[s{k}]"
+                  + drawtext(k + 1, x=6, y=6, fontsize=28, fontcolor="white", box=1, boxcolor="black@0.6") + f"[s{k}]"
                   for k in range(n))
     vf += ";" + "".join(f"[s{k}]" for k in range(n)) + (f"xstack=inputs={n}:layout={lay}:fill=black" if n > 1 else "copy")
     ffmpeg(*ins, "-filter_complex", vf, "-frames:v", "1", os.path.join(out, "kontaktark.png"))
@@ -97,16 +119,14 @@ def main(url):
         return karusell(info, entries, url, out, plat, vid)
     video = os.path.join(out, "video.mp4")
     if not os.path.exists(video):
-        with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True, "noprogress": True, "format": "best[ext=mp4]/best", "outtmpl": video}) as y:
+        with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True, "noprogress": True, **YDL_VIDEO,
+                               "outtmpl": os.path.join(out, "video.%(ext)s")}) as y:
             y.download([url])
     dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", video],
                                capture_output=True, text=True).stdout.strip() or 0)
     meta = meta_av(info, url, plat, vid) | {"längd_s": round(dur, 2)}
     json.dump(meta, open(os.path.join(out, "meta.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=2)
-    # kontaktark med tidsstämplar
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", video, "-vf",
-                    "fps=1.5,scale=220:-1,drawtext=text='%{pts\\:hms}':x=4:y=4:fontsize=16:fontcolor=white:box=1:boxcolor=black@0.6,tile=8x6",
-                    "-frames:v", "1", os.path.join(out, "kontaktark.png")], check=True)
+    kontaktark(video, 1.5, "8x6", os.path.join(out, "kontaktark.png"))
     # bildbyten (klipp) och en bild per klipp
     r = subprocess.run(["ffmpeg", "-i", video, "-vf", "select='gt(scene,0.28)',showinfo", "-f", "null", "-"],
                        capture_output=True, text=True, encoding="utf-8", errors="ignore")
