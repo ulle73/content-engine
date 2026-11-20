@@ -156,7 +156,7 @@
 {% endblock %}
 {% block content %}
 <main class="engine sms-film-page">
-  <header class="page-header"><div><p class="eyebrow">Content Engine</p><h1>Generera video</h1><p class="intro">Välj typ av video, fyll i texterna och tryck på Skapa film. Videon renderas i molnet och dyker upp här när den är klar, oftast inom några minuter.</p></div></header>
+  <header class="page-header"><div><p class="eyebrow">Content Engine</p><h1>Generera video</h1><p class="intro">Välj typ av media, fyll i texterna och tryck på Skapa. Filen renderas i molnet och dyker upp här när den är klar, oftast inom några minuter.</p></div></header>
 
   <div class="sms-grid">
     <form id="sms-form" novalidate>
@@ -164,12 +164,12 @@
       <div id="sms-error" class="notice error" role="alert" hidden></div>
 
       <section aria-labelledby="gv-kind-title">
-        <h2 id="gv-kind-title">Typ av video</h2>
+        <h2 id="gv-kind-title">Typ av media</h2>
         <div class="row mode-row" role="radiogroup" aria-labelledby="gv-kind-title">
           <label class="check"><input type="radio" name="gv-kind" value="sms" checked><span>SMS-film<small>En sms-konversation i en iPhone.</small></span></label>
           {% for m in mallar %}<label class="check"><input type="radio" name="gv-kind" value="mall:{{ m.id }}"><span>{{ m.titel }}<small>{{ m.beskrivning }}</small></span></label>{% endfor %}
         </div>
-        <div class="field" style="margin-top:.85rem"><label for="sms-title">Namn på filmen</label><input type="text" id="sms-title" maxlength="200" placeholder="T.ex. Sugar daddy – golf"></div>
+        <div class="field" style="margin-top:.85rem"><label for="sms-title">Namn</label><input type="text" id="sms-title" maxlength="200" placeholder="T.ex. Sugar daddy – golf"></div>
       </section>
 
       <section id="mall-section" aria-labelledby="mall-title" hidden>
@@ -220,7 +220,7 @@
           <label class="check"><input type="radio" name="sms-end" value="" checked><span>Inget slut<small>Filmen slutar efter sista meddelandet.</small></span></label>
           <label class="check"><input type="radio" name="sms-end" value="spotlight"><span>Golfkuponger-logga<small>Spotlight-loggan svingar in (+{{ limits.outro|floatformat:1 }} s).</small></span></label>
         </div>
-        <p class="small" id="sms-end-empty">Dina slutmallar dyker upp här när de är klara. Skapa en under Typ av video → Slutmall.</p>
+        <p class="small" id="sms-end-empty">Dina slutmallar dyker upp här när de är klara. Skapa en under Typ av media → Slutmall.</p>
         </div>
         <div class="end-preview" id="sms-end-preview" hidden>
           <video id="sms-end-video" controls playsinline preload="metadata" aria-label="Förhandsvisning av slutklippet"></video>
@@ -244,7 +244,7 @@
       </section>
       </div>
 
-      <div class="row"><button type="submit" id="sms-submit">Skapa film</button><span class="small" id="sms-submit-hint"></span></div>
+      <div class="row"><button type="submit" id="sms-submit">Skapa</button><span class="small" id="sms-submit-hint"></span></div>
     </form>
 
     <aside class="sms-side">
@@ -256,7 +256,7 @@
         <ol class="timeline" id="sms-timeline"></ol>
       </div>
       <div>
-        <h2>Dina filmer</h2>
+        <h2>Dina filer</h2>
         <div class="jobs" id="sms-jobs"></div>
       </div>
     </aside>
@@ -919,7 +919,7 @@
     } catch (err) {
       showError("Kunde inte nå servern. Kontrollera uppkopplingen och försök igen.");
     } finally {
-      button.textContent = "Skapa film"; updateTiming();
+      button.textContent = "Skapa"; updateTiming();
     }
   });
 
@@ -1020,7 +1020,7 @@
   }
   function renderJobs() {
     const box = $("sms-jobs");
-    if (!jobs.length) { cards.clear(); box.replaceChildren(el("p", { class: "small" }, "Dina filmer visas här när du skapat den första.")); return; }
+    if (!jobs.length) { cards.clear(); box.replaceChildren(el("p", { class: "small" }, "Dina filer visas här när du skapat den första.")); return; }
     const keep = new Set();
     jobs.forEach((j, i) => {
       let card = cards.get(j.id);
