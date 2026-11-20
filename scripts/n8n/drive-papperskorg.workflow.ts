@@ -3,7 +3,8 @@ import { workflow, node, trigger, ifElse, expr } from '@n8n/workflow-sdk';
 // Content Engine "Radera" (engine/smsfilm/radera.py): lägger en publicerad fil i Drives papperskorg.
 // Bara filer som ligger direkt i CONTENT/01 Publicerat (samma fasta mapp som "CE – Publicera till CONTENT") rörs.
 // Papperskorgen går att återställa i 30 dagar; inget raderas permanent härifrån.
-// En fil som redan är borta (404) eller redan ligger i papperskorgen räknas som klar.
+// En fil som redan är borta (404) eller redan ligger i papperskorgen räknas som klar. En fil som flyttats ut ur
+// CONTENT/01 rörs inte; svaret blir resultat 'flyttad'.
 // Lagringsinställningar enligt policyn i Notion; error=none eftersom headern innehåller nyckeln.
 
 const MAPP = '1Hvtqmycw5X93UZjI1yQCehSsG_2GWjwY';
@@ -77,7 +78,8 @@ const kod = Number(r.statusCode);
 if (kod === 404) return [{ json: { drive_id: id, atgard: false, resultat: 'saknas' } }];
 if (kod !== 200) throw new Error('Drive svarade ' + kod + ' när filen hämtades.');
 const f = r.body || {};
-if (!(f.parents || []).includes('${MAPP}')) throw new Error('Filen ligger inte i CONTENT/01 Publicerat och rörs inte.');
+// En fil som flyttats från CONTENT/01 Publicerat har flyttats med avsikt och rörs aldrig härifrån.
+if (!(f.parents || []).includes('${MAPP}')) return [{ json: { drive_id: id, atgard: false, resultat: 'flyttad' } }];
 if (f.trashed) return [{ json: { drive_id: id, atgard: false, resultat: 'redan_i_papperskorgen' } }];
 return [{ json: { drive_id: id, atgard: true, resultat: 'papperskorg' } }];`
     }

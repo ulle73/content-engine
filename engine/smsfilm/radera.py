@@ -4,7 +4,8 @@
 - content_engine: delete the job, its output rows and the rendered files (database and media storage). Cannot be
   undone. Publicering rows stay (output becomes NULL), so Drive version numbers are never reused.
 - drive: put every file published from this job in Drive's trash through the n8n flow "CE – Papperskorg i CONTENT".
-  The flow only touches files in CONTENT/01 Publicerat, and Drive keeps trashed files for 30 days.
+  The flow only touches files in CONTENT/01 Publicerat, and Drive keeps trashed files for 30 days. A file that has
+  been moved elsewhere is left alone and reported back (resultat['flyttade']).
 
 Drive goes first: if Google cannot be reached nothing is deleted in Content Engine, so the user can try again.
 The photos a user uploaded for the job are not touched; they belong to the media library.
@@ -39,14 +40,18 @@ def radera(job: SmsFilmJob, *, lista: bool = True, content_engine: bool = False,
         raise SmsFilmError("Välj minst ett ställe att radera från.")
     if content_engine and job.status in ACTIVE:
         raise SmsFilmError("Filen skapas just nu. Vänta tills den är klar och försök igen.")
-    resultat = {"drive": [], "content_engine": False, "dold": False}
+    resultat = {"drive": [], "flyttade": [], "content_engine": False, "dold": False}
     if i_drive_ocksa:
         d = drive()
         for pub in i_drive(job):
             try:
-                d.papperskorg(pub.drive_id)
+                utfall = d.papperskorg(pub.drive_id)
             except d.DriveFel as exc:
                 raise SmsFilmError(f"{pub.filnamn}: {exc}") from None
+            if utfall == "flyttad":
+                # Someone moved it out of CONTENT/01 Publicerat on purpose (e.g. into an ad folder): leave it alone.
+                resultat["flyttade"].append(pub.filnamn)
+                continue
             Publicering.objects.filter(pk=pub.pk).update(status="raderad", updated_at=timezone.now())
             resultat["drive"].append(pub.filnamn)
     if content_engine:
