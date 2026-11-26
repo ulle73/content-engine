@@ -155,6 +155,9 @@
   .gv-preview-cap { display: flex; justify-content: space-between; align-items: center; gap: .5rem; color: #fff; font-size: .8rem; padding: .4rem .25rem .1rem; min-height: 18px; }
   .gv-preview-cap span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .gv-preview-cap button { flex: none; border: 0; background: rgba(255,255,255,.14); color: #fff; border-radius: 6px; padding: .1rem .45rem; cursor: pointer; font-size: .85rem; }
+  .gv-besked { position: fixed; z-index: 70; left: 50%; bottom: 20px; transform: translateX(-50%); width: min(460px, calc(100vw - 32px)); display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: #1d2a22; color: #fff; font-size: .85rem; line-height: 1.4; box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: gv-in .16s ease-out; }
+  .gv-besked span { flex: 1; overflow-wrap: anywhere; }
+  .gv-besked button { flex: none; min-height: 0; box-shadow: none; border: 0; background: rgba(255,255,255,.14); color: #fff; border-radius: 6px; padding: 0 7px; cursor: pointer; font-size: 1rem; line-height: 1.5; }
   .gv-dialog { border: 0; padding: 0; border-radius: 16px; width: min(440px, calc(100vw - 32px)); box-shadow: 0 24px 60px rgba(18,27,21,.25); color: var(--text); background: var(--surface); }
   .gv-dialog::backdrop { background: rgba(15,25,19,.45); backdrop-filter: blur(2px); }
   .gv-dialog-inner { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
@@ -1091,6 +1094,14 @@
   }
   // ---------------------------------------------------------------- Radera: välj lista, Content Engine och/eller Drive
   let raderaDialog = null;
+  function visaBesked(text) {
+    const b = el("div", { class: "gv-besked", role: "status" }, el("span", {}, text));
+    const stang = el("button", { type: "button", "aria-label": "Stäng" }, "×");
+    stang.addEventListener("click", () => b.remove());
+    b.append(stang);
+    document.body.append(b);
+    setTimeout(() => b.remove(), 12000);
+  }
   function oppnaRadera(j) {
     if (!raderaDialog) {
       raderaDialog = el("dialog", { class: "gv-dialog", "aria-label": "Radera" });
@@ -1140,6 +1151,8 @@
         stangForhand(true);
         renderJobs();
         raderaDialog.close();
+        const flyttade = body.resultat.flyttade || [];
+        if (flyttade.length) visaBesked(`${flyttade.join(", ")} har flyttats från CONTENT/01 Publicerat och lades därför inte i papperskorgen. Radera ${flyttade.length === 1 ? "den" : "dem"} i Drive om du vill.`);
       } else {
         fel.textContent = body.error || "Kunde inte nå servern. Försök igen.";
         uppdatera();

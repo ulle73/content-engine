@@ -23,12 +23,35 @@ vilka ljud och vilken musik, slutkortets tempo och streck. Därför:
 
 ## 2. Beslutsrundan – en runda innan full rendering
 
-Bygg ett beslutsunderlag och låt beställaren svara i **ett** meddelande (t.ex. "B, mörker 2, musik 1, H1, S5, ok slutkort"):
+Bygg ett beslutsunderlag och låt beställaren svara i **ett** meddelande (t.ex. "B, mörker 2, musik 1, H1, S5, ok slutkort").
+**Kärnan är storyboard-arket** (Jonas 2026-11-26, efter motion-ads-paketet): hela filmen på EN bild, så att den kan
+ses i sin helhet innan något renderas.
 
-0. **Valda tekniker** ur teknikbanken (`skills/teknik`): krok, retention/struktur och cta – en rad var om varför.
-1. **Manus och tidslinje räknade från läsregeln** → den verkliga längden. Blir filmen längre än önskat: föreslå
-   textkortningar nu, inte efter leverans (FAIV-filmen gick från 24 till 39 s när läsregeln infördes i efterhand).
-2. **Kontaktkarta i mobilstorlek** (en bild per beat, ~360 px bred) med texten på sina riktiga platser.
+- Skriv blocket `"storyboard"` i filmens `film.json` (eller `storyboard.json` för filmer utan film.json): titel,
+  sammanfattning i två meningar, regler för hela filmen, valda tekniker, ev. referens och 6–10 scener med
+  `tid`, `titel`, `i_bild`, `rorelse`, `blir`, `ljud`, `text` (+ `text_tid`), `bild`/`still`. Format och fält:
+  `python scripts/storyboard.py --help`.
+- **Blender-frågan och materialet** (Jonas 2026-11-26): `"blender"` (ja/delvis/nej, varför, vilka scener) och
+  `"material"` (finns/saknas, var/hur) ska finnas på varje storyboard – arket varnar annars, och saknat material
+  visas i rött och tas upp med beställaren före bygget (`skills/ny-video`).
+- **”Blir”** är den viktigaste raden: hur scenen går över i nästa (klipp på takten, bilden krymper till en ruta i
+  väggen, kameran fortsätter …). Går den inte att skriva hör scenerna inte ihop än.
+- `./make.sh storyboard` (eller `python scripts/storyboard.py work/<film> [--stillbilder | --fran-video <utkast.mp4>]`)
+  → `out/storyboard.png`. Arket ritar plattformens osäkra zoner på varje bild och kontrollerar läsregeln per text och
+  att tidslinjen hänger ihop; varje **fel** rättas innan arket visas.
+- Visa arket och vänta. Först efter beställarens ja: `python scripts/storyboard.py work/<film> --godkann --av Jonas`.
+  **Spärr:** `./make.sh bild` vägrar bygga en ny film (ingen bild renderad än) utan godkänd storyboard. Undantag bara
+  med `"storyboard_undantag": "<varför>"` i film.json. Avviker bygget sedan från arket: uppdatera arket så att de
+  aldrig säger olika saker.
+
+Arket bär punkterna nedan; det som inte ryms på det visas bredvid:
+
+0. **Valda tekniker** ur teknikbanken (`skills/teknik`): krok, retention/struktur och cta – en rad var om varför
+   (arkets ”Valda tekniker”).
+1. **Manus och tidslinje räknade från läsregeln** → den verkliga längden (arkets tider och lästidskontroll). Blir
+   filmen längre än önskat: föreslå textkortningar nu, inte efter leverans (FAIV-filmen gick från 24 till 39 s när
+   läsregeln infördes i efterhand).
+2. **Bilderna i mobilstorlek** med texten på sina riktiga platser (arkets bilder; renderade stillbilder när det går).
 3. **Subjektiva nivåer som varianter sida vid sida** – synlighet för något dolt, gradering, mörker, hur tydlig en
    effekt är: tre nivåer i mobilstorlek. Bestäm aldrig en sådan nivå själv; den hamnar fel åt något håll.
 4. **Ljudkarta och ljudprovning** enligt `skills/ljud`: musik (2–3 kandidater i sitt sammanhang, eller fråga om
@@ -146,3 +169,4 @@ När beställaren rättar något som gäller fler filmer än denna: skriv in det
 | 2026-10-28 | GK Golfare i <stad>? (alla) | "Från sekund 7–10 är det helt tyst, inget rör sig och bilden står stilla – där ska musiken tona och svingloggan komma in" | Ingen död tid före slutbilden: när det sista elementet har landat och bilden står still klipper vi till Spotlight-slutbilden och musiken tonar ut där – även om läsregeln räknar längre (då varnar QA i stället för att stoppa) (3, Slutkort) |
 | 2026-10-28 | GK Golfare i <stad>? | "Prickarna över Ö på Göteborg blir vita" (guldtext) | Text med gradient via background-clip: bakgrundsytan ska sträcka sig ~0,3 em ovanför versalhöjden (top:-.3em; padding-top:.3em) och grundtexten under ha samma färg, så att prickar och ringar på Å/Ä/Ö får färgen (3, Text) |
 | 2026-10-30 | GK Golfare i <stad>? (alla) | "Bilder ska alltid även produceras i 4:5" (förtydligat: bilder, inte filmer) | Bilder alltid i 9:16 + 4:5; filmer bara 9:16 (3, Leverans) |
+| 2026-11-26 | Alla nya filmer | "En överblicksbild innan den genererar, så man kan se hela videon" (efter motion-ads-paketet) | Storyboard-arket `scripts/storyboard.py` + spärr i `make.sh bild` tills det är godkänt (2); referensfilmer via `skills/referens` (rea-video) |

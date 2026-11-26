@@ -50,6 +50,8 @@ Gör detta i `skills/studio` steg 2, före förslagen och beslutsrundan.
    0,67 s med tid), `klipp.txt` (bildbyten) och `klipp-NN.png`. Funkar för Instagram, TikTok, YouTube, Facebook och
    direktlänkar. **Karuseller** (`/p/`-länkar) ger `slide-NN.jpg` / `slide-NN.mp4` (+ `slide-NN-kontakt.png` för
    videoslides) och ett kontaktark med alla slides. Kräver inloggning: be användaren ladda ner filen och kör samma steg på filen med ffmpeg.
+   Ska referensen bli **en egen film** (inte bara tekniker): fortsätt i `skills/referens` – rea-video bryter ner den
+   klipp för klipp och ger berättelsen som storyboard.
 2. **Titta på riktigt** på kontaktarket och varje klippbild (Read-verktyget på bilderna). Skriv ner klipp för klipp:
    vad händer, när, hur länge, vilken text, vilket ljudgrepp. Läs beskrivningen i meta.json – den förklarar ofta greppet.
 3. **En post per distinkt teknik** – inte en per video. En reel kan ge 1–6 tekniker. Kolla dubbletter först:

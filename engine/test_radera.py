@@ -80,6 +80,16 @@ class RaderaTests(TestCase):
         self.assertEqual(fel.status, "fel")
         self.assertTrue(SmsFilmJob.objects.filter(pk=self.job.pk, dold_at__isnull=True).exists())
 
+    def test_flyttad_fil_rors_inte_men_resten_raderas(self):
+        pub = _publicerad(self.out)
+        with mock.patch.object(DRIVE, "papperskorg", return_value="flyttad"),                 mock.patch("engine.smsfilm.radera.delete_file"):
+            res = radera.radera(self.job, content_engine=True, i_drive_ocksa=True)
+        self.assertEqual(res["flyttade"], [pub.filnamn])
+        self.assertEqual(res["drive"], [])
+        self.assertTrue(res["content_engine"])
+        pub.refresh_from_db()
+        self.assertEqual(pub.status, "klar")  # still in Drive, just not in CONTENT/01
+
     def test_drivefel_raderar_inget_i_content_engine(self):
         _publicerad(self.out)
         with mock.patch.object(DRIVE, "papperskorg", side_effect=DRIVE.DriveFel("n8n kunde inte nås.")), \
@@ -133,6 +143,21 @@ class RaderaViewTests(TestCase):
         res = self.client.post(self.url(job), json.dumps({"lista": True}), content_type="application/json")
         self.assertEqual(res.status_code, 400)
         self.assertTrue(SmsFilmJob.objects.filter(pk=job.pk, dold_at__isnull=True).exists())
+
+    def test_felet_fran_drive_syns_for_anvandaren(self):
+        """SmsFilmError is a ValueError; the real message must not become "Formuläret kom inte fram"."""
+        _publicerad(self.job.outputs.first())
+        with mock.patch.object(DRIVE, "papperskorg", side_effect=DRIVE.DriveFel("n8n kunde inte nås (URLError).")):
+            res = self.client.post(self.url(self.job), json.dumps({"drive": True}), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("n8n kunde inte nås", res.json()["error"])
+
+    def test_felet_vid_godkann_syns_for_anvandaren(self):
+        out = self.job.outputs.first()
+        url = reverse("engine:sms_film_godkann", kwargs={"workspace_id": self.company.pk, "output_id": out.pk})
+        res = self.client.post(url, json.dumps({"kampanj": "!!!", "stad": "x", "variant": "a"}), content_type="application/json")
+        self.assertEqual(res.status_code, 400)
+        self.assertNotIn("Formuläret kom inte fram", res.json()["error"])
 
     def test_get_ar_inte_tillatet(self):
         self.assertEqual(self.client.get(self.url(self.job)).status_code, 405)

@@ -185,10 +185,10 @@ def godkann(request, workspace_id, output_id):
             raise ValueError
         pub = publicera.godkann(output, request.user, kampanj=data.get("kampanj"), stad=data.get("stad"),
                                 variant=data.get("variant"))
+    except spec.SmsFilmError as exc:  # a ValueError subclass, so it must be caught first
+        return JsonResponse({"error": str(exc)}, status=400)
     except ValueError:
         return JsonResponse({"error": "Formuläret kom inte fram. Försök igen."}, status=400)
-    except spec.SmsFilmError as exc:
-        return JsonResponse({"error": str(exc)}, status=400)
     pub = publicera.ladda_upp(pub)
     return JsonResponse({"publicering": publicera.serialize(pub)}, status=201 if pub.status == "klar" else 502)
 
@@ -219,10 +219,10 @@ def radera_jobb(request, workspace_id, job_id):
             raise ValueError
         resultat = radera.radera(job, lista=bool(data.get("lista")), content_engine=bool(data.get("content_engine")),
                                  i_drive_ocksa=bool(data.get("drive")))
+    except spec.SmsFilmError as exc:  # a ValueError subclass, so it must be caught first
+        return JsonResponse({"error": str(exc)}, status=400)
     except ValueError:
         return JsonResponse({"error": "Formuläret kom inte fram. Försök igen."}, status=400)
-    except spec.SmsFilmError as exc:
-        return JsonResponse({"error": str(exc)}, status=400)
     kvar = None
     if not resultat["content_engine"] and not resultat["dold"]:
         kvar = service.serialize(service.get_job(request.workspace, job_id))

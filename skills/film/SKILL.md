@@ -31,6 +31,7 @@ En film består av:
    | Text/storlek i en del av filmen | `./make.sh del <från s> <till s>` (ta med textens hela "tid" + 0,3 s marginal) |
    | Tider, banor, något som påverkar mycket | `./make.sh bild` |
    | Förhandsvisa först | `./make.sh bilder 3.0,8.5` → `out/kontakt.png` |
+   | Hela filmen på en bild (storyboard) | `./make.sh storyboard [--stillbilder \| --fran-video out/<utkast>.mp4]` → `out/storyboard.png` |
    | Ny ljudprovning | `./make.sh provning` |
 4. **QA körs automatiskt** efter varje bygge (`./make.sh qa` för att köra igen). Läs `out/QA.md`:
    - Varje ❌ måste åtgärdas. Vanliga åtgärder: för lång text → kortare text eller längre `"tid"`; för bred rad →
@@ -71,9 +72,12 @@ En film består av:
 - Godkända val (ljud, banor, texter) ändras inte utan att beställaren bett om det.
 
 ## Ny film från en befintlig
-`../_verktyg/ny-film.sh <ny-mapp> <från-mapp>` → ändra `film.json`, byt filnamnet `FILM=` i `make.sh`, `./make.sh bild`,
-granska QA, lägg till raden i `work/FILMER.md`. Helt nya idéer: börja i `skills/studio`, välj tekniker
-ur teknikbanken (`skills/teknik`) och följ `skills/video-regler` (beslutsrunda med manus och stilbilder innan bygget).
+`../_verktyg/ny-film.sh <ny-mapp> <från-mapp>` → ändra `film.json` (även `"storyboard"`), byt filnamnet `FILM=` i
+`make.sh`, `./make.sh storyboard` → visa `out/storyboard.png` → efter Jonas ja
+`../../.venv/Scripts/python.exe ../../scripts/storyboard.py . --godkann --av Jonas` → `./make.sh bild` (spärrad för nya
+filmer tills storyboarden är godkänd; en kopia nollställer godkännandet), granska QA, lägg till raden i `work/FILMER.md`.
+Helt nya idéer: börja i `skills/studio`, välj tekniker ur teknikbanken (`skills/teknik`) och följ `skills/video-regler`
+avsnitt 2 (storyboard-arket är beslutsrundan). Utgår filmen från en känd företagsfilm: `skills/referens`.
 
 ## Gör en film till en mall (så att den kan skapas i dashboarden)
 När Jonas gillar något vi gjort och vill kunna göra fler själv blir det en dashboardmall (`mall/v1`,

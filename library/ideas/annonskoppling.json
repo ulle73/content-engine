@@ -1,0 +1,16 @@
+{
+  "om": "Vilken idé i idébanken varje Meta-annons hör till. Mönstren är reguljära uttryck mot annonsens namn (skiftlägesokänsliga), första träffen gäller. Annonser utan träff listas av resultat.py som 'ej kopplade' – titta på bilden och lägg till ett mönster. Siffrorna sparas aldrig här (repot är publikt) utan i work/_idebank/.",
+  "regler": [
+    {"monster": "SIA \\d+\\s+(sthlm|gbg)", "ide": "ide.golfare-i-stad", "notering": "Q2/Q3 'Golfare i Stockholm/Göteborg?' (kontaktark 2026-10-28)"},
+    {"monster": "Still (Sthlm|Gbg|Malmo|Uppsala|Halmstad|Linkoping)", "ide": "ide.golfare-i-stad", "notering": "Q4 stillbilder per stad och klubb"},
+    {"monster": "B[12]-(slam|snurr)", "ide": "ide.golfare-i-stad", "notering": "Q4 videor B1 slam / B2 snurr per stad"},
+    {"monster": "Portal (Alla|Epassi|Benifex|S&P|Edenred)", "ide": "ide.portal-tilltal", "notering": "Q4 portalannonser"},
+    {"monster": "B9-(sp|epassi|benifex|edenred)", "ide": "ide.portal-tilltal", "notering": "Q4 B9 'Golfkuponger i <portal>'"},
+    {"monster": "^fd26_", "ide": "ide.fars-dag-present", "notering": "Fars dag 2026"},
+    {"monster": "SIA 4 generell", "ide": "ide.golfbidraget", "notering": "'Sverige har ett golfbidrag' (bild 724402699, kontrollerad 2026-11-26)"},
+    {"monster": "VID 2 generell", "ide": "ide.golfbidraget", "notering": "samma omslagsbild som SIA 4 generell"},
+    {"monster": "Q2 - karusell", "ide": "ide.golfbidraget", "notering": "'Hämta ditt golfbidrag' (bild 725457214)"},
+    {"monster": "SIA 3 generell", "ide": "ide.smygehuk-till-kiruna", "notering": "'300+ klubbar från Smygehuk till Kiruna' (bild 725146995)"}
+  ],
+  "okanda": "VID 1 generell, Video 1 sthlm, annons-1x1/9x16 (egna annonser ur Content Engine?), Inlägg '300+ banor…' (guldkort-omslag) – koncept ej fastställt; titta på bilden och lägg till regel"
+}

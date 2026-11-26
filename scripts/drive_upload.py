@@ -105,7 +105,8 @@ def publicera_session(namn: str, size: int) -> str:
 
 def papperskorg(drive_id: str) -> str:
     """Put one file in Drive's trash through "CE – Papperskorg i CONTENT". Only files in CONTENT/01 Publicerat are
-    touched (the flow checks the parent folder). Returns 'papperskorg', 'redan_i_papperskorgen' or 'saknas'."""
+    touched (the flow checks the parent folder). Returns 'papperskorg', 'redan_i_papperskorgen', 'saknas' or 'flyttad' (moved out of CONTENT/01
+    Publicerat; such a file is never touched)."""
     secret = os.environ.get("GK_DRIVE_UPLOAD_SECRET", "")
     if not secret:
         raise DriveFel("GK_DRIVE_UPLOAD_SECRET saknas.")
@@ -121,7 +122,7 @@ def papperskorg(drive_id: str) -> str:
     except (urllib.error.URLError, TimeoutError, ValueError) as exc:
         raise DriveFel(f"n8n kunde inte nås ({type(exc).__name__}).") from None
     resultat = str(data.get("resultat", ""))
-    if not data.get("ok") or resultat not in {"papperskorg", "redan_i_papperskorgen", "saknas"}:
+    if not data.get("ok") or resultat not in {"papperskorg", "redan_i_papperskorgen", "saknas", "flyttad"}:
         raise DriveFel("Drive bekräftade inte att filen lades i papperskorgen.")
     return resultat
 
