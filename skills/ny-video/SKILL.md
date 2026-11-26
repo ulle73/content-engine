@@ -77,7 +77,21 @@ Valet blir ett `"storyboard"`-block i `work/<film>/film.json` med `blender` och 
 (`skills/video-regler` avsnitt 2). `./make.sh storyboard` → `out/storyboard.png` → Jonas godkänner →
 `storyboard.py --godkann` → `./make.sh bild` (spärrad tills dess).
 
-## 4. Lärande tillbaka till banken
+## 4. Publikens resultat in i banken (Meta)
+
+Banken ska lära sig av publiken, inte bara av Jonas tycke. Uppdatera minst en gång i månaden och alltid innan en ny
+förslagsrunda om resultaten är äldre än 30 dagar (`work/_idebank/resultat.json`, fältet `hamtad`):
+1. Dashboard-MCP `data_fraga`: table `ads_daily`, filter `platform = Meta`, de senaste 120 dagarna, group_by
+   `[ad_id, ad, campaign, format]`, summor `cost→kr, impressions→vis, clicks→klick, outcome→kv, purchases→kop,
+   offline_purchases→portal, video_3s_views→v3, thruplays→tp`. Spara `rows` som `work/_idebank/export-<datum>.json`.
+2. `python library/ideas/resultat.py importera work/_idebank/export-<datum>.json --period <från>:<till>`.
+3. Läs "Ej kopplade": titta på bilden (dashboardens `creatives`/meta-ads `ads_get_creatives`) och lägg en regel i
+   `library/ideas/annonskoppling.json` – eller en ny idé om konceptet saknas i banken.
+Förslagen (`riktningar.py --forslag`) lyfter idéer som ger billigare kundvagn än övriga annonser och sänker de som
+är dyrare; arket visar "Publiken i Meta" per riktning. Siffrorna stannar lokalt i `work/` (repot är publikt).
+Vi skapar, publicerar och ändrar inget i Meta – byrån laddar upp; vi läser bara.
+
+## 5. Lärande tillbaka till banken
 
 När Jonas valt eller underkänt: lägg ett omdöme på idén i `library/ideas/make_ideas.py` (`omdome`: datum, Jonas,
 👍/👎, kommentar; `anvand` när en film görs) och kör `python library/ideas/make_ideas.py && python

@@ -33,6 +33,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "library" / "tools"))
+sys.path.insert(0, str(ROOT / "library" / "ideas"))
+import resultat as res  # noqa: E402  (publikens resultat per idé, work/_idebank/resultat.json)
 import storyboard as sb  # noqa: E402  (esc, frame_from_video, screenshot)
 
 CATALOG = ROOT / "library" / "catalog.json"
@@ -70,6 +72,7 @@ def suggest(query: str, company: str, n: int = 3) -> list[dict]:
 
     words = [w for w in tokens(query) if w not in STOPPORD]
     ranked = []
+    resultat = (res.load() or {}).get("ideer", {})
     for idea in load_ideas():
         bolag = (idea.get("ide") or {}).get("bolag")
         if company and bolag not in (company, "alla"):
@@ -79,6 +82,7 @@ def suggest(query: str, company: str, n: int = 3) -> list[dict]:
             s *= 0.5
         if thumbs_down(idea):
             s *= 0.6
+        s *= res.faktor(resultat.get(idea["id"]))  # publikens resultat i Meta: bättre än övriga lyfter, sämre sänker
         ranked.append((s, idea))
     ranked.sort(key=lambda x: -x[0])
     picked, genres = [], set()
@@ -113,8 +117,9 @@ def draft(folder: Path, query: str, company: str) -> Path:
         })
     path = folder / "riktningar.json"
     path.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    resultat = (res.load() or {}).get("ideer", {})
     for r in out["riktningar"]:
-        print(f"{r['bokstav']}. {r['titel']} [{r['genre']}] ({r['ide']})")
+        print(f"{r['bokstav']}. {r['titel']} [{r['genre']}] ({r['ide']}) – Meta: {res.kort_rad(resultat.get(r['ide']))}")
     print(f"utkast: {path} – fyll i formspråk, bärande effekt, text, ljud, bild/rörelsetest och material; rendera sedan.")
     return path
 
@@ -150,6 +155,8 @@ def check(data: dict) -> list[tuple[str | None, str, str]]:
 def build_html(data: dict, folder: Path, problems) -> str:
     esc = sb.esc
     rs = data.get("riktningar") or []
+    resdata = res.load() or {}
+    resultat = resdata.get("ideer", {})
     by = {}
     for k, lvl, msg in problems:
         by.setdefault(k, []).append((lvl, msg))
@@ -178,7 +185,8 @@ def build_html(data: dict, folder: Path, problems) -> str:
         cols.append(f'''<section class="dir"><div class="head"><span class="letter">{esc(r.get("bokstav"))}</span>
 <div><h2>{esc(r.get("titel"))}</h2><div class="genre">{esc(r.get("genre"))} · {esc(r.get("ide"))}</div></div></div>
 <div class="frame" style="aspect-ratio:{aw}/{ah}">{pic}</div>{strip}
-<p class="premiss">{esc(r.get("premiss"))}</p><dl>{rows}</dl>
+<p class="premiss">{esc(r.get("premiss"))}</p>
+<div class="meta-res">Publiken i Meta: {esc(res.kort_rad(resultat.get(r.get("ide"))))}</div><dl>{rows}</dl>
 <div class="blender {bcls}"><b>Premium med Blender? {esc((b.get("bedomning") or "?").upper())}</b> {esc(b.get("varfor"))}
 {('<br><i>' + esc(b.get("vad")) + '</i>') if b.get("vad") else ''}</div>
 <h3>Material för att bli perfekt</h3><ul class="mat">{mats}</ul>{f'<ul class="warn">{warn}</ul>' if warn else ''}</section>''')
@@ -196,7 +204,7 @@ h2{{font-size:22px;margin:0;line-height:1.15}}.genre{{color:var(--clay);font-siz
 .frame{{position:relative;width:100%;max-height:760px;background:#e4dfd2;overflow:hidden;margin:0 auto}}.frame img{{width:100%;height:100%;object-fit:cover;display:block}}
 .frame .empty{{position:absolute;inset:0;display:grid;place-items:center;color:var(--soft)}}
 .strip{{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}}.strip img{{width:100%;display:block}}
-.premiss{{font-size:16px;font-weight:600;margin:14px 0 8px}}dl{{display:grid;grid-template-columns:90px 1fr;gap:5px 10px;margin:0 0 12px;font-size:14px}}dt{{color:var(--soft)}}dd{{margin:0}}
+.premiss{{font-size:16px;font-weight:600;margin:14px 0 8px}}.meta-res{{font-size:13px;color:var(--green);background:#e8efe9;padding:6px 10px;margin:0 0 10px}}dl{{display:grid;grid-template-columns:90px 1fr;gap:5px 10px;margin:0 0 12px;font-size:14px}}dt{{color:var(--soft)}}dd{{margin:0}}
 .blender{{padding:10px 12px;border-left:4px solid var(--soft);background:#eeeae0;font-size:14px;margin-bottom:10px}}.blender.ja{{border-color:var(--green)}}.blender.delvis{{border-color:var(--gold)}}
 h3{{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin:10px 0 4px}}
 .mat,.warn,.general,.gm{{margin:0;padding:0;list-style:none;font-size:14px}}.mat li.saknas,.gm li.saknas{{color:#b42318;font-weight:650}}.mat li.finns,.gm li.finns{{color:var(--green)}}
@@ -207,7 +215,7 @@ footer{{margin-top:24px;padding-top:12px;border-top:1px solid var(--rule);color:
 {f'<ul class="general">{general}</ul>' if general else ''}
 <main class="dirs">{''.join(cols)}</main>
 {f'<h3>Gemensamt material</h3><ul class="gm">{gm}</ul>' if gm else ''}
-<footer><span>{saknas} saker saknas för att det ska bli perfekt (rött). Välj en riktning – du får låna en sak från en annan.</span>
+<footer><span>{f"Meta-resultat: {esc(resdata.get('period'))} (hämtat {esc(resdata.get('hamtad'))}). " if resdata else "Inga Meta-resultat importerade (library/ideas/resultat.py). "}{saknas} saker saknas för att det ska bli perfekt (rött). Välj en riktning – du får låna en sak från en annan.</span>
 <span>Nästa steg: storyboard för den valda riktningen.</span></footer></body></html>'''
 
 
@@ -218,6 +226,7 @@ def main(argv=None) -> int:
     ap.add_argument("--bolag", default="golfkuponger")
     ap.add_argument("--ut", type=Path)
     a = ap.parse_args(argv)
+    sys.stdout.reconfigure(encoding="utf-8")
     folder = Path(a.mapp).resolve()
     folder.mkdir(parents=True, exist_ok=True)
     if a.forslag:

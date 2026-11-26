@@ -334,6 +334,7 @@ def main(argv=None) -> int:
     ap.add_argument("--av", default="Jonas", help="vem som godkände (med --godkann)")
     ap.add_argument("--fran-rea", type=Path, help="gör ett storyboard-utkast av en rea-video-nedbrytning (mappen med breakdown.json)")
     a = ap.parse_args(argv)
+    sys.stdout.reconfigure(encoding="utf-8")
 
     folder = Path(a.mapp).resolve()
     if a.fran_rea:

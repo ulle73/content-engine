@@ -43,6 +43,9 @@ GENRER = {
     "karta-resa": "en linje eller resa över en karta",
     "produkt-premium": "produkten som fysiskt föremål i studioljus",
     "karusell-panorama": "karusellens slides bildar en sammanhängande bild",
+    "textgrafik": "platt grafik där budskapet står i text (siffra, påstående)",
+    "sasongstema": "högtid eller säsong bär budskapet (fars dag, jul, säsongsstart)",
+    "omramning": "ger en känd sak ett nytt namn eller en ny betydelse",
 }
 
 EGEN = lambda film, datum: {"typ": "egen film", "film": film, "godkänd": datum}
@@ -155,6 +158,38 @@ IDEER = [
       ["✓ gk-panorama"], tekniker=["teknik.panorama-over-slides"], medium="carousel",
       bevis=EGEN("work/gk-panorama", "2026-10-14"), anvand=[{"film": "gk-panorama", "datum": "2026-10-14"}],
       status="verified", formats=("4:5",)),
+
+    # ---------- annonskoncept i Meta (resultaten kopplas via annonskoppling.json) ----------
+    I("ide.portal-tilltal", "Har du [portal]? Sök Golfkuponger", "lokalt-tilltal",
+      "Annonsen tilltalar den som har en viss friskvårdsportal (Epassi, Benifex, S&P, Edenred) och säger exakt vad man söker på.",
+      "Konkret instruktion för just min portal i stället för ett allmänt budskap.", "trygghet",
+      "Friskvårdsportalerna: sök Golfkuponger i din portal.", ["html-playwright"],
+      ["✓ portalernas namn/loggor", "✓ banfoton"], bevis={"typ": "annonser i Meta", "kampanj": "Q4 Portal/B9"},
+      status="unverified"),
+    I("ide.golfbidraget", "Golfbidraget", "omramning",
+      "”Sverige har ett golfbidrag. De flesta vet inte om det.” – friskvårdsbidraget döps om till golfbidraget.",
+      "Ett nytt ord för något alla redan har; avslöjar en hemlighet i stället för att sälja.", "aha, nyfikenhet",
+      "Friskvårdsbidraget = golfbidraget.", ["html-playwright"], ["✓ banfoton", "✓ formuleringen (Q2-annonserna)"],
+      tekniker=["teknik.ord-knapps-bort"],
+      blender="Ordet 'friskvårdsbidraget' som 3D-text som byggs om till 'golfbidraget' i ljus.",
+      bevis={"typ": "annonser i Meta", "kampanj": "Q2 SIA 4 generell, karusell, VID 2"}, status="unverified"),
+    I("ide.smygehuk-till-kiruna", "300+ klubbar från Smygehuk till Kiruna", "karta-resa",
+      "Hela landets spännvidd i en rad över ett riktigt banfoto: från Smygehuk till Kiruna.",
+      "Två ortnamn alla känner ger skalan direkt, utan siffertabell.", "stolthet", "300+ banor i hela Sverige.",
+      ["html-playwright"], ["✓ banfoton"], bevis={"typ": "annonser i Meta", "kampanj": "Q2 SIA 3 generell"},
+      status="unverified"),
+    I("ide.platt-textgrafik", "Platt textgrafik med siffra", "textgrafik",
+      "En grön yta med ett stort påstående ('5 000 KR', '300+ KLUBBAR', 'INGEN PORTAL?', 'ETT KVITTO').",
+      "Ingenting – den ser ut som alla andras. Finns i banken som varning och jämförelse.", "ingen",
+      "Används inte som huvudidé.", ["html-playwright"], ["✓ färger och typsnitt"],
+      omdome=[{"datum": "2026-10-28", "av": "Meta-data", "betyg": "👎",
+               "kommentar": "Sämst av alla annonser: 374–900 kr per kundvagn (feb–maj 2026), se meta-annonser-oversikt."}],
+      status="unverified"),
+    I("ide.fars-dag-present", "En runda med pappa", "sasongstema",
+      "Golf som fars dag-present: 'En runda med pappa', 'Hinner du till fars dag?', deadline för leverans.",
+      "Presenten är en upplevelse tillsammans, inte en pryl.", "värme, brådska", "Presentkort till fars dag.",
+      ["html-playwright"], ["✓ presentkortsbilder", "✓ metallkortet"], bevis={"typ": "annonser i Meta", "kampanj": "fd26"},
+      status="unverified"),
 
     # ---------- oprövade genrer (bredd – visa ett rörelsetest innan de väljs) ----------
     I("ide.naturdokumentar", "Golfaren i sitt habitat", "dokumentar",

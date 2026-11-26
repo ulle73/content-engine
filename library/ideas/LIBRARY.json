@@ -27,7 +27,10 @@
     "fore-efter": "två tillstånd ställs mot varandra",
     "karta-resa": "en linje eller resa över en karta",
     "produkt-premium": "produkten som fysiskt föremål i studioljus",
-    "karusell-panorama": "karusellens slides bildar en sammanhängande bild"
+    "karusell-panorama": "karusellens slides bildar en sammanhängande bild",
+    "textgrafik": "platt grafik där budskapet står i text (siffra, påstående)",
+    "sasongstema": "högtid eller säsong bär budskapet (fars dag, jul, säsongsstart)",
+    "omramning": "ger en känd sak ett nytt namn eller en ny betydelse"
   },
   "items": [
     {
@@ -809,6 +812,236 @@
             "datum": "2026-10-14"
           }
         ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.portal-tilltal",
+      "name": "Har du [portal]? Sök Golfkuponger",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[lokalt-tilltal] Annonsen tilltalar den som har en viss friskvårdsportal (Epassi, Benifex, S&P, Edenred) och säger exakt vad man söker på. Varför: Konkret instruktion för just min portal i stället för ett allmänt budskap. Passar: Friskvårdsportalerna: sök Golfkuponger i din portal.",
+      "tags": [
+        "idé",
+        "lokalt-tilltal",
+        "trygghet",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/portal-tilltal.md",
+      "use": "Läs library/ideas/portal-tilltal.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "lokalt-tilltal",
+        "premiss": "Annonsen tilltalar den som har en viss friskvårdsportal (Epassi, Benifex, S&P, Edenred) och säger exakt vad man söker på.",
+        "overraskning": "Konkret instruktion för just min portal i stället för ett allmänt budskap.",
+        "kansla": "trygghet",
+        "golf": "Friskvårdsportalerna: sök Golfkuponger i din portal.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ portalernas namn/loggor",
+          "✓ banfoton"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "annonser i Meta",
+          "kampanj": "Q4 Portal/B9"
+        },
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.golfbidraget",
+      "name": "Golfbidraget",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[omramning] ”Sverige har ett golfbidrag. De flesta vet inte om det.” – friskvårdsbidraget döps om till golfbidraget. Varför: Ett nytt ord för något alla redan har; avslöjar en hemlighet i stället för att sälja. Passar: Friskvårdsbidraget = golfbidraget.",
+      "tags": [
+        "idé",
+        "omramning",
+        "aha, nyfikenhet",
+        "golfkuponger",
+        "html-playwright",
+        "blender"
+      ],
+      "path": "library/ideas/golfbidraget.md",
+      "use": "Läs library/ideas/golfbidraget.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "omramning",
+        "premiss": "”Sverige har ett golfbidrag. De flesta vet inte om det.” – friskvårdsbidraget döps om till golfbidraget.",
+        "overraskning": "Ett nytt ord för något alla redan har; avslöjar en hemlighet i stället för att sälja.",
+        "kansla": "aha, nyfikenhet",
+        "golf": "Friskvårdsbidraget = golfbidraget.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": "Ordet 'friskvårdsbidraget' som 3D-text som byggs om till 'golfbidraget' i ljus.",
+        "material": [
+          "✓ banfoton",
+          "✓ formuleringen (Q2-annonserna)"
+        ],
+        "tekniker": [
+          "teknik.ord-knapps-bort"
+        ],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "annonser i Meta",
+          "kampanj": "Q2 SIA 4 generell, karusell, VID 2"
+        },
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.smygehuk-till-kiruna",
+      "name": "300+ klubbar från Smygehuk till Kiruna",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[karta-resa] Hela landets spännvidd i en rad över ett riktigt banfoto: från Smygehuk till Kiruna. Varför: Två ortnamn alla känner ger skalan direkt, utan siffertabell. Passar: 300+ banor i hela Sverige.",
+      "tags": [
+        "idé",
+        "karta-resa",
+        "stolthet",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/smygehuk-till-kiruna.md",
+      "use": "Läs library/ideas/smygehuk-till-kiruna.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "karta-resa",
+        "premiss": "Hela landets spännvidd i en rad över ett riktigt banfoto: från Smygehuk till Kiruna.",
+        "overraskning": "Två ortnamn alla känner ger skalan direkt, utan siffertabell.",
+        "kansla": "stolthet",
+        "golf": "300+ banor i hela Sverige.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ banfoton"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "annonser i Meta",
+          "kampanj": "Q2 SIA 3 generell"
+        },
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.platt-textgrafik",
+      "name": "Platt textgrafik med siffra",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[textgrafik] En grön yta med ett stort påstående ('5 000 KR', '300+ KLUBBAR', 'INGEN PORTAL?', 'ETT KVITTO'). Varför: Ingenting – den ser ut som alla andras. Finns i banken som varning och jämförelse. Passar: Används inte som huvudidé.",
+      "tags": [
+        "idé",
+        "textgrafik",
+        "ingen",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/platt-textgrafik.md",
+      "use": "Läs library/ideas/platt-textgrafik.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "textgrafik",
+        "premiss": "En grön yta med ett stort påstående ('5 000 KR', '300+ KLUBBAR', 'INGEN PORTAL?', 'ETT KVITTO').",
+        "overraskning": "Ingenting – den ser ut som alla andras. Finns i banken som varning och jämförelse.",
+        "kansla": "ingen",
+        "golf": "Används inte som huvudidé.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ färger och typsnitt"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": [
+          {
+            "datum": "2026-10-28",
+            "av": "Meta-data",
+            "betyg": "👎",
+            "kommentar": "Sämst av alla annonser: 374–900 kr per kundvagn (feb–maj 2026), se meta-annonser-oversikt."
+          }
+        ]
+      }
+    },
+    {
+      "id": "ide.fars-dag-present",
+      "name": "En runda med pappa",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[sasongstema] Golf som fars dag-present: 'En runda med pappa', 'Hinner du till fars dag?', deadline för leverans. Varför: Presenten är en upplevelse tillsammans, inte en pryl. Passar: Presentkort till fars dag.",
+      "tags": [
+        "idé",
+        "sasongstema",
+        "värme, brådska",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/fars-dag-present.md",
+      "use": "Läs library/ideas/fars-dag-present.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "sasongstema",
+        "premiss": "Golf som fars dag-present: 'En runda med pappa', 'Hinner du till fars dag?', deadline för leverans.",
+        "overraskning": "Presenten är en upplevelse tillsammans, inte en pryl.",
+        "kansla": "värme, brådska",
+        "golf": "Presentkort till fars dag.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ presentkortsbilder",
+          "✓ metallkortet"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "annonser i Meta",
+          "kampanj": "fd26"
+        },
+        "anvand": [],
         "omdome": []
       }
     },
