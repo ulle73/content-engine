@@ -10,6 +10,10 @@ effekt eller stil som kan anpassas. Det finns inga stilregler här: allt får an
 kombineras – glitch, whips, 3D, morphs, hårda klipp, studs, vilka typsnitt och hur mycket text
 som helst. Brand-skillen (`golfkuponger-brand`, `faiv-brand` …) är ett **utgångsläge**, inte en spärr.
 
+**Ny video eller reel: börja i `skills/ny-video`** (Jonas 2026-11-26) – fasta frågor, referensfilm (väg A) eller tre
+riktningar ur idébanken `library/ideas` (väg B), Blender-frågan, materiallistan och anti-slop. Sökningen nedan används
+inne i den för utförandet (effekter, text, ljud) när riktningen är vald.
+
 **Video ska bli rätt första gången:** följ `skills/video-regler` – en beslutsrunda med alla smakbeslut
 före full rendering, husregler (lästid, en textposition, slutkort, ljud) och QA före leverans.
 
@@ -24,6 +28,11 @@ Läs bolagets brand- och faktaskill (`skills/<bolag>-brand`, faktabanken) innan 
 
 Har beställaren en **videolänk** ("gör en sån här för FAIV"), eller ska vi göra vår version av något som går bra hos
 konkurrenterna: börja i referensen, inte i en tom mall.
+
+**Standard (Jonas 2026-11-26): `skills/referens`.** Ber Jonas om kända/etablerade företagsfilmer → 5–8 förslag → han
+väljer → `hamta.py` → nedbrytning med **rea-video** (lokalt, gratis; berättelse, tempo, hur varje klipp är gjort, text
+och ljud) och egen granskning → referensens storyboard (`scripts/storyboard.py --fran-rea`) → vår version i samma
+storyboardformat. Vägarna nedan (betald bildmodell via OpenRouter) är ett komplement när en andra bedömning behövs.
 
 - **Länk** (Meta Ad Library, Instagram, TikTok, YouTube, Facebook, direktlänk) → MCP `analyze_reference_video`
   (lokalt: `python manage.py reference_lab --company Faiv --url <länk> --adapt`).
@@ -69,9 +78,11 @@ blanda. Ingen beställning ska få samma tre förslag – variera stil på rikti
 
 ## 4. Beslutsrunda (video) – innan full rendering
 
-Visa i ett svar: manus och tidslinje räknade från läsregeln (verklig längd), kontaktkarta i mobilstorlek,
-subjektiva nivåer som tre varianter sida vid sida, ljudkarta och ljudprovning, och det färdiga slutkortet.
-Beställaren svarar med sina val i ett meddelande. Detaljer: `skills/video-regler` avsnitt 2.
+Kärnan är **storyboard-arket** (`scripts/storyboard.py`, `./make.sh storyboard`): hela filmen på en bild – scener med
+bild, rörelse, ”blir” (övergången till nästa), ljud och text, läsregeln och safe zones kontrollerade. Bredvid:
+subjektiva nivåer som tre varianter sida vid sida, ljudprovning och det färdiga slutkortet. Beställaren svarar med sina
+val i ett meddelande; först efter ett ja körs `--godkann`, och `./make.sh bild` är spärrad för nya filmer fram till dess.
+Detaljer: `skills/video-regler` avsnitt 2.
 
 ## 5. Bygg från det valda
 
