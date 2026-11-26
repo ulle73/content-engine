@@ -1,7 +1,7 @@
 {
  "version": 1,
- "generated": "2026-11-17",
- "count": 1686,
+ "generated": "2026-11-26",
+ "count": 1688,
  "verified": 442,
  "by_type": {
   "background": 63,
@@ -16,7 +16,7 @@
   "skill": 61,
   "sound": 102,
   "technique": 28,
-  "template": 143,
+  "template": 145,
   "text": 128,
   "tool": 85,
   "transition": 123
@@ -53493,6 +53493,96 @@
   },
   {
    "kit": "golfkuponger",
+   "kit_title": "Blink – stor fråga och siffra som växlar grönt/guld",
+   "source": {
+    "name": "Content Engine (egen produktion)",
+    "url": "https://github.com/ulle73/content-engine",
+    "license": "Egen produktion. Typsnitt Anton och Inter (SIL OFL). Spotlight-slutbilden (valfri) är Golfkupongers egen."
+   },
+   "cost": "free",
+   "requires": [],
+   "use": "Dashboarden: Media → Blink. Lokalt: node library/templates/golfkuponger-blink/render.mjs --lokal [--format 9x16,4x5] [--satt stor=6] [--satt \"stor=Sista dagen\"] [--satt fraga_rader=en] [--ut work/x]",
+   "notes": "Standardtexten är den som Nicholas godkände i v4 (7-dagarsversionen). Påståenden i raderna ska komma ur faktabanken.",
+   "verified_at": null,
+   "preview": null,
+   "id": "golfkuponger.template.blink",
+   "name": "Blink – stor fråga och siffra som växlar grönt/guld",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "4:5"
+   ],
+   "engine": "html-playwright",
+   "mall": "mall.json",
+   "status": "unverified",
+   "description": "Enkel premiumgrafik som blinkar (som Caia och Libresse), Jonas val 2026-11-26 efter tre rundor: \"Friskvårdsbidrag kvar?\" som huvudfråga i full bredd (två rader som standard), jättesiffra eller ord, rubrik och en vanlig textrad (ingen knapp). Läge a: metallguld (brons → champagne → guld, mjuk kontrast) med djup på smaragd; läge b: grön text med dämpad smaragdgradient på dämpat antikguld. 0,4 s per läge (lägst 0,25 s). Inga linjer eller ramar. Texten fyller bilden (46 px i sidorna) – de säkra zonerna gäller inte här enligt Jonas beslut. Varje rad får en exakt textruta (FontFace med uppmätta mått) så att raderna kan ligga tätt. Loopar i det oändliga (ingen slutbild som standard): sömlös mp4, gif med två bilder och stillbild (läge a), 9:16 och 4:5.",
+   "tags": [
+    "blink",
+    "blinkar",
+    "flash",
+    "växlar färg",
+    "caia",
+    "libresse",
+    "nedräkning",
+    "dagar kvar",
+    "årsskifte",
+    "friskvårdsbidrag",
+    "sista dagen",
+    "siffra",
+    "grafik",
+    "stillbild",
+    "kampanj"
+   ],
+   "path": "library/templates/golfkuponger-blink/README.md"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – Golfare i <stad>? (stillbild, slam, snurr)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Eget material; banfoton ur KLUBBAR (godkända för reklam); klubblistan från golfkuponger.se; ljud per ljudbankens licenser"
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "playwright",
+    "chrome"
+   ],
+   "use": "node library/templates/golfkuponger-golfare-i-stad/render.mjs --lokal --bildmapp <mapp> --satt bakgrund=<foto.jpg> --satt stad=Uppsala --satt klubb=Upsala --satt bana=\"Upsala GK\"",
+   "notes": "Jonas 2026-11-18: skapa Golfare-bilderna i dashboarden med val av bakgrund, stad, bana, storlek, mellanrum och logga. Jämförd mot golfare-i-linkoping_A-still_4x5.jpg 2026-11-19 (samma utseende).",
+   "verified_at": null,
+   "preview": null,
+   "id": "golfkuponger.template.golfare-i-stad-bild",
+   "name": "Golfare i <stad>? – bild i 9:16 och 4:5 (dashboardmall)",
+   "type": "template",
+   "medium": "image",
+   "formats": [
+    "9:16",
+    "4:5"
+   ],
+   "engine": "html-playwright",
+   "description": "Stillbilden ur Golfare i <stad>? som dashboardmall (mall/v1): banfoto med fokus och zoom, GOLFARE I + STAD? i guld med 3D-djup, en klubb i underraden och banans namn vid plats-ikonen. Reglage för texterna, storlekar, mellanrum, typsnitt, toning och djup. Ett jobb ger en JPG i 9:16 och en i 4:5. Finns i dashboarden under Generera video. Filmerna (slam, snurr) görs med rendera.mjs.",
+   "tags": [
+    "golfkuponger",
+    "lokal",
+    "stad",
+    "golfare",
+    "annons",
+    "bild",
+    "meta",
+    "dashboard",
+    "mall",
+    "4:5",
+    "9:16"
+   ],
+   "path": "library/templates/golfkuponger-golfare-i-stad/README.md",
+   "mall": "mall.json",
+   "status": "unverified"
+  },
+  {
+   "kit": "golfkuponger",
    "kit_title": "iMessage-samtal i iPhone (9:16, ljust tema)",
    "source": {
     "name": "Content Engine (egen produktion) på HyperFrames-registrets chat-thread",
@@ -53614,6 +53704,7 @@
     "reglage"
    ],
    "path": "library/templates/golfkuponger-slutmallar/README.md",
+   "mall": "mall.json",
    "status": "unverified"
   },
   {

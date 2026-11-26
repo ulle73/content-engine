@@ -1,0 +1,30 @@
+{
+  "schema": "mall/v1",
+  "id": "golfkuponger-blink",
+  "titel": "Blink – stor fråga och siffra som växlar grönt/guld",
+  "beskrivning": "Enkel premiumgrafik som blinkar (som Caia och Libresse): stor fråga, jättesiffra eller ord, rubrik och en rad. Hela bilden växlar mellan metallguld på smaragd och grönt på dämpat antikguld. Texten fyller bilden. Loopande film utan slutbild (Spotlight går att slå på), gif och stillbild.",
+  "typ": "video",
+  "sida": "blink.html",
+  "render": "render.mjs",
+  "format": ["9x16", "4x5"],
+  "video": { "fps": 30 },
+  "utdata": [
+    { "typ": "video", "filtyp": "mp4", "format": ["9x16", "4x5"] },
+    { "typ": "bild", "filtyp": "jpg", "format": ["9x16", "4x5"] }
+  ],
+  "reglage": [
+    { "nyckel": "fraga", "typ": "text", "etikett": "Frågan överst", "hjalp": "Huvudfrågan, lika bred som rubriken. Får vara tom.", "standard": "Friskvårdsbidrag kvar?", "max_langd": 40 },
+    { "nyckel": "fraga_rader", "typ": "val", "etikett": "Frågan på", "standard": "tva",
+      "val": [
+        { "varde": "tva", "etikett": "Två rader (sista ordet på egen rad)" },
+        { "varde": "en", "etikett": "En rad" }
+      ] },
+    { "nyckel": "stor", "typ": "text", "etikett": "Stor siffra eller ord", "hjalp": "Till exempel 7 eller Sista dagen. Ord delas på två rader om de blir större så.", "standard": "7", "max_langd": 16, "kravs": true },
+    { "nyckel": "rad2", "typ": "text", "etikett": "Rubrik under", "hjalp": "Får vara tom.", "standard": "Dagar kvar av året", "max_langd": 40 },
+    { "nyckel": "golf", "typ": "text", "etikett": "Sista raden", "hjalp": "Vanlig text, ingen knapp. Får vara tom.", "standard": "Lägg det på golf.", "max_langd": 40 },
+    { "nyckel": "per_lage", "typ": "tal", "etikett": "Tid per färgläge", "hjalp": "0,4 s = glest blink. Lägst 0,25 s (högst 2 blink per sekund, av hänsyn till ljuskänslighet).", "grupp": "Blink och längd", "standard": 0.4, "min": 0.25, "max": 1, "steg": 0.05, "enhet": "s" },
+    { "nyckel": "langd", "typ": "tal", "etikett": "Längd", "hjalp": "Avrundas uppåt till hela blink (grönt + guld) så att filmen loopar sömlöst. Blir längre om texten behöver mer lästid.", "grupp": "Blink och längd", "standard": 6, "min": 3, "max": 12, "steg": 0.5, "enhet": "s" },
+    { "nyckel": "slutbild", "typ": "avpa", "etikett": "Spotlight-slutbilden sist (film)", "hjalp": "Av som standard: filmen ska loopa i det oändliga.", "grupp": "Blink och längd", "standard": false },
+    { "nyckel": "luft", "typ": "tal", "etikett": "Luft mellan raderna", "grupp": "Storlek", "standard": 60, "min": 20, "max": 140, "steg": 1, "enhet": "px" }
+  ]
+}
