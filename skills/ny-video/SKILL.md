@@ -81,14 +81,22 @@ Valet blir ett `"storyboard"`-block i `work/<film>/film.json` med `blender` och 
 
 Banken ska lära sig av publiken, inte bara av Jonas tycke. Uppdatera minst en gång i månaden och alltid innan en ny
 förslagsrunda om resultaten är äldre än 30 dagar (`work/_idebank/resultat.json`, fältet `hamtad`):
-1. Dashboard-MCP `data_fraga`: table `ads_daily`, filter `platform = Meta`, de senaste 120 dagarna, group_by
-   `[ad_id, ad, campaign, format]`, summor `cost→kr, impressions→vis, clicks→klick, outcome→kv, purchases→kop,
-   offline_purchases→portal, video_3s_views→v3, thruplays→tp`. Spara `rows` som `work/_idebank/export-<datum>.json`.
-2. `python library/ideas/resultat.py importera work/_idebank/export-<datum>.json --period <från>:<till>`.
+1. Dashboard-MCP `data_fraga`, **en fråga per säsongsfönster** (säsongerna i `library/ideas/sasonger.json`: vinter
+   jan–feb, vår mar–maj, sommar jun–aug, höst sep–okt, deadline nov–dec; `ads_daily` sparar 120 dagar): table
+   `ads_daily`, filter `platform = Meta`, `date_from/date_to` = säsongens dagar, group_by `[ad, format]`, summor
+   `cost→kr, impressions→vis, clicks→klick, outcome→kv, purchases→kop, offline_purchases→portal, video_3s_views→v3,
+   thruplays→tp`, having `kr >= 20`. Spara som `work/_idebank/export-<säsong>-<år>.json`:
+   `{"fran": "...", "till": "...", "rows": [...]}`.
+2. `python library/ideas/resultat.py importera work/_idebank/export-*.json` – säsongerna sparas i
+   `work/_idebank/historik.json` (samma säsong och år ersätts), så historiken växer även när `ads_daily` rullar vidare.
 3. Läs "Ej kopplade": titta på bilden (dashboardens `creatives`/meta-ads `ads_get_creatives`) och lägg en regel i
-   `library/ideas/annonskoppling.json` – eller en ny idé om konceptet saknas i banken.
-Förslagen (`riktningar.py --forslag`) lyfter idéer som ger billigare kundvagn än övriga annonser och sänker de som
-är dyrare; arket visar "Publiken i Meta" per riktning. Siffrorna stannar lokalt i `work/` (repot är publikt).
+   `library/ideas/annonskoppling.json` – eller en ny idé om konceptet saknas i banken. `resultat.py berakna` räknar om.
+
+**Mätbarhet:** under 10 kundvagnar eller 500 kr = för lite (påverkar inte); 10+ = indikation (±~50 %, halv vikt);
+30+ kundvagnar och 1 500 kr = mätbart (±~30 %, full vikt). Varje idé jämförs med **övriga annonser i samma säsong**
+(index), med 90 %-intervall och slutsatsen "säkert bättre/sämre/ingen säker skillnad". Förslagen
+(`riktningar.py --forslag`) använder **nuvarande säsong** när den är minst en indikation, annars alla säsonger; arket
+visar "Publiken i Meta" per riktning. Siffrorna stannar lokalt i `work/` (repot är publikt).
 Vi skapar, publicerar och ändrar inget i Meta – byrån laddar upp; vi läser bara.
 
 ## 5. Lärande tillbaka till banken

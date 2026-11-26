@@ -1,0 +1,17 @@
+{
+  "om": "Golfkupongers säsonger för att jämföra annonsresultat (library/ideas/resultat.py). En idé jämförs alltid med övriga annonser i SAMMA säsong – då tar säsongseffekter och ändringar i mätningen (t.ex. augusti 2026 med nästan inga kundvagnar på hela kontot) ut varandra. Ändra månaderna här om säsongerna ska delas annorlunda.",
+  "sasonger": [
+    {"id": "vinter", "namn": "Vinter – nytt bidrag", "manader": [1, 2], "om": "Nytt friskvårdsbidrag på året, planering inför säsongen"},
+    {"id": "var", "namn": "Vår – säsongsstart", "manader": [3, 4, 5], "om": "Banorna öppnar, golfsugen"},
+    {"id": "sommar", "namn": "Sommar – högsäsong", "manader": [6, 7, 8], "om": "Spelar mest, semester"},
+    {"id": "host", "namn": "Höst – eftersäsong", "manader": [9, 10], "om": "Bidraget kvar, säsongen går mot sitt slut"},
+    {"id": "deadline", "namn": "Deadline – bidraget brinner inne", "manader": [11, 12], "om": "31 december, presenter (fars dag, jul)"}
+  ],
+  "matbarhet": {
+    "om": "Antal kundvagnar avgör hur säker kr/kundvagn är (Poisson, 90 %): 10 kundvagnar ≈ ±52 %, 30 ≈ ±30 %, 100 ≈ ±16 %.",
+    "for_lite": "under 10 kundvagnar eller under 500 kr – räknas inte",
+    "indikation": {"min_kv": 10, "min_kr": 500, "vikt": 0.5},
+    "matbart": {"min_kv": 30, "min_kr": 1500, "vikt": 1.0},
+    "video_stannar_min_visningar": 2000
+  }
+}

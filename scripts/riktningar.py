@@ -72,7 +72,7 @@ def suggest(query: str, company: str, n: int = 3) -> list[dict]:
 
     words = [w for w in tokens(query) if w not in STOPPORD]
     ranked = []
-    resultat = (res.load() or {}).get("ideer", {})
+    resdata, sasong = res.load(), res.sasong_for(dt.date.today())
     for idea in load_ideas():
         bolag = (idea.get("ide") or {}).get("bolag")
         if company and bolag not in (company, "alla"):
@@ -82,7 +82,8 @@ def suggest(query: str, company: str, n: int = 3) -> list[dict]:
             s *= 0.5
         if thumbs_down(idea):
             s *= 0.6
-        s *= res.faktor(resultat.get(idea["id"]))  # publikens resultat i Meta: bättre än övriga lyfter, sämre sänker
+        # publikens resultat i Meta, helst i nuvarande säsong: bättre än övriga lyfter, sämre sänker, för lite data = neutralt
+        s *= res.faktor(res.for_idea(resdata, idea["id"], sasong)[0])
         ranked.append((s, idea))
     ranked.sort(key=lambda x: -x[0])
     picked, genres = [], set()
@@ -117,9 +118,10 @@ def draft(folder: Path, query: str, company: str) -> Path:
         })
     path = folder / "riktningar.json"
     path.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    resultat = (res.load() or {}).get("ideer", {})
+    resdata, sasong = res.load(), res.sasong_for(dt.date.today())
     for r in out["riktningar"]:
-        print(f"{r['bokstav']}. {r['titel']} [{r['genre']}] ({r['ide']}) – Meta: {res.kort_rad(resultat.get(r['ide']))}")
+        print(f"{r['bokstav']}. {r['titel']} [{r['genre']}] ({r['ide']}) – Meta: "
+              f"{res.kort_rad(*res.for_idea(resdata, r['ide'], sasong))}")
     print(f"utkast: {path} – fyll i formspråk, bärande effekt, text, ljud, bild/rörelsetest och material; rendera sedan.")
     return path
 
@@ -156,7 +158,7 @@ def build_html(data: dict, folder: Path, problems) -> str:
     esc = sb.esc
     rs = data.get("riktningar") or []
     resdata = res.load() or {}
-    resultat = resdata.get("ideer", {})
+    sasong = res.sasong_for(dt.date.today())
     by = {}
     for k, lvl, msg in problems:
         by.setdefault(k, []).append((lvl, msg))
@@ -186,7 +188,7 @@ def build_html(data: dict, folder: Path, problems) -> str:
 <div><h2>{esc(r.get("titel"))}</h2><div class="genre">{esc(r.get("genre"))} · {esc(r.get("ide"))}</div></div></div>
 <div class="frame" style="aspect-ratio:{aw}/{ah}">{pic}</div>{strip}
 <p class="premiss">{esc(r.get("premiss"))}</p>
-<div class="meta-res">Publiken i Meta: {esc(res.kort_rad(resultat.get(r.get("ide"))))}</div><dl>{rows}</dl>
+<div class="meta-res">Publiken i Meta – {esc(res.kort_rad(*res.for_idea(resdata, r.get("ide"), sasong)) if resdata else "inga resultat importerade")}</div><dl>{rows}</dl>
 <div class="blender {bcls}"><b>Premium med Blender? {esc((b.get("bedomning") or "?").upper())}</b> {esc(b.get("varfor"))}
 {('<br><i>' + esc(b.get("vad")) + '</i>') if b.get("vad") else ''}</div>
 <h3>Material för att bli perfekt</h3><ul class="mat">{mats}</ul>{f'<ul class="warn">{warn}</ul>' if warn else ''}</section>''')
@@ -215,7 +217,7 @@ footer{{margin-top:24px;padding-top:12px;border-top:1px solid var(--rule);color:
 {f'<ul class="general">{general}</ul>' if general else ''}
 <main class="dirs">{''.join(cols)}</main>
 {f'<h3>Gemensamt material</h3><ul class="gm">{gm}</ul>' if gm else ''}
-<footer><span>{f"Meta-resultat: {esc(resdata.get('period'))} (hämtat {esc(resdata.get('hamtad'))}). " if resdata else "Inga Meta-resultat importerade (library/ideas/resultat.py). "}{saknas} saker saknas för att det ska bli perfekt (rött). Välj en riktning – du får låna en sak från en annan.</span>
+<footer><span>{f"Meta-resultat {esc(', '.join(resdata.get('perioder', {}).values()))} (hämtat {esc(resdata.get('hamtad'))}); nu: {esc(res.sasong_namn(sasong))}. " if resdata else "Inga Meta-resultat importerade (library/ideas/resultat.py). "}{saknas} saker saknas för att det ska bli perfekt (rött). Välj en riktning – du får låna en sak från en annan.</span>
 <span>Nästa steg: storyboard för den valda riktningen.</span></footer></body></html>'''
 
 
