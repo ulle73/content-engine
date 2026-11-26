@@ -1,0 +1,1258 @@
+{
+  "kit": "ideas",
+  "title": "Idébanken – premisser för hela filmer",
+  "source": {
+    "name": "Content Engine",
+    "url": "",
+    "license": "Egen beskrivning"
+  },
+  "genrer": {
+    "objekt-metafor": "ett vardagsföremål bär budskapet (kalender, timglas, kvitto)",
+    "tidsresa": "spola tillbaka, framtid, andra chans",
+    "sketch": "figurer eller personer spelar upp en situation",
+    "fraga-igenkanning": "tittaren känner igen något och svarar i huvudet",
+    "parodi-hyllning": "lånar en känd bild, film eller genre och vrider den",
+    "3d-varld": "en byggd miniatyr- eller 3D-värld man färdas genom",
+    "forklaring-ui": "riktiga skärmar och steg visar hur något fungerar",
+    "lokalt-tilltal": "talar direkt till en plats eller grupp",
+    "chatt-samtal": "berättelsen sker i en chatt, ett mejl eller ett samtal",
+    "lanseringstrailer": "filmisk reveal av något nytt",
+    "spel-utmaning": "tittaren ska hitta, gissa eller klara något",
+    "nedrakning": "tiden som rinner ut är hela filmen",
+    "dokumentar": "allvarlig dokumentärform på ett vardagligt ämne",
+    "nyhet": "nyhetssändning, breaking, väderprognos",
+    "recept-guide": "instruktion i en lånad form (recept, bruksanvisning, IKEA-ritning)",
+    "asmr-makro": "närbilder, ljud och taktila detaljer",
+    "pov": "kameran är tittarens egna ögon och händer",
+    "fore-efter": "två tillstånd ställs mot varandra",
+    "karta-resa": "en linje eller resa över en karta",
+    "produkt-premium": "produkten som fysiskt föremål i studioljus",
+    "karusell-panorama": "karusellens slides bildar en sammanhängande bild"
+  },
+  "items": [
+    {
+      "id": "ide.rivkalendern",
+      "name": "Rivkalendern till 31 december",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[objekt-metafor] En rivkalender rivs dag för dag mot 31 december – friskvårdsbidraget brinner inne när sista bladet faller. Varför: Deadlinen blir fysisk och hörbar i stället för en text. Passar: Friskvårdsbidragets deadline 31/12.",
+      "tags": [
+        "idé",
+        "objekt-metafor",
+        "brådska",
+        "golfkuponger",
+        "html-playwright",
+        "blender"
+      ],
+      "path": "library/ideas/rivkalendern.md",
+      "use": "Läs library/ideas/rivkalendern.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10",
+      "ide": {
+        "genre": "objekt-metafor",
+        "premiss": "En rivkalender rivs dag för dag mot 31 december – friskvårdsbidraget brinner inne när sista bladet faller.",
+        "overraskning": "Deadlinen blir fysisk och hörbar i stället för en text.",
+        "kansla": "brådska",
+        "golf": "Friskvårdsbidragets deadline 31/12.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": "Ett riktigt pappersblock som rivs i 3D med ljus och skuggor skulle göra rivningen taktil.",
+        "material": [
+          "✓ rivkalender-grafik (gk-arsskifte)",
+          "✓ Spotlight-slutbild"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-arsskifte (v1)",
+          "godkänd": "2026-10"
+        },
+        "anvand": [
+          {
+            "film": "gk-arsskifte v1",
+            "datum": "2026-10"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.spola-tillbaka",
+      "name": "Spola tillbaka – andra chansen",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[tidsresa] Vi ser hur det går när man glömmer bidraget, bilden spolas tillbaka och samma dag spelas om med golf. Varför: Tittaren ser misstaget innan det händer. Passar: Glömt friskvårdsbidrag → använt på golf.",
+      "tags": [
+        "idé",
+        "tidsresa",
+        "lättnad",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/spola-tillbaka.md",
+      "use": "Läs library/ideas/spola-tillbaka.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10",
+      "ide": {
+        "genre": "tidsresa",
+        "premiss": "Vi ser hur det går när man glömmer bidraget, bilden spolas tillbaka och samma dag spelas om med golf.",
+        "overraskning": "Tittaren ser misstaget innan det händer.",
+        "kansla": "lättnad",
+        "golf": "Glömt friskvårdsbidrag → använt på golf.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ gk-arsskifte spola"
+        ],
+        "tekniker": [
+          "teknik.spola-tillbaka-andra-chans"
+        ],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-arsskifte (spola)",
+          "godkänd": "2026-10"
+        },
+        "anvand": [
+          {
+            "film": "gk-arsskifte spola",
+            "datum": "2026-10"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.chefen-betalar",
+      "name": "Låt chefen betala din golf",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[sketch] Chefen-figuren betalar motvilligt men glatt golfen – friskvårdsbidraget som arbetsgivarens gåva. Varför: Ett återkommande tecknat persongalleri i stället för stockfoto. Passar: Budskapet ”Låt chefen betala din golf”.",
+      "tags": [
+        "idé",
+        "sketch",
+        "skadeglädje, värme",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/chefen-betalar.md",
+      "use": "Läs library/ideas/chefen-betalar.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10",
+      "ide": {
+        "genre": "sketch",
+        "premiss": "Chefen-figuren betalar motvilligt men glatt golfen – friskvårdsbidraget som arbetsgivarens gåva.",
+        "overraskning": "Ett återkommande tecknat persongalleri i stället för stockfoto.",
+        "kansla": "skadeglädje, värme",
+        "golf": "Budskapet ”Låt chefen betala din golf”.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ Chefen-modulen (library/templates/golfkuponger-chefen)",
+          "✓ Tourleif"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-chefen",
+          "godkänd": "2026-10"
+        },
+        "anvand": [
+          {
+            "film": "gk-chefen",
+            "datum": "2026-10"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.spelat-den-har",
+      "name": "Spelat den här?",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[fraga-igenkanning] Kända banor blinkar förbi som en fråga, sedan en vägg av 300+ banor och utmaningen ”hur många klarar du?”. Varför: Tittaren svarar själv i huvudet – igenkänning före budskap. Passar: 300+ banor, bocka av i appen.",
+      "tags": [
+        "idé",
+        "fraga-igenkanning",
+        "nyfikenhet, stolthet",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/spelat-den-har.md",
+      "use": "Läs library/ideas/spelat-den-har.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10",
+      "ide": {
+        "genre": "fraga-igenkanning",
+        "premiss": "Kända banor blinkar förbi som en fråga, sedan en vägg av 300+ banor och utmaningen ”hur många klarar du?”.",
+        "overraskning": "Tittaren svarar själv i huvudet – igenkänning före budskap.",
+        "kansla": "nyfikenhet, stolthet",
+        "golf": "300+ banor, bocka av i appen.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ banfoton (KLUBBAR/)",
+          "✓ musik E1"
+        ],
+        "tekniker": [
+          "teknik.fragor-som-krok",
+          "teknik.vagg-av-allt"
+        ],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-banor",
+          "godkänd": "2026-10"
+        },
+        "anvand": [
+          {
+            "film": "gk-banor",
+            "datum": "2026-10"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.skriet-31-december",
+      "name": "Skriet, 31 december",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[parodi-hyllning] Munchs Skriet med Tourleif – paniken när man inser att bidraget går ut i morgon. Varför: Ett känt konstverk blir en golfskämt-reaktion. Passar: Deadline 31/12.",
+      "tags": [
+        "idé",
+        "parodi-hyllning",
+        "igenkänning, humor",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/skriet-31-december.md",
+      "use": "Läs library/ideas/skriet-31-december.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10",
+      "ide": {
+        "genre": "parodi-hyllning",
+        "premiss": "Munchs Skriet med Tourleif – paniken när man inser att bidraget går ut i morgon.",
+        "overraskning": "Ett känt konstverk blir en golfskämt-reaktion.",
+        "kansla": "igenkänning, humor",
+        "golf": "Deadline 31/12.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ Tourleif skrik-pose"
+        ],
+        "tekniker": [
+          "teknik.konstverk-hyllning"
+        ],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-konstverk",
+          "godkänd": "2026-10"
+        },
+        "anvand": [
+          {
+            "film": "gk-konstverk",
+            "datum": "2026-10"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.miniatyr-sverige",
+      "name": "Miniatyr-Sverige",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[3d-varld] En resa genom ett miniatyr-Sverige där varje område har sina banor, från Skåne och norrut. Varför: Hela utbudet blir en leksaksvärld man vill utforska. Passar: 300+ banor över hela landet.",
+      "tags": [
+        "idé",
+        "3d-varld",
+        "förundran",
+        "golfkuponger",
+        "blender",
+        "blender"
+      ],
+      "path": "library/ideas/miniatyr-sverige.md",
+      "use": "Läs library/ideas/miniatyr-sverige.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10-18",
+      "ide": {
+        "genre": "3d-varld",
+        "premiss": "En resa genom ett miniatyr-Sverige där varje område har sina banor, från Skåne och norrut.",
+        "overraskning": "Hela utbudet blir en leksaksvärld man vill utforska.",
+        "kansla": "förundran",
+        "golf": "300+ banor över hela landet.",
+        "stack": [
+          "blender"
+        ],
+        "blender": "Bärs helt av Blender: ljus, djup och miniatyrkänsla går inte att få platt.",
+        "material": [
+          "✓ Blender-scenen (work/gk-miniatyr)",
+          "foton per bana (be om underlag)"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-miniatyr (v4)",
+          "godkänd": "2026-10-18"
+        },
+        "anvand": [
+          {
+            "film": "gk-miniatyr v4",
+            "datum": "2026-10-18"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.sa-funkar-det",
+      "name": "Så funkar det – tre steg",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16",
+        "16:9"
+      ],
+      "engine": "none",
+      "description": "[forklaring-ui] Riktiga skärmar och riktiga golfare visar stegen köp → aktivera → spela, i tempo som ClassPass. Varför: Visar produkten i stället för att beskriva den; tempot gör en instruktion underhållande. Passar: Köpflödet: sajten/portalen → kod via mejl → aktivera i appen → saldo.",
+      "tags": [
+        "idé",
+        "forklaring-ui",
+        "trygghet",
+        "golfkuponger",
+        "html-playwright",
+        "hyperframes",
+        "blender"
+      ],
+      "path": "library/ideas/sa-funkar-det.md",
+      "use": "Läs library/ideas/sa-funkar-det.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10-22",
+      "ide": {
+        "genre": "forklaring-ui",
+        "premiss": "Riktiga skärmar och riktiga golfare visar stegen köp → aktivera → spela, i tempo som ClassPass.",
+        "overraskning": "Visar produkten i stället för att beskriva den; tempot gör en instruktion underhållande.",
+        "kansla": "trygghet",
+        "golf": "Köpflödet: sajten/portalen → kod via mejl → aktivera i appen → saldo.",
+        "stack": [
+          "html-playwright",
+          "hyperframes"
+        ],
+        "blender": "3D-iPhone med riktiga skärmar och kamerafärd runt telefonen gör stegen premium.",
+        "material": [
+          "✓ appens skärmar (_material/app-2026-11)",
+          "riktiga golfare i bild (filmat eller VIDEOS/)"
+        ],
+        "tekniker": [
+          "teknik.riktigt-flode-i-mobil"
+        ],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-sa-funkar-det (v3)",
+          "godkänd": "2026-10-22"
+        },
+        "anvand": [
+          {
+            "film": "gk-sa-funkar-det v3",
+            "datum": "2026-10-22"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.golfare-i-stad",
+      "name": "Golfare i [stad]?",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[lokalt-tilltal] ”Golfare i Göteborg?” över ett banfoto från en närliggande klubb – tilltal till en ort. Varför: Känns skriven för just mig; den bästa Meta-annonsen hittills. Passar: Lokala banor per stad.",
+      "tags": [
+        "idé",
+        "lokalt-tilltal",
+        "igenkänning",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/golfare-i-stad.md",
+      "use": "Läs library/ideas/golfare-i-stad.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10-28",
+      "ide": {
+        "genre": "lokalt-tilltal",
+        "premiss": "”Golfare i Göteborg?” över ett banfoto från en närliggande klubb – tilltal till en ort.",
+        "overraskning": "Känns skriven för just mig; den bästa Meta-annonsen hittills.",
+        "kansla": "igenkänning",
+        "golf": "Lokala banor per stad.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ banfoton per klubb",
+          "✓ mallen golfare-i-stad"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "golfare-i-stad (Stockholm m.fl.)",
+          "godkänd": "2026-10-28"
+        },
+        "anvand": [
+          {
+            "film": "golfare-i-stad",
+            "datum": "2026-10-28"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.imessage-kollegan",
+      "name": "Kollegan i iMessage",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[chatt-samtal] Ett iMessage-samtal där kollegan avslöjar hur hen får golfen betald. Varför: Tittaren läser någon annans chatt – nyfikenheten gör resten. Passar: Friskvårdsbidrag via kollegan.",
+      "tags": [
+        "idé",
+        "chatt-samtal",
+        "humor, nyfikenhet",
+        "golfkuponger",
+        "hyperframes"
+      ],
+      "path": "library/ideas/imessage-kollegan.md",
+      "use": "Läs library/ideas/imessage-kollegan.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "chatt-samtal",
+        "premiss": "Ett iMessage-samtal där kollegan avslöjar hur hen får golfen betald.",
+        "overraskning": "Tittaren läser någon annans chatt – nyfikenheten gör resten.",
+        "kansla": "humor, nyfikenhet",
+        "golf": "Friskvårdsbidrag via kollegan.",
+        "stack": [
+          "hyperframes"
+        ],
+        "blender": null,
+        "material": [
+          "✓ mallen imessage-samtal",
+          "✓ Jonas selfie"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-sugar-daddy",
+          "godkänd": "2026-11-13"
+        },
+        "anvand": [
+          {
+            "film": "gk-sugar-daddy",
+            "datum": "2026-11-13"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.app-reveal",
+      "name": "Nya appen – reveal",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[lanseringstrailer] En filmisk lanseringstrailer där appens delar lyfts fram en i taget runt en 3D-iPhone. Varför: Behandlar en golfapp som en stor teknikpremiär. Passar: Nya Golfkuponger-appen.",
+      "tags": [
+        "idé",
+        "lanseringstrailer",
+        "förväntan",
+        "golfkuponger",
+        "html-playwright",
+        "blender"
+      ],
+      "path": "library/ideas/app-reveal.md",
+      "use": "Läs library/ideas/app-reveal.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "lanseringstrailer",
+        "premiss": "En filmisk lanseringstrailer där appens delar lyfts fram en i taget runt en 3D-iPhone.",
+        "overraskning": "Behandlar en golfapp som en stor teknikpremiär.",
+        "kansla": "förväntan",
+        "golf": "Nya Golfkuponger-appen.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": "Riktig produktrendering av telefonen med reflexer och studioljus i hero-scenerna.",
+        "material": [
+          "✓ 3D-iPhone (telefon3d.js)",
+          "✓ appens skärmar",
+          "musik (val pågår)"
+        ],
+        "tekniker": [
+          "teknik.app-reveal-trailer",
+          "teknik.ringportal-kapitelbyte"
+        ],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-ny-app-reveal",
+          "godkänd": "2026-11"
+        },
+        "anvand": [
+          {
+            "film": "gk-ny-app-reveal",
+            "datum": "2026-11-26"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.hitta-faran",
+      "name": "Hitta faran i mörkret",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[spel-utmaning] Tittaren letar efter det dolda rådjuret i mörkret – sedan tänds extraljusen och det syns direkt. Varför: Tittaren gör själv jobbet och upplever produktens nytta. Passar: FAIV extraljus.",
+      "tags": [
+        "idé",
+        "spel-utmaning",
+        "spänning, aha",
+        "faiv",
+        "python"
+      ],
+      "path": "library/ideas/hitta-faran.md",
+      "use": "Läs library/ideas/hitta-faran.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10-24",
+      "ide": {
+        "genre": "spel-utmaning",
+        "premiss": "Tittaren letar efter det dolda rådjuret i mörkret – sedan tänds extraljusen och det syns direkt.",
+        "overraskning": "Tittaren gör själv jobbet och upplever produktens nytta.",
+        "kansla": "spänning, aha",
+        "golf": "FAIV extraljus.",
+        "stack": [
+          "python"
+        ],
+        "blender": null,
+        "material": [
+          "✓ före/efter-bilder från NTH"
+        ],
+        "tekniker": [],
+        "bolag": "faiv",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/faiv-extraljus",
+          "godkänd": "2026-10-24"
+        },
+        "anvand": [
+          {
+            "film": "faiv-extraljus",
+            "datum": "2026-10-24"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.kor-du-den-har",
+      "name": "Kör du den här?",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[fraga-igenkanning] Bilmodeller blinkar förbi som en fråga, sedan en vägg av 60+ modeller med grillkit. Varför: Samma form som Spelat den här? – fungerar i en annan bransch. Passar: FAIV grillkit.",
+      "tags": [
+        "idé",
+        "fraga-igenkanning",
+        "igenkänning",
+        "faiv",
+        "html-playwright"
+      ],
+      "path": "library/ideas/kor-du-den-har.md",
+      "use": "Läs library/ideas/kor-du-den-har.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "fraga-igenkanning",
+        "premiss": "Bilmodeller blinkar förbi som en fråga, sedan en vägg av 60+ modeller med grillkit.",
+        "overraskning": "Samma form som Spelat den här? – fungerar i en annan bransch.",
+        "kansla": "igenkänning",
+        "golf": "FAIV grillkit.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ NTH-bilder"
+        ],
+        "tekniker": [
+          "teknik.fragor-som-krok",
+          "teknik.vagg-av-allt"
+        ],
+        "bolag": "faiv",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/faiv-kor-du-den-har",
+          "godkänd": "2026-10-24"
+        },
+        "anvand": [
+          {
+            "film": "faiv-kor-du-den-har",
+            "datum": "2026-10-24"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.dagar-kvar-blink",
+      "name": "7 dagar kvar – blink",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[nedrakning] En platt grönt↔guld-växling med texten som fyller bilden: X dagar kvar. Varför: Så enkel att den sticker ut i flödet. Passar: Deadline 31/12.",
+      "tags": [
+        "idé",
+        "nedrakning",
+        "brådska",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/dagar-kvar-blink.md",
+      "use": "Läs library/ideas/dagar-kvar-blink.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "nedrakning",
+        "premiss": "En platt grönt↔guld-växling med texten som fyller bilden: X dagar kvar.",
+        "overraskning": "Så enkel att den sticker ut i flödet.",
+        "kansla": "brådska",
+        "golf": "Deadline 31/12.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ mallen golfkuponger-blink"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "blink-serie",
+          "godkänd": "2026-11"
+        },
+        "anvand": [
+          {
+            "film": "blink-serie",
+            "datum": "2026-11"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.gissa-banan",
+      "name": "Gissa banan",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[spel-utmaning] En bana visas bit för bit – gissa vilken innan den avslöjas. Varför: Tittaren tävlar mot sig själv. Passar: 300+ banor.",
+      "tags": [
+        "idé",
+        "spel-utmaning",
+        "nyfikenhet",
+        "golfkuponger",
+        "html-playwright",
+        "blender"
+      ],
+      "path": "library/ideas/gissa-banan.md",
+      "use": "Läs library/ideas/gissa-banan.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "spel-utmaning",
+        "premiss": "En bana visas bit för bit – gissa vilken innan den avslöjas.",
+        "overraskning": "Tittaren tävlar mot sig själv.",
+        "kansla": "nyfikenhet",
+        "golf": "300+ banor.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": "En flygning över banan i 3D (från höjddata/foton) gör avslöjandet filmiskt.",
+        "material": [
+          "✓ banfoton"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": [
+          {
+            "datum": "2026-10-15",
+            "av": "Jonas",
+            "betyg": "👎",
+            "kommentar": "Underkänd i utförandet: snurr → för snabb utzoom. Idén i sig ej prövad igen."
+          }
+        ]
+      }
+    },
+    {
+      "id": "ide.panorama-karusell",
+      "name": "Panorama över slides",
+      "type": "idea",
+      "medium": "carousel",
+      "formats": [
+        "4:5"
+      ],
+      "engine": "none",
+      "description": "[karusell-panorama] Karusellens slides bildar en sammanhängande bild – bollen flyger genom alla. Varför: Man måste svepa för att se helheten. Passar: Karusell på Instagram.",
+      "tags": [
+        "idé",
+        "karusell-panorama",
+        "nyfikenhet",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/panorama-karusell.md",
+      "use": "Läs library/ideas/panorama-karusell.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "verified",
+      "verified_at": "2026-10-14",
+      "ide": {
+        "genre": "karusell-panorama",
+        "premiss": "Karusellens slides bildar en sammanhängande bild – bollen flyger genom alla.",
+        "overraskning": "Man måste svepa för att se helheten.",
+        "kansla": "nyfikenhet",
+        "golf": "Karusell på Instagram.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "✓ gk-panorama"
+        ],
+        "tekniker": [
+          "teknik.panorama-over-slides"
+        ],
+        "bolag": "golfkuponger",
+        "bevis": {
+          "typ": "egen film",
+          "film": "work/gk-panorama",
+          "godkänd": "2026-10-14"
+        },
+        "anvand": [
+          {
+            "film": "gk-panorama",
+            "datum": "2026-10-14"
+          }
+        ],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.naturdokumentar",
+      "name": "Golfaren i sitt habitat",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[dokumentar] En viskande naturfilmsröst följer den sällsynta kontorsgolfaren som äntligen använder sitt friskvårdsbidrag. Varför: Allvarlig form på ett vardagligt ämne ger humor utan skämt. Passar: Friskvårdsbidraget.",
+      "tags": [
+        "idé",
+        "dokumentar",
+        "humor",
+        "golfkuponger",
+        "filmat",
+        "html-playwright"
+      ],
+      "path": "library/ideas/naturdokumentar.md",
+      "use": "Läs library/ideas/naturdokumentar.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "dokumentar",
+        "premiss": "En viskande naturfilmsröst följer den sällsynta kontorsgolfaren som äntligen använder sitt friskvårdsbidrag.",
+        "overraskning": "Allvarlig form på ett vardagligt ämne ger humor utan skämt.",
+        "kansla": "humor",
+        "golf": "Friskvårdsbidraget.",
+        "stack": [
+          "filmat",
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "filmat material eller VIDEOS/ (golfare)",
+          "berättarröst (ElevenLabs/inspelad)"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.breaking-news",
+      "name": "Breaking: bidrag brinner inne",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[nyhet] En nyhetssändning med ticker och grafik rapporterar live om alla friskvårdsbidrag som snart går förlorade. Varför: Nyhetsgrafiken är så igenkännbar att budskapet känns akut. Passar: Deadline 31/12.",
+      "tags": [
+        "idé",
+        "nyhet",
+        "brådska, humor",
+        "golfkuponger",
+        "html-playwright",
+        "blender"
+      ],
+      "path": "library/ideas/breaking-news.md",
+      "use": "Läs library/ideas/breaking-news.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "nyhet",
+        "premiss": "En nyhetssändning med ticker och grafik rapporterar live om alla friskvårdsbidrag som snart går förlorade.",
+        "overraskning": "Nyhetsgrafiken är så igenkännbar att budskapet känns akut.",
+        "kansla": "brådska, humor",
+        "golf": "Deadline 31/12.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": "3D-studio och roterande nyhetslogga i öppningen.",
+        "material": [
+          "nyhetsgrafik (byggs)",
+          "✓ banfoton som 'live-bilder'"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.level-up",
+      "name": "Golfrundan som spel – level 1 till 3",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[spel-utmaning] Stegen till golfen är banor i ett tv-spel: level 1 köp, level 2 aktivera, level 3 första tee. Varför: En instruktion som känns som underhållning; progress-mätaren håller kvar tittaren. Passar: Instruktion i tre steg (köp → aktivera → spela).",
+      "tags": [
+        "idé",
+        "spel-utmaning",
+        "lek, framsteg",
+        "golfkuponger",
+        "html-playwright",
+        "hyperframes",
+        "blender"
+      ],
+      "path": "library/ideas/level-up.md",
+      "use": "Läs library/ideas/level-up.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "spel-utmaning",
+        "premiss": "Stegen till golfen är banor i ett tv-spel: level 1 köp, level 2 aktivera, level 3 första tee.",
+        "overraskning": "En instruktion som känns som underhållning; progress-mätaren håller kvar tittaren.",
+        "kansla": "lek, framsteg",
+        "golf": "Instruktion i tre steg (köp → aktivera → spela).",
+        "stack": [
+          "html-playwright",
+          "hyperframes"
+        ],
+        "blender": "Låg-poly 3D-golfbana som spelvärld gör spelkänslan premium.",
+        "material": [
+          "✓ appens skärmar",
+          "pixel/spelgrafik (byggs)",
+          "✓ Tourleif som spelfigur"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.receptet",
+      "name": "Receptet på en golfsommar",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[recept-guide] En matlagningsvideo där ingredienserna är stegen: en kod, en app, en bana – blanda och servera. Varför: Instruktion i en lånad, mysig form. Passar: Instruktion i tre steg.",
+      "tags": [
+        "idé",
+        "recept-guide",
+        "värme",
+        "golfkuponger",
+        "html-playwright",
+        "filmat",
+        "blender"
+      ],
+      "path": "library/ideas/receptet.md",
+      "use": "Läs library/ideas/receptet.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "recept-guide",
+        "premiss": "En matlagningsvideo där ingredienserna är stegen: en kod, en app, en bana – blanda och servera.",
+        "overraskning": "Instruktion i en lånad, mysig form.",
+        "kansla": "värme",
+        "golf": "Instruktion i tre steg.",
+        "stack": [
+          "html-playwright",
+          "filmat"
+        ],
+        "blender": "Köksbänk i studioljus med koden som 'ingrediens' i makro.",
+        "material": [
+          "köksbänk (filmat eller 3D)",
+          "✓ appens skärmar"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.asmr-unboxing",
+      "name": "Unboxing av koden",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[asmr-makro] Koden i mejlet 'packas upp' som en premiumprodukt – papper, folie, ljudet när appen tänds. Varför: Gör något digitalt fysiskt och taktilt. Passar: Köp → kod via mejl → aktivera.",
+      "tags": [
+        "idé",
+        "asmr-makro",
+        "lust, tillfredsställelse",
+        "golfkuponger",
+        "blender",
+        "blender"
+      ],
+      "path": "library/ideas/asmr-unboxing.md",
+      "use": "Läs library/ideas/asmr-unboxing.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "asmr-makro",
+        "premiss": "Koden i mejlet 'packas upp' som en premiumprodukt – papper, folie, ljudet när appen tänds.",
+        "overraskning": "Gör något digitalt fysiskt och taktilt.",
+        "kansla": "lust, tillfredsställelse",
+        "golf": "Köp → kod via mejl → aktivera.",
+        "stack": [
+          "blender"
+        ],
+        "blender": "Bärs av Blender: förpackning, folie, makro och skärpedjup.",
+        "material": [
+          "riktiga ASMR-ljud (ljudbanken)",
+          "✓ appens skärmar"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.vaderprognos",
+      "name": "Golfprognosen",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[nyhet] En väderpresentatör visar högtryck över 300 banor och 'hög risk för golf' i helgen. Varför: Kartgrafiken gör utbudet konkret per region. Passar: Banor per region.",
+      "tags": [
+        "idé",
+        "nyhet",
+        "humor",
+        "golfkuponger",
+        "html-playwright"
+      ],
+      "path": "library/ideas/vaderprognos.md",
+      "use": "Läs library/ideas/vaderprognos.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "nyhet",
+        "premiss": "En väderpresentatör visar högtryck över 300 banor och 'hög risk för golf' i helgen.",
+        "overraskning": "Kartgrafiken gör utbudet konkret per region.",
+        "kansla": "humor",
+        "golf": "Banor per region.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": null,
+        "material": [
+          "Sverigekarta (byggs)",
+          "✓ klubbarnas positioner"
+        ],
+        "tekniker": [
+          "teknik.folj-linjen"
+        ],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.kontorsstol-tee",
+      "name": "Från kontorsstolen till första tee",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[fore-efter] Samma rörelse matchas mellan kontoret och banan – stolen snurrar och blir en sving. Varför: Matchklippet gör förvandlingen fysisk. Passar: Friskvård = golf.",
+      "tags": [
+        "idé",
+        "fore-efter",
+        "längtan",
+        "golfkuponger",
+        "filmat",
+        "ai-video"
+      ],
+      "path": "library/ideas/kontorsstol-tee.md",
+      "use": "Läs library/ideas/kontorsstol-tee.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "fore-efter",
+        "premiss": "Samma rörelse matchas mellan kontoret och banan – stolen snurrar och blir en sving.",
+        "overraskning": "Matchklippet gör förvandlingen fysisk.",
+        "kansla": "längtan",
+        "golf": "Friskvård = golf.",
+        "stack": [
+          "filmat",
+          "ai-video"
+        ],
+        "blender": null,
+        "material": [
+          "två matchade klipp (filmat eller AI)",
+          "✓ banfoton"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.pov-telefonen",
+      "name": "POV: från soffan till tee",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[pov] Tittarens egna händer köper, aktiverar och betalar greenfee – kameran är dina ögon hela vägen. Varför: Tittaren är huvudpersonen; stegen blir upplevda, inte förklarade. Passar: Instruktion i tre steg.",
+      "tags": [
+        "idé",
+        "pov",
+        "trygghet, lust",
+        "golfkuponger",
+        "filmat",
+        "html-playwright",
+        "blender"
+      ],
+      "path": "library/ideas/pov-telefonen.md",
+      "use": "Läs library/ideas/pov-telefonen.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "pov",
+        "premiss": "Tittarens egna händer köper, aktiverar och betalar greenfee – kameran är dina ögon hela vägen.",
+        "overraskning": "Tittaren är huvudpersonen; stegen blir upplevda, inte förklarade.",
+        "kansla": "trygghet, lust",
+        "golf": "Instruktion i tre steg.",
+        "stack": [
+          "filmat",
+          "html-playwright"
+        ],
+        "blender": "3D-telefon i handen för scener som inte kan filmas.",
+        "material": [
+          "inspelade POV-klipp med telefon (saknas)",
+          "✓ appens skärmar för skärminlägg"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.guldkortet",
+      "name": "Guldkortet",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[produkt-premium] Golfkupongen som ett fysiskt guldkort i studioljus – vänds, glänser, landar på en green. Varför: Ger en digital tjänst ett premiumföremål. Passar: Golfkuponger som gåva/premium.",
+      "tags": [
+        "idé",
+        "produkt-premium",
+        "status",
+        "golfkuponger",
+        "blender",
+        "blender"
+      ],
+      "path": "library/ideas/guldkortet.md",
+      "use": "Läs library/ideas/guldkortet.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "produkt-premium",
+        "premiss": "Golfkupongen som ett fysiskt guldkort i studioljus – vänds, glänser, landar på en green.",
+        "overraskning": "Ger en digital tjänst ett premiumföremål.",
+        "kansla": "status",
+        "golf": "Golfkuponger som gåva/premium.",
+        "stack": [
+          "blender"
+        ],
+        "blender": "Bärs av Blender: metall, reflexer, makro.",
+        "material": [
+          "✓ logga (SVG)",
+          "kortdesign (byggs)"
+        ],
+        "tekniker": [],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    },
+    {
+      "id": "ide.linjen-over-sverige",
+      "name": "Linjen över Sverige",
+      "type": "idea",
+      "medium": "video",
+      "formats": [
+        "9:16"
+      ],
+      "engine": "none",
+      "description": "[karta-resa] En linje dras från bana till bana över Sverigekartan och ritar till slut loggan. Varför: Utbudet blir en resa som slutar i varumärket. Passar: 300+ banor.",
+      "tags": [
+        "idé",
+        "karta-resa",
+        "förundran",
+        "golfkuponger",
+        "html-playwright",
+        "blender"
+      ],
+      "path": "library/ideas/linjen-over-sverige.md",
+      "use": "Läs library/ideas/linjen-over-sverige.md. Riktning i skills/ny-video; storyboard via scripts/storyboard.py.",
+      "status": "unverified",
+      "verified_at": null,
+      "ide": {
+        "genre": "karta-resa",
+        "premiss": "En linje dras från bana till bana över Sverigekartan och ritar till slut loggan.",
+        "overraskning": "Utbudet blir en resa som slutar i varumärket.",
+        "kansla": "förundran",
+        "golf": "300+ banor.",
+        "stack": [
+          "html-playwright"
+        ],
+        "blender": "Terräng i 3D med kameran som följer linjen.",
+        "material": [
+          "✓ klubbarnas positioner",
+          "Sverigekarta (byggs)"
+        ],
+        "tekniker": [
+          "teknik.folj-linjen"
+        ],
+        "bolag": "golfkuponger",
+        "bevis": null,
+        "anvand": [],
+        "omdome": []
+      }
+    }
+  ]
+}

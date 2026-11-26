@@ -31,6 +31,9 @@ ses i sin helhet innan något renderas.
   sammanfattning i två meningar, regler för hela filmen, valda tekniker, ev. referens och 6–10 scener med
   `tid`, `titel`, `i_bild`, `rorelse`, `blir`, `ljud`, `text` (+ `text_tid`), `bild`/`still`. Format och fält:
   `python scripts/storyboard.py --help`.
+- **Blender-frågan och materialet** (Jonas 2026-11-26): `"blender"` (ja/delvis/nej, varför, vilka scener) och
+  `"material"` (finns/saknas, var/hur) ska finnas på varje storyboard – arket varnar annars, och saknat material
+  visas i rött och tas upp med beställaren före bygget (`skills/ny-video`).
 - **”Blir”** är den viktigaste raden: hur scenen går över i nästa (klipp på takten, bilden krymper till en ruta i
   väggen, kameran fortsätter …). Går den inte att skriva hör scenerna inte ihop än.
 - `./make.sh storyboard` (eller `python scripts/storyboard.py work/<film> [--stillbilder | --fran-video <utkast.mp4>]`)

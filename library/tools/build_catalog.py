@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mallformat import mall_problems  # noqa: E402  (dashboardmallar, mall/v1)
 
 TYPES = {"template", "scene", "effect", "transition", "text", "caption", "grade", "background", "technique",
-         "carousel", "skill", "prompt", "sound", "tool", "recipe", "model"}
+         "carousel", "skill", "prompt", "sound", "tool", "recipe", "model", "idea"}
 MEDIA = {"video", "carousel", "image", "audio", "text"}
 FORMATS = {"9:16", "1:1", "4:5", "16:9", "any"}
 ENGINES = {"hyperframes", "remotion", "html-playwright", "python", "canvas", "none"}
@@ -92,8 +92,8 @@ def load_manifests() -> tuple[list[dict], list[str]]:
             for kind in ("video", "still"):
                 if preview.get(kind) and not (ROOT / preview[kind]).exists():
                     problems.append(f"{where} ({item_id}): preview.{kind} finns inte: {preview[kind]}")
-            # tekniker är godkända genom sitt bevis (länk/egen film); en preview är bra men inget krav
-            if item["status"] == "verified" and not preview and item["type"] != "technique":
+            # tekniker och idéer är godkända genom sitt bevis (länk/egen film); en preview är bra men inget krav
+            if item["status"] == "verified" and not preview and item["type"] not in ("technique", "idea"):
                 problems.append(f"{where} ({item_id}): verified kräver en preview")
             items.append({
                 "kit": kit,

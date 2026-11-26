@@ -10,6 +10,10 @@ effekt eller stil som kan anpassas. Det finns inga stilregler här: allt får an
 kombineras – glitch, whips, 3D, morphs, hårda klipp, studs, vilka typsnitt och hur mycket text
 som helst. Brand-skillen (`golfkuponger-brand`, `faiv-brand` …) är ett **utgångsläge**, inte en spärr.
 
+**Ny video eller reel: börja i `skills/ny-video`** (Jonas 2026-11-26) – fasta frågor, referensfilm (väg A) eller tre
+riktningar ur idébanken `library/ideas` (väg B), Blender-frågan, materiallistan och anti-slop. Sökningen nedan används
+inne i den för utförandet (effekter, text, ljud) när riktningen är vald.
+
 **Video ska bli rätt första gången:** följ `skills/video-regler` – en beslutsrunda med alla smakbeslut
 före full rendering, husregler (lästid, en textposition, slutkort, ljud) och QA före leverans.
 

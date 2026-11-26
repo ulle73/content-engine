@@ -19,6 +19,8 @@ Storyboarden kan också ligga i en egen fil (work/<film>/storyboard.json eller -
   "titel": "Spelat den här? · 22 s · 9:16", "sammanfattning": "Två meningar om hela filmen.",
   "format": "9:16", "regler": ["en textposition, y 560", "Spotlight sist"],
   "tekniker": ["Krok: teknik.fragor-som-krok – ...", "CTA: ..."],
+  "blender": {"bedomning": "ja|delvis|nej", "varfor": "vad 3D skulle lyfta (eller varför inte)", "scener": [2, 5]},
+  "material": [{"vad": "appens skärmar", "status": "finns|saknas", "kalla": "var / hur vi skaffar det"}],
   "referens": "work/references/<slug>/VIDEO.md (valfritt)",
   "scener": [
     {"tid": [0, 2.4], "titel": "Krok", "bild": "out/stills/t1.20.png", "still": 1.2,
@@ -94,6 +96,16 @@ def check(board: dict) -> list[tuple[int | None, str, str]]:
     scener = board.get("scener") or []
     if not scener:
         out.append((None, "fel", "storyboarden har inga scener"))
+    if not board.get("referensutkast"):
+        b = board.get("blender") or {}
+        if b.get("bedomning") not in ("ja", "delvis", "nej") or not (b.get("varfor") or "").strip():
+            out.append((None, "varning", "Blender-frågan saknas: hade filmen blivit mer premium med Blender? "
+                                         "(\"blender\": {\"bedomning\": \"ja|delvis|nej\", \"varfor\": \"…\", \"scener\": [..]})"))
+        if "material" not in board:
+            out.append((None, "varning", "materiallistan saknas: vad behövs för att filmen ska bli perfekt?"))
+        saknas = [m.get("vad") for m in board.get("material") or [] if m.get("status") == "saknas"]
+        if saknas:
+            out.append((None, "varning", f"material saknas: {', '.join(map(str, saknas))}"))
     prev_end = None
     for i, s in enumerate(scener, 1):
         t = s.get("tid")
@@ -226,6 +238,16 @@ def build_html(board: dict, frames: list[str | None], problems, fmt: str, zones:
   <div class="body"><div class="time">{t[0]:.1f}–{t[1]:.1f} s · {t[1]-t[0]:.1f} s</div><h2>{esc(s.get("titel"))}</h2>
   <dl>{''.join(rows)}</dl>{f'<ul class="warn">{warn}</ul>' if warn else ''}</div></section>''')
 
+    b = board.get("blender") or {}
+    blender_html = ""
+    if b:
+        sc = ", ".join(str(x) for x in b.get("scener") or [])
+        blender_html = (f'<div class="blender {esc(b.get("bedomning"))}"><b>Premium med Blender? '
+                        f'{esc((b.get("bedomning") or "?").upper())}</b> {esc(b.get("varfor"))}'
+                        f'{f" <i>(scen {esc(sc)})</i>" if sc else ""}</div>')
+    mats = "".join(f'<li class="{esc(m.get("status"))}">{"✓" if m.get("status") == "finns" else "✗"} {esc(m.get("vad"))}'
+                   f'{(" – " + esc(m.get("kalla"))) if m.get("kalla") else ""}</li>' for m in board.get("material") or [])
+    material_html = f'<div><h3>Material för att bli perfekt</h3><ul class="mat">{mats}</ul></div>' if mats else ""
     rules = "".join(f"<li>{esc(r)}</li>" for r in board.get("regler") or [])
     tekn = "".join(f"<li>{esc(r)}</li>" for r in board.get("tekniker") or [])
     general = "".join(f'<li class="{lvl}">{esc(msg)}</li>' for lvl, msg in by_scene.get(None, []))
@@ -257,12 +279,14 @@ dd.txt{{font-weight:600}}dd.poang{{color:var(--clay);font-weight:600}}mark{{back
 .read{{display:block;font-weight:400;font-size:12px;margin-top:2px}}.read.ok{{color:var(--green)}}.read.bad{{color:#d62828;font-weight:700}}
 .warn{{margin:8px 0 0;padding:0;list-style:none;font-size:12.5px}}.warn li.fel,.general li.fel{{color:#d62828;font-weight:650}}.warn li.varning,.general li.varning{{color:#a16207}}
 .general{{margin:0 0 16px;padding:0;list-style:none}}
+.meta ul.mat li::before{{content:""}}.mat li.saknas{{color:#b42318;font-weight:650}}.mat li.finns{{color:var(--green)}}
+.blender{{padding:10px 12px;border-left:4px solid var(--soft);background:#eeeae0;font-size:14px}}.blender.ja{{border-color:var(--green)}}.blender.delvis{{border-color:var(--gold)}}
 footer{{margin-top:26px;padding-top:12px;border-top:1px solid var(--rule);color:var(--soft);font-size:14px;display:flex;justify-content:space-between;gap:24px}}
 b.bad{{color:#d62828}}b.ok{{color:var(--green)}}
 </style></head><body>
 <header><div><h1>{esc(board.get("titel") or "Storyboard")}</h1><p>{esc(board.get("sammanfattning"))}</p>{ref}</div>
 <div class="facts"><b>{total:.1f} s</b>{len(scener)} scener · {esc(fmt)}</div></header>
-<div class="meta"><div><h3>Regler för hela filmen</h3><ul>{rules}</ul></div><div><h3>Valda tekniker</h3><ul>{tekn}</ul></div></div>
+<div class="meta"><div><h3>Regler för hela filmen</h3><ul>{rules}</ul></div><div><h3>Valda tekniker</h3><ul>{tekn}</ul></div>{material_html}<div>{blender_html}</div></div>
 {f'<ul class="general">{general}</ul>' if general else ''}
 <main class="shots">{''.join(cards)}</main>
 <footer><span>Röda band = plattformens osäkra zoner ({esc(fmt)}). Läsregeln: max(5/6 s, tecken/12) + 0,9 s.</span><span>{status}</span></footer>

@@ -73,5 +73,7 @@ ljudgreppen och vilka tekniker vi tar.
    referensens storyboard in som `"storyboard"` i `film.json`. Ta bort `"referensutkast"` och skriv om **varje scen**:
    samma uppgift i berättelsen, vårt innehåll – riktiga banfoton, Tourleif/Chefen, appen, fakta ur faktabanken,
    Golfkupongers Spotlight-slutbild sist, 9:16. Fyll `rorelse`, `blir`, `ljud` och `text` (läsregeln kontrolleras).
-3. Fortsätt i `skills/studio` + `skills/video-regler` avsnitt 2: storyboard-arket är beslutsrundan; `./make.sh bild`
+3. Fyll i `"blender"` (hade det blivit mer premium med Blender?) och `"material"` (vad som saknas för att bli
+   perfekt) enligt `skills/ny-video`, och kör anti-slop-frågan.
+4. Fortsätt i `skills/studio` + `skills/video-regler` avsnitt 2: storyboard-arket är beslutsrundan; `./make.sh bild`
    spärras tills det är godkänt.

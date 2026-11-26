@@ -12,6 +12,10 @@ Arbetsfiler och renderingar läggs i `work/` (gitignorerat).
 `cards/` och stockklippen i `VIDEOS/`. Undantag: `KLUBBAR/raderade/` används aldrig, och `MOBILAPP/` är konfigfiler,
 inget bildmaterial. Fråga inte om rättigheterna. Kopiera det som en film behöver in i filmens egen mapp under `work/`.
 
+**Ny video (Jonas 2026-11-26): börja i `/ny-video`** (`skills/ny-video/SKILL.md`) – fasta frågor, referensfilm
+eller tre riktningar ur idébanken (`library/ideas`, olika genrer), alltid Blender-frågan och en lista över material som
+saknas, anti-slop-kontroll, sedan storyboard.
+
 **Storyboard först (Jonas 2026-11-26):** varje ny film får ett storyboard-ark – hela filmen på en bild
 (`scripts/storyboard.py`, `./make.sh storyboard`) – som Jonas godkänner innan något renderas; `./make.sh bild` är spärrad
 tills dess (`skills/video-regler` avsnitt 2). Ber Jonas om kända/etablerade företagsfilmer eller skickar en film han gillar:
