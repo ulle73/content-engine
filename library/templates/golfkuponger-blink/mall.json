@@ -2,7 +2,7 @@
   "schema": "mall/v1",
   "id": "golfkuponger-blink",
   "titel": "Blink – stor fråga och siffra som växlar grönt/guld",
-  "beskrivning": "Enkel premiumgrafik som blinkar (som Caia och Libresse): stor fråga, jättesiffra eller ord, rubrik och en rad. Hela bilden växlar mellan metallguld på smaragd och grönt på dämpat antikguld. Texten fyller bilden. Loopande film utan slutbild (Spotlight går att slå på), gif och stillbild.",
+  "beskrivning": "Enkel premiumgrafik som blinkar (som Caia och Libresse): stor fråga, jättesiffra eller ord, rubrik och en rad. Hela bilden växlar mellan metallguld på smaragd och grönt på dämpat antikguld. Texten fyller bilden. Loopande film utan slutbild (Spotlight går att slå på) och stillbild.",
   "typ": "video",
   "sida": "blink.html",
   "render": "render.mjs",

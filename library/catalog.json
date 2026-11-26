@@ -53516,7 +53516,7 @@
    "engine": "html-playwright",
    "mall": "mall.json",
    "status": "unverified",
-   "description": "Enkel premiumgrafik som blinkar (som Caia och Libresse), Jonas val 2026-11-26 efter tre rundor: \"Friskvårdsbidrag kvar?\" som huvudfråga i full bredd (två rader som standard), jättesiffra eller ord, rubrik och en vanlig textrad (ingen knapp). Läge a: metallguld (brons → champagne → guld, mjuk kontrast) med djup på smaragd; läge b: grön text med dämpad smaragdgradient på dämpat antikguld. 0,4 s per läge (lägst 0,25 s). Inga linjer eller ramar. Texten fyller bilden (46 px i sidorna) – de säkra zonerna gäller inte här enligt Jonas beslut. Varje rad får en exakt textruta (FontFace med uppmätta mått) så att raderna kan ligga tätt. Loopar i det oändliga (ingen slutbild som standard): sömlös mp4, gif med två bilder och stillbild (läge a), 9:16 och 4:5.",
+   "description": "Enkel premiumgrafik som blinkar (som Caia och Libresse), Jonas val 2026-11-26 efter tre rundor: \"Friskvårdsbidrag kvar?\" som huvudfråga i full bredd (två rader som standard), jättesiffra eller ord, rubrik och en vanlig textrad (ingen knapp). Läge a: metallguld (brons → champagne → guld, mjuk kontrast) med djup på smaragd; läge b: grön text med dämpad smaragdgradient på dämpat antikguld. 0,4 s per läge (lägst 0,25 s). Inga linjer eller ramar. Texten fyller bilden (46 px i sidorna) – de säkra zonerna gäller inte här enligt Jonas beslut. Varje rad får en exakt textruta (FontFace med uppmätta mått) så att raderna kan ligga tätt. Loopar i det oändliga (ingen slutbild som standard): sömlös mp4 och stillbild (läge a), 9:16 och 4:5; ingen gif (bakgrunden bandar).",
    "tags": [
     "blink",
     "blinkar",

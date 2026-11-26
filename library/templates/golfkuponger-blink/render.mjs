@@ -1,9 +1,9 @@
 // Blink för Golfkuponger (2026-11-26): enkel grafik som växlar mellan två färger. Renderas med det gemensamma skelettet
 // (library/templates/_mall/render-bas.mjs); reglagen står i mall.json.
 //   node render.mjs --lokal [--format 9x16,4x5] [--satt stor=6] [--satt "rad2=Dagar kvar av året"] [--ut dir]
-// Ut: <ut>/golfkuponger-blink-<format>.mp4 (loopar sömlöst; Spotlight-slutbilden bara med --satt slutbild=true),
-// <ut>/golfkuponger-blink-<format>.gif (ett blink, loopar i det oändliga – för mejl, webb och chatt; Meta tar mp4:an)
+// Ut: <ut>/golfkuponger-blink-<format>.mp4 (loopar sömlöst; Spotlight-slutbilden bara med --satt slutbild=true)
 // och <ut>/golfkuponger-blink-<format>.jpg (stillbilden = läge a: grönt bakom, guld i texten).
+// Ingen gif: 256 färger gör den mjuka bakgrunden prickig och randig (Jonas underkände den 2026-11-26).
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -27,15 +27,6 @@ function efterVideo({ fil, info, format }) {
     fs.renameSync(tmp, fil);
   }
   ff(['-i', fil, '-f', 'null', '-']);   // leveransfilen ska gå att avkoda
-  if (!slut) {
-    // gif: exakt två bilder (läge a och läge b, mitt i var sin period) med 1/takt s var, loopar i det oändliga.
-    // Egen palett per bild (grönt och guld delar annars 256 färger och bandar).
-    const gif = fil.replace(/\.mp4$/, '.gif'), n = Math.round(info.period * 30);
-    ff(['-i', fil, '-filter_complex',
-      `[0:v]select='eq(n,${n >> 1})+eq(n,${n + (n >> 1)})',setpts=N/(${(1 / info.period).toFixed(6)}*TB),split[a][b];` +
-      '[a]palettegen=stats_mode=single:max_colors=256[p];[b][p]paletteuse=new=1:dither=sierra2_4a',
-      '-r', (1 / info.period).toFixed(6), '-loop', '0', gif]);
-  }
   return { varningar: [...(info.varningar || []), ...varningar] };
 }
 

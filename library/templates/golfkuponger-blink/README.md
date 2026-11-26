@@ -12,8 +12,8 @@ Enkel premiumgrafik som blinkar, som Caia och Libresse. Jonas valde designen 202
 - Varje stor rad får en egen FontFace med uppmätt höjd (canvas), så att textrutan är lika stor som bokstäverna.
 - **Loop, ingen slutbild** (Jonas runda 3): filmen är ett jämnt antal lägen långt så att den loopar sömlöst; Spotlight
   bara med `--satt slutbild=true`.
-- **Utdata:** loopande mp4 (till Meta), gif med exakt två bilder à 0,4 s som loopar i det oändliga (mejl, webb, chatt)
-  och stillbild (läge a), i 9:16 och 4:5. Gif:en är en sidofil från render.mjs, inte en utdatatyp i mall.json.
+- **Utdata:** loopande mp4 (till Meta; reels och stories loopar den själva) och stillbild (läge a), i 9:16 och 4:5.
+  Ingen gif: med 256 färger blir den mjuka bakgrunden prickig och randig (Jonas underkände den 2026-11-26).
 
 ```text
 node library/templates/golfkuponger-blink/render.mjs --lokal [--format 9x16,4x5] [--satt stor=6] \
