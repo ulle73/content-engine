@@ -151,6 +151,10 @@ def check(data: dict) -> list[tuple[str | None, str, str]]:
                 out.append((k, "varning", f"{label} saknas"))
         if not r.get("bild"):
             out.append((k, "varning", "ingen stillbild – visa hur riktningen ser ut"))
+        if sb.telefon_utan_3d(r.get("premiss", ""), r.get("formsprak", ""), r.get("barande", ""),
+                              " ".join(m.get("vad", "") for m in r.get("material") or [])):
+            out.append((k, "fel", "telefonen/appen syns men 3D-telefonen används inte – byggblocket "
+                                  "golfkuponger.template.telefon3d ska användas (aldrig en platt ram)"))
     return out
 
 

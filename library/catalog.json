@@ -1,8 +1,8 @@
 {
  "version": 1,
- "generated": "2026-11-26",
- "count": 1717,
- "verified": 452,
+ "generated": "2026-11-27",
+ "count": 1718,
+ "verified": 453,
  "by_type": {
   "background": 63,
   "caption": 29,
@@ -17,7 +17,7 @@
   "skill": 61,
   "sound": 102,
   "technique": 28,
-  "template": 144,
+  "template": 145,
   "text": 128,
   "tool": 85,
   "transition": 123
@@ -16364,6 +16364,58 @@
     "feed"
    ],
    "path": "library/templates/golfkuponger-golfare-i-stad/README.md",
+   "status": "verified"
+  },
+  {
+   "kit": "golfkuponger",
+   "kit_title": "Golfkuponger – 3D-telefonen (iPhone 18 Pro, three.js)",
+   "source": {
+    "name": "Golfkuponger (egen produktion)",
+    "url": "",
+    "license": "Egen modell (three.js, MIT). Formen efter Apples publicerade mått och produktbilder; Apple-loggan som form."
+   },
+   "cost": "free",
+   "requires": [
+    "node",
+    "three@0.180.0"
+   ],
+   "use": "Läs library/templates/golfkuponger-telefon3d/README.md: kopiera telefon3d.js till filmen, npm i three@0.180.0, sätt window.T3_STORLEK = {W, H}, rita skärmen i T3.skarmDuk och anropa T3.rita(lage, vrid) per bildruta. demo.html visar hela upplägget; rörelserna (varv, kullerbytta, flyga in, tryck) finns i README.",
+   "notes": "Ursprung: work/gk-ny-app-reveal/telefon3d.js (godkänd av Jonas 2026-11-25, standard i alla telefonscener). Bibliotekskopian läser storleken ur window.T3_STORLEK i stället för filmens globala W/H.",
+   "verified_at": "2026-11-25",
+   "preview": {
+    "still": "library/previews/golfkuponger.template.telefon3d.jpg"
+   },
+   "id": "golfkuponger.template.telefon3d",
+   "name": "3D-telefonen – iPhone 18 Pro i studioljus med appens skärm",
+   "type": "template",
+   "medium": "video",
+   "formats": [
+    "9:16",
+    "16:9",
+    "4:5",
+    "1:1",
+    "any"
+   ],
+   "engine": "html-playwright",
+   "description": "Riktig 3D-modell av iPhone 18 Pro (Silver) i three.js med studioljus, reflexer i aluminiet, kameraplatå, knappar och Apple-loggan på baksidan. Skärmen är en canvas som filmen ritar appens riktiga skärmar i, så telefonen kan visa vad som helst och vrida, flyga in, göra varv och zooma. Används ALLTID när en telefon eller appen syns i en film – aldrig en platt telefonram (Jonas 2026-11-27). Godkänd i 'Nya appen – reveal' 2026-11-25.",
+   "tags": [
+    "telefon",
+    "mobil",
+    "iphone",
+    "3d",
+    "app",
+    "appen",
+    "skärm",
+    "produkt",
+    "premium",
+    "three.js",
+    "webgl",
+    "phone",
+    "mockup",
+    "studioljus",
+    "golfkuponger"
+   ],
+   "path": "library/templates/golfkuponger-telefon3d/telefon3d.js",
    "status": "verified"
   },
   {
