@@ -90,6 +90,17 @@ def load_board(folder: Path, json_path: Path | None) -> tuple[dict, Path, str | 
              "(lägg ett \"storyboard\"-block i film.json, se --help).")
 
 
+TELEFON = re.compile(r"\b(telefon\w*|mobil\w*|iphone|appen|appens|app-?skärm\w*|skärminspelning\w*)\b", re.IGNORECASE)
+# 3D-telefonen/Blender – eller en riktig, filmad telefon (POV) – är godkänt; en ritad platt telefon är det inte
+TRE_D = re.compile(r"3d|telefon3d|blender|filmat|filmad|pov\b|inspelning i", re.IGNORECASE)
+
+
+def telefon_utan_3d(*texter: str) -> bool:
+    """Nämns en telefon/appen utan att 3D-telefonen (golfkuponger.template.telefon3d) eller Blender nämns?"""
+    alla = " ".join(t for t in texter if t)
+    return bool(TELEFON.search(alla)) and not TRE_D.search(alla)
+
+
 def check(board: dict) -> list[tuple[int | None, str, str]]:
     """(scen eller None, nivå 'fel'/'varning', text)."""
     out: list[tuple[int | None, str, str]] = []
@@ -121,6 +132,9 @@ def check(board: dict) -> list[tuple[int | None, str, str]]:
             out.append((i, "varning", "”Blir” saknas – hur går scenen över i nästa?"))
         if not (s.get("rorelse") or "").strip():
             out.append((i, "varning", "”Rörelse” saknas – något ska röra sig i varje scen"))
+        if telefon_utan_3d(s.get("i_bild", ""), s.get("rorelse", ""), s.get("titel", "")):
+            out.append((i, "varning", "telefon i bild – använd 3D-telefonen (golfkuponger.template.telefon3d), "
+                                      "aldrig en platt ram; skriv '3D-telefonen' i scenen"))
         txt = (s.get("text") or "").strip()
         if txt:
             tt = s.get("text_tid") or t
