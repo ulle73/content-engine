@@ -68,11 +68,13 @@ def _sms_film(request, workspace_id, *, embedded):
     if request.GET.get("from"):
         try:
             gammal = service.get_job(company, uuid.UUID(request.GET["from"]))
+            if gammal.mall_id and not _far_se(gammal.mall_id, request.user):
+                raise ValueError
             reopen = ({"kind": "mall", "mall": gammal.mall_id, "title": gammal.title, "varden": gammal.varden,
                        "formats": gammal.formats} if gammal.mall_id else gammal.form)
         except (spec.SmsFilmError, ValueError):
             reopen = None
-    jobs = list(service.jobs_for(company))
+    jobs = [j for j in service.jobs_for(company) if not j.mall_id or _far_se(j.mall_id, request.user)]
     return render(request, "engine/sms_film.html", {
         "workspace": company,
         "sms_embed": embedded,
@@ -81,7 +83,7 @@ def _sms_film(request, workspace_id, *, embedded):
         "reopen": reopen,
         "limits": {"messages": spec.MAX_MESSAGES, "text": spec.MAX_TEXT, "seconds": spec.MAX_SECONDS,
                    "uploads": spec.MAX_UPLOADS, "outro": spec.OUTRO_LEN},
-        "mallar": mallar.for_formularet(),
+        "mallar": mallar.for_formularet(request.user),
         "slutmall_klara": service.finished_slutmallar(company),
     })
 
@@ -89,9 +91,17 @@ def _sms_film(request, workspace_id, *, embedded):
 SLUTMALL_ID = "golfkuponger-slutmallar"
 
 
+def _far_se(mall_id, user):
+    """Jobs and reopen links for a template the user may not use stay hidden (mall.json "endast_for")."""
+    try:
+        return mallar.far_anvanda(mallar.hamta(mall_id), user)
+    except spec.SmsFilmError:
+        return True   # a template that is gone: keep showing the old job as before
+
+
 def _create_mall_job(company, user, form, title, files):
     """A dashboard template job: the values are checked against the template's mall.json (mallar.validera)."""
-    mall = mallar.hamta(form.get("mall"))
+    mall = mallar.hamta_for(form.get("mall"), user)
     with transaction.atomic():
         images = spec._Images(company, files)
         varden, formats = mallar.validera(mall, form.get("varden"), form.get("format"), images=images)

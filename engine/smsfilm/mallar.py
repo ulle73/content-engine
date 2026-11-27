@@ -163,8 +163,25 @@ def utdata(mall: dict, formats: list[str]) -> list[dict]:
     return sorted(ut, key=lambda x: (x["format"] != "9x16", x["variant"]))
 
 
-def for_formularet() -> list[dict]:
-    """What the dashboard form needs to draw every template's controls."""
+def far_anvanda(mall: dict, user) -> bool:
+    """A template with "endast_for" in mall.json is only shown to, and only accepted from, those accounts."""
+    tillatna = mall.get("endast_for")
+    if not tillatna:
+        return True
+    email = (getattr(user, "email", "") or "").strip().lower()
+    return bool(email) and email in {e.lower() for e in tillatna}
+
+
+def hamta_for(mall_id, user) -> dict:
+    """hamta() for a user: a template the user may not use answers exactly like one that does not exist."""
+    mall = hamta(mall_id)
+    if not far_anvanda(mall, user):
+        raise SmsFilmError("Mallen finns inte. Ladda om sidan och välj en mall.")
+    return mall
+
+
+def for_formularet(user) -> list[dict]:
+    """What the dashboard form needs to draw the controls of every template this user may use."""
     return [{"id": m["id"], "titel": m["titel"], "beskrivning": m.get("beskrivning", ""), "typ": m["typ"],
              "sida": m["sida"], "format": m["format"], "reglage": m["reglage"],
-             "standard_per": m.get("standard_per") or {}} for m in alla().values()]
+             "standard_per": m.get("standard_per") or {}} for m in alla().values() if far_anvanda(m, user)]
