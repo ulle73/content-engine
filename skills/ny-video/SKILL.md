@@ -43,6 +43,19 @@ python scripts/riktningar.py work/<film>        # → out/riktningar.png (stoppa
 ```
 Jonas väljer en riktning och får låna en sak från en annan ("A men med texten från C").
 
+## Våra egna byggblock – återanvänd alltid, bygg aldrig om
+
+Innan en riktning eller storyboard skrivs: kolla vad vi redan har gjort och godkänt (`find.py "<ord>" --kit golfkuponger`).
+Det här ska användas när motsvarande sak syns i filmen – en egen, sämre variant underkänns:
+- **Telefon eller appen i bild → 3D-telefonen** `golfkuponger.template.telefon3d`
+  (`library/templates/golfkuponger-telefon3d`, iPhone 18 Pro i three.js med appens riktiga skärmar). **Aldrig en platt
+  telefonram** (Jonas 2026-11-27, efter att startsidesfilmen fick en platt telefon trots att 3D-modellen fanns).
+- **En person i tecknat → Tourleif** (`golfkuponger.character.tourleif`), chef → Chefen (`library/templates/golfkuponger-chefen`).
+- **Slutet → Spotlight-slutbilden** (`edit-renderer/outros/golfkuponger/spotlight-<format>.mp4`).
+- **Chatt → iMessage-mallen** (`library/templates/imessage-samtal`), **stad + bana → golfare-i-stad**.
+- Appens riktiga skärmar och skärminspelningar: `work/_material/app-2026-11/`; banfoton: `KLUBBAR/` (se CLAUDE.md).
+Skriv i riktningen och storyboarden vilket byggblock som används (bank-id). Arken varnar när en telefon nämns utan 3D.
+
 ## Blender-frågan – ställ den alltid
 
 För **varje** riktning och i storyboarden: *hade det blivit mer premium med Blender?* Svara ja / delvis / nej, varför
@@ -65,7 +78,8 @@ visas i rött på arken. Fråga Jonas om det saknade **innan** bygget – bygg a
 
 En riktning eller storyboard underkänns om den bärs av något av detta:
 - stockmontage + kinetisk text ("Upptäck mer", "Ta kontroll", "Det är dags")
-- svävande 3D-telefon på gradient utan berättelse, centrerad gradienttitel, glasmorfism utan anledning
+- en **platt telefonram** eller påhittat app-gränssnitt (använd 3D-telefonen med riktiga skärmar)
+- svävande telefon på gradient utan berättelse, centrerad gradienttitel, glasmorfism utan anledning
 - samma whoosh på varje rörelse, syntade ljud, generisk "corporate"-musik
 - "I en värld där…", rubriker som kan stå på vilket företags film som helst
 - en idé som inte går att säga i en mening, eller som inte hade kunnat vara någon annans film med logga utbytt
