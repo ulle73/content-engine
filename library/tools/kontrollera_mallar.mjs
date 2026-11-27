@@ -8,6 +8,8 @@
 //   mitt      en centrerad textrad (text-align: center eller centrerad i en flexbox) har inte sin mitt på bildens mitt
 //             (x 540 i 1080 bred) ±3 px, vid samma tider som zon. Jonas 2026-10-24 och 2026-11-19: allt centrerat ligger
 //             på bildens mitt, aldrig mitt i en osymmetrisk yta. [data-zon-ignorera] räknas inte, som för zon.
+//             [data-zon-fri] undantar bara från zon (mitt kontrolleras): för grafik där Jonas uttryckligen beslutat att texten
+//             ska fylla bilden utanför de säkra zonerna (golfkuponger-blink, 2026-11-26).
 //   referens  bilden skiljer sig mer än 0,5 % av pixlarna från referens/<format>.png
 //
 //   node library/tools/kontrollera_mallar.mjs                       alla mallar (library/templates/*/mall.json + testmallen)
@@ -60,12 +62,12 @@ async function rutor(page) {
     const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     while (w.nextNode()) {
       const n = w.currentNode, el = n.parentElement;
-      if (!n.textContent.trim() || !el || el.closest('[data-zon-ignorera]') || el.closest('script,style') || !synlig(el)) continue;
+      if (!n.textContent.trim() || !el || el.closest('[data-zon-ignorera],[data-zon-fri]') || el.closest('script,style') || !synlig(el)) continue;
       const r = document.createRange(); r.selectNodeContents(n);
       for (const b of r.getClientRects()) if (b.width > 0 && b.height > 0) ut.push({ id: `"${n.textContent.trim().slice(0, 24)}"`, x: b.x, y: b.y, w: b.width, h: b.height });
     }
     for (const el of document.querySelectorAll('[data-zon]')) {
-      if (el.closest('[data-zon-ignorera]') || !synlig(el)) continue;
+      if (el.closest('[data-zon-ignorera],[data-zon-fri]') || !synlig(el)) continue;
       const b = el.getBoundingClientRect();
       ut.push({ id: el.dataset.zon || el.id || el.tagName.toLowerCase(), x: b.x, y: b.y, w: b.width, h: b.height });
     }
